@@ -8,7 +8,6 @@ import re
 from datetime import datetime, timedelta
 import time
 import pytz
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def get_url(page_no, current_date):
@@ -16,34 +15,13 @@ def get_url(page_no, current_date):
     url = f"https://section.blog.naver.com/Search/Post.naver?pageNo={page_no}&rangeType=PERIOD&orderBy=recentdate&startDate={formatted_date}&endDate={formatted_date}&keyword=%EC%84%9C%EC%9A%B8%20%EC%9B%A8%EC%9D%B4%ED%8C%85%20%EB%A7%9B%EC%A7%91"
     return url
 
-
-
-def crawl_pages(page_range, current_date):
-    titles = []
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    driver = webdriver.Chrome(options=chrome_options)
-
-    try:
-        url = get_url(page_range, current_date)
-        driver.get(url)
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'strong.title_post .title'))
-        )
-        titles_elements = driver.find_elements(By.CSS_SELECTOR, 'strong.title_post .title')
-        for title_element in titles_elements:
-            titles.append(title_element.text)
-    except Exception as e:
-        print(f"Error occurred: {e}")
-    finally:
-        driver.quit()
-
-    return titles
-
 def main():
     # Headless 모드 옵션 설정
     chrome_options = Options()
     chrome_options.add_argument("--headless") #Headless 모드 활성화.
+    chrome_options.add_argument("--disable-gpu") #GPU 비활성화 (일부 환경에서 필요).
+    chrome_options.add_argument("--no-sandbox") # Linux 환경에서 안정성을 높이기 위해 추가.
+    chrome_options.add_argument("--disable-dev-shm-usage") # Linux 환경에서 안정성을 높이기 위해 추가.
 
     # WebDriver 설정
     driver = webdriver.Chrome(options=chrome_options)
@@ -53,7 +31,7 @@ def main():
     start_date = datetime(2022, 1, 1)
     end_date = datetime(2022, 1, 2)
 
-    all_titles = []  # 제목을 저장할 리스트
+    titles = []  # 제목을 저장할 리스트
 
     current_date = start_date
 
@@ -85,34 +63,18 @@ def main():
             if remainder > 0:
                 total_pages += 1
 
-            total_pages_div, total_pages_remainder = divmod(total_pages, 10)
+            # 페이지 수만큼 for문 돌면서 크롤링
+            for p in range(1, total_pages + 1):
+                url = get_url(p, current_date)
+                driver.get(url)
 
-            for p in range(0, total_pages_div - 1):
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'strong.title_post .title'))
+                )
 
-                startPage = (p * 10) + 1
-                endPage = (p + 1) * 10
-                print(f"startPage : {startPage}")
-                print(f"endPage : {endPage}")
-
-                futures = []
-                with ThreadPoolExecutor(max_workers=10) as executor:
-                    for i in range(startPage, endPage):
-                        futures.append(executor.submit(crawl_pages, i, current_date))
-                    for future in as_completed(futures):
-                        titles.extend(future.result())
-
-            futures = []
-            with ThreadPoolExecutor(max_workers=10) as executor:
-
-                startPage = (total_pages_div * 10) + 1
-                endPage = startPage + total_pages_remainder - 1
-
-                for i in range(startPage, endPage):
-                    futures.extend(executor.submit(crawl_pages, i, current_date))
-                for future in as_completed(futures):
-                    all_titles.extend(future.result())
-
-
+                titles_elements = driver.find_elements(By.CSS_SELECTOR, 'strong.title_post .title')
+                for title_element in titles_elements:
+                    titles.append(title_element.text)
 
         except Exception as e:
             print(f"에러 발생: {e}")

@@ -215,7 +215,6 @@ def selectTable(Data):
 
     df = []
     df1, hasSecondTable = getFirstTableData(Round, url)
-    #df1, hasSecondTable = getFirstTableData(Round, 'https://www.worldfootball.net/schedule/eng-fa-cup-1876-1877-3-runde/0/')
     if hasSecondTable:
         df2 = getSecondTableData(url)
         df1[0] += df2[0] + df2[0]

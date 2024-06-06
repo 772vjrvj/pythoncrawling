@@ -1,0 +1,35 @@
+자 그럼 지금 내용을 정리하면
+
+제가 어제 드린 소스가 실행은 되는데
+아래 4개의 문제가 있다.
+
+
+1. 문제
+https://www.worldfootball.net/schedule/aut-bundesliga-2018-2019-playoff-finale/0/
+https://www.worldfootball.net/schedule/aut-bundesliga-2018-2019-playoff-halbfinale/0/
+사장님 위 두개 형식이 크롤링이 안되요
+
+2. 문제
+사장님 그리고 aet랑 pso 영문을 ay열에 넣어주세요
+
+3.문제
+https://www.worldfootball.net/schedule/aus-australia-cup-1977-finale/0/
+이것도 영문표기가 안되요
+
+4.문제
+사장님 자릿수 변경건에 대해서 ay열에 표기좀해주세요
+
+
+
+
+
+1번 첫번째꺼는 크롤러가 안되는 부분이구요
+1번 두번째는 팀명이 빠진거구요
+2번 ay열에 영문자 위치요
+3번 모든영문자는 ay열에 위치요
+4번은 aet pso두개 자리변경된것도 ay열에 영문위치요
+
+
+
+
+exe파일 튕기는 현상 해결 필요

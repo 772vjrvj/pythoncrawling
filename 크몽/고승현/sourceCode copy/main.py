@@ -29,13 +29,13 @@ def yeyak(countryInfo) -> str:
         "4": toYear
     }
     if not os.path.exists("./yeyak.json"):
-        with open("./yeyak.json", "w") as file:
+        with open("yeyak.json", "w") as file:
             json.dump([data], file)
     else:
-        with open("./yeyak.json", "r") as file:
+        with open("yeyak.json", "r") as file:
             existing_data = json.load(file)
         existing_data.append(data)
-        with open("./yeyak.json", "w") as file:
+        with open("yeyak.json", "w") as file:
             json.dump(existing_data, file)
 
     return "success"
@@ -44,7 +44,7 @@ def yeyakCrawling():
     if not os.path.exists("./yeyak.json"):
         return
     
-    with open("./yeyak.json", "r") as file:
+    with open("yeyak.json", "r") as file:
         datas = json.load(file)
 
     crawling([tuple(data.values()) for data in datas])
