@@ -1,0 +1,23 @@
+크롬 드라이버 다운로드
+
+https://stackoverflow.com/questions/78496036/chrome-driver-version-125-cant-find-the-chromedriver-exe
+
+https://googlechromelabs.github.io/chrome-for-testing/#stable
+
+https://storage.googleapis.com/chrome-for-testing-public/125.0.6422.141/win64/chromedriver-win64.zip
+
+다운로드
+
+
+https://ffmpeg.org/download.html
+
+윈도우 이미지 클릭
+Windows builds from gyan.dev 클릭
+
+https://www.gyan.dev/ffmpeg/builds/
+에서 
+git master builds에서
+ffmpeg-git-full.7z  다운로드
+
+options.add_argument("--headless")  # Remove this if you want to see the browser (Headless makes the chromedriver not have a GUI)
+

@@ -10,6 +10,15 @@ import time
 import pytz
 
 
+main_start_time = ""
+main_end_time = ""
+main_total_time = ""
+
+start_time = ""
+end_time = ""
+total_time = ""
+
+
 def get_url(page_no, current_date):
     formatted_date = current_date.strftime('%Y-%m-%d')
     url = f"https://section.blog.naver.com/Search/Post.naver?pageNo={page_no}&rangeType=PERIOD&orderBy=recentdate&startDate={formatted_date}&endDate={formatted_date}&keyword=%EC%84%9C%EC%9A%B8%20%EC%9B%A8%EC%9D%B4%ED%8C%85%20%EB%A7%9B%EC%A7%91"
@@ -29,7 +38,7 @@ def main():
     # 시작 날짜와 끝 날짜 설정
     # 날짜별로 조회하는 이유는 한꺼번에 2022-01-01 ~ 2022-12-31 이렇게 하면 정확한 데이터가 안나온다.
     start_date = datetime(2022, 1, 1)
-    end_date = datetime(2022, 1, 2)
+    end_date = datetime(2022, 1, 1)
 
     titles = []  # 제목을 저장할 리스트
 
@@ -38,6 +47,12 @@ def main():
     all_count = 0
 
     while current_date <= end_date:
+
+        print(f"======================================")
+        start_time = time.time()  # 시작 시간 기록
+        get_current_time()
+
+
         page_no = 1
         start_url = get_url(page_no, current_date)
         driver.get(start_url)
@@ -54,6 +69,7 @@ def main():
             # 숫자 문자열을 정수형으로 변환
             search_number = int(re.sub(r'[^\d]', '', search_number_text))
 
+            print(f"날짜: {current_date}")
             print(f"전체 갯수: {search_number}")
 
             all_count = all_count + search_number
@@ -62,6 +78,8 @@ def main():
             total_pages, remainder = divmod(search_number, 7)  # 페이지당 7개의 게시물
             if remainder > 0:
                 total_pages += 1
+
+            print(f"전체 페이지: {total_pages}")
 
             # 페이지 수만큼 for문 돌면서 크롤링
             for p in range(1, total_pages + 1):
@@ -74,12 +92,31 @@ def main():
 
                 titles_elements = driver.find_elements(By.CSS_SELECTOR, 'strong.title_post .title')
                 for title_element in titles_elements:
-                    titles.append(title_element.text)
+                    titles.append({
+                        "제목" : title_element.text,
+                        "날짜" : current_date.strftime('%Y-%m-%d'),
+                    })
 
         except Exception as e:
             print(f"에러 발생: {e}")
 
+
+        end_time = time.time()  # 시작 시간 기록
+
+        total_time = end_time - start_time  # 총 걸린 시간 계산
+        print(f"단위 걸린시간: {total_time} 초")
+
+        total_time = end_time - main_start_time  # 총 걸린 시간 계산
+        print(f"현재까지 걸린시간: {total_time} 초")
+
+        get_current_time()
+        print(f"======================================")
+
+
         current_date += timedelta(days=1)  # 하루씩 증가
+
+
+
 
     print(f"all_count: {all_count}")
 
@@ -88,7 +125,7 @@ def main():
     driver.quit()
 
     # 데이터를 DataFrame으로 변환
-    df = pd.DataFrame(titles, columns=["Title"])
+    df = pd.DataFrame(titles, columns=["제목", "날짜"])
 
     # Excel 파일로 저장
     df.to_excel("titles.xlsx", index=False, engine='openpyxl')
@@ -110,13 +147,13 @@ def get_current_time():
 
 
 if __name__ == "__main__":
-    start_time = time.time()  # 시작 시간 기록
+    main_start_time = time.time()  # 시작 시간 기록
     get_current_time()
 
     main()
 
-    end_time = time.time()  # 종료 시간 기록
+    main_end_time = time.time()  # 종료 시간 기록
     get_current_time()
 
-    total_time = end_time - start_time  # 총 걸린 시간 계산
-    print(f"total_time: {total_time}")
+    main_total_time = main_end_time - main_start_time  # 총 걸린 시간 계산
+    print(f"전체 걸린시간: {main_total_time} 초")

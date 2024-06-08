@@ -1,160 +1,46 @@
+import os
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import pandas as pd
-import re
-from datetime import datetime, timedelta
-import time
-import pytz
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# Chrome 드라이버 경로 설정
+driver_path = 'C:/chromedriver-win64/chromedriver.exe'
+options = Options()
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-extensions')
 
-def get_url(page_no, current_date):
-    formatted_date = current_date.strftime('%Y-%m-%d')
-    url = f"https://section.blog.naver.com/Search/Post.naver?pageNo={page_no}&rangeType=PERIOD&orderBy=recentdate&startDate={formatted_date}&endDate={formatted_date}&keyword=%EC%84%9C%EC%9A%B8%20%EC%9B%A8%EC%9D%B4%ED%8C%85%20%EB%A7%9B%EC%A7%91"
-    return url
+service = Service(driver_path)
+driver = webdriver.Chrome(service=service, options=options)
 
+try:
+    # 테스트 페이지 열기
+    driver.get('https://www.google.com/recaptcha/api2/demo')
 
+    # reCAPTCHA 기본 iframe로 로드 후 전환
+    WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//iframe[@title="reCAPTCHA"]')))
+    # reCAPTCHA 체크박스 클릭
+    checkbox = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "recaptcha-anchor"))
+    )
+    checkbox.click()
+    print("reCAPTCHA 체크박스를 클릭했습니다.")
 
-def crawl_pages(page_range, current_date):
-    titles = []
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    driver = webdriver.Chrome(options=chrome_options)
+    # 2분 후 만료될 reCAPTCHA iframe 로딩 및 전환
+    # WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//iframe[@title="reCAPTCHA&nbsp;보안문자 2분 후 만료"]')))
+    # # 오디오 버튼 클릭
+    # audio_button = WebDriverWait(driver, 10).until(
+    #     EC.element_to_be_clickable((By.XPATH, '//button[@title="음성 보안문자 듣기"]'))
+    # )
+    # audio_button.click()
+    print("오디오 보안문자 버튼을 클릭했습니다.")
 
-    try:
-        url = get_url(page_range, current_date)
-        driver.get(url)
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'strong.title_post .title'))
-        )
-        titles_elements = driver.find_elements(By.CSS_SELECTOR, 'strong.title_post .title')
-        for title_element in titles_elements:
-            titles.append(title_element.text)
-    except Exception as e:
-        print(f"Error occurred: {e}")
-    finally:
-        driver.quit()
+    # 결과를 확인하기 위해 잠시 대기
+    time.sleep(100)
 
-    return titles
-
-def main():
-    # Headless 모드 옵션 설정
-    chrome_options = Options()
-    chrome_options.add_argument("--headless") #Headless 모드 활성화.
-
-    # WebDriver 설정
-    driver = webdriver.Chrome(options=chrome_options)
-
-    # 시작 날짜와 끝 날짜 설정
-    # 날짜별로 조회하는 이유는 한꺼번에 2022-01-01 ~ 2022-12-31 이렇게 하면 정확한 데이터가 안나온다.
-    start_date = datetime(2022, 1, 1)
-    end_date = datetime(2022, 1, 2)
-
-    all_titles = []  # 제목을 저장할 리스트
-
-    current_date = start_date
-
-    all_count = 0
-
-    while current_date <= end_date:
-        page_no = 1
-        start_url = get_url(page_no, current_date)
-        driver.get(start_url)
-
-        try:
-            # 페이지 로딩 시 특정 요소가 나타날 때까지 기다립니다
-            search_number_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'em.search_number'))
-            )
-
-            # 검색 결과 수 찾기
-            search_number_text = search_number_element.text
-            # 쉼표 제거 및 숫자만 추출
-            # 숫자 문자열을 정수형으로 변환
-            search_number = int(re.sub(r'[^\d]', '', search_number_text))
-
-            print(f"전체 갯수: {search_number}")
-
-            all_count = all_count + search_number
-
-            # 7로 나누어 떨어지지 않으면 페이지 추가
-            total_pages, remainder = divmod(search_number, 7)  # 페이지당 7개의 게시물
-            if remainder > 0:
-                total_pages += 1
-
-            total_pages_div, total_pages_remainder = divmod(total_pages, 10)
-
-            for p in range(0, total_pages_div - 1):
-
-                startPage = (p * 10) + 1
-                endPage = (p + 1) * 10
-                print(f"startPage : {startPage}")
-                print(f"endPage : {endPage}")
-
-                futures = []
-                with ThreadPoolExecutor(max_workers=10) as executor:
-                    for i in range(startPage, endPage):
-                        futures.append(executor.submit(crawl_pages, i, current_date))
-                    for future in as_completed(futures):
-                        titles.extend(future.result())
-
-            futures = []
-            with ThreadPoolExecutor(max_workers=10) as executor:
-
-                startPage = (total_pages_div * 10) + 1
-                endPage = startPage + total_pages_remainder - 1
-
-                for i in range(startPage, endPage):
-                    futures.extend(executor.submit(crawl_pages, i, current_date))
-                for future in as_completed(futures):
-                    all_titles.extend(future.result())
-
-
-
-        except Exception as e:
-            print(f"에러 발생: {e}")
-
-        current_date += timedelta(days=1)  # 하루씩 증가
-
-    print(f"all_count: {all_count}")
-
-
-    # WebDriver 종료
+finally:
+    # 드라이버 종료
     driver.quit()
-
-    # 데이터를 DataFrame으로 변환
-    df = pd.DataFrame(titles, columns=["Title"])
-
-    # Excel 파일로 저장
-    df.to_excel("titles.xlsx", index=False, engine='openpyxl')
-
-
-def get_current_time():
-    # 한국 시간대 정의
-    korea_tz = pytz.timezone('Asia/Seoul')
-
-    # 현재 시간을 UTC 기준으로 가져오기
-    now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
-
-    # 한국 시간으로 변환
-    now_korea = now_utc.astimezone(korea_tz)
-
-    # 시간을 "yyyy-mm-dd hh:mm:ss" 형식으로 포맷팅
-    formatted_time_korea = now_korea.strftime('%Y-%m-%d %H:%M:%S')
-    print(formatted_time_korea)
-
-
-if __name__ == "__main__":
-    start_time = time.time()  # 시작 시간 기록
-    get_current_time()
-
-    main()
-
-    end_time = time.time()  # 종료 시간 기록
-    get_current_time()
-
-    total_time = end_time - start_time  # 총 걸린 시간 계산
-    print(f"total_time: {total_time}")
