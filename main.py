@@ -119,32 +119,40 @@ def get_marker_ids(place, category):
         print(f"Error during marker ID retrieval: {e}")
         return all_ids
 
-def get_marker_details(marker_id):
+def get_marker_details(marker_id, category, place, city):
     global driver
     url = f"https://m.place.naver.com/place/{marker_id}/home?entry=pll"
 
-
     details = {
-        "아이디": marker_id,
+        "구분번호": marker_id,
         "상호명": "",
         "카테고리": "",
+        "도시": "",
+        # "지역구": "",
         "주소": "",
         "전화번호": "",
         "인스타": "",
+        "홈페이지": "",
         "블로그": "",
-        "홈페이지": ""
+        "카카오": "",
+        "페이스북": "",
+        "유튜브": "",
+        "네이버 플레이스": url
     }
 
     try:
         driver.get(url)
-        time.sleep(2)
+        time.sleep(0.2)
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span.GHAhO')))
         details["상호명"] = driver.find_element(By.CSS_SELECTOR, 'span.GHAhO').text
-        details["카테고리"] = driver.find_element(By.CSS_SELECTOR, 'span.lnJFt').text
+        details["카테고리"] = category
+        details["도시"] = city
+        # details["지역구"] = place
         details["주소"] = driver.find_element(By.CSS_SELECTOR, 'span.LDgIH').text
         details["전화번호"] = driver.find_element(By.CSS_SELECTOR, 'span.xlx7Q').text
 
         spans = driver.find_elements(By.CSS_SELECTOR, 'span.jO09N, span.S8peq')
+
         for span in spans:
             link = span.find_element(By.TAG_NAME, 'a')
             href = link.get_attribute('href')
@@ -152,9 +160,16 @@ def get_marker_details(marker_id):
                 details["인스타"] = href
             elif 'blog' in href:
                 details["블로그"] = href
-            else:
-                if not details["홈페이지"]:
-                    details["홈페이지"] = href
+            elif 'facebook' in href:
+                details["페이스북"] = href
+            elif 'kakao' in href:
+                details["카카오"] = href
+            elif 'youtube' in href:
+                details["유튜브"] = href
+            elif '.naver.' not in href  and href:
+                details["홈페이지"] = href
+
+
         print(f"details {details}")
     except NoSuchElementException:
         print(f"Element not found for marker ID: {marker_id}")
@@ -181,12 +196,15 @@ def get_current_time():
 
 def main():
     init_driver()
-
-    places = ["강남구", "서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구"]
+    cities = "서울"
+    places = ["강남구", "서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구", "은평구", "은평구", "관악구", "금천구", "구로구"]
     categories = ["필라테스", "요가", "발레"]
     all_details = []
 
     for category in categories:
+
+        categories_total = 0
+
         for place in places:
 
             print(f"======================================")
@@ -200,10 +218,16 @@ def main():
             unique_marker_ids = list(set(marker_ids))
             print(f"Total unique marker IDs in {place} for {category}: {len(unique_marker_ids)}")
 
-            for marker_id in unique_marker_ids:
-                details = get_marker_details(marker_id)
-                all_details.append(details)
+            for i, marker_id in enumerate(unique_marker_ids):
+                if categories_total > 1000:
+                    break;
+                else:
+                    details = get_marker_details(marker_id, category, place, cities)
+                    all_details.append(details)
+                    categories_total = categories_total + 1
 
+            if categories_total > 1000:
+                break;
 
 
             end_time = time.time()  # 종료 시간 기록
