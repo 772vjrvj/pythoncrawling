@@ -1,4 +1,7 @@
+from datetime import datetime
 import time
+import pytz
+
 import re
 import pandas as pd
 from selenium import webdriver
@@ -12,11 +15,18 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # 전역 변수로 드라이버 선언
 driver = None
+main_start_time = ""
+main_end_time = ""
+main_total_time = ""
+
+start_time = ""
+end_time = ""
+total_time = ""
 
 def init_driver():
     global driver
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--window-size=1920,1080")  # Headless 모드에서 브라우저 크기 설정
@@ -116,13 +126,13 @@ def get_marker_details(marker_id):
 
     details = {
         "아이디": marker_id,
-        "상호명": None,
-        "카테고리": None,
-        "주소": None,
-        "전화번호": None,
-        "인스타": None,
-        "블로그": None,
-        "홈페이지": None
+        "상호명": "",
+        "카테고리": "",
+        "주소": "",
+        "전화번호": "",
+        "인스타": "",
+        "블로그": "",
+        "홈페이지": ""
     }
 
     try:
@@ -153,6 +163,22 @@ def get_marker_details(marker_id):
 
     return details
 
+
+def get_current_time():
+    # 한국 시간대 정의
+    korea_tz = pytz.timezone('Asia/Seoul')
+
+    # 현재 시간을 UTC 기준으로 가져오기
+    now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
+
+    # 한국 시간으로 변환
+    now_korea = now_utc.astimezone(korea_tz)
+
+    # 시간을 "yyyy-mm-dd hh:mm:ss" 형식으로 포맷팅
+    formatted_time_korea = now_korea.strftime('%Y-%m-%d %H:%M:%S')
+    print(formatted_time_korea)
+
+
 def main():
     init_driver()
 
@@ -162,6 +188,12 @@ def main():
 
     for category in categories:
         for place in places:
+
+            print(f"======================================")
+            start_time = time.time()  # 시작 시간 기록
+            get_current_time()
+
+
             print(f"Place: {place}, Category: {category}")
             marker_ids = get_marker_ids(place, category)
 
@@ -172,6 +204,22 @@ def main():
                 details = get_marker_details(marker_id)
                 all_details.append(details)
 
+
+
+            end_time = time.time()  # 종료 시간 기록
+
+            total_time = end_time - start_time  # 총 걸린 시간 계산
+            print(f"단위 걸린시간: {total_time} 초")
+
+            total_time = end_time - main_start_time  # 총 걸린 시간 계산
+            print(f"현재까지 걸린시간: {total_time} 초")
+
+            get_current_time()
+            print(f"======================================")
+
+
+
+
     df = pd.DataFrame(all_details)
     df.to_excel("marker_details.xlsx", index=False)
 
@@ -180,4 +228,14 @@ def main():
     close_driver()
 
 if __name__ == "__main__":
+
+    main_start_time = time.time()  # 시작 시간 기록
+    get_current_time()
+
     main()
+
+    main_end_time = time.time()  # 종료 시간 기록
+    get_current_time()
+
+    main_total_time = main_end_time - main_start_time  # 총 걸린 시간 계산
+    print(f"전체 걸린시간: {main_total_time} 초")
