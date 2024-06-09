@@ -156,7 +156,7 @@ def get_marker_details(marker_id):
 def main():
     init_driver()
 
-    places = ["서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구"]
+    places = ["강남구", "서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구"]
     categories = ["필라테스", "요가", "발레"]
     all_details = []
 
@@ -167,10 +167,6 @@ def main():
 
             unique_marker_ids = list(set(marker_ids))
             print(f"Total unique marker IDs in {place} for {category}: {len(unique_marker_ids)}")
-
-            # 맨 앞의 2개만 남기고 나머지 제거
-            unique_marker_ids = unique_marker_ids[:2]
-            print(f"Filtered marker IDs in {place} for {category}: {unique_marker_ids}")
 
             for marker_id in unique_marker_ids:
                 details = get_marker_details(marker_id)
