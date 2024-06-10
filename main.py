@@ -238,7 +238,7 @@ def main():
     ]
 
 
-    categories = ["발레", "요가", "필라테스"]
+    categories = ["발레"]
     all_details = []
     all_unique_marker_ids = set()
 
@@ -249,7 +249,7 @@ def main():
 
             place = pc["gu"]
 
-            if len(category_unique_marker_ids) >= 1500:
+            if len(category_unique_marker_ids) >= 1800:
                 break
 
             print(f"======================================")
@@ -276,8 +276,8 @@ def main():
             get_current_time()
             print(f"======================================")
 
-            if len(category_unique_marker_ids) >= 1500:
-                category_unique_marker_ids = set(list(category_unique_marker_ids)[:1500])  # 1100개로 제한
+            if len(category_unique_marker_ids) >= 1800:
+                category_unique_marker_ids = set(list(category_unique_marker_ids)[:1800])  # 2000개로 제한
 
         all_unique_marker_ids.update(category_unique_marker_ids)
 
@@ -285,7 +285,8 @@ def main():
         start_time = time.time()  # 시작 시간 기록
         get_current_time()
 
-        for marker_id in category_unique_marker_ids:
+        for index, marker_id in enumerate(category_unique_marker_ids):
+            print(f"Index: {index}, Marker ID: {marker_id}")
             details = get_marker_details(marker_id, category)
             all_details.append(details)
 
