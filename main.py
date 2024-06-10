@@ -1,6 +1,7 @@
 from datetime import datetime
 import time
 import pytz
+import random
 
 import re
 import pandas as pd
@@ -142,7 +143,11 @@ def get_marker_details(marker_id, category):
 
     try:
         driver.get(url)
-        time.sleep(1.2)
+
+        # 1초에서 2초 사이의 랜덤한 시간 생성
+        # 랜덤한 시간 동안 대기
+        time.sleep(random.uniform(1, 2))
+
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span.GHAhO')))
         details["상호명"] = driver.find_element(By.CSS_SELECTOR, 'span.GHAhO').text
         juso = driver.find_element(By.CSS_SELECTOR, 'span.LDgIH').text
