@@ -192,8 +192,10 @@ def get_marker_details(marker_id, category):
         print(f"details {details}")
     except NoSuchElementException:
         print(f"Element not found for marker ID: {marker_id}")
+        return None
     except TimeoutException:
         print(f"Timed out waiting for details of marker ID: {marker_id}")
+        return None
 
     return details
 
@@ -214,35 +216,25 @@ def get_current_time():
 def main():
     init_driver()
     places = [
-        {"city": "서울시", "gu": "강남구"}, {"city": "서울시", "gu": "서초구"},
-        {"city": "서울시", "gu": "송파구"}, {"city": "서울시", "gu": "강북구"},
-        {"city": "서울시", "gu": "용산구"}, {"city": "서울시", "gu": "강동구"},
-        {"city": "서울시", "gu": "마포구"}, {"city": "서울시", "gu": "중랑구"},
-        {"city": "서울시", "gu": "은평구"}, {"city": "서울시", "gu": "관악구"},
-        {"city": "서울시", "gu": "금천구"}, {"city": "서울시", "gu": "구로구"},
-        {"city": "서울시", "gu": "광진구"}, {"city": "서울시", "gu": "노원구"},
-        {"city": "서울시", "gu": "도봉구"}, {"city": "서울시", "gu": "동대문구"},
-        {"city": "서울시", "gu": "동작구"}, {"city": "서울시", "gu": "서대문구"},
-        {"city": "서울시", "gu": "성동구"}, {"city": "서울시", "gu": "성북구"},
-        {"city": "서울시", "gu": "양천구"}, {"city": "서울시", "gu": "영등포구"},
-        {"city": "서울시", "gu": "종로구"}, {"city": "서울시", "gu": "중구"},
-        {"city": "용인시", "gu": "처인구"}, {"city": "용인시", "gu": "기흥구"},
-        {"city": "용인시", "gu": "수지구"}, {"city": "수원시", "gu": "장안구"},
-        {"city": "수원시", "gu": "권선구"}, {"city": "수원시", "gu": "팔달구"},
-        {"city": "수원시", "gu": "영통구"}, {"city": "성남시", "gu": "수정구"},
-        {"city": "성남시", "gu": "중원구"}, {"city": "성남시", "gu": "분당구"},
-        {"city": "고양시", "gu": "덕양구"}, {"city": "고양시", "gu": "일산동구"},
-        {"city": "고양시", "gu": "일산서구"}, {"city": "부천시", "gu": "원미구"},
-        {"city": "부천시", "gu": "소사구"}, {"city": "부천시", "gu": "오정구"},
-        {"city": "인천시", "gu": "중구"}, {"city": "인천시", "gu": "동구"},
-        {"city": "인천시", "gu": "미추홀구"}, {"city": "인천시", "gu": "연수구"},
-        {"city": "인천시", "gu": "남동구"}, {"city": "인천시", "gu": "부평구"},
-        {"city": "인천시", "gu": "계양구"}, {"city": "인천시", "gu": "서구"},
-        {"city": "인천시", "gu": "강화군"}, {"city": "인천시", "gu": "옹진군"}
+        {'city': '부산시', 'gu': '해운대구'},
+        {'city': '부산시', 'gu': '중구'},
+        {'city': '부산시', 'gu': '서구'},
+        {'city': '부산시', 'gu': '동구'},
+        {'city': '부산시', 'gu': '영도구'},
+        {'city': '부산시', 'gu': '부산진구'},
+        {'city': '부산시', 'gu': '동래구'},
+        {'city': '부산시', 'gu': '남구'},
+        {'city': '부산시', 'gu': '북구'},
+        {'city': '부산시', 'gu': '사하구'},
+        {'city': '부산시', 'gu': '금정구'},
+        {'city': '부산시', 'gu': '강서구'},
+        {'city': '부산시', 'gu': '연제구'},
+        {'city': '부산시', 'gu': '수영구'},
+        {'city': '부산시', 'gu': '사상구'}
     ]
 
 
-    categories = ["발레", "요가", "필라테스"]
+    categories = ["발레"]
     all_details = []
     all_unique_marker_ids = set()
     all_details_cnt = 0
@@ -278,7 +270,7 @@ def main():
                     print(f"Now all_details_cnt {all_details_cnt}")
                     all_details.append(details)
 
-                    if all_details_cnt >= 1000:
+                    if all_details_cnt >= 100:
                         break
 
             end_time = time.time()  # 종료 시간 기록
@@ -291,7 +283,7 @@ def main():
             get_current_time()
             print(f"======================================")
 
-            if all_details_cnt >= 1000:
+            if all_details_cnt >= 100:
                 all_details_cnt = 0
                 break
 
