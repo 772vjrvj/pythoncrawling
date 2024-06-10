@@ -146,7 +146,7 @@ def get_marker_details(marker_id, category):
 
         # 1초에서 2초 사이의 랜덤한 시간 생성
         # 랜덤한 시간 동안 대기
-        time.sleep(1.5)
+        time.sleep(random.uniform(1, 2))
 
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span.GHAhO')))
         details["상호명"] = driver.find_element(By.CSS_SELECTOR, 'span.GHAhO').text
@@ -213,6 +213,7 @@ def get_current_time():
 
 def main():
     init_driver()
+    cities = "서울"
     places = [
         {"city": "서울시", "gu": "강남구"}, {"city": "서울시", "gu": "서초구"},
         {"city": "서울시", "gu": "송파구"}, {"city": "서울시", "gu": "강북구"},
@@ -242,18 +243,19 @@ def main():
     ]
 
 
-    categories = ["발레", "요가", "필라테스"]
+    categories = ["발레"]
     all_details = []
     all_unique_marker_ids = set()
-    all_details_cnt = 0
 
     for category in categories:
-
         category_unique_marker_ids = set()
 
         for pc in places:
 
             place = pc["city"] + " " + pc["gu"]
+
+            if len(category_unique_marker_ids) >= 1800:
+                break
 
             print(f"======================================")
             start_time = time.time()  # 시작 시간 기록
@@ -267,19 +269,7 @@ def main():
             unique_marker_ids = unique_marker_ids - category_unique_marker_ids  # 현재 카테고리에서 중복 제거
             category_unique_marker_ids.update(unique_marker_ids)
 
-            print(f"Total unique marker IDs in {place} for {category}: {len(unique_marker_ids)}")
-            print(f"Total unique marker IDs in 전체 for {category}: {len(category_unique_marker_ids)}")
-            print(f"Total unique marker IDs in 전체 for All: {len(all_unique_marker_ids)}")
-
-            for index, marker_id in enumerate(unique_marker_ids):
-                details = get_marker_details(marker_id, category)
-                if details is not None:
-                    all_details_cnt = all_details_cnt + 1
-                    print(f"Now all_details_cnt {all_details_cnt}")
-                    all_details.append(details)
-
-                    if all_details_cnt >= 1000:
-                        break
+            print(f"Total unique marker IDs in {place} for {category}: {len(category_unique_marker_ids)}")
 
             end_time = time.time()  # 종료 시간 기록
             total_time = end_time - start_time  # 총 걸린 시간 계산
@@ -291,11 +281,31 @@ def main():
             get_current_time()
             print(f"======================================")
 
-            if all_details_cnt >= 1000:
-                all_details_cnt = 0
-                break
+            if len(category_unique_marker_ids) >= 1800:
+                category_unique_marker_ids = set(list(category_unique_marker_ids)[:1800])  # 2000개로 제한
 
         all_unique_marker_ids.update(category_unique_marker_ids)
+
+        print(f"======================================")
+        start_time = time.time()  # 시작 시간 기록
+        get_current_time()
+
+        for index, marker_id in enumerate(category_unique_marker_ids):
+            print(f"Index: {index}, Marker ID: {marker_id}")
+            details = get_marker_details(marker_id, category)
+            if details is not None:
+                all_details.append(details)
+
+        end_time = time.time()  # 종료 시간 기록
+        total_time = end_time - start_time  # 총 걸린 시간 계산
+        print(f"실제데이터 수집 단위 걸린시간: {total_time} 초")
+
+        total_time = end_time - main_start_time  # 총 걸린 시간 계산
+        print(f"실제데이터 수집 현재까지 걸린시간: {total_time} 초")
+
+        get_current_time()
+        print(f"======================================")
+
 
 
     df = pd.DataFrame(all_details)
