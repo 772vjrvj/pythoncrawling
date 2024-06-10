@@ -119,7 +119,7 @@ def get_marker_ids(place, category):
         print(f"Error during marker ID retrieval: {e}")
         return all_ids
 
-def get_marker_details(marker_id, category, place, city):
+def get_marker_details(marker_id, category):
     global driver
     url = f"https://m.place.naver.com/place/{marker_id}/home?entry=pll"
 
@@ -127,7 +127,8 @@ def get_marker_details(marker_id, category, place, city):
         "구분번호": marker_id,
         "상호명": "",
         "카테고리": category,
-        "도시": city,
+        "시": "",
+        "구": "",
         "주소": "",
         "전화번호": "",
         "인스타": "",
@@ -141,10 +142,21 @@ def get_marker_details(marker_id, category, place, city):
 
     try:
         driver.get(url)
-        time.sleep(0.2)
+        time.sleep(1.2)
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span.GHAhO')))
         details["상호명"] = driver.find_element(By.CSS_SELECTOR, 'span.GHAhO').text
-        details["주소"] = driver.find_element(By.CSS_SELECTOR, 'span.LDgIH').text
+        juso = driver.find_element(By.CSS_SELECTOR, 'span.LDgIH').text
+        details["주소"] = juso
+        # 띄어쓰기로 주소를 자르기
+        split_juso = juso.split()
+
+        if split_juso[0] == '경기':
+            details["시"] = split_juso[1]
+            details["구"] = split_juso[2]
+        else:
+            details["시"] = split_juso[0]
+            details["구"] = split_juso[1]
+
         details["전화번호"] = driver.find_element(By.CSS_SELECTOR, 'span.xlx7Q').text
 
         spans = driver.find_elements(By.CSS_SELECTOR, 'span.jO09N, span.S8peq')
@@ -197,7 +209,35 @@ def get_current_time():
 def main():
     init_driver()
     cities = "서울"
-    places = ["강남구", "서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구", "은평구", "관악구", "금천구", "구로구"]
+    places = [
+        {"city": "서울", "gu": "강남구"}, {"city": "서울", "gu": "서초구"},
+        {"city": "서울", "gu": "송파구"}, {"city": "서울", "gu": "강북구"},
+        {"city": "서울", "gu": "용산구"}, {"city": "서울", "gu": "강동구"},
+        {"city": "서울", "gu": "마포구"}, {"city": "서울", "gu": "중랑구"},
+        {"city": "서울", "gu": "은평구"}, {"city": "서울", "gu": "관악구"},
+        {"city": "서울", "gu": "금천구"}, {"city": "서울", "gu": "구로구"},
+        {"city": "서울", "gu": "광진구"}, {"city": "서울", "gu": "노원구"},
+        {"city": "서울", "gu": "도봉구"}, {"city": "서울", "gu": "동대문구"},
+        {"city": "서울", "gu": "동작구"}, {"city": "서울", "gu": "서대문구"},
+        {"city": "서울", "gu": "성동구"}, {"city": "서울", "gu": "성북구"},
+        {"city": "서울", "gu": "양천구"}, {"city": "서울", "gu": "영등포구"},
+        {"city": "서울", "gu": "종로구"}, {"city": "서울", "gu": "중구"},
+        {"city": "용인시", "gu": "처인구"}, {"city": "용인시", "gu": "기흥구"},
+        {"city": "용인시", "gu": "수지구"}, {"city": "수원시", "gu": "장안구"},
+        {"city": "수원시", "gu": "권선구"}, {"city": "수원시", "gu": "팔달구"},
+        {"city": "수원시", "gu": "영통구"}, {"city": "성남시", "gu": "수정구"},
+        {"city": "성남시", "gu": "중원구"}, {"city": "성남시", "gu": "분당구"},
+        {"city": "고양시", "gu": "덕양구"}, {"city": "고양시", "gu": "일산동구"},
+        {"city": "고양시", "gu": "일산서구"}, {"city": "부천시", "gu": "원미구"},
+        {"city": "부천시", "gu": "소사구"}, {"city": "부천시", "gu": "오정구"},
+        {"city": "인천시", "gu": "중구"}, {"city": "인천시", "gu": "동구"},
+        {"city": "인천시", "gu": "미추홀구"}, {"city": "인천시", "gu": "연수구"},
+        {"city": "인천시", "gu": "남동구"}, {"city": "인천시", "gu": "부평구"},
+        {"city": "인천시", "gu": "계양구"}, {"city": "인천시", "gu": "서구"},
+        {"city": "인천시", "gu": "강화군"}, {"city": "인천시", "gu": "옹진군"}
+    ]
+
+
     categories = ["발레", "요가", "필라테스"]
     all_details = []
     all_unique_marker_ids = set()
@@ -205,8 +245,11 @@ def main():
     for category in categories:
         category_unique_marker_ids = set()
 
-        for place in places:
-            if len(category_unique_marker_ids) >= 1100:
+        for pc in places:
+
+            place = pc["gu"]
+
+            if len(category_unique_marker_ids) >= 1500:
                 break
 
             print(f"======================================")
@@ -225,22 +268,38 @@ def main():
 
             end_time = time.time()  # 종료 시간 기록
             total_time = end_time - start_time  # 총 걸린 시간 계산
-            print(f"단위 걸린시간: {total_time} 초")
+            print(f"아이디 수집 단위 걸린시간: {total_time} 초")
 
             total_time = end_time - main_start_time  # 총 걸린 시간 계산
-            print(f"현재까지 걸린시간: {total_time} 초")
+            print(f"아이디 수집 현재까지 걸린시간: {total_time} 초")
 
             get_current_time()
             print(f"======================================")
 
-            if len(category_unique_marker_ids) >= 1100:
-                category_unique_marker_ids = set(list(category_unique_marker_ids)[:1100])  # 1100개로 제한
+            if len(category_unique_marker_ids) >= 1500:
+                category_unique_marker_ids = set(list(category_unique_marker_ids)[:1500])  # 1100개로 제한
 
         all_unique_marker_ids.update(category_unique_marker_ids)
 
+        print(f"======================================")
+        start_time = time.time()  # 시작 시간 기록
+        get_current_time()
+
         for marker_id in category_unique_marker_ids:
-            details = get_marker_details(marker_id, category, place, cities)
+            details = get_marker_details(marker_id, category)
             all_details.append(details)
+
+        end_time = time.time()  # 종료 시간 기록
+        total_time = end_time - start_time  # 총 걸린 시간 계산
+        print(f"실제데이터 수집 단위 걸린시간: {total_time} 초")
+
+        total_time = end_time - main_start_time  # 총 걸린 시간 계산
+        print(f"실제데이터 수집 현재까지 걸린시간: {total_time} 초")
+
+        get_current_time()
+        print(f"======================================")
+
+
 
     df = pd.DataFrame(all_details)
     df.to_excel("marker_details.xlsx", index=False)
