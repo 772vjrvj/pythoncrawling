@@ -126,8 +126,9 @@ def get_marker_details(marker_id, category, place, city):
     details = {
         "구분번호": marker_id,
         "상호명": "",
-        "카테고리": category,
-        "도시": city,
+        "카테고리": "",
+        "도시": "",
+        # "지역구": "",
         "주소": "",
         "전화번호": "",
         "인스타": "",
@@ -144,6 +145,9 @@ def get_marker_details(marker_id, category, place, city):
         time.sleep(0.2)
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'span.GHAhO')))
         details["상호명"] = driver.find_element(By.CSS_SELECTOR, 'span.GHAhO').text
+        details["카테고리"] = category
+        details["도시"] = city
+        # details["지역구"] = place
         details["주소"] = driver.find_element(By.CSS_SELECTOR, 'span.LDgIH').text
         details["전화번호"] = driver.find_element(By.CSS_SELECTOR, 'span.xlx7Q').text
 
@@ -162,15 +166,9 @@ def get_marker_details(marker_id, category, place, city):
                 details["카카오"] = href
             elif 'youtube' in href:
                 details["유튜브"] = href
-            elif 'cafe' in href:
-                details["카페"] = href
-            elif '.naver.' not in href and href:
+            elif '.naver.' not in href  and href:
                 details["홈페이지"] = href
 
-        # 인스타, 블로그, 홈페이지 중 하나라도 없으면 details를 추가하지 않음
-        if not details["인스타"] and not details["블로그"] and not details["홈페이지"]:
-            print(f"Skipping marker ID: {marker_id} as it lacks Instagram, Blog, and Homepage")
-            return None
 
         print(f"details {details}")
     except NoSuchElementException:
@@ -179,6 +177,7 @@ def get_marker_details(marker_id, category, place, city):
         print(f"Timed out waiting for details of marker ID: {marker_id}")
 
     return details
+
 
 def get_current_time():
     # 한국 시간대 정의
@@ -194,36 +193,45 @@ def get_current_time():
     formatted_time_korea = now_korea.strftime('%Y-%m-%d %H:%M:%S')
     print(formatted_time_korea)
 
+
 def main():
     init_driver()
     cities = "서울"
-    places = ["강남구", "서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구", "은평구", "관악구", "금천구", "구로구"]
+    places = ["강남구", "서초구", "송파구", "강북구", "용산구", "강동구", "마포구", "중랑구", "은평구", "은평구", "관악구", "금천구", "구로구"]
     categories = ["발레", "요가", "필라테스"]
     all_details = []
-    all_unique_marker_ids = set()
 
     for category in categories:
-        category_unique_marker_ids = set()
+
+        categories_total = 0
 
         for place in places:
-            if len(category_unique_marker_ids) >= 1100:
-                break
 
             print(f"======================================")
             start_time = time.time()  # 시작 시간 기록
             get_current_time()
 
+
             print(f"Place: {place}, Category: {category}")
             marker_ids = get_marker_ids(place, category)
 
-            unique_marker_ids = set(marker_ids)
-            unique_marker_ids = unique_marker_ids - all_unique_marker_ids  # 전체에서 중복 제거
-            unique_marker_ids = unique_marker_ids - category_unique_marker_ids  # 현재 카테고리에서 중복 제거
-            category_unique_marker_ids.update(unique_marker_ids)
+            unique_marker_ids = list(set(marker_ids))
+            print(f"Total unique marker IDs in {place} for {category}: {len(unique_marker_ids)}")
 
-            print(f"Total unique marker IDs in {place} for {category}: {len(category_unique_marker_ids)}")
+            for i, marker_id in enumerate(unique_marker_ids):
+                if categories_total > 1000:
+                    break;
+                else:
+                    details = get_marker_details(marker_id, category, place, cities)
+                    all_details.append(details)
+                    categories_total = categories_total + 1
+
+            if categories_total > 1000:
+                break;
+
 
             end_time = time.time()  # 종료 시간 기록
+
             total_time = end_time - start_time  # 총 걸린 시간 계산
             print(f"단위 걸린시간: {total_time} 초")
 
@@ -233,14 +241,8 @@ def main():
             get_current_time()
             print(f"======================================")
 
-            if len(category_unique_marker_ids) >= 1100:
-                category_unique_marker_ids = set(list(category_unique_marker_ids)[:1100])  # 1100개로 제한
 
-        all_unique_marker_ids.update(category_unique_marker_ids)
 
-        for marker_id in category_unique_marker_ids:
-            details = get_marker_details(marker_id, category, place, cities)
-            all_details.append(details)
 
     df = pd.DataFrame(all_details)
     df.to_excel("marker_details.xlsx", index=False)
@@ -250,6 +252,7 @@ def main():
     close_driver()
 
 if __name__ == "__main__":
+
     main_start_time = time.time()  # 시작 시간 기록
     get_current_time()
 
