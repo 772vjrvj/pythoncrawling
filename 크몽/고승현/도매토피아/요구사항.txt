@@ -1,0 +1,56 @@
+도매토피아 쇼핑몰 크롤링 견적비용 문의
+
+사이트주소: https://dometopia.com/main/index
+
+검색창에 상품코드 GT와 GK로 시작하는 모든 페이지 상품을
+1관리코드, 2상품코드(모델명) , 3상품명, 4도매가, 5대표이미지주소10개정도, 6상세이미지html태그, 7제조국 크롤링하여
+엑셀로 저장
+
+(제조국은 대표이미지 오른쪽 상품정보의 전자상거래 상품정보 제공 정보에 있음: 첨부파일참조)
+
+혹시 대표이미지주소10개정도라고 했는데 대표이미지주소 개수를 줄이면 가격이 변동이 있는지요?
+
+아래 엑셀 샘플파일 이미지 첨부합니다.
+
+
+상세이미지html태그가 이미지부분만 (오른쪽마우스클릭으로 이미지복사가능한) 나오면 됩니다. 그리고 대표이미지는 있는데로 다 크롤링해주세요.
+
+gt
+214
+
+
+메인
+https://dometopia.com/goods/search?page=2&search_text=gt&popup=&iframe=&category1=&old_category1=&old_search_text=gt
+
+상세
+
+
+
+
+<img src="https://dmtusr.vipweb.kr/goods_img/1/2024/04/192615/00_023thumbView.jpg" width="300" onerror="this.src='/data/skin/beauty/images/common/noimage_list.gif'">
+
+
+
+https://dometopia.com/goods/view?no=191351&code=
+
+1. 관리코드 :  class="goods_code" 0번 text
+2. 상품코드(모델명) : class="goods_code" 1번 text
+3. 상품명 : <div class="pl_name"> <h2> 알로하 티보틀 보온병(600ml) (그린)</h2>
+            class="pl_name" 안에 h2태그 안에 text
+4. 도매가 : <span class="price_red">17,120 원</span> text만인데 숫자만 콤마도 뺴줘
+5. 대표이미지1,2... :
+    <ul class="pagination clearbox"> ul 안에 있는 모든 src의 주소들 모두 배열에 담아줘
+    <li class=""><a href="#"><img src="https://dmtusr.vipweb.kr/goods_img/1/2024/04/192615/00_023thumbView.jpg" width="300" onerror="this.src='/data/skin/beauty/images/common/noimage_list.gif'"></a></li>
+
+6. 상세설명: <div class="detail-img"><img src="/data/goods/goods_img/GDI/1367589/1367589.jpg" alt="상품상세"></div>
+         여기서 imag태그 를 통째로 넣어줘  이렇게 <img src="/data/goods/goods_img/GDI/1367589/1367589.jpg" alt="상품상세">
+
+7. 제조국 :
+
+<table class="sub-table2">안에 6번째 tr안에  <span style="color:red;">중국 제조사</span>에서 text를 가져온 다음에 " 제조사"이 부분을 제거
+
+
+
+제조국: Aijiujiu jewlery Co., Ltd. / (주)Tree
+
+
