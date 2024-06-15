@@ -1,135 +1,207 @@
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, WebDriverException, TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
+from bs4 import BeautifulSoup
+import re
+import pytz
+from datetime import datetime
 import time
-import os
-import base64
-import pyaudio
-import wave
-import speech_recognition as sr
+from openpyxl import Workbook
 
-def save_base64_image(base64_data, folder_path, file_name):
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
+main_start_time = ""
+main_end_time = ""
+main_total_time = ""
 
-    files = os.listdir(folder_path)
-    index = 1
-    new_file_name = f"{file_name}.png"
-    while new_file_name in files:
-        new_file_name = f"{file_name}_{index}.png"
-        index += 1
+start_time = ""
+end_time = ""
+total_time = ""
 
-    image_data = base64.b64decode(base64_data.split(",")[1])
-    with open(os.path.join(folder_path, new_file_name), "wb") as f:
-        f.write(image_data)
 
-    return os.path.join(folder_path, new_file_name)
 
-# 2. 오디오 캡처
-def record_audio(filename, duration=15):
-    print('record_audio 시작')
-    try:
-        chunk = 1024
-        sample_format = pyaudio.paInt16
-        channels = 1
-        fs = 44100
-        p = pyaudio.PyAudio()
-        stream = p.open(format=sample_format,
-                        channels=channels,
-                        rate=fs,
-                        frames_per_buffer=chunk,
-                        input=True)
-        frames = []
-        for i in range(0, int(fs / chunk * duration)):
-            data = stream.read(chunk)
-            frames.append(data)
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        with wave.open(filename, 'wb') as wf:
-            wf.setnchannels(channels)
-            wf.setsampwidth(p.get_sample_size(sample_format))
-            wf.setframerate(fs)
-            wf.writeframes(b''.join(frames))
-        print('Finished recording')
-    except Exception as e:
-        print(f"An error occurred during recording: {e}")
 
-# 3. 녹음된 오디오 파일을 한글 텍스트로 변환
-def transcribe_speech(filename):
-    print('transcribe_speech 시작')
-    try:
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(filename) as source:
-            audio_data = recognizer.record(source)
-        text = recognizer.recognize_sphinx(audio_data, language="ko-KR")
-        print("Transcript: " + text)
-        return text
-    except sr.UnknownValueError:
-        print("Sphinx could not understand the audio")
-    except sr.RequestError as e:
-        print(f"Sphinx error; {e}")
-    except Exception as e:
-        print(f"An error occurred during transcription: {e}")
+class Product:
+    def __init__(self, no, category, manage_code, product_code, name, wholesale_price, main_images, detail_image, country_of_origin):
+        self.no = no
+        self.category = category
+        self.manage_code = manage_code
+        self.product_code = product_code
+        self.name = name
+        self.wholesale_price = wholesale_price
+        self.main_images = main_images
+        self.detail_image = detail_image
+        self.country_of_origin = country_of_origin
 
-def naver_login(username, password):
-    options = uc.ChromeOptions()
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--start-maximized")
-    options.add_argument("--incognito")
-    options.add_argument("--disable-popup-blocking")
+    def __str__(self):
+        main_images_str = ', '.join(self.main_images[:50])
+        return (f"번호: {self.no}\n"
+                f"카테고리: {self.category}\n"
+                f"관리코드: {self.manage_code}\n"
+                f"상품코드: {self.product_code}\n"
+                f"상품명: {self.name}\n"
+                f"도매가: {self.wholesale_price}\n"
+                f"대표이미지: {main_images_str}\n"
+                f"상세이미지: {self.detail_image}\n"
+                f"제조국: {self.country_of_origin}")
 
-    driver = uc.Chrome(options=options, version_main=125)
+def get_current_time():
+    # 한국 시간대 정의
+    korea_tz = pytz.timezone('Asia/Seoul')
 
-    try:
-        driver.get("https://nid.naver.com/nidlogin.login?mode=form&url=https://www.naver.com/")
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "id")))
+    # 현재 시간을 UTC 기준으로 가져오기
+    now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
 
-        id_input = driver.find_element(By.ID, "id")
-        id_input.send_keys(username)
+    # 한국 시간으로 변환
+    now_korea = now_utc.astimezone(korea_tz)
 
-        pw_input = driver.find_element(By.ID, "pw")
-        pw_input.send_keys(password)
+    # 시간을 "yyyy-mm-dd hh:mm:ss" 형식으로 포맷팅
+    formatted_time_korea = now_korea.strftime('%Y-%m-%d %H:%M:%S')
+    print(formatted_time_korea)
 
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "log.login")))
 
-        login_button = driver.find_element(By.ID, "log.login")
+def fetch_product_details(values, search_text):
+    products = []
+    for idx, value in enumerate(values):
 
-        login_button.click()
+        url = f"https://dometopia.com/goods/view?no={value}&code="
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "pw")))
+        product_code = soup.find_all(class_="goods_code")[0].text.strip()
+        manage_code = soup.find_all(class_="goods_code")[1].text.strip()
+        name = soup.find(class_="pl_name").h2.text.strip()
 
-        pw_input = driver.find_element(By.ID, "pw")
-        pw_input.send_keys(password)
+        price_element = soup.find(class_="price_red")
+        if price_element:
+            wholesale_price = re.sub(r'\D', '', price_element.text.strip())
+        else:
+            price_element_alt = soup.find_all(class_="goods_code")
+            if len(price_element_alt) > 2:
+                wholesale_price = re.sub(r'\D', '', price_element_alt[2].text.strip())
+            else:
+                wholesale_price = "0"
 
-        voiceButton = driver.find_element(By.ID, "voice")
+        main_images = []
+        pagination = soup.find('ul', class_='pagination clearbox')
+        if pagination:
+            for img_tag in pagination.find_all('img')[:50]:
+                src = img_tag.get('src')
+                if src:
+                    main_images.append(src)
 
-        voiceButton.click()
+        detail_images = []
+        detail_img_div = soup.find('div', class_='detail-img')
+        if detail_img_div:
+            img_tags = detail_img_div.find_all('img')
+            for img_tag in img_tags:
+                src = img_tag.get('src')
+                if src:
+                    if not src.startswith('http'):
+                        src = 'https://dometopia.com' + src
+                    detail_images.append(f'<img src="{src}">')
+            detail_image = '<div style="text-align: center;">' + ''.join(detail_images) + '<br><br><br></div>'
+        else:
+            detail_image = ""
 
-        record_audio('output.wav', duration=10)
-        transcribe_speech('output.wav')
+        country_text = ""
+        gil_table = soup.find('table', class_='gilTable')
+        if gil_table:
+            th_tags = gil_table.find_all('th')
+            for th in th_tags:
+                if '원산지' in th.text or '제조국' in th.text:
+                    td = th.find_next_sibling('td')
+                    if td:
+                        country_text = td.text.strip()
+                        break
 
-        time.sleep(100)
-    except TimeoutException as e:
-        print(f"Timeout waiting for element: {e}")
-    except NoSuchElementException as e:
-        print(f"An element was not found on the page: {e}")
-    except WebDriverException as e:
-        print(f"An error occurred with the WebDriver: {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-    finally:
-        driver.quit()
+        # if not country_text and search_text == "GK":
+        #     country_text = "대한민국"
+
+
+        product = Product(
+            no=value,
+            category=search_text,
+            manage_code=manage_code,
+            product_code=product_code,
+            name=name,
+            wholesale_price=wholesale_price,
+            main_images=main_images,
+            detail_image=detail_image,
+            country_of_origin=country_text
+        )
+
+        # 여기서 출력
+        print(f"== 순서 : {idx + 1}====================")
+        print(product)
+        products.append(product)
+    return products
+
+def fetch_goods_values(page, search_text):
+    values = []
+    for i in range(1, page + 1):
+        url = f"https://dometopia.com/goods/search?page={i}&search_text={search_text}&popup=&iframe=&category1=&old_category1=&old_search_text={search_text}"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        checkboxes = soup.find_all('input', {'class': 'list_goods_chk', 'name': 'goods_seq[]'})
+        for checkbox in checkboxes:
+            values.append(checkbox['value'])
+    return values
+
+def save_to_excel(products, filename='products.xlsx'):
+    workbook = Workbook()
+    sheet = workbook.active
+    headers = ['NO', '관리코드', '상품코드 (모델명)', '상품명', '도매가', '제조국', '상세이미지'] + [f'대표이미지{i+1}' for i in range(50)]
+    sheet.append(headers)
+
+    for product in products:
+        row = [
+            product.no,
+            product.manage_code,
+            product.product_code,
+            product.name,
+            product.wholesale_price,
+            product.country_of_origin,
+            product.detail_image
+        ]
+        row.extend(product.main_images[:50])
+        row.extend([''] * (50 - len(product.main_images)))
+        sheet.append(row)
+
+    workbook.save(filename)
 
 def main():
-    username = "772vjrvj"
-    password = "Ksh@8818510"
-    naver_login(username, password)
+
+    main_start_time = time.time()  # 시작 시간 기록
+    get_current_time()
+
+    # page = 53
+    page = 2
+    search_text = "GK"
+
+    # page = 214
+    # search_text = "GT"
+
+
+
+
+    print(f"======================================")
+    start_time = time.time()  # 시작 시간 기록
+    get_current_time()
+
+    values = fetch_goods_values(page, search_text)
+
+    print(f"목록 수: {len(values)}")
+    end_time = time.time()  # 종료 시간 기록
+    total_time = end_time - start_time  # 총 걸린 시간 계산
+    print(f"목록 전체조회 걸린시간: {total_time} 초")
+    get_current_time()
+    print(f"======================================")
+
+
+    products = fetch_product_details(values, search_text)
+    save_to_excel(products)
+
+    main_end_time = time.time()  # 종료 시간 기록
+    get_current_time()
+    main_total_time = main_end_time - main_start_time  # 총 걸린 시간 계산
+    print(f"전체 걸린시간: {main_total_time} 초")
 
 if __name__ == "__main__":
     main()
