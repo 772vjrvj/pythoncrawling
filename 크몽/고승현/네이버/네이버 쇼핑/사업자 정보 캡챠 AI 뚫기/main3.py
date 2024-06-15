@@ -6,9 +6,9 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import os
 import base64
+from google.cloud import speech
 import pyaudio
 import wave
-import speech_recognition as sr
 
 def save_base64_image(base64_data, folder_path, file_name):
     if not os.path.exists(folder_path):
@@ -26,6 +26,7 @@ def save_base64_image(base64_data, folder_path, file_name):
         f.write(image_data)
 
     return os.path.join(folder_path, new_file_name)
+
 
 # 2. 오디오 캡처
 def record_audio(filename, duration=15):
@@ -57,22 +58,29 @@ def record_audio(filename, duration=15):
     except Exception as e:
         print(f"An error occurred during recording: {e}")
 
+
 # 3. 녹음된 오디오 파일을 한글 텍스트로 변환
 def transcribe_speech(filename):
     print('transcribe_speech 시작')
     try:
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(filename) as source:
-            audio_data = recognizer.record(source)
-        text = recognizer.recognize_sphinx(audio_data, language="ko-KR")
-        print("Transcript: " + text)
-        return text
-    except sr.UnknownValueError:
-        print("Sphinx could not understand the audio")
-    except sr.RequestError as e:
-        print(f"Sphinx error; {e}")
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path/to/your/service-account-file.json"
+        client = speech.SpeechClient()
+        with open(filename, "rb") as audio_file:
+            content = audio_file.read()
+        audio = speech.RecognitionAudio(content=content)
+        config = speech.RecognitionConfig(
+            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+            sample_rate_hertz=44100,
+            language_code="ko-KR",
+        )
+        response = client.recognize(config=config, audio=audio)
+        for result in response.results:
+            print("Transcript: {}".format(result.alternatives[0].transcript))
+    except FileNotFoundError:
+        print("The specified audio file was not found.")
     except Exception as e:
         print(f"An error occurred during transcription: {e}")
+
 
 def naver_login(username, password):
     options = uc.ChromeOptions()
@@ -115,6 +123,32 @@ def naver_login(username, password):
         transcribe_speech('output.wav')
 
         time.sleep(100)
+        #
+        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'captchaimg')))
+        # captcha_img = driver.find_element(By.ID, 'captchaimg')
+        # base64_data = captcha_img.get_attribute('src')
+        # captcha_image_path = save_base64_image(base64_data, "image", "captcha_image")
+        #
+        # # 새 탭을 열고 로그인 페이지로 이동
+        # driver.execute_script("window.open('https://chatgpt.com', '_blank');")
+        # time.sleep(5)  # 새 탭이 열릴 시간을 충분히 확보
+        # handles = driver.window_handles
+        # if len(handles) > 1:
+        #     driver.switch_to.window(handles[1])
+        # else:
+        #     print("새 탭이 열리지 않았습니다.")
+        #     return
+        #
+        # driver.get("https://nid.naver.com/nidlogin.login?mode=form&url=https://www.naver.com/")
+        #
+        # WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button.flex.items-center.justify-center.text-token-text-primary')))
+        # login_complete_button = driver.find_element(By.CSS_SELECTOR, 'button.flex.items-center.justify-center.text-token-text-primary')
+        # login_complete_button.click()
+        #
+        # # 이미지 업로드
+        # image_upload_input = driver.find_element(By.CSS_SELECTOR, 'input[type="file"]')
+        # image_upload_input.send_keys(captcha_image_path)
+
     except TimeoutException as e:
         print(f"Timeout waiting for element: {e}")
     except NoSuchElementException as e:
