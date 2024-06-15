@@ -59,13 +59,20 @@ def get_current_time():
 def fetch_product_details(values, search_text):
     products = []
     for idx, value in enumerate(values):
-
+        print(f"== 순서 : {idx + 1}====================")
         url = f"https://dometopia.com/goods/view?no={value}&code="
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        product_code = soup.find_all(class_="goods_code")[0].text.strip()
-        manage_code = soup.find_all(class_="goods_code")[1].text.strip()
+        goods_codes = soup.find_all(class_="goods_code")
+        if len(goods_codes) < 2:
+            print(f"Error: Not enough 'goods_code' elements found for product {value}")
+            continue
+
+        product_code = goods_codes[0].text.strip()
+        manage_code = goods_codes[1].text.strip()
+
+
         name = soup.find(class_="pl_name").h2.text.strip()
 
         price_element = soup.find(class_="price_red")
@@ -128,14 +135,13 @@ def fetch_product_details(values, search_text):
         )
 
         # 여기서 출력
-        print(f"== 순서 : {idx + 1}====================")
         print(product)
         products.append(product)
     return products
 
 def fetch_goods_values(page, search_text):
     values = []
-    for i in range(1, page + 1):
+    for i in range(151, page + 1):
         url = f"https://dometopia.com/goods/search?page={i}&search_text={search_text}&popup=&iframe=&category1=&old_category1=&old_search_text={search_text}"
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -147,7 +153,7 @@ def fetch_goods_values(page, search_text):
 def save_to_excel(products, filename='products.xlsx'):
     workbook = Workbook()
     sheet = workbook.active
-    headers = ['NO', '관리코드', '상품코드 (모델명)', '상품명', '도매가', '제조국', '상세이미지'] + [f'대표이미지{i+1}' for i in range(50)]
+    headers = ['NO', '카테고리', '관리코드', '상품코드 (모델명)', '상품명', '도매가', '제조국', '상세이미지'] + [f'대표이미지{i+1}' for i in range(50)]
     sheet.append(headers)
 
     for product in products:
@@ -172,11 +178,11 @@ def main():
     get_current_time()
 
     # page = 53
-    page = 2
-    search_text = "GK"
+    # page = 2
+    # search_text = "GK"
 
-    # page = 214
-    # search_text = "GT"
+    page = 214
+    search_text = "GT"
 
 
 
