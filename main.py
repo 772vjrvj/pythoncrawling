@@ -18,25 +18,59 @@ total_time = ""
 
 
 class Product:
-    def __init__(self, no, category, manage_code, product_code, name, wholesale_price, main_images, detail_image, country_of_origin):
+    def __init__(self,
+                 temporarilyOutOfStock,
+                 no,
+                 category,
+                 manage_code,
+                 product_code,
+                 name,
+                 wholesale_price,
+                 option,
+                 features,
+                 manufacturer,
+                 material,
+                 packaging,
+                 size,
+                 color,
+                 delivery,
+                 weight,
+                 main_images,
+                 detail_image,
+                 country_of_origin):
+        self.temporarilyOutOfStock = temporarilyOutOfStock
         self.no = no
         self.category = category
         self.manage_code = manage_code
         self.product_code = product_code
         self.name = name
         self.wholesale_price = wholesale_price
+
+        self.option = option
+
+        self.features = features
+        self.manufacturer = manufacturer
+        self.material = material
+        self.packaging = packaging
+        self.size = size
+        self.color = color
+        self.delivery = delivery
+        self.weight = weight
+
         self.main_images = main_images
         self.detail_image = detail_image
         self.country_of_origin = country_of_origin
 
     def __str__(self):
         main_images_str = ', '.join(self.main_images[:50])
-        return (f"번호: {self.no}\n"
+        return (f"구매가능: {self.temporarilyOutOfStock}\n"
+                f"번호: {self.no}\n"
                 f"카테고리: {self.category}\n"
                 f"관리코드: {self.manage_code}\n"
                 f"상품코드: {self.product_code}\n"
                 f"상품명: {self.name}\n"
                 f"도매가: {self.wholesale_price}\n"
+                f"옵션: {self.option}\n"
                 f"대표이미지: {main_images_str}\n"
                 f"상세이미지: {self.detail_image}\n"
                 f"제조국: {self.country_of_origin}")
@@ -56,10 +90,21 @@ def get_current_time():
     print(formatted_time_korea)
 
 
+def get_info(table, th_string):
+    th_element = table.find('th', string=th_string)
+    if th_element:
+        td_element = th_element.find_next_sibling('td')
+        if td_element:
+            # 모든 텍스트를 추출하여 태그를 무시합니다.
+            return td_element.get_text(separator=' ', strip=True)
+    return ''
+
+
 def fetch_product_details(values, search_text):
     products = []
     for idx, value in enumerate(values):
         print(f"== 순서 : {idx + 1}====================")
+        print(f"== value : {value}====================")
         url = f"https://dometopia.com/goods/view?no={value}&code="
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -69,12 +114,46 @@ def fetch_product_details(values, search_text):
             print(f"Error: Not enough 'goods_code' elements found for product {value}")
             continue
 
+        # 구매가능
+        temporarilyOutOfStock = soup.find('span', class_='button bgred')
+        if temporarilyOutOfStock:
+            temporarilyOutOfStock = temporarilyOutOfStock.get_text().strip()
+
+        # 상품 고유 번호 value
+
+        # 카테고리 search_text
+
+        # 상품코드 (모델명)
         product_code = goods_codes[0].text.strip()
+        if product_code.find("GKM") != -1:
+            print("GKM은 포함할수 없습니다.")
+            continue
+
+        # 옵션
+        doto_option_hide_div = soup.find('div', class_='doto-option-hide')
+        if doto_option_hide_div:
+            doto_option_hide_div = str(doto_option_hide_div)
+
+        # 상세내용
+        table = soup.find('table', class_='table-01')
+
+
+        features = get_info(table, '상품용도 및 특징')
+        manufacturer = get_info(table, '제조자/수입자')
+        material = get_info(table, '상품재질')
+        packaging = get_info(table, '포장방법')
+        size = get_info(table, '사이즈')
+        color = get_info(table, '색상종류')
+        delivery = get_info(table, '배송기일')
+        weight = get_info(table, '무게(포장포함)')
+
+        # 관리코드
         manage_code = goods_codes[1].text.strip()
 
-
+        # 상품명
         name = soup.find(class_="pl_name").h2.text.strip()
 
+        # 도매가
         price_element = soup.find(class_="price_red")
         if price_element:
             wholesale_price = re.sub(r'\D', '', price_element.text.strip())
@@ -85,14 +164,18 @@ def fetch_product_details(values, search_text):
             else:
                 wholesale_price = "0"
 
+
+
+        # 대표이미지 전체
         main_images = []
-        pagination = soup.find('ul', class_='pagination clearbox')
+        pagination = soup.find('div', id='goods_thumbs')
         if pagination:
-            for img_tag in pagination.find_all('img')[:50]:
+            for img_tag in pagination.find_all('img')[:100]:
                 src = img_tag.get('src')
                 if src:
                     main_images.append(src)
 
+        # 상세이미지 전체
         detail_images = []
         detail_img_div = soup.find('div', class_='detail-img')
         if detail_img_div:
@@ -107,6 +190,7 @@ def fetch_product_details(values, search_text):
         else:
             detail_image = ""
 
+        # 제조국
         country_text = ""
         gil_table = soup.find('table', class_='gilTable')
         if gil_table:
@@ -118,17 +202,25 @@ def fetch_product_details(values, search_text):
                         country_text = td.text.strip()
                         break
 
-        # if not country_text and search_text == "GK":
-        #     country_text = "대한민국"
-
-
         product = Product(
+            temporarilyOutOfStock=temporarilyOutOfStock,
             no=value,
             category=search_text,
             manage_code=manage_code,
             product_code=product_code,
             name=name,
             wholesale_price=wholesale_price,
+            option=doto_option_hide_div,
+
+            features=features,
+            manufacturer=manufacturer,
+            material=material,
+            packaging=packaging,
+            size=size,
+            color=color,
+            delivery=delivery,
+            weight=weight,
+
             main_images=main_images,
             detail_image=detail_image,
             country_of_origin=country_text
@@ -141,7 +233,7 @@ def fetch_product_details(values, search_text):
 
 def fetch_goods_values(page, search_text):
     values = []
-    for i in range(151, page + 1):
+    for i in range(1, page + 1):
         url = f"https://dometopia.com/goods/search?page={i}&search_text={search_text}&popup=&iframe=&category1=&old_category1=&old_search_text={search_text}"
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -153,21 +245,54 @@ def fetch_goods_values(page, search_text):
 def save_to_excel(products, filename='products.xlsx'):
     workbook = Workbook()
     sheet = workbook.active
-    headers = ['NO', '카테고리', '관리코드', '상품코드 (모델명)', '상품명', '도매가', '제조국', '상세이미지'] + [f'대표이미지{i+1}' for i in range(50)]
+    headers = ['구매가능여부',
+               'NO',
+               '카테고리',
+               '관리코드',
+               '상품코드 (모델명)',
+               '상품명',
+               '도매가',
+               '옵션',
+
+               '상품용도 및 특징',
+               '제조자/수입자',
+               '상품재질',
+               '포장방법',
+               '사이즈',
+               '색상종류',
+               '배송기일',
+               '무게(포장포함)',
+
+
+               '제조국',
+               '상세이미지'] + [f'대표이미지{i+1}' for i in range(100)]
     sheet.append(headers)
 
     for product in products:
         row = [
+            product.temporarilyOutOfStock,
             product.no,
+            product.category,
             product.manage_code,
             product.product_code,
             product.name,
             product.wholesale_price,
+            product.option,
+
+            product.features,
+            product.manufacturer,
+            product.material,
+            product.packaging,
+            product.size,
+            product.color,
+            product.delivery,
+            product.weight,
+
             product.country_of_origin,
             product.detail_image
         ]
-        row.extend(product.main_images[:50])
-        row.extend([''] * (50 - len(product.main_images)))
+        row.extend(product.main_images[:100])
+        row.extend([''] * (100 - len(product.main_images)))
         sheet.append(row)
 
     workbook.save(filename)
@@ -177,15 +302,12 @@ def main():
     main_start_time = time.time()  # 시작 시간 기록
     get_current_time()
 
-    # page = 53
-    # page = 2
-    # search_text = "GK"
+    # page = 1
+    page = 53
+    search_text = "GK"
 
-    page = 214
-    search_text = "GT"
-
-
-
+    # page = 214
+    # search_text = "GT"
 
     print(f"======================================")
     start_time = time.time()  # 시작 시간 기록
