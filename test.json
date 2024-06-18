@@ -1,0 +1,151 @@
+{
+    "resultList": [
+        {
+            "KAPT_NAME": "미추홀트루엘파크아파트",
+            "KAPT_USEDATE": "20220613",
+            "KAPT_CODE": "A10023491",
+            "X_COORD": 170652.185812432,
+            "Y_COORD": 438301.37530901
+        },
+        {
+            "KAPT_NAME": "학익두산위브",
+            "KAPT_USEDATE": "20110928",
+            "KAPT_CODE": "A40204001",
+            "X_COORD": 169456.5215,
+            "Y_COORD": 437838.0195
+        },
+        {
+            "KAPT_NAME": "학익현광2차",
+            "KAPT_USEDATE": "20020930",
+            "KAPT_CODE": "A40204101",
+            "X_COORD": 170517.59,
+            "Y_COORD": 437474.99
+        },
+        {
+            "KAPT_NAME": "학익1차하나",
+            "KAPT_USEDATE": "19971210",
+            "KAPT_CODE": "A40204104",
+            "X_COORD": 170622.115,
+            "Y_COORD": 437445.65
+        },
+        {
+            "KAPT_NAME": "학익원흥",
+            "KAPT_USEDATE": "19961114",
+            "KAPT_CODE": "A40204106",
+            "X_COORD": 169852.075,
+            "Y_COORD": 437482.77
+        },
+        {
+            "KAPT_NAME": "영남들국화아파트",
+            "KAPT_USEDATE": "19891021",
+            "KAPT_CODE": "A40204107",
+            "X_COORD": 171070.295,
+            "Y_COORD": 437403.84
+        },
+        {
+            "KAPT_NAME": "학익동아풍림",
+            "KAPT_USEDATE": "19991129",
+            "KAPT_CODE": "A40204109",
+            "X_COORD": 169980.027,
+            "Y_COORD": 437912.635
+        },
+        {
+            "KAPT_NAME": "학익풍림아이원",
+            "KAPT_USEDATE": "20071213",
+            "KAPT_CODE": "A40204110",
+            "X_COORD": 169732.145,
+            "Y_COORD": 437730.566
+        },
+        {
+            "KAPT_NAME": "학익엑슬루타워",
+            "KAPT_USEDATE": "20100913",
+            "KAPT_CODE": "A40276901",
+            "X_COORD": 169740.035,
+            "Y_COORD": 438007.615
+        },
+        {
+            "KAPT_NAME": "학익장미1차",
+            "KAPT_USEDATE": "19841212",
+            "KAPT_CODE": "A40277408",
+            "X_COORD": 169557.06,
+            "Y_COORD": 438088.8355
+        },
+        {
+            "KAPT_NAME": "학익정광산호",
+            "KAPT_USEDATE": "19981112",
+            "KAPT_CODE": "A40277503",
+            "X_COORD": 169570.485,
+            "Y_COORD": 437406.285
+        },
+        {
+            "KAPT_NAME": "학익태산",
+            "KAPT_USEDATE": "19981029",
+            "KAPT_CODE": "A40277602",
+            "X_COORD": 169762.775,
+            "Y_COORD": 437458.64
+        },
+        {
+            "KAPT_NAME": "학익현광1차",
+            "KAPT_USEDATE": "20000412",
+            "KAPT_CODE": "A40277705",
+            "X_COORD": 169325.71,
+            "Y_COORD": 437358.18
+        },
+        {
+            "KAPT_NAME": "학익 서원 아파트",
+            "KAPT_USEDATE": "19900525",
+            "KAPT_CODE": "A40277802",
+            "X_COORD": 170957.1415,
+            "Y_COORD": 437868.803
+        },
+        {
+            "KAPT_NAME": "학익신동아6차 아파트",
+            "KAPT_USEDATE": "19920506",
+            "KAPT_CODE": "A40277901",
+            "X_COORD": 171076.234,
+            "Y_COORD": 437705.103
+        },
+        {
+            "KAPT_NAME": "학익 신동아7차 아파트",
+            "KAPT_USEDATE": "19941130",
+            "KAPT_CODE": "A40277903",
+            "X_COORD": 171121.775,
+            "Y_COORD": 437950.26
+        },
+        {
+            "KAPT_NAME": "학익 신동아8차 아파트",
+            "KAPT_USEDATE": "19970624",
+            "KAPT_CODE": "A40277904",
+            "X_COORD": 171203.255,
+            "Y_COORD": 437813.405
+        },
+        {
+            "KAPT_NAME": "학익신동아5차아파트",
+            "KAPT_USEDATE": "19930622",
+            "KAPT_CODE": "A40277905",
+            "X_COORD": 171369.5245,
+            "Y_COORD": 437964.553
+        },
+        {
+            "KAPT_NAME": "주안신동아4차아파트",
+            "KAPT_USEDATE": "19901117",
+            "KAPT_CODE": "A40277906",
+            "X_COORD": 171374.287,
+            "Y_COORD": 437806.579
+        },
+        {
+            "KAPT_NAME": "학익 신동아3차 아파트",
+            "KAPT_USEDATE": "19900419",
+            "KAPT_CODE": "A40277907",
+            "X_COORD": 171307.7405,
+            "Y_COORD": 437633.579
+        },
+        {
+            "KAPT_NAME": "학익 신동아 1,2차 아파트",
+            "KAPT_USEDATE": "19881130",
+            "KAPT_CODE": "A40277908",
+            "X_COORD": 170990.9405,
+            "Y_COORD": 437649.3825
+        }
+    ]
+}
