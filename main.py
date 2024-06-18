@@ -35,6 +35,7 @@ class Product:
                  color,
                  delivery,
                  weight,
+                 main_slide_images,
                  main_images,
                  detail_image,
                  country_of_origin):
@@ -57,12 +58,14 @@ class Product:
         self.delivery = delivery
         self.weight = weight
 
+        self.main_slide_images = main_slide_images
         self.main_images = main_images
         self.detail_image = detail_image
         self.country_of_origin = country_of_origin
 
     def __str__(self):
-        main_images_str = ', '.join(self.main_images[:50])
+        # main_images_str = ', '.join(self.main_images[:100])
+        # main_slide_images_str = ', '.join(self.main_slide_images[:100])
         return (f"구매가능: {self.temporarilyOutOfStock}\n"
                 f"번호: {self.no}\n"
                 f"카테고리: {self.category}\n"
@@ -70,9 +73,10 @@ class Product:
                 f"상품코드: {self.product_code}\n"
                 f"상품명: {self.name}\n"
                 f"도매가: {self.wholesale_price}\n"
-                f"옵션: {self.option}\n"
-                f"대표이미지: {main_images_str}\n"
-                f"상세이미지: {self.detail_image}\n"
+                f"옵션: {len(self.option)}\n"
+                f"대표 슬라이드 이미지 수: {len(self.main_slide_images)}\n"
+                f"대표이미지 수: {len(self.main_images)}\n"
+                f"상세이미지 수: {len(self.detail_image)}\n"
                 f"제조국: {self.country_of_origin}")
 
 def get_current_time():
@@ -137,7 +141,6 @@ def fetch_product_details(values, search_text):
         # 상세내용
         table = soup.find('table', class_='table-01')
 
-
         features = get_info(table, '상품용도 및 특징')
         manufacturer = get_info(table, '제조자/수입자')
         material = get_info(table, '상품재질')
@@ -147,28 +150,52 @@ def fetch_product_details(values, search_text):
         delivery = get_info(table, '배송기일')
         weight = get_info(table, '무게(포장포함)')
 
+
         # 관리코드
         manage_code = goods_codes[1].text.strip()
+
 
         # 상품명
         name = soup.find(class_="pl_name").h2.text.strip()
 
+
         # 도매가
-        price_element = soup.find(class_="price_red")
-        if price_element:
-            wholesale_price = re.sub(r'\D', '', price_element.text.strip())
-        else:
-            price_element_alt = soup.find_all(class_="goods_code")
-            if len(price_element_alt) > 2:
-                wholesale_price = re.sub(r'\D', '', price_element_alt[2].text.strip())
+
+        # class="fl tc w20 list2 lt_line" 요소 찾기
+        list2_elements = soup.find_all(class_="fl tc w20 list2 lt_line")
+
+        # 요소가 존재하는지 확인
+        price_text = ''
+        if not list2_elements:
+            if len(goods_codes) > 2:
+                wholesale_price = re.sub(r'\D', '', goods_codes[2].text.strip())
             else:
                 wholesale_price = "0"
+        else:
+            # class="fl tc w20 list2 lt_line" 중 첫 번째 요소 찾기
+            first_list2_element = list2_elements[0]
+
+            # 첫 번째 요소 안에서 class="price_red" 찾기
+            price_red_element = first_list2_element.find(class_="price_red")
+
+            # 텍스트 추출
+            price_text = price_red_element.get_text()
+            wholesale_price = re.sub(r'\D', '', price_text)
 
 
+
+        # 대표 슬라이드 이미지 전체
+        main_slide_images = []
+        slides_container = soup.find('div', class_='slides_container hide')
+        if slides_container:
+            for img_tag in slides_container.find_all('img')[:100]:
+                src = img_tag.get('src')
+                if src:
+                    main_slide_images.append(src)
 
         # 대표이미지 전체
         main_images = []
-        pagination = soup.find('div', id='goods_thumbs')
+        pagination = soup.find('ul', class_='pagination clearbox')
         if pagination:
             for img_tag in pagination.find_all('img')[:100]:
                 src = img_tag.get('src')
@@ -221,6 +248,7 @@ def fetch_product_details(values, search_text):
             delivery=delivery,
             weight=weight,
 
+            main_slide_images=main_slide_images,
             main_images=main_images,
             detail_image=detail_image,
             country_of_origin=country_text
@@ -245,7 +273,7 @@ def fetch_goods_values(page, search_text):
 def save_to_excel(products, filename='products.xlsx'):
     workbook = Workbook()
     sheet = workbook.active
-    headers = ['구매가능여부',
+    headers = (['구매가능여부',
                'NO',
                '카테고리',
                '관리코드',
@@ -263,9 +291,10 @@ def save_to_excel(products, filename='products.xlsx'):
                '배송기일',
                '무게(포장포함)',
 
-
                '제조국',
-               '상세이미지'] + [f'대표이미지{i+1}' for i in range(100)]
+               '상세이미지']
+               + [f'대표 슬라이드 이미지{i+1}' for i in range(100)]
+               + [f'대표이미지{i+1}' for i in range(100)])
     sheet.append(headers)
 
     for product in products:
@@ -291,6 +320,10 @@ def save_to_excel(products, filename='products.xlsx'):
             product.country_of_origin,
             product.detail_image
         ]
+
+        row.extend(product.main_slide_images[:100])
+        row.extend([''] * (100 - len(product.main_slide_images)))
+
         row.extend(product.main_images[:100])
         row.extend([''] * (100 - len(product.main_images)))
         sheet.append(row)
@@ -303,11 +336,11 @@ def main():
     get_current_time()
 
     # page = 1
-    page = 53
-    search_text = "GK"
+    # page = 53
+    # search_text = "GK"
 
-    # page = 214
-    # search_text = "GT"
+    page = 214
+    search_text = "GT"
 
     print(f"======================================")
     start_time = time.time()  # 시작 시간 기록
@@ -322,6 +355,9 @@ def main():
     get_current_time()
     print(f"======================================")
 
+    # 테스크 케이스 다른경우 3가지
+    # values = ['192874', '55235', '181042']
+    # search_text = "GT"
 
     products = fetch_product_details(values, search_text)
     save_to_excel(products)
