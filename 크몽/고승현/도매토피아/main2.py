@@ -26,7 +26,6 @@ class Product:
                  product_code,
                  name,
                  wholesale_price,
-                 inventory,
                  option,
                  features,
                  manufacturer,
@@ -47,7 +46,7 @@ class Product:
         self.product_code = product_code
         self.name = name
         self.wholesale_price = wholesale_price
-        self.inventory = inventory
+
         self.option = option
 
         self.features = features
@@ -74,7 +73,6 @@ class Product:
                 f"상품코드: {self.product_code}\n"
                 f"상품명: {self.name}\n"
                 f"도매가: {self.wholesale_price}\n"
-                f"재고현황: {self.inventory}\n"
                 f"옵션: {len(self.option)}\n"
                 f"대표 슬라이드 이미지 수: {len(self.main_slide_images)}\n"
                 f"대표이미지 수: {len(self.main_images)}\n"
@@ -238,24 +236,6 @@ def fetch_product_details(values, search_text):
                         country_text = td.text.strip()
                         break
 
-        #재고
-        inventory = ''
-
-        # '재고현황' 텍스트를 가진 <th> 요소 찾기
-        th_element = soup.find('th', string='재고현황')
-        if th_element:
-            td_element = th_element.find_next_sibling('td')
-
-            if td_element:
-                # <td> 요소의 텍스트에서 숫자만 추출
-                td_text = td_element.get_text()
-                current_inventory = re.findall(r'\d+', td_text)
-                if current_inventory:
-                    inventory = current_inventory[0]
-
-
-
-
         product = Product(
             temporarilyOutOfStock=temporarilyOutOfStock,
             no=value,
@@ -264,7 +244,6 @@ def fetch_product_details(values, search_text):
             product_code=product_code,
             name=name,
             wholesale_price=wholesale_price,
-            inventory=inventory,
             option=doto_option_hide_div,
 
             features=features,
@@ -302,26 +281,25 @@ def save_to_excel(products, filename='products.xlsx'):
     workbook = Workbook()
     sheet = workbook.active
     headers = (['구매가능여부',
-                'NO',
-                '카테고리',
-                '관리코드',
-                '상품코드 (모델명)',
-                '상품명',
-                '도매가',
-                '재고',
-                '옵션',
+               'NO',
+               '카테고리',
+               '관리코드',
+               '상품코드 (모델명)',
+               '상품명',
+               '도매가',
+               '옵션',
 
-                '상품용도 및 특징',
-                '제조자/수입자',
-                '상품재질',
-                '포장방법',
-                '사이즈',
-                '색상종류',
-                '배송기일',
-                '무게(포장포함)',
+               '상품용도 및 특징',
+               '제조자/수입자',
+               '상품재질',
+               '포장방법',
+               '사이즈',
+               '색상종류',
+               '배송기일',
+               '무게(포장포함)',
 
-                '제조국',
-                '상세이미지']
+               '제조국',
+               '상세이미지']
                + [f'대표 슬라이드 이미지{i+1}' for i in range(100)]
                + [f'대표이미지{i+1}' for i in range(100)])
     sheet.append(headers)
@@ -335,7 +313,6 @@ def save_to_excel(products, filename='products.xlsx'):
             product.product_code,
             product.name,
             product.wholesale_price,
-            product.inventory,
             product.option,
 
             product.features,
@@ -361,37 +338,36 @@ def save_to_excel(products, filename='products.xlsx'):
     workbook.save(filename)
 
 def main():
-    main_start_time = time.time()
+
+    main_start_time = time.time()  # 시작 시간 기록
     get_current_time()
 
-    search_texts = ["GK", "GT"]
-    pages = [53, 214]
-    products = []
+    # page = 1
+    # page = 53
+    # search_text = "GK"
 
-    for search_text, page in zip(search_texts, pages):
-        print(f"======================================")
-        print(f"search_text: {search_text}")
-        print(f"page: {page}")
+    page = 214
+    search_text = "GT"
 
-        start_time = time.time()
-        get_current_time()
+    print(f"======================================")
+    start_time = time.time()  # 시작 시간 기록
+    get_current_time()
 
-        values = fetch_goods_values(page, search_text)
+    values = fetch_goods_values(page, search_text)
 
-        print(f"목록 수: {len(values)}")
-        end_time = time.time()
-        total_time = end_time - start_time
-        print(f"목록 전체조회 걸린시간: {total_time} 초")
-        get_current_time()
-        print(f"======================================")
+    print(f"목록 수: {len(values)}")
+    end_time = time.time()  # 종료 시간 기록
+    total_time = end_time - start_time  # 총 걸린 시간 계산
+    print(f"목록 전체조회 걸린시간: {total_time} 초")
+    get_current_time()
+    print(f"======================================")
 
-        products.extend(fetch_product_details(values, search_text))
-
+    products = fetch_product_details(values, search_text)
     save_to_excel(products)
 
-    main_end_time = time.time()
+    main_end_time = time.time()  # 종료 시간 기록
     get_current_time()
-    main_total_time = main_end_time - main_start_time
+    main_total_time = main_end_time - main_start_time  # 총 걸린 시간 계산
     print(f"전체 걸린시간: {main_total_time} 초")
 
 if __name__ == "__main__":
