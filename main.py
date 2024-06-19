@@ -6,17 +6,6 @@ from datetime import datetime
 import time
 from openpyxl import Workbook
 
-main_start_time = ""
-main_end_time = ""
-main_total_time = ""
-
-start_time = ""
-end_time = ""
-total_time = ""
-
-
-
-
 class Product:
     def __init__(self,
                  temporarilyOutOfStock,
@@ -49,7 +38,6 @@ class Product:
         self.wholesale_price = wholesale_price
         self.inventory = inventory
         self.option = option
-
         self.features = features
         self.manufacturer = manufacturer
         self.material = material
@@ -58,15 +46,12 @@ class Product:
         self.color = color
         self.delivery = delivery
         self.weight = weight
-
         self.main_slide_images = main_slide_images
         self.main_images = main_images
         self.detail_image = detail_image
         self.country_of_origin = country_of_origin
 
     def __str__(self):
-        # main_images_str = ', '.join(self.main_images[:100])
-        # main_slide_images_str = ', '.join(self.main_slide_images[:100])
         return (f"구매가능: {self.temporarilyOutOfStock}\n"
                 f"번호: {self.no}\n"
                 f"카테고리: {self.category}\n"
@@ -82,29 +67,20 @@ class Product:
                 f"제조국: {self.country_of_origin}")
 
 def get_current_time():
-    # 한국 시간대 정의
     korea_tz = pytz.timezone('Asia/Seoul')
-
-    # 현재 시간을 UTC 기준으로 가져오기
     now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
-
-    # 한국 시간으로 변환
     now_korea = now_utc.astimezone(korea_tz)
-
-    # 시간을 "yyyy-mm-dd hh:mm:ss" 형식으로 포맷팅
     formatted_time_korea = now_korea.strftime('%Y-%m-%d %H:%M:%S')
     print(formatted_time_korea)
-
+    return formatted_time_korea
 
 def get_info(table, th_string):
     th_element = table.find('th', string=th_string)
     if th_element:
         td_element = th_element.find_next_sibling('td')
         if td_element:
-            # 모든 텍스트를 추출하여 태그를 무시합니다.
             return td_element.get_text(separator=' ', strip=True)
     return ''
-
 
 def fetch_product_details(values, search_text):
     products = []
@@ -120,27 +96,19 @@ def fetch_product_details(values, search_text):
             print(f"Error: Not enough 'goods_code' elements found for product {value}")
             continue
 
-        # 구매가능
         temporarilyOutOfStock = soup.find('span', class_='button bgred')
         if temporarilyOutOfStock:
             temporarilyOutOfStock = temporarilyOutOfStock.get_text().strip()
 
-        # 상품 고유 번호 value
-
-        # 카테고리 search_text
-
-        # 상품코드 (모델명)
         product_code = goods_codes[0].text.strip()
-        if product_code.find("GKM") != -1:
+        if "GKM" in product_code:
             print("GKM은 포함할수 없습니다.")
             continue
 
-        # 옵션
         doto_option_hide_div = soup.find('div', class_='doto-option-hide')
         if doto_option_hide_div:
             doto_option_hide_div = str(doto_option_hide_div)
 
-        # 상세내용
         table = soup.find('table', class_='table-01')
 
         features = get_info(table, '상품용도 및 특징')
@@ -152,21 +120,10 @@ def fetch_product_details(values, search_text):
         delivery = get_info(table, '배송기일')
         weight = get_info(table, '무게(포장포함)')
 
-
-        # 관리코드
         manage_code = goods_codes[1].text.strip()
-
-
-        # 상품명
         name = soup.find(class_="pl_name").h2.text.strip()
 
-
-        # 도매가
-
-        # class="fl tc w20 list2 lt_line" 요소 찾기
         list2_elements = soup.find_all(class_="fl tc w20 list2 lt_line")
-
-        # 요소가 존재하는지 확인
         price_text = ''
         if not list2_elements:
             if len(goods_codes) > 2:
@@ -174,26 +131,16 @@ def fetch_product_details(values, search_text):
             else:
                 wholesale_price = "0"
         else:
-            # class="fl tc w20 list2 lt_line" 중 첫 번째 요소 찾기
             first_list2_element = list2_elements[0]
-
-            # 첫 번째 요소 안에서 class="price_red" 찾기
             price_red_element = first_list2_element.find(class_="price_red")
-
-            # 텍스트 추출
             price_text = price_red_element.get_text()
             wholesale_price = re.sub(r'\D', '', price_text)
 
         if wholesale_price == "0":
-            # class 속성을 사용하여 특정 <li> 태그 찾기
             li_tags = soup.find_all(class_="fl tc w50 list2 lt_line")
             if li_tags and len(li_tags) == 2:
-                # 첫 번째 <li> 태그의 텍스트만 추출
                 wholesale_price = re.sub(r'\D', '', li_tags[0].get_text(strip=True))
 
-
-
-        # 대표 슬라이드 이미지 전체
         main_slide_images = []
         slides_container = soup.find('div', class_='slides_container hide')
         if slides_container:
@@ -202,7 +149,6 @@ def fetch_product_details(values, search_text):
                 if src:
                     main_slide_images.append(src)
 
-        # 대표이미지 전체
         main_images = []
         pagination = soup.find('ul', class_='pagination clearbox')
         if pagination:
@@ -211,7 +157,6 @@ def fetch_product_details(values, search_text):
                 if src:
                     main_images.append(src)
 
-        # 상세이미지 전체
         detail_images = []
         detail_img_div = soup.find('div', class_='detail-img')
         if detail_img_div:
@@ -226,7 +171,6 @@ def fetch_product_details(values, search_text):
         else:
             detail_image = ""
 
-        # 제조국
         country_text = ""
         gil_table = soup.find('table', class_='gilTable')
         if gil_table:
@@ -238,23 +182,15 @@ def fetch_product_details(values, search_text):
                         country_text = td.text.strip()
                         break
 
-        #재고
         inventory = ''
-
-        # '재고현황' 텍스트를 가진 <th> 요소 찾기
         th_element = soup.find('th', string='재고현황')
         if th_element:
             td_element = th_element.find_next_sibling('td')
-
             if td_element:
-                # <td> 요소의 텍스트에서 숫자만 추출
                 td_text = td_element.get_text()
                 current_inventory = re.findall(r'\d+', td_text)
                 if current_inventory:
                     inventory = current_inventory[0]
-
-
-
 
         product = Product(
             temporarilyOutOfStock=temporarilyOutOfStock,
@@ -266,7 +202,6 @@ def fetch_product_details(values, search_text):
             wholesale_price=wholesale_price,
             inventory=inventory,
             option=doto_option_hide_div,
-
             features=features,
             manufacturer=manufacturer,
             material=material,
@@ -275,14 +210,12 @@ def fetch_product_details(values, search_text):
             color=color,
             delivery=delivery,
             weight=weight,
-
             main_slide_images=main_slide_images,
             main_images=main_images,
             detail_image=detail_image,
             country_of_origin=country_text
         )
 
-        # 여기서 출력
         print(product)
         products.append(product)
     return products
@@ -310,7 +243,6 @@ def save_to_excel(products, filename='products.xlsx'):
                 '도매가',
                 '재고',
                 '옵션',
-
                 '상품용도 및 특징',
                 '제조자/수입자',
                 '상품재질',
@@ -319,7 +251,6 @@ def save_to_excel(products, filename='products.xlsx'):
                 '색상종류',
                 '배송기일',
                 '무게(포장포함)',
-
                 '제조국',
                 '상세이미지']
                + [f'대표 슬라이드 이미지{i+1}' for i in range(100)]
@@ -337,7 +268,6 @@ def save_to_excel(products, filename='products.xlsx'):
             product.wholesale_price,
             product.inventory,
             product.option,
-
             product.features,
             product.manufacturer,
             product.material,
@@ -346,7 +276,6 @@ def save_to_excel(products, filename='products.xlsx'):
             product.color,
             product.delivery,
             product.weight,
-
             product.country_of_origin,
             product.detail_image
         ]
@@ -369,7 +298,7 @@ def main():
     products = []
 
     for search_text, page in zip(search_texts, pages):
-        print(f"======================================")
+        print(f"=======================================")
         print(f"search_text: {search_text}")
         print(f"page: {page}")
 
