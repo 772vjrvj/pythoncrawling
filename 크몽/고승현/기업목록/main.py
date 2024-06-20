@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-index = 0
+idx = 0  # 전역 변수로 선언
 
 def fetch_page_content(page):
     base_url = "https://www.ifa-berlin.com/exhibitors?&page={page}&searchgroup=00000001-exhibitors"
@@ -21,6 +21,7 @@ def fetch_company_details(company_id):
         return None
 
 def parse_exhibitors(content):
+    global idx  # 전역 변수 선언
     soup = BeautifulSoup(content, 'html.parser')
     items = soup.select(".m-exhibitors-list__items__item.js-librarylink-entry")
 
@@ -95,27 +96,25 @@ def parse_exhibitors(content):
             "페이스북": facebook
         }
 
+        idx += 1
 
-        print(f"index : {++index},  data : {data}")
+        print(f"index: {idx}, data: {data}")
         # 결과 리스트에 추가
         result.append(data)
-
-
 
     return result
 
 def main():
     all_exhibitors = []
 
-    for page in range(1, 2):  # 테스트를 위해 페이지를 2개로 제한
-        print(f"page : {page}")
+    for page in range(1, 33):  # 페이지 수를 실제에 맞게 설정
+        print(f"Fetching page: {page}")
         content = fetch_page_content(page)
         if content:
             exhibitors = parse_exhibitors(content)
             all_exhibitors.extend(exhibitors)
 
-    # 결과 출력
-    # 엑셀로 저장
+    # 결과 출력 및 엑셀로 저장
     df = pd.DataFrame(all_exhibitors)
     df.to_excel('exhibitors.xlsx', index=False)
 
