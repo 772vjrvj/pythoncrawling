@@ -1,5 +1,6 @@
 import re
 import pytz
+import logging
 from datetime import datetime
 import time
 from openpyxl import Workbook
@@ -11,6 +12,10 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+
+import random
+
 
 
 class Product:
@@ -95,24 +100,40 @@ def fetch_product_details(driver, values, search_text):
         print(f"== value : {value}====================")
         url = f"https://dometopia.com/goods/view?no={value}&code="
         driver.get(url)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "goods_code")))
+        time.sleep(random.uniform(2, 2.5))
 
-        goods_codes = driver.find_elements(By.CLASS_NAME, "goods_code")
-        if len(goods_codes) < 2:
-            print(f"Error: Not enough 'goods_code' elements found for product {value}")
-            continue
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "goods_code")))
+        except TimeoutException:
+            print(f"Timeout waiting for goods_code for product {value}")
+            return None
+
+        try:
+            goods_codes = driver.find_elements(By.CLASS_NAME, "goods_code")
+            if len(goods_codes) < 2:
+                print(f"Error: Not enough 'goods_code' elements found for product {value}")
+                continue
+        except NoSuchElementException:
+            print(f"No elements found with class name goods_code for product {value}")
+            return None
 
         temporarilyOutOfStock = ''
-        temporarilyOutOfStock_element = driver.find_elements(By.CLASS_NAME, 'button.bgred')
-        if temporarilyOutOfStock_element:
-            temporarilyOutOfStock = temporarilyOutOfStock_element[0].text.strip()
+        try:
+            temporarilyOutOfStock_element = driver.find_elements(By.CLASS_NAME, 'button.bgred')
+            if temporarilyOutOfStock_element:
+                temporarilyOutOfStock = temporarilyOutOfStock_element[0].text.strip()
+        except NoSuchElementException:
+            print(f"No elements found with class name button.bgred for product {value}")
 
         product_code = goods_codes[0].text.strip()
 
         doto_option_hide_div = ''
-        doto_option_hide_div_element = driver.find_elements(By.CLASS_NAME, 'doto-option-hide')
-        if doto_option_hide_div_element:
-            doto_option_hide_div = doto_option_hide_div_element[0].get_attribute('outerHTML')
+        try:
+            doto_option_hide_div_element = driver.find_elements(By.CLASS_NAME, 'doto-option-hide')
+            if doto_option_hide_div_element:
+                doto_option_hide_div = doto_option_hide_div_element[0].get_attribute('outerHTML')
+        except NoSuchElementException:
+            print(f"No elements found with class name doto-option-hide for product {value}")
 
         features = get_info(driver, '상품용도 및 특징')
         manufacturer = get_info(driver, '제조자/수입자')
@@ -124,74 +145,113 @@ def fetch_product_details(driver, values, search_text):
         weight = get_info(driver, '무게(포장포함)')
 
         manage_code = goods_codes[1].text.strip()
-        name = driver.find_element(By.CLASS_NAME, "pl_name").find_element(By.TAG_NAME, "h2").text.strip()
+
+        try:
+            name = driver.find_element(By.CLASS_NAME, "pl_name").find_element(By.TAG_NAME, "h2").text.strip()
+        except NoSuchElementException:
+            print(f"No elements found with class name pl_name for product {value}")
+            return None
 
         wholesale_price = "0"
-        list2_elements = driver.find_elements(By.CLASS_NAME, "fl.tc.w20.list2.lt_line")
-        if list2_elements:
-            price_red_element = list2_elements[0].find_elements(By.CLASS_NAME, "price_red")
-            if price_red_element:
-                price_text = price_red_element[0].text
-                wholesale_price = re.sub(r'\D', '', price_text)
-        else:
-            if len(goods_codes) > 2:
-                wholesale_price = re.sub(r'\D', '', goods_codes[2].text.strip())
+        try:
+            list2_elements = driver.find_elements(By.CLASS_NAME, "fl.tc.w20.list2.lt_line")
+            if list2_elements:
+                price_red_element = list2_elements[0].find_elements(By.CLASS_NAME, "price_red")
+                if price_red_element:
+                    price_text = price_red_element[0].text
+                    wholesale_price = re.sub(r'\D', '', price_text)
+            else:
+                if len(goods_codes) > 2:
+                    wholesale_price = re.sub(r'\D', '', goods_codes[2].text.strip())
+        except NoSuchElementException:
+            print(f"No elements found with class name fl.tc.w20.list2.lt_line for product {value}")
 
         if wholesale_price == "0":
-            li_tags = driver.find_elements(By.CLASS_NAME, "fl.tc.w50.list2.lt_line")
-            if li_tags and len(li_tags) == 2:
-                wholesale_price = re.sub(r'\D', '', li_tags[0].text.strip())
+            try:
+                li_tags = driver.find_elements(By.CLASS_NAME, "fl.tc.w50.list2.lt_line")
+                if li_tags and len(li_tags) == 2:
+                    wholesale_price = re.sub(r'\D', '', li_tags[0].text.strip())
+            except NoSuchElementException:
+                print(f"No elements found with class name fl.tc.w50.list2.lt_line for product {value}")
 
         main_slide_images = []
-        slides_container = driver.find_elements(By.CLASS_NAME, 'slides_container.hide')
-        if slides_container:
-            img_tags = slides_container[0].find_elements(By.TAG_NAME, 'img')
-            for img_tag in img_tags[:100]:
-                src = img_tag.get_attribute('src')
-                if src:
-                    main_slide_images.append(src)
+        try:
+            slides_container = driver.find_elements(By.CLASS_NAME, 'slides_container.hide')
+            if slides_container:
+                img_tags = slides_container[0].find_elements(By.TAG_NAME, 'img')
+                for img_tag in img_tags[:100]:
+                    src = img_tag.get_attribute('src')
+                    if src:
+                        main_slide_images.append(src)
+        except NoSuchElementException:
+            print(f"No elements found with class name slides_container.hide for product {value}")
 
         main_images = []
-        pagination = driver.find_elements(By.CLASS_NAME, 'pagination.clearbox')
-        if pagination:
-            img_tags = pagination[0].find_elements(By.TAG_NAME, 'img')
-            for img_tag in img_tags[:100]:
-                src = img_tag.get_attribute('src')
-                if src:
-                    main_images.append(src)
+        try:
+            pagination = driver.find_elements(By.CLASS_NAME, 'pagination.clearbox')
+            if pagination:
+                img_tags = pagination[0].find_elements(By.TAG_NAME, 'img')
+                for img_tag in img_tags[:100]:
+                    src = img_tag.get_attribute('src')
+                    if src:
+                        main_images.append(src)
+        except NoSuchElementException:
+            print(f"No elements found with class name pagination.clearbox for product {value}")
 
         detail_images = []
-        detail_img_div = driver.find_elements(By.CLASS_NAME, 'detail-img')
-        if detail_img_div:
-            img_tags = detail_img_div[0].find_elements(By.TAG_NAME, 'img')
-            for img_tag in img_tags:
-                src = img_tag.get_attribute('src')
-                if src:
-                    if not src.startswith('http'):
-                        src = 'https://dometopia.com' + src
-                    detail_images.append(f'<img src="{src}">')
-            detail_image = '<div style="text-align: center;">' + ''.join(detail_images) + '<br><br><br></div>'
-        else:
+        try:
+            detail_img_div = driver.find_elements(By.CLASS_NAME, 'detail-img')
+            if detail_img_div:
+                img_tags = detail_img_div[0].find_elements(By.TAG_NAME, 'img')
+                for img_tag in img_tags:
+                    src = img_tag.get_attribute('src')
+                    if src:
+                        if not src.startswith('http'):
+                            src = 'https://dometopia.com' + src
+                        detail_images.append(f'<img src="{src}">')
+                detail_image = '<div style="text-align: center;">' + ''.join(detail_images) + '<br><br><br></div>'
+            else:
+                detail_image = ""
+        except NoSuchElementException:
+            print(f"No elements found with class name detail-img for product {value}")
             detail_image = ""
 
         country_text = ""
-        gil_table = driver.find_elements(By.CLASS_NAME, 'gilTable')
-        if gil_table:
-            th_tags = gil_table[0].find_elements(By.TAG_NAME, 'th')
+        try:
+            # gilTable 요소가 로드될 때까지 대기
+            gil_table = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'gilTable'))
+            )
+
+            th_tags = gil_table.find_elements(By.TAG_NAME, 'th')
             for th in th_tags:
-                if '원산지' in th.text or '제조국' in th.text:
-                    td = th.find_element(By.XPATH, "./following-sibling::td")
-                    country_text = td.text.strip()
-                    break
+                # JavaScript를 사용하여 'innerText'를 가져옴
+                th_text = driver.execute_script("return arguments[0].innerText;", th)
+                if '원산지' in th_text or '제조국' in th_text:
+                    try:
+                        # JavaScript를 사용하여 'td' 요소의 'innerText' 가져오기
+                        td = th.find_element(By.XPATH, "./following-sibling::td")
+                        td_text = driver.execute_script("return arguments[0].innerText;", td)
+                        country_text = td_text.strip()
+                        print(f"Country of origin/manufacture: {country_text}")
+                        break
+                    except NoSuchElementException:
+                        print(f"Corresponding 'td' not found for th: {th_text}")
+                        continue
+        except NoSuchElementException:
+            print(f"No elements found with class name gilTable for product {value}")
 
         inventory = ''
-        th_elements = driver.find_elements(By.XPATH, "//th[contains(text(), '재고현황')]")
-        if th_elements:
-            td_element = th_elements[0].find_element(By.XPATH, "./following-sibling::td")
-            td_text = td_element.text
-            current_inventory = re.findall(r'\d+', td_text)
-            if current_inventory:
-                inventory = current_inventory[0]
+        try:
+            th_elements = driver.find_elements(By.XPATH, "//th[contains(text(), '재고현황')]")
+            if th_elements:
+                td_element = th_elements[0].find_element(By.XPATH, "./following-sibling::td")
+                td_text = td_element.text
+                current_inventory = re.findall(r'\d+', td_text)
+                if current_inventory:
+                    inventory = current_inventory[0]
+        except NoSuchElementException:
+            print(f"No elements found with text 재고현황 for product {value}")
 
         product = Product(
             temporarilyOutOfStock=temporarilyOutOfStock,
@@ -222,33 +282,55 @@ def fetch_product_details(driver, values, search_text):
     return products
 
 def fetch_goods_values(driver, page, search_text):
+    print("fetch_goods_values")
     values = []
-    for i in range(1, page + 1):
-        url = f"https://dometopia.com/goods/search?page={i}&search_text={search_text}&popup=&iframe=&category1=&old_category1=&old_search_text={search_text}"
-        driver.get(url)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "goodsDisplayCode")))
+    try:
+        for i in range(1, page + 1):
+            url = f"https://dometopia.com/goods/search?page={i}&search_text={search_text}&popup=&iframe=&category1=&old_category1=&old_search_text={search_text}"
+            driver.get(url)
+            time.sleep(random.uniform(2, 3))
 
-        dd_tags = driver.find_elements(By.CLASS_NAME, 'goodsDisplayCode')
+            try:
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "goodsDisplayCode")))
+            except TimeoutException:
+                print(f"Timeout waiting for goodsDisplayCode on page {i}")
+                return None
 
-        for dd in dd_tags:
-            label_tag = dd.find_elements(By.CLASS_NAME, 'hand')
-            if label_tag:
-                span_tag = label_tag[0].find_elements(By.CLASS_NAME, 'goods_scode')
-                if span_tag:
-                    product_code = span_tag[0].text.strip()
-                    if product_code[:2] != search_text or "GKM" in product_code[:3] or "GKD" in product_code[:3]:
-                        print(f"not product_code : {product_code}")
-                        continue
+            try:
+                dd_tags = driver.find_elements(By.CLASS_NAME, 'goodsDisplayCode')
+            except NoSuchElementException:
+                print(f"No elements found with class name goodsDisplayCode on page {i}")
+                return None
 
-                input_tag = label_tag[0].find_elements(By.XPATH, ".//input[@type='checkbox'][@class='list_goods_chk'][@name='goods_seq[]']")
-                if input_tag:
-                    values.append(input_tag[0].get_attribute('value'))
+            for dd in dd_tags:
+                try:
+                    label_tag = dd.find_elements(By.CLASS_NAME, 'hand')
+                    if label_tag:
+                        span_tag = label_tag[0].find_elements(By.CLASS_NAME, 'goods_scode')
+                        if span_tag:
+                            product_code = span_tag[0].text.strip()
+                            if product_code[:2] != search_text or "GKM" in product_code[:3] or "GKD" in product_code[:3]:
+                                print(f"not product_code : {product_code}")
+                                continue
 
-        print(f"page {i} , values len : {len(values)}")
+                        input_tag = label_tag[0].find_elements(By.XPATH, ".//input[@type='checkbox'][@class='list_goods_chk'][@name='goods_seq[]']")
+                        if input_tag:
+                            values.append(input_tag[0].get_attribute('value'))
+                except NoSuchElementException:
+                    print(f"Error processing element on page {i}")
+                    continue
+
+            print(f"page {i}, values len: {len(values)}")
+    except WebDriverException as e:
+        print(f"WebDriverException encountered: {e}")
+        return None
 
     return values
 
 def save_to_excel(products, filename='products.xlsx'):
+
+    print(f"save_to_excel")
+
     workbook = Workbook()
     sheet = workbook.active
     headers = (['구매가능여부',
@@ -307,65 +389,71 @@ def save_to_excel(products, filename='products.xlsx'):
     workbook.save(filename)
 
 def initialize_driver():
-    # 크롬 옵션 설정
-    chrome_options = Options()
+    print(f"initialize_driver")
+    try:
+        # 크롬 옵션 설정
+        chrome_options = Options()
 
-    # 이 옵션을 사용하면 브라우저가 백그라운드에서 실행됩니다. 즉, 브라우저 창이 표시되지 않고 모든 작업이 백그라운드에서 이루어집니다. 주로 서버 환경에서 자동화 작업을 수행할 때 유용합니다.
-    # chrome_options.add_argument("--headless")  # 브라우저를 표시하지 않고 실행
+        # 이 옵션을 사용하면 브라우저가 백그라운드에서 실행됩니다. 즉, 브라우저 창이 표시되지 않고 모든 작업이 백그라운드에서 이루어집니다. 주로 서버 환경에서 자동화 작업을 수행할 때 유용합니다.
+        chrome_options.add_argument("--headless")  # 브라우저를 표시하지 않고 실행
 
-    # GPU 가속을 비활성화합니다. 일반적으로 헤드리스 모드에서 사용됩니다. 이 옵션은 그래픽 하드웨어 가속을 비활성화하여 성능을 향상시킬 수 있습니다.
-    chrome_options.add_argument("--disable-gpu")  # GPU 사용 안함
+        # GPU 가속을 비활성화합니다. 일반적으로 헤드리스 모드에서 사용됩니다. 이 옵션은 그래픽 하드웨어 가속을 비활성화하여 성능을 향상시킬 수 있습니다.
+        chrome_options.add_argument("--disable-gpu")  # GPU 사용 안함
 
-    # 브라우저 창의 크기를 설정합니다. 여기서는 960x540 크기로 설정하여 화면의 절반 크기로 브라우저를 실행합니다. 헤드리스 모드에서 특정 요소의 위치나 크기를 맞추기 위해 사용할 수 있습니다.
-    chrome_options.add_argument("--window-size=960,540")  # 창 크기 설정 (화면의 절반 크기)
+        # 브라우저 창의 크기를 설정합니다. 여기서는 960x540 크기로 설정하여 화면의 절반 크기로 브라우저를 실행합니다. 헤드리스 모드에서 특정 요소의 위치나 크기를 맞추기 위해 사용할 수 있습니다.
+        chrome_options.add_argument("--window-size=960,540")  # 창 크기 설정 (화면의 절반 크기)
 
-    # 샌드박스 모드를 비활성화합니다. 이 옵션은 보안과 관련된 기능을 비활성화하여 브라우저가 더 쉽게 실행되도록 합니다. 일부 환경에서는 이 옵션을 사용해야 브라우저가 제대로 실행됩니다.
-    chrome_options.add_argument("--no-sandbox")  # 샌드박스 모드 비활성화
+        # 샌드박스 모드를 비활성화합니다. 이 옵션은 보안과 관련된 기능을 비활성화하여 브라우저가 더 쉽게 실행되도록 합니다. 일부 환경에서는 이 옵션을 사용해야 브라우저가 제대로 실행됩니다.
+        chrome_options.add_argument("--no-sandbox")  # 샌드박스 모드 비활성화
 
-    # 공유 메모리 사용을 비활성화합니다. 이는 Docker와 같은 컨테이너 환경에서 사용됩니다. 기본적으로 크롬은 /dev/shm 디렉토리를 사용하여 공유 메모리를 저장하지만, 컨테이너 환경에서는 이 디렉토리가 작을 수 있습니다. 이 옵션을 사용하면 디스크를 대신 사용합니다.
-    chrome_options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
+        # 공유 메모리 사용을 비활성화합니다. 이는 Docker와 같은 컨테이너 환경에서 사용됩니다. 기본적으로 크롬은 /dev/shm 디렉토리를 사용하여 공유 메모리를 저장하지만, 컨테이너 환경에서는 이 디렉토리가 작을 수 있습니다. 이 옵션을 사용하면 디스크를 대신 사용합니다.
+        chrome_options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
 
-    # 모든 브라우저 확장 프로그램을 비활성화합니다. 자동화 테스트에서는 확장 프로그램이 필요하지 않으므로 이를 비활성화하여 브라우저를 더 가볍고 빠르게 실행할 수 있습니다.
-    chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화
+        # 모든 브라우저 확장 프로그램을 비활성화합니다. 자동화 테스트에서는 확장 프로그램이 필요하지 않으므로 이를 비활성화하여 브라우저를 더 가볍고 빠르게 실행할 수 있습니다.
+        chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화
 
-    # 팝업 차단 기능을 비활성화합니다. 자동화 테스트 중에 팝업이 필요한 경우 이를 사용하여 팝업이 차단되지 않도록 합니다.
-    chrome_options.add_argument("--disable-popup-blocking")  # 팝업 차단 비활성화
+        # 팝업 차단 기능을 비활성화합니다. 자동화 테스트 중에 팝업이 필요한 경우 이를 사용하여 팝업이 차단되지 않도록 합니다.
+        chrome_options.add_argument("--disable-popup-blocking")  # 팝업 차단 비활성화
 
-    # 브라우저의 로그 출력을 비활성화합니다. 자동화 테스트 중에 불필요한 로그를 줄이기 위해 사용됩니다.
-    chrome_options.add_argument("--disable-logging")  # 로그 비활성화
+        # 브라우저의 로그 출력을 비활성화합니다. 자동화 테스트 중에 불필요한 로그를 줄이기 위해 사용됩니다.
+        chrome_options.add_argument("--disable-logging")  # 로그 비활성화
 
-    # 시크릿 모드로 브라우저를 실행합니다. 시크릿 모드는 쿠키나 캐시 등을 저장하지 않아 매번 깨끗한 상태에서 테스트를 시작할 수 있습니다.
-    chrome_options.add_argument("--incognito")  # 시크릿 모드
+        # 시크릿 모드로 브라우저를 실행합니다. 시크릿 모드는 쿠키나 캐시 등을 저장하지 않아 매번 깨끗한 상태에서 테스트를 시작할 수 있습니다.
+        chrome_options.add_argument("--incognito")  # 시크릿 모드
 
-    # 브라우저의 User-Agent 문자열을 변경합니다. 이를 통해 브라우저가 자동화된 스크립트가 아닌 일반 사용자의 브라우저처럼 보이도록 할 수 있습니다.
-    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+        # 브라우저의 User-Agent 문자열을 변경합니다. 이를 통해 브라우저가 자동화된 스크립트가 아닌 일반 사용자의 브라우저처럼 보이도록 할 수 있습니다.
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
-    # 브라우저의 자동화 메시지를 제거합니다. 이를 통해 "Chrome is being controlled by automated test software"와 같은 메시지를 숨길 수 있습니다.
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])  # 자동화 메시지 제거
+        # 브라우저의 자동화 메시지를 제거합니다. 이를 통해 "Chrome is being controlled by automated test software"와 같은 메시지를 숨길 수 있습니다.
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])  # 자동화 메시지 제거
 
-    # 크롬의 자동화 확장 프로그램을 비활성화합니다. 이를 통해 브라우저가 자동화된 환경에서 실행되고 있음을 감추는 데 도움이 됩니다.
-    chrome_options.add_experimental_option('useAutomationExtension', False)  # 자동화 확장 프로그램 비활성화
+        # 크롬의 자동화 확장 프로그램을 비활성화합니다. 이를 통해 브라우저가 자동화된 환경에서 실행되고 있음을 감추는 데 도움이 됩니다.
+        chrome_options.add_experimental_option('useAutomationExtension', False)  # 자동화 확장 프로그램 비활성화
 
-    # Selenium에서 브라우저가 자동화된 스크립트에 의해 제어되는지 감지하지 않도록 설정
-    # 브라우저의 추가적인 기능을 설정할 수 있습니다. 여기서는 goog:loggingPrefs를 통해 퍼포먼스 로그를 모두 캡처하도록 설정합니다.
-    caps = DesiredCapabilities.CHROME
-    caps['goog:loggingPrefs'] = {'performance': 'ALL'}
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options, desired_capabilities=caps)
+        # Selenium에서 브라우저가 자동화된 스크립트에 의해 제어되는지 감지하지 않도록 설정
+        # 브라우저의 추가적인 기능을 설정할 수 있습니다. 여기서는 goog:loggingPrefs를 통해 퍼포먼스 로그를 모두 캡처하도록 설정합니다.
+        caps = DesiredCapabilities.CHROME
+        caps['goog:loggingPrefs'] = {'performance': 'ALL'}
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options, desired_capabilities=caps)
 
-    # 자바스크립트 실행을 통해 navigator.webdriver 속성 제거
-    # 자바스크립트를 사용하여 navigator.webdriver 속성을 undefined로 설정합니다.
-    # 이는 브라우저가 자동화된 스크립트에 의해 제어되고 있음을 숨기는 데 도움이 됩니다.
-    # 웹사이트는 일반적으로 navigator.webdriver 속성을 확인하여 브라우저가 자동화된 환경에서 실행되고 있는지 감지합니다.
-    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-        'source': '''
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            })
-        '''
-    })
-
+        # 자바스크립트 실행을 통해 navigator.webdriver 속성 제거
+        # 자바스크립트를 사용하여 navigator.webdriver 속성을 undefined로 설정합니다.
+        # 이는 브라우저가 자동화된 스크립트에 의해 제어되고 있음을 숨기는 데 도움이 됩니다.
+        # 웹사이트는 일반적으로 navigator.webdriver 속성을 확인하여 브라우저가 자동화된 환경에서 실행되고 있는지 감지합니다.
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                })
+            '''
+        })
+        return driver
+    except Exception as e:
+        print(f"Error initializing the driver: {e}")
+    return None
 
 def login(driver, id, pw):
+    print(f"login")
     driver.get("https://dometopia.com/member/login")
 
     # 아이디 입력
@@ -385,7 +473,28 @@ def login(driver, id, pw):
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "dometopia_header")))
 
 
+
+# 로거 설정
+logger = logging.getLogger('my_logger')
+logger.setLevel(logging.INFO)
+
+# 핸들러 설정 (콘솔 출력)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+# 포맷터 설정
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+# 핸들러를 로거에 추가
+logger.addHandler(console_handler)
+
+# 현재 시간 로그 출력
+logger.info('This is an info log message.')
+
 def main():
+
+
     # 시작 시간 세팅
     main_start_time = time.time()
     get_current_time()
@@ -401,9 +510,9 @@ def main():
 
     # 파라미터 세팅
     # search_texts = ["GK", "GT"]
-    # pages = [53, 214]
-    search_texts = ["GK"]
-    pages = [1]
+    # pages = [52, 213]
+    search_texts = ["GT"]
+    pages = [50]
     products = []
 
 
@@ -424,7 +533,12 @@ def main():
         get_current_time()
         print(f"======================================")
 
-        products.extend(fetch_product_details(driver, values, search_text))
+        product = fetch_product_details(driver, values, search_text)
+
+        if product:
+            products.extend(product)
+        else:
+            break
 
 
     save_to_excel(products)

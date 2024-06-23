@@ -100,7 +100,7 @@ def fetch_product_details(driver, values, search_text):
         print(f"== value : {value}====================")
         url = f"https://dometopia.com/goods/view?no={value}&code="
         driver.get(url)
-        time.sleep(random.uniform(1, 1.5))
+        time.sleep(random.uniform(2, 2.5))
 
         try:
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "goods_code")))
@@ -285,7 +285,7 @@ def fetch_goods_values(driver, page, search_text):
     print("fetch_goods_values")
     values = []
     try:
-        for i in range(2, page + 1):
+        for i in range(1, page + 1):
             url = f"https://dometopia.com/goods/search?page={i}&search_text={search_text}&popup=&iframe=&category1=&old_category1=&old_search_text={search_text}"
             driver.get(url)
             time.sleep(random.uniform(2, 3))
@@ -509,10 +509,10 @@ def main():
     login(driver, id, pw)
 
     # 파라미터 세팅
-    search_texts = ["GK", "GT"]
+    # search_texts = ["GK", "GT"]
     # pages = [52, 213]
-    search_texts = ["GK"]
-    pages = [52]
+    search_texts = ["GT"]
+    pages = [50]
     products = []
 
 
