@@ -95,191 +95,192 @@ def get_info(driver, th_string):
 
 def fetch_product_details(driver, values, search_text):
     products = []
+    max_retries = 3
+
     for idx, value in enumerate(values):
         print(f"== 순서 : {idx + 1}====================")
         print(f"== value : {value}====================")
         url = f"https://dometopia.com/goods/view?no={value}&code="
-        driver.get(url)
-        time.sleep(random.uniform(2, 2.5))
+        success = False
 
-        try:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "goods_code")))
-        except TimeoutException:
-            print(f"Timeout waiting for goods_code for product {value}")
-            return None
-
-        try:
-            goods_codes = driver.find_elements(By.CLASS_NAME, "goods_code")
-            if len(goods_codes) < 2:
-                print(f"Error: Not enough 'goods_code' elements found for product {value}")
-                continue
-        except NoSuchElementException:
-            print(f"No elements found with class name goods_code for product {value}")
-            return None
-
-        temporarilyOutOfStock = ''
-        try:
-            temporarilyOutOfStock_element = driver.find_elements(By.CLASS_NAME, 'button.bgred')
-            if temporarilyOutOfStock_element:
-                temporarilyOutOfStock = temporarilyOutOfStock_element[0].text.strip()
-        except NoSuchElementException:
-            print(f"No elements found with class name button.bgred for product {value}")
-
-        product_code = goods_codes[0].text.strip()
-
-        doto_option_hide_div = ''
-        try:
-            doto_option_hide_div_element = driver.find_elements(By.CLASS_NAME, 'doto-option-hide')
-            if doto_option_hide_div_element:
-                doto_option_hide_div = doto_option_hide_div_element[0].get_attribute('outerHTML')
-        except NoSuchElementException:
-            print(f"No elements found with class name doto-option-hide for product {value}")
-
-        features = get_info(driver, '상품용도 및 특징')
-        manufacturer = get_info(driver, '제조자/수입자')
-        material = get_info(driver, '상품재질')
-        packaging = get_info(driver, '포장방법')
-        size = get_info(driver, '사이즈')
-        color = get_info(driver, '색상종류')
-        delivery = get_info(driver, '배송기일')
-        weight = get_info(driver, '무게(포장포함)')
-
-        manage_code = goods_codes[1].text.strip()
-
-        try:
-            name = driver.find_element(By.CLASS_NAME, "pl_name").find_element(By.TAG_NAME, "h2").text.strip()
-        except NoSuchElementException:
-            print(f"No elements found with class name pl_name for product {value}")
-            return None
-
-        wholesale_price = "0"
-        try:
-            list2_elements = driver.find_elements(By.CLASS_NAME, "fl.tc.w20.list2.lt_line")
-            if list2_elements:
-                price_red_element = list2_elements[0].find_elements(By.CLASS_NAME, "price_red")
-                if price_red_element:
-                    price_text = price_red_element[0].text
-                    wholesale_price = re.sub(r'\D', '', price_text)
-            else:
-                if len(goods_codes) > 2:
-                    wholesale_price = re.sub(r'\D', '', goods_codes[2].text.strip())
-        except NoSuchElementException:
-            print(f"No elements found with class name fl.tc.w20.list2.lt_line for product {value}")
-
-        if wholesale_price == "0":
+        for attempt in range(max_retries):
             try:
-                li_tags = driver.find_elements(By.CLASS_NAME, "fl.tc.w50.list2.lt_line")
-                if li_tags and len(li_tags) == 2:
-                    wholesale_price = re.sub(r'\D', '', li_tags[0].text.strip())
-            except NoSuchElementException:
-                print(f"No elements found with class name fl.tc.w50.list2.lt_line for product {value}")
+                driver.get(url)
+                time.sleep(random.uniform(2, 2.5))
 
-        main_slide_images = []
-        try:
-            slides_container = driver.find_elements(By.CLASS_NAME, 'slides_container.hide')
-            if slides_container:
-                img_tags = slides_container[0].find_elements(By.TAG_NAME, 'img')
-                for img_tag in img_tags[:100]:
-                    src = img_tag.get_attribute('src')
-                    if src:
-                        main_slide_images.append(src)
-        except NoSuchElementException:
-            print(f"No elements found with class name slides_container.hide for product {value}")
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "goods_code")))
 
-        main_images = []
-        try:
-            pagination = driver.find_elements(By.CLASS_NAME, 'pagination.clearbox')
-            if pagination:
-                img_tags = pagination[0].find_elements(By.TAG_NAME, 'img')
-                for img_tag in img_tags[:100]:
-                    src = img_tag.get_attribute('src')
-                    if src:
-                        main_images.append(src)
-        except NoSuchElementException:
-            print(f"No elements found with class name pagination.clearbox for product {value}")
+                goods_codes = driver.find_elements(By.CLASS_NAME, "goods_code")
+                if len(goods_codes) < 2:
+                    print(f"Error: Not enough 'goods_code' elements found for product {value}")
+                    continue
 
-        detail_images = []
-        try:
-            detail_img_div = driver.find_elements(By.CLASS_NAME, 'detail-img')
-            if detail_img_div:
-                img_tags = detail_img_div[0].find_elements(By.TAG_NAME, 'img')
-                for img_tag in img_tags:
-                    src = img_tag.get_attribute('src')
-                    if src:
-                        if not src.startswith('http'):
-                            src = 'https://dometopia.com' + src
-                        detail_images.append(f'<img src="{src}">')
-                detail_image = '<div style="text-align: center;">' + ''.join(detail_images) + '<br><br><br></div>'
-            else:
-                detail_image = ""
-        except NoSuchElementException:
-            print(f"No elements found with class name detail-img for product {value}")
-            detail_image = ""
+                temporarilyOutOfStock = ''
+                temporarilyOutOfStock_element = driver.find_elements(By.CLASS_NAME, 'button.bgred')
+                if temporarilyOutOfStock_element:
+                    temporarilyOutOfStock = temporarilyOutOfStock_element[0].text.strip()
 
-        country_text = ""
-        try:
-            # gilTable 요소가 로드될 때까지 대기
-            gil_table = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'gilTable'))
-            )
+                product_code = goods_codes[0].text.strip()
 
-            th_tags = gil_table.find_elements(By.TAG_NAME, 'th')
-            for th in th_tags:
-                # JavaScript를 사용하여 'innerText'를 가져옴
-                th_text = driver.execute_script("return arguments[0].innerText;", th)
-                if '원산지' in th_text or '제조국' in th_text:
+                doto_option_hide_div = ''
+                doto_option_hide_div_element = driver.find_elements(By.CLASS_NAME, 'doto-option-hide')
+                if doto_option_hide_div_element:
+                    doto_option_hide_div = doto_option_hide_div_element[0].get_attribute('outerHTML')
+
+                features = get_info(driver, '상품용도 및 특징')
+                manufacturer = get_info(driver, '제조자/수입자')
+                material = get_info(driver, '상품재질')
+                packaging = get_info(driver, '포장방법')
+                size = get_info(driver, '사이즈')
+                color = get_info(driver, '색상종류')
+                delivery = get_info(driver, '배송기일')
+                weight = get_info(driver, '무게(포장포함)')
+
+                manage_code = goods_codes[1].text.strip()
+
+                try:
+                    name = driver.find_element(By.CLASS_NAME, "pl_name").find_element(By.TAG_NAME, "h2").text.strip()
+                except NoSuchElementException:
+                    print(f"No elements found with class name pl_name for product {value}")
+                    continue
+
+                wholesale_price = "0"
+                try:
+                    list2_elements = driver.find_elements(By.CLASS_NAME, "fl.tc.w20.list2.lt_line")
+                    if list2_elements:
+                        price_red_element = list2_elements[0].find_elements(By.CLASS_NAME, "price_red")
+                        if price_red_element:
+                            price_text = price_red_element[0].text
+                            wholesale_price = re.sub(r'\D', '', price_text)
+                    else:
+                        if len(goods_codes) > 2:
+                            wholesale_price = re.sub(r'\D', '', goods_codes[2].text.strip())
+                except NoSuchElementException:
+                    print(f"No elements found with class name fl.tc.w20.list2.lt_line for product {value}")
+
+                if wholesale_price == "0":
                     try:
-                        # JavaScript를 사용하여 'td' 요소의 'innerText' 가져오기
-                        td = th.find_element(By.XPATH, "./following-sibling::td")
-                        td_text = driver.execute_script("return arguments[0].innerText;", td)
-                        country_text = td_text.strip()
-                        print(f"Country of origin/manufacture: {country_text}")
-                        break
+                        li_tags = driver.find_elements(By.CLASS_NAME, "fl.tc.w50.list2.lt_line")
+                        if li_tags and len(li_tags) == 2:
+                            wholesale_price = re.sub(r'\D', '', li_tags[0].text.strip())
                     except NoSuchElementException:
-                        print(f"Corresponding 'td' not found for th: {th_text}")
-                        continue
-        except NoSuchElementException:
-            print(f"No elements found with class name gilTable for product {value}")
+                        print(f"No elements found with class name fl.tc.w50.list2.lt_line for product {value}")
 
-        inventory = ''
-        try:
-            th_elements = driver.find_elements(By.XPATH, "//th[contains(text(), '재고현황')]")
-            if th_elements:
-                td_element = th_elements[0].find_element(By.XPATH, "./following-sibling::td")
-                td_text = td_element.text
-                current_inventory = re.findall(r'\d+', td_text)
-                if current_inventory:
-                    inventory = current_inventory[0]
-        except NoSuchElementException:
-            print(f"No elements found with text 재고현황 for product {value}")
+                main_slide_images = []
+                try:
+                    slides_container = driver.find_elements(By.CLASS_NAME, 'slides_container.hide')
+                    if slides_container:
+                        img_tags = slides_container[0].find_elements(By.TAG_NAME, 'img')
+                        for img_tag in img_tags[:100]:
+                            src = img_tag.get_attribute('src')
+                            if src:
+                                main_slide_images.append(src)
+                except NoSuchElementException:
+                    print(f"No elements found with class name slides_container.hide for product {value}")
 
-        product = Product(
-            temporarilyOutOfStock=temporarilyOutOfStock,
-            no=value,
-            category=search_text,
-            manage_code=manage_code,
-            product_code=product_code,
-            name=name,
-            wholesale_price=wholesale_price,
-            inventory=inventory,
-            option=doto_option_hide_div,
-            features=features,
-            manufacturer=manufacturer,
-            material=material,
-            packaging=packaging,
-            size=size,
-            color=color,
-            delivery=delivery,
-            weight=weight,
-            main_slide_images=main_slide_images,
-            main_images=main_images,
-            detail_image=detail_image,
-            country_of_origin=country_text
-        )
+                main_images = []
+                try:
+                    pagination = driver.find_elements(By.CLASS_NAME, 'pagination.clearbox')
+                    if pagination:
+                        img_tags = pagination[0].find_elements(By.TAG_NAME, 'img')
+                        for img_tag in img_tags[:100]:
+                            src = img_tag.get_attribute('src')
+                            if src:
+                                main_images.append(src)
+                except NoSuchElementException:
+                    print(f"No elements found with class name pagination.clearbox for product {value}")
 
-        print(product)
-        products.append(product)
+                detail_images = []
+                try:
+                    detail_img_div = driver.find_elements(By.CLASS_NAME, 'detail-img')
+                    if detail_img_div:
+                        img_tags = detail_img_div[0].find_elements(By.TAG_NAME, 'img')
+                        for img_tag in img_tags:
+                            src = img_tag.get_attribute('src')
+                            if src:
+                                if not src.startswith('http'):
+                                    src = 'https://dometopia.com' + src
+                                detail_images.append(f'<img src="{src}">')
+                        detail_image = '<div style="text-align: center;">' + ''.join(detail_images) + '<br><br><br></div>'
+                    else:
+                        detail_image = ""
+                except NoSuchElementException:
+                    print(f"No elements found with class name detail-img for product {value}")
+                    detail_image = ""
+
+                country_text = ""
+                try:
+                    gil_table = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'gilTable'))
+                    )
+
+                    th_tags = gil_table.find_elements(By.TAG_NAME, 'th')
+                    for th in th_tags:
+                        th_text = driver.execute_script("return arguments[0].innerText;", th)
+                        if '원산지' in th_text or '제조국' in th_text:
+                            try:
+                                td = th.find_element(By.XPATH, "./following-sibling::td")
+                                td_text = driver.execute_script("return arguments[0].innerText;", td)
+                                country_text = td_text.strip()
+                                print(f"Country of origin/manufacture: {country_text}")
+                                break
+                            except NoSuchElementException:
+                                print(f"Corresponding 'td' not found for th: {th_text}")
+                                continue
+                except NoSuchElementException:
+                    print(f"No elements found with class name gilTable for product {value}")
+
+                inventory = ''
+                try:
+                    th_elements = driver.find_elements(By.XPATH, "//th[contains(text(), '재고현황')]")
+                    if th_elements:
+                        td_element = th_elements[0].find_element(By.XPATH, "./following-sibling::td")
+                        td_text = td_element.text
+                        current_inventory = re.findall(r'\d+', td_text)
+                        if current_inventory:
+                            inventory = current_inventory[0]
+                except NoSuchElementException:
+                    print(f"No elements found with text 재고현황 for product {value}")
+
+                product = Product(
+                    temporarilyOutOfStock=temporarilyOutOfStock,
+                    no=value,
+                    category=search_text,
+                    manage_code=manage_code,
+                    product_code=product_code,
+                    name=name,
+                    wholesale_price=wholesale_price,
+                    inventory=inventory,
+                    option=doto_option_hide_div,
+                    features=features,
+                    manufacturer=manufacturer,
+                    material=material,
+                    packaging=packaging,
+                    size=size,
+                    color=color,
+                    delivery=delivery,
+                    weight=weight,
+                    main_slide_images=main_slide_images,
+                    main_images=main_images,
+                    detail_image=detail_image,
+                    country_of_origin=country_text
+                )
+
+                print(product)
+                products.append(product)
+                success = True
+                break
+
+            except WebDriverException as e:
+                print(f"Error fetching {url} (attempt {attempt + 1}/{max_retries}): {e}")
+                time.sleep(10)  # 재시도 전에 잠시 대기
+
+        if not success:
+            print(f"Failed to fetch product details for {value} after {max_retries} attempts")
+
     return products
+
+
 
 def fetch_goods_values(driver, page, search_text):
     print("fetch_goods_values")
@@ -512,7 +513,7 @@ def main():
     # search_texts = ["GK", "GT"]
     # pages = [52, 213]
     search_texts = ["GT"]
-    pages = [50]
+    pages = [213]
     products = []
 
 
