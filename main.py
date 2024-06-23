@@ -513,7 +513,7 @@ def main():
     # search_texts = ["GK", "GT"]
     # pages = [52, 213]
     search_texts = ["GT"]
-    pages = [213]
+    pages = [150]
     products = []
 
 
