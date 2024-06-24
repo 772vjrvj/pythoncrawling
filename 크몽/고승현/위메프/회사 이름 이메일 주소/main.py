@@ -159,11 +159,10 @@ def fetch_seller_info(driver, product_id):
     return seller_info
 
 if __name__ == "__main__":
-
-    kwd = '냉면'
-    company = '오늘의집'
+    kwd = input("Enter keyword: ")
+    company = '위메프'
     initial_page = 1
-
+    print("위메프 시작...")
     # Set up the Selenium WebDriver
     driver = setup_driver()
 
@@ -171,6 +170,7 @@ if __name__ == "__main__":
     last_page = fetch_last_page(driver, kwd, initial_page)
 
     print(f"last_page : {last_page}")
+    print("페이지 수집...")
 
     total_page = int(last_page)
     total_page = 1
@@ -185,10 +185,10 @@ if __name__ == "__main__":
     print(f"Deal IDs: {all_values}")
     print(f"Deal IDs: {len(all_values)}")
 
-    all_values = ['604860045','630363768','2881368589','631025574','2881366817','2859040936','2612772036','2218046813','630683467','629325499']
+    all_values = ['2881366817','2859040936','2612772036']
 
     all_seller_info = []
-
+    print("크롤링 시작...")
     for product_id in all_values:
 
         seller_info = fetch_seller_info(driver, product_id)

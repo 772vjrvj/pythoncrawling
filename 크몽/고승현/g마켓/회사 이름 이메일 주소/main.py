@@ -174,7 +174,7 @@ def main():
         click_shipping_info_tab(driver, product_id)
         # Optional: Add a delay to avoid being detected as a bot
         time.sleep(random.uniform(1, 3))
-        seller_info = extract_seller_info(driver, )
+        seller_info = extract_seller_info(driver)
         if seller_info:
             seller_info["키워드"] = keyword
             seller_info["플랫폼"] = company

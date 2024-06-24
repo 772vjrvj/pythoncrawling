@@ -8,6 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 def setup_driver():
     # Set up Chrome options
@@ -42,16 +44,54 @@ def setup_driver():
 
 def fetch_search_results(kwd, page):
     url = f"https://ohou.se/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20"
-    response = requests.get(url)
+    headers = {
+        'authority': 'ohou.se',
+        'method': 'GET',
+        'path': f'/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20',
+        'scheme': 'https',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'If-None-Match': 'W/"45a142fe1a5df378810859e6665519dc"',
+        'Priority': 'u=0, i',
+        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+    }
 
-    if response.status_code == 200:
+    # 세션 생성
+    session = requests.Session()
+
+    # Retry 설정
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+
+    # UTF-8로 인코딩된 헤더 설정
+    headers = {k: str(v).encode('utf-8') for k, v in headers.items()}
+
+    try:
+        response = session.get(url, headers=headers, timeout=10)  # 타임아웃 설정
+        response.raise_for_status()  # 요청이 성공하지 못하면 예외를 발생시킵니다
         return response.json()
-    else:
-        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.ConnectionError as err:
+        print(f"Error connecting: {err}")
+    except requests.exceptions.Timeout as err:
+        print(f"Timeout error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"An error occurred: {err}")
 
 def parse_results(results):
     ids = []
-    items = results.get('items', [])
+    items = results.get('productions', [])
     for item in items:
         id_value = item.get('id')
         if id_value:
@@ -60,60 +100,54 @@ def parse_results(results):
 
 def click_fourth_tab(driver, product_id):
     time.sleep(2)  # 각 요청 사이에 잠시 대기
-    url = f"https://www.11st.co.kr/products/{product_id}"
+    url = f"https://ohou.se/productions/{product_id}/selling"
     driver.get(url)
+    print(f"product_id : {product_id}")
+    print(f"url : {url}")
 
     seller_info = {"상호": "", "e-mail": ""}
 
     try:
-        # Wait until the product detail wrap is present
-        product_detail_wrap = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'l_product_detail_wrap'))
+        # class "production-selling-navigation__list"를 찾아서 4번째 li 태그 클릭
+        nav_list = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'production-selling-navigation__list'))
+        )
+        li_elements = nav_list.find_elements(By.TAG_NAME, 'li')
+        if len(li_elements) >= 4:
+            li_elements[3].click()
+        else:
+            print("li 태그가 4개 이상 존재하지 않습니다.")
+            return seller_info
+
+        time.sleep(3)  # 네비게이션 후 페이지 로딩 시간 추가
+
+        # 모든 테이블 찾기
+        tables = WebDriverWait(driver, 15).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'production-selling-table'))
         )
 
-        # Find the tab list inside the product detail wrap
-        product_tab_list = WebDriverWait(product_detail_wrap, 20).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'c_product_tab_list'))
-        )
+        print(f"len(tables): {len(tables)}")
 
-        # Find the tab menu items
-        tab_menus = product_tab_list.find_elements(By.CLASS_NAME, 'tab_menu')
-        if len(tab_menus) >= 4:
-            fourth_tab_button = tab_menus[3].find_element(By.TAG_NAME, 'button')
+        if len(tables) >= 4:
+            table = tables[3]  # 네 번째 테이블 선택
 
-            # Scroll the element into view
-            driver.execute_script("arguments[0].scrollIntoView(true);", fourth_tab_button)
-            time.sleep(1)  # Allow some time for any potential animations or scrolling to complete
+            # th의 text가 "상호"인 것의 td text 찾기
+            th_elements = table.find_elements(By.TAG_NAME, 'th')
+            for th in th_elements:
+                if '상호' in th.text:
+                    td = th.find_element(By.XPATH, './following-sibling::td')
+                    seller_info['상호'] = td.text
+                    break
 
-            # Use JavaScript to click the element
-            driver.execute_script("arguments[0].click();", fourth_tab_button)
-            print(f"Clicked the 4th tab for product ID: {product_id}")
-
-            # Wait for the details tables to load
-            time.sleep(1)
-            details_tables = WebDriverWait(driver, 20).until(
-                EC.presence_of_all_elements_located((By.CLASS_NAME, 'prdc_detail_table'))
-            )
-
-            if len(details_tables) >= 4:
-                details_table = details_tables[3]  # Get the 4th table
-
-                # Find all rows in the 4th details table
-                rows = details_table.find_elements(By.TAG_NAME, 'tr')
-
-                for row in rows:
-                    th_elements = row.find_elements(By.TAG_NAME, 'th')
-                    td_elements = row.find_elements(By.TAG_NAME, 'td')
-
-                    for th, td in zip(th_elements, td_elements):
-                        th_text = th.text.strip()
-                        td_text = td.text.strip()
-                        if "상호명/대표자" in th_text:
-                            seller_info['상호'] = td_text
-                        elif "E-Mail" in th_text:
-                            seller_info['e-mail'] = td_text
-            else:
-                print(f"Less than 4 details tables found for product ID: {product_id}")
+            # th의 text가 'E-mail'를 포함하는 것의 td text 찾기
+            for th in th_elements:
+                if 'E-mail' in th.text:
+                    td = th.find_element(By.XPATH, './following-sibling::td')
+                    seller_info['e-mail'] = td.text
+                    break
+        else:
+            print("production-selling-table 테이블이 4개 이상 존재하지 않습니다.")
+            return seller_info
 
     except Exception as e:
         print(f"An error occurred for product ID: {product_id}: {e}")
@@ -122,13 +156,19 @@ def click_fourth_tab(driver, product_id):
 
 if __name__ == "__main__":
     # 예제 검색어와 첫 페이지 번호
-    kwd = '냉면'
+    kwd = input("Enter keyword: ")
     company = '오늘의집'
     initial_page = 1
 
+    print("오늘의 집 시작...")
+
     # 첫 페이지에서 totalPage 값을 가져옵니다.
     totalPageJson = fetch_search_results(kwd, initial_page)
-    totalPage = int(totalPageJson['totalPage'])
+    print(f"totalPageJson : {totalPageJson}")
+    totalPage = int(totalPageJson['total_count'])
+    print(f"totalPage : {totalPage}")
+
+    print("페이지 수집...")
 
     all_ids = set()
 
@@ -138,21 +178,25 @@ if __name__ == "__main__":
         ids = parse_results(results)
         all_ids.update(ids)  # set을 사용하여 중복을 자동으로 제거합니다.
 
+    print(f"all_ids : {all_ids}")
+
     # Selenium WebDriver 설정
     driver = setup_driver()
 
-
-    # all_ids = ['5928602581', '4424564709', '7149332910']
+    all_ids = ['2155528', '2041865', '1926924']
 
     all_seller_info = []
-
+    print("크롤링 시작...")
     for product_id in all_ids:
         seller_info = click_fourth_tab(driver, product_id)
         seller_info["키워드"] = kwd
         seller_info["플랫폼"] = company
+
+        print(f"seller_info : {seller_info}")
+
         all_seller_info.append(seller_info)
 
-        # Define the columns
+    # Define the columns
     columns = ['키워드', '상호', 'e-mail', '플랫폼']
 
     # Create a DataFrame
@@ -160,5 +204,3 @@ if __name__ == "__main__":
 
     # Save the DataFrame to an Excel file
     df.to_excel('seller_info.xlsx', index=False)
-
-

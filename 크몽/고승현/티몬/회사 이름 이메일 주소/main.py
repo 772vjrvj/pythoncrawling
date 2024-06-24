@@ -61,7 +61,7 @@ def fetch_total_pages(driver, keyword, page):
 def fetch_deal_srl_values(driver, keyword, page):
     url = f"https://search.tmon.co.kr/search/?keyword={keyword}&thr=hs&page={page}"
     driver.get(url)
-
+    time.sleep(2)
     try:
         # Find the deallist_wrap element and get all li elements inside the ul with class 'list'
         deallist_wrap = WebDriverWait(driver, 10).until(
@@ -174,9 +174,12 @@ def fetch_product_details(driver, product_id):
 
 
 if __name__ == "__main__":
-    kwd = "냉면"  # Replace with your keyword
+    kwd = input("Enter keyword: ")
+    # kwd = "냉면"  # Replace with your keyword
     initial_page = 1  # Replace with your page number
     company = "티몬"
+
+    print("티몬 시작...")
 
     # Set up the Selenium WebDriver
     driver = setup_driver()
@@ -185,10 +188,11 @@ if __name__ == "__main__":
     total_pages_text = fetch_total_pages(driver, kwd, initial_page)
 
     total_page = int(total_pages_text)
+    print(f"total_page : {total_page}")
     total_page = 1
 
     all_deal_srl_values = set()
-
+    print("페이지 수집...")
     # 모든 페이지에 대해 for 문을 돌면서 id 값을 수집합니다.
     for page in range(1, total_page + 1):
         deal_srl_values = fetch_deal_srl_values(driver, kwd, page)
@@ -201,7 +205,7 @@ if __name__ == "__main__":
     all_seller_info = []
 
     all_deal_srl_values = ['14506661950', '26475116670','4045470354']
-
+    print("크롤링 시작...")
     for product_id in all_deal_srl_values:
 
         seller_info = fetch_product_details(driver, product_id)
