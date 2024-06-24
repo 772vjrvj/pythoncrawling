@@ -13,6 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+import urllib3.exceptions
 
 import random
 
@@ -271,15 +272,14 @@ def fetch_product_details(driver, values, search_text):
                 success = True
                 break
 
-            except WebDriverException as e:
+            except (WebDriverException, urllib3.exceptions.ProtocolError, ConnectionResetError) as e:
                 print(f"Error fetching {url} (attempt {attempt + 1}/{max_retries}): {e}")
-                time.sleep(10)  # 재시도 전에 잠시 대기
+                time.sleep(2)  # 재시도 전에 잠시 대기
 
         if not success:
             print(f"Failed to fetch product details for {value} after {max_retries} attempts")
 
     return products
-
 
 
 def fetch_goods_values(driver, page, search_text):
