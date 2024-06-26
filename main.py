@@ -29,7 +29,7 @@ def setup_driver():
     chrome_options = Options() # 크롬 옵션 설정
 
     # 헤드리스 모드로 실행
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
 
     # GPU 비활성화
     # GPU 가속을 비활성화합니다. 이는 주로 헤드리스 모드에서 그래픽 성능이 필요없을 때 리소스 사용을 줄이기 위해 사용됩니다.
