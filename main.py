@@ -166,7 +166,7 @@ def fetch_product_detail(driver, product_id):
         seller_info_button.click()
         new_print("Clicked on '판매자 정보'")
 
-        time.sleep(3)  # 판매자 정보 토글 후 로딩 시간
+        time.sleep(2)  # 판매자 정보 토글 후 로딩 시간
         tables = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'tbl_info'))
         )
