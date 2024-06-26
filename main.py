@@ -123,7 +123,7 @@ def fetch_product_ids(driver, keyword, page):
                 a_tag = li.find_element(By.TAG_NAME, 'a')
                 deal_srl = a_tag.get_attribute('data-deal-srl')
                 if deal_srl:
-                    new_print(f"id {deal_srl}")
+                    new_print(f"page : {page}, id {deal_srl}")
                     ids.append(deal_srl)
             except Exception as e:
                 print(f"Error retrieving data-deal-srl for an item: {e}")
@@ -232,6 +232,7 @@ if __name__ == "__main__":
     new_print("페이지 수집...")
 
     for page in range(1, total_pages + 1):
+        new_print(f"현재 페이지 : {page}")
         ids = fetch_product_ids(driver, kwd, page)
         product_ids.update(ids)
 
