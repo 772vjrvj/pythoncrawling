@@ -158,40 +158,38 @@ def fetch_product_detail(driver, product_id):
         for li in li_elements:
             if "환불/교환" in li.text:
                 li.click()
-                print("Clicked on '환불/교환'")
+                new_print("Clicked on '환불/교환'")
                 break
 
         time.sleep(2)  # 탭 전환 후 로딩 시간
         seller_info_button = driver.find_element(By.XPATH, "//button[h4[text()='판매자 정보']]")
         seller_info_button.click()
+        new_print("Clicked on '판매자 정보'")
 
-        time.sleep(2)  # 판매자 정보 토글 후 로딩 시간
+        time.sleep(3)  # 판매자 정보 토글 후 로딩 시간
         tables = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'tbl_info'))
         )
 
+        new_print(f"tables len {len(tables)}")
+
         # 판매자 정보 추출
         found_all_info = False
         for table in tables:
-            if not seller_info["상호명"]:
-                try:
+            try:
+                if not seller_info["상호명"]:
                     company_name_td = table.find_element(By.XPATH, ".//th[contains(text(), '상호명')]/following-sibling::td")
                     seller_info["상호명"] = company_name_td.text
-                    print(f"상호명: {seller_info['상호명']}")
-                except Exception as e:
-                    print(f"상호명 정보를 찾을 수 없습니다: {e}")
 
-            if not seller_info["이메일"]:
-                try:
+                if not seller_info["이메일"]:
                     email_td = table.find_element(By.XPATH, ".//th[contains(text(), '이메일')]/following-sibling::td")
                     seller_info["이메일"] = email_td.text
-                    print(f"이메일: {seller_info['이메일']}")
-                except Exception as e:
-                    print(f"이메일 정보를 찾을 수 없습니다: {e}")
 
-            if seller_info["상호명"] and seller_info["이메일"]:
-                found_all_info = True
-                break
+                if seller_info["상호명"] and seller_info["이메일"]:
+                    found_all_info = True
+                    break
+            except NoSuchElementException:
+                continue  # 요소가 없을 경우 다음 테이블로 넘어갑니다.
 
         if not found_all_info:
             print("Not all information could be found.")
@@ -231,7 +229,7 @@ if __name__ == "__main__":
 
     new_print("페이지 수집...")
 
-    for page in range(1, total_pages + 1):
+    for page in range(1, 2 + 1):
         new_print(f"현재 페이지 : {page}")
         ids = fetch_product_ids(driver, kwd, page)
         product_ids.update(ids)
