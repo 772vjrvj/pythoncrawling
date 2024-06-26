@@ -28,7 +28,7 @@ def setup_driver():
     chrome_options = Options() # 크롬 옵션 설정
 
     # 헤드리스 모드로 실행
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
 
     # GPU 비활성화
     # GPU 가속을 비활성화합니다. 이는 주로 헤드리스 모드에서 그래픽 성능이 필요없을 때 리소스 사용을 줄이기 위해 사용됩니다.
@@ -123,6 +123,7 @@ def fetch_product_ids(driver, keyword, page):
                 a_tag = li.find_element(By.TAG_NAME, 'a')
                 deal_srl = a_tag.get_attribute('data-deal-srl')
                 if deal_srl:
+                    new_print(f"id {deal_srl}")
                     ids.append(deal_srl)
             except Exception as e:
                 print(f"Error retrieving data-deal-srl for an item: {e}")
