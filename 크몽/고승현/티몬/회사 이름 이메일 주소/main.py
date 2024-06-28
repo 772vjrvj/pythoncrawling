@@ -6,7 +6,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException
+
 from datetime import datetime
 
 import pandas as pd
@@ -28,7 +29,7 @@ def setup_driver():
     chrome_options = Options() # 크롬 옵션 설정
 
     # 헤드리스 모드로 실행
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
 
     # GPU 비활성화
     # GPU 가속을 비활성화합니다. 이는 주로 헤드리스 모드에서 그래픽 성능이 필요없을 때 리소스 사용을 줄이기 위해 사용됩니다.
@@ -123,6 +124,7 @@ def fetch_product_ids(driver, keyword, page):
                 a_tag = li.find_element(By.TAG_NAME, 'a')
                 deal_srl = a_tag.get_attribute('data-deal-srl')
                 if deal_srl:
+                    new_print(f"page : {page}, id {deal_srl}")
                     ids.append(deal_srl)
             except Exception as e:
                 print(f"Error retrieving data-deal-srl for an item: {e}")
@@ -155,42 +157,39 @@ def fetch_product_detail(driver, product_id):
 
         # "환불/교환" 탭 클릭
         for li in li_elements:
-            if "환불/교환" in li.text:
+            if "환불" in li.text or "교환" in li.text or "취소" in li.text:
                 li.click()
-                print("Clicked on '환불/교환'")
+                new_print("Clicked on '환불/교환'")
                 break
 
         time.sleep(2)  # 탭 전환 후 로딩 시간
-        seller_info_button = driver.find_element(By.XPATH, "//button[h4[text()='판매자 정보']]")
+        seller_info_button = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//button[h4[text()='판매자 정보']]"))
+        )
         seller_info_button.click()
+        new_print("Clicked on '판매자 정보'")
 
         time.sleep(2)  # 판매자 정보 토글 후 로딩 시간
         tables = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'tbl_info'))
         )
 
+        new_print(f"tables len {len(tables)}")
+
         # 판매자 정보 추출
         found_all_info = False
         for table in tables:
-            if not seller_info["상호명"]:
-                try:
-                    company_name_td = table.find_element(By.XPATH, ".//th[contains(text(), '상호명')]/following-sibling::td")
-                    seller_info["상호명"] = company_name_td.text
-                    print(f"상호명: {seller_info['상호명']}")
-                except Exception as e:
-                    print(f"상호명 정보를 찾을 수 없습니다: {e}")
+            try:
+                company_name_td = table.find_element(By.XPATH, ".//th[contains(text(), '상호명')]/following-sibling::td")
+                seller_info["상호명"] = company_name_td.text if not seller_info["상호명"] else seller_info["상호명"]
+                email_td = table.find_element(By.XPATH, ".//th[contains(text(), '이메일')]/following-sibling::td")
+                seller_info["이메일"] = email_td.text if not seller_info["이메일"] else seller_info["이메일"]
 
-            if not seller_info["이메일"]:
-                try:
-                    email_td = table.find_element(By.XPATH, ".//th[contains(text(), '이메일')]/following-sibling::td")
-                    seller_info["이메일"] = email_td.text
-                    print(f"이메일: {seller_info['이메일']}")
-                except Exception as e:
-                    print(f"이메일 정보를 찾을 수 없습니다: {e}")
-
-            if seller_info["상호명"] and seller_info["이메일"]:
-                found_all_info = True
-                break
+                if seller_info["상호명"] and seller_info["이메일"]:
+                    found_all_info = True
+                    break
+            except (NoSuchElementException, ElementNotInteractableException):
+                continue  # 요소가 없거나 상호작용할 수 없을 경우 다음 테이블로 넘어갑니다.
 
         if not found_all_info:
             print("Not all information could be found.")
@@ -231,6 +230,7 @@ if __name__ == "__main__":
     new_print("페이지 수집...")
 
     for page in range(1, total_pages + 1):
+        new_print(f"현재 페이지 : {page}")
         ids = fetch_product_ids(driver, kwd, page)
         product_ids.update(ids)
 
