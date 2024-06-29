@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
+import os
 import pandas as pd
 
 # 현재 시간
@@ -36,8 +37,28 @@ def setup_driver():
     })
     return driver
 
+index = 1
+
+# 파일명 생성 함수
+def create_filename(base_name, keyword, extension, directory="."):
+    global index
+    # 현재 시간
+    current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    while True:
+        filename = f"{base_name}_{keyword}_{current_time}.{extension}"
+        filepath = os.path.join(directory, filename)
+        if not os.path.exists(filepath):
+            index += 1  # 인덱스를 1씩 증가시킴
+            return filepath
+
+
 # 엑셀 얻기
-def fetch_excel(all_seller_info):
-    columns = ['키워드', '상호명', '이메일', '플랫폼']
+def fetch_excel(all_seller_info, kwd):
+    columns = ['아이디', '키워드', '상호명', '이메일', '플랫폼', 'URL', '페이지', '작업시간']
     df = pd.DataFrame(all_seller_info, columns=columns)
-    df.to_excel('seller_info.xlsx', index=False)
+
+    filename = create_filename("email_info", kwd, "xlsx")
+
+    # 엑셀 파일 저장
+    df.to_excel(filename, index=False)

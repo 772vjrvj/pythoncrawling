@@ -3,20 +3,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException
+import random
+from ..common import get_current_time
+
 
 # 티몬 전체 페이지 가져오기
-def fetch_total_pages(driver, keyword, page):
-    url = f"https://search.tmon.co.kr/search/?keyword={keyword}&thr=hs&page={page}"
+def fetch_total_pages(driver, kwd, page, product_id):
+    url = f"https://search.tmon.co.kr/search/?keyword={kwd}&thr=hs&page={page}"
     try:
         driver.get(url)
-        time.sleep(5)
+        time.sleep(2)
         total_pages_element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'c-page__total'))
         )
         total_pages_text = total_pages_element.text.strip()
         if total_pages_text.isdigit():
             total_pages = int(total_pages_text)
-            print(f"Total pages text: {total_pages}")
             return total_pages
         else:
             print("No valid total pages number found.")
@@ -31,9 +33,10 @@ def fetch_total_pages(driver, keyword, page):
         print(f"An unexpected error occurred: {e}")
         return 0
 
+
 # 티몬 모든 제품 id들을 가져온다.
-def fetch_product_ids(driver, keyword, page):
-    url = f"https://search.tmon.co.kr/search/?keyword={keyword}&thr=hs&page={page}"
+def fetch_product_ids(driver, kwd, page, product_id):
+    url = f"https://search.tmon.co.kr/search/?keyword={kwd}&thr=hs&page={page}"
     try:
         driver.get(url)
         time.sleep(2)
@@ -42,27 +45,38 @@ def fetch_product_ids(driver, keyword, page):
         )
         ul_element = deallist_wrap.find_element(By.CLASS_NAME, 'list')
         li_elements = ul_element.find_elements(By.CLASS_NAME, 'item')
-        ids = []
+        ids = set()
         for li in li_elements:
             try:
                 a_tag = li.find_element(By.TAG_NAME, 'a')
                 deal_srl = a_tag.get_attribute('data-deal-srl')
                 if deal_srl:
-                    ids.append(deal_srl)
+                    ids.add(deal_srl)
             except Exception as e:
                 print(f"Error retrieving data-deal-srl for an item: {e}")
-        return ids
+                return []
+        return list(ids)
     except Exception as e:
         print(f"An error occurred while fetching the product list: {e}")
         return []
 
+
 # 티몬 제품 상세정보 가져오기
-def fetch_product_detail(driver, product_id):
+def fetch_product_detail(driver, kwd, page, product_id):
     url = f"https://www.tmon.co.kr/deal/{product_id}"
-    driver.get(url)
-    seller_info = {"상호명": "", "이메일": ""}
+    seller_info = {
+        "아이디": product_id,
+        "키워드": kwd,
+        "상호명": "",
+        "이메일": "",
+        "플랫폼": "티몬",
+        "URL": url,
+        "페이지": page,
+        "작업시간": ""
+    }
     try:
-        time.sleep(3)
+        driver.get(url)
+        time.sleep(random.uniform(3, 5))
         tab_inner = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'tab-inner._fixedUIItem'))
         )
@@ -97,5 +111,8 @@ def fetch_product_detail(driver, product_id):
             print("Not all information could be found.")
     except Exception as e:
         print(f"An error occurred: {e}")
-        return {}
+        return seller_info
+
+
+    seller_info["작업시간"] = get_current_time()
     return seller_info
