@@ -70,10 +70,11 @@ def call_company_function(company_name, add_name, driver, kwd, page, product_id)
         return []
 
 
-def is_stop():
+def is_stop(driver):
     if stop_flag.is_set():
         new_print("작업 중지됨")
         messagebox.showinfo("작업 중지", "작업이 중지되었습니다.")
+        driver.quit()
         return True
     return False
 
@@ -113,7 +114,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
     for page in range(init_page, end_page + 1):
 
         # 중지 플래그 확인
-        if is_stop():
+        if is_stop(driver):
             fetch_excel(all_seller_info, kwd)
             return
 
@@ -124,7 +125,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
         # 티몬 -> 11번가 -> G마켓 -> 쿠팡 -> 오늘의집 -> 위메프
         for company in companies_ids:
 
-            if is_stop():
+            if is_stop(driver):
                 fetch_excel(all_seller_info, kwd)
                 return
 
@@ -141,7 +142,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
                 companies_ids.remove(company)
 
             for index, product_id in enumerate(pr_ids):
-                if is_stop():
+                if is_stop(driver):
                     fetch_excel(all_seller_info, kwd)
                     return
 
@@ -174,6 +175,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
                         new_print("끝...")
                         start_button.config(text="시작", fg="black")
                         messagebox.showinfo("작업 완료", "작업이 종료되었습니다.")
+                        driver.quit()
                         return
 
 
