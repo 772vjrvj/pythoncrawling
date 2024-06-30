@@ -108,7 +108,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
     excel_len = 0
 
     # companies_ids = ["ti", "el", "gm", "cp", "oh", "we"]
-    companies_ids = ["ti", "el", "gm"]
+    companies_ids = ["cp"]
     companies_names = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
 
     for page in range(init_page, end_page + 1):
@@ -147,31 +147,34 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
 
                 # 상세조회
                 seller_info = call_company_function(company, "detail", driver, kwd, page, product_id)
-                new_print(f"{companies_names[company]} Page [{page}], 번호: {index + 1}, 상호명 : {seller_info['상호명']}, 이메일 : {seller_info['이메일']}")
 
-                all_seller_info.append(seller_info)
-                # 전체 중복 제거
-                all_seller_info = unique_seller_list(all_seller_info)
+                if seller_info['이메일']:
 
-                new_print(f"중복 제거 후 전체 진행된 갯수 : {len(all_seller_info)}")
+                    new_print(f"{companies_names[company]} Page [{page}], 번호: {index + 1}, 상호명 : {seller_info['상호명']}, 이메일 : {seller_info['이메일']}")
 
-                # 현재까지 합이 100인지 체크
-                if(len(all_seller_info) % 100 == 0 and excel_len != len(all_seller_info)):
-                    excel_len = len(all_seller_info)
-                    new_print(f"100의 배수 {len(all_seller_info)} 입니다. 현재 까지 데이터를 엑셀에 저장 하겠습니다.")
-                    fetch_excel(all_seller_info, kwd)
+                    all_seller_info.append(seller_info)
+                    # 전체 중복 제거
+                    all_seller_info = unique_seller_list(all_seller_info)
 
-                # 게이지 변경
-                update_progress(len(all_seller_info), email_count, page)
+                    new_print(f"중복 제거 후 전체 진행된 갯수 : {len(all_seller_info)}")
 
-                # 현재까지 합이 company_count 보다 큰지 체크
-                if len(all_seller_info) >= email_count:
-                    new_print("엑셀 시작...")
-                    fetch_excel(all_seller_info, kwd)
-                    new_print("끝...")
-                    start_button.config(text="시작", fg="black")
-                    messagebox.showinfo("작업 완료", "작업이 종료되었습니다.")
-                    return
+                    # 현재까지 합이 100인지 체크
+                    if(len(all_seller_info) % 100 == 0 and excel_len != len(all_seller_info)):
+                        excel_len = len(all_seller_info)
+                        new_print(f"100의 배수 {len(all_seller_info)} 입니다. 현재 까지 데이터를 엑셀에 저장 하겠습니다.")
+                        fetch_excel(all_seller_info, kwd)
+
+                    # 게이지 변경
+                    update_progress(len(all_seller_info), email_count, page)
+
+                    # 현재까지 합이 company_count 보다 큰지 체크
+                    if len(all_seller_info) >= email_count:
+                        new_print("엑셀 시작...")
+                        fetch_excel(all_seller_info, kwd)
+                        new_print("끝...")
+                        start_button.config(text="시작", fg="black")
+                        messagebox.showinfo("작업 완료", "작업이 종료되었습니다.")
+                        return
 
 
 def get_keyword():

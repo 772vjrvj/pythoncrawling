@@ -18,7 +18,7 @@ def fetch_product_ids(driver, kwd, page, product_id):
     url = f"https://www.gmarket.co.kr/n/search?keyword={kwd}&k=42&p={page}"
     try:
         driver.get(url)
-        time.sleep(2)
+        time.sleep(3)
         item_containers = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, "box__item-container"))
         )
