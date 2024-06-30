@@ -166,7 +166,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
                         fetch_excel(all_seller_info, kwd)
 
                     # 게이지 변경
-                    update_progress(len(all_seller_info), email_count, page)
+                    update_progress(len(all_seller_info), email_count, page, end_page)
 
                     # 현재까지 합이 company_count 보다 큰지 체크
                     if len(all_seller_info) >= email_count:
@@ -186,15 +186,15 @@ def get_email_count():
     return int(email_count_text.get().strip())
 
 
-def update_progress(current_value, max_value, page):
+def update_progress(current_value, max_value, page, end_page):
     progress_percentage = (current_value / max_value) * 100
     progress['value'] = progress_percentage
     progress_label.config(text=f"진행률: {progress_percentage:.2f}%")
     index_label.config(text=f"{current_value}/{max_value}")
-    current_page_label.config(text=f"현재 페이지: {page}")
+    current_page_label.config(text=f"현재 페이지: {page}/{end_page}")
     remaining_time = (max_value - current_value) * 10
     eta = str(timedelta(seconds=remaining_time))
-    eta_label.config(text=f"남은 시간: {eta}")
+    # eta_label.config(text=f"남은 시간: {eta}")
 
 
 def update_time():
@@ -318,7 +318,7 @@ def start_app():
 
 
     # ========== 진행률 [시작] ==========
-    current_page_label = tk.Label(root, text="현재 페이지: 0")
+    current_page_label = tk.Label(root, text="페이지: 0/0")
     current_page_label.pack(fill=tk.X, padx=10)
 
     progress_label = tk.Label(root, text="진행률: 0%")
@@ -327,8 +327,8 @@ def start_app():
     index_label = tk.Label(root, text="0/0")
     index_label.pack(fill=tk.X, padx=10)
 
-    eta_label = tk.Label(root, text="남은 시간: 00:00:00")
-    eta_label.pack(fill=tk.X, padx=10)
+    # eta_label = tk.Label(root, text="남은 시간: 00:00:00")
+    # eta_label.pack(fill=tk.X, padx=10)
 
     progress = ttk.Progressbar(root, orient="horizontal", mode="determinate", maximum=100)
     progress.pack(fill=tk.X, padx=10, pady=10)

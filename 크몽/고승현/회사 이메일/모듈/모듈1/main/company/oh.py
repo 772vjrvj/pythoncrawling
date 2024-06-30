@@ -2,7 +2,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, ElementClickInterceptedException
 import random
 from ..common import get_current_time
 import requests
@@ -10,13 +10,13 @@ from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 
 
-# G마켓 전체 페이지 가져오기
+# 오늘의집 전체 페이지 가져오기
 def fetch_total_pages(driver, kwd, page, product_id):
     print("No Data")
     return
 
 
-# G마켓 모든 제품 id들을 가져온다.
+# 오늘의집 모든 제품 id들을 가져온다.
 def fetch_product_ids(driver, kwd, page, product_id):
     url = f"https://ohou.se/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20"
     headers = {
@@ -79,10 +79,23 @@ def parse_results(results):
     return ids
 
 
+# 페이지를 끝까지 스크롤하는 함수
+def scroll_to_bottom(driver):
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)  # 페이지가 로드될 시간을 줌
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
+
+
 
 # 티몬 제품 상세정보 가져오기
 def fetch_product_detail(driver, kwd, page, product_id):
-    url = f"https://item.gmarket.co.kr/Item?goodscode={product_id}&buyboxtype=ad"
+    url = f"https://ohou.se/productions/{product_id}/selling"
+    print(f"url {url}")
     seller_info = {
         "아이디": product_id,
         "키워드": kwd,
@@ -97,37 +110,47 @@ def fetch_product_detail(driver, kwd, page, product_id):
         driver.get(url)
         time.sleep(random.uniform(3, 5))
 
-        li_elements = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "uxetabs_menu"))
+        nav_list = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'production-selling-navigation__list'))
         )
+
+        li_elements = nav_list.find_elements(By.TAG_NAME, 'li')
+        print(f"li_elements : {len(li_elements)}")
 
         for li in li_elements:
-            if "교환" in li.text or "반품" in li.text or "환불" in li.text or "취소" in li.text:
-                li.click()
-                break
+            if "배송" in li.text or "환불" in li.text or "반품" in li.text or "취소" in li.text:
+                try:
+                    driver.execute_script("arguments[0].scrollIntoView(true);", li)
+                    time.sleep(2)
+                    li.click()
+                    break
+                except ElementClickInterceptedException:
+                    driver.execute_script("arguments[0].click();", li)
+                    break
 
-        datas = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "list__exchange-data"))
+        # 페이지 끝까지 스크롤
+        scroll_to_bottom(driver)
+
+        time.sleep(3)
+
+        # 모든 테이블 찾기
+        tables = WebDriverWait(driver, 20).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, 'production-selling-table'))
         )
-
+        print(f"tables {len(tables)}")
         found_all_info = False
-        for data in datas:
+        for table in tables:
             try:
-                company_name = WebDriverWait(data, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//li[contains(text(), '상호명')]/span[contains(@class, 'text__deco')]"))
-                )
-
-                seller_info["상호명"] = company_name.text if not seller_info["상호명"] else seller_info["상호명"]
-
-                email = WebDriverWait(data, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//li[contains(text(), 'E-mail')]/span[contains(@class, 'text__deco')]"))
-                )
-
-                seller_info["이메일"] = email.text if not seller_info["이메일"] else seller_info["이메일"]
+                company_name_td = table.find_element(By.XPATH, ".//th[contains(text(), '상호')]/following-sibling::td")
+                seller_info["상호명"] = company_name_td.text if not seller_info["상호명"] else seller_info["상호명"]
+                email_td = table.find_element(By.XPATH, ".//th[contains(text(), 'E-mail')]/following-sibling::td")
+                seller_info["이메일"] = email_td.text if not seller_info["이메일"] else seller_info["이메일"]
                 if seller_info["상호명"] and seller_info["이메일"]:
                     found_all_info = True
                     break
-            except (NoSuchElementException, ElementNotInteractableException):
+            except NoSuchElementException as e:
+                continue
+            except ElementNotInteractableException as e:
                 continue
         if not found_all_info:
             print("Not all information could be found.")
