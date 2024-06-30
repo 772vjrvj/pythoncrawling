@@ -108,7 +108,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
     excel_len = 0
 
     # companies_ids = ["ti", "el", "gm", "cp", "oh", "we"]
-    companies_ids = ["oh"]
+    companies_ids = ["oh", "cp"]
     companies_names = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
 
     for page in range(init_page, end_page + 1):

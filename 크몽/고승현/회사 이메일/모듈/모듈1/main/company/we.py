@@ -7,13 +7,13 @@ import random
 from ..common import get_current_time
 
 
-# G마켓 전체 페이지 가져오기
+# 위메프 전체 페이지 가져오기
 def fetch_total_pages(driver, kwd, page, product_id):
     print("No Data")
     return
 
 
-# G마켓 모든 제품 id들을 가져온다.
+# 위메프 모든 제품 id들을 가져온다.
 def fetch_product_ids(driver, kwd, page, product_id):
     url = f"https://www.gmarket.co.kr/n/search?keyword={kwd}&k=42&p={page}"
     try:
@@ -47,7 +47,7 @@ def fetch_product_ids(driver, kwd, page, product_id):
         return []
 
 
-# 티몬 제품 상세정보 가져오기
+# 위메프 제품 상세정보 가져오기
 def fetch_product_detail(driver, kwd, page, product_id):
     url = f"https://item.gmarket.co.kr/Item?goodscode={product_id}&buyboxtype=ad"
     seller_info = {

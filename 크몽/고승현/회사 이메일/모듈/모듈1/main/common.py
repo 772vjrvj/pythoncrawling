@@ -26,7 +26,7 @@ def setup_driver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--incognito")
-    chrome_options.add_argument("--window-size=500,400")  # 화면 크기 설정
+    chrome_options.add_argument("--window-size=1080,750")  # 화면 크기 설정
     chrome_options.add_argument("--remote-debugging-port=9222")  # 디버깅 포트 설정
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     chrome_options.add_argument(f'user-agent={user_agent}')
