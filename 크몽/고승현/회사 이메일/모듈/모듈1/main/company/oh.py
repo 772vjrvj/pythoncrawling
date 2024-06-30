@@ -5,6 +5,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException
 import random
 from ..common import get_current_time
+import requests
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 
 # G마켓 전체 페이지 가져오기
@@ -15,36 +18,66 @@ def fetch_total_pages(driver, kwd, page, product_id):
 
 # G마켓 모든 제품 id들을 가져온다.
 def fetch_product_ids(driver, kwd, page, product_id):
-    url = f"https://www.gmarket.co.kr/n/search?keyword={kwd}&k=42&p={page}"
-    try:
-        driver.get(url)
-        time.sleep(2)
-        item_containers = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "box__item-container"))
-        )
-        ids = set()
-        for container in item_containers:
-            try:
-                # 각 'box__item-container' 안에 'box__image' 요소가 나타날 때까지 대기
-                image_element = WebDriverWait(container, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "box__image"))
-                )
-                # 'box__image' 안에 'link__item' 요소가 나타날 때까지 대기
-                link_element = WebDriverWait(image_element, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "link__item"))
-                )
+    url = f"https://ohou.se/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20"
+    headers = {
+        'authority': 'ohou.se',
+        'method': 'GET',
+        'path': f'/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20',
+        'scheme': 'https',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'If-None-Match': 'W/"45a142fe1a5df378810859e6665519dc"',
+        'Priority': 'u=0, i',
+        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+    }
 
-                # data-montelena-goodscode 속성 값 가져오기
-                product = link_element.get_attribute("data-montelena-goodscode")
-                if product:
-                    ids.add(product)
-            except Exception as e:
-                print(f"Error retrieving data-deal-srl for an item: {e}")
-                return []
-        return list(ids)
-    except Exception as e:
-        print(f"An error occurred while fetching the product list: {e}")
-        return []
+    # 세션 생성
+    session = requests.Session()
+
+    # Retry 설정
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+
+    # UTF-8로 인코딩된 헤더 설정
+    headers = {k: str(v).encode('utf-8') for k, v in headers.items()}
+
+    try:
+        response = session.get(url, headers=headers, timeout=10)  # 타임아웃 설정
+        response.raise_for_status()  # 요청이 성공하지 못하면 예외를 발생시킵니다
+
+        ids = response.json()
+        product_ids = parse_results(ids)
+        return product_ids
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.ConnectionError as err:
+        print(f"Error connecting: {err}")
+    except requests.exceptions.Timeout as err:
+        print(f"Timeout error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"An error occurred: {err}")
+
+
+def parse_results(results):
+    ids = []
+    items = results.get('productions', [])
+    for item in items:
+        id_value = item.get('id')
+        if id_value:
+            ids.append(id_value)
+    return ids
+
 
 
 # 티몬 제품 상세정보 가져오기

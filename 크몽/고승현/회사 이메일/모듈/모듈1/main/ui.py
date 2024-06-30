@@ -108,7 +108,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
     excel_len = 0
 
     # companies_ids = ["ti", "el", "gm", "cp", "oh", "we"]
-    companies_ids = ["cp"]
+    companies_ids = ["oh"]
     companies_names = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
 
     for page in range(init_page, end_page + 1):
@@ -135,6 +135,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
 
             pr_ids = call_company_function(company, "ids", driver, kwd, page, "")
             new_print(f"{companies_names[company]} Page [{page}] 조회한 품목수 : {len(pr_ids)} 개")
+            new_print(f"{companies_names[company]} Page [{page}] 조회한 품목 : {pr_ids}")
 
             # 데이터가 없으므로 회사 배열에서 삭제
             if len(pr_ids) == 0:
