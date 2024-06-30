@@ -75,6 +75,7 @@ def is_stop(driver):
         new_print("작업 중지됨")
         messagebox.showinfo("작업 중지", "작업이 중지되었습니다.")
         driver.quit()
+        new_print("드라이버 종료")
         return True
     return False
 
@@ -176,6 +177,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
                         start_button.config(text="시작", fg="black")
                         messagebox.showinfo("작업 완료", "작업이 종료되었습니다.")
                         driver.quit()
+                        new_print("드라이버 종료")
                         return
 
 
