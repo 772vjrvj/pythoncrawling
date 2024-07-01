@@ -41,90 +41,92 @@ def setup_driver():
     return driver
 
 def fetch_rec_idx_values(driver, url):
-    driver.get(url)
-
-    time.sleep(2)
-    # 요소가 로드될 때까지 대기
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CLASS_NAME, 'recruit_container'))
-    )
-
-    # class가 'recruit_container list_link recruit'인 요소들 찾기
-    elements = driver.find_elements(By.CLASS_NAME, 'recruit_container')
-
-    # data-rec_idx 값 추출
-    rec_idx_values = [element.get_attribute('data-rec_idx') for element in elements if 'list_link recruit' in element.get_attribute('class')]
-
-    return rec_idx_values
+    try:
+        driver.get(url)
+        time.sleep(2)
+        WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'recruit_container')))
+        elements = driver.find_elements(By.CLASS_NAME, 'recruit_container')
+        rec_idx_values = [element.get_attribute('data-rec_idx') for element in elements if 'list_link recruit' in element.get_attribute('class')]
+        return rec_idx_values
+    except Exception as e:
+        print(f"Error fetching rec_idx values from {url}: {e}")
+        return []
 
 def fetch_job_details(driver, rec_idx):
-    url = f"https://m.saramin.co.kr/job-search/view?rec_idx={rec_idx}"
-    driver.get(url)
+    job_info = {"회사이름": "", "제목": "", "마감일": "", "급여": "", "지역": "", "직급/직책": "", "근무요일": "", "근무일시": "",
+                "필수사항": "", "우대사항": "", "접수방법": "", "접수양식": "", "담당자": "", "전화": "", "휴대폰": "", "사전인터뷰": "",
+                "지원금/보험": "", "급여제도": "", "선물": "", "전형절차": "", "제출서류": "",
+                "대표자명": "", "기업형태": "", "업종": "", "사원수": "", "설립입": "", "매출액": "", "홈페이지": "", "주소": "",
 
-    time.sleep(random.uniform(3, 5))
+                "아이디": rec_idx, "URL": f"https://m.saramin.co.kr/job-search/view?rec_idx={rec_idx}"}
 
-    # 회사 이름과 제목 추출
-    company_name = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'corp_name'))
-    ).text.strip()
+    try:
+        driver.get(job_info["URL"])
+        time.sleep(random.uniform(3, 5))
 
-    subject = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'subject'))
-    ).text.strip()
+        company_name = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'corp_name'))).text.strip()
+        subject = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'subject'))).text.strip()
 
-    # 요소가 로드될 때까지 대기
-    first_wrap_info_job = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'wrap_info_job'))
-    )
+        job_info["회사이름"] = company_name
+        job_info["제목"] = subject
 
-    job_info = {
-        "회사이름": company_name,
-        "제목": subject
-    }
-    dt_elements = first_wrap_info_job.find_elements(By.TAG_NAME, 'dt')
-    dd_elements = first_wrap_info_job.find_elements(By.TAG_NAME, 'dd')
+        wrap_info_jobs = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'wrap_info_job')))
+        details_mapping = [
+            ["마감일", "급여", "지역", "직급/직책", "근무요일", "근무일시", "필수사항", "우대사항"],
+            ["접수방법", "접수양식", "담당자", "전화", "휴대폰", "사전인터뷰"],
+            ["전형절차", "제출서류"],
+            ["지원금/보험", "급여제도", "선물"]
+        ]
 
-    for dt, dd in zip(dt_elements, dd_elements):
-        key = dt.text.strip()
-        value = dd.text.strip()
-        if key in ["마감일", "급여", "지역", "직급/직책", "근무요일", "근무일시", "필수사항", "우대사항"]:
-            job_info[key] = value
+        for wrap_info_job, details_keys in zip(wrap_info_jobs, details_mapping):
+            dt_elements = wrap_info_job.find_elements(By.TAG_NAME, 'dt')
+            dd_elements = wrap_info_job.find_elements(By.TAG_NAME, 'dd')
+            for dt, dd in zip(dt_elements, dd_elements):
+                key = dt.text.strip()
+                value = dd.text.strip()
+                if key in details_keys:
+                    job_info[key] = value
 
-    job_info["아이디"] = rec_idx
-    job_info["URL"] = url
+
+        wrap_corp_info = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'wrap_corp_info')))
+        corp_dt_elements = wrap_corp_info.find_elements(By.TAG_NAME, 'dt')
+        corp_dd_elements = wrap_corp_info.find_elements(By.TAG_NAME, 'dd')
+        corp_details_mapping = ["대표자명", "기업형태", "업종", "사원수", "설립일", "매출액", "홈페이지", "주소"]
+
+        for dt, dd in zip(corp_dt_elements, corp_dd_elements):
+            key = dt.text.strip()
+            value = dd.text.strip()
+            if key in corp_details_mapping:
+                job_info[key] = value
+
+
+
+    except Exception as e:
+        print(f"Error fetching job details for rec_idx {rec_idx}: {e}")
 
     return job_info
 
 def save_to_excel(data, filename):
-    df = pd.DataFrame(data)
-    df.to_excel(filename, index=False)
+    try:
+        df = pd.DataFrame(data)
+        df.to_excel(filename, index=False)
+    except Exception as e:
+        print(f"Error saving to Excel file {filename}: {e}")
 
 def main():
-    url = "https://m.saramin.co.kr/search?searchType=search&searchword=%ED%8C%80%EC%9E%A5&cat_mcls=2&exp_cd=2&company_type=scale001%2Cscale002%2Cscale003&is_detail_search=y&list_type=unified&page=1"
     driver = setup_driver()
-
+    job_details_list = []
     try:
-        rec_idx_values = fetch_rec_idx_values(driver, url)
-        job_details_list = []
-
-        for index, rec_idx in enumerate(rec_idx_values):
-            if index >= 30:
-                break
-            try:
-                job_details = fetch_job_details(driver, rec_idx)
-                job_details_list.append(job_details)
-            except Exception as e:
-                print(f"Error fetching details for rec_idx {rec_idx}: {e}")
-
-        # Print job details list
-        print(job_details_list)
-
-        # Save to Excel
+        for kwd in ["팀장"]:
+            for page in [1]:
+                url = f"https://m.saramin.co.kr/search?searchType=search&searchword={kwd}&cat_mcls=2&exp_cd=2&company_type=scale001%2Cscale002%2Cscale003&is_detail_search=y&list_type=unified&page={page}"
+                rec_idx_values = fetch_rec_idx_values(driver, url)
+                for rec_idx in rec_idx_values:
+                    job_details = fetch_job_details(driver, rec_idx)
+                    job_details_list.append(job_details)
         save_to_excel(job_details_list, 'job_details.xlsx')
-
     except Exception as e:
-        print(f"Error fetching rec_idx values: {e}")
-
+        print(f"Error in main process: {e}")
     finally:
         driver.quit()
 
