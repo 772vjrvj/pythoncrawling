@@ -55,7 +55,7 @@ def fetch_rec_idx_values(driver, url):
 def fetch_job_details(driver, rec_idx):
     job_info = {"회사이름": "", "제목": "", "마감일": "", "급여": "", "지역": "", "직급/직책": "", "근무요일": "", "근무일시": "",
                 "필수사항": "", "우대사항": "", "접수방법": "", "접수양식": "", "담당자": "", "전화": "", "휴대폰": "", "사전인터뷰": "",
-                "지원금/보험": "", "급여제도": "", "선물": "", "전형절차": "", "제출서류": "",
+                "지원금/보험": "", "급여제도": "", "교육/생활": "", "선물": "", "전형절차": "", "제출서류": "",
                 "대표자명": "", "기업형태": "", "업종": "", "사원수": "", "설립입": "", "매출액": "", "홈페이지": "", "주소": "",
 
                 "아이디": rec_idx, "URL": f"https://m.saramin.co.kr/job-search/view?rec_idx={rec_idx}"}
@@ -75,7 +75,7 @@ def fetch_job_details(driver, rec_idx):
             ["마감일", "급여", "지역", "직급/직책", "근무요일", "근무일시", "필수사항", "우대사항"],
             ["접수방법", "접수양식", "담당자", "전화", "휴대폰", "사전인터뷰"],
             ["전형절차", "제출서류"],
-            ["지원금/보험", "급여제도", "선물"]
+            ["지원금/보험", "급여제도", "교육/생활", "선물"]
         ]
 
         for wrap_info_job, details_keys in zip(wrap_info_jobs, details_mapping):
@@ -101,6 +101,8 @@ def fetch_job_details(driver, rec_idx):
 
 
 
+
+
     except Exception as e:
         print(f"Error fetching job details for rec_idx {rec_idx}: {e}")
 
@@ -121,7 +123,10 @@ def main():
             for page in [1]:
                 url = f"https://m.saramin.co.kr/search?searchType=search&searchword={kwd}&cat_mcls=2&exp_cd=2&company_type=scale001%2Cscale002%2Cscale003&is_detail_search=y&list_type=unified&page={page}"
                 rec_idx_values = fetch_rec_idx_values(driver, url)
-                for rec_idx in rec_idx_values:
+                for index, rec_idx in enumerate(rec_idx_values):
+
+                    if index >= 5:
+                        break
                     job_details = fetch_job_details(driver, rec_idx)
                     job_details_list.append(job_details)
         save_to_excel(job_details_list, 'job_details.xlsx')

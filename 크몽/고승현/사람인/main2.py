@@ -10,16 +10,26 @@ import time
 import random
 
 def setup_driver():
+    # Set up Chrome options
     chrome_options = Options()
+    # chrome_options.add_argument("--headless")  # Run in headless mode
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--incognito")
+    chrome_options.add_argument("--incognito")  # Use incognito mode
+
+    # Set user-agent to mimic a regular browser
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     chrome_options.add_argument(f'user-agent={user_agent}')
+
+    # Disable automation flags
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option('useAutomationExtension', False)
+
+    # Initialize the Chrome driver
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+    # Bypass the detection of automated software
     driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
         'source': '''
             Object.defineProperty(navigator, 'webdriver', {
@@ -27,6 +37,7 @@ def setup_driver():
             })
         '''
     })
+
     return driver
 
 def fetch_rec_idx_values(driver, url):
@@ -42,13 +53,12 @@ def fetch_rec_idx_values(driver, url):
         return []
 
 def fetch_job_details(driver, rec_idx):
-    job_info = {
-        "회사이름": "", "제목": "", "마감일": "", "급여": "", "지역": "", "직급/직책": "", "근무요일": "", "근무일시": "",
-        "주요업무": "", "자격요건": "", "우대사항": "", "필수사항": "", "접수방법": "", "접수양식": "", "담당자": "",
-        "전화": "", "휴대폰": "", "사전인터뷰": "", "지원금/보험": "", "급여제도": "", "교육/생활": "", "선물": "",
-        "전형절차": "", "제출서류": "", "대표자명": "", "기업형태": "", "업종": "", "사원수": "", "설립입": "",
-        "매출액": "", "홈페이지": "", "주소": "", "아이디": rec_idx, "URL": f"https://m.saramin.co.kr/job-search/view?rec_idx={rec_idx}"
-    }
+    job_info = {"회사이름": "", "제목": "", "마감일": "", "급여": "", "지역": "", "직급/직책": "", "근무요일": "", "근무일시": "",
+                "필수사항": "", "우대사항": "", "접수방법": "", "접수양식": "", "담당자": "", "전화": "", "휴대폰": "", "사전인터뷰": "",
+                "지원금/보험": "", "급여제도": "", "교육/생활": "", "선물": "", "전형절차": "", "제출서류": "",
+                "대표자명": "", "기업형태": "", "업종": "", "사원수": "", "설립입": "", "매출액": "", "홈페이지": "", "주소": "",
+
+                "아이디": rec_idx, "URL": f"https://m.saramin.co.kr/job-search/view?rec_idx={rec_idx}"}
 
     try:
         driver.get(job_info["URL"])
@@ -77,6 +87,7 @@ def fetch_job_details(driver, rec_idx):
                 if key in details_keys:
                     job_info[key] = value
 
+
         wrap_corp_info = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'wrap_corp_info')))
         corp_dt_elements = wrap_corp_info.find_elements(By.TAG_NAME, 'dt')
         corp_dd_elements = wrap_corp_info.find_elements(By.TAG_NAME, 'dd')
@@ -88,51 +99,10 @@ def fetch_job_details(driver, rec_idx):
             if key in corp_details_mapping:
                 job_info[key] = value
 
-        time.sleep(2)
-
-        # iframe이 로드될 때까지 대기
-        iframe = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "recruit_detail_iframe"))
-        )
-        print("iframe found")
-
-        # iframe으로 전환
-        driver.switch_to.frame(iframe)
-        print("Switched to iframe")
-
-        # "모집부문 / 상세내용" 텍스트를 포함하는 h3 요소를 찾기
-        h3_element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//h3[contains(normalize-space(text()), '모집부문 / 상세내용')]"))
-        )
-        print("h3 element found")
-
-        parent_div = h3_element.find_element(By.XPATH, "./..")
-
-        print("h3 element found 1")
-
-        sibling_div = parent_div.find_element(By.XPATH, "following-sibling::div")
-
-        print("h3 element found 2")
-
-        dt_elements = sibling_div.find_elements(By.TAG_NAME, "dt")
-        dd_elements = sibling_div.find_elements(By.TAG_NAME, "dd")
-
-        # dt 및 dd 요소의 개수를 출력하여 확인
-        print(f"Found {len(dt_elements)} dt elements and {len(dd_elements)} dd elements")
 
 
-        if not dt_elements or not dd_elements:
-            print("dt 또는 dd 요소를 찾을 수 없습니다.")
-        else:
-            for dt, dd in zip(dt_elements, dd_elements):
-                dt_text = dt.text.strip() if dt.text else ""
-                dd_text = dd.text.strip() if dd.text else ""
-                if dt_text in ["주요업무", "사용기술", "자격요건", "우대사항"]:
-                    job_info[dt_text] = dd_text
 
-        # 작업이 끝난 후 기본 콘텐츠로 전환
-        driver.switch_to.default_content()
-        print("Switched back to default content")
+
     except Exception as e:
         print(f"Error fetching job details for rec_idx {rec_idx}: {e}")
 
@@ -149,11 +119,13 @@ def main():
     driver = setup_driver()
     job_details_list = []
     try:
-        for kwd in ["개발"]:
+        for kwd in ["팀장"]:
             for page in [1]:
                 url = f"https://m.saramin.co.kr/search?searchType=search&searchword={kwd}&cat_mcls=2&exp_cd=2&company_type=scale001%2Cscale002%2Cscale003&is_detail_search=y&list_type=unified&page={page}"
                 rec_idx_values = fetch_rec_idx_values(driver, url)
                 for index, rec_idx in enumerate(rec_idx_values):
+                    if rec_idx >= 2:
+                        break
                     job_details = fetch_job_details(driver, rec_idx)
                     job_details_list.append(job_details)
         save_to_excel(job_details_list, 'job_details.xlsx')
