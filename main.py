@@ -89,9 +89,9 @@ def convert_to_pyeong(square_meter):
         return 0
 
 # 해당 구가 포함된 것만 list에서 필터한다.
-def filter_data_by_address(data_list):
+def filter_data_by_address(data_list, gu):
     try:
-        return [data for data in data_list if f"서울특별시 {data["gu"]}" in data["address"]]
+        return [data for data in data_list if f"서울특별시 {gu}" in data["address"]]
     except KeyError as e:
         print(f"KeyError in filter_data_by_address: {e}")
         return []
@@ -217,10 +217,8 @@ def fetch_max_price(driver, apt_id, data):
 
 # 메인함수
 def process_data(driver, data_list):
-    filtered_data = filter_data_by_address(data_list)
     extracted_data = []
-    print(f"filtered_data len :  {len(filtered_data)}")
-    for data in filtered_data:
+    for data in data_list:
         apt_id = data["id"]
         print(f"apt_id : {apt_id}")
         latest_gap = fetch_max_price(driver, apt_id, data)
@@ -399,8 +397,6 @@ def main():
     gus = ["동작구", "성동구", "마포구", "광진구", "양천구", "강동구", "영등포구", "종로구", "중구", "동대문구", "서대문구"]
     # gus = ["동작구", "성동구"]
 
-    combined_data_dict = {}
-
     combined_data = []
 
     try:
@@ -420,13 +416,22 @@ def main():
             # print(pretty_json)
 
             if response_data["status"] == "success":
-                for item in response_data["data"]:
+
+                print(f"{gu} response_data len : {len(response_data['data'])}")
+
+                data_list = response_data['data']
+                filtered_data = filter_data_by_address(data_list, gu)
+
+                print(f"{gu} filtered_data len : {len(filtered_data)}")
+
+                for item in filtered_data:
                     item["gu"] = gu
-                    combined_data_dict[item["id"]] = item
+                    # combined_data_dict[item["id"]] = item
+                    combined_data.append(item)
 
             time.sleep(random.uniform(2, 5))
 
-        combined_data = [item for item in combined_data_dict.values()]
+        print(f"len combined_data : {len(combined_data)}")
 
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
