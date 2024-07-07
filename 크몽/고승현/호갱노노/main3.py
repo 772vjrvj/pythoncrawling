@@ -44,12 +44,12 @@ def setup_driver():
         return None
 
 # 추출 정보
-def extract_information(data, latest_gap):
+def extract_information(data, gu, latest_gap):
     try:
         area_info = data["area"]
 
         address = data["address"]
-        region = data["gu"]
+        region = gu
         apartment_name = data["name"]
         area = convert_to_pyeong(area_info["public_area"])
         highest_price = latest_gap.get("max_price", 0)
@@ -89,9 +89,9 @@ def convert_to_pyeong(square_meter):
         return 0
 
 # 해당 구가 포함된 것만 list에서 필터한다.
-def filter_data_by_address(data_list):
+def filter_data_by_address(data_list, gu):
     try:
-        return [data for data in data_list if f"서울특별시 {data["gu"]}" in data["address"]]
+        return [data for data in data_list if f"서울특별시 {gu}" in data["address"]]
     except KeyError as e:
         print(f"KeyError in filter_data_by_address: {e}")
         return []
@@ -216,8 +216,8 @@ def fetch_max_price(driver, apt_id, data):
     return latest_gap
 
 # 메인함수
-def process_data(driver, data_list):
-    filtered_data = filter_data_by_address(data_list)
+def process_data(driver, data_list, gu):
+    filtered_data = filter_data_by_address(data_list, gu)
     extracted_data = []
     print(f"filtered_data len :  {len(filtered_data)}")
     for data in filtered_data:
@@ -225,7 +225,7 @@ def process_data(driver, data_list):
         print(f"apt_id : {apt_id}")
         latest_gap = fetch_max_price(driver, apt_id, data)
         if latest_gap:
-            extracted_info = extract_information(data, latest_gap)
+            extracted_info = extract_information(data, gu, latest_gap)
             print(f"extracted_info : {extracted_info}")
             extracted_data.append(extracted_info)
         time.sleep(random.uniform(2, 5))
@@ -396,37 +396,20 @@ def main():
 
     main_data = hogangnono_json()
 
-    gus = ["동작구", "성동구", "마포구", "광진구", "양천구", "강동구", "영등포구", "종로구", "중구", "동대문구", "서대문구"]
-    # gus = ["동작구", "성동구"]
-
-    combined_data_dict = {}
-
-    combined_data = []
+    gu = "동작구"
 
     try:
+        headers = set_header(gu)
+        url = set_url(gu)
+        print(url)
 
-        for gu in gus:
-            print(f"gu : {gu}")
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # HTTP 에러가 발생하면 예외를 발생시킴
 
-            headers = set_header(gu)
-            url = set_url(gu)
+        response_data = response.json()
 
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()  # HTTP 에러가 발생하면 예외를 발생시킴
-
-            response_data = response.json()
-
-            # pretty_json = json.dumps(response_data, indent=4, ensure_ascii=False)
-            # print(pretty_json)
-
-            if response_data["status"] == "success":
-                for item in response_data["data"]:
-                    item["gu"] = gu
-                    combined_data_dict[item["id"]] = item
-
-            time.sleep(random.uniform(2, 5))
-
-        combined_data = [item for item in combined_data_dict.values()]
+        pretty_json = json.dumps(response_data, indent=4, ensure_ascii=False)
+        print(pretty_json)
 
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
@@ -442,7 +425,10 @@ def main():
         print(f"An unexpected error occurred: {err}")
 
 
-    processed_data = process_data(driver, combined_data)
+
+
+
+    processed_data = process_data(driver, main_data, gu)
     save_to_excel(processed_data)
     driver.quit()
 
