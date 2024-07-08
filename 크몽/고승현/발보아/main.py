@@ -111,6 +111,9 @@ def extract_data_from_page(driver, url):
         except NoSuchElementException:
             data['내용'] = ""
         data['URL'] = url
+
+        print(f"data : {data}")
+
         return data
     except TimeoutException:
         print(f"Loading the page {url} took too much time!")
