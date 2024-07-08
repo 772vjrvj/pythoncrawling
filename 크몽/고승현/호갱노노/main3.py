@@ -44,12 +44,12 @@ def setup_driver():
         return None
 
 # 추출 정보
-def extract_information(data, gu, latest_gap):
+def extract_information(data, latest_gap):
     try:
         area_info = data["area"]
 
         address = data["address"]
-        region = gu
+        region = data["gu"]
         apartment_name = data["name"]
         area = convert_to_pyeong(area_info["public_area"])
         highest_price = latest_gap.get("max_price", 0)
@@ -216,16 +216,14 @@ def fetch_max_price(driver, apt_id, data):
     return latest_gap
 
 # 메인함수
-def process_data(driver, data_list, gu):
-    filtered_data = filter_data_by_address(data_list, gu)
+def process_data(driver, data_list):
     extracted_data = []
-    print(f"filtered_data len :  {len(filtered_data)}")
-    for data in filtered_data:
+    for data in data_list:
         apt_id = data["id"]
         print(f"apt_id : {apt_id}")
         latest_gap = fetch_max_price(driver, apt_id, data)
         if latest_gap:
-            extracted_info = extract_information(data, gu, latest_gap)
+            extracted_info = extract_information(data, latest_gap)
             print(f"extracted_info : {extracted_info}")
             extracted_data.append(extracted_info)
         time.sleep(random.uniform(2, 5))
@@ -396,20 +394,44 @@ def main():
 
     main_data = hogangnono_json()
 
-    gu = "동작구"
+    gus = ["동작구", "성동구", "마포구", "광진구", "양천구", "강동구", "영등포구", "종로구", "중구", "동대문구", "서대문구"]
+    # gus = ["동작구", "성동구"]
+
+    combined_data = []
 
     try:
-        headers = set_header(gu)
-        url = set_url(gu)
-        print(url)
 
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()  # HTTP 에러가 발생하면 예외를 발생시킴
+        for gu in gus:
+            print(f"gu : {gu}")
 
-        response_data = response.json()
+            headers = set_header(gu)
+            url = set_url(gu)
 
-        pretty_json = json.dumps(response_data, indent=4, ensure_ascii=False)
-        print(pretty_json)
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()  # HTTP 에러가 발생하면 예외를 발생시킴
+
+            response_data = response.json()
+
+            # pretty_json = json.dumps(response_data, indent=4, ensure_ascii=False)
+            # print(pretty_json)
+
+            if response_data["status"] == "success":
+
+                print(f"{gu} response_data len : {len(response_data['data'])}")
+
+                data_list = response_data['data']
+                filtered_data = filter_data_by_address(data_list, gu)
+
+                print(f"{gu} filtered_data len : {len(filtered_data)}")
+
+                for item in filtered_data:
+                    item["gu"] = gu
+                    # combined_data_dict[item["id"]] = item
+                    combined_data.append(item)
+
+            time.sleep(random.uniform(2, 5))
+
+        print(f"len combined_data : {len(combined_data)}")
 
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
@@ -425,10 +447,7 @@ def main():
         print(f"An unexpected error occurred: {err}")
 
 
-
-
-
-    processed_data = process_data(driver, main_data, gu)
+    processed_data = process_data(driver, combined_data)
     save_to_excel(processed_data)
     driver.quit()
 
