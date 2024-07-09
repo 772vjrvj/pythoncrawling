@@ -9,8 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 import os
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+import pandas as pd
+
 
 # 드라이버 세팅
 # 크롬 브라우저에  chrome://version를 입력해서 정보를 가져온다.
@@ -121,9 +121,11 @@ def extract_text_from_hrefs(driver, hrefs):
             formatted_text = format_title(text)
 
             data = {
+                "원제": text,
                 "제목": formatted_text,
                 "url": href
             }
+            print(f"제목 : {formatted_text}")
             data_list.append(data)
         except (NoSuchElementException, TimeoutException):
             print(f"Error processing href: {href}")
@@ -195,6 +197,13 @@ def click_title_links(driver, data_list):
             continue
 
 
+def save_data_list_to_excel(data_list, filename="data_list.xlsx"):
+    df = pd.DataFrame(data_list)
+    df.to_excel(filename, index=False)
+
+
+
+
 def main():
     driver = setup_driver()
     if driver is not None:
@@ -208,17 +217,15 @@ def main():
         data_list = extract_text_from_hrefs(driver, all_hrefs)
 
         print(f"Total hrefs: {len(all_hrefs)}")
-        # 수집된 데이터 출력
-        for data in data_list:
-            print(data)
 
-        # data_list = get_data_list()
+        # 엑셀로 data_list 저장
+        save_data_list_to_excel(data_list)
+
+        # 엑셀 파일에서 data_list 불러오기
+        data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
 
         click_title_links(driver, data_list)
         driver.quit()
-
-
-
 
 
 def get_data_list():
