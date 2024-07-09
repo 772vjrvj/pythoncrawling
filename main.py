@@ -67,6 +67,7 @@ def get_links_from_page(driver):
     try:
         elements = driver.find_elements(By.CSS_SELECTOR, ".sm-contents-container-items-item a")
         links = [elem.get_attribute('href') for elem in elements]
+        print(f"links len : {len(links)}")
         return links
     except NoSuchElementException:
         print("Element not found!")
@@ -76,9 +77,7 @@ def get_links_from_page(driver):
 def get_hrefs_from_links(driver, links):
     all_hrefs = []
     for index, link in enumerate(links):
-        print(f"link : {link}")
-        if index == 1:  # Example limit for demonstration
-            break
+        print(f"index: {index},  link : {link}")
         try:
             driver.get(link)
             time.sleep(2)
@@ -86,6 +85,10 @@ def get_hrefs_from_links(driver, links):
 
             ol_elements = driver.find_elements(By.CSS_SELECTOR, "ol li a")
             hrefs = [elem.get_attribute('href') for elem in ol_elements]
+            for idx, href in enumerate(hrefs):
+                print(f"    idx: {idx},  href : {href}")
+
+            print("====================================")
             all_hrefs.extend(hrefs)
         except (NoSuchElementException, TimeoutException):
             print(f"Error processing link: {link}")
