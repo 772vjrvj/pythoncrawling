@@ -41,7 +41,7 @@ def setup_driver():
 def get_review_data(driver):
     data = []
     reviews = driver.find_elements(By.CLASS_NAME, "card-head._card_head._img_wrap")
-    for idx, review in enumerate(reviews):
+    for review in reviews:
         review.click()
         time.sleep(2)
 
@@ -63,8 +63,6 @@ def get_review_data(driver):
             item['내용'] = modal_right.find_element(By.CLASS_NAME, "txt").text
         except NoSuchElementException:
             pass
-
-        print(f"item : {item}")
 
         data.append(item)
 
@@ -110,7 +108,7 @@ def navigate_and_collect_reviews(driver):
 def main():
     driver = setup_driver()
     if driver is not None:
-        url = "https://avecchien.imweb.me/REVIEW/?q=YToyOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjtzOjQ6InBhZ2UiO2k6OTt9&page=1&only_photo=Y"
+        url = "https://avecchien.imweb.me/REVIEW"
         driver.get(url)
         time.sleep(2)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "card-head._card_head._img_wrap")))
