@@ -38,48 +38,62 @@ def setup_driver():
         print(f"Error setting up the WebDriver: {e}")
         return None
 
-def get_review_data(driver):
+def get_review_data(driver, next_index):
     data = []
     reviews = driver.find_elements(By.CLASS_NAME, "card-head._card_head._img_wrap")
-    for idx, review in enumerate(reviews):
+
+    for index, review in enumerate(reviews):
         review.click()
         time.sleep(2)
 
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "clearfix._review_modal_body")))
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "clearfix._review_modal_body"))
+        )
 
         item = {}
 
+        # Extract review details
+        try:
+            modal_right = driver.find_element(By.CLASS_NAME, "modal-right.float_l")
+            write_info = modal_right.find_elements(By.CSS_SELECTOR, ".no-margin.text-13.body_font_color_60.write_info.clearfix span")
+            item['번호'] = (next_index * 16) + index + 1
+            item['아이디'] = write_info[0].text
+            item['작성일'] = write_info[1].text
+            item['페이지'] = next_index
+            item['내부 번호'] = index + 1
+
+            content_element = modal_right.find_element(By.CLASS_NAME, "txt")
+            content_html = content_element.get_attribute('innerHTML')
+
+            best = 'O' if 'review_best' in content_html else 'X'
+            item['내용'] = content_html.replace('<span class="badge review_best">BEST</span>', '').strip()
+            item['BEST'] = best
+        except NoSuchElementException:
+            pass
+
+        # Extract image URLs
         try:
             modal_left = driver.find_element(By.CLASS_NAME, "modal-left.float_l")
-            images = modal_left.find_elements(By.TAG_NAME, "img")
+            images = modal_left.find_elements(By.CSS_SELECTOR, ".owl-item:not(.cloned) img")
             for idx, img in enumerate(images):
                 item[f'이미지url-{idx+1}'] = img.get_attribute('src')
         except NoSuchElementException:
             pass
 
-        try:
-            modal_right = driver.find_element(By.CLASS_NAME, "modal-right.float_l")
-            item['아이디'] = modal_right.find_element(By.CLASS_NAME, "no-margin.text-13.body_font_color_60.write_info.clearfix").find_element(By.TAG_NAME, "span").text
-            item['내용'] = modal_right.find_element(By.CLASS_NAME, "txt").text
-        except NoSuchElementException:
-            pass
-
         print(f"item : {item}")
-
         data.append(item)
 
-        close_button = driver.find_element(By.ID, "review_detail_close")
-        close_button.click()
+        driver.find_element(By.ID, "review_detail_close").click()
         time.sleep(1)
 
     return data
 
 def navigate_and_collect_reviews(driver):
     all_data = []
-
+    next_index = 0
     while True:
         try:
-            all_data.extend(get_review_data(driver))
+            all_data.extend(get_review_data(driver, next_index))
 
             pagination = driver.find_element(By.CLASS_NAME, "pagination")
             pages = pagination.find_elements(By.TAG_NAME, "li")
