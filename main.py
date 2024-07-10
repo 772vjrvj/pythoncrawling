@@ -86,6 +86,8 @@ def get_review_data(driver, next_index):
         except NoSuchElementException:
             pass
 
+        item['사이트 경로'] = driver.current_url
+
         print(f"item : {item}")
         data.append(item)
 

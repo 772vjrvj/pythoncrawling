@@ -83,13 +83,16 @@ def click_pagination_and_collect_links(driver):
     return all_links
 
 
-def extract_data_from_page(driver, url):
+def extract_data_from_page(driver, url, index):
     try:
         driver.get(url)
         time.sleep(random.uniform(2, 3))
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "write")))
 
         data = {}
+
+        data['번호'] = index + 1
+
 
         try:
             write_elem = driver.find_element(By.CLASS_NAME, "write")
@@ -110,7 +113,11 @@ def extract_data_from_page(driver, url):
                 data['내용'] = ""
         except NoSuchElementException:
             data['내용'] = ""
-        data['URL'] = url
+
+        data['페이지'] = ((index + 1) // 40) + 1
+        data['내부 번호'] = ((index) % 40) + 1
+
+        data['사이트 경로'] = url
 
         print(f"data : {data}")
 
@@ -131,8 +138,8 @@ def main():
         all_links = click_pagination_and_collect_links(driver)
 
         all_data = []
-        for link in all_links:
-            data = extract_data_from_page(driver, link)
+        for index, link in enumerate(all_links):
+            data = extract_data_from_page(driver, link, index)
             if data:
                 all_data.append(data)
 

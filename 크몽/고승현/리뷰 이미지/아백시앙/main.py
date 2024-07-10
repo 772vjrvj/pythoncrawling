@@ -56,18 +56,13 @@ def get_review_data(driver, next_index):
         try:
             modal_right = driver.find_element(By.CLASS_NAME, "modal-right.float_l")
             write_info = modal_right.find_elements(By.CSS_SELECTOR, ".no-margin.text-13.body_font_color_60.write_info.clearfix span")
-            item['번호'] = (next_index * 16) + index + 1
+            item['번호'] = ((next_index - 1) * 16) + index + 1
             item['아이디'] = write_info[0].text
             item['작성일'] = write_info[1].text
             item['페이지'] = next_index
             item['내부 번호'] = index + 1
+            item['내용'] = modal_right.find_element(By.CLASS_NAME, "txt").text
 
-            content_element = modal_right.find_element(By.CLASS_NAME, "txt")
-            content_html = content_element.get_attribute('innerHTML')
-
-            best = 'O' if 'review_best' in content_html else 'X'
-            item['내용'] = content_html.replace('<span class="badge review_best">BEST</span>', '').strip()
-            item['BEST'] = best
         except NoSuchElementException:
             pass
 
@@ -77,12 +72,21 @@ def get_review_data(driver, next_index):
 
             images = modal_left.find_elements(By.TAG_NAME, "img")
 
+            if len(images) > 1:
+                img = modal_left.find_elements(By.CSS_SELECTOR, ".owl-item:not(.cloned) img")
+                for idx, im in enumerate(img):
+                    item[f'이미지url-{idx+1}'] = im.get_attribute('src')
 
-            images = modal_left.find_elements(By.CSS_SELECTOR, ".owl-item:not(.cloned) img")
-            for idx, img in enumerate(images):
-                item[f'이미지url-{idx+1}'] = img.get_attribute('src')
+            elif len(images) == 1:
+                im = modal_left.find_element(By.CSS_SELECTOR, ".single-item img")
+
+                if im:
+                    item[f'이미지url-1'] = im.get_attribute('src')
+
         except NoSuchElementException:
             pass
+
+        item['사이트 경로'] = driver.current_url
 
         print(f"item : {item}")
         data.append(item)
@@ -94,7 +98,8 @@ def get_review_data(driver, next_index):
 
 def navigate_and_collect_reviews(driver):
     all_data = []
-    next_index = 0
+    next_index = 1
+
     while True:
         try:
             all_data.extend(get_review_data(driver, next_index))
