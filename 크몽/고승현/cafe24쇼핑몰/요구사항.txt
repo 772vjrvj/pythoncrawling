@@ -1,5 +1,30 @@
-https://ba-on.com/
 https://addmore.co.kr/
+
+카테고리 동일 O
+xans-element- xans-layout xans-layout-category
+
+#
+카테고리르 돌면서 클릭한다.
+
+
+
+상품 목록
+ul class prdList 안에 li
+
+
+https://ba-on.com/
+
+카테고리 동일 O
+xans-element- xans-layout xans-layout-category
+
+상품 목록
+ul class prdList 안에 li
+
+
+An error occurred: Alert Text: 회원만 접근권한이 있습니다.
+Message: unexpected alert open: {Alert text : 회원만 접근권한이 있습니다.}
+
+
 
 정리를하면
 기존에 고객님 사이트가 있는데

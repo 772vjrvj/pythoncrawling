@@ -1,152 +1,189 @@
-import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException, TimeoutException, StaleElementReferenceException
+import time
 import pandas as pd
 
-# 드라이버 세팅
 def setup_driver():
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")  # 필요 시 headless 모드로 실행
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--incognito")  # 시크릿 모드 사용
+
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    chrome_options.add_argument(f'user-agent={user_agent}')
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+        'source': '''
+            Object.defineProperty(navigator, 'webdriver', {
+              get: () => undefined
+            })
+        '''
+    })
+
+    return driver
+
+def is_alert_present(driver):
     try:
-        chrome_options = Options()
-        # chrome_options.add_argument("--headless")  # Run in headless mode if necessary
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--incognito")  # Use incognito mode
+        driver.switch_to.alert
+        return True
+    except NoAlertPresentException:
+        return False
 
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        chrome_options.add_argument(f'user-agent={user_agent}')
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
+def get_prd_img_urls(driver):
+    prd_img_urls = []
+    prd_lists = driver.find_elements(By.CLASS_NAME, "prdList")
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': '''
-                Object.defineProperty(navigator, 'webdriver', {
-                  get: () => undefined
-                })
-            '''
-        })
+    for prd_list in prd_lists:
+        prd_imgs = prd_list.find_elements(By.CLASS_NAME, "prdImg")
+        for prd_img in prd_imgs:
+            try:
+                a_element = prd_img.find_element(By.TAG_NAME, "a")
+                prd_img_urls.append(a_element.get_attribute('href'))
+            except NoSuchElementException:
+                continue
 
-        return driver
-    except WebDriverException as e:
-        print(f"Error setting up the WebDriver: {e}")
-        return None
+    return prd_img_urls
 
-def get_review_data(driver, next_index):
-    data = []
-    reviews = driver.find_elements(By.CLASS_NAME, "card-head._card_head._img_wrap")
-
-    for index, review in enumerate(reviews):
-        review.click()
-        time.sleep(2)
-
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "clearfix._review_modal_body"))
-        )
-
-        item = {}
-
-        # Extract review details
-        try:
-            modal_right = driver.find_element(By.CLASS_NAME, "modal-right.float_l")
-            write_info = modal_right.find_elements(By.CSS_SELECTOR, ".no-margin.text-13.body_font_color_60.write_info.clearfix span")
-            item['번호'] = ((next_index - 1) * 16) + index + 1
-            item['아이디'] = write_info[0].text
-            item['작성일'] = write_info[1].text
-            item['페이지'] = next_index
-            item['내부 번호'] = index + 1
-            item['내용'] = modal_right.find_element(By.CLASS_NAME, "txt").text
-
-        except NoSuchElementException:
-            pass
-
-        # Extract image URLs
-        try:
-            modal_left = driver.find_element(By.CLASS_NAME, "modal-left.float_l")
-
-            images = modal_left.find_elements(By.TAG_NAME, "img")
-
-            if len(images) > 1:
-                img = modal_left.find_elements(By.CSS_SELECTOR, ".owl-item:not(.cloned) img")
-                for idx, im in enumerate(img):
-                    item[f'이미지url-{idx+1}'] = im.get_attribute('src')
-
-            elif len(images) == 1:
-                im = modal_left.find_element(By.CSS_SELECTOR, ".single-item img")
-
-                if im:
-                    item[f'이미지url-1'] = im.get_attribute('src')
-
-        except NoSuchElementException:
-            pass
-
-        item['사이트 경로'] = driver.current_url
-
-        print(f"item : {item}")
-        data.append(item)
-
-        driver.find_element(By.ID, "review_detail_close").click()
-        time.sleep(1)
-
-    return data
-
-def navigate_and_collect_reviews(driver):
-    all_data = []
-    next_index = 1
+def navigate_pages(driver):
+    all_img_urls = []
+    current_page = 1
 
     while True:
-        try:
-            all_data.extend(get_review_data(driver, next_index))
+        print(f"Scraping page {current_page}")
+        prd_img_urls = get_prd_img_urls(driver)
+        all_img_urls.extend(prd_img_urls)
 
-            pagination = driver.find_element(By.CLASS_NAME, "pagination")
-            pages = pagination.find_elements(By.TAG_NAME, "li")
+        try:
+            paging_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "xans-element-.xans-product.xans-product-normalpaging"))
+            )
+            pages = paging_element.find_elements(By.TAG_NAME, "a")
 
             next_page = None
             for page in pages:
-                if "active" in page.get_attribute("class"):
-                    next_index = pages.index(page) + 1
-                    if next_index < len(pages):
-                        next_page = pages[next_index]
+                if page.text == str(current_page + 1):
+                    next_page = page
+                    break
+
+            if next_page:
+                next_page.click()
+                WebDriverWait(driver, 10).until(EC.staleness_of(paging_element))
+                current_page += 1
+                time.sleep(2)
+            else:
+                try:
+                    next_button_img = driver.find_element(By.CSS_SELECTOR, 'img[alt="다음 페이지"]')
+                    next_button_img.click()
+                    WebDriverWait(driver, 10).until(EC.staleness_of(paging_element))
+                    current_page += 1
+                    time.sleep(2)
+                except NoSuchElementException:
+                    try:
+                        next_button_text = driver.find_element(By.XPATH, '//a[text()="NEXT"]')
+                        next_button_text.click()
+                        WebDriverWait(driver, 10).until(EC.staleness_of(paging_element))
+                        current_page += 1
+                        time.sleep(2)
+                    except NoSuchElementException:
+                        print("No more pages.")
                         break
 
-            if next_page is None:
-                next_page = driver.find_element(By.CSS_SELECTOR, 'li[aria-label="Next"]')
-
-            next_link = next_page.find_element(By.TAG_NAME, "a")
-            driver.execute_script("arguments[0].click();", next_link)
-
-            WebDriverWait(driver, 10).until(EC.staleness_of(pagination))
-            time.sleep(2)
-
-        except (NoSuchElementException, TimeoutException):
-            print("No more pages or an error occurred during pagination.")
+        except NoSuchElementException:
+            print("Pagination element not found. Exiting.")
             break
+        except StaleElementReferenceException:
+            print("StaleElementReferenceException occurred. Retrying...")
+            continue
 
-    return all_data
+    return all_img_urls
+
+def scrape_product_details(driver, url):
+    driver.get(url)
+    time.sleep(3)
+
+    product = {}
+
+    try:
+        img_area = driver.find_element(By.CLASS_NAME, "xans-element-.xans-product.xans-product-image.imgArea")
+        img_tag = img_area.find_element(By.TAG_NAME, "img")
+        product["이미지"] = img_tag.get_attribute('src')
+    except NoSuchElementException:
+        product["이미지"] = None
+
+    try:
+        product_info = driver.find_element(By.CLASS_NAME, "product_info")
+        tbody = product_info.find_element(By.TAG_NAME, "tbody")
+        first_tr = tbody.find_element(By.TAG_NAME, "tr")
+        product_name = first_tr.find_element(By.TAG_NAME, "td").text
+        product["제품명"] = product_name
+    except NoSuchElementException:
+        product["제품명"] = None
+
+    print(f"Scraped product details: {product}")
+    return product
 
 def main():
     driver = setup_driver()
     if driver is not None:
-        url = "https://avecchien.imweb.me/REVIEW/?q=YToyOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjtzOjQ6InBhZ2UiO2k6OTt9&page=1&only_photo=Y"
-        driver.get(url)
-        time.sleep(2)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "card-head._card_head._img_wrap")))
+        base_url = "https://ba-on.com"
+        driver.get(base_url)
+        time.sleep(3)
 
-        all_data = navigate_and_collect_reviews(driver)
+        all_products = []
 
-        driver.quit()
+        try:
+            # 카테고리 찾기
+            category_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "xans-element-.xans-layout.xans-layout-category"))
+            )
+            # 그 안의 li 요소들 찾기
+            li_elements = category_element.find_elements(By.TAG_NAME, "li")
 
-        # 수집된 데이터 엑셀로 저장
-        df = pd.DataFrame(all_data)
-        df.to_excel('avecchien_reviews.xlsx', index=False)
+            for idx, li in enumerate(li_elements):
+                try:
+                    # li 안의 a 요소 찾기
+                    a_element = li.find_element(By.TAG_NAME, "a")
+                    # a 요소의 텍스트와 URL 가져오기
+                    link_text = a_element.text
+                    link_url = a_element.get_attribute('href')
 
-        print("Data saved to avecchien_reviews.xlsx")
+                    if link_text and link_url:
+                        print(f"Scraping category: {link_text}")
+                        driver.get(link_url)
+                        time.sleep(3)
+                        img_urls = navigate_pages(driver)
+                        print(f"Collected {len(img_urls)} image URLs from {link_text}")
+
+                        for img_url in img_urls:
+                            product = scrape_product_details(driver, img_url)
+                            all_products.append(product)
+
+                except NoSuchElementException:
+                    continue
+                except StaleElementReferenceException:
+                    print("StaleElementReferenceException occurred while processing categories. Retrying...")
+                    continue
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            driver.quit()
+
+        # 데이터를 엑셀 파일로 저장
+        df = pd.DataFrame(all_products)
+        df.to_excel('products.xlsx', index=False)
+        print("Data saved to products.xlsx")
 
 if __name__ == "__main__":
     main()
