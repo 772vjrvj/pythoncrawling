@@ -74,6 +74,10 @@ def get_review_data(driver, next_index):
         # Extract image URLs
         try:
             modal_left = driver.find_element(By.CLASS_NAME, "modal-left.float_l")
+
+            images = modal_left.find_elements(By.TAG_NAME, "img")
+
+
             images = modal_left.find_elements(By.CSS_SELECTOR, ".owl-item:not(.cloned) img")
             for idx, img in enumerate(images):
                 item[f'이미지url-{idx+1}'] = img.get_attribute('src')
