@@ -1,189 +1,308 @@
+import time
+import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException, TimeoutException, StaleElementReferenceException
-import time
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+import os
 import pandas as pd
 
+# 드라이버 세팅
 def setup_driver():
-    chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # 필요 시 headless 모드로 실행
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--incognito")  # 시크릿 모드 사용
-
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    chrome_options.add_argument(f'user-agent={user_agent}')
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-        'source': '''
-            Object.defineProperty(navigator, 'webdriver', {
-              get: () => undefined
-            })
-        '''
-    })
-
-    return driver
-
-def is_alert_present(driver):
     try:
-        driver.switch_to.alert
-        return True
-    except NoAlertPresentException:
-        return False
+        chrome_options = Options()
+        user_data_dir = "C:\\Users\\772vj\\AppData\\Local\\Google\\Chrome\\User Data"
+        profile = "Default"
 
-def get_prd_img_urls(driver):
-    prd_img_urls = []
-    prd_lists = driver.find_elements(By.CLASS_NAME, "prdList")
+        chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+        chrome_options.add_argument(f"profile-directory={profile}")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--start-maximized")
 
-    for prd_list in prd_lists:
-        prd_imgs = prd_list.find_elements(By.CLASS_NAME, "prdImg")
-        for prd_img in prd_imgs:
-            try:
-                a_element = prd_img.find_element(By.TAG_NAME, "a")
-                prd_img_urls.append(a_element.get_attribute('href'))
-            except NoSuchElementException:
-                continue
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
 
-    return prd_img_urls
+        download_dir = os.path.abspath("downloads")
+        if not os.path.exists(download_dir):
+            os.makedirs(download_dir)
 
-def navigate_pages(driver):
-    all_img_urls = []
-    current_page = 1
+        chrome_options.add_experimental_option('prefs', {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        })
 
-    while True:
-        print(f"Scraping page {current_page}")
-        prd_img_urls = get_prd_img_urls(driver)
-        all_img_urls.extend(prd_img_urls)
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
+        script = '''
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            window.navigator.chrome = { runtime: {} };
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+        '''
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+
+        return driver
+    except WebDriverException as e:
+        print(f"Error setting up the WebDriver: {e}")
+        return None
+
+
+def get_links_from_page(driver):
+    try:
+        elements = driver.find_elements(By.CSS_SELECTOR, ".sm-contents-container-items-item a")
+        links = []
+        print(f"[get_links_from_page start]=========================================")
+        for index, elem in enumerate(elements):
+            href = elem.get_attribute('href')
+            print(f"index : {index}, href : {href}")
+            links.append(href)
+        print(f"[get_links_from_page end]=========================================")
+        return links
+    except NoSuchElementException:
+        print("Element not found!")
+        return []
+
+
+def get_hrefs_from_links(driver, links):
+    all_hrefs = []
+    print("[get_hrefs_from_links start]=========================================")
+    for index, link in enumerate(links):
+        print(f"link : {link}")
         try:
-            paging_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "xans-element-.xans-product.xans-product-normalpaging"))
-            )
-            pages = paging_element.find_elements(By.TAG_NAME, "a")
+            driver.get(link)
+            time.sleep(2)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "ol")))
 
-            next_page = None
-            for page in pages:
-                if page.text == str(current_page + 1):
-                    next_page = page
-                    break
+            ol_elements = driver.find_elements(By.CSS_SELECTOR, "ol li a")
 
-            if next_page:
-                next_page.click()
-                WebDriverWait(driver, 10).until(EC.staleness_of(paging_element))
-                current_page += 1
-                time.sleep(2)
-            else:
-                try:
-                    next_button_img = driver.find_element(By.CSS_SELECTOR, 'img[alt="다음 페이지"]')
-                    next_button_img.click()
-                    WebDriverWait(driver, 10).until(EC.staleness_of(paging_element))
-                    current_page += 1
-                    time.sleep(2)
-                except NoSuchElementException:
-                    try:
-                        next_button_text = driver.find_element(By.XPATH, '//a[text()="NEXT"]')
-                        next_button_text.click()
-                        WebDriverWait(driver, 10).until(EC.staleness_of(paging_element))
-                        current_page += 1
-                        time.sleep(2)
-                    except NoSuchElementException:
-                        print("No more pages.")
-                        break
+            for index, elem in enumerate(ol_elements):
+                href = elem.get_attribute('href')
+                print(f"    inner index : {index + 1}, link : {href}")
+                all_hrefs.append(href)
+            
+        except (NoSuchElementException, TimeoutException):
+            print(f"Error processing link: {link}")
+            continue
+    print("[get_hrefs_from_links end]=========================================")
+    return all_hrefs
 
-        except NoSuchElementException:
-            print("Pagination element not found. Exiting.")
-            break
-        except StaleElementReferenceException:
-            print("StaleElementReferenceException occurred. Retrying...")
+# 숫자 기호와 해당 숫자 간의 매핑
+number_map = {
+    '①': '(1)', '②': '(2)', '③': '(3)', '④': '(4)', '⑤': '(5)',
+    '⑥': '(6)', '⑦': '(7)', '⑧': '(8)', '⑨': '(9)', '⑩': '(10)'
+}
+
+def replace_number_symbols(text):
+    for symbol, number in number_map.items():
+        text = text.replace(symbol, number)
+    return text
+
+def convert_date_format(text):
+    return re.sub(r'(\d{4})년\s(\d{2})\s(\d{2})일', r'\1.\2.\3', text)
+
+def extract_final_part(title):
+    return title.split(",")[-1].strip()
+
+def replace_brackets(text):
+    return text.replace('[', '(').replace(']', ')')
+
+def convert_verse_format(text):
+    return re.sub(r'(\D+)\s(\d+):(\d+)', r'\1 \2.\3', text)
+
+def extract_text_from_hrefs(driver, hrefs):
+    data_list = []
+    for index, href in enumerate(hrefs):
+        print(f"extract_text_from_hrefs index : {index}, href : {href}")
+        try:
+            driver.get(href)
+            time.sleep(2)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[style='margin-top: 20px; line-height: 2.4rem;']")))
+
+            div_elem = driver.find_element(By.CSS_SELECTOR, "div[style='margin-top: 20px; line-height: 2.4rem;']")
+            span_list = div_elem.find_elements(By.TAG_NAME, "span")
+
+            formatted_text = ""
+
+            ### 마지막 span ###
+
+            # 고전 15:22 / 김남준 목사 / 2011년 01 30일
+            last_span = span_list[-1].text
+            parts = last_span.split("/")
+
+            # 고전 13:10 -> 고전 13.10
+            bible = convert_verse_format(parts[0].strip())
+
+            # 김남준 목사
+            Pastor = parts[1].strip()
+
+            # 2011년 01 30일 -> 2011.01.30
+            date = convert_date_format(parts[2].strip())
+
+
+
+            ### 마지막 전 span ###
+            last_span_2 = span_list[-2].text
+
+            # 기호 숫자 변경 ① -> (1) ...
+            last_span_2_new = replace_number_symbols(last_span_2)
+
+
+            if len(span_list) == 3:
+                span_1 = replace_brackets(span_list[0].text)
+                # [2017 장년교구 여름수련회][경륜이 있는 복음 (장년)]목양 받게 하심 빌 1:10 / 김남준 목사 / 2017년 08 14일"
+                # (2017 장년교구 여름수련회)(경륜이 있는 복음 (장년)) 고전 13.10 2011.01.30 , 목양 받게 하심
+                if bible:
+                    formatted_text = f"{span_1} {bible} {date} , {last_span_2_new}"
+                else:
+                    formatted_text = f"{span_1} {date} , {last_span_2_new}"
+
+            if len(span_list) == 4:
+                span_1 = replace_brackets(span_list[0].text)
+                span_2 = replace_brackets(span_list[1].text)
+                if bible:
+                    formatted_text = f"{span_1}{span_2} {bible} {date} , {last_span_2_new}"
+                else:
+                    formatted_text = f"{span_1}{span_2} {date} , {last_span_2_new}"
+
+            data = {
+                "원제": div_elem.text,
+                "제목": formatted_text,
+                "성경": parts[0],
+                "목사": Pastor,
+                "날짜": date,
+                "url": href
+            }
+            print(f"    제목 : {formatted_text}")
+            data_list.append(data)
+        except (NoSuchElementException, TimeoutException):
+            print(f"Error processing href: {href}")
             continue
 
-    return all_img_urls
+    return data_list
 
-def scrape_product_details(driver, url):
-    driver.get(url)
-    time.sleep(3)
 
-    product = {}
+def wait_for_download(download_dir, timeout=60):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        for file_name in os.listdir(download_dir):
+            if file_name.endswith('.crdownload'):
+                continue
+            if file_name.endswith('.mp3'):
+                return file_name
+        time.sleep(1)
+    return None
 
-    try:
-        img_area = driver.find_element(By.CLASS_NAME, "xans-element-.xans-product.xans-product-image.imgArea")
-        img_tag = img_area.find_element(By.TAG_NAME, "img")
-        product["이미지"] = img_tag.get_attribute('src')
-    except NoSuchElementException:
-        product["이미지"] = None
 
-    try:
-        product_info = driver.find_element(By.CLASS_NAME, "product_info")
-        tbody = product_info.find_element(By.TAG_NAME, "tbody")
-        first_tr = tbody.find_element(By.TAG_NAME, "tr")
-        product_name = first_tr.find_element(By.TAG_NAME, "td").text
-        product["제품명"] = product_name
-    except NoSuchElementException:
-        product["제품명"] = None
+def click_title_links(driver, data_list):
+    download_dir = os.path.abspath("downloads")
+    complete_dir = os.path.join(download_dir, "complete")
+    if not os.path.exists(complete_dir):
+        os.makedirs(complete_dir)
 
-    print(f"Scraped product details: {product}")
-    return product
+    for index, data in enumerate(data_list):
+        print(f"index : {index}, title : {data['제목']}")
+        try:
+            driver.get(data["url"])
+            time.sleep(2)
+
+            # "음성설교" 텍스트가 포함된 버튼 찾기 (최대 10초 대기)
+            button = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//button[contains(text(), '음성설교')]"))
+            )
+            # 버튼 클릭
+            button.click()
+            time.sleep(4)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//iframe")))
+            # 첫 번째 iframe 요소 찾기
+            iframe = driver.find_element(By.XPATH, "//iframe")
+
+            # 첫 번째 iframe으로 전환
+            driver.switch_to.frame(iframe)
+
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "title__h2")))
+
+            a_elem = driver.find_element(By.CLASS_NAME, "title__h2")
+
+            href = a_elem.get_attribute('href')
+
+            print(f"href : {href}")
+
+            if href:
+                driver.get(href)
+                time.sleep(3)
+                sc_button_more = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="More"]')))
+                sc_button_more.click()
+
+                time.sleep(1)
+                download_button = driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Download this track"]')
+                download_button.click()
+
+                downloaded_file_name = wait_for_download(download_dir, timeout=60)
+                if downloaded_file_name:
+                    old_file_path = os.path.join(download_dir, downloaded_file_name)
+                    new_file_path = os.path.join(download_dir, f"{data['제목']}.mp3")
+                    os.rename(old_file_path, new_file_path)
+                    final_path = os.path.join(complete_dir, f"{data['제목']}.mp3")
+                    os.rename(new_file_path, final_path)
+                    print(f"Download complete and file moved to {final_path}")
+                else:
+                    print("Download failed or timed out. ")
+
+            else:
+                print(f"No href found for the specified a tag in {data['url']}")
+
+            driver.switch_to.default_content()
+
+        except (NoSuchElementException, TimeoutException):
+            print(f"Could not find the specified a tag in {data['url']}")
+            continue
+
+
+def save_data_list_to_excel(data_list, filename="data_list.xlsx"):
+    df = pd.DataFrame(data_list)
+    df.to_excel(filename, index=False)
+
 
 def main():
     driver = setup_driver()
     if driver is not None:
-        base_url = "https://ba-on.com"
-        driver.get(base_url)
-        time.sleep(3)
+        url = "https://www.eltechkorea.com:444/knj/Sermon/Index"
+        driver.get(url)
+        time.sleep(2)
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "sm-contents-container-items-item")))
+        
+        # 전체 페이지 목록 리스트
+        links = get_links_from_page(driver)
+        print(f">>>>> Total links: {len(links)}")
 
-        all_products = []
+        # 리스트 안에 새부 리스트 포함
+        all_hrefs = get_hrefs_from_links(driver, links)
+        print(f">>>>> Total all_hrefs: {len(all_hrefs)}")
 
-        try:
-            # 카테고리 찾기
-            category_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "xans-element-.xans-layout.xans-layout-category"))
-            )
-            # 그 안의 li 요소들 찾기
-            li_elements = category_element.find_elements(By.TAG_NAME, "li")
+        data_list = extract_text_from_hrefs(driver, all_hrefs)
+        print(f">>>>> Total data_list: {len(data_list)}")
 
-            for idx, li in enumerate(li_elements):
-                try:
-                    # li 안의 a 요소 찾기
-                    a_element = li.find_element(By.TAG_NAME, "a")
-                    # a 요소의 텍스트와 URL 가져오기
-                    link_text = a_element.text
-                    link_url = a_element.get_attribute('href')
+        # 엑셀로 data_list 저장
+        save_data_list_to_excel(data_list)
 
-                    if link_text and link_url:
-                        print(f"Scraping category: {link_text}")
-                        driver.get(link_url)
-                        time.sleep(3)
-                        img_urls = navigate_pages(driver)
-                        print(f"Collected {len(img_urls)} image URLs from {link_text}")
+        # 엑셀 파일에서 data_list 불러오기
+        data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
 
-                        for img_url in img_urls:
-                            product = scrape_product_details(driver, img_url)
-                            all_products.append(product)
+        click_title_links(driver, data_list)
+        driver.quit()
 
-                except NoSuchElementException:
-                    continue
-                except StaleElementReferenceException:
-                    print("StaleElementReferenceException occurred while processing categories. Retrying...")
-                    continue
-
-        except Exception as e:
-            print(f"An error occurred: {e}")
-        finally:
-            driver.quit()
-
-        # 데이터를 엑셀 파일로 저장
-        df = pd.DataFrame(all_products)
-        df.to_excel('products.xlsx', index=False)
-        print("Data saved to products.xlsx")
 
 if __name__ == "__main__":
     main()
