@@ -66,7 +66,7 @@ def get_links_from_page(driver):
         print(f"[get_links_from_page start]=========================================")
         for index, elem in enumerate(elements):
             href = elem.get_attribute('href')
-            print(f"index : {index}, href : {href}")
+            print(f"index : {index + 1}, href : {href}")
             links.append(href)
         print(f"[get_links_from_page end]=========================================")
         return links
@@ -78,8 +78,9 @@ def get_links_from_page(driver):
 def get_hrefs_from_links(driver, links):
     all_hrefs = []
     print("[get_hrefs_from_links start]=========================================")
+    total_idx = 0
     for index, link in enumerate(links):
-        print(f"link : {link}")
+        print(f"index : {index}, link : {link}")
         try:
             driver.get(link)
             time.sleep(2)
@@ -87,11 +88,13 @@ def get_hrefs_from_links(driver, links):
 
             ol_elements = driver.find_elements(By.CSS_SELECTOR, "ol li a")
 
-            for index, elem in enumerate(ol_elements):
+            for idx, elem in enumerate(ol_elements):
                 href = elem.get_attribute('href')
-                print(f"    inner index : {index + 1}, link : {href}")
+                total_idx += 1
+                print(f"    inner index : {idx + 1}, link : {href}")
+                print(f"    last total index : {total_idx}")
                 all_hrefs.append(href)
-            
+
         except (NoSuchElementException, TimeoutException):
             print(f"Error processing link: {link}")
             continue
@@ -124,7 +127,7 @@ def convert_verse_format(text):
 def extract_text_from_hrefs(driver, hrefs):
     data_list = []
     for index, href in enumerate(hrefs):
-        print(f"extract_text_from_hrefs index : {index}, href : {href}")
+        print(f"extract_text_from_hrefs index : {index + 1}, href : {href}")
         try:
             driver.get(href)
             time.sleep(2)
@@ -212,7 +215,7 @@ def click_title_links(driver, data_list):
         os.makedirs(complete_dir)
 
     for index, data in enumerate(data_list):
-        print(f"index : {index}, title : {data['제목']}")
+        print(f"index : {index + 1}, title : {data['제목']}")
         try:
             driver.get(data["url"])
             time.sleep(2)
@@ -282,7 +285,7 @@ def main():
         driver.get(url)
         time.sleep(2)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "sm-contents-container-items-item")))
-        
+
         # 전체 페이지 목록 리스트
         links = get_links_from_page(driver)
         print(f">>>>> Total links: {len(links)}")
@@ -300,6 +303,7 @@ def main():
         # 엑셀 파일에서 data_list 불러오기
         data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
 
+        # 음원 다운로드
         click_title_links(driver, data_list)
         driver.quit()
 
