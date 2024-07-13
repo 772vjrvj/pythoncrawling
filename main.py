@@ -230,14 +230,14 @@ def wait_for_download(download_dir, timeout=60):
     return None
 
 
-def click_title_links(driver, data_list):
+def click_title_links(driver, data_list, number = 0):
     download_dir = os.path.abspath("downloads")
     complete_dir = os.path.join(download_dir, "complete")
     if not os.path.exists(complete_dir):
         os.makedirs(complete_dir)
 
     for index, data in enumerate(data_list):
-        print(f"index : {index + 1}, title : {data['제목']}")
+        print(f"index : {number + index + 1}, title : {data['제목']}")
         try:
             driver.get(data["url"])
             time.sleep(3)
@@ -250,14 +250,14 @@ def click_title_links(driver, data_list):
             button.click()
             print(f"음성설교 클릭")
 
-            time.sleep(5)
+            time.sleep(6)
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//iframe")))
             # 첫 번째 iframe 요소 찾기
             iframe = driver.find_element(By.XPATH, "//iframe")
 
             # 첫 번째 iframe으로 전환
+            time.sleep(1)
             driver.switch_to.frame(iframe)
-
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "title__h2")))
 
             a_elem = driver.find_element(By.CLASS_NAME, "title__h2")
@@ -343,7 +343,7 @@ def main_excel(number):
         data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
 
         ### 번호 중간부터 ###
-        # 앞의 12개를 자르고 나머지 리스트를 사용
+        # 앞의 number개를 자르고 나머지 리스트를 사용
         trimmed_data_list = data_list[number:]
 
         print(f"시작 데이터 : {trimmed_data_list[0]}")
@@ -351,12 +351,12 @@ def main_excel(number):
         print(f"[목록확인 시작]==========================")
         # 목록 확인
         for index, item in enumerate(trimmed_data_list):
-            print(f"index : {index + 1 + number}, item : {item}")
+            print(f"index : {number + index + 1}, item : {item}")
 
         print(f"[목록확인 끝]===========================")
 
         # 음원 다운로드
-        click_title_links(driver, trimmed_data_list)
+        click_title_links(driver, trimmed_data_list, number)
         driver.quit()
 
 
@@ -390,7 +390,7 @@ if __name__ == "__main__":
     #main()
 
     #시작하는 번호 입력
-    main_excel(148)
+    main_excel(160)
 
     #시작하는 번호 입력
     # filter_excel(0)
