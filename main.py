@@ -127,6 +127,16 @@ def replace_brackets(text):
 def convert_verse_format(text):
     return re.sub(r'(\D+)\s(\d+):(\d+)', r'\1 \2.\3', text)
 
+
+def replace_question_mark(input_string):
+    """문자열에서 ?를 공백으로 바꾸는 함수"""
+    return input_string.replace('?', ' ')
+
+def replace_double_quote(input_string):
+    """문자열에서 "를 '로 바꾸는 함수"""
+    return input_string.replace('"', "'")
+
+
 def extract_text_from_hrefs(driver, hrefs):
     data_list = []
     for index, href in enumerate(hrefs):
@@ -185,9 +195,15 @@ def extract_text_from_hrefs(driver, hrefs):
                 else:
                     formatted_text = f"{span_1}{span_2} {date} , {last_span_2_new}"
 
+
+
+            # 폴더 특수문자 제거 ? "
+            formatted_text_1 = replace_question_mark(formatted_text)
+            formatted_text_new = replace_double_quote(formatted_text_1)
+
             data = {
                 "원제": div_elem.text,
-                "제목": formatted_text,
+                "제목": formatted_text_new,
                 "성경": parts[0],
                 "목사": Pastor,
                 "날짜": date,
@@ -343,4 +359,4 @@ if __name__ == "__main__":
     #main()
 
     #시작하는 번호 입력
-    main_excel(0)
+    main_excel(86)
