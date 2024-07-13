@@ -240,7 +240,7 @@ def click_title_links(driver, data_list):
         print(f"index : {index + 1}, title : {data['제목']}")
         try:
             driver.get(data["url"])
-            time.sleep(2)
+            time.sleep(3)
 
             # "음성설교" 텍스트가 포함된 버튼 찾기 (최대 10초 대기)
             button = WebDriverWait(driver, 10).until(
@@ -248,7 +248,9 @@ def click_title_links(driver, data_list):
             )
             # 버튼 클릭
             button.click()
-            time.sleep(4)
+            print(f"음성설교 클릭")
+
+            time.sleep(5)
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//iframe")))
             # 첫 번째 iframe 요소 찾기
             iframe = driver.find_element(By.XPATH, "//iframe")
@@ -266,13 +268,15 @@ def click_title_links(driver, data_list):
 
             if href:
                 driver.get(href)
-                time.sleep(3)
+                time.sleep(5)
                 sc_button_more = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="More"]')))
                 sc_button_more.click()
+                print(f"More 클릭")
 
                 time.sleep(1)
                 download_button = driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Download this track"]')
                 download_button.click()
+                print(f"다운로드 클릭")
 
                 downloaded_file_name = wait_for_download(download_dir, timeout=60)
                 if downloaded_file_name:
@@ -344,9 +348,35 @@ def main_excel(number):
 
         print(f"시작 데이터 : {trimmed_data_list[0]}")
 
+        print(f"[목록확인 시작]==========================")
         # 목록 확인
-        # for index, item in enumerate(trimmed_data_list):
-        #     print(f"index : {index + number}, item : {item}")
+        for index, item in enumerate(trimmed_data_list):
+            print(f"index : {index + 1 + number}, item : {item}")
+
+        print(f"[목록확인 끝]===========================")
+
+        # 음원 다운로드
+        click_title_links(driver, trimmed_data_list)
+        driver.quit()
+
+
+
+# 엑셀로 시작하는 경우
+def filter_excel(number):
+    driver = setup_driver()
+    if driver is not None:
+        # 엑셀 파일에서 data_list 불러오기
+        data_list = pd.read_excel("data_filter.xlsx").to_dict(orient='records')
+
+        ### 번호 중간부터 ###
+        # 앞의 12개를 자르고 나머지 리스트를 사용
+        trimmed_data_list = data_list[number:]
+
+        print(f"시작 데이터 : {trimmed_data_list[0]}")
+
+        # 목록 확인
+        for index, item in enumerate(trimmed_data_list):
+            print(f"index : {index + number}, item : {item}")
 
         # 음원 다운로드
         click_title_links(driver, trimmed_data_list)
@@ -356,7 +386,11 @@ def main_excel(number):
 
 if __name__ == "__main__":
 
+    #처음부터
     #main()
 
     #시작하는 번호 입력
-    main_excel(86)
+    main_excel(148)
+
+    #시작하는 번호 입력
+    # filter_excel(0)
