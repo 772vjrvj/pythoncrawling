@@ -112,6 +112,9 @@ def replace_number_symbols(text):
         text = text.replace(symbol, number)
     return text
 
+def replace_colon_with_dot(text):
+    return text.replace(':', '.')
+
 def convert_date_format(text):
     return re.sub(r'(\d{4})년\s(\d{2})\s(\d{2})일', r'\1.\2.\3', text)
 
@@ -159,7 +162,10 @@ def extract_text_from_hrefs(driver, hrefs):
             last_span_2 = span_list[-2].text
 
             # 기호 숫자 변경 ① -> (1) ...
-            last_span_2_new = replace_number_symbols(last_span_2)
+            last_span_2_1 = replace_number_symbols(last_span_2)
+
+            last_span_2_new = replace_colon_with_dot(last_span_2_1)
+
 
 
             if len(span_list) == 3:
@@ -278,6 +284,7 @@ def save_data_list_to_excel(data_list, filename="data_list.xlsx"):
     df.to_excel(filename, index=False)
 
 
+# 처음부터 시작하는경우
 def main():
     driver = setup_driver()
     if driver is not None:
@@ -302,11 +309,38 @@ def main():
 
         # 엑셀 파일에서 data_list 불러오기
         data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
-        
+
         # 음원 다운로드
         click_title_links(driver, data_list)
         driver.quit()
 
 
+# 엑셀로 시작하는 경우
+def main_excel(number):
+    driver = setup_driver()
+    if driver is not None:
+        # 엑셀 파일에서 data_list 불러오기
+        data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
+
+        ### 번호 중간부터 ###
+        # 앞의 12개를 자르고 나머지 리스트를 사용
+        trimmed_data_list = data_list[number:]
+
+        print(f"시작 데이터 : {trimmed_data_list[0]}")
+
+        # 목록 확인
+        # for index, item in enumerate(trimmed_data_list):
+        #     print(f"index : {index + number}, item : {item}")
+
+        # 음원 다운로드
+        click_title_links(driver, trimmed_data_list)
+        driver.quit()
+
+
+
 if __name__ == "__main__":
-    main()
+
+    #main()
+
+    #시작하는 번호 입력
+    main_excel(0)
