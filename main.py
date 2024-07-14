@@ -1,17 +1,91 @@
+import pandas as pd
+import numpy as np
 import time
+import csv
+from tqdm import tqdm_notebook
 import re
+import warnings
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+import ssl
+import random
 import os
-import pandas as pd
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 
-# 드라이버 세팅
+# SSL 설정 (인증서 검증 비활성화)
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# 경고 무시
+warnings.filterwarnings('ignore')
+
+# 논문 제목
+some_paper = [
+    "Themes in the work of Margaret Masterman", "Toward High Performance Machine Translation: Preliminary Results from Massively Parallel Memory-Based Translation on SNAP*",
+    "Interactive multilingual text generation for a monolingual user", "Corpora and Machine Translation",
+    "A Parameter-Based Message-Passing Parser for MT of Korean and English", "DEVELOPING AND EVALUATING A PROBABILISTIC LR PARSER OF PART-OF-SPEECH AND PUNCTUATION LABELS*",
+    "Associating semantic components with intersective Levin classes", "Harmonised large-scale syntactic/semantic lexicons: a European multilingual infrastructure",
+    "NEW TABULAR ALGORITHMS FOR LIG PARSING", "Identification et catégorisation automatiques des anthroponymes du Franc ¸ais",
+    "Word Formation in Computational Linguistics", "Une caractérisation de la pertinence pour les actions de référence", "Non-Contiguous Tree Parsing",
+    "Europarl: A Parallel Corpus for Statistical Machine Translation", "Translation of Multiword Expressions Using Parallel Suffix Arrays",
+    "Rapid development of RBMT systems for related languages", "The LIUM Arabic/English Statistical Machine Translation System for IWSLT 2008",
+    "Can Semantic Role Labeling Improve SMT?", "Analyse morphologique en terminologie biomédicale par alignement et apprentissage non-supervisé",
+    "The DCU Machine Translation Systems for IWSLT 2011", "A User-Based Usability Assessment of Raw Machine Translated Technical Instructions",
+    "ROI Analysis model for Language Service Providers", "Comparison of post-editing productivity between professional translators and lay users",
+    "Effects of Word Alignment Visualization on Post-Editing Quality & Speed †", "Factored Neural Machine Translation Architectures",
+    "Analyse et évolution de la compréhension de termes techniques", "Public Apologies in India -Semantics, Sentiment and Emotion",
+    "A Language Invariant Neural Method for TimeML Event Detection", "Diverse dialogue generation with context dependent dynamic loss function",
+    "XED: A Multilingual Dataset for Sentiment Analysis and Emotion Detection", "Entity Attribute Relation Extraction with Attribute-Aware Embeddings",
+    "SimsterQ: A Similarity based Clustering Approach to Opinion Question Answering", "On the weak link between importance and prunability of attention heads",
+    "Interpretable Entity Representations through Large-Scale Typing", "Generalizable and Explainable Dialogue Generation via Explicit Action Learning",
+    "Controlled Text Generation with Adversarial Learning", "ReINTEL: A Multimodal Data Challenge for Responsible Information Identification on Social Network Sites",
+    "Embed More Ignore Less (EMIL): Exploiting Enriched Representations for Arabic NLP", "Control Image Captioning Spatially and Temporally",
+    "Coreference Reasoning in Machine Reading Comprehension", "Peru is Multilingual, Its Machine Translation Should Be Too?",
+    "CONDA: a CONtextual Dual-Annotated dataset for in-game toxicity understanding and detection", "Modeling Users and Online Communities for Abuse Detection: A Position on Ethics and Explainability",
+    "Situation-Specific Multimodal Feature Adaptation", "Welcome to the 18th biennial conference of the International Association of Machine Translation (IAMT) -MT Summit 2021 Virtual!",
+    "End-to-end ASR to jointly predict transcriptions and linguistic annotations", "Double Perturbation: On the Robustness of Robustness and Counterfactual Bias Evaluation",
+    "RocketQA: An Optimized Training Approach to Dense Passage Retrieval for Open-Domain Question Answering", "On the Usability of Transformers-based models for a French Question-Answering task",
+    "A Semi-Supervised Approach to Detect Toxic Comments", "Unsupervised Representation Disentanglement of Text: An Evaluation on Synthetic Datasets",
+    "Amrita_CEN_NLP@SDP2021 Task A and B", "NLRG at SemEval-2021 Task 5: Toxic Spans Detection Leveraging BERT-based Token Classification and Span Prediction Techniques",
+    "DeepBlueAI at SemEval-2021 Task 1: Lexical Complexity Prediction with A Deep Ensemble Approach", "TransWiC at SemEval-2021 Task 2: Transformer-based Multilingual and Cross-lingual Word-in-Context Disambiguation",
+    "Transformer-based Multi-Task Learning for Adverse Effect Mention Analysis in Tweets", "Memory-efficient Transformers via Top-k Attention",
+    "Learning to Rank in the Age of Muppets: Effectiveness-Efficiency Tradeoffs in Multi-Stage Ranking", "Classifying Argumentative Relations Using Logical Mechanisms and Argumentation Schemes",
+    "TextGraphs 2021 Shared Task on Multi-Hop Inference for Explanation Regeneration", "A Fine-Grained Analysis of BERTScore",
+    "Decoding Part-of-Speech from Human EEG Signals", "BRIO: Bringing Order to Abstractive Summarization",
+    "Phone-ing it in: Towards Flexible, Multi-Modal Language Model Training using Phonetic Representations of Data",
+    "Multitasking Framework for Unsupervised Simple Definition Generation", "Situated Dialogue Learning through Procedural Environment Generation",
+    "USST's System for AutoSimTrans 2022", "Codenames as a Game of Co-occurrence Counting",
+    "Estimating word co-occurrence probabilities from pretrained static embeddings using a log-bilinear model",
+    "MuCoT: Multilingual Contrastive Training for Question-Answering in Low-resource Languages", "Developing Machine Translation Engines for Multilingual Participatory Spaces",
+    "Diversifying Content Generation for Commonsense Reasoning with Mixture of Knowledge Graph Experts", "KD-VLP: Improving End-to-End Vision-and-Language Pretraining with Object Knowledge Distillation",
+    "Identifying and Mitigating Spurious Correlations for Improving Robustness in NLP Models", "Looking for a Handsome Carpenter! Debiasing GPT-3 Job Advertisements",
+    "Dual-Channel Evidence Fusion for Fact Verification over Texts and Tables", "drsphelps at SemEval-2022 Task 2: Learning idiom representations using BERTRAM",
+    "SemEval 2022 Task 12: Symlink Linking Mathematical Symbols to their Descriptions", "DRS Parsing as Sequence Labeling", "Text-based NP Enrichment"
+]
+
+
+# 데이터 로드 함수
+def load_data(file_path):
+    """JSON 파일에서 데이터를 로드하는 함수"""
+    return pd.read_json(file_path)
+
+
+# 첫 네 개의 텍스트를 추출하는 함수
+def extract_first_four_texts(data):
+    """각 항목에서 첫 네 개의 텍스트를 추출하는 함수"""
+    result = {}
+    for key, value in data.items():
+        texts = [sentence['text'] for sentence in value['x'][:4]]
+        result[key] = texts
+    return result
+
+
+# Selenium 웹 드라이버 설정 함수
 def setup_driver():
     try:
         chrome_options = Options()
@@ -59,338 +133,129 @@ def setup_driver():
         return None
 
 
-def get_links_from_page(driver):
-    try:
-        elements = driver.find_elements(By.CSS_SELECTOR, ".sm-contents-container-items-item a")
-        links = []
-        print(f"[get_links_from_page start]=========================================")
-        for index, elem in enumerate(elements):
-            href = elem.get_attribute('href')
-            print(f"index : {index + 1}, href : {href}")
-            links.append(href)
-        print(f"[get_links_from_page end]=========================================")
-        return links
-    except NoSuchElementException:
-        print("Element not found!")
-        return []
+
+def search_google(driver, url, texts):
+    driver.get(url)
+    search_box = driver.find_element(By.NAME, 'q')
+    search_box.clear()
+    search_box.send_keys(f"{texts}")
+    search_box.send_keys(Keys.RETURN)
 
 
-def get_hrefs_from_links(driver, links):
-    all_hrefs = []
-    print("[get_hrefs_from_links start]=========================================")
-    total_idx = 0
-    for index, link in enumerate(links):
-        print(f"index : {index}, link : {link}")
+
+# 논문 제목을 검색하는 함수
+def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'):
+    """추출된 텍스트를 사용하여 구글에서 논문 제목을 검색하는 함수"""
+    paper_names = {}
+    error_names = {}
+
+    index = 0
+
+    for key, texts in extracted_texts.items():
+        index = index + 1
+        if index == 3:
+            break
+        print(f"============= index: {index}, key : {key}")
+        search_google(driver, url, texts)
+        time.sleep(random.uniform(2, 5))
+
+        # 캡챠 확인
+
         try:
-            driver.get(link)
-            time.sleep(2)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "ol")))
+            WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']"))
+            )
+            print("reCAPTCHA iframe 존재.")
 
-            ol_elements = driver.find_elements(By.CSS_SELECTOR, "ol li a")
+            # reCAPTCHA iframe 으로 변경
+            WebDriverWait(driver, 10).until(
+                EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']"))
+            )
 
-            for idx, elem in enumerate(ol_elements):
-                href = elem.get_attribute('href')
-                total_idx += 1
-                print(f"    inner index : {idx + 1}, link : {href}")
-                print(f"    last total index : {total_idx}")
-                all_hrefs.append(href)
+            # 클릭 the reCAPTCHA checkbox
+            recaptcha_checkbox = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "recaptcha-checkbox-border"))
+            )
 
-        except (NoSuchElementException, TimeoutException):
-            print(f"Error processing link: {link}")
-            continue
-    print("[get_hrefs_from_links end]=========================================")
-    return all_hrefs
-
-# 숫자 기호와 해당 숫자 간의 매핑
-number_map = {
-    '①': '(1)', '②': '(2)', '③': '(3)', '④': '(4)', '⑤': '(5)',
-    '⑥': '(6)', '⑦': '(7)', '⑧': '(8)', '⑨': '(9)', '⑩': '(10)'
-}
-
-def replace_number_symbols(text):
-    for symbol, number in number_map.items():
-        text = text.replace(symbol, number)
-    return text
-
-def replace_colon_with_dot(text):
-    return text.replace(':', '.')
-
-def convert_date_format(text):
-    return re.sub(r'(\d{4})년\s(\d{2})\s(\d{2})일', r'\1.\2.\3', text)
-
-def extract_final_part(title):
-    return title.split(",")[-1].strip()
-
-def replace_brackets(text):
-    return text.replace('[', '(').replace(']', ')')
-
-def convert_verse_format(text):
-    return re.sub(r'(\D+)\s(\d+):(\d+)', r'\1 \2.\3', text)
-
-
-def replace_question_mark(input_string):
-    """문자열에서 ?를 공백으로 바꾸는 함수"""
-    return input_string.replace('?', ' ')
-
-def replace_double_quote(input_string):
-    """문자열에서 "를 '로 바꾸는 함수"""
-    return input_string.replace('"', "'")
-
-
-def extract_text_from_hrefs(driver, hrefs):
-    data_list = []
-    for index, href in enumerate(hrefs):
-        print(f"extract_text_from_hrefs index : {index + 1}, href : {href}")
-        try:
-            driver.get(href)
-            time.sleep(2)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[style='margin-top: 20px; line-height: 2.4rem;']")))
-
-            div_elem = driver.find_element(By.CSS_SELECTOR, "div[style='margin-top: 20px; line-height: 2.4rem;']")
-            span_list = div_elem.find_elements(By.TAG_NAME, "span")
-
-            formatted_text = ""
-
-            ### 마지막 span ###
-
-            # 고전 15:22 / 김남준 목사 / 2011년 01 30일
-            last_span = span_list[-1].text
-            parts = last_span.split("/")
-
-            # 고전 13:10 -> 고전 13.10
-            bible = convert_verse_format(parts[0].strip())
-
-            # 김남준 목사
-            Pastor = parts[1].strip()
-
-            # 2011년 01 30일 -> 2011.01.30
-            date = convert_date_format(parts[2].strip())
-
-
-
-            ### 마지막 전 span ###
-            last_span_2 = span_list[-2].text
-
-            # 기호 숫자 변경 ① -> (1) ...
-            last_span_2_1 = replace_number_symbols(last_span_2)
-
-            last_span_2_new = replace_colon_with_dot(last_span_2_1)
-
-
-
-            if len(span_list) == 3:
-                span_1 = replace_brackets(span_list[0].text)
-                # [2017 장년교구 여름수련회][경륜이 있는 복음 (장년)]목양 받게 하심 빌 1:10 / 김남준 목사 / 2017년 08 14일"
-                # (2017 장년교구 여름수련회)(경륜이 있는 복음 (장년)) 고전 13.10 2011.01.30 , 목양 받게 하심
-                if bible:
-                    formatted_text = f"{span_1} {bible} {date} , {last_span_2_new}"
-                else:
-                    formatted_text = f"{span_1} {date} , {last_span_2_new}"
-
-            if len(span_list) == 4:
-                span_1 = replace_brackets(span_list[0].text)
-                span_2 = replace_brackets(span_list[1].text)
-                if bible:
-                    formatted_text = f"{span_1}{span_2} {bible} {date} , {last_span_2_new}"
-                else:
-                    formatted_text = f"{span_1}{span_2} {date} , {last_span_2_new}"
-
-
-
-            # 폴더 특수문자 제거 ? "
-            formatted_text_1 = replace_question_mark(formatted_text)
-            formatted_text_new = replace_double_quote(formatted_text_1)
-
-            data = {
-                "원제": div_elem.text,
-                "제목": formatted_text_new,
-                "성경": parts[0],
-                "목사": Pastor,
-                "날짜": date,
-                "url": href
-            }
-            print(f"    제목 : {formatted_text}")
-            data_list.append(data)
-        except (NoSuchElementException, TimeoutException):
-            print(f"Error processing href: {href}")
-            continue
-
-    return data_list
-
-
-def wait_for_download(download_dir, timeout=60):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        for file_name in os.listdir(download_dir):
-            if file_name.endswith('.crdownload'):
-                continue
-            if file_name.endswith('.mp3'):
-                return file_name
-        time.sleep(1)
-    return None
-
-
-def click_title_links(driver, data_list, number = 0):
-    download_dir = os.path.abspath("downloads")
-    complete_dir = os.path.join(download_dir, "complete")
-    if not os.path.exists(complete_dir):
-        os.makedirs(complete_dir)
-
-    for index, data in enumerate(data_list):
-        print(f"index : {number + index + 1}, title : {data['제목']}")
-        try:
-            driver.get(data["url"])
+            # 로봇 방지 클릭
+            recaptcha_checkbox.click()
             time.sleep(3)
 
-            # "음성설교" 텍스트가 포함된 버튼 찾기 (최대 10초 대기)
-            button = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//button[contains(text(), '음성설교')]"))
-            )
-            # 버튼 클릭
-            button.click()
-            print(f"음성설교 클릭")
+            # 안전한 검색을 위해 재 검색 시도
+            search_google(driver, url, texts)
+            print("크롤링 재시도...")
 
-            time.sleep(6)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//iframe")))
-            # 첫 번째 iframe 요소 찾기
-            iframe = driver.find_element(By.XPATH, "//iframe")
+            time.sleep(random.uniform(2, 5))
 
-            # 첫 번째 iframe으로 전환
-            time.sleep(1)
-            driver.switch_to.frame(iframe)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "title__h2")))
+            paper_names, error_names = paper_name(driver, key, paper_names, error_names)
+            if key in error_names:
+                pass
 
-            a_elem = driver.find_element(By.CLASS_NAME, "title__h2")
-
-            href = a_elem.get_attribute('href')
-
-            print(f"href : {href}")
-
-            if href:
-                driver.get(href)
-                time.sleep(5)
-                sc_button_more = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="More"]')))
-                sc_button_more.click()
-                print(f"More 클릭")
-
-                time.sleep(1)
-                download_button = driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Download this track"]')
-                download_button.click()
-                print(f"다운로드 클릭")
-
-                downloaded_file_name = wait_for_download(download_dir, timeout=60)
-                if downloaded_file_name:
-                    old_file_path = os.path.join(download_dir, downloaded_file_name)
-                    new_file_path = os.path.join(download_dir, f"{data['제목']}.mp3")
-                    os.rename(old_file_path, new_file_path)
-                    final_path = os.path.join(complete_dir, f"{data['제목']}.mp3")
-                    os.rename(new_file_path, final_path)
-                    print(f"Download complete and file moved to {final_path}")
-                else:
-                    print("Download failed or timed out. ")
-
-            else:
-                print(f"No href found for the specified a tag in {data['url']}")
-
-            driver.switch_to.default_content()
-
-        except (NoSuchElementException, TimeoutException):
-            print(f"Could not find the specified a tag in {data['url']}")
-            continue
+        except TimeoutException:
+            print("reCAPTCHA iframe 미존재.")
+            paper_names, error_names = paper_name(driver, key, paper_names, error_names)
+            if key in error_names:
+                pass
 
 
-def save_data_list_to_excel(data_list, filename="data_list.xlsx"):
-    df = pd.DataFrame(data_list)
-    df.to_excel(filename, index=False)
+    return paper_names, error_names
 
 
-# 처음부터 시작하는경우
+def paper_name(driver, key, paper_names, error_names):
+    try:
+        paper_name = driver.find_element(By.XPATH, '/html/body/div[4]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
+        print("paper_name1:", paper_name)
+        paper_names[key] = paper_name
+    except:
+        try:
+            paper_name = driver.find_element(By.XPATH, '/html/body/div[5]/div/div[13]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
+            print("paper_name2:", paper_name)
+            paper_names[key] = paper_name
+        except:
+            try:
+                paper_name = driver.find_element(By.XPATH, '/html/body/div[5]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
+                print("paper_name3:", paper_name)
+                paper_names[key] = paper_name
+            except:
+                try:
+                    paper_name = driver.find_element(By.XPATH, '/html/body/div[4]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div[1]/div/div/span/a/h3').text
+                    print("paper_name4:", paper_name)
+                    paper_names[key] = paper_name
+                except:
+                    error_names[key] = "Not Found"
+                    print("error!!")
+    time.sleep(0.5)
+    return paper_names, error_names
+
+
+# CSV 파일로 저장하는 함수
+def save_to_csv(paper_names, file_path):
+    """paper_names 딕셔너리를 CSV 파일로 저장하는 함수"""
+    df = pd.DataFrame(list(paper_names.items()), columns=['Key', 'Paper Name'])
+    df.to_csv(file_path, index=False)
+    print(f"Data saved to {file_path}")
+
+
+# 메인 함수
 def main():
-    driver = setup_driver()
-    if driver is not None:
-        url = "https://www.eltechkorea.com:444/knj/Sermon/Index"
-        driver.get(url)
-        time.sleep(2)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "sm-contents-container-items-item")))
+    """메인 실행 함수"""
+    data = load_data('full_raw.json')  # 데이터 로드
+    extracted_texts = extract_first_four_texts(data)  # 텍스트 추출
 
-        # 전체 페이지 목록 리스트
-        links = get_links_from_page(driver)
-        print(f">>>>> Total links: {len(links)}")
+    for key, texts in extracted_texts.items():
+        print(f"{texts}")
 
-        # 리스트 안에 새부 리스트 포함
-        all_hrefs = get_hrefs_from_links(driver, links)
-        print(f">>>>> Total all_hrefs: {len(all_hrefs)}")
+    driver = setup_driver()  # 웹 드라이버 설정
+    paper_names, error_names = search_paper_titles(driver, extracted_texts)  # 논문 제목 검색
+    driver.quit()  # 드라이버 종료
 
-        data_list = extract_text_from_hrefs(driver, all_hrefs)
-        print(f">>>>> Total data_list: {len(data_list)}")
+    print("Paper Names:", paper_names)
+    print("Errors:", error_names)
 
-        # 엑셀로 data_list 저장
-        save_data_list_to_excel(data_list)
-
-        # 엑셀 파일에서 data_list 불러오기
-        data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
-
-        # 음원 다운로드
-        click_title_links(driver, data_list)
-        driver.quit()
+    # CSV 파일로 저장
+    save_to_csv(paper_names, 'paper_names.csv')
 
 
-# 엑셀로 시작하는 경우
-def main_excel(number):
-    driver = setup_driver()
-    if driver is not None:
-        # 엑셀 파일에서 data_list 불러오기
-        data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
-
-        ### 번호 중간부터 ###
-        # 앞의 number개를 자르고 나머지 리스트를 사용
-        trimmed_data_list = data_list[number:]
-
-        print(f"시작 데이터 : {trimmed_data_list[0]}")
-
-        print(f"[목록확인 시작]==========================")
-        # 목록 확인
-        for index, item in enumerate(trimmed_data_list):
-            print(f"index : {number + index + 1}, item : {item}")
-
-        print(f"[목록확인 끝]===========================")
-
-        # 음원 다운로드
-        click_title_links(driver, trimmed_data_list, number)
-        driver.quit()
-
-
-
-# 엑셀로 시작하는 경우
-def filter_excel(number):
-    driver = setup_driver()
-    if driver is not None:
-        # 엑셀 파일에서 data_list 불러오기
-        data_list = pd.read_excel("data_filter.xlsx").to_dict(orient='records')
-
-        ### 번호 중간부터 ###
-        # 앞의 12개를 자르고 나머지 리스트를 사용
-        trimmed_data_list = data_list[number:]
-
-        print(f"시작 데이터 : {trimmed_data_list[0]}")
-
-        # 목록 확인
-        for index, item in enumerate(trimmed_data_list):
-            print(f"index : {index + number}, item : {item}")
-
-        # 음원 다운로드
-        click_title_links(driver, trimmed_data_list)
-        driver.quit()
-
-
-
+# 프로그램 실행
 if __name__ == "__main__":
-
-    #처음부터
-    #main()
-
-    #시작하는 번호 입력
-    main_excel(160)
-
-    #시작하는 번호 입력
-    # filter_excel(0)
+    main()
