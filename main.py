@@ -112,7 +112,7 @@ def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'
         index = index + 1
         print(f"============= index: {index}, key : {key}")
 
-        if index < 41:
+        if index < 808:
             continue
 
         search_google(driver, url, texts)
