@@ -18,13 +18,16 @@ import random
 import os
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 
+
 # SSL 설정 (인증서 검증 비활성화)
 ssl._create_default_https_context = ssl._create_unverified_context
+
 
 # 경고 무시
 warnings.filterwarnings('ignore')
 
-# 논문 제목
+
+# 제목 리스트
 some_paper = [
     "Themes in the work of Margaret Masterman", "Toward High Performance Machine Translation: Preliminary Results from Massively Parallel Memory-Based Translation on SNAP*",
     "Interactive multilingual text generation for a monolingual user", "Corpora and Machine Translation",
@@ -133,7 +136,7 @@ def setup_driver():
         return None
 
 
-
+# 구글 검색
 def search_google(driver, url, texts):
     driver.get(url)
     search_box = driver.find_element(By.NAME, 'q')
@@ -142,10 +145,9 @@ def search_google(driver, url, texts):
     search_box.send_keys(Keys.RETURN)
 
 
-
-# 논문 제목을 검색하는 함수
+# 제목을 검색하는 함수
 def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'):
-    """추출된 텍스트를 사용하여 구글에서 논문 제목을 검색하는 함수"""
+    """추출된 텍스트를 사용하여 구글에서 제목을 검색하는 함수"""
     paper_names = {}
     error_names = {}
 
@@ -179,6 +181,11 @@ def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'
             recaptcha_checkbox.click()
             time.sleep(3)
 
+
+
+
+
+
             # 안전한 검색을 위해 재 검색 시도
             search_google(driver, url, texts)
             print("크롤링 재시도...")
@@ -199,6 +206,7 @@ def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'
     return paper_names, error_names
 
 
+# 제목을 가져오는 함수
 def paper_name(driver, key, paper_names, error_names):
     try:
         paper_name = driver.find_element(By.XPATH, '/html/body/div[4]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
@@ -244,7 +252,7 @@ def main():
         print(f"{texts}")
 
     driver = setup_driver()  # 웹 드라이버 설정
-    paper_names, error_names = search_paper_titles(driver, extracted_texts)  # 논문 제목 검색
+    paper_names, error_names = search_paper_titles(driver, extracted_texts)  # 제목 검색
     driver.quit()  # 드라이버 종료
 
     print("========================================")

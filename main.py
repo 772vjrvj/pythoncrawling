@@ -17,6 +17,8 @@ import ssl
 import random
 import os
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+import speech_recognition as sr
+import requests
 
 # SSL 설정 (인증서 검증 비활성화)
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -26,46 +28,7 @@ warnings.filterwarnings('ignore')
 
 # 논문 제목
 some_paper = [
-    "Themes in the work of Margaret Masterman", "Toward High Performance Machine Translation: Preliminary Results from Massively Parallel Memory-Based Translation on SNAP*",
-    "Interactive multilingual text generation for a monolingual user", "Corpora and Machine Translation",
-    "A Parameter-Based Message-Passing Parser for MT of Korean and English", "DEVELOPING AND EVALUATING A PROBABILISTIC LR PARSER OF PART-OF-SPEECH AND PUNCTUATION LABELS*",
-    "Associating semantic components with intersective Levin classes", "Harmonised large-scale syntactic/semantic lexicons: a European multilingual infrastructure",
-    "NEW TABULAR ALGORITHMS FOR LIG PARSING", "Identification et catégorisation automatiques des anthroponymes du Franc ¸ais",
-    "Word Formation in Computational Linguistics", "Une caractérisation de la pertinence pour les actions de référence", "Non-Contiguous Tree Parsing",
-    "Europarl: A Parallel Corpus for Statistical Machine Translation", "Translation of Multiword Expressions Using Parallel Suffix Arrays",
-    "Rapid development of RBMT systems for related languages", "The LIUM Arabic/English Statistical Machine Translation System for IWSLT 2008",
-    "Can Semantic Role Labeling Improve SMT?", "Analyse morphologique en terminologie biomédicale par alignement et apprentissage non-supervisé",
-    "The DCU Machine Translation Systems for IWSLT 2011", "A User-Based Usability Assessment of Raw Machine Translated Technical Instructions",
-    "ROI Analysis model for Language Service Providers", "Comparison of post-editing productivity between professional translators and lay users",
-    "Effects of Word Alignment Visualization on Post-Editing Quality & Speed †", "Factored Neural Machine Translation Architectures",
-    "Analyse et évolution de la compréhension de termes techniques", "Public Apologies in India -Semantics, Sentiment and Emotion",
-    "A Language Invariant Neural Method for TimeML Event Detection", "Diverse dialogue generation with context dependent dynamic loss function",
-    "XED: A Multilingual Dataset for Sentiment Analysis and Emotion Detection", "Entity Attribute Relation Extraction with Attribute-Aware Embeddings",
-    "SimsterQ: A Similarity based Clustering Approach to Opinion Question Answering", "On the weak link between importance and prunability of attention heads",
-    "Interpretable Entity Representations through Large-Scale Typing", "Generalizable and Explainable Dialogue Generation via Explicit Action Learning",
-    "Controlled Text Generation with Adversarial Learning", "ReINTEL: A Multimodal Data Challenge for Responsible Information Identification on Social Network Sites",
-    "Embed More Ignore Less (EMIL): Exploiting Enriched Representations for Arabic NLP", "Control Image Captioning Spatially and Temporally",
-    "Coreference Reasoning in Machine Reading Comprehension", "Peru is Multilingual, Its Machine Translation Should Be Too?",
-    "CONDA: a CONtextual Dual-Annotated dataset for in-game toxicity understanding and detection", "Modeling Users and Online Communities for Abuse Detection: A Position on Ethics and Explainability",
-    "Situation-Specific Multimodal Feature Adaptation", "Welcome to the 18th biennial conference of the International Association of Machine Translation (IAMT) -MT Summit 2021 Virtual!",
-    "End-to-end ASR to jointly predict transcriptions and linguistic annotations", "Double Perturbation: On the Robustness of Robustness and Counterfactual Bias Evaluation",
-    "RocketQA: An Optimized Training Approach to Dense Passage Retrieval for Open-Domain Question Answering", "On the Usability of Transformers-based models for a French Question-Answering task",
-    "A Semi-Supervised Approach to Detect Toxic Comments", "Unsupervised Representation Disentanglement of Text: An Evaluation on Synthetic Datasets",
-    "Amrita_CEN_NLP@SDP2021 Task A and B", "NLRG at SemEval-2021 Task 5: Toxic Spans Detection Leveraging BERT-based Token Classification and Span Prediction Techniques",
-    "DeepBlueAI at SemEval-2021 Task 1: Lexical Complexity Prediction with A Deep Ensemble Approach", "TransWiC at SemEval-2021 Task 2: Transformer-based Multilingual and Cross-lingual Word-in-Context Disambiguation",
-    "Transformer-based Multi-Task Learning for Adverse Effect Mention Analysis in Tweets", "Memory-efficient Transformers via Top-k Attention",
-    "Learning to Rank in the Age of Muppets: Effectiveness-Efficiency Tradeoffs in Multi-Stage Ranking", "Classifying Argumentative Relations Using Logical Mechanisms and Argumentation Schemes",
-    "TextGraphs 2021 Shared Task on Multi-Hop Inference for Explanation Regeneration", "A Fine-Grained Analysis of BERTScore",
-    "Decoding Part-of-Speech from Human EEG Signals", "BRIO: Bringing Order to Abstractive Summarization",
-    "Phone-ing it in: Towards Flexible, Multi-Modal Language Model Training using Phonetic Representations of Data",
-    "Multitasking Framework for Unsupervised Simple Definition Generation", "Situated Dialogue Learning through Procedural Environment Generation",
-    "USST's System for AutoSimTrans 2022", "Codenames as a Game of Co-occurrence Counting",
-    "Estimating word co-occurrence probabilities from pretrained static embeddings using a log-bilinear model",
-    "MuCoT: Multilingual Contrastive Training for Question-Answering in Low-resource Languages", "Developing Machine Translation Engines for Multilingual Participatory Spaces",
-    "Diversifying Content Generation for Commonsense Reasoning with Mixture of Knowledge Graph Experts", "KD-VLP: Improving End-to-End Vision-and-Language Pretraining with Object Knowledge Distillation",
-    "Identifying and Mitigating Spurious Correlations for Improving Robustness in NLP Models", "Looking for a Handsome Carpenter! Debiasing GPT-3 Job Advertisements",
-    "Dual-Channel Evidence Fusion for Fact Verification over Texts and Tables", "drsphelps at SemEval-2022 Task 2: Learning idiom representations using BERTRAM",
-    "SemEval 2022 Task 12: Symlink Linking Mathematical Symbols to their Descriptions", "DRS Parsing as Sequence Labeling", "Text-based NP Enrichment"
+    # 논문 제목 리스트...
 ]
 
 
@@ -89,6 +52,9 @@ def extract_first_four_texts(data):
 def setup_driver():
     try:
         chrome_options = Options()
+
+        ##  크롬 브라우저에 chrome://version/ 검색 해서
+        ## 프로필 경로      C:\Users\772vj\AppData\Local\Google\Chrome\User Data\Default 에서 Default만 profile에 넣는다.
         user_data_dir = "C:\\Users\\772vj\\AppData\\Local\\Google\\Chrome\\User Data"
         profile = "Default"
 
@@ -133,7 +99,6 @@ def setup_driver():
         return None
 
 
-
 def search_google(driver, url, texts):
     driver.get(url)
     search_box = driver.find_element(By.NAME, 'q')
@@ -141,6 +106,24 @@ def search_google(driver, url, texts):
     search_box.send_keys(f"{texts}")
     search_box.send_keys(Keys.RETURN)
 
+
+# 음성 파일을 텍스트로 변환하는 함수
+def audio_to_text(audio_url):
+    r = sr.Recognizer()
+    response = requests.get(audio_url)
+    with open("audio.mp3", "wb") as file:
+        file.write(response.content)
+
+    with sr.AudioFile("audio.mp3") as source:
+        audio = r.record(source)
+    try:
+        text = r.recognize_google(audio)
+        return text
+    except sr.UnknownValueError:
+        return None
+    except sr.RequestError as e:
+        print(f"Could not request results from Google Speech Recognition service; {e}")
+        return None
 
 
 # 논문 제목을 검색하는 함수
@@ -150,17 +133,18 @@ def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'
     error_names = {}
 
     index = 0
-
+    print(f"len {len(extracted_texts.items())}")
     for key, texts in extracted_texts.items():
+        paper_names[key] = ""
+        error_names[key] = ""
+
         index = index + 1
-        if index == 3:
-            break
         print(f"============= index: {index}, key : {key}")
         search_google(driver, url, texts)
-        time.sleep(random.uniform(2, 5))
+
+        time.sleep(random.uniform(3, 7))
 
         # 캡챠 확인
-
         try:
             WebDriverWait(driver, 3).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']"))
@@ -179,7 +163,55 @@ def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'
 
             # 로봇 방지 클릭
             recaptcha_checkbox.click()
+            print("로봇 방지 클릭.")
             time.sleep(3)
+
+            # Switch back to the default content
+            driver.switch_to.default_content()
+
+            # "reCAPTCHA 보안문자 2분 후 만료" 확인
+            try:
+                print("오디오 버튼 확인")
+                # 새로운 reCAPTCHA 보안문자 iframe으로 전환
+                WebDriverWait(driver, 10).until(
+                    EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe[title*='보안문자']"))
+                )
+                print("오디오 버튼 확인")
+                time.sleep(5)
+
+                # 오디오 버튼 클릭
+                audio_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "recaptcha-audio-button"))
+                )
+                audio_button.click()
+                print("오디오 버튼 클릭")
+                time.sleep(5)
+
+                # 오디오 재생 버튼 클릭
+                audio_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.rc-button-audio:not([disabled])"))
+                )
+                audio_button.click()
+                print("오디오 재생 버튼 클릭")
+
+                # 오디오 URL 가져오기
+                audio_source = driver.find_element(By.ID, "audio-source")
+                audio_url = audio_source.get_attribute("src")
+
+                # 오디오를 텍스트로 변환
+                audio_text = audio_to_text(audio_url)
+
+                if (audio_text):
+                    # 텍스트 입력
+                    audio_response_input = driver.find_element(By.ID, "audio-response")
+                    audio_response_input.send_keys(audio_text)
+
+                    # 확인 버튼 클릭
+                    verify_button = driver.find_element(By.ID, "recaptcha-verify-button")
+                    verify_button.click()
+                    time.sleep(3)
+            except NoSuchElementException:
+                print("보안문자 미확인.")
 
             # 안전한 검색을 위해 재 검색 시도
             search_google(driver, url, texts)
@@ -194,9 +226,12 @@ def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'
         except TimeoutException:
             print("reCAPTCHA iframe 미존재.")
             paper_names, error_names = paper_name(driver, key, paper_names, error_names)
+
             if key in error_names:
                 pass
 
+        # 매번 루프 끝날 때마다 현재까지의 결과를 저장
+        save_to_csv(paper_names, 'paper_names.csv')
 
     return paper_names, error_names
 
@@ -232,7 +267,7 @@ def paper_name(driver, key, paper_names, error_names):
 def save_to_csv(paper_names, file_path):
     """paper_names 딕셔너리를 CSV 파일로 저장하는 함수"""
     df = pd.DataFrame(list(paper_names.items()), columns=['Key', 'Paper Name'])
-    df.to_csv(file_path, index=False)
+    df.to_csv(file_path, index=False, encoding='utf-8-sig')
     print(f"Data saved to {file_path}")
 
 
