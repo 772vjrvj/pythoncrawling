@@ -31,10 +31,12 @@ some_paper = [
     # 논문 제목 리스트...
 ]
 
+
 # 데이터 로드 함수
 def load_data(file_path):
     """JSON 파일에서 데이터를 로드하는 함수"""
     return pd.read_json(file_path)
+
 
 # 첫 네 개의 텍스트를 추출하는 함수
 def extract_first_four_texts(data):
@@ -44,6 +46,7 @@ def extract_first_four_texts(data):
         texts = [sentence['text'] for sentence in value['x'][:4]]
         result[key] = texts
     return result
+
 
 # Selenium 웹 드라이버 설정 함수
 def setup_driver():
@@ -95,6 +98,7 @@ def setup_driver():
         print(f"Error setting up the WebDriver: {e}")
         return None
 
+
 def search_google(driver, url, texts):
     driver.get(url)
     search_box = driver.find_element(By.NAME, 'q')
@@ -103,71 +107,169 @@ def search_google(driver, url, texts):
     search_box.send_keys(Keys.RETURN)
 
 
+# 음성 파일을 텍스트로 변환하는 함수
+def audio_to_text(audio_url):
+    r = sr.Recognizer()
+    response = requests.get(audio_url)
+    with open("audio.mp3", "wb") as file:
+        file.write(response.content)
+
+    with sr.AudioFile("audio.mp3") as source:
+        audio = r.record(source)
+    try:
+        text = r.recognize_google(audio)
+        return text
+    except sr.UnknownValueError:
+        return None
+    except sr.RequestError as e:
+        print(f"Could not request results from Google Speech Recognition service; {e}")
+        return None
+
+
 # 논문 제목을 검색하는 함수
 def search_paper_titles(driver, extracted_texts, url='https://www.google.co.kr/'):
     """추출된 텍스트를 사용하여 구글에서 논문 제목을 검색하는 함수"""
+    paper_names = {}
+    error_names = {}
+
     index = 0
     print(f"len {len(extracted_texts.items())}")
     for key, texts in extracted_texts.items():
+        paper_names[key] = ""
+        error_names[key] = ""
+
         index = index + 1
         print(f"============= index: {index}, key : {key}")
-
-        if index < 41:
-            continue
-
         search_google(driver, url, texts)
-        time.sleep(random.uniform(2, 3))
 
+        time.sleep(random.uniform(3, 7))
 
         # 캡챠 확인
         try:
-            WebDriverWait(driver, 2).until(
+            WebDriverWait(driver, 3).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']"))
             )
             print("reCAPTCHA iframe 존재.")
-            input("캡차 해결")
+
+            # reCAPTCHA iframe 으로 변경
+            WebDriverWait(driver, 10).until(
+                EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']"))
+            )
+
+            # 클릭 the reCAPTCHA checkbox
+            recaptcha_checkbox = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "recaptcha-checkbox-border"))
+            )
+
+            # 로봇 방지 클릭
+            recaptcha_checkbox.click()
+            print("로봇 방지 클릭.")
+            time.sleep(3)
+
+            # Switch back to the default content
+            driver.switch_to.default_content()
+
+            # "reCAPTCHA 보안문자 2분 후 만료" 확인
+            try:
+                print("오디오 버튼 확인")
+                # 새로운 reCAPTCHA 보안문자 iframe으로 전환
+                WebDriverWait(driver, 10).until(
+                    EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe[title*='보안문자']"))
+                )
+                print("오디오 버튼 확인")
+                time.sleep(5)
+
+                # 오디오 버튼 클릭
+                audio_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "recaptcha-audio-button"))
+                )
+                audio_button.click()
+                print("오디오 버튼 클릭")
+                time.sleep(5)
+
+                # 오디오 재생 버튼 클릭
+                audio_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.rc-button-audio:not([disabled])"))
+                )
+                audio_button.click()
+                print("오디오 재생 버튼 클릭")
+
+                # 오디오 URL 가져오기
+                audio_source = driver.find_element(By.ID, "audio-source")
+                audio_url = audio_source.get_attribute("src")
+
+                # 오디오를 텍스트로 변환
+                audio_text = audio_to_text(audio_url)
+
+                if (audio_text):
+                    # 텍스트 입력
+                    audio_response_input = driver.find_element(By.ID, "audio-response")
+                    audio_response_input.send_keys(audio_text)
+
+                    # 확인 버튼 클릭
+                    verify_button = driver.find_element(By.ID, "recaptcha-verify-button")
+                    verify_button.click()
+                    time.sleep(3)
+            except NoSuchElementException:
+                print("보안문자 미확인.")
+
+            # 안전한 검색을 위해 재 검색 시도
             search_google(driver, url, texts)
-            time.sleep(random.uniform(2, 3))
-            value = paper_name(driver)
-            save_to_excel({'번호': index, 'key': key, 'value': value, 'text': texts}, 'paper_names.xlsx')
+            print("크롤링 재시도...")
+
+            time.sleep(random.uniform(2, 5))
+
+            paper_names, error_names = paper_name(driver, key, paper_names, error_names)
+            if key in error_names:
+                pass
+
         except TimeoutException:
             print("reCAPTCHA iframe 미존재.")
-            value = paper_name(driver)
-            # 매번 루프 끝날 때마다 현재까지의 결과를 저장
-            save_to_excel({'번호': index, 'key': key, 'value': value, 'text': texts}, 'paper_names.xlsx')
+            paper_names, error_names = paper_name(driver, key, paper_names, error_names)
 
-def paper_name(driver):
-    paper_name = ''
+            if key in error_names:
+                pass
+
+        # 매번 루프 끝날 때마다 현재까지의 결과를 저장
+        save_to_csv(paper_names, 'paper_names.csv')
+
+    return paper_names, error_names
+
+
+def paper_name(driver, key, paper_names, error_names):
     try:
         paper_name = driver.find_element(By.XPATH, '/html/body/div[4]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
         print("paper_name1:", paper_name)
+        paper_names[key] = paper_name
     except:
         try:
             paper_name = driver.find_element(By.XPATH, '/html/body/div[5]/div/div[13]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
             print("paper_name2:", paper_name)
+            paper_names[key] = paper_name
         except:
             try:
                 paper_name = driver.find_element(By.XPATH, '/html/body/div[5]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/span/a/h3').text
                 print("paper_name3:", paper_name)
+                paper_names[key] = paper_name
             except:
                 try:
                     paper_name = driver.find_element(By.XPATH, '/html/body/div[4]/div/div[14]/div/div[2]/div[2]/div/div/div[1]/div/div/div[1]/div/div/span/a/h3').text
                     print("paper_name4:", paper_name)
+                    paper_names[key] = paper_name
                 except:
+                    error_names[key] = "Not Found"
                     print("error!!")
-    return paper_name
+    time.sleep(0.5)
+    return paper_names, error_names
 
-# 엑셀 파일로 저장하는 함수
-def save_to_excel(data, file_path):
-    """data 딕셔너리를 엑셀 파일에 추가하는 함수"""
-    df = pd.DataFrame([data])
-    if os.path.exists(file_path):
-        existing_df = pd.read_excel(file_path)
-        combined_df = pd.concat([existing_df, df], ignore_index=True)
-        combined_df.to_excel(file_path, index=False)
-    else:
-        df.to_excel(file_path, index=False)
+
+# CSV 파일로 저장하는 함수
+def save_to_csv(paper_names, file_path):
+    """paper_names 딕셔너리를 CSV 파일로 저장하는 함수"""
+    df = pd.DataFrame(list(paper_names.items()), columns=['Key', 'Paper Name'])
+    df.to_csv(file_path, index=False, encoding='utf-8-sig')
     print(f"Data saved to {file_path}")
+
 
 # 메인 함수
 def main():
@@ -179,8 +281,15 @@ def main():
         print(f"{texts}")
 
     driver = setup_driver()  # 웹 드라이버 설정
-    search_paper_titles(driver, extracted_texts)  # 논문 제목 검색
+    paper_names, error_names = search_paper_titles(driver, extracted_texts)  # 논문 제목 검색
     driver.quit()  # 드라이버 종료
+
+    print("Paper Names:", paper_names)
+    print("Errors:", error_names)
+
+    # CSV 파일로 저장
+    save_to_csv(paper_names, 'paper_names.csv')
+
 
 # 프로그램 실행
 if __name__ == "__main__":
