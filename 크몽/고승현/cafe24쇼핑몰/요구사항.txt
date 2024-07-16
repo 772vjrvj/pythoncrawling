@@ -32,3 +32,27 @@ Message: unexpected alert open: {Alert text : 회원만 접근권한이 있습�
 그 크롤링은 url을 입력햇을때
 (상품 리스트, 상품 이미지, 상세 이미지, 상품 옵션, 배너 이미지 등)을 크롤링해야하고
 자바스크립트로 코딩을 해야한다
+
+
+
+
+
+
+
+
+필요값 정리 -> 가능여부 판정 -> 견적 산출 -> 계약 -> 작업 -> 소스코드 전달 -> (자체적) 테스트 -> 수정사항 전달 -> 수정 -> 완료
+
+
+https://dailyjou.com/
+https://cherryme.kr/
+https://beidelli.com/
+https://www.ba-on.com/
+https://www.hotping.co.kr/
+https://www.pasteltime.co.kr/
+https://ganaesra.com/
+https://k-club.co.kr/
+https://needsome.co.kr/
+https://www.benito.co.kr/
+https://nearwear.co.kr/index.html
+https://loulouseoul.com/
+
