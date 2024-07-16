@@ -315,6 +315,8 @@ def main():
         driver.quit()
 
 
+# 시작하는 번호 입력
+# 시작하는 번호 부터 다운로드
 # 엑셀로 시작하는 경우
 def main_excel(number):
     driver = setup_driver()
@@ -337,10 +339,50 @@ def main_excel(number):
         driver.quit()
 
 
+# pythoncrawling 경로에 data_list.xlsx 파일이 존재
+# downloads/complete 안에 다운로드 받운 mp3파일들이 존재
+# data_list.xlsx파일안에 제목들과 downloads/complete안에 mp3로 시작하는 파일들의 이름들을 비교에서
+# data_list.xlsx에 존재하지 않은 이름들을 가져와서 다운로드 한다.
+def main_excel_filter():
+    driver = setup_driver()
+    if driver is not None:
+        # 엑셀 파일에서 data_list 불러오기
+        data_list = pd.read_excel("data_list.xlsx").to_dict(orient='records')
+
+        # downloads 폴더 안에 complete 폴더 내 .mp3 파일 이름 리스트
+        download_dir = os.path.abspath("downloads")
+        complete_dir = os.path.join(download_dir, "complete")
+        existing_files = [f.replace(".mp3", "") for f in os.listdir(complete_dir) if f.endswith(".mp3")]
+
+        print(f"===============================================")
+        for index, data in enumerate(existing_files):
+            print(f"index : {index}, data : {data}")
+        print(f"===============================================")
+        print(f"existing_files len : {len(existing_files)}")
+        print(f"===============================================")
+
+        # 기존 파일과 일치하지 않는 제목만 필터링
+        filtered_data_list = [data for data in data_list if data['제목'] not in existing_files]
+        for index, data in enumerate(filtered_data_list):
+            print(f"index : {index + 1}, data : {data}")
+        print(f"===============================================")
+        print(f"filtered_data_list len : {len(filtered_data_list)}")
+        print(f"===============================================")
+
+        # 음원 다운로드
+        click_title_links(driver, filtered_data_list)
+        driver.quit()
+
 
 if __name__ == "__main__":
+    # main()
 
-    #main()
+    # 시작하는 번호 입력
+    # 시작하는 번호 부터 다운로드
+    # main_excel(0)
 
-    #시작하는 번호 입력
-    main_excel(0)
+    # pythoncrawling 경로에 data_list.xlsx 파일이 존재
+    # downloads/complete 안에 다운로드 받운 mp3파일들이 존재
+    # data_list.xlsx파일안에 제목들과 downloads/complete안에 mp3로 시작하는 파일들의 이름들을 비교에서
+    # data_list.xlsx에 존재하지 않은 이름들을 가져와서 다운로드 한다.
+    main_excel_filter()
