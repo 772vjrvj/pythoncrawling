@@ -67,6 +67,14 @@ async function scrapeProductDetails(page, url, categoryText) {
         product['상품 리스트'] = null;
     }
 
+    try {
+        const detailImgs = await page.$$eval('.cont img', imgs => imgs.map(img => img.src));
+        detailImgs.forEach((src, idx) => {
+            product[`상세 이미지-${idx + 1}`] = src;
+        });
+    } catch (error) {
+        // 상세 이미지가 없을 경우 처리하지 않음
+    }
 
     console.log(`Scraped product details: ${JSON.stringify(product)}`);
     return product;

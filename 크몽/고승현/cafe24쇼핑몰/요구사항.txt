@@ -3,15 +3,10 @@ https://addmore.co.kr/
 카테고리 동일 O
 xans-element- xans-layout xans-layout-category
 
-#
 카테고리르 돌면서 클릭한다.
-
-
 
 상품 목록
 ul class prdList 안에 li
-
-
 https://ba-on.com/
 
 카테고리 동일 O
@@ -34,14 +29,18 @@ Message: unexpected alert open: {Alert text : 회원만 접근권한이 있습�
 자바스크립트로 코딩을 해야한다
 
 
-
-
-
-
-
-
 필요값 정리 -> 가능여부 판정 -> 견적 산출 -> 계약 -> 작업 -> 소스코드 전달 -> (자체적) 테스트 -> 수정사항 전달 -> 수정 -> 완료
 
+
+npm init -y
+npm install puppeteer xlsx
+node node.js
+
+npm -v
+10.7.0
+
+node -v
+v20.15.1
 
 https://dailyjou.com/
 https://cherryme.kr/
