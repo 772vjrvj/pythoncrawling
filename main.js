@@ -219,7 +219,6 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
 
                         productDetails.push(productDetail);
 
-                        console.log("reviews : ", JSON.stringify(reviews, null, 2));
                         productRepls.push(...reviews);
                     }
                     pageNum++;
