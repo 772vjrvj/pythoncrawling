@@ -55,3 +55,121 @@ https://www.benito.co.kr/
 https://nearwear.co.kr/index.html
 https://loulouseoul.com/
 
+
+
+쇼핑몰 정보 탭
+
+
+"쇼핑몰 이름"은 meta태그 site_name의 content
+<meta property="og:site_name" content="데일리쥬">
+obj["쇼핑몰 이름"] = 데일리쥬
+
+"쇼핑몰 UID" 는 uid= 뒤에
+<script type="text/javascript" async="" src="//cfa-js.cafe24.com/cfa.html?uid=cocomimi93&amp;sno=1&amp;stype=e&amp;type=conn&amp;CUK45=CFAE_CUK45.cocomimi93_1.H9HCB3X.1721150667993&amp;CID=CFAE_CID.cocomimi93_1.5QIZOVK.1721223322103&amp;LC=&amp;oLC1=&amp;oLC2=CFAE_LC.cocomimi93_1.9999999.1721223322103&amp;CUK1Y=CFAE_CUK1Y.cocomimi93_1.H9HCB3X.1721150667993&amp;CVID=CVID.525d575b555c5d500a036b00.1721223322103&amp;CVID_Y=CVID_Y.525d575b555c5d500a036b00.1721150667993&amp;CVID_AD=&amp;CVID_E=&amp;new_visit=F&amp;path_role=MAIN&amp;mem_id=&amp;udim=1920*1080&amp;t=1721223322103&amp;uref=&amp;url=https%3A%2F%2Fdailyjou.com%2F&amp;ttp=&amp;mkt_click_type=&amp;mkt_click_id=&amp;cfa_fp=eb7da284d0550f26f1874f04b143a9b3"></script>
+obj["쇼핑몰 UID"] = cocomimi93
+
+"쇼핑몰 URL"은  meta태그 url의 content
+<meta property="og:url" content="https://dailyjou.com">
+obj["쇼핑몰 URL"] = "https://dailyjou.com"
+
+"파비콘 이미지"는  쇼핑몰 url + 아래에 href
+<link rel="shortcut icon" href="/web/upload/favicon-c0e646eaf7488803048f776f1e035e01.ico">
+obj["파비콘 이미지"] = 쇼핑몰 url + href
+
+"테마컬러"는 body 태그 background 없으면 공백
+obj["테마컬러"] = background값
+
+"쇼핑몰 대표 이미지"는  url + 아래 img의 src
+<a href="/index.html"><!--span>데일리쥬</span--><img src="/web/upload/yangji_pc_ether/main_logo.svg" alt="로고"></a>
+obj["쇼핑몰 대표 이미지"] = url + img의 src
+
+
+
+obj["회사명"], obj["쇼핑몰 대표자"], obj["고객센터 전화번호"], obj["사업자등록번호"], obj["통신판매번호"]
+이 5개는 class 명 xans-element- xans-layout xans-layout-footer 이거 에서 찾을거야
+아래 부분이 예시야 가급적이면 xans-element- xans-layout xans-layout-footer 이 클래스 안에 text로만 5개를 찾아줘
+그게 안되면 class xans-element- xans-layout xans-layout-footer 이거안에 태그나 class로 접급해도 돼
+
+<div class=""xans-element- xans-layout xans-layout-footer footerInner ""><ul class=""address"">
+<li>데일리쥬</li>
+            <li>대표 : 정한빈,정연희</li>
+            <li>사업자등록번호 : 133-87-01483</li>
+            <li>통신판매업신고 : 2021-서울성동-00828 <span class=""bizLink""><a href=""#none"" onclick=""window.open('http://www.ftc.go.kr/bizCommPop.do?wrkr_no=1338701483', 'bizCommPop', 'width=750, height=950;');return false;"">[사업자정보확인]</a></span>
+</li>
+            <li>개인정보보호책임자 : 정한빈</li>
+            <li class=""util"">
+                <a href=""/shopinfo/company.html"">회사소개</a><em>|</em>
+                <a href=""/member/agreement.html"">이용약관</a><em>|</em>
+                <a href=""/member/privacy.html"">개인정보처리방침</a><em>|</em>
+                <a href=""/shopinfo/guide.html"">이용가이드</a>
+            </li>
+        </ul>
+<ul class=""cs"">
+<h5>고객센터</h5>
+            <li class=""chat"">
+                <a href=""https://25x18.channel.io/home"" target=""_blank"">채팅상담</a>
+                <a href=""/board/qa/6/"">Q&amp;A</a>
+                <a href=""/shopinfo/faq.html"">자주하는질문</a>
+            </li>
+            <li>월 - 금 10:00 - 17:00 점심시간 12:00 - 13:00<br>
+                주말, 공휴일 휴무</li>
+            <h5 class=""mar-t"">계좌 정보</h5>
+            <li>국민 033201-04-199729 예금주 : 주식회사 데일리쥬</li>
+        </ul>
+<ul class=""sns"">
+<h5>연결하기</h5>
+            <li><a href=""https://apps.apple.com/kr/app/%EB%8D%B0%EC%9D%BC%EB%A6%AC%EC%A5%AC/id1480319260"" target=""_blank"">APP DOWNLOAD</a></li>
+<li><a href=""https://www.instagram.com/dailyjou.official/"" target=""_blank"">INSTAGRAM</a></li>
+<!--li><a href=""https://www.youtube.com/@videodailyjou9227"" target=""_blank"">YOUTUBE</a></li-->
+        </ul>
+<ul class=""cs"">
+<h5>교환/반품 주소</h5>
+            <li>대한통운 반품 시<br>04589 | 서울특별시 중구신당동 CJ대한통운 중구2팀 데일리쥬</li>
+            <li>타택배 이용 시<br>02570 | 서울특별시 동대문구 제기동 1067 세우빌딩 4층</li>
+        </ul>
+</div>
+
+
+위 작업을 하고난 obj를
+엑셀 "쇼핑몰 정보" 탭에 컬럼으로 넣어서 만들어줘
+
+
+
+
+id="topbanner" class="topbanner"
+
+
+
+
+<div id=""topbanner"" class=""topbanner"" data-slider=""true"" data-type=""full"" data-mode=""vertical"" data-minslides=""1"" data-maxslides=""1"" data-auto=""false"" data-speed=""500"" data-pager=""false"" data-controls=""true"" data-adaptiveheight=""false"" data-autohover=""true"" data-responsive=""false"" data-pause=""3000""> <!-- data-pause : 슬라이드 되는 시간 -->
+    <div class=""bx-wrapper"" style=""max-width: 100%;""><div class=""bx-viewport"" aria-live=""polite"" style=""width: 100%; overflow: hidden; position: relative; height: 50px;""><ul style=""width: auto; position: relative; transition-duration: 0s; transform: translate3d(0px, -50px, 0px); visibility: visible;""><li style=""float: none; list-style: none; position: relative; width: 1903px;"" class=""bx-clone"" aria-hidden=""true""><a href=""/product/list.html?cate_no=61"" target=""_blank"">오늘 2시까지 주문하면 <b>당/일/출/고</b></a></li><li style=""float: none; list-style: none; position: relative; width: 1903px;"" aria-hidden=""false""><a href=""/product/list.html?cate_no=192"" target=""_blank"">햇빛이 쨍쨍한 여름! 베이델리와 함께 준비해요</a></li>
+        <li style=""float: none; list-style: none; position: relative; width: 1903px;"" aria-hidden=""true""><a href=""//jp.beidelli.com/"" target=""_blank"">BEIDELLI_JAPAN … CLICK!</a></li>
+        <li style=""float: none; list-style: none; position: relative; width: 1903px;"" aria-hidden=""true""><a href=""/product/list.html?cate_no=61"" target=""_blank"">오늘 2시까지 주문하면 <b>당/일/출/고</b></a></li>
+    <li style=""float: none; list-style: none; position: relative; width: 1903px;"" class=""bx-clone"" aria-hidden=""true""><a href=""/product/list.html?cate_no=192"" target=""_blank"">햇빛이 쨍쨍한 여름! 베이델리와 함께 준비해요</a></li></ul></div><div class=""bx-controls bx-has-controls-direction""><div class=""bx-controls-direction""><a class=""bx-prev"" href="""">Prev</a><a class=""bx-next"" href="""">Next</a></div></div></div></div>
+이런 형태나
+
+<div app4you-smart-banner=""smart-banner-admin-PC00006"" app4you-smart-banner-html=""true"" class=""xans-smart-banner-admin xans-smart-banner-admin-PC00006"">
+  <a href=""http://pf.kakao.com/_ZUdFC/friend"" target=""_self"" onclick=""APP4YOU_SMART_BANNER.incrementBanner('1135864')"" ontouchstart=""APP4YOU_SMART_BANNER.incrementBanner('1135864')"" style=""cursor:pointer""><img src=""https://file.cafe24cos.com/banner-admin-live/upload/alsdudtj112/68fc5e20-8364-427f-a09e-847b0056cda4.jpeg"" style=""width:100%""></a>
+</div>"
+이런 형태면
+
+배너이미지 URL, 배너 링크 이 두가지를
+
+obj["배너이미지 URL"], obj["배너 링크"] 이렇게 담고
+
+엑셀 메인배너 탭에 넣어줘
+
+
+
+
+
+
+
+            <li>타택배 이용 시<br>02570 | 서울특별시 동대문구 제기동 1067 세우빌딩 4층</li>
+        </ul>
+</div>"
+
+
+
+
+

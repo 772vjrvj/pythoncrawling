@@ -1,4607 +1,755 @@
-{
-  "data": {
-    "lists": {
-      "trade": [
-        {
-          "date": "2006-02-28T15:00:00.000Z",
-          "averagePrice": 16500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 16500,
-          "maxPrice": 16500
-        },
-        {
-          "date": "2006-03-31T15:00:00.000Z",
-          "averagePrice": 17000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 17000,
-          "maxPrice": 17000
-        },
-        {
-          "date": "2006-04-30T15:00:00.000Z",
-          "averagePrice": 17000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17000,
-          "maxPrice": 17000
-        },
-        {
-          "date": "2006-05-31T15:00:00.000Z",
-          "averagePrice": 17000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17000,
-          "maxPrice": 17000
-        },
-        {
-          "date": "2006-06-30T15:00:00.000Z",
-          "averagePrice": 17000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 17000,
-          "maxPrice": 17000
-        },
-        {
-          "date": "2006-07-31T15:00:00.000Z",
-          "averagePrice": 17000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17000,
-          "maxPrice": 17000
-        },
-        {
-          "date": "2006-08-31T15:00:00.000Z",
-          "averagePrice": 16533,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 3,
-          "minPrice": 15400,
-          "maxPrice": 17500
-        },
-        {
-          "date": "2006-09-30T15:00:00.000Z",
-          "averagePrice": 18000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 18000,
-          "maxPrice": 18000
-        },
-        {
-          "date": "2006-10-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2006-11-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2006-12-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-01-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-02-28T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-03-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-04-30T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-05-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-06-30T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-07-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-08-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-09-30T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-10-31T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-11-30T15:00:00.000Z",
-          "averagePrice": 17900,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 17900,
-          "maxPrice": 17900
-        },
-        {
-          "date": "2007-12-31T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2008-01-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-02-29T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-03-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-04-30T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-05-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-06-30T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-07-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-08-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2008-09-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2008-10-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2008-11-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2008-12-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-01-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-02-28T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-03-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-04-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-05-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-06-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2009-07-31T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 23000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2009-08-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2009-09-30T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2009-10-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2009-11-30T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2009-12-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-01-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-02-28T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-03-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-04-30T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-05-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-06-30T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-07-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-08-31T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-09-30T15:00:00.000Z",
-          "averagePrice": 21500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 21500,
-          "maxPrice": 21500
-        },
-        {
-          "date": "2010-10-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2010-11-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2010-12-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-01-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-02-28T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-03-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-04-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-05-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-06-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2011-07-31T15:00:00.000Z",
-          "averagePrice": 29000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 29000,
-          "maxPrice": 29000
-        },
-        {
-          "date": "2011-08-31T15:00:00.000Z",
-          "averagePrice": 29000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 29000,
-          "maxPrice": 29000
-        },
-        {
-          "date": "2011-09-30T15:00:00.000Z",
-          "averagePrice": 29000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 29000,
-          "maxPrice": 29000
-        },
-        {
-          "date": "2011-10-31T15:00:00.000Z",
-          "averagePrice": 29000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 29000,
-          "maxPrice": 29000
-        },
-        {
-          "date": "2011-11-30T15:00:00.000Z",
-          "averagePrice": 29000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 29000,
-          "maxPrice": 29000
-        },
-        {
-          "date": "2011-12-31T15:00:00.000Z",
-          "averagePrice": 29000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 29000,
-          "maxPrice": 29000
-        },
-        {
-          "date": "2012-01-31T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2012-02-29T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2012-03-31T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2012-04-30T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2012-05-31T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2012-06-30T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2012-07-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2012-08-31T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2012-09-30T15:00:00.000Z",
-          "averagePrice": 19100,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 16200,
-          "maxPrice": 22000
-        },
-        {
-          "date": "2012-10-31T15:00:00.000Z",
-          "averagePrice": 19100,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19100,
-          "maxPrice": 19100
-        },
-        {
-          "date": "2012-11-30T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2012-12-31T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2013-01-31T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2013-02-28T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2013-03-31T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2013-04-30T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2013-05-31T15:00:00.000Z",
-          "averagePrice": 23500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 23500,
-          "maxPrice": 23500
-        },
-        {
-          "date": "2013-06-30T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2013-07-31T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2013-08-31T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2013-09-30T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2013-10-31T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2013-11-30T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2013-12-31T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2014-01-31T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2014-02-28T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2014-03-31T15:00:00.000Z",
-          "averagePrice": 24000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24000,
-          "maxPrice": 24000
-        },
-        {
-          "date": "2014-04-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2014-05-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-06-30T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-07-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 23800,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-08-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-09-30T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-10-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-11-30T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2014-12-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2015-01-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2015-02-28T15:00:00.000Z",
-          "averagePrice": 28000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 28000,
-          "maxPrice": 28000
-        },
-        {
-          "date": "2015-03-31T15:00:00.000Z",
-          "averagePrice": 28000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 25500,
-          "maxPrice": 28000
-        },
-        {
-          "date": "2015-04-30T15:00:00.000Z",
-          "averagePrice": 28000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 28000,
-          "maxPrice": 28000
-        },
-        {
-          "date": "2015-05-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-06-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 25000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-07-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-08-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-09-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-10-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-11-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2015-12-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2016-01-31T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2016-02-29T15:00:00.000Z",
-          "averagePrice": 24500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 24500,
-          "maxPrice": 24500
-        },
-        {
-          "date": "2016-03-31T15:00:00.000Z",
-          "averagePrice": 27400,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 27300,
-          "maxPrice": 27500
-        },
-        {
-          "date": "2016-04-30T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2016-05-31T15:00:00.000Z",
-          "averagePrice": 27500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 26000,
-          "maxPrice": 27500
-        },
-        {
-          "date": "2016-06-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2016-07-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2016-08-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2016-09-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2016-10-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2016-11-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2016-12-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2017-01-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2017-02-28T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2017-03-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2017-04-30T15:00:00.000Z",
-          "averagePrice": 31700,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 31700,
-          "maxPrice": 31700
-        },
-        {
-          "date": "2017-05-31T15:00:00.000Z",
-          "averagePrice": 31700,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 31700,
-          "maxPrice": 31700
-        },
-        {
-          "date": "2017-06-30T15:00:00.000Z",
-          "averagePrice": 31700,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 31700,
-          "maxPrice": 31700
-        },
-        {
-          "date": "2017-07-31T15:00:00.000Z",
-          "averagePrice": 31700,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 31700,
-          "maxPrice": 31700
-        },
-        {
-          "date": "2017-08-31T15:00:00.000Z",
-          "averagePrice": 31700,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 31700,
-          "maxPrice": 31700
-        },
-        {
-          "date": "2017-09-30T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2017-10-31T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2017-11-30T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2017-12-31T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-01-31T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-02-28T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-03-31T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-04-30T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-05-31T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-06-30T15:00:00.000Z",
-          "averagePrice": 33800,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33800,
-          "maxPrice": 33800
-        },
-        {
-          "date": "2018-07-31T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2018-08-31T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2018-09-30T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2018-10-31T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2018-11-30T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2018-12-31T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2019-01-31T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2019-02-28T15:00:00.000Z",
-          "averagePrice": 39000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 39000,
-          "maxPrice": 39000
-        },
-        {
-          "date": "2019-03-31T15:00:00.000Z",
-          "averagePrice": 36300,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 36300,
-          "maxPrice": 36300
-        },
-        {
-          "date": "2019-04-30T15:00:00.000Z",
-          "averagePrice": 36300,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 36300,
-          "maxPrice": 36300
-        },
-        {
-          "date": "2019-05-31T15:00:00.000Z",
-          "averagePrice": 36300,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 36300,
-          "maxPrice": 36300
-        },
-        {
-          "date": "2019-06-30T15:00:00.000Z",
-          "averagePrice": 36300,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 36300,
-          "maxPrice": 36300
-        },
-        {
-          "date": "2019-07-31T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2019-08-31T15:00:00.000Z",
-          "averagePrice": 41500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 41500,
-          "maxPrice": 41500
-        },
-        {
-          "date": "2019-09-30T15:00:00.000Z",
-          "averagePrice": 41500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 41500,
-          "maxPrice": 41500
-        },
-        {
-          "date": "2019-10-31T15:00:00.000Z",
-          "averagePrice": 41500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 41500,
-          "maxPrice": 41500
-        },
-        {
-          "date": "2019-11-30T15:00:00.000Z",
-          "averagePrice": 41500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 41500,
-          "maxPrice": 41500
-        },
-        {
-          "date": "2019-12-31T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2020-01-31T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2020-02-29T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2020-03-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-04-30T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-05-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-06-30T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-07-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-08-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-09-30T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-10-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-11-30T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2020-12-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-01-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-02-28T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-03-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-04-30T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-05-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-06-30T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-07-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-08-31T15:00:00.000Z",
-          "averagePrice": 47000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 47000,
-          "maxPrice": 47000
-        },
-        {
-          "date": "2021-09-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2021-10-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2021-11-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2021-12-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-01-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-02-28T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-03-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-04-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-05-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-06-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-07-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-08-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-09-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-10-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-11-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2022-12-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-01-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-02-28T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-03-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-04-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-05-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-06-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-07-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-08-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-09-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-10-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-11-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2023-12-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2024-01-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2024-02-29T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2024-03-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2024-04-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2024-05-31T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        },
-        {
-          "date": "2024-06-30T15:00:00.000Z",
-          "averagePrice": 65000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 65000,
-          "maxPrice": 65000
-        }
-      ],
-      "deposit": [
-        {
-          "date": "2011-01-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 3,
-          "minPrice": 13000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2011-02-28T15:00:00.000Z",
-          "averagePrice": 11500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 11000,
-          "maxPrice": 12000
-        },
-        {
-          "date": "2011-03-31T15:00:00.000Z",
-          "averagePrice": 11500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 11500,
-          "maxPrice": 11500
-        },
-        {
-          "date": "2011-04-30T15:00:00.000Z",
-          "averagePrice": 11500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 11500,
-          "maxPrice": 11500
-        },
-        {
-          "date": "2011-05-31T15:00:00.000Z",
-          "averagePrice": 11500,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 11500,
-          "maxPrice": 11500
-        },
-        {
-          "date": "2011-06-30T15:00:00.000Z",
-          "averagePrice": 13200,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 13200,
-          "maxPrice": 13200
-        },
-        {
-          "date": "2011-07-31T15:00:00.000Z",
-          "averagePrice": 13200,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 13200,
-          "maxPrice": 13200
-        },
-        {
-          "date": "2011-08-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2011-09-30T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2011-10-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2011-11-30T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2011-12-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-01-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-02-29T15:00:00.000Z",
-          "averagePrice": 13000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 13000,
-          "maxPrice": 13000
-        },
-        {
-          "date": "2012-03-31T15:00:00.000Z",
-          "averagePrice": 13000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 13000,
-          "maxPrice": 13000
-        },
-        {
-          "date": "2012-04-30T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-05-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-06-30T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-07-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-08-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 14000,
-          "maxPrice": 25098
-        },
-        {
-          "date": "2012-09-30T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-10-31T15:00:00.000Z",
-          "averagePrice": 14000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 14000,
-          "maxPrice": 14000
-        },
-        {
-          "date": "2012-11-30T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2012-12-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-01-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-02-28T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-03-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-04-30T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-05-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-06-30T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-07-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-08-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-09-30T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-10-31T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-11-30T15:00:00.000Z",
-          "averagePrice": 16000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 16000,
-          "maxPrice": 16000
-        },
-        {
-          "date": "2013-12-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 15000,
-          "maxPrice": 21171
-        },
-        {
-          "date": "2014-01-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-02-28T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-03-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 15000,
-          "maxPrice": 19317
-        },
-        {
-          "date": "2014-04-30T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-05-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-06-30T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-07-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-08-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-09-30T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-10-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-11-30T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2014-12-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 15000,
-          "maxPrice": 23171
-        },
-        {
-          "date": "2015-01-31T15:00:00.000Z",
-          "averagePrice": 15000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 15000,
-          "maxPrice": 15000
-        },
-        {
-          "date": "2015-02-28T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-03-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-04-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-05-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-06-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-07-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 17817,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-08-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-09-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-10-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2015-11-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 19000,
-          "maxPrice": 22244
-        },
-        {
-          "date": "2015-12-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 19000,
-          "maxPrice": 23171
-        },
-        {
-          "date": "2016-01-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 19000,
-          "maxPrice": 26634
-        },
-        {
-          "date": "2016-02-29T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-03-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-04-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-05-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-06-30T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-07-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-08-31T15:00:00.000Z",
-          "averagePrice": 19000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 19000,
-          "maxPrice": 19000
-        },
-        {
-          "date": "2016-09-30T15:00:00.000Z",
-          "averagePrice": 20000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 20000,
-          "maxPrice": 20000
-        },
-        {
-          "date": "2016-10-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2016-11-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2016-12-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-01-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-02-28T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-03-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-04-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-05-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-06-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 24488,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-07-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-08-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-09-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-10-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-11-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2017-12-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-01-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-02-28T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-03-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-04-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-05-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-06-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-07-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 26000,
-          "maxPrice": 30488
-        },
-        {
-          "date": "2018-08-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-09-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-10-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-11-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2018-12-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-01-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-02-28T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-03-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-04-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-05-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-06-30T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-07-31T15:00:00.000Z",
-          "averagePrice": 26000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 26000,
-          "maxPrice": 26000
-        },
-        {
-          "date": "2019-08-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2019-09-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 20854,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2019-10-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2019-11-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 31268
-        },
-        {
-          "date": "2019-12-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2020-01-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 25000,
-          "maxPrice": 26098
-        },
-        {
-          "date": "2020-02-29T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2020-03-31T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2020-04-30T15:00:00.000Z",
-          "averagePrice": 25000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 25000,
-          "maxPrice": 25000
-        },
-        {
-          "date": "2020-05-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-06-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-07-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-08-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-09-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-10-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-11-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2020-12-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-01-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-02-28T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-03-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-04-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-05-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-06-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2021-07-31T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2021-08-31T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2021-09-30T15:00:00.000Z",
-          "averagePrice": 40000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 40000,
-          "maxPrice": 40000
-        },
-        {
-          "date": "2021-10-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2021-11-30T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2021-12-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-01-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 23780,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-02-28T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-03-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 27488,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-04-30T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-05-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 31098,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-06-30T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-07-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-08-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-09-30T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-10-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-11-30T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2022-12-31T15:00:00.000Z",
-          "averagePrice": 33000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 33000,
-          "maxPrice": 33000
-        },
-        {
-          "date": "2023-01-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-02-28T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-03-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-04-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-05-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-06-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 2,
-          "minPrice": 15634,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-07-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 18561,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-08-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-09-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-10-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 24415,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-11-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2023-12-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2024-01-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2024-02-29T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 1,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2024-03-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2024-04-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2024-05-31T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        },
-        {
-          "date": "2024-06-30T15:00:00.000Z",
-          "averagePrice": 30000,
-          "isBeforeStart": false,
-          "isOffer": false,
-          "volume": 0,
-          "minPrice": 30000,
-          "maxPrice": 30000
-        }
-      ],
-      "gap": [
-        {
-          "date": "2011-01-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 14000,
-          "gapPrice": 12000,
-          "gapRate": 53.8
-        },
-        {
-          "date": "2011-02-28T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 11500,
-          "gapPrice": 14500,
-          "gapRate": 44.2
-        },
-        {
-          "date": "2011-03-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 11500,
-          "gapPrice": 14500,
-          "gapRate": 44.2
-        },
-        {
-          "date": "2011-04-30T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 11500,
-          "gapPrice": 14500,
-          "gapRate": 44.2
-        },
-        {
-          "date": "2011-05-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 11500,
-          "gapPrice": 14500,
-          "gapRate": 44.2
-        },
-        {
-          "date": "2011-06-30T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 13200,
-          "gapPrice": 12800,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2011-07-31T15:00:00.000Z",
-          "tradePrice": 29000,
-          "depositPrice": 13200,
-          "gapPrice": 15800,
-          "gapRate": 45.5
-        },
-        {
-          "date": "2011-08-31T15:00:00.000Z",
-          "tradePrice": 29000,
-          "depositPrice": 14000,
-          "gapPrice": 15000,
-          "gapRate": 48.3
-        },
-        {
-          "date": "2011-09-30T15:00:00.000Z",
-          "tradePrice": 29000,
-          "depositPrice": 14000,
-          "gapPrice": 15000,
-          "gapRate": 48.3
-        },
-        {
-          "date": "2011-10-31T15:00:00.000Z",
-          "tradePrice": 29000,
-          "depositPrice": 14000,
-          "gapPrice": 15000,
-          "gapRate": 48.3
-        },
-        {
-          "date": "2011-11-30T15:00:00.000Z",
-          "tradePrice": 29000,
-          "depositPrice": 14000,
-          "gapPrice": 15000,
-          "gapRate": 48.3
-        },
-        {
-          "date": "2011-12-31T15:00:00.000Z",
-          "tradePrice": 29000,
-          "depositPrice": 14000,
-          "gapPrice": 15000,
-          "gapRate": 48.3
-        },
-        {
-          "date": "2012-01-31T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 14000,
-          "gapPrice": 10500,
-          "gapRate": 57.1
-        },
-        {
-          "date": "2012-02-29T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 13000,
-          "gapPrice": 11500,
-          "gapRate": 53.1
-        },
-        {
-          "date": "2012-03-31T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 13000,
-          "gapPrice": 11500,
-          "gapRate": 53.1
-        },
-        {
-          "date": "2012-04-30T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 14000,
-          "gapPrice": 10500,
-          "gapRate": 57.1
-        },
-        {
-          "date": "2012-05-31T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 14000,
-          "gapPrice": 10500,
-          "gapRate": 57.1
-        },
-        {
-          "date": "2012-06-30T15:00:00.000Z",
-          "tradePrice": 20000,
-          "depositPrice": 14000,
-          "gapPrice": 6000,
-          "gapRate": 70
-        },
-        {
-          "date": "2012-07-31T15:00:00.000Z",
-          "tradePrice": 20000,
-          "depositPrice": 14000,
-          "gapPrice": 6000,
-          "gapRate": 70
-        },
-        {
-          "date": "2012-08-31T15:00:00.000Z",
-          "tradePrice": 20000,
-          "depositPrice": 14000,
-          "gapPrice": 6000,
-          "gapRate": 70
-        },
-        {
-          "date": "2012-09-30T15:00:00.000Z",
-          "tradePrice": 19100,
-          "depositPrice": 14000,
-          "gapPrice": 5100,
-          "gapRate": 73.3
-        },
-        {
-          "date": "2012-10-31T15:00:00.000Z",
-          "tradePrice": 19100,
-          "depositPrice": 14000,
-          "gapPrice": 5100,
-          "gapRate": 73.3
-        },
-        {
-          "date": "2012-11-30T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2012-12-31T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2013-01-31T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2013-02-28T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2013-03-31T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2013-04-30T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2013-05-31T15:00:00.000Z",
-          "tradePrice": 23500,
-          "depositPrice": 16000,
-          "gapPrice": 7500,
-          "gapRate": 68.1
-        },
-        {
-          "date": "2013-06-30T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 16000,
-          "gapPrice": 8000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2013-07-31T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 16000,
-          "gapPrice": 8000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2013-08-31T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 16000,
-          "gapPrice": 8000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2013-09-30T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 16000,
-          "gapPrice": 8000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2013-10-31T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 16000,
-          "gapPrice": 8000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2013-11-30T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 16000,
-          "gapPrice": 8000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2013-12-31T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 15000,
-          "gapPrice": 9000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2014-01-31T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 15000,
-          "gapPrice": 9000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2014-02-28T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 15000,
-          "gapPrice": 9000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2014-03-31T15:00:00.000Z",
-          "tradePrice": 24000,
-          "depositPrice": 15000,
-          "gapPrice": 9000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2014-04-30T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 15000,
-          "gapPrice": 11000,
-          "gapRate": 57.7
-        },
-        {
-          "date": "2014-05-31T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-06-30T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-07-31T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-08-31T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-09-30T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-10-31T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-11-30T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2014-12-31T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2015-01-31T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 15000,
-          "gapPrice": 10000,
-          "gapRate": 60
-        },
-        {
-          "date": "2015-02-28T15:00:00.000Z",
-          "tradePrice": 28000,
-          "depositPrice": 19000,
-          "gapPrice": 9000,
-          "gapRate": 67.9
-        },
-        {
-          "date": "2015-03-31T15:00:00.000Z",
-          "tradePrice": 28000,
-          "depositPrice": 19000,
-          "gapPrice": 9000,
-          "gapRate": 67.9
-        },
-        {
-          "date": "2015-04-30T15:00:00.000Z",
-          "tradePrice": 28000,
-          "depositPrice": 19000,
-          "gapPrice": 9000,
-          "gapRate": 67.9
-        },
-        {
-          "date": "2015-05-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-06-30T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-07-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-08-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-09-30T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-10-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-11-30T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2015-12-31T15:00:00.000Z",
-          "tradePrice": 26000,
-          "depositPrice": 19000,
-          "gapPrice": 7000,
-          "gapRate": 73.1
-        },
-        {
-          "date": "2016-01-31T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 19000,
-          "gapPrice": 5500,
-          "gapRate": 77.6
-        },
-        {
-          "date": "2016-02-29T15:00:00.000Z",
-          "tradePrice": 24500,
-          "depositPrice": 19000,
-          "gapPrice": 5500,
-          "gapRate": 77.6
-        },
-        {
-          "date": "2016-03-31T15:00:00.000Z",
-          "tradePrice": 27400,
-          "depositPrice": 19000,
-          "gapPrice": 8400,
-          "gapRate": 69.3
-        },
-        {
-          "date": "2016-04-30T15:00:00.000Z",
-          "tradePrice": 25000,
-          "depositPrice": 19000,
-          "gapPrice": 6000,
-          "gapRate": 76
-        },
-        {
-          "date": "2016-05-31T15:00:00.000Z",
-          "tradePrice": 27500,
-          "depositPrice": 19000,
-          "gapPrice": 8500,
-          "gapRate": 69.1
-        },
-        {
-          "date": "2016-06-30T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 19000,
-          "gapPrice": 11000,
-          "gapRate": 63.3
-        },
-        {
-          "date": "2016-07-31T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 19000,
-          "gapPrice": 11000,
-          "gapRate": 63.3
-        },
-        {
-          "date": "2016-08-31T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 19000,
-          "gapPrice": 11000,
-          "gapRate": 63.3
-        },
-        {
-          "date": "2016-09-30T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 20000,
-          "gapPrice": 10000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2016-10-31T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 26000,
-          "gapPrice": 4000,
-          "gapRate": 86.7
-        },
-        {
-          "date": "2016-11-30T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 26000,
-          "gapPrice": 4000,
-          "gapRate": 86.7
-        },
-        {
-          "date": "2016-12-31T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 26000,
-          "gapPrice": 4000,
-          "gapRate": 86.7
-        },
-        {
-          "date": "2017-01-31T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 26000,
-          "gapPrice": 4000,
-          "gapRate": 86.7
-        },
-        {
-          "date": "2017-02-28T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 26000,
-          "gapPrice": 4000,
-          "gapRate": 86.7
-        },
-        {
-          "date": "2017-03-31T15:00:00.000Z",
-          "tradePrice": 30000,
-          "depositPrice": 26000,
-          "gapPrice": 4000,
-          "gapRate": 86.7
-        },
-        {
-          "date": "2017-04-30T15:00:00.000Z",
-          "tradePrice": 31700,
-          "depositPrice": 26000,
-          "gapPrice": 5700,
-          "gapRate": 82
-        },
-        {
-          "date": "2017-05-31T15:00:00.000Z",
-          "tradePrice": 31700,
-          "depositPrice": 26000,
-          "gapPrice": 5700,
-          "gapRate": 82
-        },
-        {
-          "date": "2017-06-30T15:00:00.000Z",
-          "tradePrice": 31700,
-          "depositPrice": 26000,
-          "gapPrice": 5700,
-          "gapRate": 82
-        },
-        {
-          "date": "2017-07-31T15:00:00.000Z",
-          "tradePrice": 31700,
-          "depositPrice": 26000,
-          "gapPrice": 5700,
-          "gapRate": 82
-        },
-        {
-          "date": "2017-08-31T15:00:00.000Z",
-          "tradePrice": 31700,
-          "depositPrice": 26000,
-          "gapPrice": 5700,
-          "gapRate": 82
-        },
-        {
-          "date": "2017-09-30T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2017-10-31T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2017-11-30T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2017-12-31T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-01-31T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-02-28T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-03-31T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-04-30T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-05-31T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-06-30T15:00:00.000Z",
-          "tradePrice": 33800,
-          "depositPrice": 26000,
-          "gapPrice": 7800,
-          "gapRate": 76.9
-        },
-        {
-          "date": "2018-07-31T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2018-08-31T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2018-09-30T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2018-10-31T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2018-11-30T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2018-12-31T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2019-01-31T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2019-02-28T15:00:00.000Z",
-          "tradePrice": 39000,
-          "depositPrice": 26000,
-          "gapPrice": 13000,
-          "gapRate": 66.7
-        },
-        {
-          "date": "2019-03-31T15:00:00.000Z",
-          "tradePrice": 36300,
-          "depositPrice": 26000,
-          "gapPrice": 10300,
-          "gapRate": 71.6
-        },
-        {
-          "date": "2019-04-30T15:00:00.000Z",
-          "tradePrice": 36300,
-          "depositPrice": 26000,
-          "gapPrice": 10300,
-          "gapRate": 71.6
-        },
-        {
-          "date": "2019-05-31T15:00:00.000Z",
-          "tradePrice": 36300,
-          "depositPrice": 26000,
-          "gapPrice": 10300,
-          "gapRate": 71.6
-        },
-        {
-          "date": "2019-06-30T15:00:00.000Z",
-          "tradePrice": 36300,
-          "depositPrice": 26000,
-          "gapPrice": 10300,
-          "gapRate": 71.6
-        },
-        {
-          "date": "2019-07-31T15:00:00.000Z",
-          "tradePrice": 40000,
-          "depositPrice": 26000,
-          "gapPrice": 14000,
-          "gapRate": 65
-        },
-        {
-          "date": "2019-08-31T15:00:00.000Z",
-          "tradePrice": 41500,
-          "depositPrice": 30000,
-          "gapPrice": 11500,
-          "gapRate": 72.3
-        },
-        {
-          "date": "2019-09-30T15:00:00.000Z",
-          "tradePrice": 41500,
-          "depositPrice": 30000,
-          "gapPrice": 11500,
-          "gapRate": 72.3
-        },
-        {
-          "date": "2019-10-31T15:00:00.000Z",
-          "tradePrice": 41500,
-          "depositPrice": 30000,
-          "gapPrice": 11500,
-          "gapRate": 72.3
-        },
-        {
-          "date": "2019-11-30T15:00:00.000Z",
-          "tradePrice": 41500,
-          "depositPrice": 30000,
-          "gapPrice": 11500,
-          "gapRate": 72.3
-        },
-        {
-          "date": "2019-12-31T15:00:00.000Z",
-          "tradePrice": 40000,
-          "depositPrice": 25000,
-          "gapPrice": 15000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2020-01-31T15:00:00.000Z",
-          "tradePrice": 40000,
-          "depositPrice": 25000,
-          "gapPrice": 15000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2020-02-29T15:00:00.000Z",
-          "tradePrice": 40000,
-          "depositPrice": 25000,
-          "gapPrice": 15000,
-          "gapRate": 62.5
-        },
-        {
-          "date": "2020-03-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 25000,
-          "gapPrice": 22000,
-          "gapRate": 53.2
-        },
-        {
-          "date": "2020-04-30T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 25000,
-          "gapPrice": 22000,
-          "gapRate": 53.2
-        },
-        {
-          "date": "2020-05-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-06-30T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-07-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-08-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-09-30T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-10-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-11-30T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2020-12-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-01-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-02-28T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-03-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-04-30T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-05-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-06-30T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 30000,
-          "gapPrice": 17000,
-          "gapRate": 63.8
-        },
-        {
-          "date": "2021-07-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 40000,
-          "gapPrice": 7000,
-          "gapRate": 85.1
-        },
-        {
-          "date": "2021-08-31T15:00:00.000Z",
-          "tradePrice": 47000,
-          "depositPrice": 40000,
-          "gapPrice": 7000,
-          "gapRate": 85.1
-        },
-        {
-          "date": "2021-09-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 40000,
-          "gapPrice": 25000,
-          "gapRate": 61.5
-        },
-        {
-          "date": "2021-10-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2021-11-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2021-12-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-01-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-02-28T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-03-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-04-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-05-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-06-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-07-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-08-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-09-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-10-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-11-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2022-12-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 33000,
-          "gapPrice": 32000,
-          "gapRate": 50.8
-        },
-        {
-          "date": "2023-01-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-02-28T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-03-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-04-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-05-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-06-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-07-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-08-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-09-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-10-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-11-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2023-12-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2024-01-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2024-02-29T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2024-03-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2024-04-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2024-05-31T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        },
-        {
-          "date": "2024-06-30T15:00:00.000Z",
-          "tradePrice": 65000,
-          "depositPrice": 30000,
-          "gapPrice": 35000,
-          "gapRate": 46.2
-        }
-      ]
-    },
-    "summary": {
-      "minPrice": 11000,
-      "maxPrice": 65000,
-      "startDate": "2006-02-28T15:00:00.000Z",
-      "endDate": "2024-06-30T15:00:00.000Z",
-      "maxSize": 221,
-      "avgGapPrice": 15219,
-      "avgGapRate": 63.1,
-      "minGapRate": 44.2,
-      "maxGapRate": 86.7,
-      "gapStartDate": "2011-01-31T15:00:00.000Z",
-      "gapEndDate": "2024-06-30T15:00:00.000Z"
-    }
+[
+  {
+    "link_product_list": "/category/장마룩🌧/216/",
+    "name": "장마룩☔🌧",
+    "param": "?cate_no=216",
+    "cate_no": 216,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
   },
-  "status": "success"
-}
+  {
+    "link_product_list": "/category/촌캉스👩🌾🍉️/219/",
+    "name": "촌캉스👩‍🌾🍉☘️",
+    "param": "?cate_no=219",
+    "cate_no": 219,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  },
+  {
+    "link_product_list": "/category/new-5-앱쿠폰-10/24/",
+    "name": "NEW 5% + 앱쿠폰 10%",
+    "param": "?cate_no=24",
+    "cate_no": 24,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  },
+  {
+    "link_product_list": "/category/best/50/",
+    "name": "BEST",
+    "param": "?cate_no=50",
+    "cate_no": 50,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  },
+  {
+    "link_product_list": "/category/dchive/86/",
+    "name": "D,CHIVE",
+    "param": "?cate_no=86",
+    "cate_no": 86,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/bottom/122/",
+        "name": "BOTTOM",
+        "param": "?cate_no=122",
+        "cate_no": 122,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": [
+          {
+            "link_product_list": "/category/데님/229/",
+            "name": "데님",
+            "param": "?cate_no=229",
+            "cate_no": 229,
+            "parent_cate_no": 122,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/트레이닝/230/",
+            "name": "트레이닝",
+            "param": "?cate_no=230",
+            "cate_no": 230,
+            "parent_cate_no": 122,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/코튼/231/",
+            "name": "코튼",
+            "param": "?cate_no=231",
+            "cate_no": 231,
+            "parent_cate_no": 122,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/슬랙스/232/",
+            "name": "슬랙스",
+            "param": "?cate_no=232",
+            "cate_no": 232,
+            "parent_cate_no": 122,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/쇼츠/233/",
+            "name": "쇼츠",
+            "param": "?cate_no=233",
+            "cate_no": 233,
+            "parent_cate_no": 122,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/etc/234/",
+            "name": "etc.",
+            "param": "?cate_no=234",
+            "cate_no": 234,
+            "parent_cate_no": 122,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          }
+        ]
+      },
+      {
+        "link_product_list": "/category/top/123/",
+        "name": "TOP",
+        "param": "?cate_no=123",
+        "cate_no": 123,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": [
+          {
+            "link_product_list": "/category/티셔츠/235/",
+            "name": "티셔츠",
+            "param": "?cate_no=235",
+            "cate_no": 235,
+            "parent_cate_no": 123,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/슬리브리스/239/",
+            "name": "슬리브리스",
+            "param": "?cate_no=239",
+            "cate_no": 239,
+            "parent_cate_no": 123,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/셔츠블라우스/236/",
+            "name": "셔츠/블라우스",
+            "param": "?cate_no=236",
+            "cate_no": 236,
+            "parent_cate_no": 123,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/니트/237/",
+            "name": "니트",
+            "param": "?cate_no=237",
+            "cate_no": 237,
+            "parent_cate_no": 123,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/맨투맨후드/238/",
+            "name": "맨투맨/후드",
+            "param": "?cate_no=238",
+            "cate_no": 238,
+            "parent_cate_no": 123,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          }
+        ]
+      },
+      {
+        "link_product_list": "/category/outer/121/",
+        "name": "OUTER",
+        "param": "?cate_no=121",
+        "cate_no": 121,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": [
+          {
+            "link_product_list": "/category/가디건/240/",
+            "name": "가디건",
+            "param": "?cate_no=240",
+            "cate_no": 240,
+            "parent_cate_no": 121,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/점퍼/241/",
+            "name": "점퍼",
+            "param": "?cate_no=241",
+            "cate_no": 241,
+            "parent_cate_no": 121,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/자켓코트/242/",
+            "name": "자켓/코트",
+            "param": "?cate_no=242",
+            "cate_no": 242,
+            "parent_cate_no": 121,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          }
+        ]
+      },
+      {
+        "link_product_list": "/category/dressskirt/124/",
+        "name": "DRESS&SKIRT",
+        "param": "?cate_no=124",
+        "cate_no": 124,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": [
+          {
+            "link_product_list": "/category/스커트/243/",
+            "name": "스커트",
+            "param": "?cate_no=243",
+            "cate_no": 243,
+            "parent_cate_no": 124,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          },
+          {
+            "link_product_list": "/category/원피스/244/",
+            "name": "원피스",
+            "param": "?cate_no=244",
+            "cate_no": 244,
+            "parent_cate_no": 124,
+            "design_page_url": "product/list.html",
+            "like_count": 0,
+            "data_list": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/top/26/",
+    "name": "TOP",
+    "param": "?cate_no=26",
+    "cate_no": 26,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/티셔츠/46/",
+        "name": "티셔츠",
+        "param": "?cate_no=46",
+        "cate_no": 46,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/셔츠/51/",
+        "name": "셔츠",
+        "param": "?cate_no=51",
+        "cate_no": 51,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/블라우스/47/",
+        "name": "블라우스",
+        "param": "?cate_no=47",
+        "cate_no": 47,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/슬리브리스/166/",
+        "name": "슬리브리스",
+        "param": "?cate_no=166",
+        "cate_no": 166,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/니트/55/",
+        "name": "니트",
+        "param": "?cate_no=55",
+        "cate_no": 55,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/맨투맨후드/89/",
+        "name": "맨투맨/후드",
+        "param": "?cate_no=89",
+        "cate_no": 89,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/bottom/27/",
+    "name": "BOTTOM",
+    "param": "?cate_no=27",
+    "cate_no": 27,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/데님/148/",
+        "name": "데님",
+        "param": "?cate_no=148",
+        "cate_no": 148,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/트레이닝/150/",
+        "name": "트레이닝",
+        "param": "?cate_no=150",
+        "cate_no": 150,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/코튼/82/",
+        "name": "코튼",
+        "param": "?cate_no=82",
+        "cate_no": 82,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/슬랙스/84/",
+        "name": "슬랙스",
+        "param": "?cate_no=84",
+        "cate_no": 84,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/쇼츠/85/",
+        "name": "쇼츠",
+        "param": "?cate_no=85",
+        "cate_no": 85,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/etc/245/",
+        "name": "etc.",
+        "param": "?cate_no=245",
+        "cate_no": 245,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/outer/25/",
+    "name": "OUTER",
+    "param": "?cate_no=25",
+    "cate_no": 25,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/가디건/44/",
+        "name": "가디건",
+        "param": "?cate_no=44",
+        "cate_no": 44,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/점퍼/45/",
+        "name": "점퍼",
+        "param": "?cate_no=45",
+        "cate_no": 45,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/자켓/53/",
+        "name": "자켓",
+        "param": "?cate_no=53",
+        "cate_no": 53,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/코트/52/",
+        "name": "코트",
+        "param": "?cate_no=52",
+        "cate_no": 52,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/dressskirt/28/",
+    "name": "DRESS&SKIRT",
+    "param": "?cate_no=28",
+    "cate_no": 28,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/스커트/48/",
+        "name": "스커트",
+        "param": "?cate_no=48",
+        "cate_no": 48,
+        "parent_cate_no": 28,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/원피스/80/",
+        "name": "원피스",
+        "param": "?cate_no=80",
+        "cate_no": 80,
+        "parent_cate_no": 28,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/bag-shoes/220/",
+    "name": "BAG & SHOES",
+    "param": "?cate_no=220",
+    "cate_no": 220,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/백/221/",
+        "name": "백",
+        "param": "?cate_no=221",
+        "cate_no": 221,
+        "parent_cate_no": 220,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/슈즈/222/",
+        "name": "슈즈",
+        "param": "?cate_no=222",
+        "cate_no": 222,
+        "parent_cate_no": 220,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/acc/67/",
+    "name": "ACC",
+    "param": "?cate_no=67",
+    "cate_no": 67,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/모자헤어/223/",
+        "name": "모자/헤어",
+        "param": "?cate_no=223",
+        "cate_no": 223,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/벨트/224/",
+        "name": "벨트",
+        "param": "?cate_no=224",
+        "cate_no": 224,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/머플러장갑/226/",
+        "name": "머플러/장갑",
+        "param": "?cate_no=226",
+        "cate_no": 226,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/양말스타킹/225/",
+        "name": "양말/스타킹",
+        "param": "?cate_no=225",
+        "cate_no": 225,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/안경선글라스/227/",
+        "name": "안경/선글라스",
+        "param": "?cate_no=227",
+        "cate_no": 227,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/주얼리/99/",
+        "name": "주얼리",
+        "param": "?cate_no=99",
+        "cate_no": 99,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/이너웨어/138/",
+        "name": "이너웨어",
+        "param": "?cate_no=138",
+        "cate_no": 138,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/스윔웨어/164/",
+        "name": "스윔웨어",
+        "param": "?cate_no=164",
+        "cate_no": 164,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/etc/228/",
+        "name": "etc.",
+        "param": "?cate_no=228",
+        "cate_no": 228,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/오늘출발/91/",
+    "name": "오늘출발",
+    "param": "?cate_no=91",
+    "cate_no": 91,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/outer/101/",
+        "name": "OUTER",
+        "param": "?cate_no=101",
+        "cate_no": 101,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/top/102/",
+        "name": "TOP",
+        "param": "?cate_no=102",
+        "cate_no": 102,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/bottom/103/",
+        "name": "BOTTOM",
+        "param": "?cate_no=103",
+        "cate_no": 103,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/dressskirt/104/",
+        "name": "DRESS&SKIRT",
+        "param": "?cate_no=104",
+        "cate_no": 104,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/acc/105/",
+        "name": "ACC",
+        "param": "?cate_no=105",
+        "cate_no": 105,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/24-restock/168/",
+    "name": "24 RESTOCK",
+    "param": "?cate_no=168",
+    "cate_no": 168,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  },
+  {
+    "link_product_list": "/category/unisex/73/",
+    "name": "UNISEX",
+    "param": "?cate_no=73",
+    "cate_no": 73,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": [
+      {
+        "link_product_list": "/category/outer/158/",
+        "name": "OUTER",
+        "param": "?cate_no=158",
+        "cate_no": 158,
+        "parent_cate_no": 73,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/top/160/",
+        "name": "TOP",
+        "param": "?cate_no=160",
+        "cate_no": 160,
+        "parent_cate_no": 73,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      },
+      {
+        "link_product_list": "/category/bottoms/161/",
+        "name": "BOTTOMS",
+        "param": "?cate_no=161",
+        "cate_no": 161,
+        "parent_cate_no": 73,
+        "design_page_url": "product/list.html",
+        "like_count": 0,
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "/category/set/146/",
+    "name": "SET",
+    "param": "?cate_no=146",
+    "cate_no": 146,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  },
+  {
+    "link_product_list": "/category/episode/136/",
+    "name": "EPISODE",
+    "param": "?cate_no=136",
+    "cate_no": 136,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  },
+  {
+    "link_product_list": "/category/창고대방출/246/",
+    "name": "창고대방출",
+    "param": "?cate_no=246",
+    "cate_no": 246,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "like_count": 0,
+    "data_list": []
+  }
+]
