@@ -167,7 +167,7 @@ async function fetchCategoryData(url) {
 }
 
 // Function to write data to Excel
-function writeToExcel(shopInfo, bannerInfo, productDetails) {
+function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     const workbook = xlsx.utils.book_new();
 
     // Write shop info
@@ -182,11 +182,15 @@ function writeToExcel(shopInfo, bannerInfo, productDetails) {
     const productSheet = xlsx.utils.json_to_sheet(productDetails);
     xlsx.utils.book_append_sheet(workbook, productSheet, '상품정보');
 
+    // Write product repls
+    const replSheet = xlsx.utils.json_to_sheet(productRepls);
+    xlsx.utils.book_append_sheet(workbook, replSheet, '리뷰정보');
+
     xlsx.writeFile(workbook, 'shop_info.xlsx');
 }
 
 // Function to log category information
-async function logCategoryInfo(url, categories, productDetails) {
+async function logCategoryInfo(url, categories, productDetails, productRepls) {
     const logCategory = async (category, parentNames = []) => {
         const currentPath = parentNames.concat({ name: category.name });
 
@@ -232,12 +236,17 @@ async function logCategoryInfo(url, categories, productDetails) {
                             "카테고리(URL)": category_url
                         };
 
-                        // Fetch additional product details
-                        await fetchProductDetails(productDetail, url);
+                        // Fetch additional product details and reviews
+                        const reviews = await fetchProductDetails(productDetail, url);
 
+                        console.log("productDetail : ", JSON.stringify(productDetail, null, 2));
                         productDetails.push(productDetail);
+
+                        console.log("reviews : ", JSON.stringify(reviews, null, 2));
+                        productRepls.push(...reviews);
                     }
                     pageNum++;
+
                 }
             }
         } else {
@@ -252,15 +261,63 @@ async function logCategoryInfo(url, categories, productDetails) {
     }
 }
 
-// Function to fetch product details
+// Function to fetch product details and reviews
+// Function to fetch product details and reviews
 async function fetchProductDetails(productDetail, url) {
     const { browser, page } = await setupBrowser();
+    console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
     await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
+
+    // Wait for a short period to ensure the page is fully loaded
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    // Close the first popup if it exists
+    // const closePopup = async (selector) => {
+    //     const popupFrameElement = await page.$(selector);
+    //     if (popupFrameElement) {
+    //         console.log("Popup found, attempting to close it.");
+    //         const frame = await popupFrameElement.contentFrame();
+    //         const closeButton = await frame.$('.snappush-close');
+    //         if (closeButton) {
+    //             await closeButton.evaluate(button => button.click());
+    //             console.log("Popup closed.");
+    //         } else {
+    //             console.log("Close button not found.");
+    //         }
+    //     } else {
+    //         console.log("Popup not found.");
+    //     }
+    // };
+    //
+    // await closePopup('#spm_banner_main iframe#spm_banner_frame_form');
+    // await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Click "오늘 그만보기" button if it exists
+    const clickCloseToday = async (iframeSelector, buttonSelector) => {
+        const iframeElement = await page.$(iframeSelector);
+        if (iframeElement) {
+            const frame = await iframeElement.contentFrame();
+            const closeButton = await frame.$(buttonSelector);
+            if (closeButton) {
+                console.log("오늘 그만보기 button found, attempting to click it.");
+                await closeButton.evaluate(button => button.click());
+                console.log("오늘 그만보기 button clicked.");
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for the popup to close
+            } else {
+                console.log("오늘 그만보기 button not found.");
+            }
+        } else {
+            console.log("Popup not found.");
+        }
+    };
+
+    await clickCloseToday('#spm_banner_main iframe#spm_banner_frame_form', '#spm-today-close');
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Extract product detail HTML
     const productDetailHtml = await page.evaluate(() => {
         const detailElement = document.querySelector('#prdDetail');
-        return detailElement ? detailElement.innerHTML : '';
+        return detailElement ? detailElement.outerHTML : '';
     });
     productDetail["상품 상세(html)*"] = productDetailHtml;
 
@@ -271,7 +328,7 @@ async function fetchProductDetails(productDetail, url) {
         imgElements.forEach(img => {
             const src = img.getAttribute('src');
             if (src) {
-                imgUrls.push(src);
+                imgUrls.push(`http:${src}`);
             }
         });
         return imgUrls;
@@ -337,9 +394,54 @@ async function fetchProductDetails(productDetail, url) {
     const optionTitles = options.map(option => Object.keys(option)[0]);
     productDetail["옵션"] = optionTitles;
 
-    console.log("productDetail : ", JSON.stringify(productDetail, null, 2));
+    // Extract reviews
+    const reviews = await fetchProductReviews(page, productDetail, url);
 
     await browser.close();
+
+    return reviews;
+}
+
+// Function to fetch product reviews
+async function fetchProductReviews(page, productDetail, url) {
+    const reviews = [];
+
+    const iframeElement = await page.$('#prdReview iframe#review_widget3_0');
+    if (iframeElement) {
+        const frame = await iframeElement.contentFrame();
+        if (frame) {
+            const reviewElements = await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
+            for (const reviewElement of reviewElements) {
+                const imageElement = await reviewElement.$('.sf_review_user_photo img');
+                const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
+
+                const scoreElement = await reviewElement.$('.sf_review_user_score');
+                const score = scoreElement ? await frame.evaluate(el => el.innerText.trim(), scoreElement) : '';
+
+                const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
+                const reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+
+                const dateElement = (await reviewElement.$$('.sf_review_user_write_date span'))[1];
+                const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
+
+                const authorElement = (await reviewElement.$$('.sf_review_user_writer_name span'))[1];
+                const author = authorElement ? await frame.evaluate(el => el.innerText.trim(), authorElement) : '';
+
+                reviews.push({
+                    "상품ID": productDetail["상품ID"],
+                    "상품명*": productDetail["상품명*"],
+                    "이미지": image,
+                    "평점": score,
+                    "리뷰": reviewText,
+                    "작성날짜": date,
+                    "작성자": author,
+                    "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+                });
+            }
+        }
+    }
+
+    return reviews;
 }
 
 // Main function
@@ -360,6 +462,8 @@ async function main(url) {
     const categoryData = await fetchCategoryData(url);
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
 
+    await browser.close();
+
     const shopInfo = {
         '쇼핑몰 이름': metaTags.siteName,
         '쇼핑몰 UID': metaTags.uid,
@@ -375,12 +479,11 @@ async function main(url) {
     };
 
     const productDetails = [];
+    const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo, productDetails);
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
-    writeToExcel(shopInfo, bannerInfo, productDetails);
-
-    await browser.close();
+    writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 }
 
 // Replace 'YOUR_URL_HERE' with the actual URL you want to scrape
