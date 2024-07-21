@@ -376,11 +376,8 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             productDetails.push(productDetail);
 
                             productRepls.push(...reviews);
-
-                            break;
                         }
                         pageNum++;
-                        hasMoreData = false;
                     }
                 } catch (error) {
                     console.error('상품 상세 정보 가져오기 중 오류 발생:', error);
@@ -708,7 +705,7 @@ async function main(url) {
     const productDetails = [];
     const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo.slice(0, 1), productDetails, productRepls);
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
