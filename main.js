@@ -1,5 +1,4 @@
 const axios = require('axios');
-const cheerio = require('cheerio');
 const xlsx = require('xlsx');
 const puppeteer = require('puppeteer');
 
@@ -33,77 +32,120 @@ async function fetchHtml(url) {
     }
 }
 
-async function extractMetaTags($) {
-    const ogSiteName = $('meta[property="og:site_name"]').attr('content');
-    const ogUrl = $('meta[property="og:url"]').attr('content');
-    const uidScript = $('script[src*="cfa.html"]').attr('src');
-    const favicon = $('link[rel="shortcut icon"]').attr('href');
-    const bodyStyle = $('body').css('background');
+async function extractMetaTags(page) {
+    const metaTags = await page.evaluate(() => {
+        const getMetaContent = (property) => {
+            const element = document.querySelector(`meta[property="${property}"]`);
+            return element ? element.getAttribute('content') : null;
+        };
 
-    const representativeImageElement = $(`a img[src*="logo"], a img[alt*="로고"], a img[alt*="${ogSiteName ? ogSiteName : ''}"], a img[alt="logo"]`);
-    const representativeImage = representativeImageElement.attr('src');
+        const getLinkHref = (rel) => {
+            const element = document.querySelector(`link[rel="${rel}"]`);
+            return element ? element.getAttribute('href') : null;
+        };
 
-    return {
-        siteName: ogSiteName || null,
-        siteUrl: ogUrl || null,
-        uid: uidScript ? new URLSearchParams(new URL(uidScript).search).get('uid') : null,
-        favicon: favicon || null,
-        themeColor: bodyStyle || '',
-        representativeImage: representativeImage || null
-    };
-}
+        const getCssStyle = (selector, property) => {
+            const element = document.querySelector(selector);
+            return element ? getComputedStyle(element).getPropertyValue(property) : '';
+        };
 
-async function extractFooterInfo($, baseUrl) {
-    const footer = $('.xans-element-.xans-layout.xans-layout-footer');
-    if (!footer.length) return null;
+        const getImageSrc = (selectors) => {
+            for (const selector of selectors) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    return element.getAttribute('src');
+                }
+            }
+            return null;
+        };
 
-    const extractText = (selector) => {
-        const element = footer.find(selector);
-        return element.length ? element.text().replace(/.*:/, '').trim() : null;
-    };
+        const ogSiteName = getMetaContent('og:site_name');
+        const ogUrl = getMetaContent('og:url');
+        const favicon = getLinkHref('shortcut icon');
+        const bodyStyle = getCssStyle('body', 'background');
+        const representativeImage = getImageSrc([
+            'a img[src*="logo"]',
+            'a img[alt*="로고"]',
+            `a img[alt*="${ogSiteName ? ogSiteName : ''}"]`,
+            'a img[alt="logo"]'
+        ]);
 
-    const extractTextByLabel = (label) => {
-        const elements = footer.find('span, li').toArray();
-        const element = elements.find(el => $(el).text().includes(label));
-        return element ? $(element).text().replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
-    };
-
-    const companyName = extractText('.address li:first-child') ||
-        extractTextByLabel('Company:');
-    const ceo = extractText('.address li:nth-child(2)') ||
-        extractTextByLabel('Ceo:');
-    const businessLicense = extractText('.address li:nth-child(3)') ||
-        extractTextByLabel('Company Reg.No:');
-    const onlineBusinessLicenseElement = footer.find('span, li').toArray().find(el => $(el).text().includes('통신판매업신고'));
-    const onlineBusinessLicense = onlineBusinessLicenseElement ? $(onlineBusinessLicenseElement).text().replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
-    const customerServicePhoneElement = footer.find('span, li').toArray().find(el => $(el).text().includes('tel:'));
-    const customerServicePhone = customerServicePhoneElement ? $(customerServicePhoneElement).text().split('E-mail:')[0].replace('tel:', '').trim() : null;
-
-    return {
-        companyName,
-        ceo,
-        businessLicense,
-        onlineBusinessLicense,
-        customerServicePhone
-    };
-}
-
-async function extractBannerInfo($, baseUrl) {
-    const banners = [];
-    const topBanners = $('#topbanner, [app4you-smart-banner]');
-
-    topBanners.each((_, banner) => {
-        const img = $(banner).find('img');
-        const aTag = $(banner).find('a');
-
-        if (img.length && aTag.length) {
-            const imgUrl = img.attr('src').startsWith('http') ? img.attr('src') : new URL(img.attr('src'), baseUrl).href;
-            const linkUrl = aTag.attr('href').startsWith('http') ? aTag.attr('href') : new URL(aTag.attr('href'), baseUrl).href;
-            banners.push({ '배너이미지 URL': imgUrl, '배너 링크': linkUrl });
-        }
+        return {
+            siteName: ogSiteName || null,
+            siteUrl: ogUrl || null,
+            favicon: favicon || null,
+            themeColor: bodyStyle || '',
+            representativeImage: representativeImage || null
+        };
     });
 
-    return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
+    const uid = await page.evaluate(() => {
+        const scripts = Array.from(document.querySelectorAll('script[src*="cfa.html"]'));
+        for (const script of scripts) {
+            const src = script.getAttribute('src');
+            const matches = src.match(/uid=([^&]*)/);
+            if (matches) {
+                return matches[1];
+            }
+        }
+        return null;
+    });
+
+    return { ...metaTags, uid };
+}
+
+async function extractFooterInfo(page) {
+    return await page.evaluate(() => {
+        const footer = document.querySelector('.xans-element-.xans-layout.xans-layout-footer');
+        if (!footer) return null;
+
+        const extractText = (selector) => {
+            const element = footer.querySelector(selector);
+            return element ? element.textContent.replace(/.*:/, '').trim() : null;
+        };
+
+        const extractTextByLabel = (label) => {
+            const elements = Array.from(footer.querySelectorAll('span, li'));
+            const element = elements.find(el => el.textContent.includes(label));
+            return element ? element.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
+        };
+
+        const companyName = extractText('.address li:first-child') || extractTextByLabel('Company:');
+        const ceo = extractText('.address li:nth-child(2)') || extractTextByLabel('Ceo:');
+        const businessLicense = extractText('.address li:nth-child(3)') || extractTextByLabel('Company Reg.No:');
+        const onlineBusinessLicenseElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('통신판매업신고'));
+        const onlineBusinessLicense = onlineBusinessLicenseElement ? onlineBusinessLicenseElement.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
+        const customerServicePhoneElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('tel:'));
+        const customerServicePhone = customerServicePhoneElement ? customerServicePhoneElement.textContent.split('E-mail:')[0].replace('tel:', '').trim() : null;
+
+        return {
+            companyName,
+            ceo,
+            businessLicense,
+            onlineBusinessLicense,
+            customerServicePhone
+        };
+    });
+}
+
+async function extractBannerInfo(page, baseUrl) {
+    return await page.evaluate((baseUrl) => {
+        const banners = [];
+        const topBanners = document.querySelectorAll('#topbanner, [app4you-smart-banner]');
+
+        topBanners.forEach(banner => {
+            const img = banner.querySelector('img');
+            const aTag = banner.querySelector('a');
+
+            if (img && aTag) {
+                const imgUrl = img.getAttribute('src').startsWith('http') ? img.getAttribute('src') : new URL(img.getAttribute('src'), baseUrl).href;
+                const linkUrl = aTag.getAttribute('href').startsWith('http') ? aTag.getAttribute('href') : new URL(aTag.getAttribute('href'), baseUrl).href;
+                banners.push({ '배너이미지 URL': imgUrl, '배너 링크': linkUrl });
+            }
+        });
+
+        return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
+    }, baseUrl);
 }
 
 function updateCategoryNames(data) {
@@ -257,7 +299,6 @@ async function retry(fn, retries = 4, delay = 2000, defaultValue = null) {
 
 async function fetchProductDetails(productDetail, url) {
     const browser = await launchBrowser();
-
     const page = await browser.newPage();
 
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
@@ -427,14 +468,16 @@ async function main(url) {
         url = 'https://' + url;
     }
 
+    const browser = await launchBrowser();
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle2' });
+
+    const metaTags = await extractMetaTags(page);
+    const footerInfo = await extractFooterInfo(page);
+    const bannerInfo = await extractBannerInfo(page, url);
+
     const html = await fetchHtml(url);
     if (!html) return;
-
-    const $ = cheerio.load(html);
-
-    const metaTags = await extractMetaTags($);
-    const footerInfo = await extractFooterInfo($, url);
-    const bannerInfo = await extractBannerInfo($, url);
 
     const categoryData = await fetchCategoryData(url);
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
@@ -462,11 +505,12 @@ async function main(url) {
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
+    await browser.close();
+
     const endTime = getCurrentFormattedTime();
     console.log('Script end time:', endTime);
     console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
 }
 
-const url = 'cherryme.kr';
-// const url = 'dailyjou.com';
+const url = 'dailyjou.com';
 main(url);
