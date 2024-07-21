@@ -3,8 +3,26 @@ const cheerio = require('cheerio');
 const xlsx = require('xlsx');
 const puppeteer = require('puppeteer');
 
+async function launchBrowser() {
+    return await puppeteer.launch({
+        headless: false,
+        args: [
+            '--disable-gpu',
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+            '--incognito',
+            '--disable-extensions',
+            '--proxy-server="direct://"',
+            '--proxy-bypass-list=*',
+            '--disable-setuid-sandbox',
+            '--disable-infobars',
+            '--window-size=1920,1080',
+            '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        ],
+        ignoreDefaultArgs: ['--enable-automation'],
+    });
+}
 
-// Function to fetch HTML content
 async function fetchHtml(url) {
     try {
         const { data } = await axios.get(url);
@@ -15,7 +33,6 @@ async function fetchHtml(url) {
     }
 }
 
-// Function to extract meta tags information
 async function extractMetaTags($) {
     const ogSiteName = $('meta[property="og:site_name"]').attr('content');
     const ogUrl = $('meta[property="og:url"]').attr('content');
@@ -36,7 +53,6 @@ async function extractMetaTags($) {
     };
 }
 
-// Function to extract footer information
 async function extractFooterInfo($, baseUrl) {
     const footer = $('.xans-element-.xans-layout.xans-layout-footer');
     if (!footer.length) return null;
@@ -72,7 +88,6 @@ async function extractFooterInfo($, baseUrl) {
     };
 }
 
-// Function to extract banner information
 async function extractBannerInfo($, baseUrl) {
     const banners = [];
     const topBanners = $('#topbanner, [app4you-smart-banner]');
@@ -91,7 +106,6 @@ async function extractBannerInfo($, baseUrl) {
     return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
 }
 
-// Function to update category names and build hierarchy with parent references
 function updateCategoryNames(data) {
     return data.map(item => {
         if (item.name.startsWith('<font')) {
@@ -127,7 +141,6 @@ function buildHierarchyWithParentReferences(data) {
     return result;
 }
 
-// Function to fetch category data from the given URL
 async function fetchCategoryData(url) {
     try {
         const response = await axios.get(url + '/exec/front/Product/SubCategory');
@@ -138,30 +151,24 @@ async function fetchCategoryData(url) {
     }
 }
 
-// Function to write data to Excel
 function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     const workbook = xlsx.utils.book_new();
 
-    // Write shop info
     const shopSheet = xlsx.utils.json_to_sheet([shopInfo]);
     xlsx.utils.book_append_sheet(workbook, shopSheet, '쇼핑몰 정보');
 
-    // Write banner info
     const bannerSheet = xlsx.utils.json_to_sheet(bannerInfo);
     xlsx.utils.book_append_sheet(workbook, bannerSheet, '메인배너');
 
-    // Write product details
     const productSheet = xlsx.utils.json_to_sheet(productDetails);
     xlsx.utils.book_append_sheet(workbook, productSheet, '상품정보');
 
-    // Write product repls
     const replSheet = xlsx.utils.json_to_sheet(productRepls);
     xlsx.utils.book_append_sheet(workbook, replSheet, '리뷰정보');
 
     xlsx.writeFile(workbook, 'shop_info.xlsx');
 }
 
-// Function to log category information
 async function logCategoryInfo(url, categories, productDetails, productRepls) {
     const logCategory = async (category, parentNames = []) => {
         const currentPath = parentNames.concat({ name: category.name });
@@ -214,7 +221,6 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             "카테고리(URL)": category_url
                         };
 
-                        // Fetch additional product details and reviews
                         const reviews = await fetchProductDetails(productDetail, url);
 
                         productDetails.push(productDetail);
@@ -236,145 +242,115 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     }
 }
 
-// Function to fetch product details and reviews using Puppeteer
+async function retry(fn, retries = 3, delay = 2000) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === retries - 1) throw error;
+            console.log(`Retrying... (${i + 1}/${retries})`);
+            await new Promise(res => setTimeout(res, delay));
+        }
+    }
+}
+
 async function fetchProductDetails(productDetail, url) {
-    const browser = await puppeteer.launch({
-        headless: false, // 디버깅용
-        args: [
-            '--disable-gpu',
-            '--no-sandbox',
-            '--disable-dev-shm-usage',
-            '--incognito',
-            '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        ],
-        ignoreDefaultArgs: ['--enable-automation'], // Disable automation flags
-    });
+    const browser = await launchBrowser();
+
     const page = await browser.newPage();
-
-    // Bypass the detection of automated software
-    await page.evaluateOnNewDocument(() => {
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined,
-        });
-    });
-
-    await page.setViewport({ width: 1280, height: 800 });
 
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
     await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
 
-    // Wait for a short period to ensure the page is fully loaded
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await page.waitForSelector('#prdDetail', { timeout: 30000 });
 
-    // Click "오늘 그만보기" button if it exists
-    const clickCloseToday = async (iframeSelector, buttonSelector) => {
-        const iframeElement = await page.$(iframeSelector);
-        if (iframeElement) {
-            const frame = await iframeElement.contentFrame();
-            const closeButton = await frame.$(buttonSelector);
-            if (closeButton) {
-                console.log("오늘 그만보기 button found, attempting to click it.");
-                await closeButton.evaluate(button => button.click());
-                console.log("오늘 그만보기 button clicked.");
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for the popup to close
-            } else {
-                console.log("오늘 그만보기 button not found.");
-            }
-        } else {
-            console.log("Popup not found.");
-        }
-    };
-
-    await clickCloseToday('#spm_banner_main iframe#spm_banner_frame_form', '#spm-today-close');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Extract product detail HTML
-    const productDetailHtml = await page.evaluate(() => {
-        const detailElement = document.querySelector('#prdDetail');
-        return detailElement ? detailElement.outerHTML : '';
-    });
+    const productDetailHtml = await retry(async () => {
+        return await page.evaluate(() => {
+            const detailElement = document.querySelector('#prdDetail');
+            return detailElement ? detailElement.outerHTML : '';
+        });
+    }, 3, 2000);
     productDetail["상품 상세(html)*"] = productDetailHtml;
 
-    // Extract product images
-    const productImages = await page.evaluate(() => {
-        const imgElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-image img');
-        const imgUrls = [];
-        imgElements.forEach(img => {
-            const src = img.getAttribute('src');
-            if (src) {
-                imgUrls.push(`http:${src}`);
-            }
-        });
-        return imgUrls;
-    });
-    productDetail["상품 이미지*"] = productImages;
-    console.log("상품 이미지* : ", JSON.stringify(productImages, null, 2));
-
-
-    // Extract option information
-    const options = await page.evaluate(() => {
-        const optionElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-option.xans-record-');
-        const options = new Map();
-        optionElements.forEach(optionElement => {
-            const th = optionElement.querySelector('th');
-            const select = optionElement.querySelector('select');
-            if (th && select) {
-                const optionTitle = th.innerText.trim();
-                const optionValues = [];
-                const optionItems = select.querySelectorAll('option');
-                optionItems.forEach(optionItem => {
-                    const value = optionItem.innerText.trim();
-                    if (value !== '*' && value !== '**' && value !== '- [필수] 옵션을 선택해 주세요 -' && !optionItem.hasAttribute('disabled')) {
-                        optionValues.push(value);
-                    }
-                });
-                if (options.has(optionTitle)) {
-                    options.set(optionTitle, [...options.get(optionTitle), ...optionValues]);
-                } else {
-                    options.set(optionTitle, optionValues);
-                }
-            }
-        });
-        return Array.from(options.entries()).map(([key, value]) => ({ [key]: value }));
-    });
-    productDetail["옵션 정보"] = options;
-    console.log("옵션 정보 : ", JSON.stringify(options, null, 2));
-
-
-    // Extract product notice information
-    const productNotice = await page.evaluate(() => {
-        const noticeElement = document.querySelector('#prdInfo');
-        const notice = {};
-        if (noticeElement) {
-            const paymentInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("상품결제정보") + td');
-            const exchangeInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("교환 및 반품정보") + td');
-            const shippingInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("배송정보") + td');
-
-            if (paymentInfo) notice["상품결제정보"] = paymentInfo.innerText.trim();
-            if (exchangeInfo) notice["교환 및 반품정보"] = exchangeInfo.innerText.trim();
-            if (shippingInfo) notice["배송정보"] = shippingInfo.innerText.trim();
-
-            const imgElements = noticeElement.querySelectorAll('img');
+    const productImages = await retry(async () => {
+        return await page.evaluate(() => {
+            const imgElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-image img');
             const imgUrls = [];
             imgElements.forEach(img => {
                 const src = img.getAttribute('src');
                 if (src) {
-                    imgUrls.push({ url: src });
+                    imgUrls.push(`http:${src}`);
                 }
             });
-            if (imgUrls.length > 0) notice["이미지"] = imgUrls;
-        }
-        return notice;
-    });
+            return imgUrls;
+        });
+    }, 3, 2000);
+    productDetail["상품 이미지*"] = productImages;
+    console.log("상품 이미지* : ", JSON.stringify(productImages, null, 2));
+
+    const options = await retry(async () => {
+        return await page.evaluate(() => {
+            const optionElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-option.xans-record-');
+            const options = new Map();
+            optionElements.forEach(optionElement => {
+                const th = optionElement.querySelector('th');
+                const select = optionElement.querySelector('select');
+                if (th && select) {
+                    const optionTitle = th.innerText.trim();
+                    const optionValues = [];
+                    const optionItems = select.querySelectorAll('option');
+                    optionItems.forEach(optionItem => {
+                        const value = optionItem.innerText.trim();
+                        if (value !== '*' && value !== '**' && value !== '- [필수] 옵션을 선택해 주세요 -' && !optionItem.hasAttribute('disabled')) {
+                            optionValues.push(value);
+                        }
+                    });
+                    if (options.has(optionTitle)) {
+                        options.set(optionTitle, [...options.get(optionTitle), ...optionValues]);
+                    } else {
+                        options.set(optionTitle, optionValues);
+                    }
+                }
+            });
+            return Array.from(options.entries()).map(([key, value]) => ({ [key]: value }));
+        });
+    }, 3, 2000);
+    productDetail["옵션 정보"] = options;
+    console.log("옵션 정보 : ", JSON.stringify(options, null, 2));
+
+    const productNotice = await retry(async () => {
+        return await page.evaluate(() => {
+            const noticeElement = document.querySelector('#prdInfo');
+            const notice = {};
+            if (noticeElement) {
+                const paymentInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("상품결제정보") + td');
+                const exchangeInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("교환 및 반품정보") + td');
+                const shippingInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("배송정보") + td');
+
+                if (paymentInfo) notice["상품결제정보"] = paymentInfo.innerText.trim();
+                if (exchangeInfo) notice["교환 및 반품정보"] = exchangeInfo.innerText.trim();
+                if (shippingInfo) notice["배송정보"] = shippingInfo.innerText.trim();
+
+                const imgElements = noticeElement.querySelectorAll('img');
+                const imgUrls = [];
+                imgElements.forEach(img => {
+                    const src = img.getAttribute('src');
+                    if (src) {
+                        imgUrls.push({ url: src });
+                    }
+                });
+                if (imgUrls.length > 0) notice["이미지"] = imgUrls;
+            }
+            return notice;
+        });
+    }, 3, 2000);
     productDetail["상품 고지 정보"] = productNotice;
     console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
 
-    // Store option titles
     const optionTitles = options.map(option => Object.keys(option)[0]);
     productDetail["옵션"] = optionTitles;
     console.log("옵션 : ", JSON.stringify(optionTitles, null, 2));
 
-    // Extract reviews
     const reviews = await fetchProductReviews(page, productDetail, url);
 
     await browser.close();
@@ -382,15 +358,18 @@ async function fetchProductDetails(productDetail, url) {
     return reviews;
 }
 
-// Function to fetch product reviews using Puppeteer
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
 
-    const iframeElement = await page.$('#prdReview iframe#review_widget3_0');
+    const iframeElement = await retry(async () => {
+        return await page.$('#prdReview iframe#review_widget3_0');
+    }, 3, 2000);
     if (iframeElement) {
         const frame = await iframeElement.contentFrame();
         if (frame) {
-            const reviewElements = await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
+            const reviewElements = await retry(async () => {
+                return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
+            }, 3, 2000);
             for (const reviewElement of reviewElements) {
                 const imageElement = await reviewElement.$('.sf_review_user_photo img');
                 const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
@@ -426,8 +405,6 @@ async function fetchProductReviews(page, productDetail, url) {
     return reviews;
 }
 
-
-// Function to get the current formatted time
 function getCurrentFormattedTime() {
     const now = new Date();
     const year = now.getFullYear();
@@ -439,7 +416,6 @@ function getCurrentFormattedTime() {
     return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
 }
 
-// Main function
 async function main(url) {
     const startTime = getCurrentFormattedTime();
     console.log('Script start time:', startTime);
@@ -457,7 +433,6 @@ async function main(url) {
     const footerInfo = await extractFooterInfo($, url);
     const bannerInfo = await extractBannerInfo($, url);
 
-    // Fetch category data from the given URL
     const categoryData = await fetchCategoryData(url);
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
 
@@ -489,6 +464,5 @@ async function main(url) {
     console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
 }
 
-// Replace 'YOUR_URL_HERE' with the actual URL you want to scrape
 const url = 'dailyjou.com';
 main(url);
