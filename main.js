@@ -242,7 +242,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     }
 }
 
-async function retry(fn, retries = 3, delay = 2000) {
+async function retry(fn, retries = 4, delay = 2000) {
     for (let i = 0; i < retries; i++) {
         try {
             return await fn();
@@ -360,6 +360,8 @@ async function fetchProductDetails(productDetail, url) {
 
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
+
+    await new Promise(res => setTimeout(res, 2000));
 
     const iframeElement = await retry(async () => {
         return await page.$('#prdReview iframe#review_widget3_0');
