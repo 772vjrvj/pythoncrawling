@@ -709,7 +709,7 @@ async function main(url) {
     console.log('categoryInfo : ', JSON.stringify(categoryInfo.splice(0,1), null, 2));
 
 
-    await logCategoryInfo(url, categoryInfo.splice(0,1), productDetails, productRepls);
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
