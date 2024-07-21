@@ -362,8 +362,6 @@ async function fetchProductDetails(productDetail, url) {
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
 
-    await new Promise(res => setTimeout(res, 5000)); // wait for 5 seconds
-
     const iframeElement = await retry(async () => {
         return await page.$('#prdReview iframe#review_widget3_0');
     }, 3, 2000, null);
