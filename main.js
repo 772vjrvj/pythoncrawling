@@ -307,7 +307,7 @@ async function fetchProductDetails(productDetail, url) {
                         }
                     });
                     if (options.has(optionTitle)) {
-                        options.set(optionTitle, [...options.get(optionTitle), ...optionValues]);
+                        options.set(optionTitle, [...new Set([...options.get(optionTitle), ...optionValues])]);
                     } else {
                         options.set(optionTitle, optionValues);
                     }
@@ -371,6 +371,7 @@ async function fetchProductReviews(page, productDetail, url) {
     if (iframeElement) {
         const frame = await iframeElement.contentFrame();
         if (frame) {
+            await frame.waitForSelector('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report', { timeout: 10000 });
             const reviewElements = await retry(async () => {
                 return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
             }, 3, 2000, []);
