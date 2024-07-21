@@ -33,129 +33,144 @@ async function fetchHtml(url) {
 }
 
 async function extractMetaTags(page) {
-    const metaTags = await page.evaluate(() => {
-        const getMetaContent = (property) => {
-            const element = document.querySelector(`meta[property="${property}"]`);
-            return element ? element.getAttribute('content') : null;
-        };
+    try {
+        const metaTags = await page.evaluate(() => {
+            const getMetaContent = (property) => {
+                const element = document.querySelector(`meta[property="${property}"]`);
+                return element ? element.getAttribute('content') : null;
+            };
 
-        const getLinkHref = (rel) => {
-            const element = document.querySelector(`link[rel="${rel}"]`);
-            return element ? element.getAttribute('href') : null;
-        };
+            const getLinkHref = (rel) => {
+                const element = document.querySelector(`link[rel="${rel}"]`);
+                return element ? element.getAttribute('href') : null;
+            };
 
-        const getCssStyle = (selector, property) => {
-            const element = document.querySelector(selector);
-            return element ? window.getComputedStyle(element).getPropertyValue(property) : '';
-        };
-
-        const rgbToHex = (rgb) => {
-            const result = rgb.match(/\d+/g).map((num) => {
-                const hex = parseInt(num, 10).toString(16).padStart(2, '0');
-                return hex;
-            });
-            return `#${result.join('')}`;
-        };
-
-        const getImageSrc = (selectors) => {
-            for (const selector of selectors) {
+            const getCssStyle = (selector, property) => {
                 const element = document.querySelector(selector);
-                if (element) {
-                    return element.getAttribute('src');
+                return element ? window.getComputedStyle(element).getPropertyValue(property) : '';
+            };
+
+            const rgbToHex = (rgb) => {
+                const result = rgb.match(/\d+/g).map((num) => {
+                    const hex = parseInt(num, 10).toString(16).padStart(2, '0');
+                    return hex;
+                });
+                return `#${result.join('')}`;
+            };
+
+            const getImageSrc = (selectors) => {
+                for (const selector of selectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        return element.getAttribute('src');
+                    }
+                }
+                return null;
+            };
+
+            const ogSiteName = getMetaContent('og:site_name');
+            const ogUrl = getMetaContent('og:url');
+            const favicon = getLinkHref('shortcut icon');
+            const bodyStyle = getCssStyle('body#main', 'background-color');
+            const themeColor = bodyStyle ? rgbToHex(bodyStyle) : '';
+            const representativeImage = getImageSrc([
+                'a img[src*="logo"]',
+                'a img[alt*="로고"]',
+                `a img[alt*="${ogSiteName ? ogSiteName : ''}"]`,
+                'a img[alt="logo"]'
+            ]);
+
+            return {
+                siteName: ogSiteName || null,
+                siteUrl: ogUrl || null,
+                favicon: favicon || null,
+                themeColor: themeColor,
+                representativeImage: representativeImage || null
+            };
+        });
+
+        const uid = await page.evaluate(() => {
+            const scripts = Array.from(document.querySelectorAll('script[src*="cfa.html"]'));
+            for (const script of scripts) {
+                const src = script.getAttribute('src');
+                const matches = src.match(/uid=([^&]*)/);
+                if (matches) {
+                    return matches[1];
                 }
             }
             return null;
-        };
+        });
 
-        const ogSiteName = getMetaContent('og:site_name');
-        const ogUrl = getMetaContent('og:url');
-        const favicon = getLinkHref('shortcut icon');
-        const bodyStyle = getCssStyle('body#main', 'background-color');
-        const themeColor = bodyStyle ? rgbToHex(bodyStyle) : '';
-        const representativeImage = getImageSrc([
-            'a img[src*="logo"]',
-            'a img[alt*="로고"]',
-            `a img[alt*="${ogSiteName ? ogSiteName : ''}"]`,
-            'a img[alt="logo"]'
-        ]);
-
-        return {
-            siteName: ogSiteName || null,
-            siteUrl: ogUrl || null,
-            favicon: favicon || null,
-            themeColor: themeColor,
-            representativeImage: representativeImage || null
-        };
-    });
-
-    const uid = await page.evaluate(() => {
-        const scripts = Array.from(document.querySelectorAll('script[src*="cfa.html"]'));
-        for (const script of scripts) {
-            const src = script.getAttribute('src');
-            const matches = src.match(/uid=([^&]*)/);
-            if (matches) {
-                return matches[1];
-            }
-        }
-        return null;
-    });
-
-    return { ...metaTags, uid };
+        return { ...metaTags, uid };
+    } catch (error) {
+        console.error('Error extracting meta tags:', error);
+        return {};
+    }
 }
 
 
 async function extractFooterInfo(page) {
-    return await page.evaluate(() => {
-        const footer = document.querySelector('.xans-element-.xans-layout.xans-layout-footer');
-        if (!footer) return null;
+    try {
+        return await page.evaluate(() => {
+            const footer = document.querySelector('.xans-element-.xans-layout.xans-layout-footer');
+            if (!footer) return null;
 
-        const extractText = (selector) => {
-            const element = footer.querySelector(selector);
-            return element ? element.textContent.replace(/.*:/, '').trim() : null;
-        };
+            const extractText = (selector) => {
+                const element = footer.querySelector(selector);
+                return element ? element.textContent.replace(/.*:/, '').trim() : null;
+            };
 
-        const extractTextByLabel = (label) => {
-            const elements = Array.from(footer.querySelectorAll('span, li'));
-            const element = elements.find(el => el.textContent.includes(label));
-            return element ? element.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
-        };
+            const extractTextByLabel = (label) => {
+                const elements = Array.from(footer.querySelectorAll('span, li'));
+                const element = elements.find(el => el.textContent.includes(label));
+                return element ? element.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
+            };
 
-        const companyName = extractText('.address li:first-child') || extractTextByLabel('Company:');
-        const ceo = extractText('.address li:nth-child(2)') || extractTextByLabel('Ceo:');
-        const businessLicense = extractText('.address li:nth-child(3)') || extractTextByLabel('Company Reg.No:');
-        const onlineBusinessLicenseElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('통신판매업신고'));
-        const onlineBusinessLicense = onlineBusinessLicenseElement ? onlineBusinessLicenseElement.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
-        const customerServicePhoneElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('tel:'));
-        const customerServicePhone = customerServicePhoneElement ? customerServicePhoneElement.textContent.split('E-mail:')[0].replace('tel:', '').trim() : null;
+            const companyName = extractText('.address li:first-child') || extractTextByLabel('Company:');
+            const ceo = extractText('.address li:nth-child(2)') || extractTextByLabel('Ceo:');
+            const businessLicense = extractText('.address li:nth-child(3)') || extractTextByLabel('Company Reg.No:');
+            const onlineBusinessLicenseElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('통신판매업신고'));
+            const onlineBusinessLicense = onlineBusinessLicenseElement ? onlineBusinessLicenseElement.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
+            const customerServicePhoneElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('tel:'));
+            const customerServicePhone = customerServicePhoneElement ? customerServicePhoneElement.textContent.split('E-mail:')[0].replace('tel:', '').trim() : null;
 
-        return {
-            companyName,
-            ceo,
-            businessLicense,
-            onlineBusinessLicense,
-            customerServicePhone
-        };
-    });
+            return {
+                companyName,
+                ceo,
+                businessLicense,
+                onlineBusinessLicense,
+                customerServicePhone
+            };
+        });
+    } catch (error) {
+        console.error('Error extracting footer info:', error);
+        return {};
+    }
 }
 
 async function extractBannerInfo(page, baseUrl) {
-    return await page.evaluate((baseUrl) => {
-        const banners = [];
-        const topBanners = document.querySelectorAll('#topbanner, [app4you-smart-banner]');
+    try {
+        return await page.evaluate((baseUrl) => {
+            const banners = [];
+            const topBanners = document.querySelectorAll('#topbanner, [app4you-smart-banner]');
 
-        topBanners.forEach(banner => {
-            const img = banner.querySelector('img');
-            const aTag = banner.querySelector('a');
+            topBanners.forEach(banner => {
+                const img = banner.querySelector('img');
+                const aTag = banner.querySelector('a');
 
-            if (img && aTag) {
-                const imgUrl = img.getAttribute('src').startsWith('http') ? img.getAttribute('src') : new URL(img.getAttribute('src'), baseUrl).href;
-                const linkUrl = aTag.getAttribute('href').startsWith('http') ? aTag.getAttribute('href') : new URL(aTag.getAttribute('href'), baseUrl).href;
-                banners.push({ '배너이미지 URL': imgUrl, '배너 링크': linkUrl });
-            }
-        });
+                if (img && aTag) {
+                    const imgUrl = img.getAttribute('src').startsWith('http') ? img.getAttribute('src') : new URL(img.getAttribute('src'), baseUrl).href;
+                    const linkUrl = aTag.getAttribute('href').startsWith('http') ? aTag.getAttribute('href') : new URL(aTag.getAttribute('href'), baseUrl).href;
+                    banners.push({ '배너이미지 URL': imgUrl, '배너 링크': linkUrl });
+                }
+            });
 
-        return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
-    }, baseUrl);
+            return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
+        }, baseUrl);
+    } catch (error) {
+        console.error('Error extracting banner info:', error);
+        return [];
+    }
 }
 
 function updateCategoryNames(data) {
@@ -262,8 +277,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     const logCategory = async (category, parentNames = []) => {
         const currentPath = parentNames.concat({ name: category.name });
 
-        if (category.data_list.length === 0)
-        {
+        if (category.data_list.length === 0) {
             const category_menu = JSON.stringify(currentPath, null, 2);
             const category_url = `${url}/${category.design_page_url}${category.param}`;
 
@@ -285,55 +299,49 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                 const nowTime2 = getCurrentFormattedTime();
                 console.log('Script now2 time:', nowTime2);
 
-                const response = await axios.get(detail_url, { timeout: 20000 });
-                const data = response.data.rtn_data.data;
+                try {
+                    const response = await axios.get(detail_url, { timeout: 20000 });
+                    const data = response.data.rtn_data.data;
 
-                if (!data || data.length === 0) {
-                    hasMoreData = false;
-                    console.log('data length 없음');
-                } else {
-                    console.log('data length: ', data.length);
-                    for (const product of data) {
-                        const productDetail = {
-                            "상품ID": product.product_no,
-                            "상품명*": product.product_name_tag,
-                            "카테고리(메뉴)*": category_menu,
-                            "상품 상세(html)*": "",
-                            "상품가격*": product.product_price,
-                            "상품 할인가격*": product.origin_prd_price_sale,
-                            "상품 이미지*": "",
-                            "상품 잔여수량": product.stock_number,
-                            "상품 태그": product.product_tag,
-                            "상품 상세화면 URL*": product.seo_url,
-                            "옵션": [],
-                            "옵션 정보": [],
-                            "상품 고지 정보": "",
-                            "카테고리(URL)": category_url
-                        };
+                    if (!data || data.length === 0) {
+                        hasMoreData = false;
+                        console.log('data length 없음');
+                    } else {
+                        console.log('data length: ', data.length);
+                        for (const product of data) {
+                            const productDetail = {
+                                "상품ID": product.product_no,
+                                "상품명*": product.product_name_tag,
+                                "카테고리(메뉴)*": category_menu,
+                                "상품 상세(html)*": "",
+                                "상품가격*": product.product_price,
+                                "상품 할인가격*": product.origin_prd_price_sale,
+                                "상품 이미지*": "",
+                                "상품 잔여수량": product.stock_number,
+                                "상품 태그": product.product_tag,
+                                "상품 상세화면 URL*": product.seo_url,
+                                "옵션": [],
+                                "옵션 정보": [],
+                                "상품 고지 정보": "",
+                                "카테고리(URL)": category_url
+                            };
 
-                        console.log('상품ID: ', product.product_no);
-                        console.log('상품명*: ', product.product_name_tag);
-                        console.log('상품가격*: ', product.product_price);
-                        console.log('상품 할인가격*: ', product.origin_prd_price_sale);
-                        console.log('상품 잔여수량*: ', product.stock_number);
-                        console.log('상품 태그*: ', product.product_tag);
+                            const reviews = await fetchProductDetails(productDetail, url);
 
+                            productDetails.push(productDetail);
 
-                        const reviews = await fetchProductDetails(productDetail, url);
-
-                        productDetails.push(productDetail);
-
-                        productRepls.push(...reviews);
+                            productRepls.push(...reviews);
+                        }
+                        pageNum++;
+                        hasMoreData = false;
                     }
-                    pageNum++;
+                } catch (error) {
+                    console.error('Error fetching product details:', error);
                     hasMoreData = false;
                 }
             }
-        }
-        else
-        {
-            for (const subCategory of category.data_list)
-            {
+        } else {
+            for (const subCategory of category.data_list) {
                 await logCategory(subCategory, currentPath);
             }
         }
@@ -362,7 +370,11 @@ async function fetchProductDetails(productDetail, url) {
     const page = await browser.newPage();
 
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
-    await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
+    try {
+        await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
+    } catch (error) {
+        console.error('Error navigating to product detail page:', error);
+    }
 
     await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds
 
@@ -373,7 +385,6 @@ async function fetchProductDetails(productDetail, url) {
         });
     }, 3, 2000, '');
     productDetail["상품 상세(html)*"] = productDetailHtml;
-    // console.log("상품 상세(html)* : ", JSON.stringify(productDetailHtml, null, 2));
 
     const productImages = await retry(async () => {
         return await page.evaluate(() => {
@@ -468,8 +479,7 @@ async function fetchProductReviews(page, productDetail, url) {
         return await page.$('#prdReview tbody.center.review_content');
     }, 3, 2000, null);
 
-    if (reviewTableElement)
-    {
+    if (reviewTableElement) {
         // If review table exists
         const reviewRows = await reviewTableElement.$$('tr');
         for (const reviewRow of reviewRows) {
@@ -514,9 +524,7 @@ async function fetchProductReviews(page, productDetail, url) {
                 "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
             });
         }
-    }
-    else
-    {
+    } else {
         // If review table does not exist, check iframe
         const iframeElement = await retry(async () => {
             return await page.$('#prdReview iframe#review_widget3_0');
@@ -586,14 +594,16 @@ async function main(url) {
 
     const browser = await launchBrowser();
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    try {
+        await page.goto(url, { waitUntil: 'networkidle2' });
+    } catch (error) {
+        console.error('Error navigating to main page:', error);
+    }
 
     const metaTags = await extractMetaTags(page);
     const footerInfo = await extractFooterInfo(page);
     const bannerInfo = await extractBannerInfo(page, url);
-
-    const html = await fetchHtml(url);
-    if (!html) return;
+    await browser.close();
 
     const categoryData = await fetchCategoryData(url);
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
@@ -617,11 +627,9 @@ async function main(url) {
     const productDetails = [];
     const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    await logCategoryInfo(url, categoryInfo.slice(0, 1), productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
-
-    await browser.close();
 
     const endTime = getCurrentFormattedTime();
     console.log('Script end time:', endTime);
