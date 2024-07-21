@@ -96,8 +96,6 @@ def main():
         for element in elements:
             texts.append(element.text)
 
-
-
         # 결과 출력
         print(texts)
 
