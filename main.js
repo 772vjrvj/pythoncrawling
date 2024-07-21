@@ -263,7 +263,7 @@ async function fetchProductDetails(productDetail, url) {
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
     await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
 
-    await page.waitForSelector('#prdDetail', { timeout: 30000 });
+    await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds
 
     const productDetailHtml = await retry(async () => {
         return await page.evaluate(() => {
@@ -362,7 +362,7 @@ async function fetchProductDetails(productDetail, url) {
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
 
-    await new Promise(res => setTimeout(res, 2000));
+    await new Promise(res => setTimeout(res, 5000)); // wait for 5 seconds
 
     const iframeElement = await retry(async () => {
         return await page.$('#prdReview iframe#review_widget3_0');
@@ -371,7 +371,7 @@ async function fetchProductReviews(page, productDetail, url) {
     if (iframeElement) {
         const frame = await iframeElement.contentFrame();
         if (frame) {
-            await frame.waitForSelector('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report', { timeout: 10000 });
+            await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds inside the iframe
             const reviewElements = await retry(async () => {
                 return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
             }, 3, 2000, []);
