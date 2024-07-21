@@ -376,6 +376,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             productDetails.push(productDetail);
 
                             productRepls.push(...reviews);
+
                         }
                         pageNum++;
                     }
@@ -705,7 +706,10 @@ async function main(url) {
     const productDetails = [];
     const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    console.log('categoryInfo : ', JSON.stringify(categoryInfo.splice(0,1), null, 2));
+
+
+    await logCategoryInfo(url, categoryInfo.splice(0,1), productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
@@ -714,5 +718,5 @@ async function main(url) {
     console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
 }
 
-const url = 'cherryme.kr';
+const url = 'https://dailyjou.com';
 main(url);
