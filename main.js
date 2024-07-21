@@ -46,7 +46,15 @@ async function extractMetaTags(page) {
 
         const getCssStyle = (selector, property) => {
             const element = document.querySelector(selector);
-            return element ? getComputedStyle(element).getPropertyValue(property) : '';
+            return element ? window.getComputedStyle(element).getPropertyValue(property) : '';
+        };
+
+        const rgbToHex = (rgb) => {
+            const result = rgb.match(/\d+/g).map((num) => {
+                const hex = parseInt(num, 10).toString(16).padStart(2, '0');
+                return hex;
+            });
+            return `#${result.join('')}`;
         };
 
         const getImageSrc = (selectors) => {
@@ -62,7 +70,8 @@ async function extractMetaTags(page) {
         const ogSiteName = getMetaContent('og:site_name');
         const ogUrl = getMetaContent('og:url');
         const favicon = getLinkHref('shortcut icon');
-        const bodyStyle = getCssStyle('body', 'background');
+        const bodyStyle = getCssStyle('body#main', 'background-color');
+        const themeColor = bodyStyle ? rgbToHex(bodyStyle) : '';
         const representativeImage = getImageSrc([
             'a img[src*="logo"]',
             'a img[alt*="로고"]',
@@ -74,7 +83,7 @@ async function extractMetaTags(page) {
             siteName: ogSiteName || null,
             siteUrl: ogUrl || null,
             favicon: favicon || null,
-            themeColor: bodyStyle || '',
+            themeColor: themeColor,
             representativeImage: representativeImage || null
         };
     });
@@ -93,6 +102,7 @@ async function extractMetaTags(page) {
 
     return { ...metaTags, uid };
 }
+
 
 async function extractFooterInfo(page) {
     return await page.evaluate(() => {
@@ -497,11 +507,12 @@ async function main(url) {
     };
 
     console.log('shopInfo : ', JSON.stringify(shopInfo, null, 2));
+    // return;
 
     const productDetails = [];
     const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    // await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
@@ -512,5 +523,6 @@ async function main(url) {
     console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
 }
 
-const url = 'dailyjou.com';
+// const url = 'dailyjou.com';
+const url = 'cherryme.kr';
 main(url);
