@@ -242,16 +242,17 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     }
 }
 
-async function retry(fn, retries = 4, delay = 2000) {
+async function retry(fn, retries = 4, delay = 2000, defaultValue = null) {
     for (let i = 0; i < retries; i++) {
         try {
             return await fn();
         } catch (error) {
-            if (i === retries - 1) throw error;
             console.log(`Retrying... (${i + 1}/${retries})`);
             await new Promise(res => setTimeout(res, delay));
         }
     }
+    console.log('Max retries reached, returning default value.');
+    return defaultValue;
 }
 
 async function fetchProductDetails(productDetail, url) {
@@ -269,7 +270,7 @@ async function fetchProductDetails(productDetail, url) {
             const detailElement = document.querySelector('#prdDetail');
             return detailElement ? detailElement.outerHTML : '';
         });
-    }, 3, 2000);
+    }, 3, 2000, '');
     productDetail["상품 상세(html)*"] = productDetailHtml;
 
     const productImages = await retry(async () => {
@@ -284,7 +285,7 @@ async function fetchProductDetails(productDetail, url) {
             });
             return imgUrls;
         });
-    }, 3, 2000);
+    }, 3, 2000, []);
     productDetail["상품 이미지*"] = productImages;
     console.log("상품 이미지* : ", JSON.stringify(productImages, null, 2));
 
@@ -314,7 +315,7 @@ async function fetchProductDetails(productDetail, url) {
             });
             return Array.from(options.entries()).map(([key, value]) => ({ [key]: value }));
         });
-    }, 3, 2000);
+    }, 3, 2000, []);
     productDetail["옵션 정보"] = options;
     console.log("옵션 정보 : ", JSON.stringify(options, null, 2));
 
@@ -343,7 +344,7 @@ async function fetchProductDetails(productDetail, url) {
             }
             return notice;
         });
-    }, 3, 2000);
+    }, 3, 2000, {});
     productDetail["상품 고지 정보"] = productNotice;
     console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
 
@@ -365,13 +366,14 @@ async function fetchProductReviews(page, productDetail, url) {
 
     const iframeElement = await retry(async () => {
         return await page.$('#prdReview iframe#review_widget3_0');
-    }, 3, 2000);
+    }, 3, 2000, null);
+
     if (iframeElement) {
         const frame = await iframeElement.contentFrame();
         if (frame) {
             const reviewElements = await retry(async () => {
                 return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
-            }, 3, 2000);
+            }, 3, 2000, []);
             for (const reviewElement of reviewElements) {
                 const imageElement = await reviewElement.$('.sf_review_user_photo img');
                 const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
