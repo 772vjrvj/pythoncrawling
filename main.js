@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 
 async function launchBrowser() {
     return await puppeteer.launch({
-        headless: false,
+        headless: true,
         args: [
             '--disable-gpu',
             '--no-sandbox',
