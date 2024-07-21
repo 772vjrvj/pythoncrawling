@@ -1,7 +1,12 @@
 const axios = require('axios');
 const xlsx = require('xlsx');
 const puppeteer = require('puppeteer');
+const moment = require('moment');
 
+/**
+ * Puppeteer 브라우저 인스턴스를 시작합니다.
+ * @returns {Promise<Browser>} 시작된 브라우저 인스턴스.
+ */
 async function launchBrowser() {
     return await puppeteer.launch({
         headless: true,
@@ -22,16 +27,11 @@ async function launchBrowser() {
     });
 }
 
-async function fetchHtml(url) {
-    try {
-        const { data } = await axios.get(url);
-        return data;
-    } catch (error) {
-        console.error('Error fetching HTML:', error);
-        return null;
-    }
-}
-
+/**
+ * 주어진 Puppeteer 페이지에서 메타 태그와 UID를 추출합니다.
+ * @param {Page} page - Puppeteer 페이지 인스턴스.
+ * @returns {Promise<Object>} 추출된 메타 태그와 UID를 포함하는 객체.
+ */
 async function extractMetaTags(page) {
     try {
         const metaTags = await page.evaluate(() => {
@@ -103,12 +103,16 @@ async function extractMetaTags(page) {
 
         return { ...metaTags, uid };
     } catch (error) {
-        console.error('Error extracting meta tags:', error);
+        console.error('메타 태그 추출 중 오류 발생:', error);
         return {};
     }
 }
 
-
+/**
+ * 주어진 Puppeteer 페이지에서 푸터 정보를 추출합니다.
+ * @param {Page} page - Puppeteer 페이지 인스턴스.
+ * @returns {Promise<Object>} 추출된 푸터 정보를 포함하는 객체.
+ */
 async function extractFooterInfo(page) {
     try {
         return await page.evaluate(() => {
@@ -143,11 +147,17 @@ async function extractFooterInfo(page) {
             };
         });
     } catch (error) {
-        console.error('Error extracting footer info:', error);
+        console.error('푸터 정보 추출 중 오류 발생:', error);
         return {};
     }
 }
 
+/**
+ * 주어진 Puppeteer 페이지에서 배너 정보를 추출합니다.
+ * @param {Page} page - Puppeteer 페이지 인스턴스.
+ * @param {string} baseUrl - 기본 URL.
+ * @returns {Promise<Array>} 추출된 배너 정보를 포함하는 배열.
+ */
 async function extractBannerInfo(page, baseUrl) {
     try {
         return await page.evaluate((baseUrl) => {
@@ -168,11 +178,16 @@ async function extractBannerInfo(page, baseUrl) {
             return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
         }, baseUrl);
     } catch (error) {
-        console.error('Error extracting banner info:', error);
+        console.error('배너 정보 추출 중 오류 발생:', error);
         return [];
     }
 }
 
+/**
+ * 카테고리 이름을 업데이트합니다.
+ * @param {Array} data - 카테고리 데이터 배열.
+ * @returns {Array} 업데이트된 카테고리 데이터 배열.
+ */
 function updateCategoryNames(data) {
     return data.map(item => {
         if (item.name.startsWith('<font')) {
@@ -185,6 +200,11 @@ function updateCategoryNames(data) {
     });
 }
 
+/**
+ * 부모 참조를 포함한 카테고리 계층 구조를 구축합니다.
+ * @param {Array} data - 카테고리 데이터 배열.
+ * @returns {Array} 부모 참조를 포함한 카테고리 계층 배열.
+ */
 function buildHierarchyWithParentReferences(data) {
     const updatedData = updateCategoryNames(data);
     const categories = updatedData.reduce((acc, item) => {
@@ -208,16 +228,27 @@ function buildHierarchyWithParentReferences(data) {
     return result;
 }
 
+/**
+ * 카테고리 데이터를 가져옵니다.
+ * @param {string} url - API 요청을 위한 기본 URL.
+ * @returns {Promise<Array>} 가져온 카테고리 데이터 배열.
+ */
 async function fetchCategoryData(url) {
     try {
         const response = await axios.get(url + '/exec/front/Product/SubCategory');
         return response.data;
     } catch (error) {
-        console.error('Error fetching category data:', error);
+        console.error('카테고리 데이터 가져오기 중 오류 발생:', error);
         return [];
     }
 }
 
+/**
+ * 텍스트를 지정된 길이로 자릅니다.
+ * @param {string} text - 자를 텍스트.
+ * @param {number} maxLength - 최대 길이.
+ * @returns {string} 자른 텍스트.
+ */
 function truncateText(text, maxLength = 32767) {
     if (typeof text === 'string' && text.length > maxLength) {
         return text.substring(0, maxLength);
@@ -225,10 +256,17 @@ function truncateText(text, maxLength = 32767) {
     return text;
 }
 
+/**
+ * 추출된 정보를 Excel 파일에 씁니다.
+ * @param {Object} shopInfo - 쇼핑몰 정보.
+ * @param {Array} bannerInfo - 배너 정보.
+ * @param {Array} productDetails - 상품 상세 정보.
+ * @param {Array} productRepls - 리뷰 정보.
+ */
 function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     const workbook = xlsx.utils.book_new();
 
-    // Truncate long text in shopInfo
+    // 긴 텍스트 자르기
     const truncatedShopInfo = {};
     for (const key in shopInfo) {
         if (Object.hasOwnProperty.call(shopInfo, key)) {
@@ -242,7 +280,7 @@ function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     const bannerSheet = xlsx.utils.json_to_sheet(bannerInfo);
     xlsx.utils.book_append_sheet(workbook, bannerSheet, '메인배너');
 
-    // Truncate long text in productDetails
+    // 긴 텍스트 자르기
     const truncatedProductDetails = productDetails.map(product => {
         const truncatedProduct = {};
         for (const key in product) {
@@ -256,7 +294,7 @@ function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     const productSheet = xlsx.utils.json_to_sheet(truncatedProductDetails);
     xlsx.utils.book_append_sheet(workbook, productSheet, '상품정보');
 
-    // Truncate long text in productRepls
+    // 긴 텍스트 자르기
     const truncatedProductRepls = productRepls.map(repl => {
         const truncatedRepl = {};
         for (const key in repl) {
@@ -273,6 +311,13 @@ function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     xlsx.writeFile(workbook, 'shop_info.xlsx');
 }
 
+/**
+ * 카테고리 정보를 로그로 기록하고, 상품 정보를 추출합니다.
+ * @param {string} url - 기본 URL.
+ * @param {Array} categories - 카테고리 정보 배열.
+ * @param {Array} productDetails - 상품 상세 정보 배열.
+ * @param {Array} productRepls - 리뷰 정보 배열.
+ */
 async function logCategoryInfo(url, categories, productDetails, productRepls) {
     const logCategory = async (category, parentNames = []) => {
         const currentPath = parentNames.concat({ name: category.name });
@@ -314,8 +359,8 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                                 "상품명*": product.product_name_tag,
                                 "카테고리(메뉴)*": category_menu,
                                 "상품 상세(html)*": "",
-                                "상품가격*": product.product_price,
-                                "상품 할인가격*": product.origin_prd_price_sale,
+                                "상품가격*": product.product_custom || product.product_price,
+                                "상품 할인가격*": product.origin_prd_price_sale || product.product_price,
                                 "상품 이미지*": "",
                                 "상품 잔여수량": product.stock_number,
                                 "상품 태그": product.product_tag,
@@ -331,12 +376,14 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             productDetails.push(productDetail);
 
                             productRepls.push(...reviews);
+
+                            break;
                         }
                         pageNum++;
                         hasMoreData = false;
                     }
                 } catch (error) {
-                    console.error('Error fetching product details:', error);
+                    console.error('상품 상세 정보 가져오기 중 오류 발생:', error);
                     hasMoreData = false;
                 }
             }
@@ -352,19 +399,33 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     }
 }
 
+/**
+ * 주어진 함수에 대해 재시도합니다.
+ * @param {Function} fn - 재시도할 함수.
+ * @param {number} [retries=4] - 재시도 횟수.
+ * @param {number} [delay=2000] - 재시도 사이의 지연 시간.
+ * @param {*} [defaultValue=null] - 재시도 실패 시 반환할 기본 값.
+ * @returns {Promise<*>} 함수 실행 결과 또는 기본 값.
+ */
 async function retry(fn, retries = 4, delay = 2000, defaultValue = null) {
     for (let i = 0; i < retries; i++) {
         try {
             return await fn();
         } catch (error) {
-            console.log(`Retrying... (${i + 1}/${retries})`);
+            console.log(`재시도 중... (${i + 1}/${retries})`);
             await new Promise(res => setTimeout(res, delay));
         }
     }
-    console.log('Max retries reached, returning default value.');
+    console.log('최대 재시도 횟수 도달, 기본 값 반환.');
     return defaultValue;
 }
 
+/**
+ * 주어진 상품에 대한 상세 정보를 추출합니다.
+ * @param {Object} productDetail - 상품 상세 정보 객체.
+ * @param {string} url - 기본 URL.
+ * @returns {Promise<Array>} 리뷰 정보 배열.
+ */
 async function fetchProductDetails(productDetail, url) {
     const browser = await launchBrowser();
     const page = await browser.newPage();
@@ -373,10 +434,10 @@ async function fetchProductDetails(productDetail, url) {
     try {
         await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
     } catch (error) {
-        console.error('Error navigating to product detail page:', error);
+        console.error('상품 상세 페이지로 이동 중 오류 발생:', error);
     }
 
-    await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds
+    await new Promise(resolve => setTimeout(resolve, 5000)); // 5초 대기
 
     const productDetailHtml = await retry(async () => {
         return await page.evaluate(() => {
@@ -399,7 +460,7 @@ async function fetchProductDetails(productDetail, url) {
             return imgUrls;
         });
     }, 3, 2000, []);
-    productDetail["상품 이미지*"] = productImages;
+    productDetail["상품 이미지*"] = JSON.stringify(productImages, null, 2);
     console.log("상품 이미지* : ", JSON.stringify(productImages, null, 2));
 
     const options = await retry(async () => {
@@ -429,7 +490,7 @@ async function fetchProductDetails(productDetail, url) {
             return Array.from(options.entries()).map(([key, value]) => ({ [key]: value }));
         });
     }, 3, 2000, []);
-    productDetail["옵션 정보"] = options;
+    productDetail["옵션 정보"] = JSON.stringify(options, null, 2);
     console.log("옵션 정보 : ", JSON.stringify(options, null, 2));
 
     const productNotice = await retry(async () => {
@@ -462,7 +523,7 @@ async function fetchProductDetails(productDetail, url) {
     console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
 
     const optionTitles = options.map(option => Object.keys(option)[0]);
-    productDetail["옵션"] = optionTitles;
+    productDetail["옵션"] = JSON.stringify(optionTitles, null, 2);
     console.log("옵션 : ", JSON.stringify(optionTitles, null, 2));
 
     const reviews = await fetchProductReviews(page, productDetail, url);
@@ -472,15 +533,24 @@ async function fetchProductDetails(productDetail, url) {
     return reviews;
 }
 
+/**
+ * 주어진 상품에 대한 리뷰 정보를 추출합니다.
+ * @param {Page} page - Puppeteer 페이지 인스턴스.
+ * @param {Object} productDetail - 상품 상세 정보 객체.
+ * @param {string} url - 기본 URL.
+ * @returns {Promise<Array>} 리뷰 정보 배열.
+ */
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
 
+    /* https://cherryme.kr */
     const reviewTableElement = await retry(async () => {
         return await page.$('#prdReview tbody.center.review_content');
     }, 3, 2000, null);
 
+
     if (reviewTableElement) {
-        // If review table exists
+        // 리뷰 테이블이 존재하는 경우
         const reviewRows = await reviewTableElement.$$('tr');
         for (const reviewRow of reviewRows) {
             const reviewData = await reviewRow.evaluate(row => {
@@ -494,12 +564,15 @@ async function fetchProductReviews(page, productDetail, url) {
                     return element ? element.src : '';
                 };
 
-                const authorAndDate = getReviewText('.rImg > span').split(' <i class="bar"></i> ');
-                const author = authorAndDate[0] || '';
-                const date = authorAndDate[1] || '';
+                const getReviewAlt = (selector) => {
+                    const element = row.querySelector(selector);
+                    return element ? element.alt.trim() : '';
+                };
 
+                const authorAndDateText = getReviewText('.rImg > span');
+                const [author, date] = authorAndDateText.split(/\s+/); // 공백으로 분리하여 author와 date를 추출
                 const image = getReviewImage('.review_img img');
-                const score = getReviewText('.rPoint').replace('점', '');
+                const score = getReviewAlt('.rPoint img').replace('점', ''); // alt 값을 가져와서 "점"을 제거
                 const title = getReviewText('.rTitle');
                 const reviewText = getReviewText('.rContent');
 
@@ -514,18 +587,21 @@ async function fetchProductReviews(page, productDetail, url) {
             });
 
             reviews.push({
-                "상품ID": productDetail["상품ID"],
-                "상품명*": productDetail["상품명*"],
                 "이미지": reviewData.image,
                 "평점": reviewData.score,
                 "리뷰": reviewData.reviewText,
                 "작성날짜": reviewData.date,
                 "작성자": reviewData.author,
-                "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+                "상품ID": productDetail["상품ID"],
+                // "상품명*": productDetail["상품명*"],
+                // "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
             });
         }
-    } else {
-        // If review table does not exist, check iframe
+    }
+    else
+    {
+        /* https://dailyjou.com */
+        // 리뷰 테이블이 존재하지 않는 경우, iframe 확인
         const iframeElement = await retry(async () => {
             return await page.$('#prdReview iframe#review_widget3_0');
         }, 3, 2000, null);
@@ -533,7 +609,7 @@ async function fetchProductReviews(page, productDetail, url) {
         if (iframeElement) {
             const frame = await iframeElement.contentFrame();
             if (frame) {
-                await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds inside the iframe
+                await new Promise(resolve => setTimeout(resolve, 5000)); // iframe 내에서 5초 대기
                 const reviewElements = await retry(async () => {
                     return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
                 }, 3, 2000, []);
@@ -573,31 +649,36 @@ async function fetchProductReviews(page, productDetail, url) {
     return reviews;
 }
 
+/**
+ * 현재 시간을 포맷된 문자열로 반환합니다.
+ * @returns {string} 포맷된 현재 시간 문자열.
+ */
 function getCurrentFormattedTime() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
+    return moment().format('YYYY.MM.DD HH:mm:ss');
 }
 
+/**
+ * 메인 함수입니다. 쇼핑몰 URL을 받아서 정보를 추출하고 Excel 파일로 저장합니다.
+ * @param {string} url - 쇼핑몰 URL.
+ */
 async function main(url) {
+    /* 시작 시간 세팅 */
     const startTime = getCurrentFormattedTime();
     console.log('Script start time:', startTime);
-
+    
+    /* url 세팅*/
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
     }
 
+    /* puppeteer 초기화 */
     const browser = await launchBrowser();
     const page = await browser.newPage();
     try {
+        /* 네트워크 연결이 2개 이하로 줄어들 때까지 대기 */
         await page.goto(url, { waitUntil: 'networkidle2' });
     } catch (error) {
-        console.error('Error navigating to main page:', error);
+        console.error('메인 페이지로 이동 중 오류 발생:', error);
     }
 
     const metaTags = await extractMetaTags(page);
