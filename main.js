@@ -203,19 +203,56 @@ async function fetchCategoryData(url) {
     }
 }
 
+function truncateText(text, maxLength = 32767) {
+    if (typeof text === 'string' && text.length > maxLength) {
+        return text.substring(0, maxLength);
+    }
+    return text;
+}
+
 function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     const workbook = xlsx.utils.book_new();
 
-    const shopSheet = xlsx.utils.json_to_sheet([shopInfo]);
+    // Truncate long text in shopInfo
+    const truncatedShopInfo = {};
+    for (const key in shopInfo) {
+        if (Object.hasOwnProperty.call(shopInfo, key)) {
+            truncatedShopInfo[key] = truncateText(shopInfo[key]);
+        }
+    }
+
+    const shopSheet = xlsx.utils.json_to_sheet([truncatedShopInfo]);
     xlsx.utils.book_append_sheet(workbook, shopSheet, '쇼핑몰 정보');
 
     const bannerSheet = xlsx.utils.json_to_sheet(bannerInfo);
     xlsx.utils.book_append_sheet(workbook, bannerSheet, '메인배너');
 
-    const productSheet = xlsx.utils.json_to_sheet(productDetails);
+    // Truncate long text in productDetails
+    const truncatedProductDetails = productDetails.map(product => {
+        const truncatedProduct = {};
+        for (const key in product) {
+            if (Object.hasOwnProperty.call(product, key)) {
+                truncatedProduct[key] = truncateText(product[key]);
+            }
+        }
+        return truncatedProduct;
+    });
+
+    const productSheet = xlsx.utils.json_to_sheet(truncatedProductDetails);
     xlsx.utils.book_append_sheet(workbook, productSheet, '상품정보');
 
-    const replSheet = xlsx.utils.json_to_sheet(productRepls);
+    // Truncate long text in productRepls
+    const truncatedProductRepls = productRepls.map(repl => {
+        const truncatedRepl = {};
+        for (const key in repl) {
+            if (Object.hasOwnProperty.call(repl, key)) {
+                truncatedRepl[key] = truncateText(repl[key]);
+            }
+        }
+        return truncatedRepl;
+    });
+
+    const replSheet = xlsx.utils.json_to_sheet(truncatedProductRepls);
     xlsx.utils.book_append_sheet(workbook, replSheet, '리뷰정보');
 
     xlsx.writeFile(workbook, 'shop_info.xlsx');
@@ -225,7 +262,8 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     const logCategory = async (category, parentNames = []) => {
         const currentPath = parentNames.concat({ name: category.name });
 
-        if (category.data_list.length === 0) {
+        if (category.data_list.length === 0)
+        {
             const category_menu = JSON.stringify(currentPath, null, 2);
             const category_url = `${url}/${category.design_page_url}${category.param}`;
 
@@ -273,6 +311,14 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             "카테고리(URL)": category_url
                         };
 
+                        console.log('상품ID: ', product.product_no);
+                        console.log('상품명*: ', product.product_name_tag);
+                        console.log('상품가격*: ', product.product_price);
+                        console.log('상품 할인가격*: ', product.origin_prd_price_sale);
+                        console.log('상품 잔여수량*: ', product.stock_number);
+                        console.log('상품 태그*: ', product.product_tag);
+
+
                         const reviews = await fetchProductDetails(productDetail, url);
 
                         productDetails.push(productDetail);
@@ -280,10 +326,14 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                         productRepls.push(...reviews);
                     }
                     pageNum++;
+                    hasMoreData = false;
                 }
             }
-        } else {
-            for (const subCategory of category.data_list) {
+        }
+        else
+        {
+            for (const subCategory of category.data_list)
+            {
                 await logCategory(subCategory, currentPath);
             }
         }
@@ -323,6 +373,7 @@ async function fetchProductDetails(productDetail, url) {
         });
     }, 3, 2000, '');
     productDetail["상품 상세(html)*"] = productDetailHtml;
+    // console.log("상품 상세(html)* : ", JSON.stringify(productDetailHtml, null, 2));
 
     const productImages = await retry(async () => {
         return await page.evaluate(() => {
@@ -395,7 +446,7 @@ async function fetchProductDetails(productDetail, url) {
             }
             return notice;
         });
-    }, 3, 2000, {});
+    }, 1, 2000, {});
     productDetail["상품 고지 정보"] = productNotice;
     console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
 
@@ -413,43 +464,98 @@ async function fetchProductDetails(productDetail, url) {
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
 
-    const iframeElement = await retry(async () => {
-        return await page.$('#prdReview iframe#review_widget3_0');
+    const reviewTableElement = await retry(async () => {
+        return await page.$('#prdReview tbody.center.review_content');
     }, 3, 2000, null);
 
-    if (iframeElement) {
-        const frame = await iframeElement.contentFrame();
-        if (frame) {
-            await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds inside the iframe
-            const reviewElements = await retry(async () => {
-                return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
-            }, 3, 2000, []);
-            for (const reviewElement of reviewElements) {
-                const imageElement = await reviewElement.$('.sf_review_user_photo img');
-                const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
+    if (reviewTableElement)
+    {
+        // If review table exists
+        const reviewRows = await reviewTableElement.$$('tr');
+        for (const reviewRow of reviewRows) {
+            const reviewData = await reviewRow.evaluate(row => {
+                const getReviewText = (selector) => {
+                    const element = row.querySelector(selector);
+                    return element ? element.innerText.trim() : '';
+                };
 
-                const scoreElement = await reviewElement.$('.sf_review_user_score');
-                const score = scoreElement ? await frame.evaluate(el => el.innerText.trim(), scoreElement) : '';
+                const getReviewImage = (selector) => {
+                    const element = row.querySelector(selector);
+                    return element ? element.src : '';
+                };
 
-                const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
-                const reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+                const authorAndDate = getReviewText('.rImg > span').split(' <i class="bar"></i> ');
+                const author = authorAndDate[0] || '';
+                const date = authorAndDate[1] || '';
 
-                const dateElement = (await reviewElement.$$('.sf_review_user_write_date span'))[1];
-                const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
+                const image = getReviewImage('.review_img img');
+                const score = getReviewText('.rPoint').replace('점', '');
+                const title = getReviewText('.rTitle');
+                const reviewText = getReviewText('.rContent');
 
-                const authorElement = (await reviewElement.$$('.sf_review_user_writer_name span'))[1];
-                const author = authorElement ? await frame.evaluate(el => el.innerText.trim(), authorElement) : '';
+                return {
+                    author,
+                    date,
+                    image,
+                    score,
+                    title,
+                    reviewText
+                };
+            });
 
-                reviews.push({
-                    "상품ID": productDetail["상품ID"],
-                    "상품명*": productDetail["상품명*"],
-                    "이미지": image,
-                    "평점": score,
-                    "리뷰": reviewText,
-                    "작성날짜": date,
-                    "작성자": author,
-                    "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
-                });
+            reviews.push({
+                "상품ID": productDetail["상품ID"],
+                "상품명*": productDetail["상품명*"],
+                "이미지": reviewData.image,
+                "평점": reviewData.score,
+                "리뷰": reviewData.reviewText,
+                "작성날짜": reviewData.date,
+                "작성자": reviewData.author,
+                "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+            });
+        }
+    }
+    else
+    {
+        // If review table does not exist, check iframe
+        const iframeElement = await retry(async () => {
+            return await page.$('#prdReview iframe#review_widget3_0');
+        }, 3, 2000, null);
+
+        if (iframeElement) {
+            const frame = await iframeElement.contentFrame();
+            if (frame) {
+                await new Promise(resolve => setTimeout(resolve, 5000)); // wait for 5 seconds inside the iframe
+                const reviewElements = await retry(async () => {
+                    return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
+                }, 3, 2000, []);
+                for (const reviewElement of reviewElements) {
+                    const imageElement = await reviewElement.$('.sf_review_user_photo img');
+                    const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
+
+                    const scoreElement = await reviewElement.$('.sf_review_user_score');
+                    const score = scoreElement ? await frame.evaluate(el => el.innerText.trim(), scoreElement) : '';
+
+                    const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
+                    const reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+
+                    const dateElement = (await reviewElement.$$('.sf_review_user_write_date span'))[1];
+                    const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
+
+                    const authorElement = (await reviewElement.$$('.sf_review_user_writer_name span'))[1];
+                    const author = authorElement ? await frame.evaluate(el => el.innerText.trim(), authorElement) : '';
+
+                    reviews.push({
+                        "상품ID": productDetail["상품ID"],
+                        "상품명*": productDetail["상품명*"],
+                        "이미지": image,
+                        "평점": score,
+                        "리뷰": reviewText,
+                        "작성날짜": date,
+                        "작성자": author,
+                        "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+                    });
+                }
             }
         }
     }
@@ -507,12 +613,11 @@ async function main(url) {
     };
 
     console.log('shopInfo : ', JSON.stringify(shopInfo, null, 2));
-    // return;
 
     const productDetails = [];
     const productRepls = [];
 
-    // await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
@@ -523,6 +628,5 @@ async function main(url) {
     console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
 }
 
-// const url = 'dailyjou.com';
 const url = 'cherryme.kr';
 main(url);

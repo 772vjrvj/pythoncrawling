@@ -1,5 +1,4 @@
 const axios = require('axios');
-const cheerio = require('cheerio');
 const xlsx = require('xlsx');
 const puppeteer = require('puppeteer');
 
@@ -33,11 +32,7 @@ async function fetchHtml(url) {
     }
 }
 
-async function extractMetaTags(url) {
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
-
+async function extractMetaTags(page) {
     const metaTags = await page.evaluate(() => {
         const getMetaContent = (property) => {
             const element = document.querySelector(`meta[property="${property}"]`);
@@ -51,7 +46,15 @@ async function extractMetaTags(url) {
 
         const getCssStyle = (selector, property) => {
             const element = document.querySelector(selector);
-            return element ? getComputedStyle(element).getPropertyValue(property) : '';
+            return element ? window.getComputedStyle(element).getPropertyValue(property) : '';
+        };
+
+        const rgbToHex = (rgb) => {
+            const result = rgb.match(/\d+/g).map((num) => {
+                const hex = parseInt(num, 10).toString(16).padStart(2, '0');
+                return hex;
+            });
+            return `#${result.join('')}`;
         };
 
         const getImageSrc = (selectors) => {
@@ -67,7 +70,8 @@ async function extractMetaTags(url) {
         const ogSiteName = getMetaContent('og:site_name');
         const ogUrl = getMetaContent('og:url');
         const favicon = getLinkHref('shortcut icon');
-        const bodyStyle = getCssStyle('body', 'background');
+        const bodyStyle = getCssStyle('body#main', 'background-color');
+        const themeColor = bodyStyle ? rgbToHex(bodyStyle) : '';
         const representativeImage = getImageSrc([
             'a img[src*="logo"]',
             'a img[alt*="로고"]',
@@ -79,7 +83,7 @@ async function extractMetaTags(url) {
             siteName: ogSiteName || null,
             siteUrl: ogUrl || null,
             favicon: favicon || null,
-            themeColor: bodyStyle || '',
+            themeColor: themeColor,
             representativeImage: representativeImage || null
         };
     });
@@ -95,8 +99,6 @@ async function extractMetaTags(url) {
         }
         return null;
     });
-
-    await browser.close();
 
     return { ...metaTags, uid };
 }
@@ -136,8 +138,6 @@ async function extractFooterInfo(page) {
     });
 }
 
-
-
 async function extractBannerInfo(page, baseUrl) {
     return await page.evaluate((baseUrl) => {
         const banners = [];
@@ -157,9 +157,6 @@ async function extractBannerInfo(page, baseUrl) {
         return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
     }, baseUrl);
 }
-
-
-
 
 function updateCategoryNames(data) {
     return data.map(item => {
@@ -312,7 +309,6 @@ async function retry(fn, retries = 4, delay = 2000, defaultValue = null) {
 
 async function fetchProductDetails(productDetail, url) {
     const browser = await launchBrowser();
-
     const page = await browser.newPage();
 
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
@@ -486,7 +482,7 @@ async function main(url) {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
-    const metaTags = await extractMetaTags(url);
+    const metaTags = await extractMetaTags(page);
     const footerInfo = await extractFooterInfo(page);
     const bannerInfo = await extractBannerInfo(page, url);
 
@@ -510,12 +506,13 @@ async function main(url) {
         '통신판매번호': footerInfo?.onlineBusinessLicense
     };
 
-    console.log('shopInfo : ', shopInfo);
+    console.log('shopInfo : ', JSON.stringify(shopInfo, null, 2));
+    // return;
 
     const productDetails = [];
     const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    // await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
