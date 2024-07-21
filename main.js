@@ -453,7 +453,7 @@ async function main(url) {
         '통신판매번호': footerInfo?.onlineBusinessLicense
     };
 
-    console.log('shopInfo : ', shopInfo);
+    console.log('shopInfo : ', JSON.stringify(shopInfo, null, 2));
 
     const productDetails = [];
     const productRepls = [];
@@ -467,5 +467,6 @@ async function main(url) {
     console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
 }
 
-const url = 'dailyjou.com';
+const url = 'cherryme.kr';
+// const url = 'dailyjou.com';
 main(url);
