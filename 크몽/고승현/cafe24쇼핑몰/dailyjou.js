@@ -707,13 +707,7 @@ async function main(url) {
     const productDetails = [];
     const productRepls = [];
 
-    //TEST
-    const bestCategory = [categoryInfo.find(category => category.name.includes('BEST'))];
-    console.log('categoryInfo : ', JSON.stringify(bestCategory, null, 2));
-    //TEST
-
-
-    await logCategoryInfo(url, bestCategory, productDetails, productRepls);
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 

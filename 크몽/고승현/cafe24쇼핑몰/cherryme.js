@@ -335,14 +335,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                 console.log('"카테고리(메뉴)*": ', category_menu);
                 console.log('detail_url: ', detail_url);
 
-                const nowTime1 = getCurrentFormattedTime();
-                console.log('Script now1 time:', nowTime1);
-
-                const delay = Math.floor(Math.random() * (5000 - 2000 + 1)) + 2000;
-                await new Promise(resolve => setTimeout(resolve, delay));
-
-                const nowTime2 = getCurrentFormattedTime();
-                console.log('Script now2 time:', nowTime2);
+                await new Promise(resolve => setTimeout(resolve, 2000));
 
                 try {
                     const response = await axios.get(detail_url, { timeout: 20000 });
@@ -353,7 +346,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                         console.log('data length 없음');
                     } else {
                         console.log('data length: ', data.length);
-                        for (const product of data) {
+                        for (const [index, product] of data.entries()) {
                             const productDetail = {
                                 "상품ID": product.product_no,
                                 "상품명*": product.product_name_tag,
@@ -372,12 +365,16 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             };
 
                             const reviews = await fetchProductDetails(productDetail, url);
-
                             productDetails.push(productDetail);
-
                             productRepls.push(...reviews);
+                            if(index === 1){
+                                hasMoreData = false;
+                                break;
+                            }
                         }
                         pageNum++;
+
+
                     }
                 } catch (error) {
                     console.error('상품 상세 정보 가져오기 중 오류 발생:', error);
@@ -429,12 +426,12 @@ async function fetchProductDetails(productDetail, url) {
 
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
     try {
-        await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 60000 });
+        await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'domcontentloaded', timeout: 60000 });
     } catch (error) {
         console.error('상품 상세 페이지로 이동 중 오류 발생:', error);
     }
 
-    await new Promise(resolve => setTimeout(resolve, 5000)); // 5초 대기
+    //await new Promise(resolve => setTimeout(resolve, 3000)); // 5초 대기
 
     const productDetailHtml = await retry(async () => {
         return await page.evaluate(() => {
@@ -544,8 +541,6 @@ async function fetchProductReviews(page, productDetail, url) {
     const reviewTableElement = await retry(async () => {
         return await page.$('#prdReview tbody.center.review_content');
     }, 3, 2000, null);
-
-
     if (reviewTableElement) {
         // 리뷰 테이블이 존재하는 경우
         const reviewRows = await reviewTableElement.$$('tr');
@@ -570,15 +565,16 @@ async function fetchProductReviews(page, productDetail, url) {
                 const [author, date] = authorAndDateText.split(/\s+/); // 공백으로 분리하여 author와 date를 추출
                 const image = getReviewImage('.review_img img');
                 const score = getReviewAlt('.rPoint img').replace('점', ''); // alt 값을 가져와서 "점"을 제거
-                const title = getReviewText('.rTitle');
-                const reviewText = getReviewText('.rContent');
+                let reviewText = getReviewText('.rContent');
+
+                // "신고하기" 문구와 연속된 공백 제거
+                reviewText = reviewText.replace(/[\r\n]+신고하기$/, '').trim();
 
                 return {
                     author,
                     date,
                     image,
                     score,
-                    title,
                     reviewText
                 };
             });
@@ -618,7 +614,10 @@ async function fetchProductReviews(page, productDetail, url) {
                     const score = scoreElement ? await frame.evaluate(el => el.innerText.trim(), scoreElement) : '';
 
                     const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
-                    const reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+                    let reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+
+                    // "신고하기" 문구와 연속된 공백 제거
+                    reviewText = reviewText.replace(/[\r\n]+신고하기$/, '').trim();
 
                     const dateElement = (await reviewElement.$$('.sf_review_user_write_date span'))[1];
                     const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
@@ -646,6 +645,7 @@ async function fetchProductReviews(page, productDetail, url) {
     return reviews;
 }
 
+
 /**
  * 현재 시간을 포맷된 문자열로 반환합니다.
  * @returns {string} 포맷된 현재 시간 문자열.
@@ -660,8 +660,10 @@ function getCurrentFormattedTime() {
  */
 async function main(url) {
     /* 시작 시간 세팅 */
-    const startTime = getCurrentFormattedTime();
+    let startTime = getCurrentFormattedTime();
     console.log('Script start time:', startTime);
+    startTime = moment();
+
 
     /* url 세팅*/
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -673,7 +675,7 @@ async function main(url) {
     const page = await browser.newPage();
     try {
         /* 네트워크 연결이 2개 이하로 줄어들 때까지 대기 */
-        await page.goto(url, { waitUntil: 'networkidle2' });
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
     } catch (error) {
         console.error('메인 페이지로 이동 중 오류 발생:', error);
     }
@@ -711,7 +713,9 @@ async function main(url) {
 
     const endTime = getCurrentFormattedTime();
     console.log('Script end time:', endTime);
-    console.log('Total execution time:', (new Date() - new Date(startTime.replace(/\./g, '-').replace(/ /, 'T'))) / 1000, 'seconds');
+
+    const totalTime = moment.duration(moment().diff(startTime));
+    console.log('Total execution time:', `${totalTime.hours()}시간 ${totalTime.minutes()}분 ${totalTime.seconds()}초`);
 }
 
 const url = 'cherryme.kr';

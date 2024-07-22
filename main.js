@@ -367,14 +367,8 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             const reviews = await fetchProductDetails(productDetail, url);
                             productDetails.push(productDetail);
                             productRepls.push(...reviews);
-                            if(index === 1){
-                                hasMoreData = false;
-                                break;
-                            }
                         }
                         pageNum++;
-
-
                     }
                 } catch (error) {
                     console.error('상품 상세 정보 가져오기 중 오류 발생:', error);
