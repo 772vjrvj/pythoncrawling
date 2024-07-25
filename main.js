@@ -37,12 +37,12 @@ async function extractMetaTags(page) {
         const metaTags = await page.evaluate(() => {
             const getMetaContent = (property) => {
                 const element = document.querySelector(`meta[property="${property}"]`);
-                return element ? element.getAttribute('content') : null;
+                return element ? element.getAttribute('content') : '';
             };
 
             const getLinkHref = (rel) => {
                 const element = document.querySelector(`link[rel="${rel}"]`);
-                return element ? element.getAttribute('href') : null;
+                return element ? element.getAttribute('href') : '';
             };
 
             const getCssStyle = (selector, property) => {
@@ -65,7 +65,7 @@ async function extractMetaTags(page) {
                         return element.getAttribute('src');
                     }
                 }
-                return null;
+                return '';
             };
 
             const ogSiteName = getMetaContent('og:site_name');
@@ -81,32 +81,43 @@ async function extractMetaTags(page) {
             ]);
 
             return {
-                siteName: ogSiteName || null,
-                siteUrl: ogUrl || null,
-                favicon: favicon || null,
-                themeColor: themeColor,
-                representativeImage: representativeImage || null
+                siteName: ogSiteName || '',
+                siteUrl: ogUrl || '',
+                favicon: favicon || '',
+                themeColor: themeColor || '',
+                representativeImage: representativeImage || ''
             };
         });
 
+        // 여러 위치에서 UID 추출 시도
         const uid = await page.evaluate(() => {
-            const scripts = Array.from(document.querySelectorAll('script[src*="cfa.html"]'));
-            for (const script of scripts) {
-                const src = script.getAttribute('src');
-                const matches = src.match(/uid=([^&]*)/);
-                if (matches) {
-                    return matches[1];
-                }
-            }
-            return null;
+            const scriptElement = Array.from(document.querySelectorAll('script[src*="//cfa-js.cafe24.com/cfa.html?uid="]'))
+                .map(script => script.src.match(/uid=([^&]*)/))
+                .filter(match => match && match[1])
+                .find(match => match)?.[1];
+
+            if (scriptElement) return scriptElement;
+
+            const metaUid = document.querySelector('meta[name="uid"]');
+            if (metaUid) return metaUid.getAttribute('content');
+
+            return '';
         });
 
-        return { ...metaTags, uid };
+        return { ...metaTags, uid: uid || '' }; // UID가 없으면 빈 문자열 반환
     } catch (error) {
         console.error('메타 태그 추출 중 오류 발생:', error);
-        return {};
+        return {
+            siteName: '',
+            siteUrl: '',
+            favicon: '',
+            themeColor: '',
+            representativeImage: '',
+            uid: ''
+        };
     }
 }
+
 
 /**
  * 주어진 Puppeteer 페이지에서 푸터 정보를 추출합니다.
@@ -115,42 +126,85 @@ async function extractMetaTags(page) {
  */
 async function extractFooterInfo(page) {
     try {
+        console.log('extractFooterInfo 함수 시작');
         return await page.evaluate(() => {
             const footer = document.querySelector('.xans-element-.xans-layout.xans-layout-footer');
-            if (!footer) return null;
 
-            const extractText = (selector) => {
-                const element = footer.querySelector(selector);
-                return element ? element.textContent.replace(/.*:/, '').trim() : null;
+            if (!footer) {
+                return { debug: '푸터 요소를 찾을 수 없음' };
+            }
+
+            const texts = footer.textContent.replace(/\s+/g, ' ').trim();
+
+            // 데이터 추출을 위한 패턴과 함수
+            const extractData = (patterns, text, removeSuffix = '') => {
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        return removeSuffix ? match[1].replace(removeSuffix, '').trim() : match[1].trim();
+                    }
+                }
+                return null;
             };
 
-            const extractTextByLabel = (label) => {
-                const elements = Array.from(footer.querySelectorAll('span, li'));
-                const element = elements.find(el => el.textContent.includes(label));
-                return element ? element.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
-            };
+            // 패턴 설정
+            const companyNamePatterns = [
+                /company\s*\.\s*(.*?)\s*ceo\s*&\s*cpo\s*\./,            //https://ba-on.com
+                /^(.*?)대표\s*:/,                                        //https://dailyjou.com, https://ba-on.com
+                /Company:\s*(.*?)\s*Ceo:/                               //https://cherryme.kr
+            ];
+            const ceoPatterns = [
+                /ceo\s*&\s*cpo\s*\.\s*(.*?)\s*business\s*license\s*\./, //https://ba-on.com
+                /대표\s*:\s*(.*?)\s*(?:고객센터|사업자등록번호)/,            //https://dailyjou.com, https://beidelli.com
+                /Ceo:\s*(.*?)\s*Personal info manager/                   //https://cherryme.kr
+            ];
+            const phonePatterns = [
+                /tel\s*\.\s*([^\s]+)/,                                  //https://ba-on.com
+                /고객센터\s*:\s*([^\s]+)/,                                //https://dailyjou.com, https://beidelli.com
+                /tel:\s*([^\s]+)/                                        //https://cherryme.kr
+            ];
+            const businessLicensePatterns = [
+                /business\s*license\s*\.\s*([^\s]+)/,                   //https://ba-on.com
+                /사업자등록번호\s*:\s*([^\s]+)/,                           //https://dailyjou.com, https://beidelli.com
+                /Company Reg\.No:\s*([^\s]+)/                           //https://cherryme.kr
+            ];
+            const onlineBusinessLicensePatterns = [
+                /online\s*business\s*license\s*\.\s*([^\s]+)/,           //https://ba-on.com
+                /통신판매업신고번호\s*:\s*제\s*([^ ]+)/,                     //https://beidelli.com
+                /통신판매업신고\s*:\s*(.*?)\s*\[/,                          //https://dailyjou.com
+                /Network Reg\.No:\s*([^\s]+)/                            //https://cherryme.kr
+            ];
 
-            const companyName = extractText('.address li:first-child') || extractTextByLabel('Company:');
-            const ceo = extractText('.address li:nth-child(2)') || extractTextByLabel('Ceo:');
-            const businessLicense = extractText('.address li:nth-child(3)') || extractTextByLabel('Company Reg.No:');
-            const onlineBusinessLicenseElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('통신판매업신고'));
-            const onlineBusinessLicense = onlineBusinessLicenseElement ? onlineBusinessLicenseElement.textContent.replace(/.*:/, '').replace(/\[.*\]/, '').trim() : null;
-            const customerServicePhoneElement = Array.from(footer.querySelectorAll('span, li')).find(el => el.textContent.includes('tel:'));
-            const customerServicePhone = customerServicePhoneElement ? customerServicePhoneElement.textContent.split('E-mail:')[0].replace('tel:', '').trim() : null;
+            // 패턴을 사용하여 데이터 추출
+            const companyName = extractData(companyNamePatterns, texts);
+            const ceo = extractData(ceoPatterns, texts);
+            let customerServicePhone = extractData(phonePatterns, texts);
+            let businessLicense = extractData(businessLicensePatterns, texts);
+            const onlineBusinessLicense = extractData(onlineBusinessLicensePatterns, texts, '호');
+
+            // 불필요한 부분 제거
+            if (businessLicense) {
+                businessLicense = businessLicense.replace(/\[.*?\]/g, '').trim();
+            }
+            if (customerServicePhone) {
+                customerServicePhone = customerServicePhone.split('E-mail:')[0].trim();
+            }
 
             return {
-                companyName,
-                ceo,
-                businessLicense,
-                onlineBusinessLicense,
-                customerServicePhone
+                companyName: companyName || '',
+                ceo: ceo || '',
+                customerServicePhone: customerServicePhone || '',
+                businessLicense: businessLicense || '',
+                onlineBusinessLicense: onlineBusinessLicense || '',
+                debug: '데이터 추출 성공'
             };
         });
     } catch (error) {
         console.error('푸터 정보 추출 중 오류 발생:', error);
-        return {};
+        return { debug: '푸터 정보 추출 중 오류 발생' };
     }
 }
+
 
 /**
  * 주어진 Puppeteer 페이지에서 배너 정보를 추출합니다.
@@ -162,20 +216,33 @@ async function extractBannerInfo(page, baseUrl) {
     try {
         return await page.evaluate((baseUrl) => {
             const banners = [];
-            const topBanners = document.querySelectorAll('#topbanner, [app4you-smart-banner]');
 
+            const processBanner = (img, aTag) => {
+                const imgUrl = img ? (img.getAttribute('src').startsWith('http') ? img.getAttribute('src') : new URL(img.getAttribute('src'), baseUrl).href) : '';
+                const linkUrl = aTag ? (aTag.getAttribute('href').startsWith('http') ? aTag.getAttribute('href') : new URL(aTag.getAttribute('href'), baseUrl).href) : '';
+                const bannerName = aTag ? aTag.textContent.trim() : 'Unnamed Banner';
+                banners.push({ '배너이미지 URL': imgUrl, '배너 링크': linkUrl, '배너 이름': bannerName });
+            };
+
+            // 이미지 배너 처리
+            // https://ba-on.com
+            const topBanners = document.querySelectorAll('#topbanner, [app4you-smart-banner]');
             topBanners.forEach(banner => {
                 const img = banner.querySelector('img');
                 const aTag = banner.querySelector('a');
-
-                if (img && aTag) {
-                    const imgUrl = img.getAttribute('src').startsWith('http') ? img.getAttribute('src') : new URL(img.getAttribute('src'), baseUrl).href;
-                    const linkUrl = aTag.getAttribute('href').startsWith('http') ? aTag.getAttribute('href') : new URL(aTag.getAttribute('href'), baseUrl).href;
-                    banners.push({ '배너이미지 URL': imgUrl, '배너 링크': linkUrl });
+                if (aTag) {
+                    processBanner(img, aTag);
                 }
             });
 
-            return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '' }];
+            // 슬라이더 배너 처리
+            // https://beidelli.com
+            const sliderBanners = document.querySelectorAll('#topbanner[data-slider="true"] ul li a');
+            sliderBanners.forEach(sliderBanner => {
+                processBanner(null, sliderBanner);
+            });
+
+            return banners.length > 0 ? banners : [{ '배너이미지 URL': '', '배너 링크': '', '배너 이름': '' }];
         }, baseUrl);
     } catch (error) {
         console.error('배너 정보 추출 중 오류 발생:', error);
@@ -653,47 +720,47 @@ function getCurrentFormattedTime() {
  * @param {string} url - 쇼핑몰 URL.
  */
 async function main(url) {
-    /* 시작 시간 세팅 */
-    let startTime = getCurrentFormattedTime();
-    console.log('Script start time:', startTime);
-    startTime = moment();
+    let startTime = moment();
+    console.log('Script start time:', startTime.format('YYYY.MM.DD HH:mm:ss'));
 
-
-    /* url 세팅*/
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
     }
 
-    /* puppeteer 초기화 */
     const browser = await launchBrowser();
     const page = await browser.newPage();
     try {
-        /* 네트워크 연결이 2개 이하로 줄어들 때까지 대기 */
         await page.goto(url, { waitUntil: 'domcontentloaded' });
     } catch (error) {
         console.error('메인 페이지로 이동 중 오류 발생:', error);
     }
 
     const metaTags = await extractMetaTags(page);
-    const footerInfo = await extractFooterInfo(page);
+
+
     const bannerInfo = await extractBannerInfo(page, url);
+
+    const footerInfo = await extractFooterInfo(page);
+    console.log('footerInfo111 : ', JSON.stringify(footerInfo, null, 2));
     await browser.close();
 
     const categoryData = await fetchCategoryData(url);
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
 
+    console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
+
     const shopInfo = {
         '쇼핑몰 이름': metaTags.siteName,
         '쇼핑몰 UID': metaTags.uid,
         '쇼핑몰 URL': metaTags.siteUrl,
-        '파비콘 이미지': metaTags.favicon ? new URL(metaTags.favicon, metaTags.siteUrl).href : null,
+        '파비콘 이미지': metaTags.favicon ? new URL(metaTags.favicon, metaTags.siteUrl).href : '',
         '테마컬러': metaTags.themeColor,
-        '회사명': footerInfo?.companyName,
-        '쇼핑몰 대표자': footerInfo?.ceo,
-        '쇼핑몰 대표 이미지': metaTags.representativeImage ? new URL(metaTags.representativeImage, metaTags.siteUrl).href : null,
-        '고객센터 전화번호': footerInfo?.customerServicePhone,
-        '사업자등록번호': footerInfo?.businessLicense,
-        '통신판매번호': footerInfo?.onlineBusinessLicense
+        '회사명': footerInfo?.companyName || '',
+        '쇼핑몰 대표자': footerInfo?.ceo || '',
+        '쇼핑몰 대표 이미지': metaTags.representativeImage ? new URL(metaTags.representativeImage, metaTags.siteUrl).href : '',
+        '고객센터 전화번호': footerInfo?.customerServicePhone || '',
+        '사업자등록번호': footerInfo?.businessLicense || '',
+        '통신판매번호': footerInfo?.onlineBusinessLicense || ''
     };
 
     console.log('shopInfo : ', JSON.stringify(shopInfo, null, 2));
@@ -705,12 +772,16 @@ async function main(url) {
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
-    const endTime = getCurrentFormattedTime();
-    console.log('Script end time:', endTime);
+    const endTime = moment();
+    console.log('Script end time:', endTime.format('YYYY.MM.DD HH:mm:ss'));
 
-    const totalTime = moment.duration(moment().diff(startTime));
+    const totalTime = moment.duration(endTime.diff(startTime));
     console.log('Total execution time:', `${totalTime.hours()}시간 ${totalTime.minutes()}분 ${totalTime.seconds()}초`);
 }
 
-const url = 'https://dailyjou.com';
+const url = "https://cherryme.kr";
+// const url = "https://dailyjou.com";
+// const url = "https://ba-on.com";
+// const url = "https://beidelli.com";
+
 main(url);
