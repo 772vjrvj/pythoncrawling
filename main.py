@@ -12,9 +12,24 @@ def generate_query(place, city):
 # 검색 결과를 가져오는 함수
 def fetch_search_results(query, page):
     url = f"https://map.naver.com/p/api/search/allSearch?query={query}&type=all&searchCoord=&boundary=&page={page}"
+    print(f"url : {url}")
     headers = {
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,zh-CN;q=0.6,zh;q=0.4",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Cookie': 'NNB=KJRADCOI5CJGM; NAC=3JEFBMw72ynA; BUC=qrDJrb9ae5JFFJnP2us_jD1AfsTGoTu_xyovmNGfYDo=',
+        'If-None-Match': 'W/"cc8e-p62VZFyMnUKal/n+PziFTq6yy3I"',
+        'Priority': 'u=0, i',
+        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
     }
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
@@ -26,6 +41,7 @@ def main():
     print(f"시작 시간: {start_time.strftime('%Y.%m.%d %H:%M:%S')}")
 
     # 시도와 시/군/구 목록 (생략)
+
     cities = [
         {"place": "서울특별시", "city": "종로구"},
         {"place": "서울특별시", "city": "중구"},
@@ -304,9 +320,8 @@ def main():
         {"place": "제주특별자치도", "city": "서귀포시"}
     ]
 
-    # 결과를 저장할 세트 (중복 제거를 위해)
-    results_set = set()
-    results_list = []
+    # 결과를 저장할 딕셔너리 (중복 제거를 위해)
+    results_dict = {}
 
     # 각 시도에 대해 검색 수행
     for entry in cities:
@@ -315,23 +330,44 @@ def main():
         query = generate_query(place, city)
         page = 1
         while True:
+            # 랜덤으로 2~5초 딜레이
+            time.sleep(random.uniform(2, 4))
+
             result = fetch_search_results(query, page)
+            print(f"query : {query}, page : {page}")
             if result is None or "error" in result:
+                print(f"error result : {result}")
                 break
             places = result.get("result", {}).get("place", {}).get("list", [])
+            print(f"places len : {len(places)}")
+
             if not places:
                 break
             for place in places:
-                place_id = place.get("id")
-                if place_id not in results_set:
-                    results_set.add(place_id)
+                address_key = (place.get("address"), place.get("roadAddress"), place.get("abbrAddress"))
+                if address_key not in results_dict:
+                    results_dict[address_key] = place
                     place['entry_place'] = entry["place"]
                     place['entry_city'] = entry["city"]
                     place['page'] = page
-                    results_list.append(place)
+                else:
+                    existing_place = results_dict[address_key]
+                    if existing_place.get('tel') is None and place.get('tel') is not None:
+                        results_dict[address_key] = place
+                        place['entry_place'] = entry["place"]
+                        place['entry_city'] = entry["city"]
+                        place['page'] = page
+                    elif existing_place.get('tel') is None and place.get('tel') is None:
+                        results_dict[address_key] = place
+                        place['entry_place'] = entry["place"]
+                        place['entry_city'] = entry["city"]
+                        place['page'] = page
+
             page += 1
-            # 랜덤으로 2~5초 딜레이
-            time.sleep(random.uniform(2, 5))
+            print(f"total len ============== {len(results_dict)}==================")
+
+    # 딕셔너리를 리스트로 변환
+    results_list = list(results_dict.values())
 
     # 데이터프레임 생성
     df = pd.DataFrame(results_list)
