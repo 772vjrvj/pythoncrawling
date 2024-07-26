@@ -1,127 +1,366 @@
 import requests
+import json
 import time
 import random
 import pandas as pd
+from datetime import datetime
 
-def grade_to_str(grades):
-    grade_mapping = {
-        1: "미취학 0세",
-        2: "미취학 1세",
-        3: "미취학 2세",
-        4: "미취학 3세",
-        5: "미취학 4세",
-        6: "미취학 5세",
-        7: "미취학 6세",
-        8: "초등학교 1학년",
-        9: "초등학교 2학년",
-        10: "초등학교 3학년",
-        11: "초등학교 4학년",
-        12: "초등학교 5학년",
-        13: "초등학교 6학년",
-        14: "중학교 1학년",
-        15: "중학교 2학년",
-        16: "중학교 3학년",
-        17: "고등학교 1학년",
-        18: "고등학교 2학년",
-        19: "고등학교 3학년",
-        20: "재수/N수"
+# 검색 쿼리 생성
+def generate_query(place, city):
+    return f"{place} {city} 운세 사주"
+
+# 검색 결과를 가져오는 함수
+def fetch_search_results(query, page):
+    url = f"https://map.naver.com/p/api/search/allSearch?query={query}&type=all&searchCoord=&boundary=&page={page}"
+    headers = {
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,zh-CN;q=0.6,zh;q=0.4",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
     }
-
-    if not grades:
-        return ""
-
-    grades.sort()
-    ranges = {"미취학": [], "초등학교": [], "중학교": [], "고등학교": [], "재수/N수": []}
-
-    for grade in grades:
-        if grade in range(1, 8):
-            ranges["미취학"].append(grade)
-        elif grade in range(8, 14):
-            ranges["초등학교"].append(grade)
-        elif grade in range(14, 17):
-            ranges["중학교"].append(grade)
-        elif grade in range(17, 20):
-            ranges["고등학교"].append(grade)
-        elif grade == 20:
-            ranges["재수/N수"].append(grade)
-
-    result = []
-    for key in ranges:
-        if ranges[key]:
-            start = ranges[key][0]
-            end = ranges[key][-1]
-            if start == end:
-                result.append(grade_mapping[start])
-            else:
-                result.append(f"{grade_mapping[start]} ~ {grade_mapping[end]}")
-
-    return ", ".join(result)
-
-def subjects_to_str(subjects):
-    subject_mapping = {
-        1: "국어",
-        2: "영어",
-        3: "수학",
-        4: "과학",
-        5: "사회",
-        6: "독서/토론/논술",
-        7: "영재교육원/경시대회",
-        8: "컨설팅",
-        9: "SW교육/코딩교육",
-        10: "유학/SAT/AP/토플",
-        11: "제2외국어",
-        12: "음악",
-        13: "미술",
-        14: "체육",
-        15: "취업/자격증",
-        16: "기타"
-    }
-
-    sorted_subjects = sorted(subjects)
-    return ", ".join([subject_mapping[sub] for sub in sorted_subjects if sub in subject_mapping])
-
-def fetch_academy_data(offset, limit):
-    url = f"https://api.gangmom.kr/user/academies?offset={offset}&limit={limit}&type=infinite"
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        return None
     return response.json()
 
-def main(total_records=1000, limit=200):
-    data_list = []
-    offsets = [i for i in range(0, total_records, limit)]
+def main():
+    start_time = datetime.now()
+    print(f"시작 시간: {start_time.strftime('%Y.%m.%d %H:%M:%S')}")
 
-    for offset in offsets:
-        data = fetch_academy_data(offset, limit)
-        for academy in data['academies']:
-            fullName = academy.get('fullName', '')
-            logo_location = academy.get('logo', {}).get('location', '')
-            roadAddress = academy.get('address', {}).get('roadAddress', '')
-            jibunAddress = academy.get('address', {}).get('jibunAddress', '')
-            detailAddress = academy.get('address', {}).get('detailAddress', '')
-            callNumber = academy.get('callNumber', '')
-            grade = grade_to_str(academy.get('grade', []))
-            subject = subjects_to_str(academy.get('subject', []))
-            url = academy.get('url', '')
+    # 시도와 시/군/구 목록 (생략)
+    cities = [
+        {"place": "서울특별시", "city": "종로구"},
+        {"place": "서울특별시", "city": "중구"},
+        {"place": "서울특별시", "city": "용산구"},
+        {"place": "서울특별시", "city": "성동구"},
+        {"place": "서울특별시", "city": "광진구"},
+        {"place": "서울특별시", "city": "동대문구"},
+        {"place": "서울특별시", "city": "중랑구"},
+        {"place": "서울특별시", "city": "성북구"},
+        {"place": "서울특별시", "city": "강북구"},
+        {"place": "서울특별시", "city": "도봉구"},
+        {"place": "서울특별시", "city": "노원구"},
+        {"place": "서울특별시", "city": "은평구"},
+        {"place": "서울특별시", "city": "서대문구"},
+        {"place": "서울특별시", "city": "마포구"},
+        {"place": "서울특별시", "city": "양천구"},
+        {"place": "서울특별시", "city": "강서구"},
+        {"place": "서울특별시", "city": "구로구"},
+        {"place": "서울특별시", "city": "금천구"},
+        {"place": "서울특별시", "city": "영등포구"},
+        {"place": "서울특별시", "city": "동작구"},
+        {"place": "서울특별시", "city": "관악구"},
+        {"place": "서울특별시", "city": "서초구"},
+        {"place": "서울특별시", "city": "강남구"},
+        {"place": "서울특별시", "city": "송파구"},
+        {"place": "서울특별시", "city": "강동구"},
+        {"place": "부산광역시", "city": "중구"},
+        {"place": "부산광역시", "city": "서구"},
+        {"place": "부산광역시", "city": "동구"},
+        {"place": "부산광역시", "city": "영도구"},
+        {"place": "부산광역시", "city": "부산진구"},
+        {"place": "부산광역시", "city": "동래구"},
+        {"place": "부산광역시", "city": "남구"},
+        {"place": "부산광역시", "city": "북구"},
+        {"place": "부산광역시", "city": "강서구"},
+        {"place": "부산광역시", "city": "해운대구"},
+        {"place": "부산광역시", "city": "사하구"},
+        {"place": "부산광역시", "city": "금정구"},
+        {"place": "부산광역시", "city": "연제구"},
+        {"place": "부산광역시", "city": "수영구"},
+        {"place": "부산광역시", "city": "사상구"},
+        {"place": "부산광역시", "city": "기장군"},
+        {"place": "대구광역시", "city": "중구"},
+        {"place": "대구광역시", "city": "동구"},
+        {"place": "대구광역시", "city": "서구"},
+        {"place": "대구광역시", "city": "남구"},
+        {"place": "대구광역시", "city": "북구"},
+        {"place": "대구광역시", "city": "수성구"},
+        {"place": "대구광역시", "city": "달서구"},
+        {"place": "대구광역시", "city": "달성군"},
+        {"place": "대구광역시", "city": "군위군"},
+        {"place": "인천광역시", "city": "중구"},
+        {"place": "인천광역시", "city": "동구"},
+        {"place": "인천광역시", "city": "미추홀구"},
+        {"place": "인천광역시", "city": "연수구"},
+        {"place": "인천광역시", "city": "남동구"},
+        {"place": "인천광역시", "city": "부평구"},
+        {"place": "인천광역시", "city": "계양구"},
+        {"place": "인천광역시", "city": "서구"},
+        {"place": "인천광역시", "city": "강화군"},
+        {"place": "인천광역시", "city": "옹진군"},
+        {"place": "광주광역시", "city": "동구"},
+        {"place": "광주광역시", "city": "서구"},
+        {"place": "광주광역시", "city": "남구"},
+        {"place": "광주광역시", "city": "북구"},
+        {"place": "광주광역시", "city": "광산구"},
+        {"place": "대전광역시", "city": "중구"},
+        {"place": "대전광역시", "city": "서구"},
+        {"place": "대전광역시", "city": "동구"},
+        {"place": "대전광역시", "city": "유성구"},
+        {"place": "대전광역시", "city": "대덕구"},
+        {"place": "울산광역시", "city": "중구"},
+        {"place": "울산광역시", "city": "남구"},
+        {"place": "울산광역시", "city": "동구"},
+        {"place": "울산광역시", "city": "북구"},
+        {"place": "울산광역시", "city": "울주군"},
+        {"place": "세종특별자치시", "city": "조치원읍"},
+        {"place": "세종특별자치시", "city": "연기면"},
+        {"place": "세종특별자치시", "city": "연동면"},
+        {"place": "세종특별자치시", "city": "부강면"},
+        {"place": "세종특별자치시", "city": "금남면"},
+        {"place": "세종특별자치시", "city": "장군면"},
+        {"place": "세종특별자치시", "city": "연서면"},
+        {"place": "세종특별자치시", "city": "전의면"},
+        {"place": "세종특별자치시", "city": "전동면"},
+        {"place": "세종특별자치시", "city": "소정면"},
+        {"place": "세종특별자치시", "city": "한솔동"},
+        {"place": "세종특별자치시", "city": "새롬동"},
+        {"place": "세종특별자치시", "city": "나성동"},
+        {"place": "세종특별자치시", "city": "다정동"},
+        {"place": "세종특별자치시", "city": "도담동"},
+        {"place": "세종특별자치시", "city": "어진동"},
+        {"place": "세종특별자치시", "city": "해밀동"},
+        {"place": "세종특별자치시", "city": "아름동"},
+        {"place": "세종특별자치시", "city": "종촌동"},
+        {"place": "세종특별자치시", "city": "고운동"},
+        {"place": "세종특별자치시", "city": "보람동"},
+        {"place": "세종특별자치시", "city": "대평동"},
+        {"place": "세종특별자치시", "city": "소담동"},
+        {"place": "세종특별자치시", "city": "반곡동"},
+        {"place": "경기도", "city": "수원시 장안구"},
+        {"place": "경기도", "city": "수원시 권선구"},
+        {"place": "경기도", "city": "수원시 팔달구"},
+        {"place": "경기도", "city": "수원시 영통구"},
+        {"place": "경기도", "city": "성남시 수정구"},
+        {"place": "경기도", "city": "성남시 중원구"},
+        {"place": "경기도", "city": "성남시 분당구"},
+        {"place": "경기도", "city": "의정부시"},
+        {"place": "경기도", "city": "안양시 만안구"},
+        {"place": "경기도", "city": "안양시 동안구"},
+        {"place": "경기도", "city": "부천시 원미구"},
+        {"place": "경기도", "city": "부천시 소사구"},
+        {"place": "경기도", "city": "부천시 오정구"},
+        {"place": "경기도", "city": "광명시"},
+        {"place": "경기도", "city": "동두천시"},
+        {"place": "경기도", "city": "평택시"},
+        {"place": "경기도", "city": "안산시 상록구"},
+        {"place": "경기도", "city": "안산시 단원구"},
+        {"place": "경기도", "city": "고양시 덕양구"},
+        {"place": "경기도", "city": "고양시 일산동구"},
+        {"place": "경기도", "city": "고양시 일산서구"},
+        {"place": "경기도", "city": "과천시"},
+        {"place": "경기도", "city": "구리시"},
+        {"place": "경기도", "city": "남양주시"},
+        {"place": "경기도", "city": "오산시"},
+        {"place": "경기도", "city": "시흥시"},
+        {"place": "경기도", "city": "군포시"},
+        {"place": "경기도", "city": "의왕시"},
+        {"place": "경기도", "city": "하남시"},
+        {"place": "경기도", "city": "용인시 처인구"},
+        {"place": "경기도", "city": "용인시 기흥구"},
+        {"place": "경기도", "city": "용인시 수지구"},
+        {"place": "경기도", "city": "파주시"},
+        {"place": "경기도", "city": "이천시"},
+        {"place": "경기도", "city": "안성시"},
+        {"place": "경기도", "city": "김포시"},
+        {"place": "경기도", "city": "화성시"},
+        {"place": "경기도", "city": "광주시"},
+        {"place": "경기도", "city": "양주시"},
+        {"place": "경기도", "city": "포천시"},
+        {"place": "경기도", "city": "여주시"},
+        {"place": "경기도", "city": "연천군"},
+        {"place": "경기도", "city": "가평군"},
+        {"place": "경기도", "city": "양평군"},
+        {"place": "강원특별자치도", "city": "춘천시"},
+        {"place": "강원특별자치도", "city": "원주시"},
+        {"place": "강원특별자치도", "city": "강릉시"},
+        {"place": "강원특별자치도", "city": "동해시"},
+        {"place": "강원특별자치도", "city": "태백시"},
+        {"place": "강원특별자치도", "city": "속초시"},
+        {"place": "강원특별자치도", "city": "삼척시"},
+        {"place": "강원특별자치도", "city": "홍천군"},
+        {"place": "강원특별자치도", "city": "횡성군"},
+        {"place": "강원특별자치도", "city": "영월군"},
+        {"place": "강원특별자치도", "city": "평창군"},
+        {"place": "강원특별자치도", "city": "정선군"},
+        {"place": "강원특별자치도", "city": "철원군"},
+        {"place": "강원특별자치도", "city": "화천군"},
+        {"place": "강원특별자치도", "city": "양구군"},
+        {"place": "강원특별자치도", "city": "인제군"},
+        {"place": "강원특별자치도", "city": "고성군"},
+        {"place": "강원특별자치도", "city": "양양군"},
+        {"place": "충청북도", "city": "청주시 상당구"},
+        {"place": "충청북도", "city": "청주시 흥덕구"},
+        {"place": "충청북도", "city": "청주시 서원구"},
+        {"place": "충청북도", "city": "청주시 청원구"},
+        {"place": "충청북도", "city": "충주시"},
+        {"place": "충청북도", "city": "제천시"},
+        {"place": "충청북도", "city": "보은군"},
+        {"place": "충청북도", "city": "옥천군"},
+        {"place": "충청북도", "city": "영동군"},
+        {"place": "충청북도", "city": "증평군"},
+        {"place": "충청북도", "city": "진천군"},
+        {"place": "충청북도", "city": "괴산군"},
+        {"place": "충청북도", "city": "음성군"},
+        {"place": "충청북도", "city": "단양군"},
+        {"place": "충청남도", "city": "천안시 동남구"},
+        {"place": "충청남도", "city": "천안시 서북구"},
+        {"place": "충청남도", "city": "공주시"},
+        {"place": "충청남도", "city": "보령시"},
+        {"place": "충청남도", "city": "아산시"},
+        {"place": "충청남도", "city": "서산시"},
+        {"place": "충청남도", "city": "논산시"},
+        {"place": "충청남도", "city": "계룡시"},
+        {"place": "충청남도", "city": "당진시"},
+        {"place": "충청남도", "city": "금산군"},
+        {"place": "충청남도", "city": "부여군"},
+        {"place": "충청남도", "city": "서천군"},
+        {"place": "충청남도", "city": "청양군"},
+        {"place": "충청남도", "city": "홍성군"},
+        {"place": "충청남도", "city": "예산군"},
+        {"place": "충청남도", "city": "태안군"},
+        {"place": "전북특별자치도", "city": "전주시 완산구"},
+        {"place": "전북특별자치도", "city": "전주시 덕진구"},
+        {"place": "전북특별자치도", "city": "군산시"},
+        {"place": "전북특별자치도", "city": "익산시"},
+        {"place": "전북특별자치도", "city": "정읍시"},
+        {"place": "전북특별자치도", "city": "남원시"},
+        {"place": "전북특별자치도", "city": "김제시"},
+        {"place": "전북특별자치도", "city": "완주군"},
+        {"place": "전북특별자치도", "city": "진안군"},
+        {"place": "전북특별자치도", "city": "무주군"},
+        {"place": "전북특별자치도", "city": "장수군"},
+        {"place": "전북특별자치도", "city": "임실군"},
+        {"place": "전북특별자치도", "city": "순창군"},
+        {"place": "전북특별자치도", "city": "고창군"},
+        {"place": "전북특별자치도", "city": "부안군"},
+        {"place": "전라남도", "city": "목포시"},
+        {"place": "전라남도", "city": "여수시"},
+        {"place": "전라남도", "city": "순천시"},
+        {"place": "전라남도", "city": "나주시"},
+        {"place": "전라남도", "city": "광양시"},
+        {"place": "전라남도", "city": "담양군"},
+        {"place": "전라남도", "city": "곡성군"},
+        {"place": "전라남도", "city": "구례군"},
+        {"place": "전라남도", "city": "고흥군"},
+        {"place": "전라남도", "city": "보성군"},
+        {"place": "전라남도", "city": "화순군"},
+        {"place": "전라남도", "city": "장흥군"},
+        {"place": "전라남도", "city": "강진군"},
+        {"place": "전라남도", "city": "해남군"},
+        {"place": "전라남도", "city": "영암군"},
+        {"place": "전라남도", "city": "무안군"},
+        {"place": "전라남도", "city": "함평군"},
+        {"place": "전라남도", "city": "영광군"},
+        {"place": "전라남도", "city": "장성군"},
+        {"place": "전라남도", "city": "완도군"},
+        {"place": "전라남도", "city": "진도군"},
+        {"place": "전라남도", "city": "신안군"},
+        {"place": "경상북도", "city": "포항시 남구"},
+        {"place": "경상북도", "city": "포항시 북구"},
+        {"place": "경상북도", "city": "경주시"},
+        {"place": "경상북도", "city": "김천시"},
+        {"place": "경상북도", "city": "안동시"},
+        {"place": "경상북도", "city": "구미시"},
+        {"place": "경상북도", "city": "영주시"},
+        {"place": "경상북도", "city": "영천시"},
+        {"place": "경상북도", "city": "상주시"},
+        {"place": "경상북도", "city": "문경시"},
+        {"place": "경상북도", "city": "경산시"},
+        {"place": "경상북도", "city": "의성군"},
+        {"place": "경상북도", "city": "청송군"},
+        {"place": "경상북도", "city": "영양군"},
+        {"place": "경상북도", "city": "영덕군"},
+        {"place": "경상북도", "city": "청도군"},
+        {"place": "경상북도", "city": "고령군"},
+        {"place": "경상북도", "city": "성주군"},
+        {"place": "경상북도", "city": "칠곡군"},
+        {"place": "경상북도", "city": "예천군"},
+        {"place": "경상북도", "city": "봉화군"},
+        {"place": "경상북도", "city": "울진군"},
+        {"place": "경상북도", "city": "울릉군"},
+        {"place": "경상남도", "city": "창원시 마산합포구"},
+        {"place": "경상남도", "city": "창원시 마산회원구"},
+        {"place": "경상남도", "city": "창원시 의창구"},
+        {"place": "경상남도", "city": "창원시 성산구"},
+        {"place": "경상남도", "city": "창원시 진해구"},
+        {"place": "경상남도", "city": "진주시"},
+        {"place": "경상남도", "city": "통영시"},
+        {"place": "경상남도", "city": "사천시"},
+        {"place": "경상남도", "city": "김해시"},
+        {"place": "경상남도", "city": "밀양시"},
+        {"place": "경상남도", "city": "거제시"},
+        {"place": "경상남도", "city": "양산시"},
+        {"place": "경상남도", "city": "의령군"},
+        {"place": "경상남도", "city": "함안군"},
+        {"place": "경상남도", "city": "창녕군"},
+        {"place": "경상남도", "city": "고성군"},
+        {"place": "경상남도", "city": "남해군"},
+        {"place": "경상남도", "city": "하동군"},
+        {"place": "경상남도", "city": "산청군"},
+        {"place": "경상남도", "city": "함양군"},
+        {"place": "경상남도", "city": "거창군"},
+        {"place": "경상남도", "city": "합천군"},
+        {"place": "제주특별자치도", "city": "제주시"},
+        {"place": "제주특별자치도", "city": "서귀포시"}
+    ]
 
-            data = {
-                '학원명': fullName,
-                '사진': logo_location,
-                '도로명 주소': roadAddress,
-                '지번 주소': jibunAddress,
-                '상세주소': detailAddress,
-                '전화': callNumber,
-                '수강대상(학년)': grade,
-                '과목': subject,
-                'url': url
-            }
+    # 결과를 저장할 세트 (중복 제거를 위해)
+    results_set = set()
+    results_list = []
 
-            print(f"data {data}")
+    # 각 시도에 대해 검색 수행
+    for entry in cities:
+        place = entry["place"]
+        city = entry["city"]
+        query = generate_query(place, city)
+        page = 1
+        while True:
+            result = fetch_search_results(query, page)
+            if result is None or "error" in result:
+                break
+            places = result.get("result", {}).get("place", {}).get("list", [])
+            if not places:
+                break
+            for place in places:
+                place_id = place.get("id")
+                if place_id not in results_set:
+                    results_set.add(place_id)
+                    place['entry_place'] = entry["place"]
+                    place['entry_city'] = entry["city"]
+                    place['page'] = page
+                    results_list.append(place)
+            page += 1
+            # 랜덤으로 2~5초 딜레이
+            time.sleep(random.uniform(2, 5))
 
-            data_list.append(data)
+    # 데이터프레임 생성
+    df = pd.DataFrame(results_list)
 
-        time.sleep(random.uniform(3, 6))
+    # 필요한 열만 선택하여 새 데이터프레임 생성
+    df_selected = df[["id", "name", "address", "roadAddress", "abbrAddress", "tel", "entry_place", "entry_city", "page"]].copy()
 
-    df = pd.DataFrame(data_list)
-    df.to_excel('academies.xlsx', index=False)
+    # 열 이름 변경
+    df_selected.columns = ["ID", "이름", "주소", "도로명 주소", "상세주소", "전화번호", "place", "city", "page"]
+
+    # 추가 열 생성
+    df_selected["지역"] = df["address"].apply(lambda x: x.split(' ')[0] if pd.notna(x) else "")
+    df_selected["도시"] = df["address"].apply(lambda x: x.split(' ')[1] if pd.notna(x) else "")
+    df_selected["카테고리"] = "운세,사주"
+    df_selected["URL"] = df_selected["ID"].apply(lambda x: f"https://map.naver.com/p/entry/place/{x}")
+
+    # 열 순서 재배치
+    df_final = df_selected[["ID", "지역", "도시", "주소", "도로명 주소", "상세주소", "이름", "카테고리", "전화번호", "URL", "place", "city", "page"]]
+
+    # 엑셀 파일로 저장
+    df_final.to_excel("search_results.xlsx", index=False)
+
+    end_time = datetime.now()
+    print(f"종료 시간: {end_time.strftime('%Y.%m.%d %H:%M:%S')}")
+
+    elapsed_time = end_time - start_time
+    hours, remainder = divmod(elapsed_time.total_seconds(), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    print(f"총 걸린 시간: {int(hours)}시간 {int(minutes)}분 {int(seconds)}초")
 
 if __name__ == "__main__":
-    main(total_records=1000, limit=200)
+    main()

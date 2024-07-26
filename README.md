@@ -1,9 +1,7 @@
 # pythoncrawling
 
-
 이 경로에 웹크롬 드라이버 있음
 C:\Users\772vj\.cache\selenium
-
 
 ■ 인텔레제이 세팅
 File > Project Structure > Platform Settings > SDKs
@@ -18,7 +16,6 @@ File > Project Structure > Project Settings > Project
 Name : pythoncrawling
 SDK : Python 3.9 (pythoncrawling)
 
-
 ■ 가상환경
 터미널에서 가상환경 만들기
 python -m venv mypiplist
@@ -28,14 +25,11 @@ cd mypiplist
 가상환경 나가기
 deactivate
 
-
 가상환경 진입
 .\mypiplist\Scripts\activate
 
-
-
 패키지 보기
-pip list 
+pip list
 
 셀러니엄 공식 홈페이지
 https://www.selenium.dev/
@@ -43,8 +37,5 @@ https://www.selenium.dev/
 pip install beautifulsoup4
 pip install pyperclip
 pip install requests
-
-
-
 
 https://brightdata.com/
