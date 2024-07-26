@@ -4,6 +4,7 @@ import time
 import random
 import pandas as pd
 from datetime import datetime
+from openpyxl import load_workbook
 
 # 검색 쿼리 생성
 def generate_query(place, city):
@@ -36,11 +37,47 @@ def fetch_search_results(query, page):
         return None
     return response.json()
 
+def save_to_excel(results_dict, file_prefix):
+    results_list = list(results_dict.values())
+    df = pd.DataFrame(results_list)
+    df_selected = df[["id", "name", "address", "roadAddress", "abbrAddress", "tel", "entry_place", "entry_city", "page"]].copy()
+    df_selected.columns = ["ID", "이름", "주소", "도로명 주소", "상세주소", "전화번호", "place", "city", "page"]
+    df_selected["지역"] = df["address"].apply(lambda x: x.split(' ')[0] if pd.notna(x) else "")
+    df_selected["도시"] = df["address"].apply(lambda x: x.split(' ')[1] if pd.notna(x) else "")
+    df_selected["카테고리"] = "운세,사주"
+    df_selected["URL"] = df_selected["ID"].apply(lambda x: f"https://map.naver.com/p/entry/place/{x}")
+    df_final = df_selected[["ID", "지역", "도시", "주소", "도로명 주소", "상세주소", "이름", "카테고리", "전화번호", "URL", "place", "city", "page"]]
+
+    file_name = f"{file_prefix}.xlsx"
+
+    try:
+        # 기존 파일에 데이터 추가
+        book = load_workbook(file_name)
+        writer = pd.ExcelWriter(file_name, engine='openpyxl')
+        writer.book = book
+        writer.sheets = {ws.title: ws for ws in book.worksheets}
+
+        # 기존 데이터의 마지막 행 위치 찾기
+        startrow = writer.sheets['Sheet1'].max_row
+
+        df_final.to_excel(writer, index=False, sheet_name='Sheet1', startrow=startrow, header=False)
+
+        writer.save()
+        writer.close()
+    except FileNotFoundError:
+        # 파일이 없으면 새로 생성
+        df_final.to_excel(file_name, index=False, sheet_name='Sheet1')
+
+    print(f"Data appended to {file_name}")
+
 def main():
     start_time = datetime.now()
     print(f"시작 시간: {start_time.strftime('%Y.%m.%d %H:%M:%S')}")
 
-    # 시도와 시/군/구 목록 (생략)
+    # 결과를 저장할 딕셔너리 (중복 제거를 위해)
+    results_dict = {}
+    total_count = 0
+    batch_number = 1
 
     cities = [
         {"place": "서울특별시", "city": "종로구"},
@@ -320,9 +357,6 @@ def main():
         {"place": "제주특별자치도", "city": "서귀포시"}
     ]
 
-    # 결과를 저장할 딕셔너리 (중복 제거를 위해)
-    results_dict = {}
-
     # 각 시도에 대해 검색 수행
     for entry in cities:
         place = entry["place"]
@@ -330,7 +364,7 @@ def main():
         query = generate_query(place, city)
         page = 1
         while True:
-            # 랜덤으로 2~5초 딜레이
+            # 랜덤으로 2~4초 딜레이
             time.sleep(random.uniform(2, 4))
 
             result = fetch_search_results(query, page)
@@ -338,7 +372,11 @@ def main():
             if result is None or "error" in result:
                 print(f"error result : {result}")
                 break
-            places = result.get("result", {}).get("place", {}).get("list", [])
+            try:
+                places = result.get("result", {}).get("place", {}).get("list", [])
+            except AttributeError as e:
+                print(f"Error accessing keys: {e}")
+                break
             print(f"places len : {len(places)}")
 
             if not places:
@@ -350,6 +388,7 @@ def main():
                     place['entry_place'] = entry["place"]
                     place['entry_city'] = entry["city"]
                     place['page'] = page
+                    total_count += 1
                 else:
                     existing_place = results_dict[address_key]
                     if existing_place.get('tel') is None and place.get('tel') is not None:
@@ -364,31 +403,18 @@ def main():
                         place['page'] = page
 
             page += 1
-            print(f"total len ============== {len(results_dict)}==================")
+            print(f"500단위 len ============== {len(results_dict)}==================")
+            print(f"현재까지 작업한 전체 카운트: {total_count}")
 
-    # 딕셔너리를 리스트로 변환
-    results_list = list(results_dict.values())
+            # 500개마다 저장
+            if len(results_dict) >= 500:
+                save_to_excel(results_dict, "search_results")
+                batch_number += 1
+                results_dict.clear()
 
-    # 데이터프레임 생성
-    df = pd.DataFrame(results_list)
-
-    # 필요한 열만 선택하여 새 데이터프레임 생성
-    df_selected = df[["id", "name", "address", "roadAddress", "abbrAddress", "tel", "entry_place", "entry_city", "page"]].copy()
-
-    # 열 이름 변경
-    df_selected.columns = ["ID", "이름", "주소", "도로명 주소", "상세주소", "전화번호", "place", "city", "page"]
-
-    # 추가 열 생성
-    df_selected["지역"] = df["address"].apply(lambda x: x.split(' ')[0] if pd.notna(x) else "")
-    df_selected["도시"] = df["address"].apply(lambda x: x.split(' ')[1] if pd.notna(x) else "")
-    df_selected["카테고리"] = "운세,사주"
-    df_selected["URL"] = df_selected["ID"].apply(lambda x: f"https://map.naver.com/p/entry/place/{x}")
-
-    # 열 순서 재배치
-    df_final = df_selected[["ID", "지역", "도시", "주소", "도로명 주소", "상세주소", "이름", "카테고리", "전화번호", "URL", "place", "city", "page"]]
-
-    # 엑셀 파일로 저장
-    df_final.to_excel("search_results.xlsx", index=False)
+    # 남은 데이터 저장
+    if results_dict:
+        save_to_excel(results_dict, "search_results")
 
     end_time = datetime.now()
     print(f"종료 시간: {end_time.strftime('%Y.%m.%d %H:%M:%S')}")
@@ -397,6 +423,7 @@ def main():
     hours, remainder = divmod(elapsed_time.total_seconds(), 3600)
     minutes, seconds = divmod(remainder, 60)
     print(f"총 걸린 시간: {int(hours)}시간 {int(minutes)}분 {int(seconds)}초")
+    print(f"최종 작업한 전체 카운트: {total_count}")
 
 if __name__ == "__main__":
     main()
