@@ -5,6 +5,7 @@ import random
 import pandas as pd
 from datetime import datetime
 from openpyxl import load_workbook
+import zipfile
 
 # 검색 쿼리 생성
 def generate_query(place, city):
@@ -37,7 +38,7 @@ def fetch_search_results(query, page):
         return None
     return response.json()
 
-def save_to_excel(results_dict, file_prefix):
+def save_to_excel(results_dict, file_name):
     results_list = list(results_dict.values())
     df = pd.DataFrame(results_list)
     df_selected = df[["id", "name", "address", "roadAddress", "abbrAddress", "tel", "entry_place", "entry_city", "page"]].copy()
@@ -48,36 +49,23 @@ def save_to_excel(results_dict, file_prefix):
     df_selected["URL"] = df_selected["ID"].apply(lambda x: f"https://map.naver.com/p/entry/place/{x}")
     df_final = df_selected[["ID", "지역", "도시", "주소", "도로명 주소", "상세주소", "이름", "카테고리", "전화번호", "URL", "place", "city", "page"]]
 
-    file_name = f"{file_prefix}.xlsx"
-
     try:
         # 기존 파일에 데이터 추가
         book = load_workbook(file_name)
-        writer = pd.ExcelWriter(file_name, engine='openpyxl')
-        writer.book = book
-        writer.sheets = {ws.title: ws for ws in book.worksheets}
-
-        # 기존 데이터의 마지막 행 위치 찾기
-        startrow = writer.sheets['Sheet1'].max_row
-
-        df_final.to_excel(writer, index=False, sheet_name='Sheet1', startrow=startrow, header=False)
-
-        writer.save()
-        writer.close()
-    except FileNotFoundError:
-        # 파일이 없으면 새로 생성
+        with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            startrow = book['Sheet1'].max_row
+            df_final.to_excel(writer, index=False, sheet_name='Sheet1', startrow=startrow, header=False)
+    except (FileNotFoundError, zipfile.BadZipFile, KeyError):
+        # 파일이 없거나 손상된 경우 새로 생성
         df_final.to_excel(file_name, index=False, sheet_name='Sheet1')
 
     print(f"Data appended to {file_name}")
 
+
+
 def main():
     start_time = datetime.now()
     print(f"시작 시간: {start_time.strftime('%Y.%m.%d %H:%M:%S')}")
-
-    # 결과를 저장할 딕셔너리 (중복 제거를 위해)
-    results_dict = {}
-    total_count = 0
-    batch_number = 1
 
     cities = [
         {"place": "서울특별시", "city": "종로구"},
@@ -357,7 +345,19 @@ def main():
         {"place": "제주특별자치도", "city": "서귀포시"}
     ]
 
-    # 각 시도에 대해 검색 수행
+
+    # 결과를 저장할 딕셔너리 (중복 제거를 위해)
+    results_dict = {}
+    total_count = 0
+    batch_number = 1
+
+    # 고유한 파일 이름 생성
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    file_name = f"search_results_{timestamp}.xlsx"
+
+    # 중복 체크를 위한 전체 결과 저장 딕셔너리
+    overall_results_dict = {}
+
     for entry in cities:
         place = entry["place"]
         city = entry["city"]
@@ -383,38 +383,39 @@ def main():
                 break
             for place in places:
                 address_key = (place.get("address"), place.get("roadAddress"), place.get("abbrAddress"))
-                if address_key not in results_dict:
-                    results_dict[address_key] = place
+                if address_key not in overall_results_dict:
+                    overall_results_dict[address_key] = place
                     place['entry_place'] = entry["place"]
                     place['entry_city'] = entry["city"]
                     place['page'] = page
                     total_count += 1
+
+                    # 임시 딕셔너리에 추가
+                    results_dict[address_key] = place
                 else:
-                    existing_place = results_dict[address_key]
-                    if existing_place.get('tel') is None and place.get('tel') is not None:
-                        results_dict[address_key] = place
+                    existing_place = overall_results_dict[address_key]
+                    if existing_place.get('tel') is None:
+                        overall_results_dict[address_key] = place
                         place['entry_place'] = entry["place"]
                         place['entry_city'] = entry["city"]
                         place['page'] = page
-                    elif existing_place.get('tel') is None and place.get('tel') is None:
+
+                        # 임시 딕셔너리에 추가
                         results_dict[address_key] = place
-                        place['entry_place'] = entry["place"]
-                        place['entry_city'] = entry["city"]
-                        place['page'] = page
 
             page += 1
-            print(f"500단위 len ============== {len(results_dict)}==================")
+            print(f"100단위 카운트 ============== {len(results_dict)}==================")
             print(f"현재까지 작업한 전체 카운트: {total_count}")
 
-            # 500개마다 저장
-            if len(results_dict) >= 500:
-                save_to_excel(results_dict, "search_results")
+            # 100개마다 저장
+            if len(results_dict) >= 100:
+                save_to_excel(results_dict, file_name)
                 batch_number += 1
                 results_dict.clear()
 
     # 남은 데이터 저장
     if results_dict:
-        save_to_excel(results_dict, "search_results")
+        save_to_excel(results_dict, file_name)
 
     end_time = datetime.now()
     print(f"종료 시간: {end_time.strftime('%Y.%m.%d %H:%M:%S')}")
@@ -425,5 +426,7 @@ def main():
     print(f"총 걸린 시간: {int(hours)}시간 {int(minutes)}분 {int(seconds)}초")
     print(f"최종 작업한 전체 카운트: {total_count}")
 
+
 if __name__ == "__main__":
     main()
+
