@@ -35,6 +35,7 @@ async function launchBrowser() {
 async function extractMetaTags(page) {
     try {
         const metaTags = await page.evaluate(() => {
+
             const getMetaContent = (property) => {
                 const element = document.querySelector(`meta[property="${property}"]`);
                 return element ? element.getAttribute('content') : '';
@@ -434,12 +435,22 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                                 "카테고리(URL)": category_url
                             };
 
+                            console.log("productDetail : ", JSON.stringify(productDetail, null, 2));
+
+
                             const reviews = await fetchProductDetails(productDetail, url);
                             productDetails.push(productDetail);
                             productRepls.push(...reviews);
+                            //test 시작
+                            break;
+                            //test 끝
                         }
                         pageNum++;
+                        //test 시작
+                        hasMoreData = false;
+                        //test 끝
                     }
+
                 } catch (error) {
                     console.error('상품 상세 정보 가져오기 중 오류 발생:', error);
                     hasMoreData = false;
@@ -498,11 +509,80 @@ async function fetchProductDetails(productDetail, url) {
     //await new Promise(resolve => setTimeout(resolve, 3000)); // 5초 대기
 
     const productDetailHtml = await retry(async () => {
-        return await page.evaluate(() => {
+        return await page.evaluate((url) => {
+            // prdDetail 요소 가져오기
             const detailElement = document.querySelector('#prdDetail');
-            return detailElement ? detailElement.outerHTML : '';
-        });
-    }, 3, 2000, '');
+            if (detailElement) {
+
+                // <div class="cont"> 요소에 style 속성 추가하여 가운데 정렬
+                const contElements = detailElement.querySelectorAll('div.cont');
+                contElements.forEach(cont => {
+                    cont.style.textAlign = 'center';
+                });
+
+                // img 태그의 src 속성을 ec-data-src로 교체
+                const imgElementsWithEcDataSrc = detailElement.querySelectorAll('img[ec-data-src]');
+                imgElementsWithEcDataSrc.forEach(img => {
+
+                    const ecDataSrc = img.getAttribute('ec-data-src');
+
+                    // https://dailyjou.com
+                    if (ecDataSrc.startsWith('//')) {
+                        img.src = "https:" + ecDataSrc;
+
+                    // https://ba-on.com
+                    } else if (ecDataSrc.startsWith('/')) {
+                        img.src = url + ecDataSrc;
+
+                    // https://beidelli.com
+                    } else if (ecDataSrc.startsWith('https')) {
+                        img.src = ecDataSrc;
+                    }
+
+                });
+
+
+                // ec-data-src 속성이 없는 img 태그의 src가 '/'로 시작하면 url 추가
+
+                // https://cherryme.kr
+                // https://www.hotping.co.kr
+                const allImgElements = detailElement.querySelectorAll('img:not([ec-data-src])');
+                allImgElements.forEach(img => {
+
+                    const dataSrc = img.getAttribute('src');
+
+                    if (dataSrc.startsWith('//')) {
+                        img.src = "https:" + dataSrc;
+
+                    } else if (dataSrc.startsWith('/')) {
+                        img.src = url + dataSrc;
+
+                    } else if (dataSrc.startsWith('https')) {
+                        img.src = dataSrc;
+                    }
+
+                });
+
+                // ul 태그와 그 안의 모든 태그 삭제
+                const ulElements = detailElement.querySelectorAll('ul');
+                ulElements.forEach(ul => ul.remove());
+
+                // a 태그의 href 속성이 '/'로 시작하면 url 추가
+                const allAnchorElements = detailElement.querySelectorAll('a[href^="/"]');
+                allAnchorElements.forEach(anchor => {
+                    anchor.href = url + anchor.getAttribute('href');
+                });
+
+            }
+
+            const detailHtml = detailElement ? detailElement.outerHTML : '';
+
+            // 새로운 div 생성 및 prdDetail 내용 포함
+            const combinedHtml = `<div>${detailHtml}</div>`;
+            return combinedHtml;
+        }, url);
+    }, 3, 2000, "");
+
     productDetail["상품 상세(html)*"] = productDetailHtml;
 
     const productImages = await retry(async () => {
@@ -519,7 +599,7 @@ async function fetchProductDetails(productDetail, url) {
         });
     }, 3, 2000, []);
     productDetail["상품 이미지*"] = JSON.stringify(productImages, null, 2);
-    console.log("상품 이미지* : ", JSON.stringify(productImages, null, 2));
+    console.log("상품 이미지* : ", productImages);
 
     const options = await retry(async () => {
         return await page.evaluate(() => {
@@ -601,7 +681,7 @@ async function fetchProductDetails(productDetail, url) {
 async function fetchProductReviews(page, productDetail, url) {
     const reviews = [];
 
-    /* https://cherryme.kr */
+    // https://cherryme.kr
     const reviewTableElement = await retry(async () => {
         return await page.$('#prdReview tbody.center.review_content');
     }, 3, 2000, null);
@@ -657,7 +737,9 @@ async function fetchProductReviews(page, productDetail, url) {
     }
     else
     {
-        /* https://dailyjou.com */
+        // https://dailyjou.com
+        // https://www.ba-on.com
+
         // 리뷰 테이블이 존재하지 않는 경우, iframe 확인
         const iframeElement = await retry(async () => {
             return await page.$('#prdReview iframe#review_widget3_0');
@@ -675,7 +757,11 @@ async function fetchProductReviews(page, productDetail, url) {
                     const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
 
                     const scoreElement = await reviewElement.$('.sf_review_user_score');
-                    const score = scoreElement ? await frame.evaluate(el => el.innerText.trim(), scoreElement) : '';
+                    let score = '';
+                    if (scoreElement) {
+                        const fullScoreText = await frame.evaluate(el => el.innerText.trim(), scoreElement);
+                        score = fullScoreText.replace(/[^★]/g, ''); // "★" 외의 모든 문자 제거
+                    }
 
                     const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
                     let reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
@@ -737,23 +823,24 @@ async function main(url) {
     } catch (error) {
         console.error('메인 페이지로 이동 중 오류 발생:', error);
     }
+    await page.waitForSelector('script[src*="cfa-js.cafe24.com/cfa.html?uid="]');
 
     const metaTags = await extractMetaTags(page);
-
 
     const bannerInfo = await extractBannerInfo(page, url);
 
     const footerInfo = await extractFooterInfo(page);
-    console.log('footerInfo111 : ', JSON.stringify(footerInfo, null, 2));
+    // console.log('footerInfo111 : ', JSON.stringify(footerInfo, null, 2));
     // await browser.close();
     // return;
 
     const categoryData = await fetchCategoryData(url);
+
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
 
-    console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
+    // console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
 
-    console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
+    // console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
 
     const shopInfo = {
         '쇼핑몰 이름': metaTags.siteName,
@@ -774,7 +861,12 @@ async function main(url) {
     const productDetails = [];
     const productRepls = [];
 
-    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    // await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+
+    //test 시작
+    console.log('categoryInfo:', categoryInfo.slice(1,2));
+    await logCategoryInfo(url, categoryInfo.slice(1,2), productDetails, productRepls);
+    //test 끝
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
