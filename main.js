@@ -679,12 +679,16 @@ async function fetchProductDetails(productDetail, url) {
  * @returns {Promise<Array>} 리뷰 정보 배열.
  */
 async function fetchProductReviews(page, productDetail, url) {
+
     const reviews = [];
+
+    console.log('cherryme type ');
 
     // https://cherryme.kr
     const reviewTableElement = await retry(async () => {
         return await page.$('#prdReview tbody.center.review_content');
     }, 3, 2000, null);
+    console.log('reviewTableElement : ' , !!reviewTableElement);
     if (reviewTableElement) {
         // 리뷰 테이블이 존재하는 경우
         const reviewRows = await reviewTableElement.$$('tr');
@@ -695,9 +699,9 @@ async function fetchProductReviews(page, productDetail, url) {
                     return element ? element.innerText.trim() : '';
                 };
 
-                const getReviewImage = (selector) => {
-                    const element = row.querySelector(selector);
-                    return element ? element.src : '';
+                const getReviewImages = (selector) => {
+                    const elements = row.querySelectorAll(selector);
+                    return elements ? Array.from(elements).map(element => element.src) : [];
                 };
 
                 const getReviewAlt = (selector) => {
@@ -707,7 +711,7 @@ async function fetchProductReviews(page, productDetail, url) {
 
                 const authorAndDateText = getReviewText('.rImg > span');
                 const [author, date] = authorAndDateText.split(/\s+/); // 공백으로 분리하여 author와 date를 추출
-                const image = getReviewImage('.review_img img');
+                const images = getReviewImages('.review_img img');
                 const score = getReviewAlt('.rPoint img').replace('점', ''); // alt 값을 가져와서 "점"을 제거
                 let reviewText = getReviewText('.rContent');
 
@@ -717,79 +721,156 @@ async function fetchProductReviews(page, productDetail, url) {
                 return {
                     author,
                     date,
-                    image,
+                    images,
                     score,
                     reviewText
                 };
             });
 
             reviews.push({
-                "이미지": reviewData.image,
-                "평점": reviewData.score,
-                "리뷰": reviewData.reviewText,
-                "작성날짜": reviewData.date,
-                "작성자": reviewData.author,
                 "상품ID": productDetail["상품ID"],
-                // "상품명*": productDetail["상품명*"],
-                // "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+                "상품명*": productDetail["상품명*"],
+                "이미지": reviewRows.images,
+                "평점": reviewRows.score,
+                "리뷰": reviewRows.reviewText,
+                "작성날짜": reviewRows.date,
+                "작성자": reviewRows.author,
+                "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
             });
         }
+        console.log("reviews : ", JSON.stringify(reviews, null, 2));
+
+        return reviews;
     }
-    else
-    {
-        // https://dailyjou.com
-        // https://www.ba-on.com
 
-        // 리뷰 테이블이 존재하지 않는 경우, iframe 확인
-        const iframeElement = await retry(async () => {
-            return await page.$('#prdReview iframe#review_widget3_0');
-        }, 3, 2000, null);
 
-        if (iframeElement) {
-            const frame = await iframeElement.contentFrame();
-            if (frame) {
-                await new Promise(resolve => setTimeout(resolve, 5000)); // iframe 내에서 5초 대기
-                const reviewElements = await retry(async () => {
-                    return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
-                }, 3, 2000, []);
-                for (const reviewElement of reviewElements) {
-                    const imageElement = await reviewElement.$('.sf_review_user_photo img');
-                    const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
 
-                    const scoreElement = await reviewElement.$('.sf_review_user_score');
-                    let score = '';
-                    if (scoreElement) {
-                        const fullScoreText = await frame.evaluate(el => el.innerText.trim(), scoreElement);
-                        score = fullScoreText.replace(/[^★]/g, ''); // "★" 외의 모든 문자 제거
-                    }
+    // https://dailyjou.com
+    // https://www.ba-on.com
+    console.log('dailyjou type ');
 
-                    const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
-                    let reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+    // 리뷰 테이블이 존재하지 않는 경우, iframe 확인
+    const iframeElement1 = await retry(async () => {
+        return await page.$('#prdReview iframe#review_widget3_0');
+    }, 3, 2000, null);
+    console.log('iframeElement1 : ' , !!iframeElement1);
 
-                    // "신고하기" 문구와 연속된 공백 제거
-                    reviewText = reviewText.replace(/[\r\n]+신고하기$/, '').trim();
+    if (iframeElement1) {
+        const frame = await iframeElement1.contentFrame();
+        if (frame) {
+            await new Promise(resolve => setTimeout(resolve, 3000)); // iframe 내에서 5초 대기
+            const reviewElements = await retry(async () => {
+                return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
+            }, 3, 2000, []);
+            for (const reviewElement of reviewElements) {
+                const imageElement = await reviewElement.$('.sf_review_user_photo img');
+                const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
 
-                    const dateElement = (await reviewElement.$$('.sf_review_user_write_date span'))[1];
-                    const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
+                const imageElements = await reviewElement.$$('.sf_review_user_photo img');
+                const images = imageElements.length > 0 ? await frame.evaluate(imgs => imgs.map(img => img.src), imageElements) : [];
 
-                    const authorElement = (await reviewElement.$$('.sf_review_user_writer_name span'))[1];
-                    const author = authorElement ? await frame.evaluate(el => el.innerText.trim(), authorElement) : '';
-
-                    reviews.push({
-                        "상품ID": productDetail["상품ID"],
-                        "상품명*": productDetail["상품명*"],
-                        "이미지": image,
-                        "평점": score,
-                        "리뷰": reviewText,
-                        "작성날짜": date,
-                        "작성자": author,
-                        "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
-                    });
+                const scoreElement = await reviewElement.$('.sf_review_user_score');
+                let score = '';
+                if (scoreElement) {
+                    const fullScoreText = await frame.evaluate(el => el.innerText.trim(), scoreElement);
+                    score = fullScoreText.replace(/[^★]/g, ''); // "★" 외의 모든 문자 제거
                 }
+
+                const reviewTextElement = await reviewElement.$('.sf_text_overflow.value');
+                let reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+
+                // "신고하기" 문구와 연속된 공백 제거
+                reviewText = reviewText.replace(/[\r\n]+신고하기$/, '').trim();
+
+                const dateElement = (await reviewElement.$$('.sf_review_user_write_date span'))[1];
+                const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
+
+                const authorElement = (await reviewElement.$$('.sf_review_user_writer_name span'))[1];
+                const author = authorElement ? await frame.evaluate(el => el.innerText.trim(), authorElement) : '';
+
+                reviews.push({
+                    "상품ID": productDetail["상품ID"],
+                    "상품명*": productDetail["상품명*"],
+                    "이미지": images,
+                    "평점": score,
+                    "리뷰": reviewText,
+                    "작성날짜": date,
+                    "작성자": author,
+                    "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+                });
             }
         }
+        console.log("reviews : ", JSON.stringify(reviews, null, 2));
+
+        return reviews;
     }
 
+
+
+
+    // https://beidelli.com/
+    console.log('beidelli type ');
+
+    const iframeElement2 = await retry(async () => {
+        await page.waitForSelector('#prdReview iframe#alpha_widget_3', { timeout: 5000 });
+        return await page.$('#prdReview iframe#alpha_widget_3');
+    }, 3, 2000, null);
+
+    console.log('iframeElement2 : ', !!iframeElement2);
+
+    if (iframeElement2) {
+        const frame = await iframeElement2.contentFrame();
+        if (frame) {
+
+            await new Promise(resolve => setTimeout(resolve, 3000)); // iframe 내에서 5초 대기
+
+            // widget_boardAlphareview 클래스를 가진 요소 내에서 필요한 리뷰 데이터를 가져옴
+            const reviewElements = await frame.$$(
+                '.widget_boardAlphareview .widget_item.review[data-widgettype="board_Alphareview"]'
+            );
+
+            for (const reviewElement of reviewElements) {
+                // 작성자
+                const authorElement = await reviewElement.$('.widget_item_none_username_2');
+                const author = authorElement ? await frame.evaluate(el => el.innerText.trim(), authorElement) : '';
+
+                // 작성일
+                const dateElement = await reviewElement.$('.widget_item_date_product_none');
+                const date = dateElement ? await frame.evaluate(el => el.innerText.trim(), dateElement) : '';
+
+                // 평점 (★ 갯수)
+                const scoreElements = await reviewElement.$$('.alph_star_full');
+                const score = '★'.repeat(scoreElements.length);
+
+                // 리뷰
+                const reviewTextElement = await reviewElement.$('.widget_item_review_box');
+                const reviewText = reviewTextElement ? await frame.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
+
+                // 이미지
+                const imageElements = await reviewElement.$$('.widget_item_photo.widget_item_photo_s.lozad');
+                const images = [];
+                for (const imgElement of imageElements) {
+                    const imgSrc = await frame.evaluate(el => el.src, imgElement);
+                    images.push(imgSrc);
+                }
+
+                reviews.push({
+                    "상품ID": productDetail["상품ID"],
+                    "상품명*": productDetail["상품명*"],
+                    "이미지": images,
+                    "평점": score,
+                    "리뷰": reviewText,
+                    "작성날짜": date,
+                    "작성자": author,
+                    "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+                });
+            }
+
+        }
+        console.log("reviews : ", JSON.stringify(reviews, null, 2));
+
+        return reviews;
+    }
     console.log("reviews : ", JSON.stringify(reviews, null, 2));
 
     return reviews;
@@ -840,7 +921,7 @@ async function main(url) {
 
     // console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
 
-    // console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
+    console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
 
     const shopInfo = {
         '쇼핑몰 이름': metaTags.siteName,
@@ -880,7 +961,7 @@ async function main(url) {
 // const url = "https://cherryme.kr";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
-// const url = "https://beidelli.com";
-const url = "https://www.hotping.co.kr";
+const url = "https://beidelli.com";
+// const url = "https://www.hotping.co.kr";
 
 main(url);
