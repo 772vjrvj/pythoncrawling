@@ -43,8 +43,8 @@ def save_to_excel(results_dict, file_name):
     df = pd.DataFrame(results_list)
     df_selected = df[["id", "name", "address", "roadAddress", "abbrAddress", "tel", "entry_place", "entry_city", "page"]].copy()
     df_selected.columns = ["ID", "이름", "주소", "도로명 주소", "상세주소", "전화번호", "place", "city", "page"]
-    df_selected["지역"] = df["address"].apply(lambda x: x.split(' ')[0] if pd.notna(x) else "")
-    df_selected["도시"] = df["address"].apply(lambda x: x.split(' ')[1] if pd.notna(x) else "")
+    df_selected["지역"] = df["address"].apply(lambda x: x.split(' ')[0] if pd.notna(x) and len(x.split(' ')) > 0 else "")
+    df_selected["도시"] = df["address"].apply(lambda x: x.split(' ')[1] if pd.notna(x) and len(x.split(' ')) > 1 else "")
     df_selected["카테고리"] = "운세,사주"
     df_selected["URL"] = df_selected["ID"].apply(lambda x: f"https://map.naver.com/p/entry/place/{x}")
     df_final = df_selected[["ID", "지역", "도시", "주소", "도로명 주소", "상세주소", "이름", "카테고리", "전화번호", "URL", "place", "city", "page"]]
@@ -354,6 +354,7 @@ def main():
     # 고유한 파일 이름 생성
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     file_name = f"search_results_{timestamp}.xlsx"
+    # file_name = f"search_results_20240727033954.xlsx"
 
     # 중복 체크를 위한 전체 결과 저장 딕셔너리
     overall_results_dict = {}
@@ -394,7 +395,7 @@ def main():
                     results_dict[address_key] = place
                 else:
                     existing_place = overall_results_dict[address_key]
-                    if existing_place.get('tel') is None:
+                    if existing_place.get('tel') is None and place.get('tel') is not None:
                         overall_results_dict[address_key] = place
                         place['entry_place'] = entry["place"]
                         place['entry_city'] = entry["city"]
@@ -402,7 +403,14 @@ def main():
 
                         # 임시 딕셔너리에 추가
                         results_dict[address_key] = place
+                    elif existing_place.get('tel') is None and place.get('tel') is None:
+                        overall_results_dict[address_key] = place
+                        place['entry_place'] = entry["place"]
+                        place['entry_city'] = entry["city"]
+                        place['page'] = page
 
+                        # 임시 딕셔너리에 추가
+                        results_dict[address_key] = place
             page += 1
             print(f"100단위 카운트 ============== {len(results_dict)}==================")
             print(f"현재까지 작업한 전체 카운트: {total_count}")
