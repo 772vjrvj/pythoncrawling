@@ -149,30 +149,35 @@ async function extractFooterInfo(page) {
 
             // 패턴 설정
             const companyNamePatterns = [
-                /company\s*\.\s*(.*?)\s*ceo\s*&\s*cpo\s*\./,            //https://ba-on.com
-                /^(.*?)대표\s*:/,                                        //https://dailyjou.com, https://ba-on.com
-                /Company:\s*(.*?)\s*Ceo:/                               //https://cherryme.kr
+                /COMPANY\.\s*(.*?)\s*PRESIDENT/,                            // https://example.com
+                /company\s*\.\s*(.*?)\s*ceo\s*&\s*cpo\s*\./,                // https://ba-on.com
+                /^(.*?)대표\s*:/,                                            // https://dailyjou.com, https://ba-on.com
+                /Company:\s*(.*?)\s*Ceo:/                                   // https://cherryme.kr
             ];
             const ceoPatterns = [
-                /ceo\s*&\s*cpo\s*\.\s*(.*?)\s*business\s*license\s*\./, //https://ba-on.com
-                /대표\s*:\s*(.*?)\s*(?:고객센터|사업자등록번호)/,            //https://dailyjou.com, https://beidelli.com
-                /Ceo:\s*(.*?)\s*Personal info manager/                   //https://cherryme.kr
+                /PRESIDENT\s*(.*?)\s*E-MAIL/,                               // https://example.com
+                /ceo\s*&\s*cpo\s*\.\s*(.*?)\s*business\s*license\s*\./,     // https://ba-on.com
+                /대표\s*:\s*(.*?)\s*(?:고객센터|사업자등록번호)/,              // https://dailyjou.com, https://beidelli.com
+                /Ceo:\s*(.*?)\s*Personal info manager/                       // https://cherryme.kr
             ];
             const phonePatterns = [
-                /tel\s*\.\s*([^\s]+)/,                                  //https://ba-on.com
-                /고객센터\s*:\s*([^\s]+)/,                                //https://dailyjou.com, https://beidelli.com
-                /tel:\s*([^\s]+)/                                        //https://cherryme.kr
+                /TEL\.\s*([^\s]+)/,                                         // https://example.com
+                /tel\s*\.\s*([^\s]+)/,                                      // https://ba-on.com
+                /고객센터\s*:\s*([^\s]+)/,                                    // https://dailyjou.com, https://beidelli.com
+                /tel:\s*([^\s]+)/                                            // https://cherryme.kr
             ];
             const businessLicensePatterns = [
-                /business\s*license\s*\.\s*([^\s]+)/,                   //https://ba-on.com
-                /사업자등록번호\s*:\s*([^\s]+)/,                           //https://dailyjou.com, https://beidelli.com
-                /Company Reg\.No:\s*([^\s]+)/                           //https://cherryme.kr
+                /BUSINESS NUM\.\s*([^\s]+)/,                                // https://example.com
+                /business\s*license\s*\.\s*([^\s]+)/,                       // https://ba-on.com
+                /사업자등록번호\s*:\s*([^\s]+)/,                               // https://dailyjou.com, https://beidelli.com
+                /Company Reg\.No:\s*([^\s]+)/                               // https://cherryme.kr
             ];
             const onlineBusinessLicensePatterns = [
-                /online\s*business\s*license\s*\.\s*([^\s]+)/,           //https://ba-on.com
-                /통신판매업신고번호\s*:\s*제\s*([^ ]+)/,                     //https://beidelli.com
-                /통신판매업신고\s*:\s*(.*?)\s*\[/,                          //https://dailyjou.com
-                /Network Reg\.No:\s*([^\s]+)/                            //https://cherryme.kr
+                /MAIL-ORDER LICENSE\.\s*([^\s]+)/,                           // https://example.com
+                /online\s*business\s*license\s*\.\s*([^\s]+)/,               // https://ba-on.com
+                /통신판매업신고번호\s*:\s*제\s*([^ ]+)/,                       // https://beidelli.com
+                /통신판매업신고\s*:\s*(.*?)\s*\[/,                              // https://dailyjou.com
+                /Network Reg\.No:\s*([^\s]+)/                                // https://cherryme.kr
             ];
 
             // 패턴을 사용하여 데이터 추출
@@ -187,7 +192,7 @@ async function extractFooterInfo(page) {
                 businessLicense = businessLicense.replace(/\[.*?\]/g, '').trim();
             }
             if (customerServicePhone) {
-                customerServicePhone = customerServicePhone.split('E-mail:')[0].trim();
+                customerServicePhone = customerServicePhone.split('E-MAIL:')[0].trim();
             }
 
             return {
@@ -204,8 +209,6 @@ async function extractFooterInfo(page) {
         return { debug: '푸터 정보 추출 중 오류 발생' };
     }
 }
-
-
 /**
  * 주어진 Puppeteer 페이지에서 배너 정보를 추출합니다.
  * @param {Page} page - Puppeteer 페이지 인스턴스.
@@ -742,10 +745,13 @@ async function main(url) {
 
     const footerInfo = await extractFooterInfo(page);
     console.log('footerInfo111 : ', JSON.stringify(footerInfo, null, 2));
-    await browser.close();
+    // await browser.close();
+    // return;
 
     const categoryData = await fetchCategoryData(url);
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
+
+    console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
 
     console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
 
@@ -779,9 +785,10 @@ async function main(url) {
     console.log('Total execution time:', `${totalTime.hours()}시간 ${totalTime.minutes()}분 ${totalTime.seconds()}초`);
 }
 
-const url = "https://cherryme.kr";
+// const url = "https://cherryme.kr";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
 // const url = "https://beidelli.com";
+const url = "https://www.hotping.co.kr";
 
 main(url);
