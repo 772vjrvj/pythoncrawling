@@ -43,7 +43,7 @@ def load_excel_to_dict(file_name):
     df = pd.read_excel(file_name)
     overall_results_dict = {}
     for _, row in df.iterrows():
-        address_key = (row["지역"], row["도시"], row["상세주소"])
+        address_key = (row.get("지역"), row.get("도시"), row.get("상세주소"))
         overall_results_dict[address_key] = row.to_dict()
     return overall_results_dict
 
@@ -71,16 +71,17 @@ def process_data(overall_results_dict):
 def save_to_excel(results_dict, file_name):
     results_list = list(results_dict.values())
     df = pd.DataFrame(results_list)
+    df_selected = df[["ID", "지역", "도시", "주소", "도로명 주소", "상세주소", "이름", "카테고리", "전화번호", "URL", "place", "city", "page"]]
 
     try:
         # 기존 파일에 데이터 추가
         book = load_workbook(file_name)
         with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
             startrow = book['Sheet1'].max_row
-            df.to_excel(writer, index=False, sheet_name='Sheet1', startrow=startrow, header=False)
+            df_selected.to_excel(writer, index=False, sheet_name='Sheet1', startrow=startrow, header=False)
     except (FileNotFoundError, zipfile.BadZipFile, KeyError):
         # 파일이 없거나 손상된 경우 새로 생성
-        df.to_excel(file_name, index=False, sheet_name='Sheet1')
+        df_selected.to_excel(file_name, index=False, sheet_name='Sheet1')
 
     print(f"Data appended to {file_name}")
 
