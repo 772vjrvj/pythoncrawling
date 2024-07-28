@@ -119,7 +119,6 @@ async function extractMetaTags(page) {
     }
 }
 
-
 /**
  * 주어진 Puppeteer 페이지에서 푸터 정보를 추출합니다.
  * @param {Page} page - Puppeteer 페이지 인스턴스.
@@ -210,6 +209,7 @@ async function extractFooterInfo(page) {
         return { debug: '푸터 정보 추출 중 오류 발생' };
     }
 }
+
 /**
  * 주어진 Puppeteer 페이지에서 배너 정보를 추출합니다.
  * @param {Page} page - Puppeteer 페이지 인스턴스.
@@ -382,6 +382,11 @@ function writeToExcel(shopInfo, bannerInfo, productDetails, productRepls) {
     xlsx.writeFile(workbook, 'shop_info.xlsx');
 }
 
+// HTML 태그 제거 함수
+function stripHTML(html) {
+    return html.replace(/<\/?[^>]+(>|$)/g, "");
+}
+
 /**
  * 카테고리 정보를 로그로 기록하고, 상품 정보를 추출합니다.
  * @param {string} url - 기본 URL.
@@ -420,7 +425,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                         for (const [index, product] of data.entries()) {
                             const productDetail = {
                                 "상품ID": product.product_no,
-                                "상품명*": product.product_name_tag,
+                                "상품명*": stripHTML(product.product_name_tag),
                                 "카테고리(메뉴)*": category_menu,
                                 "상품 상세(html)*": "",
                                 "상품가격*": product.product_custom || product.product_price,
@@ -468,6 +473,7 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
     }
 }
 
+
 /**
  * 주어진 함수에 대해 재시도합니다.
  * @param {Function} fn - 재시도할 함수.
@@ -489,6 +495,7 @@ async function retry(fn, retries = 4, delay = 2000, defaultValue = null) {
     return defaultValue;
 }
 
+
 /**
  * 주어진 상품에 대한 상세 정보를 추출합니다.
  * @param {Object} productDetail - 상품 상세 정보 객체.
@@ -501,7 +508,7 @@ async function fetchProductDetails(productDetail, url) {
 
     console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
     try {
-        await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'domcontentloaded', timeout: 60000 });
+        await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 30000 });
     } catch (error) {
         console.error('상품 상세 페이지로 이동 중 오류 발생:', error);
     }
@@ -572,7 +579,6 @@ async function fetchProductDetails(productDetail, url) {
                 allAnchorElements.forEach(anchor => {
                     anchor.href = url + anchor.getAttribute('href');
                 });
-
             }
 
             const detailHtml = detailElement ? detailElement.outerHTML : '';
@@ -671,6 +677,7 @@ async function fetchProductDetails(productDetail, url) {
     return reviews;
 }
 
+
 /**
  * 주어진 상품에 대한 리뷰 정보를 추출합니다.
  * @param {Page} page - Puppeteer 페이지 인스턴스.
@@ -679,9 +686,7 @@ async function fetchProductDetails(productDetail, url) {
  * @returns {Promise<Array>} 리뷰 정보 배열.
  */
 async function fetchProductReviews(page, productDetail, url) {
-
     const reviews = [];
-
 
     // https://cherryme.kr
     const reviewTableElement = await retry(async () => {
@@ -728,19 +733,17 @@ async function fetchProductReviews(page, productDetail, url) {
             reviews.push({
                 "상품ID": productDetail["상품ID"],
                 "상품명*": productDetail["상품명*"],
-                "이미지": reviewRows.images,
-                "평점": reviewRows.score,
-                "리뷰": reviewRows.reviewText,
-                "작성날짜": reviewRows.date,
-                "작성자": reviewRows.author,
+                "이미지": reviewData.images,
+                "평점": reviewData.score,
+                "리뷰": reviewData.reviewText,
+                "작성날짜": reviewData.date,
+                "작성자": reviewData.author,
                 "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
             });
         }
         console.log("reviews : ", JSON.stringify(reviews, null, 2));
-
         return reviews;
     }
-
 
     // https://dailyjou.com
     // https://www.ba-on.com
@@ -748,7 +751,6 @@ async function fetchProductReviews(page, productDetail, url) {
     const iframeElement1 = await retry(async () => {
         return await page.$('#prdReview iframe#review_widget3_0');
     }, 3, 2000, null);
-
     if (iframeElement1) {
         const frame = await iframeElement1.contentFrame();
         if (frame) {
@@ -785,7 +787,7 @@ async function fetchProductReviews(page, productDetail, url) {
                 reviews.push({
                     "상품ID": productDetail["상품ID"],
                     "상품명*": productDetail["상품명*"],
-                    "이미지": images,
+                    "이미지": JSON.stringify(images, null, 2),
                     "평점": score,
                     "리뷰": reviewText,
                     "작성날짜": date,
@@ -795,54 +797,39 @@ async function fetchProductReviews(page, productDetail, url) {
             }
         }
         console.log("reviews : ", JSON.stringify(reviews, null, 2));
-
         return reviews;
     }
 
-
-
     // https://beidelli.com/
-    console.log('beidelli type ');
-
-    const dataCodeValue = await page.evaluate(() => {
-        const alphaWidgetElement = document.querySelector('#prdReview .alpha_widget');
+    console.log('beidelli type');
+    const prdReviewBeidelli = await page.evaluate(() => {
+        const prdReviewEl = document.querySelector('#prdReview .alpha_widget');
         return {
-            code: alphaWidgetElement ? alphaWidgetElement.getAttribute('data-code') : null,
-            value: alphaWidgetElement ? alphaWidgetElement.getAttribute('data-value') : null
+            code: prdReviewEl?.getAttribute('data-code'),
+            value: prdReviewEl?.getAttribute('data-value')
         };
     });
-
-    console.log('eValue.code ', dataCodeValue.code);
-    console.log('eValue.value ', dataCodeValue.value);
-
-    if (dataCodeValue.code && dataCodeValue.value) {
-        const url = `https://saladlab.shop/api/widget?code=${dataCodeValue.code}&value=${dataCodeValue.value}&idx=3`;
+    console.log('prdReviewBeidelli.code ', prdReviewBeidelli.code);
+    console.log('prdReviewBeidelli.value ', prdReviewBeidelli.value);
+    if (prdReviewBeidelli.code && prdReviewBeidelli.value) {
+        const url = `https://saladlab.shop/api/widget?code=${prdReviewBeidelli.code}&value=${prdReviewBeidelli.value}&idx=3`;
         console.log('url ', url);
-        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
 
-        const reviewElements = await page.$$('.widget_boardAlphareview .widget_m .widget_item.review[data-widgettype="board_Alphareview"]');
-        for (const reviewElement of reviewElements) {
-            const authorElement = await reviewElement.$('.widget_item_none_username_2');
-            const author = authorElement ? await page.evaluate(el => el.innerText.trim(), authorElement) : '';
+        const reviewEls = await page.$$('.widget_boardAlphareview .widget_m .widget_item.review[data-widgettype="board_Alphareview"]');
+        const reviews = [];
 
-            const dateElement = await reviewElement.$('.widget_item_date_product_none');
-            const date = dateElement ? await page.evaluate(el => el.innerText.trim(), dateElement) : '';
-
-            const scoreElements = await reviewElement.$$('.alph_star_full');
-            const score = '★'.repeat(scoreElements.length);
-
-            const reviewTextElement = await reviewElement.$('.widget_item_review_box');
-            const reviewText = reviewTextElement ? await page.evaluate(el => el.innerText.trim(), reviewTextElement) : '';
-
-            const imageElements = await reviewElement.$$('.widget_item_photo.widget_item_photo_s.lozad img');
-            const images = imageElements.length > 0 ? await page.evaluate(imgs => imgs.map(img => img.src), imageElements) : [];
-
-
+        for (const reviewEl of reviewEls) {
+            const author = await getElementTextContent(reviewEl, '.widget_item_none_username_2');
+            const date = await getElementTextContent(reviewEl, '.widget_item_date_product_none');
+            const score = '★'.repeat((await reviewEl.$$('.alph_star_full')).length);
+            const reviewText = await getElementTextContent(reviewEl, '.widget_item_review_box');
+            const images = await getImageSrcs(reviewEl, '.widget_item_photo.widget_item_photo_s.lozad img');
 
             reviews.push({
                 "상품ID": productDetail["상품ID"],
                 "상품명*": productDetail["상품명*"],
-                "이미지": images,
+                "이미지": JSON.stringify(images, null, 2),
                 "평점": score,
                 "리뷰": reviewText,
                 "작성날짜": date,
@@ -850,6 +837,7 @@ async function fetchProductReviews(page, productDetail, url) {
                 "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
             });
         }
+
         console.log('reviews :', reviews);
         return reviews;
 
@@ -857,7 +845,77 @@ async function fetchProductReviews(page, productDetail, url) {
         console.log('Code or value not found');
     }
 
+    //https://www.hotping.co.kr
+    console.log('hotping type ');
+    const prdReviewHotping = await page.evaluate(() => {
+        const prdReviewEl = document.querySelector('#prdReview .crema-product-reviews.crema-applied:not(.crema-hide)');
+        return {
+            code: prdReviewEl?.getAttribute('data-product-code'),
+            id: prdReviewEl?.getAttribute('data-widget-id')
+        };
+    });
+    console.log('prdReviewHotping.code ', prdReviewHotping.code);
+    console.log('prdReviewHotping.id ', prdReviewHotping.id);
+    if (prdReviewHotping.code && prdReviewHotping.id) {
+        // 프로토콜 제거
+        let mainUrl = url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+
+        const reviewUrl = `https://review3.cre.ma/${mainUrl}/products/reviews?page=1&product_code=${prdReviewHotping.code}&widget_env=300&widget_id=${prdReviewHotping.id}`;
+        console.log('url ', reviewUrl);
+
+        await page.goto(reviewUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+
+        const reviewEls = await page.evaluate(() => {
+            const getElementTextContent = (el, selector) => {
+                const element = el.querySelector(selector);
+                return element ? element.textContent.trim() : '';
+            };
+
+            const getImageSrcs = (el, selector) => {
+                return Array.from(el.querySelectorAll(selector)).map(img => img.src);
+            };
+
+            return Array.from(document.querySelectorAll('.products_reviews__reviews.reviews > li.review_list_v2.review_list_v2--collapsed.renewed_review.js-review-container')).map(el => ({
+                author: getElementTextContent(el, '.review_list_v2__user_name_message b'),
+                score: '★'.repeat(el.querySelectorAll('.crema_product_reviews_score_star_wrapper--full').length),
+                reviewText: getElementTextContent(el, '.review_list_v2__message.js-collapsed-review-content.js-translate-text'),
+                images: getImageSrcs(el, 'img.review_media_v2__medium_image.js-review-media')
+            }));
+        });
+
+        const reviews = [];
+
+        for (const reviewData of reviewEls) {
+            reviews.push({
+                "상품ID": productDetail["상품ID"],
+                "상품명*": productDetail["상품명*"],
+                "이미지": JSON.stringify(reviewData.images, null, 2),
+                "평점": reviewData.score,
+                "리뷰": reviewData.reviewText,
+                "작성날짜": '', // 작성날짜를 가져오는 코드가 없습니다.
+                "작성자": reviewData.author,
+                "상품 상세화면 URL*": productDetail["상품 상세화면 URL*"]
+            });
+        }
+
+        console.log('reviews hot :', reviews);
+        return reviews;
+
+    } else {
+        console.log('Code or value not found');
+    }
+
     return reviews;
+}
+
+async function getElementTextContent(parent, selector) {
+    const element = await parent.$(selector);
+    return element ? await parent.evaluate(el => el.innerText.trim(), element) : '';
+}
+
+async function getImageSrcs(parent, selector) {
+    const imgElements = await parent.$$(selector);
+    return imgElements.length > 0 ? await parent.evaluate(imgs => imgs.map(img => 'https:' + img.src), imgElements) : [];
 }
 
 
@@ -868,6 +926,7 @@ async function fetchProductReviews(page, productDetail, url) {
 function getCurrentFormattedTime() {
     return moment().format('YYYY.MM.DD HH:mm:ss');
 }
+
 
 /**
  * 메인 함수입니다. 쇼핑몰 URL을 받아서 정보를 추출하고 Excel 파일로 저장합니다.
@@ -935,6 +994,8 @@ async function main(url) {
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
 
+    browser.close();
+
     const endTime = moment();
     console.log('Script end time:', endTime.format('YYYY.MM.DD HH:mm:ss'));
 
@@ -942,10 +1003,11 @@ async function main(url) {
     console.log('Total execution time:', `${totalTime.hours()}시간 ${totalTime.minutes()}분 ${totalTime.seconds()}초`);
 }
 
+
 // const url = "https://cherryme.kr";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
-const url = "https://beidelli.com";
-// const url = "https://www.hotping.co.kr";
+// const url = "https://beidelli.com";
+const url = "https://www.hotping.co.kr";
 
 main(url);
