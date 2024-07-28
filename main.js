@@ -812,9 +812,12 @@ async function fetchProductReviews(page, productDetail, url) {
         };
     });
 
+    console.log('eValue.code ', dataCodeValue.code);
+    console.log('eValue.value ', dataCodeValue.value);
+
     if (dataCodeValue.code && dataCodeValue.value) {
         const url = `https://saladlab.shop/api/widget?code=${dataCodeValue.code}&value=${dataCodeValue.value}&idx=3`;
-
+        console.log('url ', url);
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
         const reviewElements = await page.$$('.widget_boardAlphareview .widget_m .widget_item.review[data-widgettype="board_Alphareview"]');
