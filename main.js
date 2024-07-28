@@ -447,12 +447,12 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
                             productDetails.push(productDetail);
                             productRepls.push(...reviews);
                             //test 시작
-                            break;
+                            // break;
                             //test 끝
                         }
                         pageNum++;
                         //test 시작
-                        hasMoreData = false;
+                        // hasMoreData = false;
                         //test 끝
                     }
 
@@ -988,8 +988,8 @@ async function main(url) {
     // await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     //test 시작
-    console.log('categoryInfo:', categoryInfo.slice(1,2));
-    await logCategoryInfo(url, categoryInfo.slice(1,2), productDetails, productRepls);
+    // console.log('categoryInfo:', categoryInfo.slice(1,2));
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
     //test 끝
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
