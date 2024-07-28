@@ -954,6 +954,7 @@ async function main(url) {
     const bannerInfo = await extractBannerInfo(page, url);
 
     const footerInfo = await extractFooterInfo(page);
+
     // console.log('footerInfo111 : ', JSON.stringify(footerInfo, null, 2));
     // await browser.close();
     // return;
@@ -962,7 +963,7 @@ async function main(url) {
 
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
 
-    // console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
+    console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
 
     console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
 
@@ -985,11 +986,11 @@ async function main(url) {
     const productDetails = [];
     const productRepls = [];
 
-    // await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
 
     //test 시작
     // console.log('categoryInfo:', categoryInfo.slice(1,2));
-    await logCategoryInfo(url, categoryInfo, productDetails, productRepls);
+    // await logCategoryInfo(url, categoryInfo.slice(1,2), productDetails, productRepls);
     //test 끝
 
     writeToExcel(shopInfo, bannerInfo, productDetails, productRepls);
@@ -1004,10 +1005,10 @@ async function main(url) {
 }
 
 
-// const url = "https://cherryme.kr";
+const url = "https://cherryme.kr";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
 // const url = "https://beidelli.com";
-const url = "https://www.hotping.co.kr";
+// const url = "https://www.hotping.co.kr";
 
 main(url);
