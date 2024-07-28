@@ -442,7 +442,6 @@ async function logCategoryInfo(url, categories, productDetails, productRepls) {
 
                             console.log("productDetail : ", JSON.stringify(productDetail, null, 2));
 
-
                             const reviews = await fetchProductDetails(productDetail, url);
                             productDetails.push(productDetail);
                             productRepls.push(...reviews);
@@ -800,6 +799,7 @@ async function fetchProductReviews(page, productDetail, url) {
         return reviews;
     }
 
+
     // https://beidelli.com/
     console.log('beidelli type');
     const prdReviewBeidelli = await page.evaluate(() => {
@@ -816,15 +816,14 @@ async function fetchProductReviews(page, productDetail, url) {
         console.log('url ', url);
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
 
-        const reviewEls = await page.$$('.widget_boardAlphareview .widget_m .widget_item.review[data-widgettype="board_Alphareview"]');
-        const reviews = [];
+        const reviewEls = await page.$$('.widget_boardAlphareview .widget_w .widget_item.review[data-widgettype="board_Alphareview"]');
 
         for (const reviewEl of reviewEls) {
-            const author = await getElementTextContent(reviewEl, '.widget_item_none_username_2');
-            const date = await getElementTextContent(reviewEl, '.widget_item_date_product_none');
+            const author = await getElementTextContent(page, reviewEl, '.widget_item_none_username_2');
+            const date = await getElementTextContent(page, reviewEl, '.widget_item_date_product_none');
             const score = '★'.repeat((await reviewEl.$$('.alph_star_full')).length);
-            const reviewText = await getElementTextContent(reviewEl, '.widget_item_review_box');
-            const images = await getImageSrcs(reviewEl, '.widget_item_photo.widget_item_photo_s.lozad img');
+            const reviewText = await getElementTextContent(page, reviewEl, '.widget_item_review_box');
+            const images = await getImageSrcs(page, reviewEl, 'img.widget_item_photo.widget_item_photo_s.lozad');
 
             reviews.push({
                 "상품ID": productDetail["상품ID"],
@@ -844,6 +843,7 @@ async function fetchProductReviews(page, productDetail, url) {
     } else {
         console.log('Code or value not found');
     }
+
 
     //https://www.hotping.co.kr
     console.log('hotping type ');
@@ -908,16 +908,25 @@ async function fetchProductReviews(page, productDetail, url) {
     return reviews;
 }
 
-async function getElementTextContent(parent, selector) {
+async function getElementTextContent(page, parent, selector) {
     const element = await parent.$(selector);
-    return element ? await parent.evaluate(el => el.innerText.trim(), element) : '';
+    return element ? await page.evaluate(el => el.innerText.trim(), element) : '';
 }
 
-async function getImageSrcs(parent, selector) {
+async function getImageSrcs(page, parent, selector) {
     const imgElements = await parent.$$(selector);
-    return imgElements.length > 0 ? await parent.evaluate(imgs => imgs.map(img => 'https:' + img.src), imgElements) : [];
+    if (imgElements.length > 0) {
+        const imgSrcs = [];
+        for (const imgElement of imgElements) {
+            const src = await page.evaluate(img => img.getAttribute('data-src') || img.getAttribute('src'), imgElement);
+            if (src) {
+                imgSrcs.push(src.startsWith('http') ? src : `https:${src}`);
+            }
+        }
+        return imgSrcs;
+    }
+    return [];
 }
-
 
 /**
  * 현재 시간을 포맷된 문자열로 반환합니다.
@@ -1005,10 +1014,10 @@ async function main(url) {
 }
 
 
-const url = "https://cherryme.kr";
+// const url = "https://cherryme.kr";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
-// const url = "https://beidelli.com";
+const url = "https://beidelli.com";
 // const url = "https://www.hotping.co.kr";
 
 main(url);
