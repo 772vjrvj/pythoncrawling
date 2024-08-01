@@ -82,6 +82,8 @@ def main(q):
     all_results = []
     post_index = 1
     page = 1
+
+    # for문 계속 도므로 마지막 페이지 설정하는게 좋음
     while True:
         search_results = get_search_results(q, page)
         if not search_results:
