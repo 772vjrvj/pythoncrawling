@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import time
 import random
 import os
+from openpyxl import Workbook, load_workbook
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -65,13 +65,17 @@ def get_post_details(url, index):
 def save_to_excel(data, file_name='pann_results.xlsx'):
     try:
         if os.path.exists(file_name):
-            existing_df = pd.read_excel(file_name)
-            combined_df = pd.concat([existing_df, pd.DataFrame(data)], ignore_index=True)
+            wb = load_workbook(file_name)
+            ws = wb.active
         else:
-            combined_df = pd.DataFrame(data)
+            wb = Workbook()
+            ws = wb.active
+            ws.append(['사이트', 'URL', '제목', '원문', '날짜'])  # Header 추가
 
-        with pd.ExcelWriter(file_name, engine='openpyxl', mode='w') as writer:
-            combined_df.to_excel(writer, index=False)
+        for entry in data:
+            ws.append([entry['사이트'], entry['URL'], entry['제목'], entry['원문'], entry['날짜']])
+
+        wb.save(file_name)
         print(f"Data successfully saved to {file_name}")
 
     except Exception as e:
@@ -95,8 +99,7 @@ def main(q):
                     save_to_excel(all_results)
                     all_results = []
         page += 1
-        if page == 3:
-            break
+
 
     if all_results:
         save_to_excel(all_results)

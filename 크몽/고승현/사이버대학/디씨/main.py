@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import time
 import random
 import os
+from openpyxl import Workbook, load_workbook
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -47,7 +47,7 @@ def get_post_details(url, index):
     obj = {}
     soup = BeautifulSoup(response.text, 'html.parser')
     try:
-        obj['사이트'] = "디씨인싸이드"
+        obj['사이트'] = "디씨인사이드"
         obj['URL'] = url
         obj['제목'] = soup.find(class_='title_subject').get_text(strip=True) if soup.find(class_='title_subject') else "No title"
         obj['원문'] = soup.find(class_='write_div').get_text(strip=True) if soup.find(class_='write_div') else "No content"
@@ -62,13 +62,17 @@ def get_post_details(url, index):
 def save_to_excel(data, file_name='dcinside_results.xlsx'):
     try:
         if os.path.exists(file_name):
-            existing_df = pd.read_excel(file_name)
-            combined_df = pd.concat([existing_df, pd.DataFrame(data)], ignore_index=True)
+            wb = load_workbook(file_name)
+            ws = wb.active
         else:
-            combined_df = pd.DataFrame(data)
+            wb = Workbook()
+            ws = wb.active
+            ws.append(['사이트', 'URL', '제목', '원문', '날짜'])  # Header 추가
 
-        with pd.ExcelWriter(file_name, engine='openpyxl', mode='w') as writer:
-            combined_df.to_excel(writer, index=False)
+        for entry in data:
+            ws.append([entry['사이트'], entry['URL'], entry['제목'], entry['원문'], entry['날짜']])
+
+        wb.save(file_name)
         print(f"Data successfully saved to {file_name}")
 
     except Exception as e:
