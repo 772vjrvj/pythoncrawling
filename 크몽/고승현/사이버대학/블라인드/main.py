@@ -72,13 +72,13 @@ def get_search_results(driver, q):
 def get_post_details(driver, url, index):
     print(f"[{index}] Fetching details from {url}")
     driver.get(url)
-    obj = {'title': '', 'content': '', 'date': ''}
+    obj = {}
     try:
         obj['사이트'] = "블라인드"
         obj['URL'] = url
-        obj['title'] = driver.find_element(By.CSS_SELECTOR, '.article-view-head h2').text.strip()
-        obj['content'] = driver.find_element(By.ID, 'contentArea').text.strip()
-        obj['date'] = driver.find_element(By.CLASS_NAME, 'date').get_attribute('textContent').strip().replace('작성일', '').strip()
+        obj['제목'] = driver.find_element(By.CSS_SELECTOR, '.article-view-head h2').text.strip()
+        obj['원문'] = driver.find_element(By.ID, 'contentArea').text.strip()
+        obj['날짜'] = driver.find_element(By.CLASS_NAME, 'date').get_attribute('textContent').strip().replace('작성일', '').strip()
 
     except Exception as e:
         print(f"Error parsing post details from {url}: {e}")
