@@ -142,8 +142,6 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             education_records.append(record)
         details["최근 교육 실적"] = json.dumps(education_records, ensure_ascii=False)
 
-        details["페이지"] = page_num
-
     except Exception as e:
         print(f"상세 정보 파싱 에러: {e} for instructor {instrctrNo}")
         return None
@@ -151,8 +149,15 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
     print(f"Detail {detail_index}: {details}")
     return details
 
+def remove_illegal_characters(df):
+    illegal_characters = re.compile(r'[\x00-\x1F\x7F]')  # 제어 문자와 비표준 유니코드 문자 패턴
+    for col in df.columns:
+        df[col] = df[col].astype(str).apply(lambda x: illegal_characters.sub('', x))
+    return df
+
 def save_to_excel(all_details, file_name="instructor_details.xlsx"):
     df = pd.DataFrame(all_details)
+    df = remove_illegal_characters(df)
 
     # 순서 맞추기: 강사정보 -> 홍보자료 -> 강사소개 -> 보유자격 -> 강의소개 -> 최근 교육 실적 -> 페이지
     ordered_columns = [
@@ -162,7 +167,7 @@ def save_to_excel(all_details, file_name="instructor_details.xlsx"):
         '주요경력', '주요활동',
         '보유자격',
         '강의소개', '강의목차',
-        '최근 교육 실적', '페이지'
+        '최근 교육 실적'
     ]
 
     # 빈 데이터프레임에 컬럼 추가
@@ -218,6 +223,7 @@ def main():
 
         # 100개마다 엑셀 파일로 저장
         if index % 100 == 0:
+            print(f"단위 저장")
             save_to_excel(all_details, "instructor_details.xlsx")
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
