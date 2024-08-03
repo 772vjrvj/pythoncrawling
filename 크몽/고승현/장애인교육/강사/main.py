@@ -6,6 +6,10 @@ import random
 import pandas as pd
 import json
 import os
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.utils.exceptions import IllegalCharacterError
 
 def send_post_request(url, payload):
     """POST 요청을 보내고 응답을 반환하는 함수"""
@@ -39,6 +43,15 @@ def parse_html_for_ids(html, page_index):
         print(f"HTML 파싱 에러: {e}")
         return []
 
+def format_text(text):
+    """텍스트를 원하는 형식으로 변환하는 함수"""
+    formatted_text = text.replace("& lt;", "<").replace("& gt;", ">").replace("\n\n", "\n")
+    return formatted_text
+
+def clean_text_for_excel(text):
+    """엑셀에서 사용 불가능한 문자를 제거하는 함수"""
+    return re.sub(r'[\000-\010]|[\013-\014]|[\016-\037]', '', text)
+
 def parse_instructor_details(instrctrNo, page_num, detail_index):
     url = "https://edu.kead.or.kr/aisd/search/InstrctrProfile.do"
     payload = {'instrctrNo': instrctrNo, 'pageNum': 1}
@@ -71,14 +84,14 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             ths = row.find_all("th")
             tds = row.find_all("td")
             for th, td in zip(ths, tds):
-                th_text = th.text.strip()
-                td_text = td.text.strip()
+                th_text = clean_text_for_excel(format_text(th.text.strip()))
+                td_text = clean_text_for_excel(format_text(td.text.strip()))
                 if th_text in ["강사명", "성별", "연락처", "이메일", "홈페이지", "한줄소개"]:
                     details[th_text] = td_text
                 elif th_text == "활동지역":
-                    details["활동지역"] = ", ".join([li.text.strip() for li in td.find("ul").find_all("li")])
+                    details["활동지역"] = ", ".join([clean_text_for_excel(format_text(li.text.strip())) for li in td.find("ul").find_all("li")])
                 elif th_text == "활동요일":
-                    details["활동요일"] = ", ".join([li.text.strip() for li in td.find("ul").find_all("li")])
+                    details["활동요일"] = ", ".join([clean_text_for_excel(format_text(li.text.strip())) for li in td.find("ul").find_all("li")])
 
         # 홍보자료
         promo_section = t_con_sections[1]
@@ -87,8 +100,8 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             ths = row.find_all("th")
             tds = row.find_all("td")
             for th, td in zip(ths, tds):
-                th_text = th.text.strip()
-                td_text = td.text.strip()
+                th_text = clean_text_for_excel(format_text(th.text.strip()))
+                td_text = clean_text_for_excel(format_text(td.text.strip()))
                 if th_text in ["샘플 강의 동영상", "홍보자료1", "홍보자료2"]:
                     details[th_text] = td_text
 
@@ -99,8 +112,8 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             ths = row.find_all("th")
             tds = row.find_all("td")
             for th, td in zip(ths, tds):
-                th_text = th.text.strip()
-                td_text = td.find("textarea").text.strip() if td.find("textarea") else td.text.strip()
+                th_text = clean_text_for_excel(format_text(th.text.strip()))
+                td_text = clean_text_for_excel(td.find("textarea").text.strip() if td.find("textarea") else format_text(td.text.strip()))
                 if th_text in ["주요경력", "주요활동"]:
                     details[th_text] = td_text
 
@@ -111,8 +124,8 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             ths = row.find_all("th")
             tds = row.find_all("td")
             for th, td in zip(ths, tds):
-                th_text = th.text.strip()
-                td_text = td.find("textarea").text.strip() if td.find("textarea") else td.text.strip()
+                th_text = clean_text_for_excel(format_text(th.text.strip()))
+                td_text = clean_text_for_excel(td.find("textarea").text.strip() if td.find("textarea") else format_text(td.text.strip()))
                 if th_text == "보유자격":
                     details[th_text] = td_text
 
@@ -123,8 +136,8 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             ths = row.find_all("th")
             tds = row.find_all("td")
             for th, td in zip(ths, tds):
-                th_text = th.text.strip()
-                td_text = td.find("textarea").text.strip() if td.find("textarea") else td.text.strip()
+                th_text = clean_text_for_excel(format_text(th.text.strip()))
+                td_text = clean_text_for_excel(td.find("textarea").text.strip() if td.find("textarea") else format_text(td.text.strip()))
                 if th_text in ["강의소개", "강의목차"]:
                     details[th_text] = td_text
 
@@ -143,14 +156,13 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
         else:
             for row in recent_education_table.find("tbody").find_all("tr"):
                 record = {
-                    "교육일자": row.find_all("td")[0].text.strip(),
-                    "교육시간": row.find_all("td")[1].text.strip(),
-                    "교육 의뢰 기관": row.find_all("td")[2].text.strip(),
-                    "교육장소": row.find_all("td")[3].text.strip()
+                    "교육일자": clean_text_for_excel(format_text(row.find_all("td")[0].text.strip())),
+                    "교육시간": clean_text_for_excel(format_text(row.find_all("td")[1].text.strip())),
+                    "교육 의뢰 기관": clean_text_for_excel(format_text(row.find_all("td")[2].text.strip())),
+                    "교육장소": clean_text_for_excel(format_text(row.find_all("td")[3].text.strip()))
                 }
                 education_records.append(record)
         details["최근 교육 실적"] = json.dumps(education_records, ensure_ascii=False)
-
 
     except Exception as e:
         print(f"상세 정보 파싱 에러: {e} for instructor {instrctrNo}")
@@ -159,19 +171,28 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
     print(f"Detail {detail_index}: {details}")
     return details
 
-def remove_illegal_characters(df):
-    illegal_characters = re.compile(r'[\x00-\x1F\x7F]')  # 제어 문자와 비표준 유니코드 문자 패턴
-    for col in df.columns:
-        df[col] = df[col].astype(str).apply(lambda x: illegal_characters.sub('', x))
-    return df
+def save_images_to_folder(details, folder="images"):
+    """이미지 URL을 다운로드하여 폴더에 저장하고, 파일 경로를 반환하는 함수"""
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    for detail in details:
+        image_url = detail.get("이미지 URL", "")
+        if image_url:
+            image_name = os.path.join(folder, image_url.split("/")[-1])
+            response = requests.get(image_url)
+            with open(image_name, 'wb') as file:
+                file.write(response.content)
+            detail["이미지"] = image_name
+        else:
+            detail["이미지"] = ""
+    return details
 
-def save_to_excel(all_details, file_name="instructor_details.xlsx"):
+def save_to_excel_with_images(all_details, file_name="instructor_details.xlsx"):
     df = pd.DataFrame(all_details)
-    df = remove_illegal_characters(df)
 
     # 순서 맞추기: 강사정보 -> 홍보자료 -> 강사소개 -> 보유자격 -> 강의소개 -> 최근 교육 실적 -> 페이지
     ordered_columns = [
-        '강사명', '성별', '연락처', '이메일', '이미지 URL',
+        '강사명', '성별', '연락처', '이메일', '이미지', '이미지 URL',
         '한줄소개', '홈페이지', '활동요일', '활동지역',
         '샘플 강의 동영상', '홍보자료1', '홍보자료2',
         '주요경력', '주요활동',
@@ -187,14 +208,26 @@ def save_to_excel(all_details, file_name="instructor_details.xlsx"):
 
     df = df[ordered_columns]
 
-    if os.path.exists(file_name):
-        # 기존 파일이 있을 경우 데이터 추가
-        with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-            startrow = writer.sheets['Sheet1'].max_row  # 기존 데이터의 마지막 행 번호
-            df.to_excel(writer, index=False, header=False, startrow=startrow)
-    else:
-        # 기존 파일이 없을 경우 새로운 파일 생성
-        df.to_excel(file_name, index=False)
+    wb = Workbook()
+    ws = wb.active
+
+    # 데이터프레임을 엑셀 워크북으로 변환
+    for r in dataframe_to_rows(df, index=False, header=True):
+        ws.append(r)
+
+    # 이미지 파일을 엑셀에 삽입
+    for idx, row in df.iterrows():
+        img_path = row["이미지"]
+        if img_path and os.path.exists(img_path):
+            img = Image(img_path)
+            img.width = 100  # 이미지 너비 조정
+            img.height = 100  # 이미지 높이 조정
+            ws.add_image(img, f"E{idx + 2}")
+            # 셀 크기를 이미지 크기에 맞게 조정
+            ws.row_dimensions[idx + 2].height = 85  # 높이 조정
+            ws.column_dimensions['E'].width = 20  # 너비 조정
+
+    wb.save(file_name)
 
 def main():
     url = "https://edu.kead.or.kr/aisd/search/InstrctrSearchList.do?menuId=M3021"
@@ -233,8 +266,8 @@ def main():
 
         # 100개마다 엑셀 파일로 저장
         if index % 100 == 0:
-            print(f"단위 저장")
-            save_to_excel(all_details, "instructor_details.xlsx")
+            all_details = save_images_to_folder(all_details)
+            save_to_excel_with_images(all_details, "instructor_details.xlsx")
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
 
@@ -242,7 +275,8 @@ def main():
 
     # 남은 데이터 저장
     if all_details:
-        save_to_excel(all_details, "instructor_details.xlsx")
+        all_details = save_images_to_folder(all_details)
+        save_to_excel_with_images(all_details, "instructor_details.xlsx")
 
 if __name__ == "__main__":
     main()
