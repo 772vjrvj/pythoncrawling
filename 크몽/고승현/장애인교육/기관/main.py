@@ -22,12 +22,12 @@ def parse_html_for_ids(html, page_index):
     try:
         soup = BeautifulSoup(html, 'html.parser')
 
-        # 정규 표현식 패턴: javascript:dmoelRequst('K0148-2018148','Y');
-        pattern = re.compile(r"javascript:dmoelRequst\('([^']+)','Y'\);")
+        # 정규 표현식 패턴: javascript:dmoelRequst('2018-40');
+        pattern = re.compile(r"javascript:dmoelRequst\('([^']+)'\);")
 
         results = []
-        for div in soup.find_all("div", class_="bd-name"):
-            a_tag = div.find("a")
+        for td in soup.find_all("td", class_="txt_left elli"):
+            a_tag = td.find("a")
             if a_tag and 'href' in a_tag.attrs:
                 match = pattern.search(a_tag['href'])
                 if match:
@@ -39,9 +39,9 @@ def parse_html_for_ids(html, page_index):
         print(f"HTML 파싱 에러: {e}")
         return []
 
-def parse_instructor_details(instrctrNo, page_num, detail_index):
-    url = "https://edu.kead.or.kr/aisd/search/InstrctrProfile.do"
-    payload = {'instrctrNo': instrctrNo, 'pageNum': 1}
+def parse_institution_details(eclstNo, page_num, detail_index):
+    url = "https://edu.kead.or.kr/aisd/search/EclstProfile.do"
+    payload = {'eclstNo': eclstNo, 'pageNum': 1}
     response_text = send_post_request(url, payload)
     if response_text is None:
         return None
@@ -51,11 +51,11 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
 
     try:
         t_con_sections = soup.find_all("div", class_="t-con")
-        if len(t_con_sections) < 6:
-            print(f"Expected at least 6 t-con sections for instructor {instrctrNo}, but found {len(t_con_sections)}")
+        if len(t_con_sections) < 5:
+            print(f"Expected at least 5 t-con sections for institution {eclstNo}, but found {len(t_con_sections)}")
             return None
 
-        # 강사정보
+        # 교육기관 정보
         profile_section = t_con_sections[0]
         img_tag = profile_section.find("span", class_="profile-info").find("img")
         if img_tag:
@@ -73,7 +73,7 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             for th, td in zip(ths, tds):
                 th_text = th.text.strip()
                 td_text = td.text.strip()
-                if th_text in ["강사명", "성별", "연락처", "이메일", "홈페이지", "한줄소개"]:
+                if th_text in ["교육기관명", "교육종목", "연락처", "이메일", "소재지", "홈페이지"]:
                     details[th_text] = td_text
                 elif th_text == "활동지역":
                     details["활동지역"] = ", ".join([li.text.strip() for li in td.find("ul").find_all("li")])
@@ -92,7 +92,7 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
                 if th_text in ["샘플 강의 동영상", "홍보자료1", "홍보자료2"]:
                     details[th_text] = td_text
 
-        # 강사소개
+        # 기관소개
         intro_section = t_con_sections[2]
         intro_rows = intro_section.find("table", class_="view-table type-2").find("tbody").find_all("tr")
         for row in intro_rows:
@@ -101,23 +101,12 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
             for th, td in zip(ths, tds):
                 th_text = th.text.strip()
                 td_text = td.find("textarea").text.strip() if td.find("textarea") else td.text.strip()
-                if th_text in ["주요경력", "주요활동"]:
+                if th_text in ["주요연혁", "주요활동"]:
                     details[th_text] = td_text
 
-        # 보유자격
-        cert_section = t_con_sections[3]
-        cert_rows = cert_section.find("table", class_="view-table type-2").find("tbody").find_all("tr")
-        for row in cert_rows:
-            ths = row.find_all("th")
-            tds = row.find_all("td")
-            for th, td in zip(ths, tds):
-                th_text = th.text.strip()
-                td_text = td.find("textarea").text.strip() if td.find("textarea") else td.text.strip()
-                if th_text == "보유자격":
-                    details[th_text] = td_text
 
         # 강의소개
-        lecture_section = t_con_sections[4]
+        lecture_section = t_con_sections[3]
         lecture_rows = lecture_section.find("table", class_="view-table type-2").find("tbody").find_all("tr")
         for row in lecture_rows:
             ths = row.find_all("th")
@@ -128,8 +117,9 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
                 if th_text in ["강의소개", "강의목차"]:
                     details[th_text] = td_text
 
+
         # 최근 교육 실적
-        recent_education_section = t_con_sections[5]
+        recent_education_section = t_con_sections[4]
         recent_education_table = recent_education_section.find("table", class_="list-table")
         education_records = []
         no_records = recent_education_table.find("td", class_="ac")
@@ -153,29 +143,21 @@ def parse_instructor_details(instrctrNo, page_num, detail_index):
 
 
     except Exception as e:
-        print(f"상세 정보 파싱 에러: {e} for instructor {instrctrNo}")
+        print(f"상세 정보 파싱 에러: {e} for eclstNo {eclstNo}")
         return None
 
     print(f"Detail {detail_index}: {details}")
     return details
 
-def remove_illegal_characters(df):
-    illegal_characters = re.compile(r'[\x00-\x1F\x7F]')  # 제어 문자와 비표준 유니코드 문자 패턴
-    for col in df.columns:
-        df[col] = df[col].astype(str).apply(lambda x: illegal_characters.sub('', x))
-    return df
-
-def save_to_excel(all_details, file_name="instructor_details.xlsx"):
+def save_to_excel(all_details, file_name="institution_details.xlsx"):
     df = pd.DataFrame(all_details)
-    df = remove_illegal_characters(df)
 
-    # 순서 맞추기: 강사정보 -> 홍보자료 -> 강사소개 -> 보유자격 -> 강의소개 -> 최근 교육 실적 -> 페이지
+    # 순서 맞추기: 교육기관 정보 -> 홍보자료 -> 강의소개 -> 기관소개 -> 최근 교육 실적 -> 페이지
     ordered_columns = [
-        '강사명', '성별', '연락처', '이메일', '이미지 URL',
-        '한줄소개', '홈페이지', '활동요일', '활동지역',
+        '교육기관명', '교육종목', '연락처', '이메일', '이미지 URL',
+        '한줄소개', '홈페이지', '활동요일', '활동지역', '소재지',
         '샘플 강의 동영상', '홍보자료1', '홍보자료2',
-        '주요경력', '주요활동',
-        '보유자격',
+        '주요연혁', '주요활동',
         '강의소개', '강의목차',
         '최근 교육 실적'
     ]
@@ -197,23 +179,25 @@ def save_to_excel(all_details, file_name="instructor_details.xlsx"):
         df.to_excel(file_name, index=False)
 
 def main():
-    url = "https://edu.kead.or.kr/aisd/search/InstrctrSearchList.do?menuId=M3021"
+    url = "https://edu.kead.or.kr/aisd/search/EclstSearchList.do"
     page_num = 1
     all_ids = []
     id_index = 1
 
-    # 강사 ID 수집
+
+    # 교육기관 ID 수집
     while True:
-        payload = {'pageNum': page_num}
+        payload = {'pageNum': page_num, 'pageType': 'SEARCH'}
         response_text = send_post_request(url, payload)
         if response_text is not None:
             ids = parse_html_for_ids(response_text, id_index)
             if not ids:
                 break
             all_ids.extend(ids)
+            break
             page_num += 1
             id_index += 1
-            time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
+            time.sleep(2)  # 2~3초 랜덤하게 쉬기
         else:
             print("데이터를 가져오지 못했습니다.")
             break
@@ -222,27 +206,26 @@ def main():
     file_count = 1
     detail_index = 1
 
-    # 각 강사에 대한 상세 정보 수집
-    for index, instrctrNo in enumerate(all_ids, start=1):
-        print(f"Processing instructor {index}: {instrctrNo}")
-        details = parse_instructor_details(instrctrNo, index, detail_index)
+    # 각 교육기관에 대한 상세 정보 수집
+    for index, eclstNo in enumerate(all_ids, start=1):
+        print(f"Processing institution {index}: {eclstNo}")
+        details = parse_institution_details(eclstNo, index, detail_index)
         if details:
             all_details.append(details)
-            print(f"Finished processing instructor {index}: {instrctrNo}")
+            print(f"Finished processing institution {index}: {eclstNo}")
             detail_index += 1
 
         # 100개마다 엑셀 파일로 저장
         if index % 100 == 0:
-            print(f"단위 저장")
-            save_to_excel(all_details, "instructor_details.xlsx")
+            save_to_excel(all_details, "장애인 교육기관.xlsx")
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
 
-        time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
+        time.sleep(2)  # 2~3초 랜덤하게 쉬기
 
     # 남은 데이터 저장
     if all_details:
-        save_to_excel(all_details, "instructor_details.xlsx")
+        save_to_excel(all_details, "장애인 교육기관.xlsx")
 
 if __name__ == "__main__":
     main()
