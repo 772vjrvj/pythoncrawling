@@ -213,7 +213,7 @@ def main():
             all_ids.extend(ids)
             page_num += 1
             id_index += 1
-            time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
+            time.sleep(1)  # 2~3초 랜덤하게 쉬기
         else:
             print("데이터를 가져오지 못했습니다.")
             break
@@ -238,7 +238,7 @@ def main():
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
 
-        time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
+        time.sleep(1)  # 2~3초 랜덤하게 쉬기
 
     # 남은 데이터 저장
     if all_details:
