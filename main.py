@@ -5,6 +5,7 @@ import time
 import random
 import pandas as pd
 import json
+import os
 
 def send_post_request(url, payload):
     """POST 요청을 보내고 응답을 반환하는 함수"""
@@ -16,7 +17,7 @@ def send_post_request(url, payload):
         print(f"HTTP 요청 에러: {e}")
         return None
 
-def parse_html_for_ids(html):
+def parse_html_for_ids(html, page_index):
     """HTML을 파싱하여 필요한 ID들을 추출하는 함수"""
     try:
         soup = BeautifulSoup(html, 'html.parser')
@@ -32,12 +33,13 @@ def parse_html_for_ids(html):
                 if match:
                     results.append(match.group(1))
 
+        print(f"Page {page_index}: Collected IDs - {results}")
         return results
     except Exception as e:
         print(f"HTML 파싱 에러: {e}")
         return []
 
-def parse_instructor_details(instrctrNo, page_num):
+def parse_instructor_details(instrctrNo, page_num, detail_index):
     url = "https://edu.kead.or.kr/aisd/search/InstrctrProfile.do"
     payload = {'instrctrNo': instrctrNo, 'pageNum': 1}
     response_text = send_post_request(url, payload)
@@ -146,12 +148,13 @@ def parse_instructor_details(instrctrNo, page_num):
         print(f"상세 정보 파싱 에러: {e} for instructor {instrctrNo}")
         return None
 
+    print(f"Detail {detail_index}: {details}")
     return details
 
 def save_to_excel(all_details, file_name="instructor_details.xlsx"):
     df = pd.DataFrame(all_details)
 
-    # 순서 맞추기: 강사정보 -> 홍보자료 -> 강사소개 -> 보유자격 -> 강의소개 -> 최근 교육 실적 -> 사이트 URL -> 페이지
+    # 순서 맞추기: 강사정보 -> 홍보자료 -> 강사소개 -> 보유자격 -> 강의소개 -> 최근 교육 실적 -> 페이지
     ordered_columns = [
         '강사명', '성별', '연락처', '이메일', '이미지 URL',
         '한줄소개', '홈페이지', '활동요일', '활동지역',
@@ -169,24 +172,32 @@ def save_to_excel(all_details, file_name="instructor_details.xlsx"):
 
     df = df[ordered_columns]
 
-    # 엑셀로 저장
-    df.to_excel(file_name, index=False)
+    if os.path.exists(file_name):
+        # 기존 파일이 있을 경우 데이터 추가
+        with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            startrow = writer.sheets['Sheet1'].max_row  # 기존 데이터의 마지막 행 번호
+            df.to_excel(writer, index=False, header=False, startrow=startrow)
+    else:
+        # 기존 파일이 없을 경우 새로운 파일 생성
+        df.to_excel(file_name, index=False)
 
 def main():
     url = "https://edu.kead.or.kr/aisd/search/InstrctrSearchList.do?menuId=M3021"
     page_num = 1
     all_ids = []
+    id_index = 1
 
     # 강사 ID 수집
     while True:
         payload = {'pageNum': page_num}
         response_text = send_post_request(url, payload)
         if response_text is not None:
-            ids = parse_html_for_ids(response_text)
+            ids = parse_html_for_ids(response_text, id_index)
             if not ids:
                 break
             all_ids.extend(ids)
             page_num += 1
+            id_index += 1
             time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
         else:
             print("데이터를 가져오지 못했습니다.")
@@ -194,18 +205,20 @@ def main():
 
     all_details = []
     file_count = 1
+    detail_index = 1
 
     # 각 강사에 대한 상세 정보 수집
     for index, instrctrNo in enumerate(all_ids, start=1):
         print(f"Processing instructor {index}: {instrctrNo}")
-        details = parse_instructor_details(instrctrNo, index)
+        details = parse_instructor_details(instrctrNo, index, detail_index)
         if details:
             all_details.append(details)
             print(f"Finished processing instructor {index}: {instrctrNo}")
+            detail_index += 1
 
         # 100개마다 엑셀 파일로 저장
         if index % 100 == 0:
-            save_to_excel(all_details, f"instructor_details_part_{file_count}.xlsx")
+            save_to_excel(all_details, "instructor_details.xlsx")
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
 
@@ -213,7 +226,7 @@ def main():
 
     # 남은 데이터 저장
     if all_details:
-        save_to_excel(all_details, f"instructor_details_part_{file_count}.xlsx")
+        save_to_excel(all_details, "instructor_details.xlsx")
 
 if __name__ == "__main__":
     main()
