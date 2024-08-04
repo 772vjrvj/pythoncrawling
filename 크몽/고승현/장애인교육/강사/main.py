@@ -185,7 +185,7 @@ def save_images_to_folder(details, folder="images"):
             detail["이미지"] = ""
     return details
 
-def save_to_excel_with_images(all_details, file_name="instructor_details.xlsx"):
+def save_to_excel_with_images(all_details, file_name="장애인교육 강사.xlsx"):
     df = pd.DataFrame(all_details)
 
     # 순서 맞추기: 강사정보 -> 홍보자료 -> 강사소개 -> 보유자격 -> 강의소개 -> 최근 교육 실적 -> 페이지
@@ -272,7 +272,7 @@ def main():
         # 100개마다 엑셀 파일로 저장
         if index % 100 == 0:
             all_details = save_images_to_folder(all_details)
-            save_to_excel_with_images(all_details, "instructor_details.xlsx")
+            save_to_excel_with_images(all_details, "장애인교육 강사.xlsx")
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
 
@@ -281,7 +281,7 @@ def main():
     # 남은 데이터 저장
     if all_details:
         all_details = save_images_to_folder(all_details)
-        save_to_excel_with_images(all_details, "instructor_details.xlsx")
+        save_to_excel_with_images(all_details, "장애인교육 강사.xlsx")
 
 if __name__ == "__main__":
     main()

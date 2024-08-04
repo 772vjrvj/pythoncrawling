@@ -6,10 +6,9 @@ import random
 import pandas as pd
 import json
 import os
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.drawing.image import Image
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.utils.exceptions import IllegalCharacterError
 
 def send_post_request(url, payload):
     """POST 요청을 보내고 응답을 반환하는 함수"""
@@ -175,7 +174,7 @@ def save_images_to_folder(details, folder="images"):
             detail["이미지"] = ""
     return details
 
-def save_to_excel_with_images(all_details, file_name="institution_details.xlsx"):
+def save_to_excel_with_images(all_details, file_name="장애인 교육기관.xlsx"):
     df = pd.DataFrame(all_details)
 
     # 순서 맞추기: 교육기관 정보 -> 홍보자료 -> 강의소개 -> 기관소개 -> 최근 교육 실적 -> 페이지
@@ -195,23 +194,30 @@ def save_to_excel_with_images(all_details, file_name="institution_details.xlsx")
 
     df = df[ordered_columns]
 
-    wb = Workbook()
-    ws = wb.active
+    if os.path.exists(file_name):
+        wb = load_workbook(file_name)
+        ws = wb.active
+    else:
+        wb = Workbook()
+        ws = wb.active
+        # 헤더 추가
+        ws.append(df.columns.tolist())
 
     # 데이터프레임을 엑셀 워크북으로 변환
-    for r in dataframe_to_rows(df, index=False, header=True):
+    start_row = ws.max_row + 1
+    for r in dataframe_to_rows(df, index=False, header=False):
         ws.append(r)
 
     # 이미지 파일을 엑셀에 삽입
-    for idx, row in df.iterrows():
-        img_path = row["이미지"]
+    for idx, row in enumerate(df.itertuples(), start=start_row):
+        img_path = row.이미지
         if img_path and os.path.exists(img_path):
             img = Image(img_path)
             img.width = 100  # 이미지 너비 조정
             img.height = 100  # 이미지 높이 조정
-            ws.add_image(img, f"E{idx + 2}")
+            ws.add_image(img, f"E{idx}")
             # 셀 크기를 이미지 크기에 맞게 조정
-            ws.row_dimensions[idx + 2].height = 75  # 높이 조정
+            ws.row_dimensions[idx].height = 100  # 높이 조정
             ws.column_dimensions['E'].width = 20  # 너비 조정
 
     wb.save(file_name)
@@ -233,7 +239,7 @@ def main():
             all_ids.extend(ids)
             page_num += 1
             id_index += 1
-            time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
+            time.sleep(1)
         else:
             print("데이터를 가져오지 못했습니다.")
             break
@@ -258,7 +264,7 @@ def main():
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
 
-        time.sleep(random.uniform(2, 3))  # 2~3초 랜덤하게 쉬기
+        time.sleep(1)
 
     # 남은 데이터 저장
     if all_details:
