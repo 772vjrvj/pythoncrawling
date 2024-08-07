@@ -20,24 +20,46 @@ def send_post_request(url, payload):
         print(f"HTTP 요청 에러: {e}")
         return None
 
-def parse_html_for_ids(html, page_index):
+def parse_html_for_ids(html, page_index, id_index):
     """HTML을 파싱하여 필요한 ID들을 추출하는 함수"""
     try:
         soup = BeautifulSoup(html, 'html.parser')
-
-        # 정규 표현식 패턴: javascript:dmoelRequst('2018-40');
         pattern = re.compile(r"javascript:dmoelRequst\('([^']+)'\);")
 
         results = []
-        for td in soup.find_all("td", class_="txt_left elli"):
-            a_tag = td.find("a")
-            if a_tag and 'href' in a_tag.attrs:
-                match = pattern.search(a_tag['href'])
-                if match:
-                    results.append(match.group(1))
+        table = soup.find("table", class_="board")
+        tbody = table.find("tbody") if table else None
 
-        print(f"Page {page_index}: Collected IDs - {results}")
-        return results
+        if tbody:
+            for tr in tbody.find_all("tr"):
+                tds = tr.find_all("td")
+                if len(tds) < 6:
+                    continue
+
+                institution_name, homepage = tds[0].text.strip().split('\n', 1) if '\n' in tds[0].text.strip() else (tds[0].text.strip(), '')
+
+                a_tag = tds[0].find("a")
+                if a_tag and 'href' in a_tag.attrs and 'javascript:alert' in a_tag['href']:
+                    id_value = None
+                else:
+                    id_value = pattern.search(a_tag['href']).group(1) if a_tag else None
+
+                institution = {
+                    "교육기관명": clean_text_for_excel(format_text(institution_name.strip())),
+                    "홈페이지": clean_text_for_excel(format_text(homepage.strip())),
+                    "ID": id_value,
+                    "교육종목": clean_text_for_excel(format_text(tds[1].text.strip())),
+                    "활동지역": clean_text_for_excel(format_text(tds[2].text.strip())),
+                    "보유강사": clean_text_for_excel(format_text(tds[3].text.strip())),
+                    "지정일자": clean_text_for_excel(format_text(tds[4].text.strip())),
+                    "연락처": clean_text_for_excel(format_text(tds[5].text.strip())),
+                }
+                id_index += 1
+                print(f"Page {page_index}, Index : {id_index}, Collected Obj - {institution}")
+
+                results.append(institution)
+
+        return results, id_index
     except Exception as e:
         print(f"HTML 파싱 에러: {e}")
         return []
@@ -51,21 +73,22 @@ def clean_text_for_excel(text):
     """엑셀에서 사용 불가능한 문자를 제거하는 함수"""
     return re.sub(r'[\000-\010]|[\013-\014]|[\016-\037]', '', text)
 
-def parse_institution_details(eclstNo, page_num, detail_index):
+def parse_institution_details(institution, detail_index):
+    eclstNo = institution["ID"]
     url = "https://edu.kead.or.kr/aisd/search/EclstProfile.do"
     payload = {'eclstNo': eclstNo, 'pageNum': 1}
     response_text = send_post_request(url, payload)
     if response_text is None:
-        return None
+        return institution
 
     soup = BeautifulSoup(response_text, 'html.parser')
-    details = {}
+    details = institution.copy()
 
     try:
         t_con_sections = soup.find_all("div", class_="t-con")
         if len(t_con_sections) < 5:
             print(f"Expected at least 5 t-con sections for institution {eclstNo}, but found {len(t_con_sections)}")
-            return None
+            return institution
 
         # 교육기관 정보
         profile_section = t_con_sections[0]
@@ -153,7 +176,7 @@ def parse_institution_details(eclstNo, page_num, detail_index):
 
     except Exception as e:
         print(f"상세 정보 파싱 에러: {e} for eclstNo {eclstNo}")
-        return None
+        return institution
 
     print(f"Detail {detail_index}: {details}")
     return details
@@ -180,7 +203,7 @@ def save_to_excel_with_images(all_details, file_name="장애인 교육기관.xls
     # 순서 맞추기: 교육기관 정보 -> 홍보자료 -> 강의소개 -> 기관소개 -> 최근 교육 실적 -> 페이지
     ordered_columns = [
         '교육기관명', '교육종목', '연락처', '이메일', '이미지', '이미지 URL',
-        '한줄소개', '홈페이지', '활동요일', '활동지역', '소재지',
+        '한줄소개', '홈페이지', '활동요일', '활동지역', '소재지', '보유강사', '지정일자',
         '샘플 강의 동영상', '홍보자료1', '홍보자료2',
         '주요연혁', '주요활동',
         '강의소개', '강의목차',
@@ -225,20 +248,20 @@ def save_to_excel_with_images(all_details, file_name="장애인 교육기관.xls
 def main():
     url = "https://edu.kead.or.kr/aisd/search/EclstSearchList.do"
     page_num = 1
-    all_ids = []
-    id_index = 1
+    all_institutions = []
+    id_index = 0
 
     # 교육기관 ID 수집
     while True:
         payload = {'pageNum': page_num, 'pageType': 'SEARCH'}
         response_text = send_post_request(url, payload)
         if response_text is not None:
-            ids = parse_html_for_ids(response_text, id_index)
-            if not ids:
+            institutions, in_id_index = parse_html_for_ids(response_text, page_num, id_index)
+            if not institutions:
                 break
-            all_ids.extend(ids)
+            all_institutions.extend(institutions)
             page_num += 1
-            id_index += 1
+            id_index = in_id_index
             time.sleep(1)
         else:
             print("데이터를 가져오지 못했습니다.")
@@ -246,30 +269,35 @@ def main():
 
     all_details = []
     file_count = 1
-    detail_index = 1
 
     # 각 교육기관에 대한 상세 정보 수집
-    for index, eclstNo in enumerate(all_ids, start=1):
-        print(f"Processing institution {index}: {eclstNo}")
-        details = parse_institution_details(eclstNo, index, detail_index)
+    for index, institution in enumerate(all_institutions, start=1):
+        print(f"Processing institution {index}: {institution['ID']}")
+        if institution['ID'] is not None:
+            details = parse_institution_details(institution, index)
+        else:
+            details = institution  # 기본 데이터를 그대로 사용
         if details:
             all_details.append(details)
-            print(f"Finished processing institution {index}: {eclstNo}")
-            detail_index += 1
+            print(f"Finished processing institution {index}: {institution['ID']}")
 
         # 100개마다 엑셀 파일로 저장
         if index % 100 == 0:
+            print(f"Processing 100개 마다 저장")
             all_details = save_images_to_folder(all_details)
             save_to_excel_with_images(all_details, "장애인 교육기관.xlsx")
             file_count += 1
             all_details = []  # 저장 후 리스트 초기화
+            print(f"Finished 100개 마다 저장")
 
         time.sleep(1)
 
     # 남은 데이터 저장
     if all_details:
+        print(f"Processing 남은 데이터 저장")
         all_details = save_images_to_folder(all_details)
         save_to_excel_with_images(all_details, "장애인 교육기관.xlsx")
+        print(f"Finished 남은 데이터 저장")
 
 if __name__ == "__main__":
     main()
