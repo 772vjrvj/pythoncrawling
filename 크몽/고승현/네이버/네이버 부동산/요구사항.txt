@@ -9,7 +9,7 @@ https://new.land.naver.com/complexes?ms=37.5073921,127.0999192,16&a=OPST:PRE&b=B
 강남구
 송파구
 서초구
-송파구
+영등포구
 용산구
 성동구
 
@@ -44,3 +44,14 @@ https://new.land.naver.com/complexes?ms=37.5073921,127.0999192,16&a=OPST:PRE&b=B
 사무실
 
 입니다
+
+
+매물DB 수집할 때 구단위 구분 + 동단위 구분 까지 추가 부탁드리겠습니다
+
+(수집된 매물 DB에서도 동단위까지 구분할 수 있게)
+
+
+
+그리고 수집된 중개소 셀 옆에 중개소의 주소까지 함께 수집되기 희망합니다! (주소셀추가)
+
+pyinstaller --onefile --noconsole main.py
