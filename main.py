@@ -1,449 +1,30 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-import threading
-import time
-from datetime import timedelta
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import requests
+from tkinterdnd2 import DND_FILES, TkinterDnD
 import pandas as pd
+from tkinter import filedialog, font, messagebox
+import time
 import random
-import json
-
-
-stop_flag = threading.Event()
-
-# 매물유형과 구이름 설정
-property_types = {
-    "아파트": "APT",
-    "오피스텔": "OPST",
-    "빌라": "VL",
-    "아파트분양권": "ABYG",
-    "오피스텔분양권": "OBYG",
-    "재건축": "JGC",
-    "상가": "SG",
-    "사무실": "SMS"
-}
-
-districts = {
-    "강남구": "https://m.land.naver.com/map/37.517408:127.047313:12:1168000000/{property_type}/A1:B1:B2",
-    "송파구": "https://m.land.naver.com/map/37.514592:127.105863:12:1171000000/{property_type}/A1:B1:B2",
-    "서초구": "https://m.land.naver.com/map/37.483564:127.032594:12:1165000000/{property_type}/A1:B1:B2",
-    "용산구": "https://m.land.naver.com/map/37.538825:126.96535:12:1117000000/{property_type}/A1:B1:B2",
-    "성동구": "https://m.land.naver.com/map/37.563475:127.036838:12:1120000000/{property_type}/A1:B1:B2",
-    "영등포구": "https://m.land.naver.com/map/37.526367:126.896213:12:1156000000/{property_type}/A1:B1:B2",
-}
-
-# 각 구별 URL 템플릿
-district_url_templates = {
-    "강남구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.517408&lon=127.047313&btm=37.4257185&lft=126.7865594&top=37.608985&rgt=127.3080666&showR0=&cortarNo=1168000000&sort=rank&page={page}",
-    "송파구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.514592&lon=127.105863&btm=37.4228991&lft=126.8451094&top=37.6061724&rgt=127.3666166&showR0=&cortarNo=1171000000&sort=rank&page={page}",
-    "서초구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.483564&lon=127.032594&btm=37.391833&lft=126.7718404&top=37.5751825&rgt=127.2933476&showR0=&cortarNo=1165000000&sort=rank&page={page}",
-    "용산구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.538825&lon=126.96535&btm=37.4471618&lft=126.7045964&top=37.6303756&rgt=127.2261036&showR0=&cortarNo=1117000000&sort=rank&page={page}",
-    "성동구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.563475&lon=127.036838&btm=37.4718421&lft=126.7760844&top=37.6549953&rgt=127.2975916&showR0=&cortarNo=1120000000&sort=rank&page={page}",
-    "영등포구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.526367&lon=126.896213&btm=37.4346885&lft=126.6354594&top=37.617933&rgt=127.1569666&showR0=&cortarNo=1156000000&sort=rank&page={page}"
-}
-
-
-# 웹드라이버 설정 함수
-def setup_driver():
-    driver = None
-    try:
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Uncomment if you want to run in headless mode
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--incognito")  # Use incognito mode
-
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        chrome_options.add_argument(f'user-agent={user_agent}')
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': '''
-                Object.defineProperty(navigator, 'webdriver', {
-                  get: () => undefined
-                })
-            '''
-        })
-
-        driver.maximize_window()  # Maximize the window
-
-        return driver
-    except WebDriverException as e:
-        new_print(f"Error setting up the WebDriver: {e}")
-        if driver:
-            driver.quit()
-        return None
-
-
-
-def print_article_count(driver, gu_urls):
-    total_count = 0
-    for gu_url in gu_urls:
-        url = gu_url.format(property_type=get_selected_property_types())
-        try:
-            driver.get(url)
-            time.sleep(3)  # Wait for page to load
-            btn_option = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "btn_option._article"))
-            )
-            txt_number = WebDriverWait(btn_option, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "txt_number._count"))
-            )
-            count_str = txt_number.text.replace('+', '').replace(',', '')
-            total_count += int(count_str)
-        except Exception as e:
-            new_print(f"Error while fetching article count for {gu_url}: {e}")
-    return total_count
-
-
-def fetch_article_list(gu, page):
-    rletTpCd = get_selected_property_types()
-    url_template = district_url_templates[gu].format(rletTpCd=rletTpCd, page=page)
-
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-
-    response = requests.get(url_template, headers=headers)
-    if response.status_code != 200:
-        return [], []
-
-    data = response.json()
-    articles = data.get('body', [])
-    if not articles:
-        return [], []
-
-    article_numbers = [article['atclNo'] for article in articles]
-    new_print(f"구 : {gu}, 페이지 : {page}, 대표목록: {article_numbers}")
-    details = fetch_article_details(article_numbers, gu, page)
-
-    return details, article_numbers
-
-
-def save_to_excel(details, mode='w'):
-    file_name = 'real_estate_data.xlsx'
-    try:
-        if mode == 'a':
-            existing_df = pd.read_excel(file_name)
-            new_df = pd.DataFrame(details)
-            df = pd.concat([existing_df, new_df], ignore_index=True)
-        else:
-            df = pd.DataFrame(details)
-        df.to_excel(file_name, index=False)
-    except FileNotFoundError:
-        df = pd.DataFrame(details)
-        df.to_excel(file_name, index=False)
-    new_print(f"엑셀 저장 {file_name}")
-
-
-def fetch_article_details(article_numbers, gu, page):
-    details = []
-    url_template = "https://m.land.naver.com/article/getSameAddrArticle?articleNo={}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-
-    new_print(f"구 : {gu}, 페이지 : {page}, 전체목록 수집중 ...")
-
-    for atclNo in article_numbers:
-        if stop_flag.is_set():  # stop_flag 체크
-            break
-        time.sleep(random.uniform(2, 3))
-        try:
-            response = requests.get(url_template.format(atclNo), headers=headers)
-            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
-        except requests.RequestException as e:
-            new_print(f"Request failed: {e}")
-            continue
-
-        try:
-            datas = response.json()
-            for data in datas:
-                details.append(data['atclNo'])
-        except ValueError:
-            new_print(f"fetch_article_details JSON decode error: {response.text[:100]}")  # 응답이 JSON이 아닌 경우 내용의 일부를 출력
-        except Exception as e:
-            new_print(f"fetch_article_details Unexpected error: {e}")
-
-    new_print(f"구 : {gu}, 페이지 : {page}, 전체목록: {details}")
-
-    return fetch_additional_info(details)
-
-
-def remove_duplicates(details):
-    seen = set()
-    unique_details = []
-    for detail in details:
-        # 물건번호와 URL을 제외한 키들의 튜플 생성
-        detail_key = tuple((k, v) for k, v in detail.items() if k not in ("물건번호", "URL"))
-        if detail_key not in seen:
-            seen.add(detail_key)
-            unique_details.append(detail)
-    return unique_details
-
-
-def fetch_additional_info(details):
-    base_url = "https://fin.land.naver.com/articles/{}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-
-    results = []
-
-    for idx, atclNo in enumerate(details, start=1):
-        if stop_flag.is_set():
-            break
-        time.sleep(random.uniform(2, 3))
-        try:
-            response = requests.get(base_url.format(atclNo), headers=headers)
-            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
-        except requests.RequestException as e:
-            new_print(f"Request failed atclNo : {atclNo}, e : {e}")
-            continue
-
-        try:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            item = soup.select_one('.ArticleSummary_info-complex__uti3v').text if soup.select_one('.ArticleSummary_info-complex__uti3v') else ""
-            item_type = soup.select_one('.ArticleSummary_highlight__zEvdA').text if soup.select_one('.ArticleSummary_highlight__zEvdA') else ""
-            representative = soup.select_one('.ArticleAgent_broker-name__IrVqj').text if soup.select_one('.ArticleAgent_broker-name__IrVqj') else ""
-            agency = soup.select_one('.ArticleAgent_info-agent__tWe2j').text.replace(representative, '').strip() if soup.select_one('.ArticleAgent_info-agent__tWe2j') else ""
-            phone_elements = soup.select('.ArticleAgent_link-telephone__RPK6B')
-            phone_numbers = [phone.text for phone in phone_elements]
-
-            if not item_type:
-                continue
-
-            # 위치 추출
-            location = ""
-            location_area = soup.select_one('.ArticleComplexInfo_list-data__mMqCQ')
-            if location_area:
-                first_li = location_area.find('li')
-                if first_li:
-                    location_element = first_li.select_one('.DataList_definition__d9KY1 .ArticleComplexInfo_area-data__EAsta')
-                    if location_element and location_element.contents:
-                        location = location_element.contents[0].strip()
-
-            dong = ""
-            gu = ""
-            if location:
-                parts = location.split()
-                if len(parts) > 2:
-                    dong = parts[2]
-                    gu = parts[1]
-                else:
-                    dong = ""
-                    gu = ""
-
-            # <script> 태그 내의 JSON 데이터 추출
-            if not location:
-                script_tag = soup.find('script', {'id': '__NEXT_DATA__'})
-                if script_tag:
-                    try:
-                        json_data = json.loads(script_tag.string)
-
-                        # pnu 값 추출
-                        pnu_value = json_data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['result']['address']['legalDivisionNumber']
-
-                        # GET 요청을 보낼 URL 생성
-                        url = f"https://fin.land.naver.com/front-api/v1/legalDivision/infoList?legalDivisionNumbers={pnu_value}"
-
-                        # GET 요청 보내기
-                        response = requests.get(url)
-                        response.raise_for_status()  # 요청이 실패할 경우 예외 발생
-
-                        # 요청이 성공한 경우 응답 데이터를 JSON으로 파싱
-                        response_data = response.json()
-
-                        # result에서 pnu_value 키를 사용하여 해당 데이터를 추출
-                        result_data = response_data['result'].get(pnu_value, {})
-
-                        location = result_data.get('regionName', '')
-                        gu = result_data.get('divisionName', '')
-                        dong = result_data.get('sectorName', '')
-
-                    except (json.JSONDecodeError, KeyError, requests.RequestException) as e:
-                        new_print(f"Error processing JSON data: {e}")
-                        continue
-                else:
-                    new_print("Script tag with id '__NEXT_DATA__' not found.")
-                    continue
-
-            # 중개소 위치 추출
-            agency_location = ""
-            agent_area = soup.select_one('.ArticleAgent_area-agent__DV2Nc')
-            if agent_area:
-                lis = agent_area.find_all('li')
-                for li in lis:
-                    term_element = li.select_one('.DataList_term__Tks7l')
-                    if term_element and term_element.text.strip() == "위치":
-                        location_element = li.select_one('.DataList_definition__d9KY1')
-                        if location_element:
-                            agency_location = location_element.text.strip()
-                            break
-
-            # 최초게재 날짜 추출 및 포맷 변환
-            first_li_article = soup.select_one('.ArticleBaseInfo_article__XXWMw .DataSource_article__6OjKi ul li')
-            published_date = ""
-            if first_li_article and "최초게재" in first_li_article.text:
-                # 공백을 모두 제거하고, "최초게재" 부분을 제거
-                raw_text = first_li_article.text.replace(" ", "").replace("최초게재", "")
-                if raw_text.endswith("."):
-                    raw_text = raw_text[:-1]  # 마지막의 "." 제거
-                published_date = raw_text  # "2024.8.9" 형식으로 남음
-
-
-            result = {
-                "물건번호": atclNo,
-                "구": gu,
-                "동": dong,
-                "물건종류": item_type,
-                "물건": item,
-                "등록일": published_date,
-                "위치": location,
-                "대표자": representative,
-                "중개소이름": agency,
-                "중개소위치": agency_location,
-            }
-
-            # Add phone numbers as separate fields
-            for i, phone_number in enumerate(phone_numbers, start=1):
-                result[f"전화번호 {i}"] = phone_number
-
-            result["URL"] = f"https://fin.land.naver.com/articles/{atclNo}"
-
-            log_message = f"{result}"
-            new_print(log_message)
-
-            results.append(result)
-
-        except Exception as e:
-            new_print(f"Unexpected error for atclNo {atclNo}: {e}")
-            continue
-
-    return remove_duplicates(results)
-
-
-def start_crawling():
-    if not any(property_vars[prop].get() for prop in property_vars):
-        messagebox.showwarning("경고", "매물 유형을 선택하세요.")
-        return
-
-    if not any(district_vars[district].get() for district in district_vars):
-        messagebox.showwarning("경고", "구 이름을 선택하세요.")
-        return
-
-    if start_button["text"] == "시작":
-        start_button.config(text="중지", fg="white", bg="red")
-        stop_flag.clear()  # 중지 플래그 초기화
-        log_text_widget.delete('1.0', tk.END)  # 로그 초기화
-        progress['value'] = 0  # 진행률 초기화
-        progress_label.config(text="진행률: 0%")
-        eta_label.config(text="예상 소요 시간: 00:00:00")
-        threading.Thread(target=actual_crawling_function).start()
-    else:
-        stop_flag.set()  # 중지 플래그 설정
-        new_print("크롤링 중지")
-        start_button.config(text="시작", fg="black", bg="lightgreen")
-
-
-def actual_crawling_function():
-    try:
-        new_print(f"크롤링 시작")
-        selected_gus = get_selected_districts()
-        if not selected_gus:
-            new_print("구이름을 선택해주세요.")
-            return
-
-        driver = setup_driver()
-        if not driver:
-            return
-
-        new_print(f"전체 매물 수 계산중 ...")
-        gu_urls = [districts[gu] for gu in selected_gus]
-        total_count = print_article_count(driver, gu_urls)
-        new_print(f"전체 매물 수 : {total_count}")
-
-        # 전체 매물 수를 계산한 후 진행률 및 예상 소요 시간 초기화
-        progress['maximum'] = total_count
-        progress['value'] = 0
-        progress_label.config(text=f"진행률: 0% (0/{total_count})")
-        remaining_time = total_count * 15
-        eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
-        eta_label.config(text=f"예상 소요 시간: {eta}")
-        progress.update_idletasks()
-
-        driver.quit()
-
-        all_details = []
-
-        for gu in selected_gus:
-            page = 1
-            while True:
-                if stop_flag.is_set():
-                    break
-
-                new_print(f"구 : {gu} , 페이지 : {page}")
-                details, article_numbers = fetch_article_list(gu, page)
-
-                if not details:
-                    break
-
-                all_details.extend(details)
-
-                progress['value'] += len(article_numbers)
-                progress_label.config(text=f"진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
-                remaining_time = (progress['maximum'] - progress['value']) * 15
-                eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
-                eta_label.config(text=f"예상 소요 시간: {eta}")
-                progress.update_idletasks()
-
-                if page % 2 == 0:
-                    try:
-                        save_to_excel(all_details, mode='a')  # 2페이지마다 저장
-                        all_details = []
-                    except Exception as e:
-                        new_print(f"Error saving to Excel on page {page}: {e}")
-
-                page += 1
-            if stop_flag.is_set():
-                break
-        new_print("엑셀 저장중 잠시만 기다려주세요...")
-
-        # 남아있는 데이터를 엑셀에 저장
-        if all_details:
-            save_to_excel(all_details, mode='a')
-            new_print("최종 데이터 저장 완료")
-
-        new_print("크롤링이 완료 되었습니다.")
-        messagebox.showinfo("알림", "크롤링이 완료 되었습니다.")
-
-    except Exception as e:
-        new_print(f"actual_crawling_function Error during crawling: {e}")
-        messagebox.showerror("에러", f"크롤링 중 에러가 발생했습니다: {e}")
-
-
-def get_selected_districts():
-    return [district for district in districts if district_vars[district].get() == 1]
-
-
-def get_selected_property_types():
-    selected_types = [property_types[prop] for prop in property_types if property_vars[prop].get() == 1]
-    if not selected_types:
-        return "APT:OPST:VL:ABYG:OBYG:JGC:SG:SMS"  # 기본값은 전체 선택
-    return ":".join(selected_types)
-
+import threading
+import requests
+from datetime import datetime
+import os
+from tkinter import ttk  # 진행률 표시를 위한 모듈 추가
+
+url_list = []
+extracted_data_list = []  # 모든 데이터 저장용
+stop_flag = False  # 중지를 위한 플래그
+
+def read_excel_file(filepath):
+    df = pd.read_excel(filepath, sheet_name=0)
+    url_list = df.iloc[:, 0].tolist()
+    return url_list
+
+def update_log(url_list):
+    log_text_widget.delete(1.0, tk.END)
+    for url in url_list:
+        log_text_widget.insert(tk.END, url + "\n")
+    log_text_widget.insert(tk.END, f"\n총 {len(url_list)}개의 URL이 있습니다.\n")
+    log_text_widget.see(tk.END)
 
 def new_print(text, level="INFO"):
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -452,71 +33,213 @@ def new_print(text, level="INFO"):
     log_text_widget.insert(tk.END, f"{formatted_text}\n")
     log_text_widget.see(tk.END)
 
+def extract_prdtNo(url):
+    # URL에서 prdtNo 값을 추출하는 함수
+    if "prdtNo=" in url:
+        prdtNo_part = url.split("prdtNo=")[-1]
+        prdtNo = prdtNo_part.split("&")[0]  # prdtNo 값 추출
+        return prdtNo
+    return None
 
-def start_app():
-    global root, property_vars, district_vars, progress, start_button, log_text_widget, progress_label, eta_label
+def start_processing():
+    global stop_flag, extracted_data_list
+    stop_flag = False
+    log_text_widget.delete(1.0, tk.END)  # 기존 로그 화면 초기화
+    headers = {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Connection": "keep-alive",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest"
+    }
 
-    root = tk.Tk()
-    root.title("네이버 부동산 리스트")
-    root.geometry("700x700")  # 화면 너비를 현재 크기의 2/3로 조정
+    current_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
+    extracted_data_list = []
+    total_urls = len(url_list)
+    progress["maximum"] = total_urls
+    start_time = time.time()
 
-    font_large = ('Helvetica', 10)
+    for index, url in enumerate(url_list):
+        if stop_flag:
+            break
+        try:
+            # prdtNo 값을 추출
+            prdtNo = extract_prdtNo(url)
+            if prdtNo:
+                # URL에 따라 request_url 분기
+                if "abcmart" in url:
+                    request_url = f"https://abcmart.a-rt.com/product/info?prdtNo={prdtNo}"
+                    Retailer = "ABC-MART"
+                elif "grandstage" in url:
+                    request_url = f"https://grandstage.a-rt.com/product/info?prdtNo={prdtNo}"
+                    Retailer = "GRAND STAGE"
+                else:
+                    new_print(f"Unsupported URL: {url}", level="ERROR")
+                    continue
 
-    # 옵션 프레임
-    option_frame = tk.Frame(root)
-    option_frame.pack(fill=tk.X, padx=10, pady=10)
+                new_print(f"Requesting URL: {request_url}")
 
-    # 매물유형
-    type_label = tk.Label(option_frame, text="매물유형:", font=font_large)
-    type_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+                # 요청을 보내고 JSON 응답 받기
+                response = requests.get(request_url, headers=headers)
+                response.raise_for_status()  # 요청 오류가 있으면 예외 발생
+                json_data = response.json()
 
-    all_properties_var = tk.IntVar(value=1)  # 전체 선택 기본값을 선택으로 설정
-    property_vars = {prop: tk.IntVar(value=1) for prop in property_types}  # 기본값을 전체 선택으로 설정
-    chk_all_properties = tk.Checkbutton(option_frame, text="전체 선택", variable=all_properties_var,
-                                        command=lambda: select_all(property_vars, all_properties_var), font=font_large)
-    chk_all_properties.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+                # 품절된 옵션과 구매 가능한 옵션을 분리
+                sold_out_options = []
+                available_options = []
+                total_stock_qty = 0
 
-    # 매물유형 체크박스 배치
-    props = list(property_types.keys())
-    for i, prop in enumerate(props):
-        row = (i // 4) + 1
-        col = (i % 4) + 1
-        chk = tk.Checkbutton(option_frame, text=prop, variable=property_vars[prop], font=font_large,
-                             command=lambda: update_all_var(all_properties_var, property_vars))
-        chk.grid(row=row, column=col, padx=5, pady=5, sticky='w')
+                for option in json_data.get("productOption", []):
+                    optnName = option.get("optnName")
+                    totalStockQty = option.get("totalStockQty", 0)
+                    if totalStockQty == 0:
+                        sold_out_options.append(optnName)
+                    else:
+                        available_options.append(optnName)
+                    total_stock_qty += totalStockQty
 
-    # 구이름
-    gu_label = tk.Label(option_frame, text="구이름:", font=font_large)
-    gu_label.grid(row=3, column=0, padx=5, pady=5, sticky='w')
+                # 상품상태 결정
+                product_status = "품절" if total_stock_qty == 0 else "정상"
 
-    all_districts_var = tk.IntVar(value=1)  # 전체 선택 기본값을 선택으로 설정
-    district_vars = {district: tk.IntVar(value=1) for district in districts}  # 기본값을 전체 선택으로 설정
-    chk_all_districts = tk.Checkbutton(option_frame, text="전체 선택", variable=all_districts_var,
-                                       command=lambda: select_all(district_vars, all_districts_var), font=font_large)
-    chk_all_districts.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+                # 판매가 포맷 설정
+                sellAmt = json_data.get("productPrice", {}).get("sellAmt")
+                if sellAmt is not None:
+                    sellAmt = f"{sellAmt:,}"
 
-    col = 2
-    for i, district in enumerate(districts.keys()):  # .keys()를 추가하여 dictionary의 key를 사용
-        row = 4 + (i // 4)  # 행을 4열씩 정렬하도록 변경
-        col = (i % 4) + 1
-        chk = tk.Checkbutton(option_frame, text=district, variable=district_vars[district], font=font_large,
-                             command=lambda: update_all_var(all_districts_var, district_vars))
-        chk.grid(row=row, column=col, padx=5, pady=5, sticky='w')
+                # 빈 배열일 경우 공백으로 설정
+                if not sold_out_options:
+                    sold_out_options = ""
+                if not available_options:
+                    available_options = ""
 
-    # 버튼 프레임
-    button_frame = tk.Frame(root)
-    button_frame.pack(pady=10)
+                # 원하는 값을 추출하여 객체로 구성
+                extracted_data = {
+                    "상품명": json_data.get("prdtName"),
+                    "상품 상태": product_status,
+                    "브랜드": json_data.get("brand", {}).get("brandName"),
+                    "상품상세url": url,
+                    "구매 가능한 옵션": available_options,
+                    "품절된 옵션": sold_out_options,
+                    "최초수집일": current_date,
+                    "스타일코드": json_data.get("styleInfo"),
+                    "판매가": sellAmt,
+                    "색상코드": json_data.get("prdtColorInfo"),
+                    "판매처": Retailer
+                }
 
-    # 시작 및 중지 버튼
-    start_button = tk.Button(button_frame, text="시작", command=start_crawling, fg="black", bg="lightgreen", font=font_large, width=20)
-    start_button.pack()
+                extracted_data_list.append(extracted_data)
 
-    # 버튼 프레임을 중앙에 배치
-    button_frame.pack(anchor=tk.CENTER)
+                new_print(extracted_data, level="DATA")
+            else:
+                new_print(f"Invalid URL or prdtNo not found: {url}", level="ERROR")
+        except Exception as e:
+            new_print(f"WARN processing {url}: {str(e)}", level="WARN")
+            extracted_data = {
+                "상품명": "",
+                "상품 상태": "판매 종료",
+                "브랜드": "",
+                "상품상세url": url,
+                "구매 가능한 옵션": "",
+                "품절된 옵션": "",
+                "수집일": current_date,
+                "스타일코드": "",
+                "판매가": "",
+                "색상코드": "",
+                "판매처": ""
+            }
+            extracted_data_list.append(extracted_data)
+            new_print(extracted_data, level="WARN")
 
+        # 진행률 업데이트
+        progress["value"] = index + 1
+        progress_label.config(text=f"진행률: {int((index + 1) / total_urls * 100)}%")
 
-    # 로그 화면
-    log_label = tk.Label(root, text="로그 화면:", font=font_large)
+        remaining_time = (total_urls - (index + 1)) * 2.5  # 남은 URL 개수 * 2초
+        eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
+
+        time.sleep(random.uniform(2, 3))
+
+    if not stop_flag:
+        save_to_excel(extracted_data_list)
+        new_print("작업 완료.", level="SUCCESS")
+
+def save_to_excel(data):
+    df = pd.DataFrame(data)
+    filename = "ABC마트 데이터.xlsx"
+    if os.path.exists(filename):
+        i = 1
+        while os.path.exists(f"ABC마트 데이터 ({i}).xlsx"):
+            i += 1
+        filename = f"ABC마트 데이터 ({i}).xlsx"
+
+    df.to_excel(filename, index=False)
+    new_print(f"Data saved to {filename}", level="INFO")
+
+def on_drop(event):
+    global url_list  # url_list 변수를 전역으로 선언
+    filepath = event.data.strip('{}')
+    url_list = read_excel_file(filepath)
+    update_log(url_list)
+    check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
+def browse_file():
+    global url_list  # url_list 변수를 전역으로 선언
+    filepath = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
+    if filepath:
+        url_list = read_excel_file(filepath)
+        update_log(url_list)
+        check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
+def toggle_start_stop():
+    if not url_list:
+        messagebox.showwarning("경고", "목록을 찾을 수 없습니다.")
+        return
+
+    if start_button.config('text')[-1] == '시작':
+        start_button.config(text="중지", bg="red", fg="white")
+        threading.Thread(target=start_processing).start()
+    else:
+        stop_processing()
+
+def stop_processing():
+    global stop_flag, url_list
+    stop_flag = True
+    url_list = []  # 배열 초기화
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+
+def check_list_and_toggle_button():
+    if url_list:
+        start_button.config(state=tk.NORMAL)
+    else:
+        start_button.config(state=tk.DISABLED)
+
+def main():
+    global log_text_widget, start_button, progress, progress_label, eta_label
+
+    root = TkinterDnD.Tk()
+    root.title("ABC마트 데이터 수집 프로그램")
+    root.geometry("600x600")
+
+    font_large = font.Font(size=10)
+
+    btn_browse = tk.Button(root, text="엑셀 파일 선택", command=browse_file, font=font_large, width=20)
+    btn_browse.pack(pady=10)
+
+    lbl_or = tk.Label(root, text="또는", font=font_large)
+    lbl_or.pack(pady=5)
+
+    lbl_drop = tk.Label(root, text="여기에 파일을 드래그 앤 드롭하세요", relief="solid", width=40, height=5, font=font_large, bg="white")
+    lbl_drop.pack(pady=10)
+
+    lbl_drop.drop_target_register(DND_FILES)
+    lbl_drop.dnd_bind('<<Drop>>', on_drop)
+
+    # 시작 버튼
+    start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
+    start_button.pack(pady=10)
+
+    log_label = tk.Label(root, text="로그 화면", font=font_large)
     log_label.pack(fill=tk.X, padx=10)
 
     log_frame = tk.Frame(root)
@@ -534,12 +257,12 @@ def start_app():
     x_scrollbar.config(command=log_text_widget.xview)
     y_scrollbar.config(command=log_text_widget.yview)
 
-
     # 진행률
     progress_frame = tk.Frame(root)
     progress_frame.pack(fill=tk.X, padx=10, pady=10)
+
     progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
-    eta_label = tk.Label(progress_frame, text="예상 소요 시간: 00:00:00", font=font_large)
+    eta_label = tk.Label(progress_frame, text="남은 시간: 00:00:00", font=font_large)
 
     progress_label.pack(side=tk.TOP, padx=5)
     eta_label.pack(side=tk.TOP, padx=5)
@@ -551,19 +274,5 @@ def start_app():
 
     root.mainloop()
 
-
-def select_all(vars_dict, all_var):
-    value = all_var.get()
-    for var in vars_dict.values():
-        var.set(value)
-
-
-def update_all_var(all_var, vars_dict):
-    if all(v.get() for v in vars_dict.values()):
-        all_var.set(1)
-    else:
-        all_var.set(0)
-
-
 if __name__ == "__main__":
-    start_app()
+    main()

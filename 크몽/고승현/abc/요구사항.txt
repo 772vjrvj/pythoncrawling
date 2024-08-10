@@ -49,3 +49,20 @@ abc마트와 그랜드스테이지 두가지 두가지 분류로 나뉩니다.
 마지막 수집일
 
 이 부분만 사이트에 어디에 있는지만 표시해주시면 될것 같습니다
+
+
+
+
+프로그램 작동 방식에 대해서 문의 드려봅니다.
+제가 원하는 상품만도 가능할까요?
+예를 들어 아래 세가지 상품을 크롤링할때
+목록 넣는 폼이 있고
+그 폼에 상품 상세페이지 링크를 넣으며
+목록에 넣어져 있는 상품만 크롤링 되도록 도 가능할까요?
+
+https://grandstage.a-rt.com/product/new?prdtNo=1020104649
+https://grandstage.a-rt.com/product/new?prdtNo=1020089209&page=1
+https://grandstage.a-rt.com/product/new?prdtNo=1020105427
+https://grandstage.a-rt.com/product/new?prdtNo=1020101338&page=1
+
+품절
