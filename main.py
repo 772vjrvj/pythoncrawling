@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import random
+import json
+
 
 stop_flag = threading.Event()
 
@@ -49,8 +51,10 @@ district_url_templates = {
     "영등포구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.526367&lon=126.896213&btm=37.4346885&lft=126.6354594&top=37.617933&rgt=127.1569666&showR0=&cortarNo=1156000000&sort=rank&page={page}"
 }
 
+
 # 웹드라이버 설정 함수
 def setup_driver():
+    driver = None
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Uncomment if you want to run in headless mode
@@ -78,7 +82,10 @@ def setup_driver():
         return driver
     except WebDriverException as e:
         new_print(f"Error setting up the WebDriver: {e}")
+        if driver:
+            driver.quit()
         return None
+
 
 
 def print_article_count(driver, gu_urls):
@@ -111,12 +118,12 @@ def fetch_article_list(gu, page):
 
     response = requests.get(url_template, headers=headers)
     if response.status_code != 200:
-        return []
+        return [], []
 
     data = response.json()
     articles = data.get('body', [])
     if not articles:
-        return []
+        return [], []
 
     article_numbers = [article['atclNo'] for article in articles]
     new_print(f"구 : {gu}, 페이지 : {page}, 대표목록: {article_numbers}")
@@ -151,16 +158,28 @@ def fetch_article_details(article_numbers, gu, page):
     new_print(f"구 : {gu}, 페이지 : {page}, 전체목록 수집중 ...")
 
     for atclNo in article_numbers:
+        if stop_flag.is_set():  # stop_flag 체크
+            break
         time.sleep(random.uniform(2, 3))
-        response = requests.get(url_template.format(atclNo), headers=headers)
-        if response.status_code == 200:
+        try:
+            response = requests.get(url_template.format(atclNo), headers=headers)
+            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+        except requests.RequestException as e:
+            new_print(f"Request failed: {e}")
+            continue
+
+        try:
             datas = response.json()
             for data in datas:
                 details.append(data['atclNo'])
+        except ValueError:
+            new_print(f"fetch_article_details JSON decode error: {response.text[:100]}")  # 응답이 JSON이 아닌 경우 내용의 일부를 출력
+        except Exception as e:
+            new_print(f"fetch_article_details Unexpected error: {e}")
 
     new_print(f"구 : {gu}, 페이지 : {page}, 전체목록: {details}")
 
-    return fetch_additional_info(details, gu)
+    return fetch_additional_info(details)
 
 
 def remove_duplicates(details):
@@ -175,7 +194,7 @@ def remove_duplicates(details):
     return unique_details
 
 
-def fetch_additional_info(details, gu):
+def fetch_additional_info(details):
     base_url = "https://fin.land.naver.com/articles/{}"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -187,8 +206,14 @@ def fetch_additional_info(details, gu):
         if stop_flag.is_set():
             break
         time.sleep(random.uniform(2, 3))
-        response = requests.get(base_url.format(atclNo), headers=headers)
-        if response.status_code == 200:
+        try:
+            response = requests.get(base_url.format(atclNo), headers=headers)
+            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+        except requests.RequestException as e:
+            new_print(f"Request failed atclNo : {atclNo}, e : {e}")
+            continue
+
+        try:
             soup = BeautifulSoup(response.text, 'html.parser')
             item = soup.select_one('.ArticleSummary_info-complex__uti3v').text if soup.select_one('.ArticleSummary_info-complex__uti3v') else ""
             item_type = soup.select_one('.ArticleSummary_highlight__zEvdA').text if soup.select_one('.ArticleSummary_highlight__zEvdA') else ""
@@ -196,6 +221,9 @@ def fetch_additional_info(details, gu):
             agency = soup.select_one('.ArticleAgent_info-agent__tWe2j').text.replace(representative, '').strip() if soup.select_one('.ArticleAgent_info-agent__tWe2j') else ""
             phone_elements = soup.select('.ArticleAgent_link-telephone__RPK6B')
             phone_numbers = [phone.text for phone in phone_elements]
+
+            if not item_type:
+                continue
 
             # 위치 추출
             location = ""
@@ -206,6 +234,51 @@ def fetch_additional_info(details, gu):
                     location_element = first_li.select_one('.DataList_definition__d9KY1 .ArticleComplexInfo_area-data__EAsta')
                     if location_element and location_element.contents:
                         location = location_element.contents[0].strip()
+
+            dong = ""
+            gu = ""
+            if location:
+                parts = location.split()
+                if len(parts) > 2:
+                    dong = parts[2]
+                    gu = parts[1]
+                else:
+                    dong = ""
+                    gu = ""
+
+            # <script> 태그 내의 JSON 데이터 추출
+            if not location:
+                script_tag = soup.find('script', {'id': '__NEXT_DATA__'})
+                if script_tag:
+                    try:
+                        json_data = json.loads(script_tag.string)
+
+                        # pnu 값 추출
+                        pnu_value = json_data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['result']['address']['legalDivisionNumber']
+
+                        # GET 요청을 보낼 URL 생성
+                        url = f"https://fin.land.naver.com/front-api/v1/legalDivision/infoList?legalDivisionNumbers={pnu_value}"
+
+                        # GET 요청 보내기
+                        response = requests.get(url)
+                        response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+
+                        # 요청이 성공한 경우 응답 데이터를 JSON으로 파싱
+                        response_data = response.json()
+
+                        # result에서 pnu_value 키를 사용하여 해당 데이터를 추출
+                        result_data = response_data['result'].get(pnu_value, {})
+
+                        location = result_data.get('regionName', '')
+                        gu = result_data.get('divisionName', '')
+                        dong = result_data.get('sectorName', '')
+
+                    except (json.JSONDecodeError, KeyError, requests.RequestException) as e:
+                        new_print(f"Error processing JSON data: {e}")
+                        continue
+                else:
+                    new_print("Script tag with id '__NEXT_DATA__' not found.")
+                    continue
 
             # 중개소 위치 추출
             agency_location = ""
@@ -220,8 +293,16 @@ def fetch_additional_info(details, gu):
                             agency_location = location_element.text.strip()
                             break
 
-            # 동 추출
-            dong = location.split()[2] if location != "" else ""
+            # 최초게재 날짜 추출 및 포맷 변환
+            first_li_article = soup.select_one('.ArticleBaseInfo_article__XXWMw .DataSource_article__6OjKi ul li')
+            published_date = ""
+            if first_li_article and "최초게재" in first_li_article.text:
+                # 공백을 모두 제거하고, "최초게재" 부분을 제거
+                raw_text = first_li_article.text.replace(" ", "").replace("최초게재", "")
+                if raw_text.endswith("."):
+                    raw_text = raw_text[:-1]  # 마지막의 "." 제거
+                published_date = raw_text  # "2024.8.9" 형식으로 남음
+
 
             result = {
                 "물건번호": atclNo,
@@ -229,10 +310,11 @@ def fetch_additional_info(details, gu):
                 "동": dong,
                 "물건종류": item_type,
                 "물건": item,
+                "등록일": published_date,
                 "위치": location,
                 "대표자": representative,
                 "중개소이름": agency,
-                "중개소위치": agency_location
+                "중개소위치": agency_location,
             }
 
             # Add phone numbers as separate fields
@@ -245,6 +327,10 @@ def fetch_additional_info(details, gu):
             new_print(log_message)
 
             results.append(result)
+
+        except Exception as e:
+            new_print(f"Unexpected error for atclNo {atclNo}: {e}")
+            continue
 
     return remove_duplicates(results)
 
@@ -293,7 +379,7 @@ def actual_crawling_function():
         progress['maximum'] = total_count
         progress['value'] = 0
         progress_label.config(text=f"진행률: 0% (0/{total_count})")
-        remaining_time = total_count * 10
+        remaining_time = total_count * 15
         eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
         eta_label.config(text=f"예상 소요 시간: {eta}")
         progress.update_idletasks()
@@ -318,21 +404,22 @@ def actual_crawling_function():
 
                 progress['value'] += len(article_numbers)
                 progress_label.config(text=f"진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
-                remaining_time = (progress['maximum'] - progress['value']) * 2.5
+                remaining_time = (progress['maximum'] - progress['value']) * 15
                 eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
                 eta_label.config(text=f"예상 소요 시간: {eta}")
                 progress.update_idletasks()
 
                 if page % 2 == 0:
-                    save_to_excel(all_details, mode='a')  # 2페이지마다 저장
-                    all_details = []
+                    try:
+                        save_to_excel(all_details, mode='a')  # 2페이지마다 저장
+                        all_details = []
+                    except Exception as e:
+                        new_print(f"Error saving to Excel on page {page}: {e}")
 
                 page += 1
-
             if stop_flag.is_set():
                 break
-
-        new_print("엑셀 저장중...")
+        new_print("엑셀 저장중 잠시만 기다려주세요...")
 
         # 남아있는 데이터를 엑셀에 저장
         if all_details:
@@ -341,8 +428,9 @@ def actual_crawling_function():
 
         new_print("크롤링이 완료 되었습니다.")
         messagebox.showinfo("알림", "크롤링이 완료 되었습니다.")
+
     except Exception as e:
-        new_print(f"Error during crawling: {e}")
+        new_print(f"actual_crawling_function Error during crawling: {e}")
         messagebox.showerror("에러", f"크롤링 중 에러가 발생했습니다: {e}")
 
 
@@ -357,9 +445,11 @@ def get_selected_property_types():
     return ":".join(selected_types)
 
 
-def new_print(text):
-    print(text)
-    log_text_widget.insert(tk.END, f"{text}\n")
+def new_print(text, level="INFO"):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_text = f"[{timestamp}] [{level}] {text}"
+    print(formatted_text)
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
     log_text_widget.see(tk.END)
 
 
