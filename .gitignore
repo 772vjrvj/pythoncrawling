@@ -61,7 +61,7 @@ coverage.xml
 
 # Environments
 .env
-.venv
+.venv/
 env/
 venv/
 ENV/
@@ -93,4 +93,16 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Exclude Excel files
 *.xlsx
+
+# Exclude Node.js modules
+node_modules/
+
+# Exclude image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.svg
