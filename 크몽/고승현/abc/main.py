@@ -6,9 +6,9 @@ import time
 import random
 import threading
 import requests
-from datetime import datetime
 import os
 from tkinter import ttk  # 진행률 표시를 위한 모듈 추가
+import ctypes
 
 url_list = []
 extracted_data_list = []  # 모든 데이터 저장용
@@ -42,7 +42,7 @@ def extract_prdtNo(url):
     return None
 
 def start_processing():
-    global stop_flag, extracted_data_list
+    global stop_flag, extracted_data_list, root
     stop_flag = False
     log_text_widget.delete(1.0, tk.END)  # 기존 로그 화면 초기화
     headers = {
@@ -54,11 +54,9 @@ def start_processing():
         "X-Requested-With": "XMLHttpRequest"
     }
 
-    current_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
     extracted_data_list = []
     total_urls = len(url_list)
     progress["maximum"] = total_urls
-    start_time = time.time()
 
     for index, url in enumerate(url_list):
         if stop_flag:
@@ -121,7 +119,6 @@ def start_processing():
                     "상품상세url": url,
                     "구매 가능한 옵션": available_options,
                     "품절된 옵션": sold_out_options,
-                    "최초수집일": current_date,
                     "스타일코드": json_data.get("styleInfo"),
                     "판매가": sellAmt,
                     "색상코드": json_data.get("prdtColorInfo"),
@@ -142,7 +139,6 @@ def start_processing():
                 "상품상세url": url,
                 "구매 가능한 옵션": "",
                 "품절된 옵션": "",
-                "수집일": current_date,
                 "스타일코드": "",
                 "판매가": "",
                 "색상코드": "",
@@ -163,6 +159,54 @@ def start_processing():
     if not stop_flag:
         save_to_excel(extracted_data_list)
         new_print("작업 완료.", level="SUCCESS")
+        flash_window(root)
+        messagebox.showinfo("알림", "작업이 완료되었습니다.")
+        stop_flash_window(root)  # 메시지박스 확인 후 깜빡임 중지
+
+
+flashing = True  # 깜빡임 상태를 관리하는 플래그
+
+def flash_window(root):
+    global flashing
+
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    FLASHW_ALL = 3  # 모든 플래시
+    hwnd = root.winfo_id()  # Tkinter 창의 윈도우 핸들 얻기
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, FLASHW_ALL, 0, 0)
+
+    def flash():
+        while flashing:
+            ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+            time.sleep(0.5)  # 0.5초 간격으로 깜빡임
+
+    threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
+
+
+
+def stop_flash_window(root):
+    global flashing
+    flashing = False
+
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    hwnd = root.winfo_id()
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
+    ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+
+
 
 def save_to_excel(data):
     df = pd.DataFrame(data)
@@ -214,8 +258,10 @@ def check_list_and_toggle_button():
     else:
         start_button.config(state=tk.DISABLED)
 
+
 def main():
-    global log_text_widget, start_button, progress, progress_label, eta_label
+    global log_text_widget, start_button, progress, progress_label, eta_label, root
+
 
     root = TkinterDnD.Tk()
     root.title("ABC마트 데이터 수집 프로그램")

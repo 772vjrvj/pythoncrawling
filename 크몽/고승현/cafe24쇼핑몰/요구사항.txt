@@ -11,21 +11,35 @@
 - 카테고리(메뉴)와 상품정보를 api 를 사용해서 불러오는것이 확인되었습니다. 저희가 이전에도 외주 맡겼을때 스마트스토어를 api로 사용해서 불러오다 막혀서 재개발해야한적이 있어서 api 사용하지 않고 순수 크롤링으로만 정보가 불러와져야 합니다.
 
 2. 테스트결과:
-바온
+■ 바온
+https://www.ba-on.com/
 특이사항 없음
 
-베이델리
-배너이미지 URL을 가져오지 못함
+■ 베이델리
+https://beidelli.com/
+배너이미지 URL을 가져오지 못함  - 배너에 이미지가 없음
 
-데일리쥬
+■ 데일리쥬
+https://dailyjou.com/
 상품이미지에 http:이 한번더 붙는 케이스가 있음
 예) "http:https://cafe24img.poxo.com/cocomimi93/web/product/extra/small/202009/1642c45ca1f60f3910536b205f64c24a.jpg";
 
-체리미
+■ 체리미
+https://cherryme.kr/
 특이사항 없음
 
-핫핑
-배너정보 없음
+■ 핫핑
+https://www.hotping.co.kr/
+배너정보 없음 - 실제로 배너가 없음
+
 
 3. 추가 수정사항
 ㄴ 작업물 파일 첨부
+
+
+
+
+
+
+
+
