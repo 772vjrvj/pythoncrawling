@@ -1,0 +1,511 @@
+[
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=214",
+    "name": "바캉스룩🌊🌴",
+    "param": "?cate_no=214",
+    "cate_no": 214,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": []
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=24",
+    "name": "NEW 5% + 앱쿠폰 10%",
+    "param": "?cate_no=24",
+    "cate_no": 24,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": []
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=50",
+    "name": "BEST",
+    "param": "?cate_no=50",
+    "cate_no": 50,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": []
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=86",
+    "name": "D,CHIVE",
+    "param": "?cate_no=86",
+    "cate_no": 86,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/bottom/122/",
+        "name": "BOTTOM",
+        "param": "?cate_no=122",
+        "cate_no": 122,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/top/123/",
+        "name": "TOP",
+        "param": "?cate_no=123",
+        "cate_no": 123,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/outer/121/",
+        "name": "OUTER",
+        "param": "?cate_no=121",
+        "cate_no": 121,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/dressskirt/124/",
+        "name": "DRESS&SKIRT",
+        "param": "?cate_no=124",
+        "cate_no": 124,
+        "parent_cate_no": 86,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=26",
+    "name": "TOP",
+    "param": "?cate_no=26",
+    "cate_no": 26,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/%ED%8B%B0%EC%85%94%EC%B8%A0/46/",
+        "name": "티셔츠",
+        "param": "?cate_no=46",
+        "cate_no": 46,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%85%94%EC%B8%A0/51/",
+        "name": "셔츠",
+        "param": "?cate_no=51",
+        "cate_no": 51,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%B8%94%EB%9D%BC%EC%9A%B0%EC%8A%A4/47/",
+        "name": "블라우스",
+        "param": "?cate_no=47",
+        "cate_no": 47,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%8A%AC%EB%A6%AC%EB%B8%8C%EB%A6%AC%EC%8A%A4/166/",
+        "name": "슬리브리스",
+        "param": "?cate_no=166",
+        "cate_no": 166,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%8B%88%ED%8A%B8/55/",
+        "name": "니트",
+        "param": "?cate_no=55",
+        "cate_no": 55,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%A7%A8%ED%88%AC%EB%A7%A8%ED%9B%84%EB%93%9C/89/",
+        "name": "맨투맨/후드",
+        "param": "?cate_no=89",
+        "cate_no": 89,
+        "parent_cate_no": 26,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=27",
+    "name": "BOTTOM",
+    "param": "?cate_no=27",
+    "cate_no": 27,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%8D%B0%EB%8B%98/148/",
+        "name": "데님",
+        "param": "?cate_no=148",
+        "cate_no": 148,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%ED%8A%B8%EB%A0%88%EC%9D%B4%EB%8B%9D/150/",
+        "name": "트레이닝",
+        "param": "?cate_no=150",
+        "cate_no": 150,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%BD%94%ED%8A%BC/82/",
+        "name": "코튼",
+        "param": "?cate_no=82",
+        "cate_no": 82,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%8A%AC%EB%9E%99%EC%8A%A4/84/",
+        "name": "슬랙스",
+        "param": "?cate_no=84",
+        "cate_no": 84,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%87%BC%EC%B8%A0/85/",
+        "name": "쇼츠",
+        "param": "?cate_no=85",
+        "cate_no": 85,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/etc/245/",
+        "name": "etc.",
+        "param": "?cate_no=245",
+        "cate_no": 245,
+        "parent_cate_no": 27,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=25",
+    "name": "OUTER",
+    "param": "?cate_no=25",
+    "cate_no": 25,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/%EA%B0%80%EB%94%94%EA%B1%B4/44/",
+        "name": "가디건",
+        "param": "?cate_no=44",
+        "cate_no": 44,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%A0%90%ED%8D%BC/45/",
+        "name": "점퍼",
+        "param": "?cate_no=45",
+        "cate_no": 45,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%9E%90%EC%BC%93/53/",
+        "name": "자켓",
+        "param": "?cate_no=53",
+        "cate_no": 53,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%BD%94%ED%8A%B8/52/",
+        "name": "코트",
+        "param": "?cate_no=52",
+        "cate_no": 52,
+        "parent_cate_no": 25,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=28",
+    "name": "DRESS&SKIRT",
+    "param": "?cate_no=28",
+    "cate_no": 28,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%8A%A4%EC%BB%A4%ED%8A%B8/48/",
+        "name": "스커트",
+        "param": "?cate_no=48",
+        "cate_no": 48,
+        "parent_cate_no": 28,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%9B%90%ED%94%BC%EC%8A%A4/80/",
+        "name": "원피스",
+        "param": "?cate_no=80",
+        "cate_no": 80,
+        "parent_cate_no": 28,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=220",
+    "name": "BAG & SHOES",
+    "param": "?cate_no=220",
+    "cate_no": 220,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%B0%B1/221/",
+        "name": "백",
+        "param": "?cate_no=221",
+        "cate_no": 221,
+        "parent_cate_no": 220,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%8A%88%EC%A6%88/222/",
+        "name": "슈즈",
+        "param": "?cate_no=222",
+        "cate_no": 222,
+        "parent_cate_no": 220,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=67",
+    "name": "ACC",
+    "param": "?cate_no=67",
+    "cate_no": 67,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%AA%A8%EC%9E%90%ED%97%A4%EC%96%B4/223/",
+        "name": "모자/헤어",
+        "param": "?cate_no=223",
+        "cate_no": 223,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%B2%A8%ED%8A%B8/224/",
+        "name": "벨트",
+        "param": "?cate_no=224",
+        "cate_no": 224,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EB%A8%B8%ED%94%8C%EB%9F%AC%EC%9E%A5%EA%B0%91/226/",
+        "name": "머플러/장갑",
+        "param": "?cate_no=226",
+        "cate_no": 226,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%96%91%EB%A7%90%EC%8A%A4%ED%83%80%ED%82%B9/225/",
+        "name": "양말/스타킹",
+        "param": "?cate_no=225",
+        "cate_no": 225,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%95%88%EA%B2%BD%EC%84%A0%EA%B8%80%EB%9D%BC%EC%8A%A4/227/",
+        "name": "안경/선글라스",
+        "param": "?cate_no=227",
+        "cate_no": 227,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%A3%BC%EC%96%BC%EB%A6%AC/99/",
+        "name": "주얼리",
+        "param": "?cate_no=99",
+        "cate_no": 99,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%9D%B4%EB%84%88%EC%9B%A8%EC%96%B4/138/",
+        "name": "이너웨어",
+        "param": "?cate_no=138",
+        "cate_no": 138,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/%EC%8A%A4%EC%9C%94%EC%9B%A8%EC%96%B4/164/",
+        "name": "스윔웨어",
+        "param": "?cate_no=164",
+        "cate_no": 164,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/etc/228/",
+        "name": "etc.",
+        "param": "?cate_no=228",
+        "cate_no": 228,
+        "parent_cate_no": 67,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=91",
+    "name": "오늘출발🚚",
+    "param": "?cate_no=91",
+    "cate_no": 91,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/outer/101/",
+        "name": "OUTER",
+        "param": "?cate_no=101",
+        "cate_no": 101,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/top/102/",
+        "name": "TOP",
+        "param": "?cate_no=102",
+        "cate_no": 102,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/bottom/103/",
+        "name": "BOTTOM",
+        "param": "?cate_no=103",
+        "cate_no": 103,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/dressskirt/104/",
+        "name": "DRESS&SKIRT",
+        "param": "?cate_no=104",
+        "cate_no": 104,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/acc/105/",
+        "name": "ACC",
+        "param": "?cate_no=105",
+        "cate_no": 105,
+        "parent_cate_no": 91,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=168",
+    "name": "RESTOCK 10%할인",
+    "param": "?cate_no=168",
+    "cate_no": 168,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": []
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=73",
+    "name": "UNISEX",
+    "param": "?cate_no=73",
+    "cate_no": 73,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": [
+      {
+        "link_product_list": "https://dailyjou.com/category/outer/158/",
+        "name": "OUTER",
+        "param": "?cate_no=158",
+        "cate_no": 158,
+        "parent_cate_no": 73,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/top/160/",
+        "name": "TOP",
+        "param": "?cate_no=160",
+        "cate_no": 160,
+        "parent_cate_no": 73,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      },
+      {
+        "link_product_list": "https://dailyjou.com/category/bottoms/161/",
+        "name": "BOTTOMS",
+        "param": "?cate_no=161",
+        "cate_no": 161,
+        "parent_cate_no": 73,
+        "design_page_url": "product/list.html",
+        "data_list": []
+      }
+    ]
+  },
+  {
+    "link_product_list": "https://dailyjou.com/product/list.html?cate_no=146",
+    "name": "SET",
+    "param": "?cate_no=146",
+    "cate_no": 146,
+    "parent_cate_no": 1,
+    "design_page_url": "product/list.html",
+    "data_list": []
+  }
+]
+
+
+
+
+

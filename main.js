@@ -9,7 +9,7 @@ const moment = require('moment');
  */
 async function launchBrowser() {
     return await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: [
             '--disable-gpu',
             '--no-sandbox',
@@ -304,10 +304,152 @@ function buildHierarchyWithParentReferences(data) {
  * @param {string} url - API 요청을 위한 기본 URL.
  * @returns {Promise<Array>} 가져온 카테고리 데이터 배열.
  */
-async function fetchCategoryData(url) {
+async function fetchCategoryData(url, page) {
     try {
-        const response = await axios.get(url + '/exec/front/Product/SubCategory');
-        return response.data;
+        // 페이지 로드
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+        // 부모 카테고리 데이터 추출
+        const categoryData = await page.evaluate(async () => {
+            const categories = [];
+
+            // .xans-element-.xans-layout.xans-layout-category 요소를 배열로 받음
+            const categoryWrappers = document.querySelectorAll('.xans-element-.xans-layout.xans-layout-category');
+
+            if (categoryWrappers.length > 0) {
+                // 첫 번째 요소 안의 class="xans-record-"인 li들을 선택
+                const categoryElements = Array.from(categoryWrappers[0].querySelectorAll('li'))
+                    .filter(li => {
+                        const style = li.getAttribute('style');
+                        const hasDisplayNone = style && style.includes('display:none');
+                        const hasContent = li.innerText.trim().length > 0;
+                        return !hasDisplayNone && hasContent;
+                    });
+
+                for (const categoryElement of categoryElements) {
+                    // li 바로 아래 있는 a 태그 href 추출
+                    const mainLink = categoryElement.querySelector(':scope > a'); // :scope를 사용하여 li 바로 아래의 a 태그를 선택
+                    if (mainLink && mainLink.href) {
+                        const mainHref = mainLink.href;
+
+                        // href에서 cate_no 값을 추출하는 로직
+                        let parentCateNo;
+                        const cateNoMatch = mainHref.match(/cate_no=(\d+)/);
+                        if (cateNoMatch) {
+                            parentCateNo = parseInt(cateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
+                        } else {
+                            parentCateNo = parseInt(mainHref.split('/').slice(-2, -1)[0], 10) || 1; // 기존 방식 사용
+                        }
+
+                        // 부모 카테고리도 categories에 추가
+                        categories.push({
+                            link_product_list: mainHref,
+                            name: mainLink.innerText.trim(),
+                            param: `?cate_no=${parentCateNo}`,
+                            cate_no: parentCateNo,
+                            parent_cate_no: 1, // 부모 카테고리는 최상위이므로 parent_cate_no는 1 설정
+                            design_page_url: "product/list.html",
+                            data_list: [] // 서브 카테고리를 저장할 배열
+                        });
+                    }
+                }
+            }
+
+            return categories;
+        });
+
+        const addCategory = []
+
+        // 각 부모 카테고리의 서브 카테고리 추출
+        for (const category of categoryData) {
+            const categoryUrl = `${url}/${category.design_page_url}${category.param}`;
+            await page.goto(categoryUrl, { waitUntil: 'domcontentloaded' });
+
+            // 서브 카테고리 데이터 추출
+            const subCategories = await page.evaluate(async (parentCateNo) => {
+                // 서브 카테고리가 로드될 때까지 대기
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 2초 대기, 상황에 따라 조정 가능
+
+                const subCategoryLinks = [];
+                // menuCategory 안에 xans-element- xans-product xans-product-displaycategory xans-record- 클래스를 가진 요소를 찾기
+                const productElements = Array.from(document.querySelectorAll('.menuCategory .xans-element-.xans-product.xans-product-displaycategory.xans-record-'));
+
+                productElements.forEach(async (productElement) => {
+                    // li 바로 아래 있는 a 태그 선택
+                    const subLink = productElement.querySelector(':scope > a'); // :scope를 사용하여 li 바로 아래의 a 태그를 선택
+                    if (subLink) {
+                        const name = subLink.innerText.trim();
+                        const linkProductList = subLink.href;
+
+                        // 서브 카테고리 번호 추출
+                        let cateNo;
+                        const subCateNoMatch = linkProductList.match(/cate_no=(\d+)/);
+                        if (subCateNoMatch) {
+                            cateNo = parseInt(subCateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
+                        } else {
+                            cateNo = parseInt(linkProductList.split('/').slice(-2, -1)[0], 10); // 기존 방식 사용
+                        }
+
+                        // 서브 카테고리 추가
+                        subCategoryLinks.push({
+                            link_product_list: linkProductList,
+                            name,
+                            param: `?cate_no=${cateNo}`,
+                            cate_no: cateNo,
+                            parent_cate_no: parentCateNo,
+                            design_page_url: "product/list.html"
+                        });
+
+                        // await new Promise(resolve => setTimeout(resolve, 500)); // 1초 대기, 상황에 따라 조정 가능
+
+                        // 마우스 오버 이벤트 발생
+                        // subLink.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+
+                        // 마우스 오버 후에 동료 요소 중 class="xans-element- xans-product xans-product-children"인 요소가 생길 때까지 대기
+                        // await new Promise(resolve => setTimeout(resolve, 500)); // 1초 대기, 상황에 따라 조정 가능
+
+                        // 서브 서브 카테고리 처리
+                        const subSubCategoryElements = productElement.querySelectorAll('.xans-element-.xans-product.xans-product-children .xans-record- a');
+                        const subSubCategoryLinks = [];
+
+                        subSubCategoryElements.forEach(subSubLink => {
+                            const subSubName = subSubLink.innerText.trim();
+                            const subSubLinkProductList = subSubLink.href;
+
+                            // 서브 서브 카테고리 번호 추출
+                            let subSubCateNo;
+                            const subSubCateNoMatch = subSubLinkProductList.match(/cate_no=(\d+)/);
+                            if (subSubCateNoMatch) {
+                                subSubCateNo = parseInt(subSubCateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
+                            } else {
+                                subSubCateNo = parseInt(subSubLinkProductList.split('/').slice(-2, -1)[0], 10); // 기존 방식 사용
+                            }
+
+                            subSubCategoryLinks.push({
+                                link_product_list: subSubLinkProductList,
+                                name: subSubName,
+                                param: `?cate_no=${subSubCateNo}`,
+                                cate_no: subSubCateNo,
+                                parent_cate_no: cateNo, // 상위 카테고리 번호를 parent_cate_no로 설정
+                                design_page_url: "product/list.html"
+                            });
+                        });
+
+                        // subCategoryLinks에 서브 서브 카테고리 추가
+                        subCategoryLinks.push(...subSubCategoryLinks);
+                    }
+                });
+
+                return subCategoryLinks;
+            }, category.cate_no); // category.cate_no를 parentCateNo로 넘김
+
+            // 부모 카테고리의 data_list에 서브 카테고리 추가
+            addCategory.push(...subCategories);
+        }
+
+        categoryData.push(...addCategory);
+
+        return categoryData;
     } catch (error) {
         console.error('카테고리 데이터 가져오기 중 오류 발생:', error);
         return [];
@@ -968,9 +1110,13 @@ async function main(url) {
     // await browser.close();
     // return;
 
-    const categoryData = await fetchCategoryData(url);
+    const categoryData = await fetchCategoryData(url, page);
+
+    console.log('categoryData len : ', categoryData.length);
 
     const categoryInfo = buildHierarchyWithParentReferences(categoryData);
+
+    console.log('categoryInfo : ', categoryInfo.length);
 
     console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
 
@@ -1015,9 +1161,9 @@ async function main(url) {
 
 
 // const url = "https://cherryme.kr";
+// const url = "https://beidelli.com";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
-const url = "https://beidelli.com";
-// const url = "https://www.hotping.co.kr";
+const url = "https://www.hotping.co.kr";
 
 main(url);

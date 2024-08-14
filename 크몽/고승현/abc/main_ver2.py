@@ -210,15 +210,15 @@ def stop_flash_window(root):
 
 def save_to_excel(data):
     df = pd.DataFrame(data)
-
-    # 현재 시간 가져오기
-    current_time = time.strftime("%Y%m%d_%H%M%S")
-    filename = f"ABC마트 데이터_{current_time}.xlsx"
+    filename = "ABC마트 데이터.xlsx"
+    if os.path.exists(filename):
+        i = 1
+        while os.path.exists(f"ABC마트 데이터 ({i}).xlsx"):
+            i += 1
+        filename = f"ABC마트 데이터 ({i}).xlsx"
 
     df.to_excel(filename, index=False)
     new_print(f"Data saved to {filename}", level="INFO")
-
-
 
 def on_drop(event):
     global url_list  # url_list 변수를 전역으로 선언
