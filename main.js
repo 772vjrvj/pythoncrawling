@@ -317,14 +317,28 @@ async function fetchCategoryData(url, page) {
             const categoryWrappers = document.querySelectorAll('.xans-element-.xans-layout.xans-layout-category');
 
             if (categoryWrappers.length > 0) {
-                // 첫 번째 요소 안의 class="xans-record-"인 li들을 선택
-                const categoryElements = Array.from(categoryWrappers[0].querySelectorAll('li'))
-                    .filter(li => {
-                        const style = li.getAttribute('style');
-                        const hasDisplayNone = style && style.includes('display:none');
-                        const hasContent = li.innerText.trim().length > 0;
-                        return !hasDisplayNone && hasContent;
-                    });
+                let categoryElements = [];
+
+                // 첫 번째 케이스: ':scope > ul > li' 또는 ':scope > div > ul > li' 선택자
+                const ulLiElements = categoryWrappers[0].querySelectorAll(':scope > ul > li, :scope > div > ul > li');
+
+                if (ulLiElements.length > 0) {
+                    categoryElements = Array.from(ulLiElements);
+                } else {
+                    // 두 번째 케이스: ':scope > li' 선택자
+                    const liElements = categoryWrappers[0].querySelectorAll(':scope > li');
+                    if (liElements.length > 0) {
+                        categoryElements = Array.from(liElements);
+                    }
+                }
+
+                // 존재하는 요소들에 대해 필터링
+                categoryElements = categoryElements.filter(li => {
+                    const style = li.getAttribute('style');
+                    const hasDisplayNone = style && style.includes('display:none');
+                    const hasContent = li.innerText.trim().length > 0;
+                    return !hasDisplayNone && hasContent;
+                });
 
                 for (const categoryElement of categoryElements) {
                     // li 바로 아래 있는 a 태그 href 추출
@@ -358,93 +372,117 @@ async function fetchCategoryData(url, page) {
             return categories;
         });
 
-        const addCategory = []
+
+        const addCategory = [];
 
         // 각 부모 카테고리의 서브 카테고리 추출
         for (const category of categoryData) {
             const categoryUrl = `${url}/${category.design_page_url}${category.param}`;
-            await page.goto(categoryUrl, { waitUntil: 'domcontentloaded' });
 
-            // 서브 카테고리 데이터 추출
-            const subCategories = await page.evaluate(async (parentCateNo) => {
-                // 서브 카테고리가 로드될 때까지 대기
-                await new Promise(resolve => setTimeout(resolve, 1000)); // 2초 대기, 상황에 따라 조정 가능
+            let alertHandled = false;
 
-                const subCategoryLinks = [];
-                // menuCategory 안에 xans-element- xans-product xans-product-displaycategory xans-record- 클래스를 가진 요소를 찾기
-                const productElements = Array.from(document.querySelectorAll('.menuCategory .xans-element-.xans-product.xans-product-displaycategory.xans-record-'));
+            // 자식 페이지에서 alert 처리
+            const handleDialog = async dialog => {
+                if (!alertHandled) {
+                    console.log('Alert detected: ', dialog.message());
+                    await dialog.dismiss(); // 알림창 닫기
+                    alertHandled = true; // alert 처리됨
+                }
+            };
 
-                productElements.forEach(async (productElement) => {
-                    // li 바로 아래 있는 a 태그 선택
-                    const subLink = productElement.querySelector(':scope > a'); // :scope를 사용하여 li 바로 아래의 a 태그를 선택
-                    if (subLink) {
-                        const name = subLink.innerText.trim();
-                        const linkProductList = subLink.href;
+            page.on('dialog', handleDialog);
+            try {
 
-                        // 서브 카테고리 번호 추출
-                        let cateNo;
-                        const subCateNoMatch = linkProductList.match(/cate_no=(\d+)/);
-                        if (subCateNoMatch) {
-                            cateNo = parseInt(subCateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
-                        } else {
-                            cateNo = parseInt(linkProductList.split('/').slice(-2, -1)[0], 10); // 기존 방식 사용
-                        }
+                await page.goto(categoryUrl, { waitUntil: 'domcontentloaded' });
 
-                        // 서브 카테고리 추가
-                        subCategoryLinks.push({
-                            link_product_list: linkProductList,
-                            name,
-                            param: `?cate_no=${cateNo}`,
-                            cate_no: cateNo,
-                            parent_cate_no: parentCateNo,
-                            design_page_url: "product/list.html"
-                        });
+                // 만약 alert가 발생했다면 이 페이지를 건너뜀
+                if (alertHandled) {
+                    console.log(`Skipping category due to alert: ${categoryUrl}`);
+                    alertHandled = false; // 다음에 사용할 수 있도록 초기화
+                    continue; // 다음 카테고리로 이동
+                }
 
-                        // await new Promise(resolve => setTimeout(resolve, 500)); // 1초 대기, 상황에 따라 조정 가능
+                // 서브 카테고리 데이터 추출
+                const subCategories = await page.evaluate(async (parentCateNo) => {
+                    // 서브 카테고리가 로드될 때까지 대기
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 대기, 상황에 따라 조정 가능
 
-                        // 마우스 오버 이벤트 발생
-                        // subLink.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+                    const subCategoryLinks = [];
+                    // menuCategory 안에 xans-element- xans-product xans-product-displaycategory xans-record- 클래스를 가진 요소를 찾기
+                    const productElements = Array.from(document.querySelectorAll('.menuCategory .xans-element-.xans-product.xans-product-displaycategory.xans-record-'));
 
-                        // 마우스 오버 후에 동료 요소 중 class="xans-element- xans-product xans-product-children"인 요소가 생길 때까지 대기
-                        // await new Promise(resolve => setTimeout(resolve, 500)); // 1초 대기, 상황에 따라 조정 가능
+                    productElements.forEach((productElement) => {
+                        // li 바로 아래 있는 a 태그 선택
+                        const subLink = productElement.querySelector(':scope > a'); // :scope를 사용하여 li 바로 아래의 a 태그를 선택
+                        if (subLink) {
+                            const name = subLink.innerText.trim();
+                            const linkProductList = subLink.href;
 
-                        // 서브 서브 카테고리 처리
-                        const subSubCategoryElements = productElement.querySelectorAll('.xans-element-.xans-product.xans-product-children .xans-record- a');
-                        const subSubCategoryLinks = [];
-
-                        subSubCategoryElements.forEach(subSubLink => {
-                            const subSubName = subSubLink.innerText.trim();
-                            const subSubLinkProductList = subSubLink.href;
-
-                            // 서브 서브 카테고리 번호 추출
-                            let subSubCateNo;
-                            const subSubCateNoMatch = subSubLinkProductList.match(/cate_no=(\d+)/);
-                            if (subSubCateNoMatch) {
-                                subSubCateNo = parseInt(subSubCateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
+                            // 서브 카테고리 번호 추출
+                            let cateNo;
+                            const subCateNoMatch = linkProductList.match(/cate_no=(\d+)/);
+                            if (subCateNoMatch) {
+                                cateNo = parseInt(subCateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
                             } else {
-                                subSubCateNo = parseInt(subSubLinkProductList.split('/').slice(-2, -1)[0], 10); // 기존 방식 사용
+                                cateNo = parseInt(linkProductList.split('/').slice(-2, -1)[0], 10); // 기존 방식 사용
                             }
 
-                            subSubCategoryLinks.push({
-                                link_product_list: subSubLinkProductList,
-                                name: subSubName,
-                                param: `?cate_no=${subSubCateNo}`,
-                                cate_no: subSubCateNo,
-                                parent_cate_no: cateNo, // 상위 카테고리 번호를 parent_cate_no로 설정
+                            // 서브 카테고리 추가
+                            subCategoryLinks.push({
+                                link_product_list: linkProductList,
+                                name,
+                                param: `?cate_no=${cateNo}`,
+                                cate_no: cateNo,
+                                parent_cate_no: parentCateNo,
                                 design_page_url: "product/list.html"
                             });
-                        });
 
-                        // subCategoryLinks에 서브 서브 카테고리 추가
-                        subCategoryLinks.push(...subSubCategoryLinks);
-                    }
-                });
+                            // 서브 서브 카테고리 처리
+                            const subSubCategoryElements = productElement.querySelectorAll('.xans-element-.xans-product.xans-product-children .xans-record- a');
+                            const subSubCategoryLinks = [];
 
-                return subCategoryLinks;
-            }, category.cate_no); // category.cate_no를 parentCateNo로 넘김
+                            subSubCategoryElements.forEach(subSubLink => {
+                                const subSubName = subSubLink.innerText.trim();
+                                const subSubLinkProductList = subSubLink.href;
 
-            // 부모 카테고리의 data_list에 서브 카테고리 추가
-            addCategory.push(...subCategories);
+                                // 서브 서브 카테고리 번호 추출
+                                let subSubCateNo;
+                                const subSubCateNoMatch = subSubLinkProductList.match(/cate_no=(\d+)/);
+                                if (subSubCateNoMatch) {
+                                    subSubCateNo = parseInt(subSubCateNoMatch[1], 10); // cate_no 값을 추출하여 정수로 변환
+                                } else {
+                                    subSubCateNo = parseInt(subSubLinkProductList.split('/').slice(-2, -1)[0], 10); // 기존 방식 사용
+                                }
+
+                                subSubCategoryLinks.push({
+                                    link_product_list: subSubLinkProductList,
+                                    name: subSubName,
+                                    param: `?cate_no=${subSubCateNo}`,
+                                    cate_no: subSubCateNo,
+                                    parent_cate_no: cateNo, // 상위 카테고리 번호를 parent_cate_no로 설정
+                                    design_page_url: "product/list.html"
+                                });
+                            });
+
+                            // subCategoryLinks에 서브 서브 카테고리 추가
+                            subCategoryLinks.push(...subSubCategoryLinks);
+                        }
+                    });
+
+                    return subCategoryLinks;
+                }, category.cate_no); // category.cate_no를 parentCateNo로 넘김
+
+                console.log('subCategories : ', subCategories);
+
+                // 부모 카테고리의 data_list에 서브 카테고리 추가
+                addCategory.push(...subCategories);
+
+            } catch (error) {
+                console.log(`Error processing category: ${categoryUrl} - ${error.message}`);
+                continue; // 문제가 있는 카테고리는 건너뜀
+            } finally {
+                page.off('dialog', handleDialog); // 이벤트 핸들러 제거
+            }
         }
 
         categoryData.push(...addCategory);
@@ -1160,10 +1198,11 @@ async function main(url) {
 }
 
 
+
 // const url = "https://cherryme.kr";
-// const url = "https://beidelli.com";
 // const url = "https://dailyjou.com";
 // const url = "https://ba-on.com";
-const url = "https://www.hotping.co.kr";
+// const url = "https://www.hotping.co.kr";
+// const url = "https://beidelli.com";
 
 main(url);
