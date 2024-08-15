@@ -1276,13 +1276,13 @@ async function main(url) {
     // await browser.close();
     // return;
 
-    // const categoryData = await fetchCategoryData(url, page);
+    const categoryData = await fetchCategoryData(url, page);
 
     // console.log('categoryData len : ', categoryData.length);
 
-    // const categoryInfo = buildHierarchyWithParentReferences(categoryData);
+    const categoryInfo = buildHierarchyWithParentReferences(categoryData);
 
-    const categoryInfo = testJson;
+    // const categoryInfo = testJson;
 
     console.log('categoryInfo len : ', categoryInfo.length);
 
@@ -1334,9 +1334,9 @@ async function main(url) {
 // const url = "https://beidelli.com";
 const url = "https://dailyjou.com";
 
-// main(url);
+main(url);
 
-testDetail(url)
+// testDetail(url)
 
 
 async function testDetail(url)
