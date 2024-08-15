@@ -4,11 +4,10 @@ import json
 import re
 import time
 import random
-import os
-import pandas as pd
 
 def fetch_search_results(query, page):
     url = f"https://map.naver.com/p/api/search/allSearch?query={query}&type=all&searchCoord=&boundary=&page={page}"
+    print(f"url : {url}")
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'Accept-Encoding': 'gzip, deflate, br, zstd',
@@ -30,15 +29,6 @@ def fetch_search_results(query, page):
     if response.status_code != 200:
         return None
     return response.json()
-
-
-def download_image(image_url, save_path):
-    try:
-        img_data = requests.get(image_url).content
-        with open(save_path, 'wb') as handler:
-            handler.write(img_data)
-    except Exception as e:
-        print(f"Failed to download {image_url}: {e}")
 
 
 def fetch_place_info(place_id):
@@ -70,66 +60,64 @@ def fetch_place_info(place_id):
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # script_tag = soup.find('script', text=re.compile('window.__APOLLO_STATE__'))
-        script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
-
+        # <script> 태그 안에 있는 JSON-like 데이터 추출
+        script_tag = soup.find('script', text=re.compile('window.__APOLLO_STATE__'))
         if script_tag:
+            # JSON 데이터를 추출하기 위해 정규 표현식 사용
             json_text = re.search(r'window\.__APOLLO_STATE__\s*=\s*(\{.*\});', script_tag.string)
             if json_text:
                 data = json.loads(json_text.group(1))
 
+                # 1. f"PlaceDetailBase:{place_id}"에서 "roadAddress" 값 추출
                 address = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
 
+                # 2. f"Menu:{place_id}_n" 값들을 "금액" 배열에 담기
                 prices = []
                 for key, value in data.items():
                     if key.startswith(f"Menu:{place_id}"):
                         prices.append(value)
 
+                # 3. "InformationFacilities:n" 값들을 "편의" 배열에 담기
                 facilities = []
                 for key, value in data.items():
                     if key.startswith("InformationFacilities:"):
                         facilities.append(value)
 
-                imageUrls = []
+                # 4. "ROOT_QUERY" 안에서 이미지 추출
+                imageUrls = []  # origin 값을 담을 배열
                 root_query = data.get("ROOT_QUERY", {})
                 place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
                 images_info = root_query.get(place_detail_key, {}).get('images({"source":["ugcModeling"]})', {}).get("images", [])
-
+                # origin 값만 추출하여 imageUrls 배열에 담기
                 for image in images_info:
                     origin_url = image.get("origin")
                     if origin_url:
                         imageUrls.append(origin_url)
 
-                # Download images
-                os.makedirs(f'images/{place_id}', exist_ok=True)
-                for idx, image_url in enumerate(imageUrls):
-                    download_image(image_url, f'images/{place_id}/{idx}.jpg')
-
+                # 5. "businessHours" 정보 추출
                 business_hours = root_query.get(place_detail_key, {}).get('businessHours({"source":["tpirates","jto","shopWindow"]})', [])
 
-                # 6. "newBusinessHours" 정보 추출
-                new_business_hours = root_query.get(place_detail_key, {}).get('newBusinessHours', [])
 
+                URL = f"https://pcmap.place.naver.com/place/{place_id}/home"
 
-                return {
-                    "Place ID": place_id,
-                    "주소": address,
-                    "금액": prices,
-                    "편의": facilities,
-                    "이미지 URLs": imageUrls,
-                    "영업시간": business_hours,
-                    "새로운 영업시간": new_business_hours
-                }
+                # 결과 출력
+                print(f"\n=== Place ID: {place_id} ===")
+                print("주소:", address)
+                print("금액:", prices)
+                print("편의:", facilities)
+                print("이미지:", imageUrls)
+                print("영업시간:", business_hours)
+                print("URL:", URL)
+
     else:
         print(f"Failed to fetch data for Place ID: {place_id}. Status code: {response.status_code}")
-    return None
 
 
 def main():
     all_ids = []  # 모든 id를 저장할 배열
-    query = input("검색어를 입력하세요: ")
+    # query = input("검색어를 입력하세요: ")
+    query = "당감동 스터디카페"
     page = 1
-    results = []
 
     while True:
         result = fetch_search_results(query, page)
@@ -139,28 +127,28 @@ def main():
             print(f"error result: {result}")
             break
 
+        # "place" -> "list" 안에 있는 id들을 가져와서 배열에 추가
         place_list = result.get("result", {}).get("place", {}).get("list", [])
         for place in place_list:
             place_id = place.get("id")
             if place_id:
                 all_ids.append(place_id)
 
+        # 다음 페이지로 이동
         page += 1
         break
         time.sleep(random.uniform(1, 2))
 
+
+    # 모든 페이지에서 수집한 id 출력
     print("모든 ID:", all_ids)
 
-    for place_id in all_ids:
-        place_info = fetch_place_info(place_id)
-        if place_info:
-            results.append(place_info)
-        time.sleep(random.uniform(1, 2))
 
-    # 엑셀로 저장
-    df = pd.DataFrame(results)
-    df.to_excel(f'{query}_results.xlsx', index=False)
-    print(f"Results saved to {query}_results.xlsx")
+    for place_id in all_ids:
+        fetch_place_info(place_id)
+        # 요청 간 딜레이 추가
+        time.sleep(random.uniform(1, 2))  # 1~3초 사이의 랜덤 딜레이
+
 
 if __name__ == "__main__":
     main()
