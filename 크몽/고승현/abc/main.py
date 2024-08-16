@@ -117,10 +117,10 @@ def start_processing():
                     "상품 상태": product_status,
                     "브랜드": json_data.get("brand", {}).get("brandName"),
                     "상품상세url": url,
+                    "판매가": sellAmt,
                     "구매 가능한 옵션": available_options,
                     "품절된 옵션": sold_out_options,
                     "스타일코드": json_data.get("styleInfo"),
-                    "판매가": sellAmt,
                     "색상코드": json_data.get("prdtColorInfo"),
                     "판매처": Retailer
                 }

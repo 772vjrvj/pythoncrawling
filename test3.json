@@ -1,3301 +1,393 @@
 {
-  "result": {
-    "type": "place",
-    "metaInfo": {
-      "pageId": "cb206db1-38df-4f3d-a664-dd110c44d05e",
-      "sessionId": "None",
-      "rcode": "None",
-      "searchedQuery": "당감동 스터디카페",
-      "queryTypes": [
-        "query_region",
-        "query_category"
-      ],
-      "regionQuery": "True",
-      "correction": "None",
-      "displayCorrectAnswer": "False"
+  '아이디': '1369318717',
+  '주소': '경기 수원시 영통구 태장로 77 4층',
+  '금액': [
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '일회시간권 2시간',
+      'price': '4000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_0',
+      'index': 0
     },
-    "address": "None",
-    "place": {
-      "page": 1,
-      "totalCount": 60,
-      "boundary": [
-        "129.0112287",
-        "35.1736692",
-        "129.0604216",
-        "35.1472174"
-      ],
-      "feedback": [
-        "<strong>"
-        부산광역시
-        부산진구
-        당감동
-        "</strong>",
-        "근처 <strong>"
-        스터디카페
-        "</strong>"
-      ],
-      "options": {
-        "sort": "0",
-        "toggleLocation": "0",
-        "rank": "1"
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '일회시간권 4시간',
+      'price': '6000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_1',
+      'index': 1
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '일회시간권 6시간',
+      'price': '8000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_2',
+      'index': 2
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '일회시간권 8시간',
+      'price': '10000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_3',
+      'index': 3
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '일회시간권 10시간',
+      'price': '12000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_4',
+      'index': 4
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '시간제 정액권(자유석) 50시간',
+      'price': '70000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_5',
+      'index': 5
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '시간제 정액권(자유석) 100시간',
+      'price': '130000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_6',
+      'index': 6
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '기간제 정기권(자유석) 2주',
+      'price': '80000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_7',
+      'index': 7
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '기간제 정기권(자유석) 4주-인강제공',
+      'price': '140000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_8',
+      'index': 8
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '시크릿존(고정석) 4주-인강제공',
+      'price': '200000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_9',
+      'index': 9
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '스터디룸(4인실) 1시간',
+      'price': '8000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_10',
+      'index': 10
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '사물함 2주',
+      'price': '6000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_11',
+      'index': 11
+    },
+    {
+      '__typename': 'Menu',
+      'priority': None,
+      'name': '사물함 4주',
+      'price': '10000',
+      'recommend': False,
+      'change': False,
+      'priceType': '',
+      'description': '',
+      'images': [],
+      'id': '1369318717_12',
+      'index': 12
+    }
+  ],
+  '편의': [
+    {
+      '__typename': 'InformationFacilities',
+      'id': '7',
+      'name': '무선 인터넷',
+      'i18nName': '무선 인터넷'
+    },
+    {
+      '__typename': 'InformationFacilities',
+      'id': '1',
+      'name': '예약',
+      'i18nName': '예약'
+    },
+    {
+      '__typename': 'InformationFacilities',
+      'id': '13',
+      'name': '단체 이용 가능',
+      'i18nName': '단체 이용 가능'
+    },
+    {
+      '__typename': 'InformationFacilities',
+      'id': '8',
+      'name': '남/녀 화장실 구분',
+      'i18nName': '남/녀 화장실 구분'
+    }
+  ],
+  '이미지 URLs': [
+    'https://ldb-phinf.pstatic.net/20231017_238/16975325907190polw_JPEG/IMG_1972.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_266/1697532810551TNu3W_JPEG/IMG_1974.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_203/1697532811461fRuuU_JPEG/IMG_1973.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_249/1697532791576eivo8_JPEG/IMG_1982.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_11/1697532791771XcdnR_JPEG/IMG_1980.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_161/16975328067212B8i4_JPEG/IMG_1979.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_240/1697532800053RkYEt_JPEG/IMG_1977.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_66/1697532802604zSOHo_JPEG/IMG_1978.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_157/1697532806866DY5IS_JPEG/IMG_1976.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_149/1697532790405miRlf_JPEG/IMG_1983.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_103/1697532811637w6T2S_JPEG/IMG_1975.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_69/1697532790629GXM26_JPEG/IMG_1993.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_166/1697532786466ukkaT_JPEG/IMG_1984.jpeg',
+    'https://ldb-phinf.pstatic.net/20231017_84/1697532791952JCaYJ_JPEG/IMG_1987.jpeg'
+  ],
+  '영업시간': None,
+  '새로운 영업시간': [
+    {
+      '__typename': 'NewBusinessHour',
+      'name': '',
+      'businessStatusDescription': {
+        '__typename': 'BusinessStatusDescription',
+        'status': '24시간 영업',
+        'blindDescription': None,
+        'description': '연중무휴'
       },
-      "filters": {},
-      "reSearch": "None",
-      "isSiteSortAvailable": "False",
-      "specializedSearch": "None",
-      "hasPollingPlace": "False",
-      "isAdultKeyword": "False",
-      "containAdultContents": "False",
-      "address": "None",
-      "brandPromotion": "None",
-      "list": [
+      'businessHours': [
         {
-          "index": "0",
-          "rank": "1",
-          "id": "1285854475",
-          "name": "르하임스터디카페 부산당감점",
-          "tel": "",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "0",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1005804"
-            ]
-          ],
-          "rcode": "08230109",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
+          '__typename': 'WorkingHoursInfo',
+          'day': '매일',
+          'businessHours': {
+            '__typename': 'StartEndTime',
+            'start': '00:00',
+            'end': '24:00'
           },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 당감동 300-1 당감엘리움메디컬센터 902호",
-          "roadAddress": "부산광역시 부산진구 동평로 106 당감엘리움메디컬센터 902호",
-          "abbrAddress": "당감동 300-1 당감엘리움메디컬센터 902호",
-          "shortAddress": [
-            "부산 부산진구",
-            "동평로 106",
-            "당감엘리움메디컬센터 902호"
-          ],
-          "display": "르하임<b>스터디카페</b> 부산당감점",
-          "telDisplay": "",
-          "context": [],
-          "reviewCount": 6,
-          "placeReviewCount": 54,
-          "ktCallMd": "e6e721baedaa75fce9165a73ba2715dd",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20210113_198/1610512246153V5gf3_JPEG/XTc5b3POTGvDtmi3Y7xhk-pX.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20210113_198/1610512246153V5gf3_JPEG/XTc5b3POTGvDtmi3Y7xhk-pX.jpg",
-            "https://ldb-phinf.pstatic.net/20210113_290/1610512244763BEVqY_JPEG/YFDOEAb1LpqbMJPG47qjzljz.jpg",
-            "https://ldb-phinf.pstatic.net/20210113_64/1610512245107f1L3Y_JPEG/3ka-Xrx58y_3dC54HEYaqEyD.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0410872",
-          "y": "35.1656150",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "kpU+j6uGZi2wc9A0hVMzvw==",
-            "pan": "166.22",
-            "tilt": "10.00",
-            "lng": "129.0410298",
-            "lat": "35.1658477",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "czmypLexzoMAbkoe1WY/LA==",
-            "pan": "-13.57",
-            "tilt": "-30.00",
-            "lng": "129.0411682",
-            "lat": "35.1652794",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "http://르하임.com",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.0409929,
-                "y": 35.1654702
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.0411315,
-                "y": 35.16576
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "1회 시간권 (2시간) 3,000 | 1회 시간권 (4시간) 5,000 | 1회 시간권 (6시간) 6,000 | 1회 시간권 (9시간) 8,000 | 1회 시간권 (12시간) 10,000 | 2주 기간권 (14일) 70,000 | 4주 기간권 (28일) 120,000 | 50시간 정액권 60,000 | 100시간 정액권 110,000 | 200시간 정액권 200,000 | 4인실 스터디룸 1시간 7,000 | 6인실 스터디룸 1시간 9,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324894.66",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1005804",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
+          'breakHours': [],
+          'description': None,
+          'lastOrderTimes': None
+        }
+      ],
+      'comingIrregularClosedDays': [],
+      'comingRegularClosedDays': '',
+      'freeText': ''
+    }
+  ],
+  'URL': 'https://m.place.naver.com/place/1369318717/home',
+  '지도': 'https://map.naver.com/p/entry/place/1369318717',
+  '리뷰': [
+    {
+      'id': '6691aedac4ba76c94ccf703e',
+      'rating': None,
+      'author': {
+        'nickname': 'jye****',
+        'imageUrl': None
+      },
+      'body': '굿',
+      'created': '7.13.토',
+      'tags': None,
+      'media': []
+    },
+    {
+      'id': '664dd60cf33739bf43bfa2f9',
+      'rating': None,
+      'author': {
+        'nickname': '훗061',
+        'imageUrl': 'https://phinf.pstatic.net/contact/20170609_233/1496977389702z19pj_PNG/avatar_profile.png'
+      },
+      'body': '깔끔하고 조용해요 ㅎ\n커피도 맛있고 집중 잘돼요',
+      'created': '5.22.수',
+      'tags': None,
+      'media': [
         {
-          "index": "1",
-          "rank": "2",
-          "id": "1999076418",
-          "name": "이솝 스터디카페 당감점",
-          "tel": "0507-1358-0223",
-          "isCallLink": "False",
-          "virtualTel": "0507-1358-0223",
-          "virtualTelDisplay": "0507-1358-0223",
-          "ppc": "1",
-          "category": [
-            "스터디카페"
-          ],
-          "categoryPath": [
-            [
-              "220036",
-              "220052",
-              "220587",
-              "1003616",
-              "1003617"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230109",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 당감동 495-9 107동 단지나상가 2층 이솝스터디카페",
-          "roadAddress": "부산광역시 부산진구 당감로17번길 90 107동 단지나상가 2층 이솝스터디카페",
-          "abbrAddress": "당감동 495-9 107동 단지나상가 2층 이솝스터디카페",
-          "shortAddress": [
-            "부산 부산진구",
-            "당감로17번길 90",
-            "107동 단지나상가 2층 이솝스터디카페"
-          ],
-          "display": "이솝 <b>스터디카페</b> 당감점",
-          "telDisplay": "0507-1358-0223",
-          "context": [],
-          "reviewCount": 2,
-          "placeReviewCount": 51,
-          "ktCallMd": "4d0074ce724eccd5093c734800aa16f2",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20211018_150/1634520396042C7Y6M_JPEG/csOy_fJsSrRrTDkc_h31bUOn.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20211018_150/1634520396042C7Y6M_JPEG/csOy_fJsSrRrTDkc_h31bUOn.jpg",
-            "https://ldb-phinf.pstatic.net/20211018_295/1634520440960cIgOw_JPEG/c987qUzjqfEuND2IRExh9vyw.jpg",
-            "https://ldb-phinf.pstatic.net/20211018_294/16345204599955JhDQ_JPEG/tMQGRJdSc8ZLrdeqPsSUwsql.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0346012",
-          "y": "35.1624612",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "AgqBwxGKU/kqylJIykOFCA==",
-            "pan": "138.25",
-            "tilt": "10.00",
-            "lng": "129.0345511",
-            "lat": "35.1625173",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "mczEQ9l2o9+slwty6Lb2Ug==",
-            "pan": "-175.84",
-            "tilt": "-30.00",
-            "lng": "129.0347900",
-            "lat": "35.1650009",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "http://nmhome.kr/20211104212858/",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.034563,
-                "y": 35.162346
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.034563,
-                "y": 35.162346
-              },
-              {
-                "rep": "False",
-                "x": 129.034654,
-                "y": 35.162519
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "2시간 3,000 | 2주 70,000 | 4주 120,000 | 8주 220,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324854.84",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003617",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "2",
-          "rank": "3",
-          "id": "1312965725",
-          "name": "화이트펜슬 스터디카페 당감점",
-          "tel": "0507-1324-2419",
-          "isCallLink": "False",
-          "virtualTel": "0507-1324-2419",
-          "virtualTelDisplay": "0507-1324-2419",
-          "ppc": "1",
-          "category": [
-            "스터디카페"
-          ],
-          "categoryPath": [
-            [
-              "220036",
-              "220052",
-              "220587",
-              "1003616",
-              "1003617"
-            ]
-          ],
-          "rcode": "08230109",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 당감동 734-21 광성빌딩 5층",
-          "roadAddress": "부산광역시 부산진구 당감서로80번길 22 광성빌딩 5층",
-          "abbrAddress": "당감동 734-21 광성빌딩 5층",
-          "shortAddress": [
-            "부산 부산진구",
-            "당감서로80번길 22",
-            "광성빌딩 5층"
-          ],
-          "display": "화이트펜슬 <b>스터디카페</b> 당감점",
-          "telDisplay": "0507-1324-2419",
-          "context": [],
-          "reviewCount": 3,
-          "placeReviewCount": 142,
-          "ktCallMd": "f8ae090245cb27630b59e5a84abd8193",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20191219_283/1576731852203bI3Yh_JPEG/h4YXmkLIqSQRFLvHX5Pkav5-.JPG.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20191219_283/1576731852203bI3Yh_JPEG/h4YXmkLIqSQRFLvHX5Pkav5-.JPG.jpg",
-            "https://ldb-phinf.pstatic.net/20220322_71/16479455545884e2q9_JPEG/E438A01D-260C-4E4B-A36D-4DAFDB61A1F4.jpeg",
-            "https://ldb-phinf.pstatic.net/20191219_246/1576731851096tKwIp_JPEG/WxXTY_0qoVZHuTSmPGg3cpix.JPG.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0382576",
-          "y": "35.1673144",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "n+gsrnNoUKpVGiTQFoCboA==",
-            "pan": "175.78",
-            "tilt": "10.00",
-            "lng": "129.0382424",
-            "lat": "35.1675160",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "sdvj4ybd4rB0CDO5z4QnRw==",
-            "pan": "-9.27",
-            "tilt": "-30.00",
-            "lng": "129.0385895",
-            "lat": "35.1652794",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://www.instagram.com/whitepencil_danggam",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.03814,
-                "y": 35.167445
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.038302,
-                "y": 35.167444
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "당일권 2시간 3,000 | 당일권 4시간 5,000 | 당일권 6시간 6,000 | 당일권 9시간 8,000 | 당일권 12시간 10,000 | 시간권30시간 40,000 | 정액권 50시간 60,000 | 정액권 100시간 110,000 | 시간권150시간 160,000 | 시간권200시간 200,000 | 기간권1주 40,000 | 기간권 2주 70,000 | 기간권3주 100,000 | 기간권 4주 120,000 | 장기등록8주(+2주) 260,000 | 장기등록12주(+4주) 390,000 | 장기등록20주(+8주) 650,000 | 장기등록52주(사물함서비스) 1,300,000 | 4인 스터디룸 1시간 7,000 | 4인 스터디룸 10시간 60,000 | 4인 스터디룸 20시간 110,000 | 4인 스터디룸 30시간 170,000 | 사물함 15일 이용권 6,000 | 사물함 30일 이용권 10,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324593.09",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003617",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "3",
-          "rank": "4",
-          "id": "1719656709",
-          "name": "플로우스터디카페",
-          "tel": "0507-1354-4227",
-          "isCallLink": "False",
-          "virtualTel": "0507-1354-4227",
-          "virtualTelDisplay": "0507-1354-4227",
-          "ppc": "1",
-          "category": [
-            "스터디카페"
-          ],
-          "categoryPath": [
-            [
-              "220036",
-              "220052",
-              "220587",
-              "1003616",
-              "1003617"
-            ]
-          ],
-          "rcode": "08230109",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "202408151000~202408151200",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 당감동 252-1 6층",
-          "roadAddress": "부산광역시 부산진구 당감로 26 6층",
-          "abbrAddress": "당감동 252-1 6층",
-          "shortAddress": [
-            "부산 부산진구",
-            "당감로 26",
-            "6층"
-          ],
-          "display": "플로우<b>스터디카페</b>",
-          "telDisplay": "0507-1354-4227",
-          "context": [],
-          "reviewCount": 0,
-          "placeReviewCount": 0,
-          "ktCallMd": "96a5bae6e6b54dd6700c2742682cdada",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20230707_64/16887077471604OKAp_JPEG/IMG_1795.jpeg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20230707_64/16887077471604OKAp_JPEG/IMG_1795.jpeg",
-            "https://ldb-phinf.pstatic.net/20230707_161/1688707747522u5fyQ_JPEG/IMG_1794.jpeg",
-            "https://ldb-phinf.pstatic.net/20230707_160/1688707747392GBfUN_JPEG/IMG_1793.jpeg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0397258",
-          "y": "35.1638941",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "0vj16GnsEFBCZ+q8P6w9nA==",
-            "pan": "95.59",
-            "tilt": "10.00",
-            "lng": "129.0395320",
-            "lat": "35.1639130",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "hJTEPzdzW9XenQ8y8VRCEQ==",
-            "pan": "-163.79",
-            "tilt": "-30.00",
-            "lng": "129.0401306",
-            "lat": "35.1652794",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.039636,
-                "y": 35.163826
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.039596,
-                "y": 35.163936
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "1회 이용권 3시간 5,000 | 1회 이용권 2시간 4,000 | 1회 이용권 1시간 2,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324983.75",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003617",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "4",
-          "rank": "5",
-          "id": "1472057327",
-          "name": "별빛스터디카페",
-          "tel": "0507-1405-4346",
-          "isCallLink": "False",
-          "virtualTel": "0507-1405-4346",
-          "virtualTelDisplay": "0507-1405-4346",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "229971"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230109",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 당감동 810-1",
-          "roadAddress": "부산광역시 부산진구 백양관문로 106",
-          "abbrAddress": "당감동 810-1",
-          "shortAddress": [
-            "부산 부산진구",
-            "백양관문로 106"
-          ],
-          "display": "별빛<b>스터디카페</b>",
-          "telDisplay": "0507-1405-4346",
-          "context": [],
-          "reviewCount": 5,
-          "placeReviewCount": 28,
-          "ktCallMd": "7c3971dba2ea9136371bbc563ac8e251",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20210831_124/1630400533427zkuvI_JPEG/ihLI6k4fXhDVncxhQoSVj1X3.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20210831_124/1630400533427zkuvI_JPEG/ihLI6k4fXhDVncxhQoSVj1X3.jpg",
-            "https://ldb-phinf.pstatic.net/20210831_220/1630400534293Dv2Dc_JPEG/QLZqSQ3Vo5FQHR7dyGI8WogE.jpg",
-            "https://ldb-phinf.pstatic.net/20210831_187/1630403504060s0L9F_JPEG/0PxO6VZMGarcvjXXVsI_ybTB.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0279210",
-          "y": "35.1682603",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "oN77mS/nTmRTormIFLnM1A==",
-            "pan": "75.89",
-            "tilt": "10.00",
-            "lng": "129.0276443",
-            "lat": "35.1681905",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "A6J7Lh3WcZEbycaj5qiQTw==",
-            "pan": "61.89",
-            "tilt": "-30.00",
-            "lng": "129.0258636",
-            "lat": "35.1671600",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://www.instagram.com/starlight.studycafe",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.027764,
-                "y": 35.16826
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.027979,
-                "y": 35.168156
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "2시간 3,000 | 4시간 5,000 | 6시간 6,000 | 9시간 8,000 | 12시간 10,000 | 50시간 60,000 | 100시간 110,000 | 200시간 200,000 | 2주 70,000 | 4주 120,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "323980.84",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "229971",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "5",
-          "rank": "6",
-          "id": "1668884551",
-          "name": "바짝독서실 부산당감센터",
-          "tel": "051-898-4799",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "1",
-          "category": [
-            "교육,학문",
-            "독서실"
-          ],
-          "categoryPath": [
-            [
-              "222412",
-              "222415",
-              "222446",
-              "231974"
-            ]
-          ],
-          "rcode": "08230109",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 2,
-              "text": "운영 중",
-              "emphasis": "False",
-              "description": "운영중",
-              "detailInfo": "새벽 01:00에 운영종료"
-            },
-            "businessHours": "202408150830~202408152500",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 당감동 731-2 5층 바짝독서실",
-          "roadAddress": "부산광역시 부산진구 당감서로80번길 20 5층 바짝독서실",
-          "abbrAddress": "당감동 731-2 5층 바짝독서실",
-          "shortAddress": [
-            "부산 부산진구",
-            "당감서로80번길 20",
-            "5층 바짝독서실"
-          ],
-          "display": "바짝독서실 부산당감센터",
-          "telDisplay": "051-898-4799",
-          "context": [],
-          "reviewCount": 18,
-          "placeReviewCount": 27,
-          "ktCallMd": "a906cef5eb6d4d8537eafb948e3399d5",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20220624_125/1656064650488zpajb_PNG/%C5%B0%BF%C0%BD%BA%C5%A9%B0%A1%B0%DD%C7%A5_%28SNS%BF%EB%29.png",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20220624_125/1656064650488zpajb_PNG/%C5%B0%BF%C0%BD%BA%C5%A9%B0%A1%B0%DD%C7%A5_%28SNS%BF%EB%29.png",
-            "https://ldb-phinf.pstatic.net/20220614_103/1655209425467jECdp_JPEG/KakaoTalk_20220614_211015368_01.jpg",
-            "https://ldb-phinf.pstatic.net/20220614_160/1655209420337Ln7yG_JPEG/KakaoTalk_20220614_211015368_02.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0380172",
-          "y": "35.1673315",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "WtBWhHEH3bLYPasHD8nUaQ==",
-            "pan": "176.72",
-            "tilt": "10.00",
-            "lng": "129.0380063",
-            "lat": "35.1675167",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "sdvj4ybd4rB0CDO5z4QnRw==",
-            "pan": "-15.59",
-            "tilt": "-30.00",
-            "lng": "129.0385895",
-            "lat": "35.1652794",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://www.instagram.com/bazzak_danggam/",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.037896,
-                "y": 35.167442
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.038092,
-                "y": 35.167442
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "운영 중",
-          "menuInfo": "None",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "0",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324578.97",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "231974",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "6",
-          "rank": "7",
-          "id": "11840369",
-          "name": "토즈 서면점",
-          "tel": "0507-1424-6767",
-          "isCallLink": "False",
-          "virtualTel": "0507-1424-6767",
-          "virtualTelDisplay": "0507-1424-6767",
-          "ppc": "1",
-          "category": [
-            "임대,대여",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "221419"
-            ]
-          ],
-          "rcode": "08230103",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 9,
-              "text": "오늘 휴무",
-              "emphasis": "True",
-              "description": "공휴일 휴무",
-              "detailInfo": "광복절 휴무"
-            },
-            "businessHours": "",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 부전동 233-1",
-          "roadAddress": "부산광역시 부산진구 신천대로62번길 59",
-          "abbrAddress": "부전동 233-1",
-          "shortAddress": [
-            "부산 부산진구",
-            "신천대로62번길 59"
-          ],
-          "display": "토즈 서면점",
-          "telDisplay": "0507-1424-6767",
-          "context": [],
-          "reviewCount": 355,
-          "placeReviewCount": 210,
-          "ktCallMd": "9071c4089e96fb5b69cdb3825a4e608d",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20240204_110/1707008512556YIB5f_JPEG/%BC%AD%B8%E9%C1%A1_%BB%E7%C1%F8.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20240204_110/1707008512556YIB5f_JPEG/%BC%AD%B8%E9%C1%A1_%BB%E7%C1%F8.jpg",
-            "https://ldb-phinf.pstatic.net/20180221_86/1519183987152fL7gd_JPEG/ophrtVtJ4qVECL_iEgRHfq-o.jpg",
-            "https://ldb-phinf.pstatic.net/20180222_142/15192619045820SnB4_JPEG/fdE4dxIU6vnUoSkO72XEOI1M.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0582771",
-          "y": "35.1533218",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "2beTeOi/MdXQxl0SaeaRrg==",
-            "pan": "-168.19",
-            "tilt": "10.00",
-            "lng": "129.0582991",
-            "lat": "35.1534263",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "pV/7Y3YrZlj62qRwkuNRTA==",
-            "pan": "74.70",
-            "tilt": "-30.00",
-            "lng": "129.0565186",
-            "lat": "35.1528397",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "http://www.toz.co.kr/branch/main/index.htm?id=13",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.058232,
-                "y": 35.153407
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.058232,
-                "y": 35.153407
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "오늘 휴무",
-          "menuInfo": "A타입(1인)_기본2시간 4,000 | B타입(2~3인)_기본2시간 변동가격(업주문의) | C타입(4~6인)_기본2시간 변동가격(업주문의) | D타입(6~9인)_기본2시간 변동가격(업주문의) | E타입(10~13인)_기본2시간 변동가격(업주문의) | F타입(12~15인)_기본2시간 변동가격(업주문의) | 대형세미나실 1실(16~18인) 변동가격(업주문의) | 대형세미나실 2실(20~24인) 변동가격(업주문의) | 대형세미나실 3실(22~26인) 변동가격(업주문의) | 대형세미나실 4실(30~35인) 변동가격(업주문의) | 대형세미나실 5실(40~44인) 변동가격(업주문의) | 노트북 1시간 1,000 | 프로젝트1시간 3,000 | 복사,출력,팩스 (별도문의) 변동가격(업주문의) | 무료 음료 (커피,차,주스,탄산) 0 | 유료 먹거리 (별도문의) 변동가격(업주문의)",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "True",
-          "naverBookingUrl": "https://booking.naver.com/booking/10/bizes/343144",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "True",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": "[지인 추천 이벤트]1인 1시간 무료*학생/취준생>기본(2시간)>4천원. 1시간>2천원, 30분>1천원(학생증 지참)*장기 예약 10%할인"
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "326903.62",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "221419",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "7",
-          "rank": "8",
-          "id": "1237143634",
-          "name": "작심스터디카페 부산서면점",
-          "tel": "",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "0",
-          "category": [
-            "임대,대여",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1003306"
-            ]
-          ],
-          "rcode": "08230103",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 2,
-              "text": "영업 중",
-              "emphasis": "False",
-              "description": "영업중",
-              "detailInfo": "새벽 00:00에 영업종료"
-            },
-            "businessHours": "202408150800~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 부전동 198-4 1층~4층",
-          "roadAddress": "부산광역시 부산진구 중앙대로680번길 19-1 1층~4층",
-          "abbrAddress": "부전동 198-4 1층~4층",
-          "shortAddress": [
-            "부산 부산진구",
-            "중앙대로680번길 19-1",
-            "1층~4층"
-          ],
-          "display": "작심<b>스터디카페</b> 부산서면점",
-          "telDisplay": "",
-          "context": [],
-          "reviewCount": 11,
-          "placeReviewCount": 57,
-          "ktCallMd": "89d0bd2e1aaad32ca71c017a0bed30b3",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20210122_13/16112442716585bBVR_JPEG/XDgjX8LU9TixBje9FHAD_-Ez.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20210122_13/16112442716585bBVR_JPEG/XDgjX8LU9TixBje9FHAD_-Ez.jpg",
-            "https://ldb-phinf.pstatic.net/20210122_120/1611244271684VLHt0_JPEG/fXxmGrE0nA1_jNntPJFtCXKe.jpg",
-            "https://ldb-phinf.pstatic.net/20210122_213/1611244271796qF1Cu_JPEG/2C1lo8jA9hvyklSL-H-JVU6t.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0604216",
-          "y": "35.1536834",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": "None",
-          "skyPanorama": {
-            "id": "pV/7Y3YrZlj62qRwkuNRTA==",
-            "pan": "77.84",
-            "tilt": "-30.00",
-            "lng": "129.0565186",
-            "lat": "35.1528397",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/pyh8198",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.060375,
-                "y": 35.15349
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.060375,
-                "y": 35.15349
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "영업 중",
-          "menuInfo": "100시간(보들리안룸) 110,000 | 50시간(보들리안룸) 60,000 | 1층 일일 이용권 8시간 9,000 | 1층 일일 이용권 7시간 8,000 | 1층 일일 이용권 5시간 6,000 | 1층 일일 이용권 3시간 4,000 | 4층 1인실 일일 이용권 15,000 | 3층 일일 이용권 12,000 | 2층 일일 이용권 11,000 | 1층일일이용권 10,000 | 1층 일일 이용권 2시간 3,000 | 1층 일일 이용권 4시간 5,000 | 1층 일일 이용권 6시간 7,000 | 1층 일일 이용권 연장 1시간 2,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "326979.88",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003306",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "8",
-          "rank": "9",
-          "id": "1524280106",
-          "name": "르하임스터디카페 부산개금점",
-          "tel": "",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "0",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1005804"
-            ],
-            [
-              "1004760",
-              "1004542"
-            ]
-          ],
-          "rcode": "08230111",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 개금동 177-243 SH빌딩 11층",
-          "roadAddress": "부산광역시 부산진구 가야대로 462-1 SH빌딩 11층",
-          "abbrAddress": "개금동 177-243 SH빌딩 11층",
-          "shortAddress": [
-            "부산 부산진구",
-            "가야대로 462-1",
-            "SH빌딩 11층"
-          ],
-          "display": "르하임<b>스터디카페</b> 부산개금점",
-          "telDisplay": "",
-          "context": [],
-          "reviewCount": 33,
-          "placeReviewCount": 90,
-          "ktCallMd": "a3c2e3f5d37542f010ac7b8f15ffb8c8",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20240702_286/1719882989590ycvvy_JPEG/%B0%B3%B1%DD.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20240702_286/1719882989590ycvvy_JPEG/%B0%B3%B1%DD.jpg",
-            "https://ldb-phinf.pstatic.net/20190409_49/1554796169557Tw0xh_JPEG/WN8VeBgv-y0Cp8pe0uGaLaww.jpg",
-            "https://ldb-phinf.pstatic.net/20190521_178/1558426840717EARca_JPEG/ZdEZkQbLXzeHiTzRmOfb8iUi.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0225933",
-          "y": "35.1528553",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "nMHLTz6WX7MKpflTvh6BYw==",
-            "pan": "-170.10",
-            "tilt": "10.00",
-            "lng": "129.0226398",
-            "lat": "35.1531196",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "LxflWVKn7so4qKf/ZJbtLQ==",
-            "pan": "-6.51",
-            "tilt": "-30.00",
-            "lng": "129.0229187",
-            "lat": "35.1500015",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://lchayim98.modoo.at/",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.022593,
-                "y": 35.152713
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.022592,
-                "y": 35.153015
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "1회 시간권 (2시간) 3,000 | 1회 시간권 (4시간) 5,000 | 1회 시간권 (6시간) 6,000 | 1회 시간권 (9시간) 8,000 | 1회 시간권 (12시간) 10,000 | 2주 기간권 (14일) 80,000 | 4주 기간권 (28일) 120,000 | 50시간 정액권 70,000 | 100시간 정액권 120,000 | 200시간 정액권 220,000 | 5인실 스터디룸 1시간 8,000 | 5인실 스터디룸 10시간 (정액권) 70,000 | 5인실 스터디룸 20시간 (정액권) 140,000 | 6인실 스터디룸 1시간 9,000 | 6인실 스터디룸 10시간 (정액권) 80,000 | 6인실 스터디룸 20시간 (정액권) 160,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "325135.34",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1005804",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "9",
-          "rank": "10",
-          "id": "1539710794",
-          "name": "멘토즈스터디카페 부산개금점",
-          "tel": "0507-1429-8941",
-          "isCallLink": "False",
-          "virtualTel": "0507-1429-8941",
-          "virtualTelDisplay": "0507-1429-8941",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004844"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230111",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 개금동 198-1 5층",
-          "roadAddress": "부산광역시 부산진구 개금온정로 6 5층",
-          "abbrAddress": "개금동 198-1 5층",
-          "shortAddress": [
-            "부산 부산진구",
-            "개금온정로 6",
-            "5층"
-          ],
-          "display": "멘토즈<b>스터디카페</b> 부산개금점",
-          "telDisplay": "0507-1429-8941",
-          "context": [],
-          "reviewCount": 95,
-          "placeReviewCount": 137,
-          "ktCallMd": "928934bc7f20da4ddfc2f9e364c10b9e",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20240620_201/17188628308230cAPY_JPEG/1000027246.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20240620_201/17188628308230cAPY_JPEG/1000027246.jpg",
-            "https://ldb-phinf.pstatic.net/20240718_184/1721273160684LxNsF_JPEG/001.jpg",
-            "https://ldb-phinf.pstatic.net/20240721_65/1721552078775bNqb5_JPEG/1721552056553.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0255659",
-          "y": "35.1536882",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "ygxy85k+z7bvp6kYB7j+TQ==",
-            "pan": "90.22",
-            "tilt": "10.00",
-            "lng": "129.0253689",
-            "lat": "35.1536889",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "xtjCyot7ebdd/rnNAUTzvQ==",
-            "pan": "-172.06",
-            "tilt": "-30.00",
-            "lng": "129.0259857",
-            "lat": "35.1566658",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/mentorsbluesky",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.0254394,
-                "y": 35.1537726
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.0254394,
-                "y": 35.1537726
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "✍️기간내 무제한 이용 변동가격(업주문의) | 기간권 12주(84일) 350,000 | 기간권 4주(28일) 130,000 | 기간권 2주(14일) 80,000 | ✍️사용한 시간만큼 차감 변동가격(업주문의) | 시간권 200시간(유효기간32주) 220,000 | 시간권 100시간(유효기간16주) 120,000 | 시간권 50시간(유효기간8주) 70,000 | ✍️1회권 결제시점부터 이용 변동가격(업주문의) | 당일권 10시간 10,000 | 당일권 8시간 8,000 | 당일권 6시간 6,000 | 당일권 4시간 5,000 | 당일권 2시간 3,000 | 당일권 시간초과시 1시간당 2,000 | ✍️고정석(노블레스석) 변동가격(업주문의) | 지정석 12주(84일) 480,000 | 지정석 4주(28일) 200,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "325207.25",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004844",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "10",
-          "rank": "11",
-          "id": "1064193153",
-          "name": "화이트펜슬 스터디카페 냉정점",
-          "tel": "",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "0",
-          "category": [
-            "스터디카페"
-          ],
-          "categoryPath": [
-            [
-              "220036",
-              "220052",
-              "220587",
-              "1003616",
-              "1003617"
-            ]
-          ],
-          "rcode": "08530106",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 사상구 주례동 60-8 동서빌딩 8층",
-          "roadAddress": "부산광역시 사상구 가야대로 370 동서빌딩 8층",
-          "abbrAddress": "주례동 60-8 동서빌딩 8층",
-          "shortAddress": [
-            "부산 사상구",
-            "가야대로 370",
-            "동서빌딩 8층"
-          ],
-          "display": "화이트펜슬 <b>스터디카페</b> 냉정점",
-          "telDisplay": "",
-          "context": [],
-          "reviewCount": 24,
-          "placeReviewCount": 69,
-          "ktCallMd": "4fada41d8cea48958e89e764b9bd1cfd",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20220318_140/1647576435544jsbqu_JPEG/6B09C176-72E9-4DF7-9605-004FA93F6FC5.JPG",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20220318_140/1647576435544jsbqu_JPEG/6B09C176-72E9-4DF7-9605-004FA93F6FC5.JPG",
-            "https://ldb-phinf.pstatic.net/20220318_9/1647576435640fxaPH_JPEG/18F85415-30EE-4993-964D-4EBA71FBB347.JPG",
-            "https://ldb-phinf.pstatic.net/20220318_25/1647576435583WTlvc_JPEG/71A3DD52-0D85-4560-B7A1-90F05CBD5FDF.JPG"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0129142",
-          "y": "35.1510166",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "u69UrClFh4A8Yj78emXHNA==",
-            "pan": "-177.19",
-            "tilt": "10.00",
-            "lng": "129.0129242",
-            "lat": "35.1512141",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "FXg8NSj+3bRj2tKYRBpabQ==",
-            "pan": "5.02",
-            "tilt": "-30.00",
-            "lng": "129.0128174",
-            "lat": "35.1499138",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.0128096,
-                "y": 35.1511063
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.0128096,
-                "y": 35.1511063
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "당일권 2 시간 3,000 | 당일권 4 시간 5,000 | 당일권 6 시간 6,000 | 당일권 9 시간 8,000 | 당일권 12 시간 10,000 | 시간권 50 시간 60,000 | 시간권 100 시간 - 사물함추가 100,000 | 시간권 200 시간 - 사물함 추가 180,000 | 2주 기간권 60,000 | 4주 기간권 - 사물함추가 120,000 | 8주 기간권 - 사물함추가 225,000 | 12주 기간권 - 사물함추가 315,000 | 사물함 2주 이용권 6,000 | 사물함 4주 이용권 10,000 | 사물함 8주 이용권 18,000 | 사물함 12주 이용권 25,000 | 스터디룸 2시간 / 1인 5,000 | 스터디룸 4 시간 / 1인 8,500 | 스터디룸 6시간 / 1인 13,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324817.25",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003617",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "11",
-          "rank": "12",
-          "id": "1166020223",
-          "name": "멘토즈스터디카페 초읍연지점",
-          "tel": "0507-1360-8937",
-          "isCallLink": "False",
-          "virtualTel": "0507-1360-8937",
-          "virtualTelDisplay": "0507-1360-8937",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004844"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230107",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 초읍동 269-48 2층",
-          "roadAddress": "부산광역시 부산진구 새싹로 196 2층",
-          "abbrAddress": "초읍동 269-48 2층",
-          "shortAddress": [
-            "부산 부산진구",
-            "새싹로 196",
-            "2층"
-          ],
-          "display": "멘토즈<b>스터디카페</b> 초읍연지점",
-          "telDisplay": "0507-1360-8937",
-          "context": [],
-          "reviewCount": 62,
-          "placeReviewCount": 50,
-          "ktCallMd": "7ca77fb8a9f9e9935f39ca98a9ce4880",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20210702_171/1625209301476EnUNX_JPEG/haXbOceyG-_t7qX68uw-TGYG.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20210702_171/1625209301476EnUNX_JPEG/haXbOceyG-_t7qX68uw-TGYG.jpg",
-            "https://ldb-phinf.pstatic.net/20220406_97/1649233532729n74Vh_JPEG/KakaoTalk_20210702_144223954_19%28%BC%F6%C1%A4%29.jpg",
-            "https://ldb-phinf.pstatic.net/20220303_282/1646284159869z5fx8_JPEG/KakaoTalk_20211227_094039090_08.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0493896",
-          "y": "35.1736692",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "KZ7ChQAQnoWng2tEJfKR3g==",
-            "pan": "4.03",
-            "tilt": "10.00",
-            "lng": "129.0493830",
-            "lat": "35.1735756",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "GgD1Vri0TzyuM2bnUsWXfQ==",
-            "pan": "11.80",
-            "tilt": "-30.00",
-            "lng": "129.0490875",
-            "lat": "35.1722221",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "http://pf.kakao.com/_kAhCs",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.049539,
-                "y": 35.173636
-              },
-              {
-                "rep": "False",
-                "x": 129.049262,
-                "y": 35.173762
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.049539,
-                "y": 35.173636
-              },
-              {
-                "rep": "False",
-                "x": 129.049262,
-                "y": 35.173762
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "당일권 2시간 4,000 | 당일권 4시간 6,500 | 당일권 6시간 9,000 | 당일권 8시간 11,500 | 당일권 12시간 13,000 | 시간권 50시간(유효기간 8주) 82,000 | 시간권 100시간(유효기간 16주) 135,000 | 기간권 2주(14일) 92,000 | 기간권 4주(28일) 145,000 | 사물함 4주 이용권 11,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "True",
-          "naverBookingUrl": "https://booking.naver.com/booking/10/bizes/918304",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "True",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324576.41",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004844",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "12",
-          "rank": "13",
-          "id": "1577399801",
-          "name": "멘토즈스터디카페 당감화승점",
-          "tel": "0507-1494-4570",
-          "isCallLink": "False",
-          "virtualTel": "0507-1494-4570",
-          "virtualTelDisplay": "0507-1494-4570",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004844"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230108",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 부암동 504",
-          "roadAddress": "부산광역시 부산진구 당감서로 88 5층",
-          "abbrAddress": "부암동 504",
-          "shortAddress": [
-            "부산 부산진구",
-            "당감서로 88",
-            "5층"
-          ],
-          "display": "멘토즈<b>스터디카페</b> 당감화승점",
-          "telDisplay": "0507-1494-4570",
-          "context": [],
-          "reviewCount": 79,
-          "placeReviewCount": 73,
-          "ktCallMd": "5d91279d35bb314ea472f2101d3c6555",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20230724_63/1690189368919N4IjA_JPEG/KakaoTalk_20230724_180217297_04.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20230724_63/1690189368919N4IjA_JPEG/KakaoTalk_20230724_180217297_04.jpg",
-            "https://ldb-phinf.pstatic.net/20230724_164/1690189368146MIdWR_JPEG/KakaoTalk_20230724_180217297_01.jpg",
-            "https://ldb-phinf.pstatic.net/20230724_120/1690189368431N9wjW_JPEG/KakaoTalk_20230724_180217297_02.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0368754",
-          "y": "35.1684523",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "MA5f4WKBQadyPeoJqryz2A==",
-            "pan": "-65.65",
-            "tilt": "10.00",
-            "lng": "129.0370431",
-            "lat": "35.1683764",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "dKMFKMGtbFSnBtkvu4K7KQ==",
-            "pan": "-7.22",
-            "tilt": "-30.00",
-            "lng": "129.0372772",
-            "lat": "35.1652794",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/mentors_danggam",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.036726,
-                "y": 35.168353
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.037016,
-                "y": 35.168485
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "4주(28일) 기간권 130,000 | 100시간 시간권 120,000 | 2주(14일) 기간권 80,000 | 50시간 시간권 70,000 | 2시간 당일권 3,000 | 4시간 당일권 5,000 | 6시간 당일권 7,000 | 8시간 당일권 9,000 | 12시간 당일권 11,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "True",
-          "naverBookingUrl": "https://booking.naver.com/booking/5/bizes/584156",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "True",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "True",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324418.25",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004844",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "13",
-          "rank": "14",
-          "id": "1530300915",
-          "name": "화이트펜슬 스터디카페 가야점",
-          "tel": "0507-1337-2484",
-          "isCallLink": "False",
-          "virtualTel": "0507-1337-2484",
-          "virtualTelDisplay": "0507-1337-2484",
-          "ppc": "1",
-          "category": [
-            "스터디카페"
-          ],
-          "categoryPath": [
-            [
-              "220036",
-              "220052",
-              "220587",
-              "1003616",
-              "1003617"
-            ]
-          ],
-          "rcode": "08230110",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 가야동 379-3 세화오피스텔 2층",
-          "roadAddress": "부산광역시 부산진구 대학로 3 세화오피스텔 2층",
-          "abbrAddress": "가야동 379-3 세화오피스텔 2층",
-          "shortAddress": [
-            "부산 부산진구",
-            "대학로 3",
-            "세화오피스텔 2층"
-          ],
-          "display": "화이트펜슬 <b>스터디카페</b> 가야점",
-          "telDisplay": "0507-1337-2484",
-          "context": [],
-          "reviewCount": 16,
-          "placeReviewCount": 92,
-          "ktCallMd": "96fc3aff9fc840ea5ddf78a0ab08978a",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20191216_230/1576462120306j1iMC_JPEG/3jLnCeIc8Oy2pK3zZwa3nN8l.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20191216_230/1576462120306j1iMC_JPEG/3jLnCeIc8Oy2pK3zZwa3nN8l.jpg",
-            "https://ldb-phinf.pstatic.net/20191216_293/1576462120441anIAx_JPEG/kQ58RT9XswM36qFVIk6JBRy4.jpg",
-            "https://ldb-phinf.pstatic.net/20200102_174/1577950155304sQPiD_JPEG/X4oS-wSKJmKBCAF-XQWFfQgl.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0379826",
-          "y": "35.1545017",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "KGwaLJ3aSpC27IGbKTg1Lw==",
-            "pan": "139.29",
-            "tilt": "10.00",
-            "lng": "129.0378559",
-            "lat": "35.1546487",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "g8FQfgjtJLg7W4fT1UrYUg==",
-            "pan": "169.61",
-            "tilt": "-30.00",
-            "lng": "129.0375824",
-            "lat": "35.1566658",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/alflqwk7794",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.037707,
-                "y": 35.154551
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.037707,
-                "y": 35.154551
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "당일권_2시간 3,000 | 당일권_4시간 5,000 | 당일권_6시간 6,000 | 당일권_9시간 8,000 | 당일권12시간 10,000 | 정액권50시간 70,000 | 정액권100시간 120,000 | 기간권_2주 80,000 | 기간권_4주 120,000 | 8인스터디룸_1시간 12,000 | 8인스터디룸_20시간정액권 220,000 | 8인스터디룸_30시간정액권 330,000 | 사물함15일이용권 6,000 | 사물함30일이용권 10,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "325761.69",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003617",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "14",
-          "rank": "15",
-          "id": "1169417166",
-          "name": "작심스터디카페 부산초읍점",
-          "tel": "",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "0",
-          "category": [
-            "임대,대여",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1003306"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230106",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 연지동 353-1 106동 상가 지하1층",
-          "roadAddress": "부산광역시 부산진구 새싹로 177 106동 상가 지하1층",
-          "abbrAddress": "연지동 353-1 106동 상가 지하1층",
-          "shortAddress": [
-            "부산 부산진구",
-            "새싹로 177",
-            "106동 상가 지하1층"
-          ],
-          "display": "작심<b>스터디카페</b> 부산초읍점",
-          "telDisplay": "",
-          "context": [],
-          "reviewCount": 11,
-          "placeReviewCount": 32,
-          "ktCallMd": "a6d101cf595ef37a2847a5632b6f6eb2",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20240130_81/1706583533143MVm3u_JPEG/%C3%CA%C0%BE_%B0%A3%C6%C7.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20240130_81/1706583533143MVm3u_JPEG/%C3%CA%C0%BE_%B0%A3%C6%C7.jpg",
-            "https://ldb-phinf.pstatic.net/20240702_39/1719887713964YRfQR_JPEG/%C3%CA%C0%BE_%C0%CC%BA%A5%C6%AE_%C5%DB%C7%C3%B8%B4.jpg",
-            "https://ldb-phinf.pstatic.net/20240130_191/1706583761034VjnHj_JPEG/KakaoTalk_20240116_171721091.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0495067",
-          "y": "35.1719544",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "AFyZMEsHXS3CFaQ+w3MYIw==",
-            "pan": "-95.61",
-            "tilt": "10.00",
-            "lng": "129.0496763",
-            "lat": "35.1719710",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "GgD1Vri0TzyuM2bnUsWXfQ==",
-            "pan": "122.61",
-            "tilt": "-30.00",
-            "lng": "129.0490875",
-            "lat": "35.1722221",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.04955,
-                "y": 35.17206
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.04955,
-                "y": 35.17206
-              },
-              {
-                "rep": "False",
-                "x": 129.049597,
-                "y": 35.171889
-              },
-              {
-                "rep": "False",
-                "x": 129.049432,
-                "y": 35.171933
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "2시간권 4,000 | 4시간권 6,000 | 6시간권 8,000 | 8시간권 10,000 | 12시간권 12,000 | 50시간권 70,000 | 100시간권 96,000 | 1주(기간정기권) 50,000 | 2주(기간정기권) 80,000 | 4주(기간정기권) 104,000 | 고정석 1주(기간정기권) 60,000 | 고정석 2주(기간정기권) 100,000 | 고정석 4주(기간정기권) 128,000 | 사물함이용권 (2주) 6,000 | 사물함이용권 (4주) 10,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324740.75",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1003306",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "15",
-          "rank": "16",
-          "id": "1103658964",
-          "name": "플랜트스터디카페 개금라운지",
-          "tel": "0507-1392-5802",
-          "isCallLink": "False",
-          "virtualTel": "0507-1392-5802",
-          "virtualTelDisplay": "0507-1392-5802",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004990"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08230111",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 개금동 527-189 2층",
-          "roadAddress": "부산광역시 부산진구 엄광로 35 2층",
-          "abbrAddress": "개금동 527-189 2층",
-          "shortAddress": [
-            "부산 부산진구",
-            "엄광로 35",
-            "2층"
-          ],
-          "display": "플랜트<b>스터디카페</b> 개금라운지",
-          "telDisplay": "0507-1392-5802",
-          "context": [],
-          "reviewCount": 13,
-          "placeReviewCount": 346,
-          "ktCallMd": "02eb32f53ac81ac486b3097d5bdfab20",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20201108_55/1604792019538tsAs6_JPEG/0vJwAnJUkNInkTVvggEk9VCq.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20201108_55/1604792019538tsAs6_JPEG/0vJwAnJUkNInkTVvggEk9VCq.jpg",
-            "https://ldb-phinf.pstatic.net/20201228_23/1609153315703Kcegr_JPEG/ecHLBmAfNsgJ99Cxz7hn6FK_.jpg",
-            "https://ldb-phinf.pstatic.net/20201108_30/1604792047675j40t9_JPEG/5nasDKbBoLJsQr4TjPHpCjhC.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0199327",
-          "y": "35.1483287",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "EX77RIIV4Rn0ixRVhSdbVA==",
-            "pan": "79.95",
-            "tilt": "30.00",
-            "lng": "129.0199606",
-            "lat": "35.1481762",
-            "fov": "57"
-          },
-          "skyPanorama": {
-            "id": "qMVcaY7qx9MyIH8Dd5DCKg==",
-            "pan": "-173.49",
-            "tilt": "-30.00",
-            "lng": "129.0201263",
-            "lat": "35.1500015",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/licjjoi",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.019911,
-                "y": 35.148262
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.019911,
-                "y": 35.148262
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "당일 이용권  1시간 2,000 | 당일 이용권  2시간 3,000 | 당일 이용권 4시간 5,000 | 당일 이용권 6시간 6,000 | 당일 이용권 9시간 8,000 | 당일 이용권 12시간 10,000 | 기간 이용권 2주+1일(15일) 70,000 | 기간 이용권 4주+2일(30일) 130,000 | 기간 이용권 6주+3일(45일) 190,000 | 시간 충전권 50시간 70,000 | 시간 충전권 100시간 120,000 | 시간 충전권 150시간 170,000 | 시간 충전권 200시간 200,000 | 고정석 이용권 1인 28일 190,000 | 사물함이용권 30일 10,000 | 사물함이용권 60일 18,000 | 사물함이용권 90일 25,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "https://booking.naver.com/booking/6/bizes/435222",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "325419.53",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004990",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "16",
-          "rank": "17",
-          "id": "1318325663",
-          "name": "초심스터디카페 부산개금점",
-          "tel": "0507-1369-2269",
-          "isCallLink": "False",
-          "virtualTel": "0507-1369-2269",
-          "virtualTelDisplay": "0507-1369-2269",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004585"
-            ]
-          ],
-          "rcode": "08230111",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 개금동 171-108 2층",
-          "roadAddress": "부산광역시 부산진구 가야대로482번길 18 2층",
-          "abbrAddress": "개금동 171-108 2층",
-          "shortAddress": [
-            "부산 부산진구",
-            "가야대로482번길 18",
-            "2층"
-          ],
-          "display": "초심<b>스터디카페</b> 부산개금점",
-          "telDisplay": "0507-1369-2269",
-          "context": [],
-          "reviewCount": 8,
-          "placeReviewCount": 22,
-          "ktCallMd": "7e053a04ecbb4e853ca3fd5fda7fc1e1",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20220908_115/1662603640772cf4SB_JPEG/downloadImage_%2815%29.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20220908_115/1662603640772cf4SB_JPEG/downloadImage_%2815%29.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0246465",
-          "y": "35.1521908",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": "None",
-          "skyPanorama": {
-            "id": "cf/3hyqGRolyO8QgHZEfog==",
-            "pan": "10.75",
-            "tilt": "-30.00",
-            "lng": "129.0242310",
-            "lat": "35.1500015",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://chosimstudybs.modoo.at/",
-          "description": "",
-          "entranceCoords": "None",
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "None",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "325301.16",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004585",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "17",
-          "rank": "18",
-          "id": "1205834710",
-          "name": "시작스터디카페 부산가야점",
-          "tel": "051-898-0901",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004919"
-            ],
-            [
-              "1004760",
-              "1004542"
-            ]
-          ],
-          "rcode": "08230110",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 가야동 265-8 6층",
-          "roadAddress": "부산광역시 부산진구 가야대로 586 6층 시작스터디카페 부산가야점",
-          "abbrAddress": "가야동 265-8 6층",
-          "shortAddress": [
-            "부산 부산진구",
-            "가야대로 586",
-            "6층 시작스터디카페 부산가야점"
-          ],
-          "display": "시작<b>스터디카페</b> 부산가야점",
-          "telDisplay": "051-898-0901",
-          "context": [],
-          "reviewCount": 3,
-          "placeReviewCount": 114,
-          "ktCallMd": "6cf61761be75260eee6609259c1da1ae",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20200309_109/1583716471720QO4Yg_JPEG/Rn32n7rE1JTKzQn_DgtY5QgQ.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20200309_109/1583716471720QO4Yg_JPEG/Rn32n7rE1JTKzQn_DgtY5QgQ.jpg",
-            "https://ldb-phinf.pstatic.net/20200309_177/1583716471835Nq2sC_JPEG/Ll6Sa6nkC2UaFHBB8jwTZ9Sq.jpg",
-            "https://ldb-phinf.pstatic.net/20200309_183/1583716472418wkYO4_JPEG/wWOkreuB_8d2a9uomZbxgHXm.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0359645",
-          "y": "35.1543299",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "3ntMY2of9eFTSjJTGyplUQ==",
-            "pan": "165.08",
-            "tilt": "10.00",
-            "lng": "129.0359155",
-            "lat": "35.1545128",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "nUV6sTvIHcxWwMdnhRNPhg==",
-            "pan": "167.22",
-            "tilt": "-30.00",
-            "lng": "129.0354309",
-            "lat": "35.1566658",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/sizaklibrary",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.035807,
-                "y": 35.15429
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.035875,
-                "y": 35.154426
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "일일 시간권 1시간 2,000 | 일일 시간권 2시간 3,000 | 일일 시간권 3시간 4,000 | 일일 시간권 4시간 5,000 | 일일 시간권 6시간 6,000 | 일일 시간권 9시간 8,000 | 일일 시간권 12시간 10,000 | 시간 패키지 30시간 45,000 | 시간 패키지 50시간 70,000 | 시간 패키지 100시간 120,000 | 시간 패키지 200시간 220,000 | 기간권 1주 50,000 | 기간권 2주 80,000 | 기간권 4주 120,000 | 기간권 8주 220,000 | 4인석 1시간 7,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "325674.91",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004919",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "18",
-          "rank": "19",
-          "id": "1582836539",
-          "name": "멘토즈스터디카페 부산동의대점",
-          "tel": "0507-1358-9103",
-          "isCallLink": "False",
-          "virtualTel": "0507-1358-9103",
-          "virtualTelDisplay": "0507-1358-9103",
-          "ppc": "1",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004844"
-            ]
-          ],
-          "rcode": "08230110",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 부산진구 가야동 459-41 4층",
-          "roadAddress": "부산광역시 부산진구 엄광로 176-5 4층",
-          "abbrAddress": "가야동 459-41 4층",
-          "shortAddress": [
-            "부산 부산진구",
-            "엄광로 176-5",
-            "4층"
-          ],
-          "display": "멘토즈<b>스터디카페</b> 부산동의대점",
-          "telDisplay": "0507-1358-9103",
-          "context": [],
-          "reviewCount": 15,
-          "placeReviewCount": 38,
-          "ktCallMd": "09de8344cccac7207bc35ff3a5ad2e6b",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20221124_223/1669252825299kuTPn_JPEG/KakaoTalk_20221123_130850410_28.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20221124_223/1669252825299kuTPn_JPEG/KakaoTalk_20221123_130850410_28.jpg",
-            "https://ldb-phinf.pstatic.net/20221124_64/16692528251659Q9IC_JPEG/KakaoTalk_20221123_130753869_18.jpg",
-            "https://ldb-phinf.pstatic.net/20221124_8/1669252825186aIBk8_JPEG/KakaoTalk_20221123_130850410_25.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0339255",
-          "y": "35.1472174",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "Or7rKD0r6vZ1Sjk4qa5HNg==",
-            "pan": "-89.65",
-            "tilt": "10.00",
-            "lng": "129.0340279",
-            "lat": "35.1472169",
-            "fov": "120"
-          },
-          "skyPanorama": {
-            "id": "1Vrqo2smzb6sTWXW45oXug==",
-            "pan": "20.45",
-            "tilt": "-30.00",
-            "lng": "129.0332031",
-            "lat": "35.1452789",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/mentorsdeu1004",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.033998,
-                "y": 35.147175
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.03382,
-                "y": 35.147294
-              },
-              {
-                "rep": "False",
-                "x": 129.033999,
-                "y": 35.147352
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "None",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "https://booking.naver.com/booking/5/bizes/843431",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": "신규회원만 무료체험 2시간 가능합니다."
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "326229.47",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004844",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
-        },
-        {
-          "index": "19",
-          "rank": "20",
-          "id": "1013201667",
-          "name": "플랜트스터디카페 냉정역라운지",
-          "tel": "",
-          "isCallLink": "False",
-          "virtualTel": "",
-          "virtualTelDisplay": "",
-          "ppc": "0",
-          "category": [
-            "서비스,산업",
-            "장소대여"
-          ],
-          "categoryPath": [
-            [
-              "225111",
-              "225130",
-              "229970",
-              "1004990"
-            ],
-            [
-              "1004760",
-              "1004380",
-              "1002043"
-            ]
-          ],
-          "rcode": "08530106",
-          "businessStatus": {
-            "requestTime": "202408152018",
-            "status": {
-              "code": 8,
-              "text": "24시간 영업",
-              "emphasis": "False",
-              "description": "24시간 영업",
-              "detailInfo": ""
-            },
-            "businessHours": "202408150000~202408152400",
-            "breakTime": "",
-            "lastOrder": ""
-          },
-          "naviInfoText": "None",
-          "address": "부산광역시 사상구 주례동 183-5 2층",
-          "roadAddress": "부산광역시 사상구 주례로 10 2층",
-          "abbrAddress": "주례동 183-5 2층",
-          "shortAddress": [
-            "부산 사상구",
-            "주례로 10",
-            "2층"
-          ],
-          "display": "플랜트<b>스터디카페</b> 냉정역라운지",
-          "telDisplay": "",
-          "context": [],
-          "reviewCount": 24,
-          "placeReviewCount": 31,
-          "ktCallMd": "fcbbbc23ec6e2656065b5d10a56d357d",
-          "coupon": "0",
-          "thumUrl": "https://ldb-phinf.pstatic.net/20210517_258/16212161644068SOy6_JPEG/bQiOM24OXQSmxUfkdDGV0YWp.jpeg.jpg",
-          "thumUrls": [
-            "https://ldb-phinf.pstatic.net/20210517_258/16212161644068SOy6_JPEG/bQiOM24OXQSmxUfkdDGV0YWp.jpeg.jpg",
-            "https://ldb-phinf.pstatic.net/20210328_60/16169383777645buP2_JPEG/H6_rLORKHmg0xEKyNK4YkgDY.jpeg.jpg",
-            "https://ldb-phinf.pstatic.net/20210517_210/1621216140015KOX2J_JPEG/bfxxHTDrF-CuaNwOa-XNz40X.jpeg.jpg"
-          ],
-          "type": "s",
-          "isSite": "1",
-          "posExact": "1",
-          "x": "129.0112287",
-          "y": "35.1501990",
-          "itemLevel": "12",
-          "isAdultBusiness": "False",
-          "streetPanorama": {
-            "id": "kFUECaEnWfu+sp4cCFvM5g==",
-            "pan": "-137.36",
-            "tilt": "19.69",
-            "lng": "129.0113848",
-            "lat": "35.1504741",
-            "fov": "62"
-          },
-          "skyPanorama": {
-            "id": "SRSp+Pb69JwWNV4M+hGMdQ==",
-            "pan": "-31.52",
-            "tilt": "-30.00",
-            "lng": "129.0115204",
-            "lat": "35.1497231",
-            "fov": "124"
-          },
-          "insidePanorama": "None",
-          "interiorPanorama": "None",
-          "indoorPanorama": "None",
-          "theme": "None",
-          "poiInfo": {
-            "relation": "None",
-            "hasRelation": "False",
-            "road": {
-              "poiShapeType": "1",
-              "shapeKey": "None",
-              "boundary": "None",
-              "detail": "None"
-            },
-            "hasRoad": "False",
-            "land": "None",
-            "hasLand": "False",
-            "polygon": "None",
-            "hasPolygon": "False"
-          },
-          "homePage": "https://blog.naver.com/plantof",
-          "description": "",
-          "entranceCoords": {
-            "car": [
-              {
-                "rep": "True",
-                "x": 129.011319,
-                "y": 35.150183
-              }
-            ],
-            "walk": [
-              {
-                "rep": "True",
-                "x": 129.011319,
-                "y": 35.150183
-              }
-            ]
-          },
-          "isPollingPlace": "False",
-          "bizhourInfo": "24시간 영업",
-          "menuInfo": "2시간 (1일 시간권) 3,000 | 4시간 (1일 시간권) 5,000 | 6시간 (1일 시간권) 6,000 | 9시간 (1일 시간권) 8,000 | 12시간 (1일 시간권) 10,000 | 50시간 (1인 시간권)  60,000 | 100시간 (1인 시간권) 110,000 | 150시간 (1인 시간권) 150,000 | 200시간 (1인 시간권) 180,000 | 15일 기간권 (1인 자유석 기간권) 80,000 | 30일 기간권 (1인 자유석 기간권) 130,000 | 45일 기간권 (1인 자유석 기간권) 180,000 | 1인실 28일 고정석 (3석 선착순) 변동가격(업주문의) | 개방형 칸막이 28일 고정석 170,000 | LOCKER 사물함 30일 10,000 | LOCKER 사물함 45일 14,000 | LOCKER 사물함 60일 18,000 | LOCKER 사물함 90일 25,000 | 7일 기간권 50,000",
-          "petrolInfo": "None",
-          "couponUrl": "None",
-          "couponUrlMobile": "None",
-          "hasCardBenefit": "False",
-          "menuExist": "1",
-          "hasNaverBooking": "False",
-          "naverBookingUrl": "",
-          "naverEasyOrderUrl": "None",
-          "hasNaverSmartOrder": "False",
-          "reservationLabel": {
-            "standard": "False",
-            "preOrder": "False",
-            "table": "False",
-            "takeout": "False"
-          },
-          "reservation": {
-            "benefit": ""
-          },
-          "hasBroadcastInfo": "False",
-          "broadcastInfo": "None",
-          "shopWindowInfo": "None",
-          "hasNPay": "False",
-          "carWash": "",
-          "parkingPrice": "None",
-          "card": "None",
-          "distance": "324809.19",
-          "marker": "nres://marker/00079-00145",
-          "markerSelected": "nres://marker/00079-00309",
-          "markerId": "1004990",
-          "microReview": [],
-          "michelinGuide": "None",
-          "indoor": "None",
-          "markerLabel": "None",
-          "subway": "None",
-          "evChargerVendor": "None",
-          "evChargerPublic": "None",
-          "evChargerParking": "None",
-          "evChargerInfo": "None"
+          'type': 'image',
+          'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDA1MjJfMjQx/MDAxNzE2Mzc3MDk5ODY3.SK7W8l9EdUe4dGWaZvz6MPoVJCHXvM9_5-XPyx0SmEUg.U6TlJoD-cJcfC2VDCqFGIGlM_t7rX9S5uqtkW2LC5rYg.JPEG/FE16E15F-2B56-4C30-91D6-7226C0834FBA.jpeg?type=w1500_60_sharpen'
         }
       ]
     },
-    "bus": "None"
-  }
+    {
+      'id': '660a37b133133bdb93e2b863',
+      'rating': None,
+      'author': {
+        'nickname': 'lloaapp',
+        'imageUrl': None
+      },
+      'body': '스터디카페 여러 군데 다녀봤는데 작심스터디카페가 가장 좋았어요. 시디즈 의자라서 그런지 오래 앉아있어도 불편하지가 않아요!!',
+      'created': '4.1.월',
+      'tags': None,
+      'media': [
+        {
+          'type': 'image',
+          'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDA0MDFfMjU1/MDAxNzExOTQ1NjQ4MDMw.ldlmPnl7Ms1EIYNW75ZUYLzCcDg4uTdR2cXq3GfbjcUg.RwoMn08aN3173g5E4ehpgKTC9xM77VdkeswsVBPYiWAg.JPEG/9D8BABEE-B875-4F37-A4E6-283D1C023939.jpeg?type=w1500_60_sharpen'
+        },
+        {
+          'type': 'image',
+          'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDA0MDFfMjI2/MDAxNzExOTQ1NjQ4NDI2.1bi72E_Ekq8naIxfbeTLnQtSyc4VpfaKwD_inISLL8sg.jGlcSD6WvmqpYkmGp_FO-kZgCnXx6LR2ox1W4pXawSsg.JPEG/3A242B07-E16F-439E-BAF5-0B45FC0DA9C4.jpeg?type=w1500_60_sharpen'
+        }
+      ]
+    }
+  ],
+  '리뷰 분석': [
+    {
+      'code': 'study_good',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/laptop20220119222228.png',
+      'displayName': '집중하기 좋아요',
+      'count': 32
+    },
+    {
+      'code': 'store_clean',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/sparkles20220119222028.png',
+      'displayName': '매장이 청결해요',
+      'count': 18
+    },
+    {
+      'code': 'comfy',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/couch20220119222228.png',
+      'displayName': '좌석이 편해요',
+      'count': 14
+    },
+    {
+      'code': 'atmosphere_calm',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/face_relieved20220119222233.png',
+      'displayName': '차분한 분위기예요',
+      'count': 12
+    },
+    {
+      'code': 'interior_cool',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/couch_and_lamp20220119222025.png',
+      'displayName': '인테리어가 멋져요',
+      'count': 10
+    },
+    {
+      'code': 'spacious',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/eyes20220119222026.png',
+      'displayName': '매장이 넓어요',
+      'count': 10
+    },
+    {
+      'code': 'coffee_good',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/coffee20220119222225.png',
+      'displayName': '커피가 맛있어요',
+      'count': 8
+    },
+    {
+      'code': 'quiet_strict',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/index_pointing_up20220119224230.png',
+      'displayName': '분위기 관리가 철저해요',
+      'count': 6
+    },
+    {
+      'code': 'price_cheap',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/coin20220119222025.png',
+      'displayName': '가성비가 좋아요',
+      'count': 3
+    },
+    {
+      'code': 'rest_good',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/tea20220119222229.png',
+      'displayName': '휴게시설이 잘 되어있어요',
+      'count': 3
+    },
+    {
+      'code': 'price_plan',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/clipboard20220119222236.png',
+      'displayName': '요금제가 잘 되어있어요',
+      'count': 2
+    },
+    {
+      'code': 'price_worthy',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/gem_stone20220119222239.png',
+      'displayName': '비싼 만큼 가치있어요',
+      'count': 2
+    },
+    {
+      'code': 'quiet',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/face_shushing20220119222248.png',
+      'displayName': '조용해요',
+      'count': 2
+    },
+    {
+      'code': 'drink_good',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/juice20220119222226.png',
+      'displayName': '음료가 맛있어요',
+      'count': 1
+    },
+    {
+      'code': 'kind',
+      'iconUrl': 'https://ssl.pstatic.net/static/pup/emoji/beating_heart20220119222223.png',
+      'displayName': '친절해요',
+      'count': 1
+    }
+  ]
 }
