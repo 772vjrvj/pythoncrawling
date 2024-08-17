@@ -11,29 +11,33 @@ def fetch_data():
 
     # payload 설정
     payload = {
-        "disableCorrect": False,
-        "filterItems": "",
-        "listId": "9418d09961014fdcbce2dacdd1c21248",
-        "offset": 0,
-        "pageSize": 120,
-        "pageSn": 10009,
-        "query": "여성용 가방",
         "scene": "search",
-        "searchMethod": "user"
+        "pageSn": 10009,
+        "offset": 0,
+        "listId": "69426b1cc6dd4a499b2c56b3ce0e2389",
+        "pageSize": 120,
+        "query": "여성 목걸이",
+        "filterItems": "",
+        "searchMethod": "user",
+        "disableCorrect": False
     }
 
     # 헤더 설정
     headers = {
+        "authority": "www.temu.com",
+        "method": "POST",
+        "path": "/api/poppy/v1/search?scene=search",
+        "scheme": "https",
         "accept": "application/json, text/plain, */*",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "anti-content": "0aqAfxnZLOloF99VZg-3cD1eXbx44pkRoYnUDk40DuCIntns61CKkm7jKf_2-vYf66vaX72s80otear4uN24PE6XQNxNvNRWxAWxRvWKz7ApKPoQZ7fngjf26UqEVVJePqXkB58PapQmgGEZEWQOrKszT7zvsCzSkacTltCThreBmKFxs4ofUlsCOPkF98PbmGj336g01atVPDPpoSwB1BS6RERL5zxc5aELzO6O4woPUWq64HtG4OtfLpPXPxoD-vwEGIG1hByiNaSeUJjfAe2lyCJBfHUpy4Cj6nrtYV5Yng2pw6dBvCGCpH0mJgI9pUXXA1VTunf_fJv4vE9akk-Oyh690Hc9KuS39EFSnKwJ4B_eU_4jCwm-xXqmIk7eugPhDM2uxmBeT8r1p7sAMiHG4kJSk13Ej7-sANApzJkiXlNFxR61KWvlKLKRySuBjnF8G1JImh5_cvOiqjNRhFRY5iqhYtcVxcg1eEZN",
-        "content-length": "194",
+        "anti-content": "0aqAfaOYdySYy99oQBdozO90aHSqPHUVNon7fljkeH3ZUO5HAb0nikQ3BgFDurkOg-pK1FOuO0tsPe3jnxTcEXSx696g_NZPHr0w26837DoJg-iZI45CIbyhwpBlLoAWi30ii6-oG4jEajGAlG7GSFiQGU0D5FRIf6EeRwWb4WUr7d_RJ2NZMoQD5IAPFW2FBXnRTrmm6a0hC0j6cPfc01yTzPGofK0q9nqAEnHGyAxzvZjw1TZvfl-eXx2JHSVATESlJWUAp4RHUUAtdQfqlTcsPjtOTTcIrAzue0JjvIRCmwAkLM15nLukZFrqhZ0GwtrCJNiTNqCErHnJINDftk8_zozpqahUsas8XQsVyLTO70a0APRG-J5sh0UuNTZ6hR07K2HcIqdAEtIl8tzeepQY6_yzMvedtcJXIKB6aoVemfxwDvmldOpqqep9uSVtZfToT0s4LHp5174DHI0dfgoaWXd63TZL6JfmJyFb3Coji7m1YgIKNHVgjeCYASxJTTYdoDjRM1dr1NWWTzZfqYmaoz06luM9bxDiTur8TBQFLXq5fWyHu3wAILSr2jS_reZFL6Y1eSRIgN11ZIwQVu0u4AvS1a7xNpsBls-7goWCEtWr_n1WIk6J9y0Vd-E6FTHjcmncGaRSMHoBVHAlUjS_Cg_bjB-SQmTTHrdndZrQTg7HqRPXzF4XK7-FM18kBCyHkwfEZFDt5fx7Vw_wMKTYlyGS8FKktCYD9WgZ46DYomIW_nbUe6paefmd-lKI0ZevomgPkDPO5p1tyqGaoWmXNmQLE26MEG-5mTytv5p_Utn0YAhYs-vqJe4xaYh6DQ5rERu-iVLQxodXJ_KFZPL",
+        "content-length": "192",
         "content-type": "application/json;charset=UTF-8",
-        "cookie": "region=185; language=ko; currency=KRW; api_uid=CmyENmannHFlXgBgLDVFAg==; timezone=Asia%2FSeoul; webp=1; _nano_fp=XpmxX5PjX0dbnqdqlT_gXzjlJCCTidyaQ5k~jUJ1; _bee=4UoHmiJ1ctuzf2HydeOj5mhi7nHuDdOG; njrpl=4UoHmiJ1ctuzf2HydeOj5mhi7nHuDdOG; dilx=kLHZkv~x0z0Sh3yVGx54s; hfsc=L3yIeos26Tvx1ZLOeA==; _ttc=3.Dgqp8qZKZeBR.1753796618; verifyAuthToken=ldrFseqtunY8WxWpYYH5GQ6875bc747cadf7e45; __cf_bm=hyZjON66FLTruzjYK7NDOGH89wpNY5d4NHAqQJsZldI-1722263304-1.0.1.1-gfIBGCf9COozgtdN2wMGWUNgqw5.EaB7HA6d10iIAW7x.X49IVyBjAopuhrOR6jJa2qCVkilCraz2Uq3V4J4uw",
+        "cookie": "region=185; language=ko; currency=KRW; api_uid=Cm3EUma9xmqCxABHZ/glAg==; timezone=Asia%2FSeoul; webp=1; _nano_fp=XpmxXqmaXqgqn0djXC_pbKCoyOQjaLLqMy7XEpdy; _bee=4UoHmiJ1ctuzf2HydeOj5mhi7nHuDdOG; njrpl=4UoHmiJ1ctuzf2HydeOj5mhi7nHuDdOG; dilx=kLHZkv~x0z0Sh3yVGx54s; hfsc=L3yIeos26Tvx1ZLOeA==; _device_tag=CgI2WRIIWG9MU3RkbnkaMNrEOLr5zU44g5yZCOsCKkbF+KJZ3v8lnQCEfAd+uaOFk64ZYogVSw6JgFF0lRzKnjAC; _ttc=3.rEA8aZtsXcfk.1755249152; __cf_bm=j4dd_OBhgUAoFY95Pjo1tX7DT44vKOCY9B9ETI2RJkk-1723859956-1.0.1.1-jI.pQfuDmZKSzv1k1qA2ZgSTQiHvko4Ga64xOawYC4Bd2a_Vtu.26WPykw8zzMetVc4GSExtbkX5_WBqzVbOJA; _hal_tag=ANjXDmJCkcK9oIGkV9fDD4bb2R4QaSNHDR+w7q5+J/z5nCUk7sfiiNwsB+vtaa85vg==; AccessToken=YQNDL2NDMXKTIANEUD6QCVTCILIVQOZ7TCIWQNQODRNVNENK24YQ0110b9e1f65a; user_uin=BB6JGKXN5EDDJKIHK2SWSHR6PK5IQHPMSAQH6DJA; isLogin=1723859975843",
         "origin": "https://www.temu.com",
         "priority": "u=1, i",
-        "referer": "https://www.temu.com/search_result.html?search_key=%EC%97%AC%EC%84%B1%EC%9A%A9%20%EA%B0%80%EB%B0%A9&search_method=recent&refer_page_el_sn=200254&srch_enter_source=top_search_entrance_10005&refer_page_name=home&refer_page_id=10005_1722263757154_iftos7c1ms&refer_page_sn=10005&_x_sessn_id=2d9vdugdsw",
+        "referer": "https://www.temu.com/search_result.html?search_key=%EC%97%AC%EC%84%B1%20%EB%AA%A9%EA%B1%B8%EC%9D%B4&search_method=recent&refer_page_el_sn=200254&srch_enter_source=top_search_entrance_10005&_x_sessn_id=xpp1uvxosf&refer_page_name=home&refer_page_id=10005_1723859978935_7ijphpvhq8&refer_page_sn=10005",
         "sec-ch-ua": "\"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"",
         "sec-ch-ua-mobile": "?0",
         "sec-ch-ua-platform": "\"Windows\"",
@@ -41,7 +45,8 @@ def fetch_data():
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-origin",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
-        "verifyauthtoken": "ldrFseqtunY8WxWpYYH5GQ6875bc747cadf7e45"
+        "verifyauthtoken": "qsJbyNKrHuLw5b7hu5ofbQ59feea75b87f6729b",
+        "x-document-referer": "https://www.temu.com/?_x_sessn_id=xpp1uvxosf&refer_page_name=login&refer_page_id=10013_1723859959420_w9nqcsf17l&refer_page_sn=10013&is_back=1"
     }
 
     # POST 요청 보내기
@@ -50,6 +55,7 @@ def fetch_data():
     # 응답 데이터 확인
     if response.status_code == 200:
         data = response.json()
+        print(f"data : {data}")
         return data, mainUrl
     else:
         print("데이터를 불러오는데 실패했습니다. 상태 코드:", response.status_code)
@@ -77,12 +83,11 @@ def parse_data(data, mainUrl):
             "평점": rating
         }
 
-
         extracted_data.append(data)
 
     return extracted_data
 
-def save_to_excel(data, filename="temu_bags.xlsx"):
+def save_to_excel(data, filename="temu_necklaces.xlsx"):
     # DataFrame으로 변환
     df = pd.DataFrame(data)
 
