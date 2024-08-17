@@ -18,35 +18,43 @@ mainUrl = "https://www.temu.com"
 
 def fetch_detail_page_selenium(driver, detail_url):
     target_tag = ""
-    try:
-        # URL 접근
-        driver.get(detail_url)
+    retries = 5  # 최대 재시도 횟수
 
-        # 페이지 로딩 대기 (최대 10초)
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "_151rnt-L"))
-        )
+    for attempt in range(retries):
+        try:
+            # URL 접근
+            driver.get(detail_url)
 
-        # 지정된 클래스 이름을 가진 태그 찾기
-        target_tag = driver.find_element(By.CLASS_NAME, "_151rnt-L")
+            time.sleep(2)
+            # 페이지 로딩 대기 (최대 15초)
+            WebDriverWait(driver, 2).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "_151rnt-L"))
+            )
 
-        if target_tag:
-            print(target_tag.get_attribute('outerHTML'))  # 태그 자체를 출력
-            return target_tag.get_attribute('outerHTML')
-        else:
-            print("지정된 클래스 이름을 가진 태그를 찾을 수 없습니다.")
-            return target_tag
+            # 지정된 클래스 이름을 가진 태그 찾기
+            target_tag = driver.find_element(By.CLASS_NAME, "_151rnt-L")
 
-    except Exception as e:
-        print(f"Error fetching detail page: {e}")
-        return target_tag
+            if target_tag:
+                print(target_tag.get_attribute('outerHTML'))  # 태그 자체를 출력
+                return target_tag.get_attribute('outerHTML')
+            else:
+                print("지정된 클래스 이름을 가진 태그를 찾을 수 없습니다.")
+
+        except (NoSuchElementException, TimeoutException):
+            print(f"태그를 찾을 수 없거나 페이지 로딩에 실패했습니다: {detail_url}")
+
+        # 재시도 전에 5초 대기 후 새로고침
+        print("재시도 중... 1초 대기 후 새로고침합니다.")
+        time.sleep(1)
+        driver.refresh()
+
+    print("지정된 태그를 가져오지 못했습니다. 최대 재시도 횟수에 도달했습니다.")
+    return target_tag
 
 def setup_driver():
     try:
         chrome_options = Options()
 
-        ##  크롬 브라우저에 chrome://version/ 검색 해서
-        ## 프로필 경로      C:\Users\772vj\AppData\Local\Google\Chrome\User Data\Default 에서 Default만 profile에 넣는다.
         user_data_dir = "C:\\Users\\772vj\\AppData\\Local\\Google\\Chrome\\User Data"
         profile = "Default"
 
@@ -57,6 +65,9 @@ def setup_driver():
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-software-rasterizer")
         chrome_options.add_argument("--start-maximized")
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
 
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         chrome_options.add_argument(f'user-agent={user_agent}')
@@ -86,9 +97,12 @@ def setup_driver():
         driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
 
         return driver
+
     except WebDriverException as e:
         print(f"Error setting up the WebDriver: {e}")
         return None
+
+
 
 def fetch_data():
 

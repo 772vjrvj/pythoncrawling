@@ -909,35 +909,87 @@ async function fetchProductDetails(productDetail, url) {
     console.log("상품 이미지* : ", productImages);
 
 
-    const options = await retry(async () => {
-        return await page.evaluate(() => {
-            const optionElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-option.xans-record-');
-            const options = new Map();
-            optionElements.forEach(optionElement => {
-                const th = optionElement.querySelector('th');
-                const select = optionElement.querySelector('select');
+    const [options, optionsInfos] = await retry(async () => {
+        return await page.evaluate(async () => {
+            const optionElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-option.xans-record- .xans-element-.xans-product.xans-product-option.xans-record-');
+
+            const options = [];
+            const optionsInfos = [];
+
+            //https://cherryme.kr 또는 1개
+            if (optionElements.length === 1) {
+                const th = optionElements[0].querySelector('th');
+                const select = optionElements[0].querySelector('select');
                 if (th && select) {
                     const optionTitle = th.innerText.trim();
                     const optionValues = [];
                     const optionItems = select.querySelectorAll('option');
-                    optionItems.forEach(optionItem => {
-                        const value = optionItem.innerText.trim();
-                        if (value !== '*' && value !== '**' && value !== '- [필수] 옵션을 선택해 주세요 -' && !optionItem.hasAttribute('disabled')) {
-                            optionValues.push(value);
+
+                    for (const optionItem of optionItems) {
+                        const value = optionItem.value.trim();
+                        const text = optionItem.innerText.trim();
+                        if (value !== '*' && value !== '**' && value) {
+
+                            // 옵션 텍스트에서 가격 추출
+                            let optionPrice = 0;
+                            const priceMatch = text.match(/\(([-+]?\d{1,3}(?:,\d{3})*원)\)/);
+                            if (priceMatch) {
+                                // 추출된 가격이 여러 개인 경우, 첫 번째 값 사용
+                                optionPrice = priceMatch[0].replace(/[^-+\d]/g, ''); // "5,200원" -> "5200"
+                            }
+
+                            optionsInfos.push({
+                                '옵션1': text,
+                                '옵션가격': optionPrice,
+                                '옵션상태': '판매중'
+                            });
+
+                            optionValues.push(text);  // "화이트-FREE", "스카이블루-FREE", "블랙-FREE" 등을 추가
                         }
-                    });
-                    if (options.has(optionTitle)) {
-                        options.set(optionTitle, [...new Set([...options.get(optionTitle), ...optionValues])]);
-                    } else {
-                        options.set(optionTitle, optionValues);
                     }
+
+                    options.push({
+                        "이름": optionTitle,
+                        "밸류": optionValues
+                    });
+
                 }
-            });
-            return Array.from(options.entries()).map(([key, value]) => ({[key]: value}));
+                return [options, optionsInfos];
+            }
+
+            if (optionElements.length > 3) {
+                options.push(optionElements.length);
+            }
+
+            // optionElements.forEach(optionElement => {
+            //     const th = optionElement.querySelector('th');
+            //     const select = optionElement.querySelector('select');
+            //     if (th && select) {
+            //         const optionTitle = th.innerText.trim();
+            //         const optionValues = [];
+            //         const optionItems = select.querySelectorAll('option');
+            //         optionItems.forEach(optionItem => {
+            //             const value = optionItem.innerText.trim();
+            //             if (value !== '*' && value !== '**' && value !== '- [필수] 옵션을 선택해 주세요 -' && !optionItem.hasAttribute('disabled')) {
+            //                 optionValues.push(value);
+            //             }
+            //         });
+            //
+            //
+            //         // if (options.has(optionTitle)) {
+            //         //     options.set(optionTitle, [...new Set([...options.get(optionTitle), ...optionValues])]);
+            //         // } else {
+            //         //     options.set(optionTitle, optionValues);
+            //         // }
+            //
+            //
+            //     }
+            // });
+            return [options, optionsInfos];
         });
     }, 3, 2000, []);
-    productDetail["옵션 정보"] = JSON.stringify(options, null, 2);
-    console.log("옵션 정보 : ", JSON.stringify(options, null, 2));
+    productDetail["옵션(그룹)"] = JSON.stringify(options, null, 2);
+    console.log("옵션(그룹) : ", JSON.stringify(options, null, 2));
 
 
     const productNotice = await retry(async () => {
@@ -969,10 +1021,9 @@ async function fetchProductDetails(productDetail, url) {
     productDetail["상품 고지 정보"] = productNotice;
     console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
 
-
-    const optionTitles = options.map(option => Object.keys(option)[0]);
-    productDetail["옵션"] = JSON.stringify(optionTitles, null, 2);
-    console.log("옵션 : ", JSON.stringify(optionTitles, null, 2));
+    // const optionTitles = options.map(option => Object.keys(option)[0]);
+    productDetail["옵션정보"] = JSON.stringify(optionsInfos, null, 2);
+    console.log("옵션정보 : ", JSON.stringify(optionsInfos, null, 2));
 
 
     const reviews = await fetchProductReviews(page, productDetail, url);
@@ -1334,16 +1385,25 @@ async function main(url) {
 // const url = "https://beidelli.com";
 const url = "https://dailyjou.com";
 
-main(url);
+// main(url);
 
-// testDetail(url)
+testDetail(url)
 
 
 async function testDetail(url)
 {
-    //https://dailyjou.com/product/%EB%A0%88%EA%B1%B0%EC%8B%9C-%ED%95%80%ED%84%B1-%EB%B2%84%EB%AE%A4%EB%8B%A4-%ED%8C%AC%EC%B8%A0%EA%B3%B5%EC%9A%A9/18880/category/73/display/1/
 
-    const href = "https://cherryme.kr/product/%EB%8B%B9%EC%9D%BC%EC%B6%9C%EA%B3%A0%EC%8B%A0%EC%83%81%ED%95%A0%EC%9D%B8%F0%9F%92%99-%EB%B0%9C%EB%A0%88%EC%BD%94%EC%96%B4-%EC%B2%AD%EC%88%9C-%ED%81%AC%EB%A1%AD-%EB%A6%AC%EB%B3%B8-%EC%8A%A4%ED%8A%B8%EB%9E%A9-%ED%88%AC%ED%94%BC%EC%8A%A4-%EB%B9%84%ED%82%A4%EB%8B%88-%EC%88%98%EC%98%81%EB%B3%B5/385/category/59/display/1/";
+    const href = "https://www.hotping.co.kr/product/detail.html?product_no=39386&cate_no=1900&display_group=1";
+    // const href = "https://cherryme.kr/product/%EB%8B%B9%EC%9D%BC%EC%B6%9C%EA%B3%A0%EC%8B%A0%EC%83%81%ED%95%A0%EC%9D%B8%F0%9F%92%99-%EB%B0%9C%EB%A0%88%EC%BD%94%EC%96%B4-%EC%B2%AD%EC%88%9C-%ED%81%AC%EB%A1%AD-%EB%A6%AC%EB%B3%B8-%EC%8A%A4%ED%8A%B8%EB%9E%A9-%ED%88%AC%ED%94%BC%EC%8A%A4-%EB%B9%84%ED%82%A4%EB%8B%88-%EC%88%98%EC%98%81%EB%B3%B5/385/category/59/display/1/#none";
+    // const href = "https://dailyjou.com/product/21%EB%A7%8C%EC%9E%A5%ED%8C%90%EB%A7%A4made-%EB%8D%B0%EC%96%B4-%EB%B0%B4%EB%94%A9-%ED%8C%AC%EC%B8%A0%EC%88%8F%ED%8C%AC%EC%B8%A0-%EC%B6%94%EA%B0%80/3420/category/50/display/1/"
+    // const href = "https://ba-on.com/product/baonhaus-%EC%97%90%ED%83%80%EC%9D%B4-%EC%8A%A4%ED%8A%B8%EB%9D%BC%EC%9D%B4%ED%94%84-%EC%98%A4%EB%B2%84-%EC%85%94%EC%B8%A0-2color/18402/category/39/display/2/";
+
+    //2개
+    // const href = 'https://dailyjou.com/product/%EB%94%94%EB%A0%89%ED%8A%B8-%EC%BB%B7%ED%8C%85-%EB%8D%B0%EB%AF%B8%EC%A7%80-%EB%8D%B0%EB%8B%98-%EC%88%8F%ED%8C%AC%EC%B8%A0/18520/category/214/display/1/';
+    // const href = 'https://beidelli.com/product/detail.html?product_no=3881&cate_no=68&display_group=2';
+    // const href = 'https://ba-on.com/product/%ED%94%8C%EB%A3%A8%ED%82%A4-%EC%98%A4%EB%B2%84-%ED%9B%84%EB%93%9C-%EA%B8%B4%ED%8C%94-%EC%85%94%EC%B8%A0-2color/18939/category/34/display/1/';
+    // const href = 'https://www.hotping.co.kr/product/set%EB%AA%A8%EB%8D%B8%EC%BD%94%EB%94%94-%ED%95%A0%EC%9D%B8%EA%B5%AC%EB%A7%A4made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%ED%85%8C%EC%9D%BC%EB%9F%AC%EB%93%9C%EB%8D%94%EB%B8%94%EC%9E%90%EC%BC%93made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%EB%92%B7%EB%B0%B4%EB%94%A9-%EB%A1%B1-%EC%99%80%EC%9D%B4%EB%93%9C-%EC%8A%AC%EB%9E%99%EC%8A%A4%ED%88%AC%ED%94%BC%EC%8A%A4%EC%85%8B%EC%97%85-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EB%A9%B4%EC%A0%91%EB%A3%A9/44485/category/620/display/1/';
+
 
 
     const productDetails = [];
