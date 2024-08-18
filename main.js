@@ -740,414 +740,447 @@ async function retry(fn, retries = 4, delay = 2000, defaultValue = null) {
 async function fetchProductDetails(productDetail, url) {
     const browser = await launchBrowser();
     const page = await browser.newPage();
+    let reviews = [];
+    let alertHandled = false;
 
-    console.log("상품 상세화면 URL* : ", productDetail["상품 상세화면 URL*"]);
+    // 자식 페이지에서 alert 처리
+    const handleDialog = async dialog => {
+        if (!alertHandled) {
+            console.log('Alert detected: ', dialog.message());
+            await dialog.dismiss(); // 알림창 닫기
+            alertHandled = true; // alert 처리됨
+        }
+    };
+
+    page.on('dialog', handleDialog);
+
     try {
-        await page.goto(productDetail["상품 상세화면 URL*"], {waitUntil: 'networkidle2', timeout: 30000});
-    } catch (error) {
-        console.error('상품 상세 페이지로 이동 중 오류 발생:', error);
-    }
+        await page.goto(productDetail["상품 상세화면 URL*"], { waitUntil: 'networkidle2', timeout: 30000 });
 
-    await new Promise(resolve => setTimeout(resolve, 3000)); // 5초 대기
-
-    // https://cherryme.kr/
-    // https://www.hotping.co.kr
-    // 추가된 부분: 상품명, 상품가격, 상품 할인가격 추출
-    const productInfo = await retry(async () => {
-        return await page.evaluate(() => {
-            const productDetails = new Map();
-
-            const container = document.querySelector('.xans-element-.xans-product.xans-product-detaildesign');
-
-            if (container) {
-                // 모든 tr.xans-record- 요소를 순회하며 필요한 데이터를 추출
-                container.querySelectorAll('tr.xans-record-').forEach(row => {
-                    const label = row.querySelector('th span')?.innerText.trim();
-                    if (label === "상품명") {
-                        const value = row.querySelector('td span')?.innerText.trim();
-                        productDetails.set("상품명*", value || '');
-                    } else if (label === "소비자가") {
-                        const value = row.querySelector('td span')?.innerText.trim();
-                        productDetails.set("상품가격*", value || '');
-                    } else if (label === "판매가") {
-                        const value = row.querySelector('td span')?.innerText.trim();
-                        productDetails.set("상품 할인가격*", value || '');
-                    } else if (label === "할인판매가") {
-                        const value = row.querySelector('td span')?.innerText.trim();
-                        productDetails.set("상품가격*", productDetails.get("상품 할인가격*") || '');
-                        productDetails.set("상품 할인가격*", value || '');
-                    }
-                });
-
-                // "상품명*"이 없는 경우, 첫 번째 td span 값을 "상품명*"으로 설정
-                if (!productDetails.has("상품명*")) {
-                    const firstTdSpanValue = container.querySelector('tr.xans-record- td span')?.innerText.trim();
-                    if (firstTdSpanValue) {
-                        productDetails.set("상품명*", firstTdSpanValue);
-                    }
-                }
-            }
-
-            return Array.from(productDetails.entries()).map(([key, value]) => ({ [key]: value }));
-        });
-    }, 3, 2000, []);
+        // 만약 alert가 발생했다면 이 페이지를 건너뜀
+        if (alertHandled) {
+            console.log(`Skipping product due to alert: ${productDetail["상품 상세화면 URL*"]}`);
+            alertHandled = false; // 다음 작업을 위해 초기화
+            return reviews; // 빈 배열 리턴
+        }
 
 
-    productDetail["상품명*"] = productInfo.find(item => item["상품명*"])?.["상품명*"] || '';
-    productDetail["상품가격*"] = productInfo.find(item => item["상품가격*"])?.["상품가격*"] ||
-        productInfo.find(item => item["상품 할인가격*"])?.["상품 할인가격*"] || '';
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 5초 대기
 
-    productDetail["상품 할인가격*"] = productInfo.find(item => item["상품 할인가격*"])?.["상품 할인가격*"] ||
-        productInfo.find(item => item["상품가격*"])?.["상품가격*"] || '';
+        // https://cherryme.kr/
+        // https://www.hotping.co.kr
+        // 추가된 부분: 상품명, 상품가격, 상품 할인가격 추출
+        const productInfo = await retry(async () => {
+            return await page.evaluate(() => {
+                const productDetails = new Map();
 
-    console.log("상품명* : ", productDetail["상품명*"]);
-    console.log("상품가격* : ", productDetail["상품가격*"]);
-    console.log("상품 할인가격* : ", productDetail["상품 할인가격*"]);
+                const container = document.querySelector('.xans-element-.xans-product.xans-product-detaildesign');
 
-
-    const productDetailHtml = await retry(async () => {
-        return await page.evaluate((url) => {
-            // prdDetail 요소 가져오기
-            const detailElement = document.querySelector('#prdDetail');
-            if (detailElement) {
-
-                // <div class="cont"> 요소에 style 속성 추가하여 가운데 정렬
-                const contElements = detailElement.querySelectorAll('div.cont');
-                contElements.forEach(cont => {
-                    cont.style.textAlign = 'center';
-                });
-
-                // img 태그의 src 속성을 ec-data-src로 교체
-                const imgElementsWithEcDataSrc = detailElement.querySelectorAll('img[ec-data-src]');
-                imgElementsWithEcDataSrc.forEach(img => {
-
-                    const ecDataSrc = img.getAttribute('ec-data-src');
-
-                    // https://dailyjou.com
-                    if (ecDataSrc.startsWith('//')) {
-                        img.src = "https:" + ecDataSrc;
-
-                        // https://ba-on.com
-                    } else if (ecDataSrc.startsWith('/')) {
-                        img.src = url + ecDataSrc;
-
-                        // https://beidelli.com
-                    } else if (ecDataSrc.startsWith('https')) {
-                        img.src = ecDataSrc;
-                    }
-
-                });
-
-
-                // ec-data-src 속성이 없는 img 태그의 src가 '/'로 시작하면 url 추가
-
-                // https://cherryme.kr
-                // https://www.hotping.co.kr
-                const allImgElements = detailElement.querySelectorAll('img:not([ec-data-src])');
-                allImgElements.forEach(img => {
-
-                    const dataSrc = img.getAttribute('src');
-
-                    if (dataSrc.startsWith('//')) {
-                        img.src = "https:" + dataSrc;
-
-                    } else if (dataSrc.startsWith('/')) {
-                        img.src = url + dataSrc;
-
-                    } else if (dataSrc.startsWith('https')) {
-                        img.src = dataSrc;
-                    }
-
-                });
-
-                // ul 태그와 그 안의 모든 태그 삭제
-                const ulElements = detailElement.querySelectorAll('ul');
-                ulElements.forEach(ul => ul.remove());
-
-                // a 태그의 href 속성이 '/'로 시작하면 url 추가
-                const allAnchorElements = detailElement.querySelectorAll('a[href^="/"]');
-                allAnchorElements.forEach(anchor => {
-                    anchor.href = url + anchor.getAttribute('href');
-                });
-            }
-
-            const detailHtml = detailElement ? detailElement.outerHTML : '';
-
-            // 새로운 div 생성 및 prdDetail 내용 포함
-            const combinedHtml = `<div>${detailHtml}</div>`;
-            return combinedHtml;
-        }, url);
-    }, 3, 2000, "");
-    productDetail["상품 상세(html)*"] = productDetailHtml;
-
-
-    const productImages = await retry(async () => {
-        return await page.evaluate(() => {
-            const imgElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-image img');
-            const imgUrls = [];
-
-            imgElements.forEach(img => {
-                let src = img.getAttribute('src');
-                if (src) {
-                    // 'http:'를 붙여 완전한 URL을 만든 후, 'http:https:' 패턴을 'https:'로 변환
-                    let fullUrl = `http:${src}`.replace('http:https:', 'https:');
-
-                    // 제외할 키워드가 URL에 포함되어 있는지 검사
-                    const hasInvalidKeywords = /(icon_facebook|icon_twitter|product_zoom|navleft_big|navright_big)/.test(fullUrl);
-
-                    if (!hasInvalidKeywords) {
-                        imgUrls.push(fullUrl);
-                    }
-                }
-            });
-
-            return imgUrls;
-        });
-    }, 3, 2000, []);
-
-    productDetail["상품 이미지*"] = JSON.stringify(productImages, null, 2);
-    console.log("상품 이미지* : ", productImages);
-
-
-    const [options, optionsInfos] = await retry(async () => {
-        return await page.evaluate(async () => {
-
-            // 문자열의 공백을 정리해주는 함수
-            function normalizeString(str) {
-                return str.trim().replace(/\s+/g, '');
-            }
-
-            const optionElements = document.querySelectorAll('table.xans-element-.xans-product.xans-record- .xans-element-.xans-product.xans-record-');
-
-            const options = [];
-            const optionsInfos = [];
-
-            if (optionElements.length === 1) {
-                const th = optionElements[0].querySelector('th');
-                const select = optionElements[0].querySelector('select');
-                const optionValues = [];
-
-                if (th && select) {
-                    const optionTitle = th.innerText.trim();
-
-                    const optionItems = select.querySelectorAll('option');
-
-                    for (const optionItem of optionItems) {
-                        const value = optionItem.value.trim();
-                        const text = optionItem.innerText.trim(); // 데이터를 그대로 유지
-                        if (value !== '*' && value !== '**' && value) {
-                            optionValues.push(text);
-                            optionItem.selected = true;
-                            optionItem.dispatchEvent(new Event('change', { bubbles: true }));
-                            optionItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                if (container) {
+                    // 모든 tr.xans-record- 요소를 순회하며 필요한 데이터를 추출
+                    container.querySelectorAll('tr.xans-record-').forEach(row => {
+                        const label = row.querySelector('th span')?.innerText.trim();
+                        if (label === "상품명") {
+                            const value = row.querySelector('td span')?.innerText.trim();
+                            productDetails.set("상품명*", value || '');
+                        } else if (label === "소비자가") {
+                            const value = row.querySelector('td span')?.innerText.trim();
+                            productDetails.set("상품가격*", value || '');
+                        } else if (label === "판매가") {
+                            const value = row.querySelector('td span')?.innerText.trim();
+                            productDetails.set("상품 할인가격*", value || '');
+                        } else if (label === "할인판매가") {
+                            const value = row.querySelector('td span')?.innerText.trim();
+                            productDetails.set("상품가격*", productDetails.get("상품 할인가격*") || '');
+                            productDetails.set("상품 할인가격*", value || '');
                         }
-                    }
-
-                    options.push({
-                        "이름": optionTitle,
-                        "밸류": optionValues
                     });
 
-                    const optionProductElements = document.querySelectorAll('.option_product .product span');
+                    // "상품명*"이 없는 경우, 첫 번째 td span 값을 "상품명*"으로 설정
+                    if (!productDetails.has("상품명*")) {
+                        const firstTdSpanValue = container.querySelector('tr.xans-record- td span')?.innerText.trim();
+                        if (firstTdSpanValue) {
+                            productDetails.set("상품명*", firstTdSpanValue);
+                        }
+                    }
+                }
 
-                    // optionValues를 기준으로 순회
-                    for (const optionValue of optionValues) {
-                        const normalizedOptionValue = normalizeString(optionValue);
+                return Array.from(productDetails.entries()).map(([key, value]) => ({ [key]: value }));
+            });
+        }, 3, 2000, []);
 
-                        let matchedElementText = '';
-                        let optionPrice = 0;
 
-                        // optionProductElements에서 일치하는 요소를 찾음
-                        for (const element of optionProductElements) {
-                            const elementText = element.innerText.trim(); // 데이터를 그대로 유지
-                            if (normalizeString(elementText) === normalizedOptionValue) {
-                                matchedElementText = optionValue;
+        productDetail["상품명*"] = productInfo.find(item => item["상품명*"])?.["상품명*"] || '';
+        productDetail["상품가격*"] = productInfo.find(item => item["상품가격*"])?.["상품가격*"] ||
+            productInfo.find(item => item["상품 할인가격*"])?.["상품 할인가격*"] || '';
 
-                                // 옵션 텍스트에서 가격 추출
-                                const priceMatch = optionValue.match(/\(\s*([-+]?\d{1,3}(?:,\d{3})*)\s*원?\s*\)/);
-                                if (priceMatch) {
-                                    optionPrice = priceMatch[0].replace(/[^-+\d]/g, '');
-                                }
-                                break;
+        productDetail["상품 할인가격*"] = productInfo.find(item => item["상품 할인가격*"])?.["상품 할인가격*"] ||
+            productInfo.find(item => item["상품가격*"])?.["상품가격*"] || '';
+
+        console.log("상품명* : ", productDetail["상품명*"]);
+        console.log("상품가격* : ", productDetail["상품가격*"]);
+        console.log("상품 할인가격* : ", productDetail["상품 할인가격*"]);
+
+
+        const productDetailHtml = await retry(async () => {
+            return await page.evaluate((url) => {
+                // prdDetail 요소 가져오기
+                const detailElement = document.querySelector('#prdDetail');
+                if (detailElement) {
+
+                    // <div class="cont"> 요소에 style 속성 추가하여 가운데 정렬
+                    const contElements = detailElement.querySelectorAll('div.cont');
+                    contElements.forEach(cont => {
+                        cont.style.textAlign = 'center';
+                    });
+
+                    // img 태그의 src 속성을 ec-data-src로 교체
+                    const imgElementsWithEcDataSrc = detailElement.querySelectorAll('img[ec-data-src]');
+                    imgElementsWithEcDataSrc.forEach(img => {
+
+                        const ecDataSrc = img.getAttribute('ec-data-src');
+
+                        // https://dailyjou.com
+                        if (ecDataSrc.startsWith('//')) {
+                            img.src = "https:" + ecDataSrc;
+
+                            // https://ba-on.com
+                        } else if (ecDataSrc.startsWith('/')) {
+                            img.src = url + ecDataSrc;
+
+                            // https://beidelli.com
+                        } else if (ecDataSrc.startsWith('https')) {
+                            img.src = ecDataSrc;
+                        }
+
+                    });
+
+
+                    // ec-data-src 속성이 없는 img 태그의 src가 '/'로 시작하면 url 추가
+
+                    // https://cherryme.kr
+                    // https://www.hotping.co.kr
+                    const allImgElements = detailElement.querySelectorAll('img:not([ec-data-src])');
+                    allImgElements.forEach(img => {
+
+                        const dataSrc = img.getAttribute('src');
+
+                        if (dataSrc.startsWith('//')) {
+                            img.src = "https:" + dataSrc;
+
+                        } else if (dataSrc.startsWith('/')) {
+                            img.src = url + dataSrc;
+
+                        } else if (dataSrc.startsWith('https')) {
+                            img.src = dataSrc;
+                        }
+
+                    });
+
+                    // ul 태그와 그 안의 모든 태그 삭제
+                    const ulElements = detailElement.querySelectorAll('ul');
+                    ulElements.forEach(ul => ul.remove());
+
+                    // a 태그의 href 속성이 '/'로 시작하면 url 추가
+                    const allAnchorElements = detailElement.querySelectorAll('a[href^="/"]');
+                    allAnchorElements.forEach(anchor => {
+                        anchor.href = url + anchor.getAttribute('href');
+                    });
+                }
+
+                const detailHtml = detailElement ? detailElement.outerHTML : '';
+
+                // 새로운 div 생성 및 prdDetail 내용 포함
+                const combinedHtml = `<div>${detailHtml}</div>`;
+                return combinedHtml;
+            }, url);
+        }, 3, 2000, "");
+        productDetail["상품 상세(html)*"] = productDetailHtml;
+
+
+        const productImages = await retry(async () => {
+            return await page.evaluate(() => {
+                const imgElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-image img');
+                const imgUrls = [];
+
+                imgElements.forEach(img => {
+                    let src = img.getAttribute('src');
+                    if (src) {
+                        // 'http:'를 붙여 완전한 URL을 만든 후, 'http:https:' 패턴을 'https:'로 변환
+                        let fullUrl = `http:${src}`.replace('http:https:', 'https:');
+
+                        // 제외할 키워드가 URL에 포함되어 있는지 검사
+                        const hasInvalidKeywords = /(icon_facebook|icon_twitter|product_zoom|navleft_big|navright_big)/.test(fullUrl);
+
+                        if (!hasInvalidKeywords) {
+                            imgUrls.push(fullUrl);
+                        }
+                    }
+                });
+
+                return imgUrls;
+            });
+        }, 3, 2000, []);
+
+        productDetail["상품 이미지*"] = JSON.stringify(productImages, null, 2);
+        console.log("상품 이미지* : ", productImages);
+
+
+        /**
+         * 옵션 정보와 상태를 처리하는 메인 로직
+         * retry 함수는 비동기 작업이 실패할 때 재시도하는 로직을 담당합니다.
+         *
+         * 상품 옵션들을 일일이 선택해서 구매가능한 상품 목록을 추가합니다.
+         * 추가된 목록에 있으면 판매중, 없으면 품절 입니다.
+         * 옵션이 1개인 경우와 2개인 경우 구분해서 작업합니다.
+         *
+         * @returns {Array} options - 옵션 그룹과 그 값들을 포함한 배열
+         * @returns {Array} optionsInfos - 각 옵션별 가격 및 상태 정보를 포함한 배열
+         *
+         * @retry {number} 3 - 최대 3회까지 재시도
+         * @delay {number} 2000ms - 재시도 간격
+         */
+        const [options, optionsInfos] = await retry(async () => {
+            return await page.evaluate(async () => {
+
+                // 문자열의 공백을 정리해주는 함수
+                function normalizeString(str) {
+                    return str.trim().replace(/\s+/g, '');
+                }
+
+                // 옵션 텍스트에서 가격 정보를 추출하는 함수 (5,000원) -> 5000
+                function extractPrice(text) {
+                    const priceMatch = text.match(/\(\s*([-+]?\d{1,3}(?:,\d{3})*)\s*원?\s*\)/);
+                    return priceMatch ? priceMatch[1].replace(/[^-+\d]/g, '') : 0;
+                }
+
+                // 옵션 엘리먼트들을 선택
+                const optionElements = document.querySelectorAll('table.xans-element-.xans-product.xans-record- .xans-element-.xans-product.xans-record-');
+                const options = [];
+                const optionsInfos = [];
+
+                // 옵션이 1개인 경우 처리
+                if (optionElements.length === 1) {
+                    //옵션 명
+                    const th = optionElements[0].querySelector('th');
+                    //옵션 select box
+                    const select = optionElements[0].querySelector('select');
+                    const optionValues = new Set();
+
+                    if (th && select) {
+                        const optionTitle = th.innerText.trim();
+                        const optionItems = select.querySelectorAll('option');
+
+                        for (const optionItem of optionItems) {
+                            const value = optionItem.value.trim();
+                            const text = optionItem.innerText.trim();
+
+                            // 유효한 옵션 값만 처리
+                            if (value !== '*' && value !== '**' && value) {
+                                optionValues.add(text);
+                                optionItem.selected = true;
+                                optionItem.dispatchEvent(new Event('change', { bubbles: true }));
+                                //select box의 option 선택시 선택 상품이 추가 된다.
+                                optionItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                await new Promise(resolve => setTimeout(resolve, 1000));
                             }
                         }
 
-                        // 이미 추가된 옵션인지 확인
-                        const isDuplicate = optionsInfos.some(info =>
-                            normalizeString(info['옵션1']) === normalizedOptionValue
-                        );
+                        //옵션(그룹)
+                        options.push({
+                            "이름": optionTitle,
+                            "밸류": Array.from(optionValues),
+                        });
 
-                        if (!isDuplicate) {
-                            optionsInfos.push({
-                                '옵션1': optionValue,
-                                '옵션가격': optionPrice,
-                                '옵션상태': matchedElementText ? '판매중' : '품절' // 일치 여부에 따라 상태 설정
-                            });
+                        //select box에서 클릭한 판매중 상품 목록
+                        const optionProductElements = document.querySelectorAll('.option_product .product span');
+
+                        for (const optionValue of optionValues) {
+                            const normalizedOptionValue = normalizeString(optionValue);
+                            let matchedElementText = '';
+                            let optionPrice = 0;
+
+                            for (const element of optionProductElements) {
+                                const elementText = element.innerText.trim();
+
+                                if (normalizeString(elementText) === normalizedOptionValue) {
+                                    matchedElementText = optionValue;
+                                    optionPrice = extractPrice(optionValue);
+                                    break;
+                                }
+                            }
+
+                            //옵션정보에 중복되는지 확인
+                            const isDuplicate = optionsInfos.some(info =>
+                                normalizeString(info['옵션1']) === normalizedOptionValue
+                            );
+
+                            //옵션정보에 추가
+                            if (!isDuplicate) {
+                                optionsInfos.push({
+                                    '옵션1': optionValue,
+                                    '옵션가격': optionPrice,
+                                    '옵션상태': matchedElementText ? '판매중' : '품절',
+                                });
+                            }
                         }
                     }
                 }
-                return [options, optionsInfos];
-            }
 
-            if (optionElements.length === 2) {
-                const option1Element = optionElements[0];
-                const option2Element = optionElements[1];
+                // 옵션이 2개인 경우 처리
+                if (optionElements.length === 2) {
+                    const option1Element = optionElements[0];
+                    const option2Element = optionElements[1];
+                    const option1Values = [];
+                    let option2Values = new Set();
 
-                const options = [];
-                const option1Values = [];
-                let option2Values = new Set();
+                    const optionsInfos = [];
+                    let option1Title = "";
+                    let option2Title = "";
 
-                const optionsInfos = [];
+                    //첫번째 옵션
+                    const th1 = option1Element.querySelector('th');
+                    const select1 = option1Element.querySelector('select');
 
-                let option1Title = "";
-                let option2Title = "";
+                    if (th1 && select1) {
+                        option1Title = th1.innerText.trim();
+                        const option1Items = select1.querySelectorAll('option');
 
-                const th1 = option1Element.querySelector('th');
-                const select1 = option1Element.querySelector('select');
+                        for (const option1Item of option1Items) {
+                            const value1 = option1Item.value.trim();
+                            const text1 = option1Item.innerText.trim();
 
-                if (th1 && select1) {
-                    option1Title = th1.innerText.trim();
-                    const option1Items = select1.querySelectorAll('option');
+                            if (value1 !== '*' && value1 !== '**' && value1) {
+                                option1Values.push(text1);
 
-                    for (const option1Item of option1Items) {
-                        const value1 = option1Item.value.trim();
-                        const text1 = option1Item.innerText.trim(); // 데이터를 그대로 유지
-                        if (value1 !== '*' && value1 !== '**' && value1) {
-                            option1Values.push(text1);
+                                option1Item.selected = true;
+                                option1Item.dispatchEvent(new Event('change', { bubbles: true }));
+                                option1Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                //두번째 옵션
+                                const th2 = option2Element.querySelector('th');
+                                const select2 = option2Element.querySelector('select');
 
-                            option1Item.selected = true;
-                            option1Item.dispatchEvent(new Event('change', { bubbles: true }));
-                            option1Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                                if (th2 && select2) {
+                                    option2Title = th2.innerText.trim();
+                                    const option2Items = select2.querySelectorAll('option');
 
-                            const th2 = option2Element.querySelector('th');
-                            const select2 = option2Element.querySelector('select');
+                                    for (const option2Item of option2Items) {
+                                        const value2 = option2Item.value.trim();
+                                        const text2 = option2Item.innerText.trim();
 
-                            if (th2 && select2) {
-                                option2Title = th2.innerText.trim();
-                                const option2Items = select2.querySelectorAll('option');
+                                        if (value2 !== '*' && value2 !== '**' && value2) {
+                                            option2Values.add(text2);
 
-                                for (const option2Item of option2Items) {
-                                    const value2 = option2Item.value.trim();
-                                    const text2 = option2Item.innerText.trim(); // 데이터를 그대로 유지
-                                    if (value2 !== '*' && value2 !== '**' && value2) {
-                                        option2Values.add(text2);
-
-                                        option2Item.selected = true;
-                                        option2Item.dispatchEvent(new Event('change', { bubbles: true }));
-                                        option2Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                                        await new Promise(resolve => setTimeout(resolve, 1000));
-                                    }
-                                }
-
-                                const optionProductElements = document.querySelectorAll('.option_product .product span');
-                                // option2Values를 기준으로 순회
-                                for (const option2Value of option2Values) {
-
-                                    const normalizedOption2Value = normalizeString(option2Value);
-
-                                    let matchedElementText = '';
-                                    let optionPrice = 0;
-
-                                    // optionProductElements에서 일치하는 요소를 찾음
-                                    for (const element of optionProductElements) {
-                                        const elementText = element.innerText.trim(); // 데이터를 그대로 유지
-                                        const elementRightPart = elementText.split('/').pop().trim();
-
-                                        if (normalizeString(elementRightPart) === normalizedOption2Value) {
-                                            matchedElementText = option2Value;
-
-                                            // 옵션 텍스트에서 가격 추출
-                                            const priceMatch = option2Value.match(/\(\s*([-+]?\d{1,3}(?:,\d{3})*)\s*원?\s*\)/);
-                                            if (priceMatch) {
-                                                optionPrice = priceMatch[0].replace(/[^-+\d]/g, '');
-                                            }
-                                            break;
+                                            option2Item.selected = true;
+                                            option2Item.dispatchEvent(new Event('change', { bubbles: true }));
+                                            option2Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                            await new Promise(resolve => setTimeout(resolve, 1000));
                                         }
                                     }
 
-                                    // 이미 추가된 옵션인지 확인
-                                    const isDuplicate = optionsInfos.some(info =>
-                                        normalizeString(info['옵션1']) === normalizeString(text1) && normalizeString(info['옵션2']) === normalizedOption2Value
-                                    );
+                                    const optionProductElements = document.querySelectorAll('.option_product .product span');
 
-                                    if (!isDuplicate) {
-                                        optionsInfos.push({
-                                            '옵션1': text1,
-                                            '옵션2': option2Value,
-                                            '옵션가격': optionPrice,
-                                            '옵션상태': matchedElementText ? '판매중' : '품절' // 일치 여부에 따라 상태 설정
-                                        });
+                                    for (const option2Value of option2Values) {
+                                        const normalizedOption2Value = normalizeString(option2Value);
+                                        let matchedElementText = '';
+                                        let optionPrice = 0;
+
+                                        for (const element of optionProductElements) {
+                                            const elementText = element.innerText.trim();
+                                            const elementRightPart = elementText.split('/').pop().trim();
+
+                                            if (normalizeString(elementRightPart) === normalizedOption2Value) {
+                                                matchedElementText = option2Value;
+                                                optionPrice = extractPrice(option2Value);
+                                                break;
+                                            }
+                                        }
+
+                                        const isDuplicate = optionsInfos.some(info =>
+                                            normalizeString(info['옵션1']) === normalizeString(text1) &&
+                                            normalizeString(info['옵션2']) === normalizedOption2Value
+                                        );
+
+                                        if (!isDuplicate) {
+                                            optionsInfos.push({
+                                                '옵션1': text1,
+                                                '옵션2': option2Value,
+                                                '옵션가격': optionPrice,
+                                                '옵션상태': matchedElementText ? '판매중' : '품절',
+                                            });
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+                    //첫번째 옵션(구륩)
+                    options.push({
+                        "이름": option1Title,
+                        "밸류": option1Values,
+                    });
+
+                    //두번째 옵션(구륩)
+                    options.push({
+                        "이름": option2Title,
+                        "밸류": Array.from(option2Values),
+                    });
                 }
 
-                options.push({
-                    "이름": option1Title,
-                    "밸류": option1Values
-                });
-
-                options.push({
-                    "이름": option2Title,
-                    "밸류": Array.from(option2Values)
-                });
-
                 return [options, optionsInfos];
-            }
+            });
+        }, 3, 2000, []);
 
-            return [options, optionsInfos];
-        });
-    }, 3, 2000, []);
+        productDetail["옵션(그룹)"] = JSON.stringify(options, null, 2);
+        console.log("옵션(그룹) : ", productDetail["옵션(그룹)"]);
 
-    productDetail["옵션(그룹)"] = JSON.stringify(options, null, 2);
-    console.log("옵션(그룹) : ", JSON.stringify(options, null, 2));
+        productDetail["옵션정보"] = JSON.stringify(optionsInfos, null, 2);
+        console.log("옵션정보 : ", productDetail["옵션정보"]);
 
+        const productNotice = await retry(async () => {
+            return await page.evaluate(() => {
+                const noticeElement = document.querySelector('#prdInfo');
+                const notice = {};
+                if (noticeElement) {
+                    const paymentInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("상품결제정보") + td');
+                    const exchangeInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("교환 및 반품정보") + td');
+                    const shippingInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("배송정보") + td');
 
-    const productNotice = await retry(async () => {
-        return await page.evaluate(() => {
-            const noticeElement = document.querySelector('#prdInfo');
-            const notice = {};
-            if (noticeElement) {
-                const paymentInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("상품결제정보") + td');
-                const exchangeInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("교환 및 반품정보") + td');
-                const shippingInfo = noticeElement.querySelector('.ec-base-table.table-th-left.mgt10 tbody tr td:contains("배송정보") + td');
+                    if (paymentInfo) notice["상품결제정보"] = paymentInfo.innerText.trim();
+                    if (exchangeInfo) notice["교환 및 반품정보"] = exchangeInfo.innerText.trim();
+                    if (shippingInfo) notice["배송정보"] = shippingInfo.innerText.trim();
 
-                if (paymentInfo) notice["상품결제정보"] = paymentInfo.innerText.trim();
-                if (exchangeInfo) notice["교환 및 반품정보"] = exchangeInfo.innerText.trim();
-                if (shippingInfo) notice["배송정보"] = shippingInfo.innerText.trim();
+                    const imgElements = noticeElement.querySelectorAll('img');
+                    const imgUrls = [];
+                    imgElements.forEach(img => {
+                        const src = img.getAttribute('src');
+                        if (src) {
+                            imgUrls.push({url: src});
+                        }
+                    });
+                    if (imgUrls.length > 0) notice["이미지"] = imgUrls;
+                }
+                return notice;
+            });
+        }, 1, 2000, {});
+        productDetail["상품 고지 정보"] = productNotice;
+        console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
 
-                const imgElements = noticeElement.querySelectorAll('img');
-                const imgUrls = [];
-                imgElements.forEach(img => {
-                    const src = img.getAttribute('src');
-                    if (src) {
-                        imgUrls.push({url: src});
-                    }
-                });
-                if (imgUrls.length > 0) notice["이미지"] = imgUrls;
-            }
-            return notice;
-        });
-    }, 1, 2000, {});
-    productDetail["상품 고지 정보"] = productNotice;
-    console.log("상품 고지 정보 : ", JSON.stringify(productNotice, null, 2));
+        reviews = await fetchProductReviews(page, productDetail, url);
+        await browser.close();
+        return reviews;
 
-    // const optionTitles = options.map(option => Object.keys(option)[0]);
-    productDetail["옵션정보"] = JSON.stringify(optionsInfos, null, 2);
-    console.log("옵션정보 : ", JSON.stringify(optionsInfos, null, 2));
-
-
-    const reviews = await fetchProductReviews(page, productDetail, url);
-
-
-    await browser.close();
-
-
-    return reviews;
+    } catch (error) {
+        console.error('상품 상세 페이지로 이동 중 오류 발생:', error);
+        return reviews; // 오류 발생 시 빈 배열 리턴
+    } finally {
+        page.off('dialog', handleDialog); // 이벤트 핸들러 제거
+        if (browser.isConnected()) {
+            await browser.close(); // 브라우저 종료
+        }
+    }
 }
 
 
@@ -1402,14 +1435,6 @@ async function getImageSrcs(page, parent, selector) {
     return [];
 }
 
-/**
- * 현재 시간을 포맷된 문자열로 반환합니다.
- * @returns {string} 포맷된 현재 시간 문자열.
- */
-function getCurrentFormattedTime() {
-    return moment().format('YYYY.MM.DD HH:mm:ss');
-}
-
 
 /**
  * 메인 함수입니다. 쇼핑몰 URL을 받아서 정보를 추출하고 Excel 파일로 저장합니다.
@@ -1494,15 +1519,15 @@ async function main(url) {
 }
 
 
-// const url = "https://cherryme.kr";
+const url = "https://cherryme.kr";
 // const url = "https://www.hotping.co.kr";
 // const url = "https://ba-on.com";
 // const url = "https://beidelli.com";
-const url = "https://dailyjou.com";
+// const url = "https://dailyjou.com";
 
-// main(url);
+main(url);
 
-testDetail(url)
+// testDetail(url)
 
 
 async function testDetail(url)
@@ -1518,7 +1543,6 @@ async function testDetail(url)
     // let href = 'https://dailyjou.com/product/%EB%94%94%EB%A0%89%ED%8A%B8-%EC%BB%B7%ED%8C%85-%EB%8D%B0%EB%AF%B8%EC%A7%80-%EB%8D%B0%EB%8B%98-%EC%88%8F%ED%8C%AC%EC%B8%A0/18520/category/214/display/1/';
     // let href = 'https://ba-on.com/product/%ED%94%8C%EB%A3%A8%ED%82%A4-%EC%98%A4%EB%B2%84-%ED%9B%84%EB%93%9C-%EA%B8%B4%ED%8C%94-%EC%85%94%EC%B8%A0-2color/18939/category/34/display/1/';
     // let href = 'https://beidelli.com/product/detail.html?product_no=4184&cate_no=49&display_group=2';
-
 
 
     const productDetails = [];
