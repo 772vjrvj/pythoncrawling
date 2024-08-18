@@ -118,7 +118,12 @@ def print_article_count(driver, gu_urls):
             txt_number = WebDriverWait(btn_option, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "txt_number._count"))
             )
-            count_str = txt_number.text.replace('+', '').replace(',', '')
+            count_str = txt_number.text.replace('+', '').replace(',', '').strip()
+
+            # count_str이 공백이면 0으로 처리
+            if not count_str:
+                count_str = '0'
+
             total_count += int(count_str)
         except Exception as e:
             new_print(f"Error while fetching article count for {gu_url}: {e}")
