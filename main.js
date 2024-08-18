@@ -1528,8 +1528,6 @@ const url = "https://cherryme.kr";
 main(url);
 
 // testDetail(url)
-
-
 async function testDetail(url)
 {
     //1개 옵션 테스트
@@ -1576,8 +1574,6 @@ async function testDetail(url)
     productDetails.push(productDetail);
     productRepls.push(...reviews);
 }
-
-
 
 //https://cherryme.kr
 const testJson_x1 = [

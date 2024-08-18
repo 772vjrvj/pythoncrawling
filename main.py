@@ -1,308 +1,586 @@
-import json
-import pandas as pd
+import tkinter as tk
+from tkinter import ttk, messagebox
+import threading
+import time
+from datetime import timedelta
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-import os
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
 import requests
-import time
+import pandas as pd
 import random
+import json
 
 
-mainUrl = "https://www.temu.com"
+stop_flag = threading.Event()
 
-def fetch_detail_page_selenium(driver, detail_url):
-    target_tag = ""
-    retries = 5  # 최대 재시도 횟수
+# 매물유형과 구이름 설정
+property_types = {
+    "아파트": "APT",
+    "오피스텔": "OPST",
+    "빌라": "VL",
+    "아파트분양권": "ABYG",
+    "오피스텔분양권": "OBYG",
+    "재건축": "JGC",
+    "상가": "SG",
+    "사무실": "SMS"
+}
 
-    for attempt in range(retries):
-        try:
-            # URL 접근
-            driver.get(detail_url)
+districts = {
+    ## ver1
+    "강남구": "https://m.land.naver.com/map/37.517408:127.047313:12:1168000000/{property_type}/A1:B1:B2",
+    "송파구": "https://m.land.naver.com/map/37.514592:127.105863:12:1171000000/{property_type}/A1:B1:B2",
+    "서초구": "https://m.land.naver.com/map/37.483564:127.032594:12:1165000000/{property_type}/A1:B1:B2",
+    "용산구": "https://m.land.naver.com/map/37.538825:126.96535:12:1117000000/{property_type}/A1:B1:B2",
+    "성동구": "https://m.land.naver.com/map/37.563475:127.036838:12:1120000000/{property_type}/A1:B1:B2",
+    "영등포구": "https://m.land.naver.com/map/37.526367:126.896213:12:1156000000/{property_type}/A1:B1:B2",
 
-            time.sleep(2)
-            # 페이지 로딩 대기 (최대 15초)
-            WebDriverWait(driver, 2).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "_151rnt-L"))
-            )
+    ## 신규 추가 ver2 2024-08-19
+    "강서구": "https://m.land.naver.com/map/37.550985:126.849534:12:1150000000/{property_type}/A1:B1:B2",
+    "종로구": "https://m.land.naver.com/map/37.573025:126.979638:12:1111000000/{property_type}/A1:B1:B2",
+    "중구": "https://m.land.naver.com/map/37.563842:126.9976:12:1114000000/{property_type}/A1:B1:B2",
+    "구로구": "https://m.land.naver.com/map/37.49551:126.887532:12:1153000000/{property_type}/A1:B1:B2",
+    "동작구": "https://m.land.naver.com/map/37.51245:126.9395:12:1159000000/{property_type}/A1:B1:B2",
+    "강동구": "https://m.land.naver.com/map/37.530126:127.123771:12:1174000000/{property_type}/A1:B1:B2"
+}
 
-            # 지정된 클래스 이름을 가진 태그 찾기
-            target_tag = driver.find_element(By.CLASS_NAME, "_151rnt-L")
+# 각 구별 URL 템플릿
+district_url_templates = {
+    ## ver1
+    "강남구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.517408&lon=127.047313&btm=37.4257185&lft=126.7865594&top=37.608985&rgt=127.3080666&showR0=&cortarNo=1168000000&sort=rank&page={page}",
+    "송파구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.514592&lon=127.105863&btm=37.4228991&lft=126.8451094&top=37.6061724&rgt=127.3666166&showR0=&cortarNo=1171000000&sort=rank&page={page}",
+    "서초구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.483564&lon=127.032594&btm=37.391833&lft=126.7718404&top=37.5751825&rgt=127.2933476&showR0=&cortarNo=1165000000&sort=rank&page={page}",
+    "용산구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.538825&lon=126.96535&btm=37.4471618&lft=126.7045964&top=37.6303756&rgt=127.2261036&showR0=&cortarNo=1117000000&sort=rank&page={page}",
+    "성동구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.563475&lon=127.036838&btm=37.4718421&lft=126.7760844&top=37.6549953&rgt=127.2975916&showR0=&cortarNo=1120000000&sort=rank&page={page}",
+    "영등포구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.526367&lon=126.896213&btm=37.4346885&lft=126.6354594&top=37.617933&rgt=127.1569666&showR0=&cortarNo=1156000000&sort=rank&page={page}",
 
-            if target_tag:
-                print(target_tag.get_attribute('outerHTML'))  # 태그 자체를 출력
-                return target_tag.get_attribute('outerHTML')
-            else:
-                print("지정된 클래스 이름을 가진 태그를 찾을 수 없습니다.")
+    ## 신규 추가 ver2 2024-08-19
+    "강서구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.550985&lon=126.849534&btm=37.4593367&lft=126.5887804&top=37.6425207&rgt=127.1102876&showR0=&cortarNo=1150000000&sort=rank&page={page}",
+    "종로구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.573025&lon=126.979638&btm=37.4814038&lft=126.7188844&top=37.6645336&rgt=127.2403916&showR0=&cortarNo=1111000000&sort=rank&page={page}",
+    "중구":   "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.563842&lon=126.9976&btm=37.4722095&lft=126.7368464&top=37.6553619&rgt=127.2583536&showR0=&cortarNo=1114000000&sort=rank&page={page}",
+    "구로구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.49551&lon=126.887532&btm=37.4037936&lft=126.6267784&top=37.5871139&rgt=127.1482856&showR0=&cortarNo=1153000000&sort=rank&page={page}",
+    "동작구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.51245&lon=126.9395&btm=37.4207544&lft=126.6787464&top=37.6040331&rgt=127.2002536&showR0=&cortarNo=1159000000&sort=rank&page={page}",
+    "강동구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.530126&lon=127.123771&btm=37.4384521&lft=126.8630174&top=37.6216873&rgt=127.3845246&showR0=&cortarNo=1174000000&sort=rank&page={page}"
+}
 
-        except (NoSuchElementException, TimeoutException):
-            print(f"태그를 찾을 수 없거나 페이지 로딩에 실패했습니다: {detail_url}")
 
-        # 재시도 전에 5초 대기 후 새로고침
-        print("재시도 중... 1초 대기 후 새로고침합니다.")
-        time.sleep(1)
-        driver.refresh()
-
-    print("지정된 태그를 가져오지 못했습니다. 최대 재시도 횟수에 도달했습니다.")
-    return target_tag
-
+# 웹드라이버 설정 함수
 def setup_driver():
+    driver = None
     try:
         chrome_options = Options()
-
-        user_data_dir = "C:\\Users\\772vj\\AppData\\Local\\Google\\Chrome\\User Data"
-        profile = "Default"
-
-        chrome_options.add_argument(f"user-data-dir={user_data_dir}")
-        chrome_options.add_argument(f"profile-directory={profile}")
+        chrome_options.add_argument("--headless")  # Uncomment if you want to run in headless mode
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-software-rasterizer")
-        chrome_options.add_argument("--start-maximized")
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--incognito")  # Use incognito mode
 
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         chrome_options.add_argument(f'user-agent={user_agent}')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
 
-        download_dir = os.path.abspath("downloads")
-        if not os.path.exists(download_dir):
-            os.makedirs(download_dir)
-
-        chrome_options.add_experimental_option('prefs', {
-            "download.default_directory": download_dir,
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": True
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                  get: () => undefined
+                })
+            '''
         })
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-        script = '''
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-            window.navigator.chrome = { runtime: {} };
-            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-            Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
-        '''
-        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+        driver.maximize_window()  # Maximize the window
 
         return driver
-
     except WebDriverException as e:
-        print(f"Error setting up the WebDriver: {e}")
+        new_print(f"Error setting up the WebDriver: {e}")
+        if driver:
+            driver.quit()
         return None
 
 
+def print_article_count(driver, gu_urls):
+    total_count = 0
+    for gu_url in gu_urls:
+        url = gu_url.format(property_type=get_selected_property_types())
+        try:
+            driver.get(url)
+            time.sleep(3)  # Wait for page to load
+            btn_option = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "btn_option._article"))
+            )
+            txt_number = WebDriverWait(btn_option, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "txt_number._count"))
+            )
+            count_str = txt_number.text.replace('+', '').replace(',', '')
+            total_count += int(count_str)
+        except Exception as e:
+            new_print(f"Error while fetching article count for {gu_url}: {e}")
+    return total_count
 
-def fetch_data():
 
-    # 조회할 url
-    url = "https://www.temu.com/api/poppy/v1/search?scene=search"
+def fetch_article_list(gu, page):
+    rletTpCd = get_selected_property_types()
+    url_template = district_url_templates[gu].format(rletTpCd=rletTpCd, page=page)
 
-    # payload 설정
-    payload = {
-        "scene": "search",
-        "pageSn": 10009,
-        "offset": 6,
-        "listId": "69426b1cc6dd4a499b2c56b3ce0e2389",
-        "pageSize": 120,
-        "query": "여성 목걸이",
-        "filterItems": "",
-        "searchMethod": "user",
-        "disableCorrect": False
-    }
-
-    # 헤더 설정
     headers = {
-        "authority": "www.temu.com",
-        "method": "POST",
-        "path": "/api/poppy/v1/search?scene=search",
-        "scheme": "https",
-        "accept": "application/json, text/plain, */*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "content-length": "192",
-        "content-type": "application/json;charset=UTF-8",
-        "cookie": "region=185; language=ko; currency=KRW; api_uid=Cm3EUma9xmqCxABHZ/glAg==; timezone=Asia%2FSeoul; webp=1; _nano_fp=XpmxXqmaXqgqn0djXC_pbKCoyOQjaLLqMy7XEpdy; _bee=4UoHmiJ1ctuzf2HydeOj5mhi7nHuDdOG; njrpl=4UoHmiJ1ctuzf2HydeOj5mhi7nHuDdOG; dilx=kLHZkv~x0z0Sh3yVGx54s; hfsc=L3yIeos26Tvx1ZLOeA==; _device_tag=CgI2WRIIWG9MU3RkbnkaMNrEOLr5zU44g5yZCOsCKkbF+KJZ3v8lnQCEfAd+uaOFk64ZYogVSw6JgFF0lRzKnjAC; _ttc=3.rEA8aZtsXcfk.1755249152; verifyAuthToken=NyVEcJlD_A5tAl73W53oSQ0a5ab6c17aefc8b62; _hal_tag=AJ22fGD7I1uVcuAItzda4La/YT7aYAaT1mX4wv5rV53nsDzrnWDCqMFs2HIZKh1gtUZNKUE/gEQ8k4jo9w==; AccessToken=VUIWI7G7P5CIF67AGJWRXI6EM3UFQV56GQXDO4C7VKVCZFJRA4VQ0110b9bacd10; user_uin=BBJAOAX67CURFFZLMHFPSNYSFHX5T2YDPGQBQQUZ; isLogin=1723863017139; __cf_bm=1a4t7JqZBf0SipQaSX3oFhvFCcNCjCg737IHMAAawLo-1723865651-1.0.1.1-.CIlGYVLjFhdYfTv._48qLA3usjEYcOXD_TX.UJPXGYbB6wJEMmbDNOssfzCSIoAScwCbgsYzZswnwvs.6o4tQ",  # 실제 쿠키 값으로 대체
-        "origin": "https://www.temu.com",
-        "referer": "https://www.temu.com/search_result.html",
-        "sec-ch-ua": "\"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
 
-    # POST 요청 보내기
-    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    response = requests.get(url_template, headers=headers)
+    if response.status_code != 200:
+        return [], []
 
-    # 응답 데이터 확인
-    if response.status_code == 200:
-        data = response.json()
-        print("data:", data)
-        return data
-    else:
-        print("데이터를 불러오는데 실패했습니다. 상태 코드:", response.status_code)
-        return None, None
+    data = response.json()
+    articles = data.get('body', [])
+    if not articles:
+        return [], []
 
+    article_numbers = [article['atclNo'] for article in articles]
+    new_print(f"구 : {gu}, 페이지 : {page}, 대표목록: {article_numbers}")
+    details = fetch_article_details(article_numbers, gu, page)
 
-def parse_data(data):
-    # 결과에서 필요한 정보 추출
-    goods_list = data['result']['data']['goods_list']
-
-    # 추출한 데이터를 저장할 리스트 초기화
-    extracted_data = []
-
-    for item in goods_list:
-        image_url = item['image']['url'] if 'image' in item else ''
-        detail_url = mainUrl + "/" + item['link_url'] if 'link_url' in item else ''
-        title = item['title'] if 'title' in item else ''
-        price = item['price_info']['price_str'] if 'price_info' in item and 'price_str' in item['price_info'] else ''
-        rating = item['comment']['goods_score'] if 'comment' in item and 'goods_score' in item['comment'] else ''
-
-        data = {
-            "메인 이미지": image_url,
-            "상세 Url": detail_url,
-            "이름": title,
-            "가격": price,
-            "평점": rating
-        }
-
-        extracted_data.append(data)
-
-    return extracted_data
+    return details, article_numbers
 
 
-def save_to_excel(data, filename="temu_necklaces_with_details.xlsx"):
-    # DataFrame으로 변환
-    df = pd.DataFrame(data)
+def save_to_excel(details, mode='w'):
+    file_name = 'real_estate_data.xlsx'
+    try:
+        if mode == 'a':
+            existing_df = pd.read_excel(file_name)
+            new_df = pd.DataFrame(details)
+            df = pd.concat([existing_df, new_df], ignore_index=True)
+        else:
+            df = pd.DataFrame(details)
+        df.to_excel(file_name, index=False)
+    except FileNotFoundError:
+        df = pd.DataFrame(details)
+        df.to_excel(file_name, index=False)
+    new_print(f"엑셀 저장 {file_name}")
 
-    # 엑셀 파일로 저장
-    df.to_excel(filename, index=False)
-    print(f"데이터가 엑셀 파일로 저장되었습니다: {filename}")
+
+def fetch_article_details(article_numbers, gu, page):
+    details = []
+    url_template = "https://m.land.naver.com/article/getSameAddrArticle?articleNo={}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    new_print(f"구 : {gu}, 페이지 : {page}, 전체목록 수집중 ...")
+
+    for atclNo in article_numbers:
+        if stop_flag.is_set():  # stop_flag 체크
+            break
+        time.sleep(random.uniform(2, 3))
+        try:
+            response = requests.get(url_template.format(atclNo), headers=headers)
+            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+        except requests.RequestException as e:
+            new_print(f"Request failed: {e}")
+            continue
+
+        try:
+            datas = response.json()
+            for data in datas:
+                details.append(data['atclNo'])
+        except ValueError:
+            new_print(f"fetch_article_details JSON decode error: {response.text[:100]}")  # 응답이 JSON이 아닌 경우 내용의 일부를 출력
+        except Exception as e:
+            new_print(f"fetch_article_details Unexpected error: {e}")
+
+    new_print(f"구 : {gu}, 페이지 : {page}, 전체목록: {details}")
+
+    return fetch_additional_info(details)
 
 
-def main():
+def remove_duplicates(details):
+    seen = set()
+    unique_details = []
+    for detail in details:
+        # 물건번호와 URL을 제외한 키들의 튜플 생성
+        detail_key = tuple((k, v) for k, v in detail.items() if k not in ("물건번호", "URL"))
+        if detail_key not in seen:
+            seen.add(detail_key)
+            unique_details.append(detail)
+    return unique_details
 
-    driver = setup_driver()
-    if not driver:
+
+def fetch_additional_info(details):
+    base_url = "https://fin.land.naver.com/articles/{}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    results = []
+
+    for idx, atclNo in enumerate(details, start=1):
+        if stop_flag.is_set():
+            break
+        time.sleep(random.uniform(2, 3))
+        try:
+            response = requests.get(base_url.format(atclNo), headers=headers)
+            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+        except requests.RequestException as e:
+            new_print(f"Request failed atclNo : {atclNo}, e : {e}")
+            continue
+
+        try:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            item = soup.select_one('.ArticleSummary_info-complex__uti3v').text if soup.select_one('.ArticleSummary_info-complex__uti3v') else ""
+            item_type = soup.select_one('.ArticleSummary_highlight__zEvdA').text if soup.select_one('.ArticleSummary_highlight__zEvdA') else ""
+            representative = soup.select_one('.ArticleAgent_broker-name__IrVqj').text if soup.select_one('.ArticleAgent_broker-name__IrVqj') else ""
+            agency = soup.select_one('.ArticleAgent_info-agent__tWe2j').text.replace(representative, '').strip() if soup.select_one('.ArticleAgent_info-agent__tWe2j') else ""
+            phone_elements = soup.select('.ArticleAgent_link-telephone__RPK6B')
+            phone_numbers = [phone.text for phone in phone_elements]
+
+            if not item_type:
+                continue
+
+            # 위치 추출
+            location = ""
+            location_area = soup.select_one('.ArticleComplexInfo_list-data__mMqCQ')
+            if location_area:
+                first_li = location_area.find('li')
+                if first_li:
+                    location_element = first_li.select_one('.DataList_definition__d9KY1 .ArticleComplexInfo_area-data__EAsta')
+                    if location_element and location_element.contents:
+                        location = location_element.contents[0].strip()
+
+            dong = ""
+            gu = ""
+            if location:
+                parts = location.split()
+                if len(parts) > 2:
+                    dong = parts[2]
+                    gu = parts[1]
+                else:
+                    dong = ""
+                    gu = ""
+
+            # <script> 태그 내의 JSON 데이터 추출
+            if not location:
+                script_tag = soup.find('script', {'id': '__NEXT_DATA__'})
+                if script_tag:
+                    try:
+                        json_data = json.loads(script_tag.string)
+
+                        # pnu 값 추출
+                        pnu_value = json_data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['result']['address']['legalDivisionNumber']
+
+                        # GET 요청을 보낼 URL 생성
+                        url = f"https://fin.land.naver.com/front-api/v1/legalDivision/infoList?legalDivisionNumbers={pnu_value}"
+
+                        # GET 요청 보내기
+                        response = requests.get(url)
+                        response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+
+                        # 요청이 성공한 경우 응답 데이터를 JSON으로 파싱
+                        response_data = response.json()
+
+                        # result에서 pnu_value 키를 사용하여 해당 데이터를 추출
+                        result_data = response_data['result'].get(pnu_value, {})
+
+                        location = result_data.get('regionName', '')
+                        gu = result_data.get('divisionName', '')
+                        dong = result_data.get('sectorName', '')
+
+                    except (json.JSONDecodeError, KeyError, requests.RequestException) as e:
+                        new_print(f"Error processing JSON data: {e}")
+                        continue
+                else:
+                    new_print("Script tag with id '__NEXT_DATA__' not found.")
+                    continue
+
+            # 중개소 위치 추출
+            agency_location = ""
+            agent_area = soup.select_one('.ArticleAgent_area-agent__DV2Nc')
+            if agent_area:
+                lis = agent_area.find_all('li')
+                for li in lis:
+                    term_element = li.select_one('.DataList_term__Tks7l')
+                    if term_element and term_element.text.strip() == "위치":
+                        location_element = li.select_one('.DataList_definition__d9KY1')
+                        if location_element:
+                            agency_location = location_element.text.strip()
+                            break
+
+            # 최초게재 날짜 추출 및 포맷 변환
+            first_li_article = soup.select_one('.ArticleBaseInfo_article__XXWMw .DataSource_article__6OjKi ul li')
+            published_date = ""
+            if first_li_article and "최초게재" in first_li_article.text:
+                # 공백을 모두 제거하고, "최초게재" 부분을 제거
+                raw_text = first_li_article.text.replace(" ", "").replace("최초게재", "")
+                if raw_text.endswith("."):
+                    raw_text = raw_text[:-1]  # 마지막의 "." 제거
+                published_date = raw_text  # "2024.8.9" 형식으로 남음
+
+
+            result = {
+                "물건번호": atclNo,
+                "구": gu,
+                "동": dong,
+                "물건종류": item_type,
+                "물건": item,
+                "등록일": published_date,
+                "위치": location,
+                "대표자": representative,
+                "중개소이름": agency,
+                "중개소위치": agency_location,
+            }
+
+            # Add phone numbers as separate fields
+            for i, phone_number in enumerate(phone_numbers, start=1):
+                result[f"전화번호 {i}"] = phone_number
+
+            result["URL"] = f"https://fin.land.naver.com/articles/{atclNo}"
+
+            log_message = f"{result}"
+            new_print(log_message)
+
+            results.append(result)
+
+        except Exception as e:
+            new_print(f"Unexpected error for atclNo {atclNo}: {e}")
+            continue
+
+    return remove_duplicates(results)
+
+
+def start_crawling():
+    if not any(property_vars[prop].get() for prop in property_vars):
+        messagebox.showwarning("경고", "매물 유형을 선택하세요.")
         return
 
-    # data = fetch_data()
-    # if data:
-    if True:
-        # parsed_data = parse_data(data)
-        parsed_data = ["https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099562614761&_oak_mp_inf=EOn%2Fna%2Bm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCYh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F5f479f92-3802-4197-8a99-c829dfaa25c2.jpg&spec_gallery_id=2123514842&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NjMy",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099586351891&_oak_mp_inf=EJPmxrqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCYh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F28b897c9-ed45-44b9-ba9d-f7eb5998bae7.jpg&spec_gallery_id=2163263720&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjQyOA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099603845448&_oak_mp_inf=EMjC8sKm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F28458db1-37d8-41b5-8e6c-61ebb17545be.jpg&spec_gallery_id=2223857580&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjYwOQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099567941841&_oak_mp_inf=ENGR47Gm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F6848d266-5656-4fe4-936b-bd618734edff.jpg&spec_gallery_id=2128662453&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTc2OA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099584111079&_oak_mp_inf=EOeDvrmm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F5e6ed0ea-0e14-4faf-8898-14000e34cea0.jpg&spec_gallery_id=2158453143&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NjAy",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099547555931&_oak_mp_inf=ENvwhqim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F08c1c84a-0456-4713-9d9d-65b087c1d3f0.jpg&spec_gallery_id=2093081911&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTA4NTQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099628673230&_oak_mp_inf=EM7x3c6m1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F4035d654-2f54-4ca7-b62b-2a581bd8b5f2.jpg&spec_gallery_id=2318325388&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NjAxMg",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099607628264&_oak_mp_inf=EOiz2cSm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fe62376e8-b24f-4bb8-a74b-184e84cb98a4.jpg&spec_gallery_id=2255326550&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDQ4OQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099522456088&_oak_mp_inf=EJj0ipym1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F2b877e809664f044ee5b336d789b1dca.jpg&spec_gallery_id=2021002149&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTIyMQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099553222340&_oak_mp_inf=EMTd4Kqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fba8f3a9a-6a8a-4412-8bf1-6b2db009fc85.jpg&spec_gallery_id=2143850320&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=Mzc2Mw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099549468251&_oak_mp_inf=ENvM%2B6im1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fc2936626-1481-4b3b-96a2-fddddb3f48ab.jpg&spec_gallery_id=2095717490&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTAzMw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099597376233&_oak_mp_inf=EOnV57%2Bm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F898148e9-7e2e-4be6-b124-abc3da7321d5.jpg&spec_gallery_id=2214592224&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=ODcyNw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099582016638&_oak_mp_inf=EP6Yvrim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fd89c7cf4-16b9-4782-99e0-f39ef7ce0c0e.jpg&spec_gallery_id=2237107846&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTYxMDM",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099582252299&_oak_mp_inf=EIvKzLim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCZh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F71e838d1-4a7c-454b-a2c5-83429b5830bb.jpg&spec_gallery_id=2171516986&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTQwMg",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099514519335&_oak_mp_inf=EKe%2Bppim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Ffc49dbd2-2a4d-4bc4-be09-f4de86ef445f.jpg&spec_gallery_id=21805161&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjIwNTQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099513127538&_oak_mp_inf=EPLE0Zem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Fopen%2F2022-11-30%2F1669831409634-6e57fd8184f74ab180412cfe26224916-goods.jpeg&spec_gallery_id=10282015&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=Nzk3",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099546291153&_oak_mp_inf=ENHXuaem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F3ffa4662-311b-413c-81c4-6381cd73fa37.jpg&spec_gallery_id=2090232209&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjU4MA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099606946867&_oak_mp_inf=ELPor8Sm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fbc2c3ba3-bfd8-40ad-985e-dd3753f5b5c6.jpg&spec_gallery_id=2236732066&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTMwNA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099520500302&_oak_mp_inf=EM7Ek5um1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F285b6edb5f4a392e56c4aaa3628216fb.jpg&spec_gallery_id=2025461725&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjEwNA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099553207995&_oak_mp_inf=ELvt36qm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F930b83db-f9a8-4302-8059-5a8c4f29078d.jpg&spec_gallery_id=2148714598&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=Mzc2Mw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099520910887&_oak_mp_inf=EKfMrJum1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Ff42c4ac6abcd0be1c57bd9149546040f.jpg&spec_gallery_id=2047069650&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTY1OQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099554661685&_oak_mp_inf=ELXKuKum1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F7133ca1d-b102-45d7-99f1-7bd5cc119627.jpg&spec_gallery_id=2101386606&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDE3",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099602183164&_oak_mp_inf=EPyHjcKm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F9ef20ece-8e51-4735-8df2-10e84823a0d5.jpg&spec_gallery_id=2227156628&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=Njcy",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099619649941&_oak_mp_inf=EJWTt8qm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Fopen%2F2024-07-23%2F1721718135497-0bf0b22d1fa44153bacf3316242edabc-goods.jpeg&spec_gallery_id=2267837251&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTk5Nw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099530055955&_oak_mp_inf=EJPi2p%2Bm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCah6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F26c9996a7917c88bfb3f8059dd126ca4.jpg&spec_gallery_id=2044681975&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=ODY4",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099532913611&_oak_mp_inf=EMuXiaGm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F91676eeefb90f09cab410f10c3d54694.jpg&spec_gallery_id=2105927455&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDk0",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099551844087&_oak_mp_inf=EPfNjKqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fba93655c-2f26-4c93-af98-677728a252cd.jpg&spec_gallery_id=2105313087&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjE5MDI",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099536013514&_oak_mp_inf=EMqxxqKm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Fafa0183e4f027b7a0ba82a08e897ee7e.jpg&spec_gallery_id=2065341472&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NzQ5",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099530341562&_oak_mp_inf=ELqZ7J%2Bm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Fc70cbfa11732871423e86cdd47c937c6.jpg&spec_gallery_id=2045298655&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjE3Nw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099543745180&_oak_mp_inf=EJylnqam1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F7c87da52-ac5e-449c-b532-5d8739faaa31.jpg&spec_gallery_id=2083478574&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTI1ODc",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099588873134&_oak_mp_inf=EK7X4Lum1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F7479dd58-7403-493e-b726-bc9851eea12c.jpg&spec_gallery_id=2188875965&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTY1OQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099586005138&_oak_mp_inf=EJLRsbqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F8efd4c10-7fbe-49bb-8a36-b1af7f835ad8.jpg&spec_gallery_id=2255487548&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=ODYw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099577291038&_oak_mp_inf=EJ7inbam1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F6acafd35-8163-48c7-bb1f-79433cca46cc.jpg&spec_gallery_id=2171310516&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTIzMw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099537098957&_oak_mp_inf=EM3RiKOm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Faae139625a0268765ded59d4656f62fd.jpg&spec_gallery_id=2066845864&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTY4NDA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099587079685&_oak_mp_inf=EIWc87qm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Ffd820135-ddbf-45d9-990e-60ff68f099a3.jpg&spec_gallery_id=2184024459&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTI0NjI",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099582230120&_oak_mp_inf=EOicy7im1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F11be46b0-35c0-4941-ac39-ef8bd847c591.jpg&spec_gallery_id=2171071946&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTIzNg",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099511944888&_oak_mp_inf=ELitiZem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2F1d14c6c0a3a%2F84539eec-7f23-4207-88ae-42e254fc7233_800x800.jpeg&spec_gallery_id=3105551&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTMyMg",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099546857367&_oak_mp_inf=EJef3Kem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F0e5d8b1f-2e75-432b-938f-acd9d4f7885a.jpg&spec_gallery_id=2103871279&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NjM3",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099581999568&_oak_mp_inf=ENCTvbim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCbh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fd27c9047-9273-4088-9a18-ece5f7797968.jpg&spec_gallery_id=2158836721&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTAxMDQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099519596916&_oak_mp_inf=EPSy3Jqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Ffd4645b2fd0a79c071b20e40afad8015.jpg&spec_gallery_id=2011432457&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjY1Nw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099535891673&_oak_mp_inf=ENn5vqKm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F4648203175c7fa15454c44fce0e674a7.jpg&spec_gallery_id=2062975853&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MzE0",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099584886387&_oak_mp_inf=EPOs7bmm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F59180a84-a012-45e6-a177-42a25398910d.jpg&spec_gallery_id=2223552681&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NzgzMA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099607053967&_oak_mp_inf=EI%2BttsSm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fb3346126-68b3-436b-8e83-f6c908fff2bd.jpg&spec_gallery_id=2235219253&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTU3OQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099608362379&_oak_mp_inf=EIubhsWm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Ff6c9541b-bcf3-4712-8f9c-35b082dcc7d2.jpg&spec_gallery_id=2232402334&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MzkyNQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099603844100&_oak_mp_inf=EIS48sKm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fe685f6be-2c89-4de7-b3de-1a5a7a90a0a4.jpg&spec_gallery_id=2270376286&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjA2Mg",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099545649761&_oak_mp_inf=EOHEkqem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Faeb21407-6122-488e-85fc-1aa907b39172.jpg&spec_gallery_id=2094296267&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDI1Nw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099569628640&_oak_mp_inf=EOCLyrKm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Faca4bbae-ef0b-4f20-a13c-c386b73558e0.jpg&spec_gallery_id=2260441550&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTAwOA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099572426481&_oak_mp_inf=EPHt9LOm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F4298adc5-21c4-43bc-9bf6-3526d70d3567.jpg&spec_gallery_id=2132869104&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjQxNw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099623392151&_oak_mp_inf=EJfHm8ym1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F1276c30d-cf9a-423a-883c-57986c97b2ca.jpg&spec_gallery_id=2322347333&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjE5MA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099544668980&_oak_mp_inf=ELTW1qam1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F32624484-7646-4e02-8dcd-1367c41b0799.jpg&spec_gallery_id=2082666633&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTM5NTk",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099550593298&_oak_mp_inf=EJKiwKmm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fc58d2788-c3a9-4548-8ca0-86bc72e1ed90.jpg&spec_gallery_id=2099053815&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MzI4",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099559614786&_oak_mp_inf=EMLy5q2m1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F6f65b789-30cf-4cda-848c-00830cde6902.jpg&spec_gallery_id=2124440339&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTE4NzE",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099565369913&_oak_mp_inf=ELmUxrCm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F2fd10194-22bf-4c8d-98dd-da36006083ef.jpg&spec_gallery_id=2122278322&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTAzNQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099546159896&_oak_mp_inf=EJjWsaem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCch6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F9386ef48-0c28-4174-b9c0-ba2157e53fa2.jpg&spec_gallery_id=2104670027&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTE2MzE",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099593261282&_oak_mp_inf=EOLB7L2m1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F90bf8076-cf49-46e0-8d65-e9f554d07a5a.jpg&spec_gallery_id=2183340862&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NzY2",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099607454810&_oak_mp_inf=ENrozsSm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F9248a458-ede3-4148-9ad1-ead178112091.jpg&spec_gallery_id=2228094788&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTYyNw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099612963072&_oak_mp_inf=EICCn8em1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F897e4b76-415c-4b0f-9001-74702f307d03.jpg&spec_gallery_id=2247775281&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=Mjk4Nw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099592085169&_oak_mp_inf=ELHdpL2m1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F9093ce47-e76f-46c7-9b47-31b8c7a12fb8.jpg&spec_gallery_id=2196835802&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=OTExOQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099546178050&_oak_mp_inf=EILksqem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F99e6c3e9-b176-4544-aa4a-b995bab7cd60.jpg&spec_gallery_id=2091096379&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=ODAxNA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099573538527&_oak_mp_inf=EN%2FduLSm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F4b359e24-924e-4362-828b-a0c18a053288.jpg&spec_gallery_id=2138158182&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTM5NTk",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099581131902&_oak_mp_inf=EP6YiLim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Ff14ceaf9-20f7-4b32-b99e-eff679736ebd.jpg&spec_gallery_id=2153490512&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDgx",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099575211235&_oak_mp_inf=EOPpnrWm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fed2ef6d2-ff40-4034-88d3-0a045813abef.jpg&spec_gallery_id=2325624503&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NzM4",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099523585620&_oak_mp_inf=ENTsz5ym1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F2349587ede137f98a00353f99a0ee759.jpg&spec_gallery_id=2030540168&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjI2Ng",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099576980060&_oak_mp_inf=ENzkiram1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F09df7e79-e0d4-4767-a594-e4566b6d8e77.jpg&spec_gallery_id=2166206004&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=OTkxMg",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099584169299&_oak_mp_inf=ENPKwbmm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F9e75c935-9f43-4cd4-948f-d8461a5d63bb.jpg&spec_gallery_id=2220508075&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MzM4NQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099565157069&_oak_mp_inf=EM2VubCm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F32916f26-52a7-47ab-8f3b-16dd7dc71beb.jpg&spec_gallery_id=2124032140&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NjE3",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099557089499&_oak_mp_inf=ENvhzKym1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F7ad635ac-1647-45e1-879a-45f42bff3df0.jpg&spec_gallery_id=2113835059&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTU5ODk",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099520653805&_oak_mp_inf=EO3znJum1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Fadfc72c9fd91dd5d7ea1f4bbee2c5300.jpg&spec_gallery_id=2017343201&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjI2Ng",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099549372068&_oak_mp_inf=EKTd9aim1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCdh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F30588ea1efa07cf1cb26034d1eef6d0f.jpg&spec_gallery_id=2095956977&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=OTQ0",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099518385461&_oak_mp_inf=ELW6kpqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F1d5858fa808dee3ad7ca6c1c5ee45b4f.jpg&spec_gallery_id=2042094009&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=ODEx",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099550232825&_oak_mp_inf=EPmhqqmm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F639044c3-693a-40d7-be29-cf33ef5f4b95.jpg&spec_gallery_id=2098962998&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDc2Nw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099521834454&_oak_mp_inf=ENb75Jum1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Fbd2c46ce57ce538267d447ee1dedd941.jpg&spec_gallery_id=2021427533&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjI2Ng",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099622600932&_oak_mp_inf=EOSh68um1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F619f13d9-fa04-4583-ae69-43a7c412e349.jpg&spec_gallery_id=2288494872&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MjU1Ng",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099538135318&_oak_mp_inf=EJbyx6Om1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2F6c1309c54af328d037313de972274f28.jpg&spec_gallery_id=2080642159&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=Nzc1",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099528881888&_oak_mp_inf=EOCNk5%2Bm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fd049826c-b862-4d10-9245-f09f668cc70c.jpg&spec_gallery_id=2038366395&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTA1OTc",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099547359986&_oak_mp_inf=EPL1%2Bqem1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F234a6082-16d9-42de-9f88-b4eafc086794.jpg&spec_gallery_id=2092528220&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTM1NzA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099597850406&_oak_mp_inf=EKbOhMCm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2Fe0582730-b26a-4554-8954-783acb03a90f.jpg&spec_gallery_id=2227907039&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTA2MQ",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099529282231&_oak_mp_inf=ELfFq5%2Bm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2FFancyalgo%2FVirtualModelMatting%2Fb5d6206819c9c39e6094f03fbcb25a37.jpg&spec_gallery_id=2043064309&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=MTcwMw",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099540453949&_oak_mp_inf=EL201aSm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F4645e7a1-81cb-4e22-9196-2049c20e4a97.jpg&spec_gallery_id=2071292995&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=NDkzNA",
-                       "https://www.temu.com/goods.html?_bg_fs=1&goods_id=601099551922110&_oak_mp_inf=EL6vkaqm1ogBGiA2OTQyNmIxY2M2ZGQ0YTQ5OWIyYzU2YjNjZTBlMjM4OSCeh6XzlTI%3D&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Ffancy%2F4392276d-5ad7-48fb-8b4e-ee12b8d622bf.jpg&spec_gallery_id=2107282054&refer_page_sn=10009&refer_source=0&freesia_scene=2&_oak_freesia_scene=2&_oak_rec_ext_1=OTcxMQ"]
+    if not any(district_vars[district].get() for district in district_vars):
+        messagebox.showwarning("경고", "구 이름을 선택하세요.")
+        return
+
+    if start_button["text"] == "시작":
+        start_button.config(text="중지", fg="white", bg="red")
+        stop_flag.clear()  # 중지 플래그 초기화
+        log_text_widget.delete('1.0', tk.END)  # 로그 초기화
+        progress['value'] = 0  # 진행률 초기화
+        progress_label.config(text="진행률: 0%")
+        eta_label.config(text="예상 소요 시간: 00:00:00")
+        threading.Thread(target=actual_crawling_function).start()
+    else:
+        stop_flag.set()  # 중지 플래그 설정
+        new_print("크롤링 중지")
+        start_button.config(text="시작", fg="black", bg="lightgreen")
 
 
-        # 각 상세 URL에 접속하여 추가 데이터를 가져옴
-        for index, item in enumerate(parsed_data):
-            if index == 4:
+def actual_crawling_function():
+    try:
+        new_print(f"크롤링 시작")
+        selected_gus = get_selected_districts()
+        if not selected_gus:
+            new_print("구이름을 선택해주세요.")
+            return
+
+        driver = setup_driver()
+        if not driver:
+            return
+
+        new_print(f"전체 매물 수 계산중 ...")
+        gu_urls = [districts[gu] for gu in selected_gus]
+        total_count = print_article_count(driver, gu_urls)
+        new_print(f"전체 매물 수 : {total_count}")
+
+        # 전체 매물 수를 계산한 후 진행률 및 예상 소요 시간 초기화
+        progress['maximum'] = total_count
+        progress['value'] = 0
+        progress_label.config(text=f"진행률: 0% (0/{total_count})")
+        remaining_time = total_count * 15
+        eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
+        eta_label.config(text=f"예상 소요 시간: {eta}")
+        progress.update_idletasks()
+
+        driver.quit()
+
+        all_details = []
+
+        for gu in selected_gus:
+            page = 1
+            while True:
+                if stop_flag.is_set():
+                    break
+
+                new_print(f"구 : {gu} , 페이지 : {page}")
+                details, article_numbers = fetch_article_list(gu, page)
+
+                if not details:
+                    break
+
+                all_details.extend(details)
+
+                progress['value'] += len(article_numbers)
+                progress_label.config(text=f"진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
+                remaining_time = (progress['maximum'] - progress['value']) * 15
+                eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
+                eta_label.config(text=f"예상 소요 시간: {eta}")
+                progress.update_idletasks()
+
+                if page % 2 == 0:
+                    try:
+                        save_to_excel(all_details, mode='a')  # 2페이지마다 저장
+                        all_details = []
+                    except Exception as e:
+                        new_print(f"Error saving to Excel on page {page}: {e}")
+
+                page += 1
+            if stop_flag.is_set():
                 break
-            detail_description = fetch_detail_page_selenium(driver, item)
-            print(f"detail_description : {detail_description}")
-            time.sleep(random.uniform(3,5))
-            # detail_description = fetch_detail_page_selenium(driver, item['상세 Url'])
-            # item['상세 설명'] = detail_description
-            # time.sleep(random.uniform(2,4))
+        new_print("엑셀 저장중 잠시만 기다려주세요...")
 
-        save_to_excel(parsed_data)
+        # 남아있는 데이터를 엑셀에 저장
+        if all_details:
+            save_to_excel(all_details, mode='a')
+            new_print("최종 데이터 저장 완료")
 
-    driver.quit()
+        new_print("크롤링이 완료 되었습니다.")
+        messagebox.showinfo("알림", "크롤링이 완료 되었습니다.")
+
+    except Exception as e:
+        new_print(f"actual_crawling_function Error during crawling: {e}")
+        messagebox.showerror("에러", f"크롤링 중 에러가 발생했습니다: {e}")
 
 
+def get_selected_districts():
+    return [district for district in districts if district_vars[district].get() == 1]
 
-# 프로그램 실행
+
+def get_selected_property_types():
+    selected_types = [property_types[prop] for prop in property_types if property_vars[prop].get() == 1]
+    if not selected_types:
+        return "APT:OPST:VL:ABYG:OBYG:JGC:SG:SMS"  # 기본값은 전체 선택
+    return ":".join(selected_types)
+
+
+def new_print(text, level="INFO"):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_text = f"[{timestamp}] [{level}] {text}"
+    print(formatted_text)
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
+    log_text_widget.see(tk.END)
+
+
+def start_app():
+    global root, property_vars, district_vars, progress, start_button, log_text_widget, progress_label, eta_label
+
+    root = tk.Tk()
+    root.title("네이버 부동산 리스트")
+    root.geometry("700x700")  # 화면 너비를 현재 크기의 2/3로 조정
+
+    font_large = ('Helvetica', 10)
+
+    # 옵션 프레임
+    option_frame = tk.Frame(root)
+    option_frame.pack(fill=tk.X, padx=10, pady=10)
+
+    # 매물유형
+    type_label = tk.Label(option_frame, text="매물유형:", font=font_large)
+    type_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    all_properties_var = tk.IntVar(value=1)  # 전체 선택 기본값을 선택으로 설정
+    property_vars = {prop: tk.IntVar(value=1) for prop in property_types}  # 기본값을 전체 선택으로 설정
+    chk_all_properties = tk.Checkbutton(option_frame, text="전체 선택", variable=all_properties_var,
+                                        command=lambda: select_all(property_vars, all_properties_var), font=font_large)
+    chk_all_properties.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+
+    # 매물유형 체크박스 배치
+    props = list(property_types.keys())
+    for i, prop in enumerate(props):
+        row = (i // 4) + 1
+        col = (i % 4) + 1
+        chk = tk.Checkbutton(option_frame, text=prop, variable=property_vars[prop], font=font_large,
+                             command=lambda: update_all_var(all_properties_var, property_vars))
+        chk.grid(row=row, column=col, padx=5, pady=5, sticky='w')
+
+    # 구이름
+    gu_label = tk.Label(option_frame, text="구이름:", font=font_large)
+    gu_label.grid(row=3, column=0, padx=5, pady=5, sticky='w')
+
+    all_districts_var = tk.IntVar(value=1)  # 전체 선택 기본값을 선택으로 설정
+    district_vars = {district: tk.IntVar(value=1) for district in districts}  # 기본값을 전체 선택으로 설정
+    chk_all_districts = tk.Checkbutton(option_frame, text="전체 선택", variable=all_districts_var,
+                                       command=lambda: select_all(district_vars, all_districts_var), font=font_large)
+    chk_all_districts.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+
+    col = 2
+    for i, district in enumerate(districts.keys()):  # .keys()를 추가하여 dictionary의 key를 사용
+        row = 4 + (i // 4)  # 행을 4열씩 정렬하도록 변경
+        col = (i % 4) + 1
+        chk = tk.Checkbutton(option_frame, text=district, variable=district_vars[district], font=font_large,
+                             command=lambda: update_all_var(all_districts_var, district_vars))
+        chk.grid(row=row, column=col, padx=5, pady=5, sticky='w')
+
+    # 버튼 프레임
+    button_frame = tk.Frame(root)
+    button_frame.pack(pady=10)
+
+    # 시작 및 중지 버튼
+    start_button = tk.Button(button_frame, text="시작", command=start_crawling, fg="black", bg="lightgreen", font=font_large, width=20)
+    start_button.pack()
+
+    # 버튼 프레임을 중앙에 배치
+    button_frame.pack(anchor=tk.CENTER)
+
+
+    # 로그 화면
+    log_label = tk.Label(root, text="로그 화면:", font=font_large)
+    log_label.pack(fill=tk.X, padx=10)
+
+    log_frame = tk.Frame(root)
+    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
+    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    x_scrollbar.config(command=log_text_widget.xview)
+    y_scrollbar.config(command=log_text_widget.yview)
+
+
+    # 진행률
+    progress_frame = tk.Frame(root)
+    progress_frame.pack(fill=tk.X, padx=10, pady=10)
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
+    eta_label = tk.Label(progress_frame, text="예상 소요 시간: 00:00:00", font=font_large)
+
+    progress_label.pack(side=tk.TOP, padx=5)
+    eta_label.pack(side=tk.TOP, padx=5)
+
+    style = ttk.Style()
+    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+    progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+
+    root.mainloop()
+
+
+def select_all(vars_dict, all_var):
+    value = all_var.get()
+    for var in vars_dict.values():
+        var.set(value)
+
+
+def update_all_var(all_var, vars_dict):
+    if all(v.get() for v in vars_dict.values()):
+        all_var.set(1)
+    else:
+        all_var.set(0)
+
+
 if __name__ == "__main__":
-    main()
+    start_app()
