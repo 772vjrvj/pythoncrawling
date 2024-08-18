@@ -911,40 +911,36 @@ async function fetchProductDetails(productDetail, url) {
 
     const [options, optionsInfos] = await retry(async () => {
         return await page.evaluate(async () => {
-            const optionElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-option.xans-record- .xans-element-.xans-product.xans-product-option.xans-record-');
+
+            // 문자열의 공백을 정리해주는 함수
+            function normalizeString(str) {
+                return str.trim().replace(/\s+/g, '');
+            }
+
+            const optionElements = document.querySelectorAll('table.xans-element-.xans-product.xans-record- .xans-element-.xans-product.xans-record-');
 
             const options = [];
             const optionsInfos = [];
 
-            //https://cherryme.kr 또는 1개
             if (optionElements.length === 1) {
                 const th = optionElements[0].querySelector('th');
                 const select = optionElements[0].querySelector('select');
+                const optionValues = [];
+
                 if (th && select) {
                     const optionTitle = th.innerText.trim();
-                    const optionValues = [];
+
                     const optionItems = select.querySelectorAll('option');
 
                     for (const optionItem of optionItems) {
                         const value = optionItem.value.trim();
-                        const text = optionItem.innerText.trim();
+                        const text = optionItem.innerText.trim(); // 데이터를 그대로 유지
                         if (value !== '*' && value !== '**' && value) {
-
-                            // 옵션 텍스트에서 가격 추출
-                            let optionPrice = 0;
-                            const priceMatch = text.match(/\(([-+]?\d{1,3}(?:,\d{3})*원)\)/);
-                            if (priceMatch) {
-                                // 추출된 가격이 여러 개인 경우, 첫 번째 값 사용
-                                optionPrice = priceMatch[0].replace(/[^-+\d]/g, ''); // "5,200원" -> "5200"
-                            }
-
-                            optionsInfos.push({
-                                '옵션1': text,
-                                '옵션가격': optionPrice,
-                                '옵션상태': '판매중'
-                            });
-
-                            optionValues.push(text);  // "화이트-FREE", "스카이블루-FREE", "블랙-FREE" 등을 추가
+                            optionValues.push(text);
+                            optionItem.selected = true;
+                            optionItem.dispatchEvent(new Event('change', { bubbles: true }));
+                            optionItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                            await new Promise(resolve => setTimeout(resolve, 1000));
                         }
                     }
 
@@ -953,41 +949,160 @@ async function fetchProductDetails(productDetail, url) {
                         "밸류": optionValues
                     });
 
+                    const optionProductElements = document.querySelectorAll('.option_product .product span');
+
+                    // optionValues를 기준으로 순회
+                    for (const optionValue of optionValues) {
+                        const normalizedOptionValue = normalizeString(optionValue);
+
+                        let matchedElementText = '';
+                        let optionPrice = 0;
+
+                        // optionProductElements에서 일치하는 요소를 찾음
+                        for (const element of optionProductElements) {
+                            const elementText = element.innerText.trim(); // 데이터를 그대로 유지
+                            if (normalizeString(elementText) === normalizedOptionValue) {
+                                matchedElementText = optionValue;
+
+                                // 옵션 텍스트에서 가격 추출
+                                const priceMatch = optionValue.match(/\(\s*([-+]?\d{1,3}(?:,\d{3})*)\s*원?\s*\)/);
+                                if (priceMatch) {
+                                    optionPrice = priceMatch[0].replace(/[^-+\d]/g, '');
+                                }
+                                break;
+                            }
+                        }
+
+                        // 이미 추가된 옵션인지 확인
+                        const isDuplicate = optionsInfos.some(info =>
+                            normalizeString(info['옵션1']) === normalizedOptionValue
+                        );
+
+                        if (!isDuplicate) {
+                            optionsInfos.push({
+                                '옵션1': optionValue,
+                                '옵션가격': optionPrice,
+                                '옵션상태': matchedElementText ? '판매중' : '품절' // 일치 여부에 따라 상태 설정
+                            });
+                        }
+                    }
                 }
                 return [options, optionsInfos];
             }
 
-            if (optionElements.length > 3) {
-                options.push(optionElements.length);
+            if (optionElements.length === 2) {
+                const option1Element = optionElements[0];
+                const option2Element = optionElements[1];
+
+                const options = [];
+                const option1Values = [];
+                let option2Values = new Set();
+
+                const optionsInfos = [];
+
+                let option1Title = "";
+                let option2Title = "";
+
+                const th1 = option1Element.querySelector('th');
+                const select1 = option1Element.querySelector('select');
+
+                if (th1 && select1) {
+                    option1Title = th1.innerText.trim();
+                    const option1Items = select1.querySelectorAll('option');
+
+                    for (const option1Item of option1Items) {
+                        const value1 = option1Item.value.trim();
+                        const text1 = option1Item.innerText.trim(); // 데이터를 그대로 유지
+                        if (value1 !== '*' && value1 !== '**' && value1) {
+                            option1Values.push(text1);
+
+                            option1Item.selected = true;
+                            option1Item.dispatchEvent(new Event('change', { bubbles: true }));
+                            option1Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
+                            const th2 = option2Element.querySelector('th');
+                            const select2 = option2Element.querySelector('select');
+
+                            if (th2 && select2) {
+                                option2Title = th2.innerText.trim();
+                                const option2Items = select2.querySelectorAll('option');
+
+                                for (const option2Item of option2Items) {
+                                    const value2 = option2Item.value.trim();
+                                    const text2 = option2Item.innerText.trim(); // 데이터를 그대로 유지
+                                    if (value2 !== '*' && value2 !== '**' && value2) {
+                                        option2Values.add(text2);
+
+                                        option2Item.selected = true;
+                                        option2Item.dispatchEvent(new Event('change', { bubbles: true }));
+                                        option2Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                        await new Promise(resolve => setTimeout(resolve, 1000));
+                                    }
+                                }
+
+                                const optionProductElements = document.querySelectorAll('.option_product .product span');
+                                // option2Values를 기준으로 순회
+                                for (const option2Value of option2Values) {
+
+                                    const normalizedOption2Value = normalizeString(option2Value);
+
+                                    let matchedElementText = '';
+                                    let optionPrice = 0;
+
+                                    // optionProductElements에서 일치하는 요소를 찾음
+                                    for (const element of optionProductElements) {
+                                        const elementText = element.innerText.trim(); // 데이터를 그대로 유지
+                                        const elementRightPart = elementText.split('/').pop().trim();
+
+                                        if (normalizeString(elementRightPart) === normalizedOption2Value) {
+                                            matchedElementText = option2Value;
+
+                                            // 옵션 텍스트에서 가격 추출
+                                            const priceMatch = option2Value.match(/\(\s*([-+]?\d{1,3}(?:,\d{3})*)\s*원?\s*\)/);
+                                            if (priceMatch) {
+                                                optionPrice = priceMatch[0].replace(/[^-+\d]/g, '');
+                                            }
+                                            break;
+                                        }
+                                    }
+
+                                    // 이미 추가된 옵션인지 확인
+                                    const isDuplicate = optionsInfos.some(info =>
+                                        normalizeString(info['옵션1']) === normalizeString(text1) && normalizeString(info['옵션2']) === normalizedOption2Value
+                                    );
+
+                                    if (!isDuplicate) {
+                                        optionsInfos.push({
+                                            '옵션1': text1,
+                                            '옵션2': option2Value,
+                                            '옵션가격': optionPrice,
+                                            '옵션상태': matchedElementText ? '판매중' : '품절' // 일치 여부에 따라 상태 설정
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                options.push({
+                    "이름": option1Title,
+                    "밸류": option1Values
+                });
+
+                options.push({
+                    "이름": option2Title,
+                    "밸류": Array.from(option2Values)
+                });
+
+                return [options, optionsInfos];
             }
 
-            // optionElements.forEach(optionElement => {
-            //     const th = optionElement.querySelector('th');
-            //     const select = optionElement.querySelector('select');
-            //     if (th && select) {
-            //         const optionTitle = th.innerText.trim();
-            //         const optionValues = [];
-            //         const optionItems = select.querySelectorAll('option');
-            //         optionItems.forEach(optionItem => {
-            //             const value = optionItem.innerText.trim();
-            //             if (value !== '*' && value !== '**' && value !== '- [필수] 옵션을 선택해 주세요 -' && !optionItem.hasAttribute('disabled')) {
-            //                 optionValues.push(value);
-            //             }
-            //         });
-            //
-            //
-            //         // if (options.has(optionTitle)) {
-            //         //     options.set(optionTitle, [...new Set([...options.get(optionTitle), ...optionValues])]);
-            //         // } else {
-            //         //     options.set(optionTitle, optionValues);
-            //         // }
-            //
-            //
-            //     }
-            // });
             return [options, optionsInfos];
         });
     }, 3, 2000, []);
+
     productDetail["옵션(그룹)"] = JSON.stringify(options, null, 2);
     console.log("옵션(그룹) : ", JSON.stringify(options, null, 2));
 
@@ -1392,17 +1507,17 @@ testDetail(url)
 
 async function testDetail(url)
 {
+    //1개 옵션 테스트
+    // let href = "https://cherryme.kr/product/%EB%8B%B9%EC%9D%BC%EC%B6%9C%EA%B3%A0%EC%8B%A0%EC%83%81%ED%95%A0%EC%9D%B8%F0%9F%92%99-%EB%B0%9C%EB%A0%88%EC%BD%94%EC%96%B4-%EC%B2%AD%EC%88%9C-%ED%81%AC%EB%A1%AD-%EB%A6%AC%EB%B3%B8-%EC%8A%A4%ED%8A%B8%EB%9E%A9-%ED%88%AC%ED%94%BC%EC%8A%A4-%EB%B9%84%ED%82%A4%EB%8B%88-%EC%88%98%EC%98%81%EB%B3%B5/385/category/59/display/1/#none";
+    // let href = "https://www.hotping.co.kr/product/detail.html?product_no=39386&cate_no=1900&display_group=1";
+    // let href = "https://dailyjou.com/product/21%EB%A7%8C%EC%9E%A5%ED%8C%90%EB%A7%A4made-%EB%8D%B0%EC%96%B4-%EB%B0%B4%EB%94%A9-%ED%8C%AC%EC%B8%A0%EC%88%8F%ED%8C%AC%EC%B8%A0-%EC%B6%94%EA%B0%80/3420/category/50/display/1/"
+    // let href = "https://ba-on.com/product/baonhaus-%EC%97%90%ED%83%80%EC%9D%B4-%EC%8A%A4%ED%8A%B8%EB%9D%BC%EC%9D%B4%ED%94%84-%EC%98%A4%EB%B2%84-%EC%85%94%EC%B8%A0-2color/18402/category/39/display/2/";
 
-    const href = "https://www.hotping.co.kr/product/detail.html?product_no=39386&cate_no=1900&display_group=1";
-    // const href = "https://cherryme.kr/product/%EB%8B%B9%EC%9D%BC%EC%B6%9C%EA%B3%A0%EC%8B%A0%EC%83%81%ED%95%A0%EC%9D%B8%F0%9F%92%99-%EB%B0%9C%EB%A0%88%EC%BD%94%EC%96%B4-%EC%B2%AD%EC%88%9C-%ED%81%AC%EB%A1%AD-%EB%A6%AC%EB%B3%B8-%EC%8A%A4%ED%8A%B8%EB%9E%A9-%ED%88%AC%ED%94%BC%EC%8A%A4-%EB%B9%84%ED%82%A4%EB%8B%88-%EC%88%98%EC%98%81%EB%B3%B5/385/category/59/display/1/#none";
-    // const href = "https://dailyjou.com/product/21%EB%A7%8C%EC%9E%A5%ED%8C%90%EB%A7%A4made-%EB%8D%B0%EC%96%B4-%EB%B0%B4%EB%94%A9-%ED%8C%AC%EC%B8%A0%EC%88%8F%ED%8C%AC%EC%B8%A0-%EC%B6%94%EA%B0%80/3420/category/50/display/1/"
-    // const href = "https://ba-on.com/product/baonhaus-%EC%97%90%ED%83%80%EC%9D%B4-%EC%8A%A4%ED%8A%B8%EB%9D%BC%EC%9D%B4%ED%94%84-%EC%98%A4%EB%B2%84-%EC%85%94%EC%B8%A0-2color/18402/category/39/display/2/";
-
-    //2개
-    // const href = 'https://dailyjou.com/product/%EB%94%94%EB%A0%89%ED%8A%B8-%EC%BB%B7%ED%8C%85-%EB%8D%B0%EB%AF%B8%EC%A7%80-%EB%8D%B0%EB%8B%98-%EC%88%8F%ED%8C%AC%EC%B8%A0/18520/category/214/display/1/';
-    // const href = 'https://beidelli.com/product/detail.html?product_no=3881&cate_no=68&display_group=2';
-    // const href = 'https://ba-on.com/product/%ED%94%8C%EB%A3%A8%ED%82%A4-%EC%98%A4%EB%B2%84-%ED%9B%84%EB%93%9C-%EA%B8%B4%ED%8C%94-%EC%85%94%EC%B8%A0-2color/18939/category/34/display/1/';
-    // const href = 'https://www.hotping.co.kr/product/set%EB%AA%A8%EB%8D%B8%EC%BD%94%EB%94%94-%ED%95%A0%EC%9D%B8%EA%B5%AC%EB%A7%A4made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%ED%85%8C%EC%9D%BC%EB%9F%AC%EB%93%9C%EB%8D%94%EB%B8%94%EC%9E%90%EC%BC%93made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%EB%92%B7%EB%B0%B4%EB%94%A9-%EB%A1%B1-%EC%99%80%EC%9D%B4%EB%93%9C-%EC%8A%AC%EB%9E%99%EC%8A%A4%ED%88%AC%ED%94%BC%EC%8A%A4%EC%85%8B%EC%97%85-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EB%A9%B4%EC%A0%91%EB%A3%A9/44485/category/620/display/1/';
+    //2개 옵션 테스트
+    let href = 'https://www.hotping.co.kr/product/set%EB%AA%A8%EB%8D%B8%EC%BD%94%EB%94%94-%ED%95%A0%EC%9D%B8%EA%B5%AC%EB%A7%A4made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%ED%85%8C%EC%9D%BC%EB%9F%AC%EB%93%9C%EB%8D%94%EB%B8%94%EC%9E%90%EC%BC%93made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%EB%92%B7%EB%B0%B4%EB%94%A9-%EB%A1%B1-%EC%99%80%EC%9D%B4%EB%93%9C-%EC%8A%AC%EB%9E%99%EC%8A%A4%ED%88%AC%ED%94%BC%EC%8A%A4%EC%85%8B%EC%97%85-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EB%A9%B4%EC%A0%91%EB%A3%A9/44485/category/620/display/1/';
+    // let href = 'https://dailyjou.com/product/%EB%94%94%EB%A0%89%ED%8A%B8-%EC%BB%B7%ED%8C%85-%EB%8D%B0%EB%AF%B8%EC%A7%80-%EB%8D%B0%EB%8B%98-%EC%88%8F%ED%8C%AC%EC%B8%A0/18520/category/214/display/1/';
+    // let href = 'https://ba-on.com/product/%ED%94%8C%EB%A3%A8%ED%82%A4-%EC%98%A4%EB%B2%84-%ED%9B%84%EB%93%9C-%EA%B8%B4%ED%8C%94-%EC%85%94%EC%B8%A0-2color/18939/category/34/display/1/';
+    // let href = 'https://beidelli.com/product/detail.html?product_no=4184&cate_no=49&display_group=2';
 
 
 
