@@ -1173,7 +1173,9 @@ async function fetchProductDetails(productDetail, url) {
         return reviews;
 
     } catch (error) {
+        console.log('상품 상세 페이지로 이동 중 오류 발생 url:', url);
         console.error('상품 상세 페이지로 이동 중 오류 발생:', error);
+
         return reviews; // 오류 발생 시 빈 배열 리턴
     } finally {
         page.off('dialog', handleDialog); // 이벤트 핸들러 제거
@@ -1519,11 +1521,11 @@ async function main(url) {
 }
 
 
-const url = "https://cherryme.kr";
+// const url = "https://cherryme.kr";
 // const url = "https://www.hotping.co.kr";
 // const url = "https://ba-on.com";
 // const url = "https://beidelli.com";
-// const url = "https://dailyjou.com";
+const url = "https://dailyjou.com";
 
 main(url);
 
