@@ -36,7 +36,8 @@ https://naver.me/FoHF8tuA
 
 연지동헬스장 / 휴밸런스운동센터 / 운영시간주차
 
-
-
 연지동헬스장 / 휴밸런스운동센터 / /운영시간 가격 주차리뷰
 
+
+
+pyinstaller --onefile --noconsole main.py

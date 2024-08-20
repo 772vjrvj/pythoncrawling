@@ -224,20 +224,8 @@ def fetch_place_info(place_id):
 
                     root_query = data.get("ROOT_QUERY", {})
                     place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
-                    images_info = root_query.get(place_detail_key, {}).get('images({"source":["ugcModeling"]})', {}).get("images", [])
 
                     information = root_query.get(place_detail_key, {}).get('description({"source":["shopWindow","jto"]})', "")
-
-                    # 최대 5개 이미지 URL만 수집
-                    imageUrls = []
-                    for image in images_info[:5]:  # 첫 5개 이미지만 처리
-                        origin_url = image.get("origin")
-                        if origin_url:
-                            imageUrls.append(origin_url)
-
-                    os.makedirs(f'images/{name}', exist_ok=True)
-                    for idx, image_url in enumerate(imageUrls):
-                        download_image(image_url, f'images/{name}/{name}_{idx}.jpg')
 
                     business_hours = root_query.get(place_detail_key, {}).get('businessHours({"source":["tpirates","jto","shopWindow"]})', [])
 
@@ -253,7 +241,6 @@ def fetch_place_info(place_id):
                         "가상번호": virtualPhone,
                         "금액": prices,
                         "편의": facilities,
-                        "이미지 URLs": imageUrls,
                         "영업시간": business_hours,
                         "새로운 영업시간": new_business_hours,
                         "정보": information,
@@ -268,6 +255,149 @@ def fetch_place_info(place_id):
     except Exception as e:
         print(f"Error processing data for Place ID: {place_id}: {e}")
     return None
+
+
+def fetch_photos(place_id):
+    url = "https://api.place.naver.com/graphql"
+    headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'ko-KR,ko;q=0.9',
+        'Origin': 'https://m.place.naver.com',
+        'Referer': f'https://m.place.naver.com/place/{place_id}/home'
+    }
+    payload = [
+        {
+            "operationName": "getPhotoViewerItems",
+            "variables": {
+                "input": {
+                    "businessId": place_id,
+                    "businessType": "restaurant",
+                    "cursors": [
+                        {"id": "biz"},
+                        {"id": "cp0"},
+                        {"id": "visitorReview"},
+                        {"id": "clip"},
+                        {"id": "imgSas"}
+                    ],
+                    "excludeAuthorIds": [],
+                    "excludeSection": [],
+                    "excludeClipIds": [],
+                    "dateRange": ""
+                }
+            },
+            "query": """
+            query getPhotoViewerItems($input: PhotoViewerInput) {
+              photoViewer(input: $input) {
+                cursors {
+                  id
+                  startIndex
+                  hasNext
+                  lastCursor
+                  __typename
+                }
+                photos {
+                  viewId
+                  originalUrl
+                  width
+                  height
+                  title
+                  text
+                  desc
+                  link
+                  date
+                  photoType
+                  mediaType
+                  option {
+                    channelName
+                    dateString
+                    playCount
+                    likeCount
+                    __typename
+                  }
+                  to
+                  relation
+                  logId
+                  author {
+                    id
+                    nickname
+                    from
+                    imageUrl
+                    objectId
+                    url
+                    borderImageUrl
+                    __typename
+                  }
+                  votedKeywords {
+                    code
+                    iconUrl
+                    iconCode
+                    displayName
+                    __typename
+                  }
+                  visitCount
+                  originType
+                  isFollowing
+                  businessName
+                  rating
+                  externalLink {
+                    title
+                    url
+                    __typename
+                  }
+                  sourceTitle
+                  moment {
+                    channelId
+                    contentId
+                    momentId
+                    gdid
+                    blogRelation
+                    statAllowYn
+                    category
+                    docNo
+                    __typename
+                  }
+                  video {
+                    videoId
+                    videoUrl
+                    trailerUrl
+                    __typename
+                  }
+                  music {
+                    artists
+                    title
+                    __typename
+                  }
+                  clip {
+                    viewerHash
+                    __typename
+                  }
+                  __typename
+                }
+                __typename
+              }
+            }
+            """
+        }
+    ]
+    image_urls = []
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
+        data = response.json()
+
+        # 원하는 데이터 추출 예시 (originalUrl만 추출)
+        photos = data[0].get('data', {}).get('photoViewer', {}).get('photos', [])
+        for photo in photos:
+            image_urls.append(photo.get('originalUrl'))
+
+        return image_urls[:5]
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return image_urls
 
 
 def extract_information(information):
@@ -430,18 +560,17 @@ def new_print(text, level="INFO"):
     log_text_widget.see(tk.END)
 
 
-def main(query):
+def main(query, total_queries, current_query_index):
     try:
-        query_no_spaces = query.replace(" ", "")
         page = 1
-
         results = []
-        all_ids = set()  # 중복을 제거하기 위해 set 사용
+        all_ids = set()
+        all_ids_list = []
+        total_count = 0
 
         new_print(f"크롤링 시작")
         while True:
             if stop_event.is_set():
-                messagebox.showinfo("중지", "작업이 중지되었습니다.")
                 return
 
             result = fetch_search_results(query, page)
@@ -453,27 +582,24 @@ def main(query):
 
             new_print(f"페이지 : {page}, 목록 : {ids_this_page}")
 
-            if not ids_this_page:  # 더 이상 결과가 없으면 종료
+            if not ids_this_page:
                 break
 
-            all_ids.update(ids_this_page)  # ID를 set에 추가하여 중복 제거
-
-            page += 1  # 페이지 번호 증가
+            all_ids.update(ids_this_page)
+            page += 1
             time.sleep(random.uniform(1, 2))
 
-        # all_ids를 리스트로 변환하여 사용
-        all_ids_list = list(all_ids)
-        total_count = len(all_ids_list)
-        new_print(f"전체 매물 수 : {total_count}")
+        if not stop_event.is_set():
+            all_ids_list = list(all_ids)
+            total_count = len(all_ids_list)
+            new_print(f"전체 매물 수 : {total_count}")
 
-        # 전체 매물 수를 계산한 후 진행률 및 예상 소요 시간 초기화
-        progress['maximum'] = total_count
-        progress['value'] = 0
-        set_progress()
+            progress['maximum'] = total_count
+            progress['value'] = 0
+            set_progress(query, total_queries, current_query_index)
 
         for idx, place_id in enumerate(all_ids_list, start=1):
             if stop_event.is_set():
-                messagebox.showinfo("중지", "작업이 중지되었습니다.")
                 return
 
             place_info = fetch_place_info(place_id)
@@ -481,28 +607,46 @@ def main(query):
                 reviews_info = fetch_reviews(place_id)
                 place_info["리뷰"] = reviews_info.get("reviews", [])
                 place_info["리뷰 분석"] = reviews_info.get("stats", [])
+
+                name = place_info["이름"]
+                image_urls = fetch_photos(place_id)
+                os.makedirs(f'images/{query}/{idx}. {name}', exist_ok=True)
+                for i, image_url in enumerate(image_urls, start=1):
+                    download_image(image_url, f'images/{query}/{idx}. {name}/{name}_{i}.jpg')
+                place_info['이미지 URLs'] = image_urls
                 results.append(place_info)
-                new_print(f"번호 : {idx}, 이름 : {place_info["이름"]}")
+
+                new_print(f"번호 : {idx}, 이름 : {place_info['이름']}")
                 time.sleep(random.uniform(1, 2))
 
-                progress['value'] += 1
-                set_progress()
+                if not stop_event.is_set():
+                    progress['value'] += 1
+                    set_progress(query, total_queries, current_query_index)
 
-        progress['maximum'] = total_count
-        progress['value'] = total_count
-        set_progress()
-        save_to_excel(results, query_no_spaces)
+        if not stop_event.is_set():
+            progress['maximum'] = total_count
+            progress['value'] = total_count
+            set_progress(query, total_queries, current_query_index)
+            query_no_spaces = query.replace(" ", "")
+            save_to_excel(results, query_no_spaces)
 
     except Exception as e:
         print(f"Unexpected error: {e}")
 
 
-def set_progress():
-    progress_label.config(text=f"진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
+def set_progress(query, total_queries, current_query_index):
+    # 개별 진행률 업데이트
+    progress_label.config(text=f"[{query}] 진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
     remaining_time = (progress['maximum'] - progress['value']) * time_val
     eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
     eta_label.config(text=f"예상 소요 시간: {eta}")
     progress.update_idletasks()
+
+    # 전체 진행률 업데이트
+    overall_progress_percentage = ((current_query_index + progress['value'] / progress['maximum']) / total_queries) * 100
+    overall_progress_label.config(text=f"전체 진행률: {overall_progress_percentage:.2f}%")
+    overall_progress['value'] = overall_progress_percentage
+    overall_progress.update_idletasks()
 
 
 def save_to_excel(results, query_no_spaces, mode='w'):
@@ -528,8 +672,8 @@ def save_to_excel(results, query_no_spaces, mode='w'):
     now = datetime.datetime.now()
     timestamp = now.strftime("%Y%m%d%H%M")
 
-    # 파일 이름에 현재 날짜와 시간 추가
-    file_name = f'{query_no_spaces}_{timestamp}.xlsx'
+    # 파일 이름에 현재 날짜와 시간 추가, 파일 이름을 안전하게 처리
+    file_name = sanitize_filename(f'{query_no_spaces}_{timestamp}.xlsx')
     try:
         if mode == 'a':
             existing_df = pd.read_excel(file_name)
@@ -544,37 +688,45 @@ def save_to_excel(results, query_no_spaces, mode='w'):
 
     new_print(f"엑셀 저장 {file_name}")
     # 메시지박스 표시
-    messagebox.showinfo("완료", "작업이 완료되었습니다.")
+
+
+def sanitize_filename(name):
+    # 파일 이름에 사용할 수 없는 문자들을 제거합니다.
+    return re.sub(r'[\\/*?:"<>|]', "", name)
 
 
 def start_app():
-    global root, search_entry, search_button, log_text_widget, progress, progress_label, eta_label
+    global root, search_entry, search_button, log_text_widget, progress, progress_label, eta_label, overall_progress_label, overall_progress
 
     root = tk.Tk()
     root.title("네이버 블로그 프로그램")
-    root.geometry("700x700")  # 원래 크기
+    root.geometry("700x750")  # 크기 조정
 
-    font_large = ('Helvetica', 10)  # 원래 폰트 크기
+    font_large = ('Helvetica', 10)  # 폰트 크기
 
     # 옵션 프레임
     option_frame = tk.Frame(root)
-    option_frame.pack(fill=tk.X, padx=10, pady=10)  # 원래 패딩
+    option_frame.pack(fill=tk.X, padx=10, pady=10)
 
     # 검색어 입력 프레임
     search_frame = tk.Frame(root)
-    search_frame.pack(pady=20)  # 원래 상하 여백
+    search_frame.pack(pady=20)
 
     # 검색어 레이블
     search_label = tk.Label(search_frame, text="검색어:", font=font_large)
-    search_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')  # 원래 패딩
+    search_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
 
     # 검색어 입력 필드
-    search_entry = tk.Entry(search_frame, font=font_large, width=25)  # 원래 너비
+    search_entry = tk.Entry(search_frame, font=font_large, width=25)
     search_entry.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
 
     # 검색 버튼
     search_button = tk.Button(search_frame, text="검색", font=font_large, bg="lightgreen", command=on_search)
     search_button.grid(row=0, column=2, padx=5, pady=5)
+
+    # 안내 문구
+    guide_label = tk.Label(search_frame, text="* 콤마(,)로 구분하여 검색어를 작성해주세요 *", font=font_large, fg="red")
+    guide_label.grid(row=1, column=0, columnspan=3, padx=5, pady=5)
 
     # 검색 프레임의 열 비율 설정
     search_frame.columnconfigure(1, weight=1)
@@ -601,25 +753,48 @@ def start_app():
     # 진행률
     progress_frame = tk.Frame(root)
     progress_frame.pack(fill=tk.X, padx=10, pady=10)
-    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
-    eta_label = tk.Label(progress_frame, text="예상 소요 시간: 00:00:00", font=font_large)
 
+    # 개별 진행률 표시
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
     progress_label.pack(side=tk.TOP, padx=5)
+
+    # 예상 소요 시간
+    eta_label = tk.Label(progress_frame, text="예상 소요 시간: 00:00:00", font=font_large)
     eta_label.pack(side=tk.TOP, padx=5)
 
-    style = ttk.Style()
-    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+
+    # 개별 진행률 게이지 바 (전체 진행률 아래로 이동)
     progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
-    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+    progress.pack(fill=tk.X, padx=10, pady=(0, 10), expand=True)
+
+    # 전체 진행률 표시 (위로 이동)
+    overall_progress_label = tk.Label(progress_frame, text="전체 진행률: 0%", font=font_large)
+    overall_progress_label.pack(side=tk.TOP, padx=5)
+
+    # 전체 진행률 게이지 바
+    overall_progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    overall_progress.pack(fill=tk.X, padx=10, pady=(0, 10), expand=True)
 
     root.mainloop()
 
 
-def run_main(query):
+def run_main(querys):
     try:
-        main(query)
+        query_list = [q.strip() for q in querys.split(",")]
+        total_queries = len(query_list)
+        for idx, query in enumerate(query_list):
+            if stop_event.is_set():
+                break
+            new_print(f"검색어: {query} 크롤링 시작", "INFO")
+            progress_label.config(text=f"[{query}] 진행률: 0%")
+            main(query, total_queries, idx)
+
+        if not stop_event.is_set():
+            messagebox.showwarning("경고", "크롤링이 완료되었습니다.")
+            search_button.config(bg="lightgreen", fg="black", text="검색")
+
     except Exception as e:
-        print(f"Unexpected error in thread: {e}")
+        new_print(f"Unexpected error in thread: {e}", "ERROR")
 
 
 def on_search():
@@ -631,12 +806,22 @@ def on_search():
             new_print("크롤링 중지")
             stop_event.set()  # 이벤트 설정
             search_button.config(bg="lightgreen", fg="black", text="검색")
+
+            # 진행률 게이지바 초기화
+            progress['value'] = 0
+            overall_progress['value'] = 0
+            progress_label.config(text="진행률: 0%")
+            overall_progress_label.config(text="전체 진행률: 0%")
+            eta_label.config(text="예상 소요 시간: 00:00:00")
+            messagebox.showwarning("경고", "크롤링이 중지되었습니다.")
         else:
-            # 시작 버튼 클릭 시
+            # 시작 버튼 클릭 시 모든 진행률 초기화
             stop_event.clear()  # 이벤트 초기화
             log_text_widget.delete('1.0', tk.END)  # 로그 초기화
-            progress['value'] = 0  # 진행률 초기화
+            progress['value'] = 0  # 개별 진행률 초기화
+            overall_progress['value'] = 0  # 전체 진행률 초기화
             progress_label.config(text="진행률: 0%")
+            overall_progress_label.config(text="전체 진행률: 0%")
             eta_label.config(text="예상 소요 시간: 00:00:00")
             search_button.config(bg="red", fg="white", text="중지")
             search_thread = threading.Thread(target=run_main, args=(query,))
