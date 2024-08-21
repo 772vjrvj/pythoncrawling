@@ -163,7 +163,6 @@ def start_processing():
         messagebox.showinfo("알림", "작업이 완료되었습니다.")
         stop_flash_window(root)  # 메시지박스 확인 후 깜빡임 중지
 
-
 flashing = True  # 깜빡임 상태를 관리하는 플래그
 
 def flash_window(root):
@@ -188,8 +187,6 @@ def flash_window(root):
 
     threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
 
-
-
 def stop_flash_window(root):
     global flashing
     flashing = False
@@ -205,8 +202,6 @@ def stop_flash_window(root):
     hwnd = root.winfo_id()
     flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
     ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
-
-
 
 def save_to_excel(data):
     df = pd.DataFrame(data)
