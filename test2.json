@@ -1,0 +1,688 @@
+{
+  "__typename": "Query",
+  "accessor({\"businessId\":\"1285854475\"})": {
+    "__typename": "Accessor",
+    "accessor": "",
+    "accessorBanner": []
+  },
+  "recentBooking({\"input\":{\"bookingStatuses\":[\"confirmed\"],\"businessId\":\"1285854475\",\"businessType\":\"place\"}})": null,
+  "placeDetail({\"input\":{\"checkRedirect\":true,\"deviceType\":\"pc\",\"id\":\"1285854475\",\"isNx\":false}})": {
+    "__typename": "PlaceDetail",
+    "base": {
+      "__ref": "PlaceDetailBase:1285854475"
+    },
+    "naverBooking": {
+      "__typename": "PlaceDetailNaverBooking",
+      "bookingBusinessId": null,
+      "naverBookingUrl": null,
+      "bookingDisplayName": "방문",
+      "bookingButtonName": "예약",
+      "bookingHubButtonName": null,
+      "naverBookingHubUrl": null,
+      "naverBookingPromotion": null,
+      "promotionTitle": null,
+      "nPayPromotion": null,
+      "hasSmartOrder": null
+    },
+    "images({\"source\":[\"ugcModeling\"]})": {
+      "__typename": "PlaceDetailImages",
+      "images": [
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_198\u002F1610512246153V5gf3_JPEG\u002FXTc5b3POTGvDtmi3Y7xhk-pX.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_290\u002F1610512244763BEVqY_JPEG\u002FYFDOEAb1LpqbMJPG47qjzljz.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_64\u002F1610512245107f1L3Y_JPEG\u002F3ka-Xrx58y_3dC54HEYaqEyD.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_141\u002F1610512242116qlkkn_JPEG\u002FoAr7KLfeYc2FjvteXcmb3f4g.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_67\u002F16105122441294DfIF_JPEG\u002F9JO22-whjmygpE8e4QT4NiMN.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_173\u002F16105122466450eCP0_JPEG\u002FaTPbatCdYUqaH26YTbrCZ58T.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_248\u002F16105122473770Xubv_JPEG\u002FHOHTFMh-9gDJoj1VmNFz5Aw-.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_212\u002F16105122487485Dy3R_JPEG\u002FMfBVKntpsfBAMhIVQE1-8_A7.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_43\u002F1610512245817Ntemb_JPEG\u002F6lLG_XcIzgpNGCPL70Jtub8K.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_122\u002F1610512243551nHO3W_JPEG\u002FId6pAqXahb141-SyjUkdwWze.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_176\u002F1610512248201uBeW3_JPEG\u002FweqUEU6iiqIbbuCibP3gyDvT.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_214\u002F1610512243214paF0e_JPEG\u002FsJYKYGClGZFQmZzBnSIt8eoj.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_122\u002F1610512245537LJKi9_JPEG\u002FpBUDdE8zt4j8SF19i9HW16QQ.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_273\u002F1610512242702Bjpf3_JPEG\u002FA3US8ybK9-J6LhPXu8fwOec4.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_263\u002F16105122420606QMjG_JPEG\u002FWHfAy1WrxSQoWb5vPR5eJo4n.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_43\u002F161051224206255DDw_JPEG\u002Fk6og5_aL3l9aTugSsIDZLEVx.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_129\u002F1610512241818VuXGr_JPEG\u002Fns26cEQTGLDVLJ0KDsYKMHuz.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_119\u002F1610512241639VnqWC_JPEG\u002FYY94aztyXyXs9YHLEREB8K3O.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_162\u002F1610512248241FI6Br_JPEG\u002FixtvcgWw0_qh56LZdwwGt5wd.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_67\u002F1610512248676d5KtB_JPEG\u002FBLRw0uxlc-hp-qGoovd2mGRf.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_70\u002F1610512246947TW7ze_JPEG\u002F4ZxDuwVF-UZDvalWwH7mZ95h.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_263\u002F1610512244915ACkFe_JPEG\u002F_Lp_o83THMe7N74D2DqSX1pQ.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_105\u002F1610512247015tV8k2_JPEG\u002Fc3u5vDOq2FVFe4VvVU1WsBdj.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_285\u002F161051224641960EY5_JPEG\u002FZpFVr5lhxLd3nshm-Pry2GFU.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_139\u002F1610512244261izyn8_JPEG\u002F5T0cEFsYJ5m74tgYDHhnDmFu.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_147\u002F1610512247863N6iEc_JPEG\u002FSdVm_4ctCDzktLraa5ojxVFJ.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 3024,
+          "height": 4032,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_95\u002F1610512247651qlEh1_JPEG\u002FgrHq47vCcQa_dubC2fFW0TaQ.jpg",
+          "number": null,
+          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
+          "url": null,
+          "desc": null,
+          "width": 4032,
+          "height": 3024,
+          "source": null
+        }
+      ],
+      "totalImages": 27
+    },
+    "businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})": [
+      {
+        "__typename": "BusinessHour",
+        "index": 0,
+        "day": "매일",
+        "isDayOff": false,
+        "hourString": "매일 00:00 - 24:00",
+        "startTime": "00:00",
+        "endTime": "24:00",
+        "description": "연중무휴"
+      }
+    ],
+    "brandPromotion": {
+      "__typename": "BrandPromotion",
+      "promotionMobileUrl": null,
+      "promotionType": null,
+      "promotionDetail": null,
+      "promotionSdayOfWeek": null,
+      "brandDirNum": null,
+      "brandPcUrl": null,
+      "promotionPcUrl": null,
+      "promotionImage": null,
+      "promotionEdayOfWeek": null,
+      "brandMobileUrl": null,
+      "promotionEdate": null,
+      "brandLogoImage": null,
+      "brandPhone": null,
+      "sDate": null,
+      "promotionSdate": null,
+      "promotionPlaceImage": null,
+      "promotionDetailColor": null,
+      "eDate": null,
+      "brandTitle": null,
+      "status": null
+    },
+    "cesco": null,
+    "fsasReviews": {
+      "__typename": "FsasReviewsResult",
+      "total": 6,
+      "maxItemCount": 6,
+      "items": [
+        {
+          "__ref": "FsasReview:blog_완벽하지 않아도 괜찮아:)_222379744906_21.06.01 블챌 9일차 반짝이는 6월✨ &amp; 당감 르하임스터디카페 후기"
+        },
+        {
+          "__ref": "FsasReview:blog_르하임스터디카페 공식블로그_222167745823_부산 부산진구 당감동 스터디카페 르하임 부산당감점 사전예약 50... "
+        },
+        {
+          "__ref": "FsasReview:blog_르하임스터디카페 공식블로그_222206013937_르하임 부산당감점 1월 13일 오픈!"
+        }
+      ]
+    },
+    "visitorReviewStats": {
+      "__ref": "VisitorReviewStatsResult:1285854475"
+    },
+    "busStations": [
+      {
+        "__ref": "BusStation:623117"
+      },
+      {
+        "__ref": "BusStation:621544"
+      },
+      {
+        "__ref": "BusStation:623118"
+      },
+      {
+        "__ref": "BusStation:613538"
+      },
+      {
+        "__ref": "BusStation:627503"
+      },
+      {
+        "__ref": "BusStation:623119"
+      }
+    ],
+    "hasCoupon": {
+      "__typename": "HasCoupon",
+      "count": 0
+    },
+    "hasFeed": {
+      "__typename": "HasFeed",
+      "blogExist": true,
+      "feedExist": true
+    },
+    "shopWindow": {
+      "__typename": "ShopWindow",
+      "total": null,
+      "naverPayYn": null,
+      "sales": null,
+      "description": null,
+      "itemsFromChannelNo": null,
+      "itemsFromInterlockId": null,
+      "branchNews": null,
+      "url": null,
+      "typeName": null,
+      "branchYn": null,
+      "isTraditionalMarket": null,
+      "homepages": {
+        "__typename": "Homepage",
+        "etc": [],
+        "repr": {
+          "__typename": "HomepageRepr",
+          "url": "http:\u002F\u002F르하임.com",
+          "landingUrl": "http:\u002F\u002Fxn--2w2b60xoxk.com",
+          "isDeadUrl": false,
+          "type": "홈페이지",
+          "order": 0,
+          "isRep": null
+        }
+      },
+      "businessHours": null
+    },
+    "directories({\"input\":{\"display\":3}})": {
+      "__typename": "Directories",
+      "validTabs": null,
+      "total": 0,
+      "items": [],
+      "countDirectories": null
+    },
+    "festivalPerformance": {
+      "__typename": "FestivalPerformance",
+      "headInfo": "",
+      "festivalSectionHeadInfo": "",
+      "festivalsTotal": 0,
+      "festivals": [],
+      "performancesTotal": 0,
+      "performances": []
+    },
+    "cpImages({\"source\":[\"ugcImage\",\"jto\",\"nwindow\",\"themepark\",\"elecvery\"]})": {
+      "__typename": "CPImages",
+      "total": 0,
+      "images": []
+    },
+    "encyclopedia": null,
+    "tickets": {
+      "__typename": "TicketItemsResult",
+      "total": 0,
+      "moreBookingUrl": null,
+      "items": []
+    },
+    "sites": {
+      "__typename": "Sites",
+      "subLinks": null,
+      "etc": null,
+      "url": null,
+      "landingUrl": null,
+      "gdid": null
+    },
+    "themepark": null,
+    "businessStats": {
+      "__typename": "BusinessStats",
+      "contexts": null,
+      "daily": null,
+      "gender": null,
+      "age": null,
+      "lastUpdated": null,
+      "weather": null,
+      "bestMonths": null,
+      "alsoSearched": null
+    },
+    "businessTools": {
+      "__typename": "BusinessTools",
+      "tools": [
+        {
+          "__typename": "BusinessTool",
+          "type": "smartCall",
+          "title": "스마트콜",
+          "countInString": "50만",
+          "description": "전화를 대신 받고 응대까지 해드려요!",
+          "link": "https:\u002F\u002Ftv.naver.com\u002Fv\u002F2015533",
+          "using": false
+        }
+      ],
+      "hideAnnouncement": false
+    },
+    "photoTabInfo": {
+      "__typename": "PhotoTabInfo",
+      "sasImagesTotal": 0,
+      "clipTotal": 0
+    },
+    "kinQna": {
+      "__typename": "KinQna",
+      "answerCount": null,
+      "answerList": null,
+      "profileUrl": null
+    },
+    "excludeTargets": null,
+    "newBusinessHours": [
+      {
+        "__typename": "NewBusinessHour",
+        "name": "기본",
+        "businessStatusDescription": {
+          "__typename": "BusinessStatusDescription",
+          "status": "24시간 영업",
+          "blindDescription": null,
+          "description": "연중무휴"
+        },
+        "businessHours": [
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "매일",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "00:00",
+              "end": "24:00"
+            },
+            "breakHours": null,
+            "description": null,
+            "lastOrderTimes": null
+          }
+        ],
+        "comingIrregularClosedDays": [],
+        "comingRegularClosedDays": "",
+        "freeText": null
+      }
+    ],
+    "tsInspection": {
+      "__typename": "TSInspection",
+      "tsId": null
+    },
+    "themeparkAttraction": null,
+    "subwayStations": [],
+    "land": null,
+    "bank": null,
+    "movieTimes": null,
+    "evChargingStation": null,
+    "menuImages": [
+      {
+        "__typename": "MenuImage",
+        "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210610_219\u002F1623331066930sENrz_JPEG\u002FRGKyyWMzo9gRc_oVjFmUoU_V.jpg"
+      }
+    ],
+    "mountain": null,
+    "opinet": null,
+    "toilet": null,
+    "nadle": null,
+    "shelter": null,
+    "pollingStation": null,
+    "informationTab({\"providerSource\":[\"pbp\",\"pollingplace\"]})": {
+      "__typename": "InformationTab",
+      "parkingInfo": null,
+      "facilities": [
+        {
+          "__ref": "InformationFacilities:13"
+        },
+        {
+          "__ref": "InformationFacilities:8"
+        },
+        {
+          "__ref": "InformationFacilities:7"
+        }
+      ],
+      "keywordList": [
+        "당감동스터디카페",
+        "부산진구스터디카페",
+        "부산진구스터디룸",
+        "당감동스터디룸",
+        "르하임스터디카페"
+      ]
+    },
+    "restArea": null,
+    "homepages({\"source\":[\"shopWindow\",\"jto\"]})": {
+      "__typename": "Homepage",
+      "etc": [],
+      "repr": {
+        "__typename": "HomepageRepr",
+        "url": "http:\u002F\u002F르하임.com",
+        "landingUrl": "http:\u002F\u002Fxn--2w2b60xoxk.com",
+        "isDeadUrl": false,
+        "type": "홈페이지",
+        "typeI18n": "홈페이지",
+        "order": 0,
+        "isRep": null
+      }
+    },
+    "jto": null,
+    "parkingmodu": null,
+    "aniPharm": null,
+    "gift": {
+      "__typename": "Gift",
+      "gifticonId": null,
+      "gifticonMoreUrl": null
+    },
+    "menus": [
+      {
+        "__ref": "Menu:1285854475_0"
+      },
+      {
+        "__ref": "Menu:1285854475_1"
+      },
+      {
+        "__ref": "Menu:1285854475_2"
+      },
+      {
+        "__ref": "Menu:1285854475_3"
+      },
+      {
+        "__ref": "Menu:1285854475_4"
+      },
+      {
+        "__ref": "Menu:1285854475_5"
+      },
+      {
+        "__ref": "Menu:1285854475_6"
+      },
+      {
+        "__ref": "Menu:1285854475_7"
+      },
+      {
+        "__ref": "Menu:1285854475_8"
+      },
+      {
+        "__ref": "Menu:1285854475_9"
+      },
+      {
+        "__ref": "Menu:1285854475_10"
+      },
+      {
+        "__ref": "Menu:1285854475_11"
+      }
+    ],
+    "branchDeliveryInfo": null,
+    "cp0Videos": [],
+    "goodPrice": null,
+    "paiUpperImage": {
+      "__typename": "PaiUpperImage",
+      "images": []
+    },
+    "description({\"source\":[\"shopWindow\",\"jto\"]})": "르하임 스터디카페 부산당감점\n\n고객 만족도 1위 스터디카페\n24시간, 365일 무인시스템으로 운영되는 프리미엄 스터디카페 입니다.\n\n집중력을 높이는 최적의 조도와\n모던하고 고급스러운 인테리어로\n여러분들에게 최고의 공부 환경을 제공합니다.\n\n스터디존\u002F스터디룸\u002F카페존\n3개의 공간이 완전히 분리되어 있어\n\n스터디존에서 공부하시다가\n카페존으로 나와서 편히 쉴 수 있으며\n\n그룹으로 모이는 공간이 필요하시면\n예약을 통해 4인실\u002F6인실 스터디룸 사용이 가능합니다.\n\n※ 주요 이용 고객\n- 학생(중간\u002F기말 시험, 모의고사, 수능 준비)\n- 대학생(대학 시험, 과제, 공모전, 취업 스터디)\n- 일반성인(공무원 준비, 전문자격증 취득 등)\n\n※ 내부시설\n1. 스터디존 : 다인석(8인), 부스석, 1인 독립석, bar석 4가지 타입의 좌석제공\n2. 4인룸\u002F6인룸 제공\n3. 프리미엄 IOT 냉난방 환기시스템\n4. 초고속 무선인터넷 wifi\n5. 독서대 및 담요 제공\n6. PC & 복합기 제공\n7. Premium sound masking zone\n\n※스터디카페 특성상 1회 시간권 사용자들과 기간권, 정액권 이용자들이 겹치는 이용 시간에는 좌석이 만석될 수 있으며, 좌석 만석 시 부득이하게 기다리실 수 있는 점 양해를 부탁드립니다.",
+    "martOffInfo": null,
+    "is100YearCertified": null,
+    "is100YearSmallManufacturer": null,
+    "isNFASafetyCertified": null,
+    "staticMapUrl": "https:\u002F\u002Fsimg.pstatic.net\u002Fstatic.map\u002Fv2\u002Fmap\u002Fstaticmap.bin?center=129.0410872%2C35.1656151&level=16&dataversion=172.29&caller=naver_mstore&markers=pos%3A129.0410872%2035.1656151%7Ctype%3Ac%7Ccolor%3Ablue%7Clabel%3Arestaurant",
+    "newOpening": null
+  },
+  "panoramaThumbnail({\"input\":{\"businessId\":\"1285854475\",\"height\":400,\"type\":\"thumbnail\",\"width\":800}})": {
+    "__typename": "PanoramaThumbnailResult",
+    "url": "https:\u002F\u002Fapis.naver.com\u002Fplace\u002Fpanorama\u002Fthumbnail\u002F1285854475\u002F0?width=800&height=400&msgpad=1724339961434&md=8OZOmSyuOXPDj1wYZ9xRZLFnlS4%3D"
+  },
+  "user": {
+    "__typename": "UserResult",
+    "partnerHashedIdNo": null,
+    "myplace": {
+      "__typename": "MyPlaceUserInfo",
+      "profile": {
+        "__typename": "MyPlaceProfile",
+        "imageUrl": null,
+        "borderImageUrl": null,
+        "myplaceId": null,
+        "myplaceNickname": null
+      }
+    }
+  },
+  "visitorReviewMediasTotal({\"input\":{\"businessId\":\"1285854475\"}})": {
+    "__typename": "VisitorReviewMediasTotalResult",
+    "total": 5
+  }
+}
