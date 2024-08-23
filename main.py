@@ -81,6 +81,8 @@ def fetch_place_info(place_id):
                         "URL": url,
                         "지도": map_url
                     }
+                    new_print(result)
+
                     return result
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
