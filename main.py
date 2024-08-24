@@ -2522,13 +2522,6 @@ if __name__ == "__main__":
         "동적깡통구이",
         "다운이네"
     ]
-    names = [
-        "프론트서울",
-        "마일스톤",
-        "오아시스",
-    ]
-
-
     # 현재 시간 가져오기
     current_time = datetime.now().strftime("%Y%m%d%H%M")
     # 파일 이름에 시간 추가
