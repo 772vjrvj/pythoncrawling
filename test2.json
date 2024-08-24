@@ -1,688 +1,4922 @@
 {
-  "__typename": "Query",
-  "accessor({\"businessId\":\"1285854475\"})": {
-    "__typename": "Accessor",
-    "accessor": "",
-    "accessorBanner": []
-  },
-  "recentBooking({\"input\":{\"bookingStatuses\":[\"confirmed\"],\"businessId\":\"1285854475\",\"businessType\":\"place\"}})": null,
-  "placeDetail({\"input\":{\"checkRedirect\":true,\"deviceType\":\"pc\",\"id\":\"1285854475\",\"isNx\":false}})": {
-    "__typename": "PlaceDetail",
-    "base": {
-      "__ref": "PlaceDetailBase:1285854475"
-    },
-    "naverBooking": {
-      "__typename": "PlaceDetailNaverBooking",
-      "bookingBusinessId": null,
-      "naverBookingUrl": null,
-      "bookingDisplayName": "방문",
-      "bookingButtonName": "예약",
-      "bookingHubButtonName": null,
-      "naverBookingHubUrl": null,
-      "naverBookingPromotion": null,
-      "promotionTitle": null,
-      "nPayPromotion": null,
-      "hasSmartOrder": null
-    },
-    "images({\"source\":[\"ugcModeling\"]})": {
-      "__typename": "PlaceDetailImages",
-      "images": [
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_198\u002F1610512246153V5gf3_JPEG\u002FXTc5b3POTGvDtmi3Y7xhk-pX.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_290\u002F1610512244763BEVqY_JPEG\u002FYFDOEAb1LpqbMJPG47qjzljz.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_64\u002F1610512245107f1L3Y_JPEG\u002F3ka-Xrx58y_3dC54HEYaqEyD.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_141\u002F1610512242116qlkkn_JPEG\u002FoAr7KLfeYc2FjvteXcmb3f4g.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_67\u002F16105122441294DfIF_JPEG\u002F9JO22-whjmygpE8e4QT4NiMN.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_173\u002F16105122466450eCP0_JPEG\u002FaTPbatCdYUqaH26YTbrCZ58T.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_248\u002F16105122473770Xubv_JPEG\u002FHOHTFMh-9gDJoj1VmNFz5Aw-.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_212\u002F16105122487485Dy3R_JPEG\u002FMfBVKntpsfBAMhIVQE1-8_A7.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_43\u002F1610512245817Ntemb_JPEG\u002F6lLG_XcIzgpNGCPL70Jtub8K.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_122\u002F1610512243551nHO3W_JPEG\u002FId6pAqXahb141-SyjUkdwWze.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_176\u002F1610512248201uBeW3_JPEG\u002FweqUEU6iiqIbbuCibP3gyDvT.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_214\u002F1610512243214paF0e_JPEG\u002FsJYKYGClGZFQmZzBnSIt8eoj.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_122\u002F1610512245537LJKi9_JPEG\u002FpBUDdE8zt4j8SF19i9HW16QQ.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_273\u002F1610512242702Bjpf3_JPEG\u002FA3US8ybK9-J6LhPXu8fwOec4.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_263\u002F16105122420606QMjG_JPEG\u002FWHfAy1WrxSQoWb5vPR5eJo4n.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_43\u002F161051224206255DDw_JPEG\u002Fk6og5_aL3l9aTugSsIDZLEVx.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_129\u002F1610512241818VuXGr_JPEG\u002Fns26cEQTGLDVLJ0KDsYKMHuz.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_119\u002F1610512241639VnqWC_JPEG\u002FYY94aztyXyXs9YHLEREB8K3O.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_162\u002F1610512248241FI6Br_JPEG\u002FixtvcgWw0_qh56LZdwwGt5wd.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_67\u002F1610512248676d5KtB_JPEG\u002FBLRw0uxlc-hp-qGoovd2mGRf.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_70\u002F1610512246947TW7ze_JPEG\u002F4ZxDuwVF-UZDvalWwH7mZ95h.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_263\u002F1610512244915ACkFe_JPEG\u002F_Lp_o83THMe7N74D2DqSX1pQ.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_105\u002F1610512247015tV8k2_JPEG\u002Fc3u5vDOq2FVFe4VvVU1WsBdj.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_285\u002F161051224641960EY5_JPEG\u002FZpFVr5lhxLd3nshm-Pry2GFU.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_139\u002F1610512244261izyn8_JPEG\u002F5T0cEFsYJ5m74tgYDHhnDmFu.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_147\u002F1610512247863N6iEc_JPEG\u002FSdVm_4ctCDzktLraa5ojxVFJ.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 3024,
-          "height": 4032,
-          "source": null
-        },
-        {
-          "__typename": "Image",
-          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210113_95\u002F1610512247651qlEh1_JPEG\u002FgrHq47vCcQa_dubC2fFW0TaQ.jpg",
-          "number": null,
-          "infoTitle": "르하임스터디카페 부산당감점 업체등록사진",
-          "url": null,
-          "desc": null,
-          "width": 4032,
-          "height": 3024,
-          "source": null
-        }
-      ],
-      "totalImages": 27
-    },
-    "businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})": [
-      {
-        "__typename": "BusinessHour",
-        "index": 0,
-        "day": "매일",
-        "isDayOff": false,
-        "hourString": "매일 00:00 - 24:00",
-        "startTime": "00:00",
-        "endTime": "24:00",
-        "description": "연중무휴"
-      }
-    ],
-    "brandPromotion": {
-      "__typename": "BrandPromotion",
-      "promotionMobileUrl": null,
-      "promotionType": null,
-      "promotionDetail": null,
-      "promotionSdayOfWeek": null,
-      "brandDirNum": null,
-      "brandPcUrl": null,
-      "promotionPcUrl": null,
-      "promotionImage": null,
-      "promotionEdayOfWeek": null,
-      "brandMobileUrl": null,
-      "promotionEdate": null,
-      "brandLogoImage": null,
-      "brandPhone": null,
-      "sDate": null,
-      "promotionSdate": null,
-      "promotionPlaceImage": null,
-      "promotionDetailColor": null,
-      "eDate": null,
-      "brandTitle": null,
-      "status": null
-    },
-    "cesco": null,
-    "fsasReviews": {
-      "__typename": "FsasReviewsResult",
-      "total": 6,
-      "maxItemCount": 6,
-      "items": [
-        {
-          "__ref": "FsasReview:blog_완벽하지 않아도 괜찮아:)_222379744906_21.06.01 블챌 9일차 반짝이는 6월✨ &amp; 당감 르하임스터디카페 후기"
-        },
-        {
-          "__ref": "FsasReview:blog_르하임스터디카페 공식블로그_222167745823_부산 부산진구 당감동 스터디카페 르하임 부산당감점 사전예약 50... "
-        },
-        {
-          "__ref": "FsasReview:blog_르하임스터디카페 공식블로그_222206013937_르하임 부산당감점 1월 13일 오픈!"
-        }
-      ]
-    },
-    "visitorReviewStats": {
-      "__ref": "VisitorReviewStatsResult:1285854475"
-    },
-    "busStations": [
-      {
-        "__ref": "BusStation:623117"
+  layout: "default",
+  data: [
+    {
+      q: a,
+      sortType: {
+        id: 2,
+        tag: a,
+        label: a,
+        wid: "channelSearchSortType.mostSubscribed"
       },
-      {
-        "__ref": "BusStation:621544"
-      },
-      {
-        "__ref": "BusStation:623118"
-      },
-      {
-        "__ref": "BusStation:613538"
-      },
-      {
-        "__ref": "BusStation:627503"
-      },
-      {
-        "__ref": "BusStation:623119"
-      }
-    ],
-    "hasCoupon": {
-      "__typename": "HasCoupon",
-      "count": 0
-    },
-    "hasFeed": {
-      "__typename": "HasFeed",
-      "blogExist": true,
-      "feedExist": true
-    },
-    "shopWindow": {
-      "__typename": "ShopWindow",
-      "total": null,
-      "naverPayYn": null,
-      "sales": null,
-      "description": null,
-      "itemsFromChannelNo": null,
-      "itemsFromInterlockId": null,
-      "branchNews": null,
-      "url": null,
-      "typeName": null,
-      "branchYn": null,
-      "isTraditionalMarket": null,
-      "homepages": {
-        "__typename": "Homepage",
-        "etc": [],
-        "repr": {
-          "__typename": "HomepageRepr",
-          "url": "http:\u002F\u002F르하임.com",
-          "landingUrl": "http:\u002F\u002Fxn--2w2b60xoxk.com",
-          "isDeadUrl": false,
-          "type": "홈페이지",
-          "order": 0,
-          "isRep": null
-        }
-      },
-      "businessHours": null
-    },
-    "directories({\"input\":{\"display\":3}})": {
-      "__typename": "Directories",
-      "validTabs": null,
-      "total": 0,
-      "items": [],
-      "countDirectories": null
-    },
-    "festivalPerformance": {
-      "__typename": "FestivalPerformance",
-      "headInfo": "",
-      "festivalSectionHeadInfo": "",
-      "festivalsTotal": 0,
-      "festivals": [],
-      "performancesTotal": 0,
-      "performances": []
-    },
-    "cpImages({\"source\":[\"ugcImage\",\"jto\",\"nwindow\",\"themepark\",\"elecvery\"]})": {
-      "__typename": "CPImages",
-      "total": 0,
-      "images": []
-    },
-    "encyclopedia": null,
-    "tickets": {
-      "__typename": "TicketItemsResult",
-      "total": 0,
-      "moreBookingUrl": null,
-      "items": []
-    },
-    "sites": {
-      "__typename": "Sites",
-      "subLinks": null,
-      "etc": null,
-      "url": null,
-      "landingUrl": null,
-      "gdid": null
-    },
-    "themepark": null,
-    "businessStats": {
-      "__typename": "BusinessStats",
-      "contexts": null,
-      "daily": null,
-      "gender": null,
-      "age": null,
-      "lastUpdated": null,
-      "weather": null,
-      "bestMonths": null,
-      "alsoSearched": null
-    },
-    "businessTools": {
-      "__typename": "BusinessTools",
-      "tools": [
+      selectedFilters: [
         {
-          "__typename": "BusinessTool",
-          "type": "smartCall",
-          "title": "스마트콜",
-          "countInString": "50만",
-          "description": "전화를 대신 받고 응대까지 해드려요!",
-          "link": "https:\u002F\u002Ftv.naver.com\u002Fv\u002F2015533",
-          "using": false
-        }
-      ],
-      "hideAnnouncement": false
-    },
-    "photoTabInfo": {
-      "__typename": "PhotoTabInfo",
-      "sasImagesTotal": 0,
-      "clipTotal": 0
-    },
-    "kinQna": {
-      "__typename": "KinQna",
-      "answerCount": null,
-      "answerList": null,
-      "profileUrl": null
-    },
-    "excludeTargets": null,
-    "newBusinessHours": [
-      {
-        "__typename": "NewBusinessHour",
-        "name": "기본",
-        "businessStatusDescription": {
-          "__typename": "BusinessStatusDescription",
-          "status": "24시간 영업",
-          "blindDescription": null,
-          "description": "연중무휴"
-        },
-        "businessHours": [
-          {
-            "__typename": "WorkingHoursInfo",
-            "day": "매일",
-            "businessHours": {
-              "__typename": "StartEndTime",
-              "start": "00:00",
-              "end": "24:00"
-            },
-            "breakHours": null,
-            "description": null,
-            "lastOrderTimes": null
+          attrId: X,
+          nameWid: "channelSearchPage.filter.country.name",
+          descriptionWid: "channelSearchPage.filter.country.desc",
+          multiselect: x,
+          condition: {
+            type: X,
+            country: {
+              code: "KR",
+              name: "한국",
+              readableCode: "south-korea",
+              currencyCode: "KRW",
+              weight: 3
+            }
           }
-        ],
-        "comingIrregularClosedDays": [],
-        "comingRegularClosedDays": "",
-        "freeText": null
-      }
-    ],
-    "tsInspection": {
-      "__typename": "TSInspection",
-      "tsId": null
-    },
-    "themeparkAttraction": null,
-    "subwayStations": [],
-    "land": null,
-    "bank": null,
-    "movieTimes": null,
-    "evChargingStation": null,
-    "menuImages": [
-      {
-        "__typename": "MenuImage",
-        "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210610_219\u002F1623331066930sENrz_JPEG\u002FRGKyyWMzo9gRc_oVjFmUoU_V.jpg"
-      }
-    ],
-    "mountain": null,
-    "opinet": null,
-    "toilet": null,
-    "nadle": null,
-    "shelter": null,
-    "pollingStation": null,
-    "informationTab({\"providerSource\":[\"pbp\",\"pollingplace\"]})": {
-      "__typename": "InformationTab",
-      "parkingInfo": null,
-      "facilities": [
-        {
-          "__ref": "InformationFacilities:13"
-        },
-        {
-          "__ref": "InformationFacilities:8"
-        },
-        {
-          "__ref": "InformationFacilities:7"
         }
       ],
-      "keywordList": [
-        "당감동스터디카페",
-        "부산진구스터디카페",
-        "부산진구스터디룸",
-        "당감동스터디룸",
-        "르하임스터디카페"
-      ]
+      totalChannels: 18813875,
+      total: 481723,
+      list: [
+        {
+          description: "BLACKPINK Official YouTube Channel\n블랙핑크 공식 유튜브 채널입니다.\n\nJISOO, JENNIE, ROSÉ, LISA\n지수, 제니, 로제, 리사",
+          storedProfileImageId: "EMHEc8vNqHUC-eBFl_RrLcla7_NH6hEohpi0RrMABe6cOcmCabmnxcqfVFmONWTQg5LtbpNkQg",
+          videoCount: 601,
+          subscriberCount: 94600000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FEMHEc8vNqHUC-eBFl_RrLcla7_NH6hEohpi0RrMABe6cOcmCabmnxcqfVFmONWTQg5LtbpNkQg",
+          spreadVelocity: null,
+          channelId: "UCOmHUn--16B90oW2L6FRR3A",
+          videoUpdatedAt: 1723042800,
+          likeRate: 3.385,
+          playCount: 36389201780,
+          name: "BLACKPINK",
+          score: 0,
+          videos: [
+            {
+              title: "BLACKPINK - BLACKPINK 8TH ANNIVERSARY 'OUR AREA' #BLACKPINK #블랙핑크 #BLACKPINK8THANNIVERSARY #shorts",
+              isAd: c,
+              playCount: 862697,
+              videoId: "0WR4AQfp2xA",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FEMHEc8vNqHUC-eBFl_RrLcla7_NH6hEohpi0RrMABe6cOcmCabmnxcqfVFmONWTQg5LtbpNkQg",
+          keywords: [
+            "YG",
+            "와이지",
+            "K-pop",
+            "BLACKPINK",
+            "블랙핑크",
+            "블핑",
+            "제니",
+            "로제",
+            "리사",
+            "지수",
+            "Lisa",
+            "Jisoo",
+            "Jennie",
+            "Rosé",
+            "BLINK",
+            "블링크",
+            "Entertainment",
+            "YG Entertainment",
+            "지수 꽃",
+            "JISOO FLOWER",
+            "FLOWER",
+            "All Eyes On Me",
+            "JISOO All Eyes On Me",
+            "지수 All Eyes On Me",
+            "JISOO ME",
+            "ME",
+            "지수 FLOWER",
+            "JISOO 꽃",
+            "WORLD_TOUR",
+            "You and Me",
+            "BPM"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "This is the official YouTube channel of BTS. 방탄소년단 공식 유튜브 채널 입니다.",
+          videoCount: 2055,
+          storedProfileImageId: "zL7KDS7WEHVbgpo6dM91hL5e91etHiuq2umW32iSePrhE5411SPsEdpAEcf5m5mYS-a_vpl7Ww",
+          subscriberCount: 78800000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FzL7KDS7WEHVbgpo6dM91hL5e91etHiuq2umW32iSePrhE5411SPsEdpAEcf5m5mYS-a_vpl7Ww",
+          spreadVelocity: [
+            {
+              play: 1220984,
+              period: 3
+            },
+            {
+              play: 1457404,
+              period: 7
+            },
+            {
+              play: 1677057,
+              period: 15
+            },
+            {
+              play: 1902212,
+              period: 30
+            }
+          ],
+          channelId: "UCLkAepWjdylmXSltofFvsYQ",
+          videoUpdatedAt: 1723646691,
+          likeRate: 16.465,
+          playCount: 23438375239,
+          name: "BANGTANTV",
+          score: 0,
+          videos: [
+            {
+              title: "'JUNG KOOK: I AM STILL' Ticket Announcement",
+              isAd: c,
+              playCount: 305030,
+              videoId: "v5HwLLyYAzo",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FzL7KDS7WEHVbgpo6dM91hL5e91etHiuq2umW32iSePrhE5411SPsEdpAEcf5m5mYS-a_vpl7Ww",
+          keywords: [
+            "BTS",
+            "방탄",
+            "방탄소년단",
+            "BANGTAN",
+            "RM",
+            "Jin",
+            "SUGA",
+            "j-hope",
+            "Jimin",
+            "알엠",
+            "슈가",
+            "제이홉",
+            "지민",
+            "정국",
+            "진",
+            "빅히트",
+            "V",
+            "Jung",
+            "Kook",
+            "뷔",
+            "k-pop",
+            "Jung Kook",
+            "BTS V",
+            "Jimin_MUSE",
+            "Jimin_Who",
+            "RunJin",
+            "달려라석진",
+            "AreYouSure",
+            "이게맞아",
+            "지민x정국",
+            "JiminxJungKook",
+            "BANGTANBOMB",
+            "방탄밤"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "Welcome to the official YouTube channel of HYBE, the content hub for BIGHIT MUSIC, BELIFT LAB, SOURCE MUSIC, PLEDIS Entertainment, KOZ ENTERTAINMENT, ADOR and more.",
+          storedProfileImageId: "AAUvwnhhboU7vGhXSkGq1HeSbYd-h87SBDRC0F7EipSMkw",
+          videoCount: 1976,
+          subscriberCount: 75600000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_ldT8kWzx6T1Q7LQL4ENvkeCGjFP6hUzWgHSVtjddJ5Ib0",
+          spreadVelocity: [
+            {
+              play: 1521348,
+              period: 3
+            },
+            {
+              play: 1986987,
+              period: 7
+            },
+            {
+              play: 2421321,
+              period: 15
+            },
+            {
+              play: 3063619,
+              period: 30
+            }
+          ],
+          channelId: "UC3IZKseVpdzPSBaWxBxundA",
+          videoUpdatedAt: 1723561237,
+          likeRate: 5.422,
+          playCount: 35473533605,
+          name: "HYBE LABELS",
+          score: 0,
+          videos: [
+            {
+              title: "LE SSERAFIM (르세라핌) 4th Mini Album 'CRAZY' HIGHLIGHT MEDLEY '미치지 못하는 이유'",
+              isAd: c,
+              playCount: 94631,
+              videoId: "TMDSJ05BCuI",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAAUvwnhhboU7vGhXSkGq1HeSbYd-h87SBDRC0F7EipSMkw",
+          keywords: [
+            "HYBE",
+            "HYBE LABELS",
+            "하이브",
+            "하이브레이블즈",
+            "ENHYPEN",
+            "LE_SSERAFIM",
+            "르세라핌",
+            "다큐멘터리",
+            "DOCUMENTARY",
+            "엔하이픈",
+            "ROMANCE_UNTOLD",
+            "andTEAM",
+            "青嵐_Aoarashi",
+            "BroughtTheHeatBack",
+            "KATSEYE",
+            "KATSEYE_Touch",
+            "Jimin_MUSE",
+            "지민",
+            "Jimin"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          channelId: "UCiVs2pnGW5mLIc1jS2nxhjg",
+          name: "김프로KIMPRO",
+          description: "문의 : fm1778@naver.com\n⚠️허가 없이 영상 사용 금지⚠️\n",
+          subscriberCount: 49800000,
+          playCount: 45395298459,
+          storedProfileImageId: "211bb8c95e4185a59d4c9dd93a5a6e27",
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FohQUIor1nPD35gBkpwKqDny5YGcf7K6oiQZcdVL3v9cz8cHYktyL1Gzq8zONK7eaR3KJqS8HPw",
+          likeRate: .762,
+          spreadVelocity: [
+            {
+              play: 18791,
+              period: 3
+            },
+            {
+              play: 26258,
+              period: 7
+            },
+            {
+              play: 38125,
+              period: 15
+            },
+            {
+              play: 62049,
+              period: 30
+            }
+          ],
+          videoCount: 3300,
+          videoUpdatedAt: 1723822075,
+          score: 0,
+          videos: [
+            {
+              title: "수업 시간에 이어폰이 잘렸습니다!",
+              isAd: c,
+              playCount: 15079,
+              videoId: "LQ4Jf4M1HRE",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002F211bb8c95e4185a59d4c9dd93a5a6e27",
+          keywords: [
+            "김프로",
+            "kimpro",
+            "김동준",
+            "김프로유투브",
+            "유투브김프로",
+            "유백합",
+            "okteam",
+            "ok팀",
+            "오케이팀",
+            "kkubi",
+            "틱톡김프로",
+            "김동준유튜브",
+            "김프로KIMPRO",
+            "shorts",
+            "jun",
+            "김동준유투브",
+            "kkubi99",
+            "teamok"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "Welcome to SM Entertainment Official YouTube Channel!\nYou can enjoy SM artist's latest videos on SMTOWN Official YouTube Channel.",
+          storedProfileImageId: "1e36dec2a6abd31aaa8f63a0bd2df825",
+          videoCount: 1832,
+          subscriberCount: 32600000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002F_1Z4I2qpWaCN9g3BcDd3cVA9MDHOG43lE1YNWDNkKro49haGxkjwuFK-I8faWTKM6Jle9qb4ag",
+          spreadVelocity: [
+            {
+              play: 2341454,
+              period: 3
+            },
+            {
+              play: 3729382,
+              period: 7
+            },
+            {
+              play: 4776671,
+              period: 15
+            },
+            {
+              play: 5571458,
+              period: 30
+            }
+          ],
+          channelId: "UCEf_Bc-KVd7onSeifS3py9g",
+          videoUpdatedAt: 1723453200,
+          likeRate: 3.736,
+          playCount: 29970013628,
+          name: "SMTOWN",
+          score: 0,
+          videos: [
+            {
+              title: "SUNGMIN 성민 '요.요.요. (YO.YO.YO.)' MV",
+              isAd: c,
+              playCount: 25511,
+              videoId: "adT2SwCkG2Y",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002F1e36dec2a6abd31aaa8f63a0bd2df825",
+          keywords: [
+            "SM",
+            "SMTOWN",
+            "NCT",
+            "엔시티",
+            "SMENT",
+            "SMENTERTAINMENT",
+            "에스엠엔터테인먼트",
+            "에스엠타운",
+            "에스엠",
+            "KPOP",
+            "TVXQ!",
+            "동방신기",
+            "東方神起",
+            "DBSK",
+            "SuperJunior",
+            "슈퍼주니어",
+            "SJ",
+            "Girls'Generation",
+            "소녀시대",
+            "GG",
+            "SNSD",
+            "少女時代",
+            "SHINee",
+            "샤이니",
+            "에프엑스",
+            "f(x)",
+            "Grace",
+            "천상지희",
+            "천상지희더그레이스",
+            "TRAX",
+            "트랙스",
+            "BoA",
+            "보아",
+            "KANGTA",
+            "강타",
+            "LeeYeonHee",
+            "exo",
+            "exom",
+            "exok",
+            "엑소",
+            "엑소케이",
+            "엑소엠",
+            "127",
+            "DREAM",
+            "Red",
+            "Velvet",
+            "레드벨벳",
+            "드림",
+            "U",
+            "엔시티유",
+            "Music Video",
+            "MV",
+            "뮤직비디오",
+            "뮤비",
+            "Teaser",
+            "티저",
+            "RIIZE",
+            "SHOTARO",
+            "EUNSEOK",
+            "SUNGCHAN",
+            "WONBIN",
+            "SOHEE",
+            "ANTON",
+            "라이즈",
+            "쇼타로",
+            "은석",
+            "성찬",
+            "원빈",
+            "RISEandREALIZE",
+            "마크",
+            "MARK",
+            "해찬",
+            "HAECHAN",
+            "aespa",
+            "에스파",
+            "æspa"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "JYPnation Official YouTube\n\nLEADER IN ENTERTAINMENT\n\nThere are values and goals that JYP Entertainment (JYP) has pursued. JYP prides itself with those values and strives to be an exemplary leader in the entertainment industry. \n\nWith the lead of Park Jin Young as one of Asia’s most prominent producers in the entertainment industry, JYP has discovered and produced some of the most popular and successful K-Pop artists, such as god, Rain, Wonder Girls, 2PM, 2AM, miss A, GOT7, DAY6, TWICE, Stray Kids, ITZY, Xdinary Heroes and NMIXX.\n\nAlso, we have introduced and led K-Pop’s dominance by expanding the activities of our artists to the global music industry through the network of our overseas subsidiaries, JYP Japan and JYP China. \n\nJYP not only focuses on ordinary business, like planning and creating music, finding and managing artists, conducting online, mobile and overseas business, but also strives to scout creative talents and develop them to be suitable for the entertainment industry.\n",
+          storedProfileImageId: "1abdf60ea67933f284d14b4b1ee9786e",
+          videoCount: 1290,
+          subscriberCount: 29600000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FkcV7NQkBm-UvvzVTJvrg1Yf1eHSqi-DLXuZPt_ECa3cHEPefujS951Dxj6KUEQ5i9Z7_fyMUjw",
+          spreadVelocity: [
+            {
+              play: 1460881,
+              period: 3
+            },
+            {
+              play: 2235409,
+              period: 7
+            },
+            {
+              play: 3141624,
+              period: 15
+            },
+            {
+              play: 4102209,
+              period: 30
+            }
+          ],
+          channelId: "UCaO6TYtlC8U5ttz62hTrZgg",
+          videoUpdatedAt: 1723388400,
+          likeRate: 5.634,
+          playCount: 23066642605,
+          name: "JYP Entertainment",
+          score: 0,
+          videos: [
+            {
+              title: "JUN. K(준케이) \"Paint this love\" M\u002FV Teaser",
+              isAd: c,
+              playCount: 32817,
+              videoId: "YGeKcpSsDyE",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002F1abdf60ea67933f284d14b4b1ee9786e",
+          keywords: [
+            "JYP",
+            "jypentertainment",
+            "jypnation",
+            "제이와이피",
+            "제이와이피엔터테인먼트",
+            "제이와이피네이션",
+            "원더걸스",
+            "투에이엠",
+            "투피엠",
+            "미쓰에이",
+            "미스에이",
+            "제이제이프로젝트",
+            "피프틴앤드",
+            "박지민",
+            "백예린",
+            "주",
+            "백아연",
+            "산이",
+            "소희",
+            "선예",
+            "예은",
+            "혜림",
+            "유빈",
+            "선미",
+            "김유빈",
+            "조권",
+            "진운",
+            "창민",
+            "슬옹",
+            "택연",
+            "닉쿤",
+            "준케이",
+            "찬성",
+            "준호",
+            "우영",
+            "수지",
+            "페이",
+            "지아",
+            "민",
+            "박진영",
+            "주니어",
+            "제이비",
+            "지민",
+            "예린",
+            "wondergirls",
+            "2pm",
+            "2am",
+            "15&",
+            "jjproject",
+            "sane",
+            "kpop",
+            "girlgroup",
+            "Stray Kids",
+            "Sony",
+            "MV",
+            "니쥬",
+            "needyou",
+            "ニジュー",
+            "NiziU",
+            "마야",
+            "마코",
+            "리마",
+            "리오",
+            "미이히",
+            "마유카",
+            "아야카",
+            "니나",
+            "리쿠",
+            "maya",
+            "mako",
+            "rima",
+            "miihi",
+            "mayuka",
+            "rio",
+            "ayaka",
+            "nina",
+            "riku"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "©Starlike Inc.\n",
+          videoCount: 2829,
+          storedProfileImageId: "6b3154e1b9ed5339098215ebe1a44943",
+          subscriberCount: 27200000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FleZYNLIwv7quZhiM3cubKejs0wkGwGoCfRFKYnIFh6VFigjIFIoFVFpkhiB3CUh-awqQn066",
+          spreadVelocity: null,
+          channelId: "UCKqx9r4mrFglauNBJc1L_eg",
+          videoUpdatedAt: 1721740214,
+          likeRate: .088,
+          playCount: 16275625511,
+          name: "ToyPuddingTV",
+          score: 0,
+          videos: [
+            {
+              title: "✨MIKU MIKU BEAM!!✨ #mikumikubeam #meme #sixtargate",
+              isAd: c,
+              playCount: 6449,
+              videoId: "dkhk2uyFiow",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002F6b3154e1b9ed5339098215ebe1a44943",
+          keywords: [
+            "animation",
+            "vtuber",
+            "virtualyoutuber",
+            "3d",
+            "cartoon",
+            "live2d",
+            "anime",
+            "bgm",
+            "kawaii",
+            "moe",
+            "tiktok",
+            "shorts",
+            "challenge",
+            "Baby doll toys play",
+            "toy pudding"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "Dance with us, let's INSPIRE MILLIONS!",
+          videoCount: 7619,
+          storedProfileImageId: "AMLnZu-0jhNMAcMjDrXUNj_DIvUNJkCM8KHKuSVDH_dTSA",
+          subscriberCount: 26300000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_lo2jDy-W_a8budHd9PGmP141FoXfu9lY7TNCQtzCV5rLg",
+          spreadVelocity: [
+            {
+              play: 15648,
+              period: 3
+            },
+            {
+              play: 19642,
+              period: 7
+            },
+            {
+              play: 23185,
+              period: 15
+            },
+            {
+              play: 26752,
+              period: 30
+            }
+          ],
+          channelId: "UCw8ZhLPdQ0u_Y-TLKd61hGA",
+          videoUpdatedAt: 1722862818,
+          likeRate: 3.236,
+          playCount: 8285461457,
+          name: "1MILLION Dance Studio",
+          donationAmount: 465.5873473286629,
+          score: 0,
+          videos: [
+            {
+              title: "Impossible \u002F Master Class \u002F @DU LOCK",
+              isAd: c,
+              playCount: 5746,
+              videoId: "6kFcU760zSo",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAMLnZu-0jhNMAcMjDrXUNj_DIvUNJkCM8KHKuSVDH_dTSA",
+          keywords: [
+            "1Million",
+            "원밀리언",
+            "Dance",
+            "Studio",
+            "choreography",
+            "1million dance studio",
+            "원밀리언 댄스 스튜디오",
+            "1m",
+            "안무",
+            "댄스",
+            "안무가",
+            "tutorial",
+            "4K",
+            "POP",
+            "liakim",
+            "리아킴",
+            "에이미",
+            "리아리티쇼",
+            "lialityshows",
+            "토크쇼",
+            "스우파",
+            "공민지",
+            "유빈",
+            "원더걸스",
+            "2NE1",
+            "투에니원",
+            "투애니원",
+            "WonderGirls",
+            "YUBIN",
+            "MINZY",
+            "JYP"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          channelId: "UCkLNHZZsC3LKdUAroKNwOOw",
+          name: "CuRe 구래",
+          description: "안녕하세요 구래커플입니다♥\n\n\n📱CuRe Tiktok 👉🏻 cure0721\n⭐️CuRe Inst 👉🏻 cure_9997\n💌CuRe E-mail 👉🏻 fkakqjqtk99@naver.com",
+          subscriberCount: 25400000,
+          playCount: 16959998019,
+          storedProfileImageId: "mb-J5I-ZBAaeRWcr3tCbaVKl9qQerB7pG_tDJ44iIqTSPkbqGtyEY9B_qluUwhiAhtjmDqx14Jw",
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fmb-J5I-ZBAaeRWcr3tCbaVKl9qQerB7pG_tDJ44iIqTSPkbqGtyEY9B_qluUwhiAhtjmDqx14Jw",
+          videoCount: 565,
+          videoUpdatedAt: 1722684617,
+          likeRate: .371,
+          spreadVelocity: null,
+          score: 0,
+          videos: [
+            {
+              title: "ENG) 2년만에 이사하는 vlog🚛\u002F 이사 후 바로 남자친구 군대 영장📮🫡ㅣ우리의 소소한 생일파티🎁ㅣ새로운 강아지 입양(?)🐶",
+              isAd: c,
+              playCount: 53720,
+              videoId: "e_ANyCbbXus",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002Fmb-J5I-ZBAaeRWcr3tCbaVKl9qQerB7pG_tDJ44iIqTSPkbqGtyEY9B_qluUwhiAhtjmDqx14Jw",
+          keywords: [
+            "구래커플",
+            "cure",
+            "구래",
+            "curecouple",
+            "couple",
+            "@cure0721",
+            "shorts",
+            "tiktok",
+            "korea",
+            "funny",
+            "funnyvideo",
+            "cute",
+            "커플유튜버",
+            "한국",
+            "틱톡",
+            "comedy",
+            "capdoiviethan",
+            "한베커플",
+            "국제커플",
+            "bantraihanquoc",
+            "hoctienghan",
+            "몰카",
+            "trollny",
+            "troll",
+            "베트남여자",
+            "베트남",
+            "베트남여친",
+            "hanquoc",
+            "챌린지",
+            "trollbantrai"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "\"K-pop Wonderland\" 1theK\n\nK-pop을 이끄는 국내 최고 아티스트들의 뮤직비디오부터,\n전 세계 팬들이 보고, 듣고, 참여할 수 있는 오리지널 컨텐츠들까지!\n1theK에서 가장 빠르게 만나보세요! :)\n\nWelcome to the official YouTube page of \"K-pop Wonderland\" 1theK\nEnjoy the leading K-Pop artists’ M\u002FVs, teasers and more exclusive originals for the K-pop fans all over the world on 1theK! \nStay tuned for the latest updates!\n\n*Business contact : 1theK.ad@kakaoent.com\n\n(주)카카오엔터테인먼트의 1theK 공식 유튜브 채널입니다.\nCopyrightⓒKakao Entertainment Corp. All rights reserved.\n",
+          storedProfileImageId: "AATXAJxJ83_FyiwkL7QwtlAn9QtkfJ_WhONVr8qiJ-ZdUok",
+          videoCount: 12086,
+          subscriberCount: 24800000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_m80G5qHF44NdRf9PbnF6h4zouJcYL3u6J3B5DXmvfqmtHM",
+          spreadVelocity: [
+            {
+              play: 22300,
+              period: 3
+            },
+            {
+              play: 39528,
+              period: 7
+            },
+            {
+              play: 52742,
+              period: 15
+            },
+            {
+              play: 64320,
+              period: 30
+            }
+          ],
+          channelId: "UCweOkPb1wVVH0Q0Tlj4a5Pw",
+          videoUpdatedAt: 1724230821,
+          likeRate: 6.28,
+          playCount: 25474076305,
+          name: "1theK (원더케이)",
+          score: 0,
+          videos: [
+            {
+              title: "[Teaser] 1000°(천도) _ So obvious(티 나게) (Live Shorts Teaser)",
+              isAd: c,
+              playCount: 364,
+              videoId: "sDIXLM32UU8",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAATXAJxJ83_FyiwkL7QwtlAn9QtkfJ_WhONVr8qiJ-ZdUok",
+          keywords: [
+            "1theK",
+            "원더케이",
+            "멜론",
+            "로엔",
+            "로엔엔터테인먼트",
+            "아이유",
+            "IU",
+            "loen",
+            "loenentertainment",
+            "melon",
+            "우주소녀",
+            "더보이즈",
+            "THEBOYZ",
+            "K-POP",
+            "Original",
+            "1theK Original",
+            "TOP100",
+            "idol",
+            "아이돌",
+            b,
+            "LIVE",
+            "원더케이 오리지널",
+            "음악",
+            "NEWRELEASE",
+            "MV"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "제 유튜브 채널에 와주셔서 감사합니다💙\n⏱업로드 시간 : 매일 오후 7시 !!⏱\n인스타 그램 : seu_ngbean\n\n컨텍 메일 : 💌seungbin030708@gmail.com\n\n",
+          storedProfileImageId: "703f8e8533ba013a303cdc6a6bd848ba",
+          videoCount: 538,
+          subscriberCount: 24700000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002F6HwYfo2bM43A-28Uj4ERRtmEZY_TRDSFd5Jls0_HpNrVEJ9PbCvzDKkEjHxM_IRRoU1IVZwegw",
+          spreadVelocity: [
+            {
+              play: 2508205,
+              period: 3
+            },
+            {
+              play: 7188702,
+              period: 7
+            },
+            {
+              play: 22411225,
+              period: 15
+            },
+            {
+              play: 32591966,
+              period: 30
+            }
+          ],
+          channelId: "UCPhHBEtG6dVZ5fJKoNArcJw",
+          videoUpdatedAt: 1723888500,
+          likeRate: 2.319,
+          playCount: 18556519361,
+          name: "승비니 Seungbini",
+          donationAmount: 1.6984000205993652,
+          score: 0,
+          videos: [
+            {
+              title: "이모티콘 순서대로 먹기",
+              isAd: c,
+              playCount: 311354,
+              videoId: "WDzY9mtUrZ4",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002F703f8e8533ba013a303cdc6a6bd848ba",
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          keywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "LIKE IS LOVE ❤️\n\nghs.contents@gmail.com",
+          videoCount: 890,
+          storedProfileImageId: "pr-ZtUqT7gNLbqVt91OAb17W3x1YzRdoIghovVTdoxx9xSjV008MCDjWXl0Grfj31tm0mrrg",
+          subscriberCount: 23100000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fpr-ZtUqT7gNLbqVt91OAb17W3x1YzRdoIghovVTdoxx9xSjV008MCDjWXl0Grfj31tm0mrrg",
+          spreadVelocity: [
+            {
+              play: 2811000,
+              period: 3
+            },
+            {
+              play: 4267944,
+              period: 7
+            },
+            {
+              play: 6384847,
+              period: 15
+            },
+            {
+              play: 8829661,
+              period: 30
+            }
+          ],
+          channelId: "UCdrBnBNLsN4_cH32HWbr9qg",
+          videoUpdatedAt: 1723984339,
+          likeRate: .854,
+          playCount: 17675394970,
+          name: "계향쓰 GH'S",
+          score: 0,
+          videos: [
+            {
+              title: "😈 vs 👼 | GH'STORY | #animation #anime (‪@chadabin‬)",
+              isAd: c,
+              playCount: 221960,
+              videoId: "OQwBsvdWJc0",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002Fpr-ZtUqT7gNLbqVt91OAb17W3x1YzRdoIghovVTdoxx9xSjV008MCDjWXl0Grfj31tm0mrrg",
+          keywords: [
+            "계향쓰",
+            "GH'S",
+            "계향",
+            "poppy playtime",
+            "poppy playtime animation",
+            "huggy wuggy",
+            "파피플레이타임",
+            "허기워기",
+            "mommy long legs",
+            "마미롱레그",
+            "bunzo bunny",
+            "번조버니",
+            "pj pug a pillar",
+            "퍼거필러",
+            "Fancy Refill",
+            "catnap",
+            "poppy",
+            "smile critters",
+            "critters",
+            "캣냅",
+            "poppy playtime chapter3",
+            "pp",
+            "dd",
+            "ghs animation",
+            "gh'story",
+            "anime",
+            "animation",
+            "ゲヒャンスー"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "KBS WORLD TV is a television channel for international audiences provided by the Korean Broadcasting System (KBS).\nIt's your premier window on Korean contents with a nonstop, 24-hour a day, 7-day a week stream of Korea's latest and most popular programs.",
+          storedProfileImageId: "AKedOLQ_34jNUOPlbqCQ4A5cr_mvjLfg6GEaN_mj0IAjYCc",
+          videoCount: 35407,
+          subscriberCount: 19800000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_nYneSzNh7_fxCLOOkFxVaMDd55aFmPFY9NvFb_i-R8EKjE",
+          spreadVelocity: [
+            {
+              play: 35552,
+              period: 3
+            },
+            {
+              play: 43358,
+              period: 7
+            },
+            {
+              play: 54143,
+              period: 15
+            },
+            {
+              play: 63175,
+              period: 30
+            }
+          ],
+          channelId: "UC5BMQOsAB8hKUyHu9KI6yig",
+          videoUpdatedAt: 1723111275,
+          likeRate: 8.872,
+          playCount: 16572660354,
+          name: "KBS WORLD TV",
+          donationAmount: 2026.9705446586013,
+          score: 0,
+          videos: [
+            {
+              title: "Madness [Snow White's Revenge : EP.34] | KBS WORLD TV 240822",
+              isAd: c,
+              playCount: 0,
+              videoId: "nu8Tmk4NR1E",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAKedOLQ_34jNUOPlbqCQ4A5cr_mvjLfg6GEaN_mj0IAjYCc",
+          keywords: [
+            "KBSWorld",
+            "kbs",
+            "kbs월드",
+            "월드TV",
+            "kdrama",
+            "kpop",
+            "world",
+            "월드",
+            "tv",
+            "한국방송",
+            "케이팝",
+            "yt:cc=on",
+            "kbsworldTV",
+            "world tv",
+            "SoapOpera",
+            "KoreanDrama",
+            "뮤직뱅크",
+            "musicbank",
+            "일일드라마",
+            "미녀와순정남",
+            "주말드라마",
+            "BeautyandMr.Romantic",
+            "임수향",
+            "지현우",
+            "차화연",
+            "고윤",
+            "양대혁",
+            "이상준",
+            "윤유선",
+            "이두일",
+            "임예진",
+            "이영은",
+            "박상원",
+            "이일화",
+            "김혜선",
+            "정재순"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "PSY Official YouTube Channel",
+          videoCount: 117,
+          storedProfileImageId: "f181609a52888c6697e379084082509b",
+          subscriberCount: 18900000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FVXVR9IKCRGRAtjdXcul8EcB2MoT1ZC7d8YMlkzVfB8Iuulf3WK5HA_h6BihPBe-OnpS4Fufrag",
+          spreadVelocity: null,
+          channelId: "UCrDkAvwZum-UTjHmzDI2iIw",
+          videoUpdatedAt: 1689148800,
+          likeRate: 2.194,
+          playCount: 11427169097,
+          name: "officialpsy",
+          score: 0,
+          videos: [
+            {
+              title: "PSY - ‘I LUV IT’ Live Performance at 싸이흠뻑쇼 SUMMERSWAG 2023 서울",
+              isAd: c,
+              playCount: 5213739,
+              videoId: "Z2hDVt7dNxM",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002Ff181609a52888c6697e379084082509b",
+          keywords: [
+            "싸이",
+            "psy",
+            "피네이션",
+            "싸다9",
+            "싸다구",
+            "official",
+            "싸이공식채널",
+            "korean",
+            "hiphop",
+            "asian",
+            "P",
+            "NATION",
+            "PNATION",
+            "PSY 9th",
+            "정규9집",
+            "박재상",
+            "SUGA",
+            "BTS",
+            "That That",
+            "9th",
+            "Comeback",
+            "coming back",
+            "컴백",
+            "콘서트",
+            "싸이 콘서트",
+            "구집",
+            "9wlq",
+            "9집",
+            "2.",
+            "MV",
+            "featuring",
+            "that",
+            "produced",
+            "music video",
+            "슈가",
+            "방탄소년단",
+            "댓댓"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "협찬 선물 환영!!\n많이 주세요\n\ncrazygreapaofficial@gmail.com\n",
+          storedProfileImageId: "AKedOLTo3k6zSIKT4tg4XWjyDvc9I2M355dwAxvdwQ",
+          videoCount: 1164,
+          subscriberCount: 18600000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_nrSMu7uOrLGJFdRXb4A5nLEKTGSH6UZji5OqQK12k",
+          spreadVelocity: null,
+          channelId: "UCNQAoLEv87L7NgUp4We3HIg",
+          videoUpdatedAt: 1722956400,
+          likeRate: 1.647,
+          playCount: 15184669202,
+          name: "CRAZY GREAPA",
+          donationAmount: 165.33366060256958,
+          score: 0,
+          videos: [
+            {
+              title: "Smart Sigma Girl #funny #sigma #memes",
+              isAd: c,
+              playCount: 107224,
+              videoId: "gsB3TayL1jo",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAKedOLTo3k6zSIKT4tg4XWjyDvc9I2M355dwAxvdwQ",
+          keywords: [
+            "tiktok",
+            "sigmagirl",
+            "shorts",
+            "그레빠",
+            "greapa",
+            "재밌는영상",
+            "memes",
+            "그레빠체리",
+            "병맛",
+            "웃긴영상",
+            "meme",
+            "funnytiktok",
+            "tiktokchallenge",
+            "mostfunny",
+            "greapacherritiktok",
+            "웃긴동영상",
+            "꿀잼",
+            "크레이지 그레빠",
+            "sigma music",
+            "sigma song",
+            "funnyvideo"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "Jane ASMR mukbang channel",
+          videoCount: 2566,
+          storedProfileImageId: "AATXAJwte8QSmQGxIqUvQYZNu6Qo4L8PLJKMme8vgM5zAA",
+          subscriberCount: 18100000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_m_UPPk8SldYo68iRWI2r_e5L-0IgLWYBthGLWASNEX_GY",
+          spreadVelocity: [
+            {
+              play: 110553,
+              period: 3
+            },
+            {
+              play: 148762,
+              period: 7
+            },
+            {
+              play: 189831,
+              period: 15
+            },
+            {
+              play: 231617,
+              period: 30
+            }
+          ],
+          channelId: "UC2fsxQr6Hcx1enORxXgKpxQ",
+          videoUpdatedAt: 1722956400,
+          likeRate: 1.511,
+          playCount: 7729861521,
+          name: "Jane ASMR 제인",
+          score: 0,
+          videos: [
+            {
+              title: "ASMR Pink Honey Jelly Dessert 핑크 꿀젤리 디저트 먹방 Mukbang, Eating",
+              isAd: c,
+              playCount: 41436,
+              videoId: "I-wO_BCZfGU",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAATXAJwte8QSmQGxIqUvQYZNu6Qo4L8PLJKMme8vgM5zAA",
+          keywords: [
+            "asmr",
+            "먹방",
+            "mukbang",
+            "eating",
+            "show",
+            "eat",
+            "JANE",
+            "제인",
+            "amsr",
+            "desserts",
+            "mukbang asmr",
+            "eating show",
+            "asmr mukbang",
+            "젤리",
+            "gummy",
+            "jelly",
+            "rainbow",
+            "chocolate",
+            "ice cream",
+            "cake",
+            "gummies",
+            "무지개",
+            "레인보우",
+            "asmr jelly",
+            "candy",
+            "jellies",
+            "asmr crunchy",
+            "food challenge",
+            "mochi",
+            "dessert",
+            "cakes",
+            "아이스크림"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          storedProfileImageId: "bq2wOyTpCPP_ikRLqYMu-CzGxn35shKL14JpMDGwxxXonlR-6R8Tb8ZaZYMHVUZB32eDHac1V24",
+          subscriberCount: 17500000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fbq2wOyTpCPP_ikRLqYMu-CzGxn35shKL14JpMDGwxxXonlR-6R8Tb8ZaZYMHVUZB32eDHac1V24",
+          spreadVelocity: [
+            {
+              play: 290611,
+              period: 3
+            },
+            {
+              play: 356751,
+              period: 7
+            },
+            {
+              play: 426177,
+              period: 15
+            },
+            {
+              play: 488631,
+              period: 30
+            }
+          ],
+          videoUpdatedAt: 1724216460,
+          likeRate: 5.693,
+          playCount: 6538380762,
+          name: "TWICE",
+          description: "TWICE Official YouTube Channel",
+          videoCount: 1661,
+          channelId: "UCzgxx_DM2Dcb9Y1spb9mUJA",
+          score: 0,
+          videos: [
+            {
+              title: "2WICE의 데이2 (2WICE's DATE) Season 3 ep.모챙 (MOCHAENG) Highlight #2 #TWICE #2WICE의데이2 #2WICEsDATE",
+              isAd: c,
+              playCount: 16261,
+              videoId: "QhAyC6o1vMw",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002Fbq2wOyTpCPP_ikRLqYMu-CzGxn35shKL14JpMDGwxxXonlR-6R8Tb8ZaZYMHVUZB32eDHac1V24",
+          keywords: [
+            "TWICE",
+            "트와이스",
+            "NAYEON",
+            "트와이스 나연",
+            "TWICE NAYEON",
+            "NA",
+            "나연 ABCD",
+            "나연",
+            "NAYEON ABCD",
+            "트와이스 자컨",
+            "트와이스 자컨 추천",
+            "나연 ABCD 비하인드",
+            "NAYEON ABCD Behind",
+            "NAYEON ABCD MV",
+            "NAYEON New Song",
+            "트둥워크샵",
+            "TWICE REALITY TIME TO TWICE",
+            "TDOONG",
+            "WORKSHOP",
+            "TIMETOTWICE",
+            "TTT",
+            "나연 컴백",
+            "NAYEON Comeback",
+            "나연 ABCD 뮤비",
+            "나연 ABCD 자컨",
+            "나연 신곡",
+            "NAYEON POP!",
+            "트와이스 데이2",
+            "2WICE's DATE",
+            "트와이스 TTT"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          storedProfileImageId: "A7TPRXEbhCBJ6E82CreGGFRe06E7e7MMoYJgmnAmNxdJ00YiYVvQpSUxIIavINO3l8MCBorCTw",
+          subscriberCount: 17400000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FA7TPRXEbhCBJ6E82CreGGFRe06E7e7MMoYJgmnAmNxdJ00YiYVvQpSUxIIavINO3l8MCBorCTw",
+          spreadVelocity: [
+            {
+              play: 44352,
+              period: 3
+            },
+            {
+              play: 55374,
+              period: 7
+            },
+            {
+              play: 69992,
+              period: 15
+            },
+            {
+              play: 82716,
+              period: 30
+            }
+          ],
+          videoUpdatedAt: 1723291200,
+          likeRate: 4.422,
+          playCount: 3901298435,
+          name: "JFlaMusic",
+          description: "\nI really hope you guys enjoy my videos♥\n\n\n",
+          videoCount: 212,
+          channelId: "UClkRzsdvg7_RKVhwDwiDZOA",
+          donationAmount: 9.960729956626892,
+          score: 0,
+          videos: [
+            {
+              title: "제이플라(J.Fla) - My Youth",
+              isAd: c,
+              playCount: 43742,
+              videoId: "mTnzmyV3hUI",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FA7TPRXEbhCBJ6E82CreGGFRe06E7e7MMoYJgmnAmNxdJ00YiYVvQpSUxIIavINO3l8MCBorCTw",
+          keywords: [
+            "musician",
+            "video",
+            "music",
+            "J",
+            "Fla",
+            "pop",
+            "rock",
+            "alternative",
+            "j.fla",
+            "제이플라",
+            "music video",
+            "official music video",
+            "뮤직 비디오",
+            "pop song",
+            "jflamusic",
+            "최신 음악",
+            "new music",
+            "cover",
+            "oldpop",
+            "vlog",
+            "브이로그",
+            "concert"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "Welcome to Hongyu ASMR 홍유 Official Channel :)\n홍유 채널에 오신 걸 환영합니다 🌈🌈\n\n📝 instagram : @hongyu.asmr_official\n💌 hongyu.asmr@gmail.com\n",
+          videoCount: 852,
+          storedProfileImageId: "0b51bddacda14ed7fec9d9b5440537fb",
+          subscriberCount: 16000000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002FEDP_QW0-HQHfSr0gS59epQ-WsKtNBb_b-rcX2KYsbo6bkTf79gpeyDPVS_RE7bUjkK1gffNX",
+          spreadVelocity: [
+            {
+              play: 145038,
+              period: 3
+            },
+            {
+              play: 233293,
+              period: 7
+            },
+            {
+              play: 340498,
+              period: 15
+            },
+            {
+              play: 480406,
+              period: 30
+            }
+          ],
+          channelId: "UCxtLc0Jqq3SKBWlIXM_OC9g",
+          videoUpdatedAt: 1723464000,
+          likeRate: .705,
+          playCount: 5778241220,
+          name: "Hongyu ASMR 홍유",
+          score: 0,
+          videos: [
+            {
+              title: "ASMR MUKBANG | 직접만든 꿀젤리 무지개 디저트 킨조젤리 먹방 DESSERT RAINBOW GALAXY HONEY JELLY CANDY",
+              isAd: c,
+              playCount: 26211,
+              videoId: "ZZz1UMkELlc",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002F0b51bddacda14ed7fec9d9b5440537fb",
+          keywords: [
+            "mukbang",
+            "asmr",
+            "먹방",
+            "cooking",
+            "recipe",
+            "real",
+            "sounds",
+            "eating",
+            "요리",
+            "rainbow",
+            "desserts",
+            "먹방 asmr",
+            "asmr 먹방",
+            "asmr eating",
+            "asmr food",
+            "디저트 먹방",
+            "most popular food for asmr",
+            "젤리 먹방",
+            "color food asmr",
+            "color food mukbnag",
+            "asmr jello",
+            "most popular dessert",
+            "eating jelly",
+            "asmr rainbow desserts",
+            "asmr rainbow food",
+            "asmr gummy",
+            "asmr rainbow dessert",
+            "rainbow dessert asmr",
+            "rainbow desserts asmr",
+            "무지개 먹방",
+            "EATING SOUNDS",
+            "korean mukbang",
+            "asmr dessert",
+            "asmr jelly",
+            "asmr mukbang",
+            "컬러 푸드 먹방",
+            "mukbang korean",
+            "jelly asmr",
+            "asmr boba"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        },
+        {
+          description: "BIGBANG Official YouTube Channel\n빅뱅 공식 유튜브 채널입니다.\n\nG-DRAGON, TAEYANG, T.O.P, DAESUNG\n지드래곤, 태양, 탑, 대성",
+          videoCount: 757,
+          storedProfileImageId: "AAUvwngDOGdG2B2lmV-iHXnLU5vARWX9EIxmq5J0KroZGA",
+          subscriberCount: 15200000,
+          profileImageUri: "https:\u002F\u002Fyt3.googleusercontent.com\u002Fytc\u002FAIdro_lkx5-DPMlQD3cKYB3aLLTC-y2YoX6Sqra-hSoX4brnK08",
+          spreadVelocity: null,
+          channelId: "UCzw-C7fNfs018R1FzIKnlaA",
+          videoUpdatedAt: 1649084411,
+          likeRate: 3.236,
+          playCount: 8446017927,
+          name: "BIGBANG",
+          score: 0,
+          videos: [
+            {
+              title: "BIGBANG - ‘봄여름가을겨울 (Still Life)’ M\u002FV REACTION",
+              isAd: c,
+              playCount: 6645923,
+              videoId: "yrkvNsGcr64",
+              channelId: a,
+              monetizableState: a,
+              description: a,
+              category: a,
+              tags: a,
+              keywords: a,
+              length: a,
+              isLiveStream: a,
+              isPremier: a,
+              liveStartAt: a,
+              liveEndAt: a,
+              isLiveNow: a,
+              isUpcoming: a,
+              liveViewerCount: a,
+              adNoticeInMeta: a,
+              adNoticeInDesc: a,
+              adNoticeTextIndex: a,
+              adNoticeTextLength: a,
+              commentCount: a,
+              likeCount: a,
+              dislikeCount: a,
+              donationAmount: a,
+              publishedAt: a,
+              updatedAt: a,
+              isRestrictedAd: a,
+              status: a
+            }
+          ],
+          profileImagePath: "https:\u002F\u002Fi.playboard.app\u002Fp\u002FAAUvwngDOGdG2B2lmV-iHXnLU5vARWX9EIxmq5J0KroZGA",
+          keywords: [
+            "BIGBANG",
+            "빅뱅",
+            "YG",
+            "와이지",
+            "SEUNGRI",
+            "승리",
+            "DAESUNG",
+            "지디",
+            "대성",
+            "G-DRAGON",
+            "GD",
+            "TAEYANG",
+            "TOP",
+            "VI",
+            "태양",
+            "탑",
+            "D-LITE",
+            "지드래곤",
+            "권지용",
+            "BIG",
+            "BANG",
+            "SOL",
+            "T",
+            "O",
+            "P",
+            "지드레곤",
+            "최승현",
+            "동영배",
+            "강대성",
+            "이승현",
+            "ビッグバン",
+            "ヨンベ",
+            "ジヨン",
+            "ビッグ",
+            "バン",
+            "ベン",
+            "YG Entertainment",
+            "재팬",
+            "japan",
+            "K-pop",
+            "ATOZ",
+            "CASHART",
+            "EQUATOR",
+            "798ARTZONE",
+            "BEIJING",
+            "CHINA",
+            "KwonJiYong"
+          ],
+          type: a,
+          bannerUri: a,
+          country: a,
+          category: a,
+          donationAmount: a,
+          avgWeeklyVideos: a,
+          avgWeeklyLiveStreams: a,
+          avgWeeklyPremieres: a,
+          avgPlayCount: a,
+          playRate: a,
+          likeShare: a,
+          commentRate: a,
+          liveStreamAvgViewer: a,
+          liveStreamMaxViewer: a,
+          adSpreadVelocity: a,
+          originalSpreadVelocity: a,
+          adCount: a,
+          adUpdatedAt: a,
+          liveStreamCount: a,
+          liveStreamUpdatedAt: a,
+          premierCount: a,
+          premierUpdatedAt: a,
+          customKeywords: a,
+          links: a,
+          isDeepScanQualified: a,
+          isRestrictedAd: a,
+          status: a,
+          joinedAt: a,
+          updatedAt: a,
+          createdAt: a
+        }
+      ],
+      cursor: "eyJ0cyI6MTcyNDQ1NzYwMCwic2VhcmNoQWZ0ZXIiOlsxNTIwMDAwMCwxNTY0NjgyNjQzMDAwLDczNTI0MF19",
+      hasNext: x,
+      isRestrictedAd: c,
+      isNowDownloading: c
+    }
+  ],
+  fetch: {
+  },
+  error: null,
+  state: {
+    clientToken: "8fa77f6763dd1eac432e380254f6112d:361a52a28bb0610067566ebf3275aace",
+    countryCode: "KR",
+    utcOffset: "+09:00",
+    timezone: "Asia\u002FSeoul",
+    testArgs: "",
+    recapchaSDKLoaded: c,
+    youtubePlayerApiLoaded: c,
+    dpCurrencyCode: "KRW",
+    dpCurrencyExchangeRate: 1325.584981,
+    keyCurrencyCode: "USD",
+    isNowModalLoading: c,
+    tooltipEvent: a,
+    alertPopupEvent: a,
+    errorPopupEvent: a,
+    about: {
     },
-    "restArea": null,
-    "homepages({\"source\":[\"shopWindow\",\"jto\"]})": {
-      "__typename": "Homepage",
-      "etc": [],
-      "repr": {
-        "__typename": "HomepageRepr",
-        "url": "http:\u002F\u002F르하임.com",
-        "landingUrl": "http:\u002F\u002Fxn--2w2b60xoxk.com",
-        "isDeadUrl": false,
-        "type": "홈페이지",
-        "typeI18n": "홈페이지",
-        "order": 0,
-        "isRep": null
+    account: {
+      session: a,
+      refreshToken: a
+    },
+    billing: {
+    },
+    cd: {
+    },
+    channel: {
+      channelOveralls: {
       }
     },
-    "jto": null,
-    "parkingmodu": null,
-    "aniPharm": null,
-    "gift": {
-      "__typename": "Gift",
-      "gifticonId": null,
-      "gifticonMoreUrl": null
+    chart: {
+      isNowExporting: c
     },
-    "menus": [
-      {
-        "__ref": "Menu:1285854475_0"
-      },
-      {
-        "__ref": "Menu:1285854475_1"
-      },
-      {
-        "__ref": "Menu:1285854475_2"
-      },
-      {
-        "__ref": "Menu:1285854475_3"
-      },
-      {
-        "__ref": "Menu:1285854475_4"
-      },
-      {
-        "__ref": "Menu:1285854475_5"
-      },
-      {
-        "__ref": "Menu:1285854475_6"
-      },
-      {
-        "__ref": "Menu:1285854475_7"
-      },
-      {
-        "__ref": "Menu:1285854475_8"
-      },
-      {
-        "__ref": "Menu:1285854475_9"
-      },
-      {
-        "__ref": "Menu:1285854475_10"
-      },
-      {
-        "__ref": "Menu:1285854475_11"
-      }
-    ],
-    "branchDeliveryInfo": null,
-    "cp0Videos": [],
-    "goodPrice": null,
-    "paiUpperImage": {
-      "__typename": "PaiUpperImage",
-      "images": []
+    favorite: {
+      myGroupsLoadState: "pending",
+      myGroups: [],
+      favoritedItems: [],
+      addItemEvent: a
     },
-    "description({\"source\":[\"shopWindow\",\"jto\"]})": "르하임 스터디카페 부산당감점\n\n고객 만족도 1위 스터디카페\n24시간, 365일 무인시스템으로 운영되는 프리미엄 스터디카페 입니다.\n\n집중력을 높이는 최적의 조도와\n모던하고 고급스러운 인테리어로\n여러분들에게 최고의 공부 환경을 제공합니다.\n\n스터디존\u002F스터디룸\u002F카페존\n3개의 공간이 완전히 분리되어 있어\n\n스터디존에서 공부하시다가\n카페존으로 나와서 편히 쉴 수 있으며\n\n그룹으로 모이는 공간이 필요하시면\n예약을 통해 4인실\u002F6인실 스터디룸 사용이 가능합니다.\n\n※ 주요 이용 고객\n- 학생(중간\u002F기말 시험, 모의고사, 수능 준비)\n- 대학생(대학 시험, 과제, 공모전, 취업 스터디)\n- 일반성인(공무원 준비, 전문자격증 취득 등)\n\n※ 내부시설\n1. 스터디존 : 다인석(8인), 부스석, 1인 독립석, bar석 4가지 타입의 좌석제공\n2. 4인룸\u002F6인룸 제공\n3. 프리미엄 IOT 냉난방 환기시스템\n4. 초고속 무선인터넷 wifi\n5. 독서대 및 담요 제공\n6. PC & 복합기 제공\n7. Premium sound masking zone\n\n※스터디카페 특성상 1회 시간권 사용자들과 기간권, 정액권 이용자들이 겹치는 이용 시간에는 좌석이 만석될 수 있으며, 좌석 만석 시 부득이하게 기다리실 수 있는 점 양해를 부탁드립니다.",
-    "martOffInfo": null,
-    "is100YearCertified": null,
-    "is100YearSmallManufacturer": null,
-    "isNFASafetyCertified": null,
-    "staticMapUrl": "https:\u002F\u002Fsimg.pstatic.net\u002Fstatic.map\u002Fv2\u002Fmap\u002Fstaticmap.bin?center=129.0410872%2C35.1656151&level=16&dataversion=172.29&caller=naver_mstore&markers=pos%3A129.0410872%2035.1656151%7Ctype%3Ac%7Ccolor%3Ablue%7Clabel%3Arestaurant",
-    "newOpening": null
-  },
-  "panoramaThumbnail({\"input\":{\"businessId\":\"1285854475\",\"height\":400,\"type\":\"thumbnail\",\"width\":800}})": {
-    "__typename": "PanoramaThumbnailResult",
-    "url": "https:\u002F\u002Fapis.naver.com\u002Fplace\u002Fpanorama\u002Fthumbnail\u002F1285854475\u002F0?width=800&height=400&msgpad=1724339961434&md=8OZOmSyuOXPDj1wYZ9xRZLFnlS4%3D"
-  },
-  "user": {
-    "__typename": "UserResult",
-    "partnerHashedIdNo": null,
-    "myplace": {
-      "__typename": "MyPlaceUserInfo",
-      "profile": {
-        "__typename": "MyPlaceProfile",
-        "imageUrl": null,
-        "borderImageUrl": null,
-        "myplaceId": null,
-        "myplaceNickname": null
+    ge21: {
+    },
+    home: {
+    },
+    insights: {
+    },
+    "keyword-group": {
+      groups: [],
+      openedGroups: []
+    },
+    live: {
+      liveDic: {},
+      liveTrendsDic: {}
+    },
+    mail: {},
+    org: {
+    },
+    search: {
+    },
+    support: {
+    },
+    topic: {
+      topics: []
+    },
+    video: {},
+    waf: {},
+    i18n: {
+      routeParams: {
       }
     }
   },
-  "visitorReviewMediasTotal({\"input\":{\"businessId\":\"1285854475\"}})": {
-    "__typename": "VisitorReviewMediasTotalResult",
-    "total": 5
+  serverRendered: x,
+  routePath: "\u002Fsearch",
+  config: {
+    _app: {
+      basePath: Y,
+      assetsPath: Y,
+      cdnURL: "https:\u002F\u002Fstatic.playboard.app\u002Fprod\u002F"
+    }
+  },
+  __i18n: {
+    langs: {
+      ko: {
+        cd: {
+          group: {
+            globalLiveDashboard: "글로벌 라이브 대시보드"
+          },
+          clvTrend: {
+            name: "동시 시청자 추세",
+            metric: {
+              clv: {
+                name: "동시 시청자",
+                desc: "동시 시청자 수는 10분 단위로 모든 라이브 방송의 시청자 수를 합산하여 측정됩니다."
+              },
+              peakClv: {
+                name: "최고 동시 시청자 수",
+                desc: "기간 내 최고 동시 시청자 수입니다.\u003Cspan class='footnote'\u003E@:cd.clvTrend.metric.clv.desc\u003C\u002Fspan\u003E"
+              },
+              avgClv: {
+                name: "평균 동시 시청자 수",
+                desc: "기간 내 동시 시청자 수의 평균입니다.\u003Cspan class='footnote'\u003E@:cd.clvTrend.metric.clv.desc\u003C\u002Fspan\u003E"
+              },
+              minClv: {
+                name: "최저 동시 시청자 수",
+                desc: "기간 내 최저 동시 시청자 수입니다.\u003Cspan class='footnote'\u003E@:cd.clvTrend.metric.clv.desc\u003C\u002Fspan\u003E"
+              }
+            }
+          },
+          donationTrend: {
+            name: "유료 채팅 추세",
+            metric: {
+              donationCount: {
+                name: "유료 채팅 수",
+                desc: "슈퍼챗 \u002F 슈퍼스티커 등의 유료 채팅 전송 횟수입니다."
+              },
+              sumAmountUsd: {
+                name: "합계 (USD)",
+                desc: "유료 채팅 지불액 합계입니다. USD 이외의 통화로 지불된 경우 지불 시점의 환율을 기준으로 USD로 환전되어 집계됩니다."
+              },
+              donatorCount: {
+                name: Z,
+                desc: "유료 채팅을 전송한 사용자 수입니다."
+              },
+              videoCount: {
+                name: b,
+                desc: "유료 채팅이 1회 이상 전송된 라이브 방송 개수 입니다."
+              },
+              channelCount: {
+                name: e,
+                desc: "유료 채팅을 1회 이상 받은 채널 개수입니다."
+              }
+            }
+          },
+          liveProductionTrend: {
+            name: "라이브 방송 추세",
+            criteria: "라이브 방송의 시작 시간을 기준으로 집계됩니다.",
+            notEndedLiveException: "아직 종료되지 않은 라이브 방송의 방송 시간은 [방송 시작 시점 ~ 데이터 열람 시점] 까지로 계산됩니다.",
+            metric: {
+              videoCount: {
+                name: b,
+                desc: k
+              },
+              channelCount: {
+                name: _,
+                desc: k
+              },
+              sumAirtime: {
+                name: $,
+                desc: "기간 내 시작된 모든 라이브 방송의 방송 시간 합계입니다.\u003Cspan class='footnote'\u003E@:cd.liveProductionTrend.notEndedLiveException\u003C\u002Fspan\u003E"
+              },
+              avgAirtime: {
+                name: "평균 방송시간",
+                desc: "기간 내 시작된 모든 라이브 방송의 평균 방송 시간입니다.\u003Cspan class='footnote'\u003E@:cd.liveProductionTrend.notEndedLiveException\u003C\u002Fspan\u003E"
+              }
+            }
+          },
+          liveWatchTimeTrend: {
+            name: "라이브 시청 시간 추세",
+            metric: {
+              videoCount: {
+                name: b,
+                desc: k
+              },
+              channelCount: {
+                name: _,
+                desc: k
+              },
+              sumWatchTime: {
+                name: "총 시청시간",
+                desc: "기간 내 시작된 라이브 방송의 시청시간 합계입니다.\u003Cspan class='footnote'\u003E시청시간 = 평균 동시 시청자 * 방송시간\u003C\u002Fspan\u003E"
+              }
+            }
+          }
+        },
+        chartLnb: {
+          menus: {
+            channel: {
+              label: e
+            },
+            artist: {
+              label: "아티스트"
+            },
+            video: {
+              label: y
+            },
+            short: {
+              label: aa
+            },
+            live: {
+              label: b
+            },
+            ad: {
+              label: l,
+              sub: {
+                normal: {
+                  label: "일반"
+                },
+                short: {
+                  label: aa
+                }
+              }
+            }
+          }
+        },
+        chartList: {
+          updateInfoTooltip: {
+            title: "차트 상세 정보",
+            desc: "\u003Cdiv class=\"section\"\u003E\u003Cspan class=\"bullet\"\u003E집계 기간\u003C\u002Fspan\u003E\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd\u003E시작\u003C\u002Ftd\u003E\u003Ctd\u003E{aggStartAt}\u003C\u002Ftd\u003E\u003C\u002Ftr\u003E\u003Ctr\u003E\u003Ctd\u003E끝\u003C\u002Ftd\u003E\u003Ctd\u003E{aggEndAt}\u003C\u002Ftd\u003E\u003C\u002Ftr\u003E\u003C\u002Ftbody\u003E\u003C\u002Ftable\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E\u003Cspan class=\"bullet\"\u003E업데이트 시간\u003C\u002Fspan\u003E\u003Cdiv class=\"quote quote--bold\"\u003E{createdAt}\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E"
+          },
+          emptyMessage: {
+            noChartCreated: "이 기간의 아직 차트가 생성되지 않았습니다.",
+            noChannelSelected: "이 차트에 선정된 채널이 없습니다.",
+            noVideoSelected: "이 차트에 선정된 영상이 없습니다.",
+            delayedUpdate: "유튜브의 정보 업데이트가 지연되어 이 날짜의 차트는 제공되지 않습니다.\u003Cbr \u002F\u003E이용에 불편드려 죄송합니다."
+          },
+          loginRequired: {
+            channelQuantity: {
+              message: z,
+              buttonLabel: m
+            },
+            videoQuantity: {
+              message: z,
+              buttonLabel: m
+            }
+          },
+          upgradeRequired: {
+            channelQuantity: {
+              message: A,
+              buttonLabel: "더 많은 채널 보기"
+            },
+            channelExport: {
+              message: "차트의 채널 목록을 파일로 저장하려면 플랜 업그레이드가 필요합니다.",
+              buttonLabel: ab
+            },
+            videoQuantity: {
+              message: A,
+              buttonLabel: "더 많은 영상 보기"
+            },
+            videoExport: {
+              message: "차트의 영상 목록을 파일로 저장하려면 플랜 업그레이드가 필요합니다.",
+              buttonLabel: ab
+            }
+          }
+        },
+        all: ac,
+        ok: d,
+        usagePercent: "{percent} 사용",
+        superchat: f,
+        superSticker: "슈퍼스티커",
+        commonError: {
+          upgradeRequired: "현재 플랜에서 사용할 수 없는 기능입니다.\u003Cbr \u002F\u003E지금 저렴한 가격으로 플랜을 업그레이드할 수 있습니다.",
+          badRequestError: "잘못된 요청입니다.",
+          temporaryError: "일시적인 오류가 발생했습니다.\u003Cbr \u002F\u003E잠시 후 다시 시도해 주세요.",
+          forbiddenError: "권한이 없습니다.",
+          unauthorizedError: "로그인이 필요합니다.",
+          memberOnlyFeature: "이 기능을 이용하려면 로그인이 필요합니다.",
+          serverIsDown: "서버에 일시적인 장애가 발생하였습니다.\u003Cbr \u002F\u003E잠시 후 다시 접속해 주세요.",
+          clientNetworkOffline: "네트워크를 이용할 수 없습니다.",
+          pageNotFound: "페이지를 찾을 수 없습니다.",
+          tooManyRequestsOnNetwork: "접속한 네트워크에서 너무 많은 요청이 발생하고 있습니다.",
+          tooManyRequestsOnNetworkCapchaRequest: "접속한 네트워크에서 너무 많은 요청이 발생하고 있습니다.\u003Cbr \u002F\u003E아래의 체크박스를 클릭해주세요.",
+          tooManyRequestsOnAccount: "너무 많은 요청이 발생하고 있습니다.\u003Cbr \u002F\u003E잠시 후 다시 시도해 주세요.",
+          concurrentSessionErrorTitle: "너무 많은 장치에서 이 계정을 사용 중이어서 로그아웃 되었습니다.",
+          concurrentSessionErrorDesc: "계정은 최대 5개의 장치에서 동시에 접속할 수 있습니다.",
+          empty: "표시할 항목이 없습니다",
+          notSubscribed: "구독 중이 아닙니다.",
+          noSeats: "팀에 더 이상 멤버를 추가할 수 없습니다. 유료 플랜 업그레이드가 필요합니다."
+        },
+        capcha: {
+          statusMessage: {
+            fail: "검증에 실패했습니다.",
+            required: "위의 체크박스를 선택해주세요."
+          }
+        },
+        apiContact: "자동화된 방식으로 데이터에 접근할 때는 API 서비스를 이용해야 합니다. \u003Ca href='mailto:hello@playboard.co'\u003Ehello@playboard.co\u003C\u002Fa\u003E 로 문의해주세요.",
+        errorContact: "이 문제가 지속될 경우 \u003Ca href='mailto:hello@playboard.co'\u003Ehello@playboard.co\u003C\u002Fa\u003E 로 문의해주세요.",
+        current: ad,
+        change: B,
+        perMonth: "매월",
+        export: "내보내기",
+        exportSample: "샘플 다운로드",
+        status: "상태",
+        role: "역할",
+        selectedFilters: "선택된 필터",
+        time: ae,
+        date: af,
+        year: "년",
+        month: "월",
+        week: "주",
+        day: "일",
+        hour: "시",
+        minute: "분",
+        second: "초",
+        lastFrom: {
+          d: "최근 1일 | 최근 {count}일",
+          w: "최근 1주 | 최근 {count}주",
+          m: "최근 한달 | 최근 {count}개월",
+          y: "최근 1년 | 최근 {count}년"
+        },
+        datetimeCount: {
+          h: "{count}시간",
+          m: ag,
+          s: "{count}초",
+          d: "{count}일",
+          w: "{count}주",
+          M: "{count}월",
+          y: "{count}년"
+        },
+        rangeFilter: {
+          customLabel: {
+            shortFormVideo: "Short ( 60초 이하 )",
+            longFormVideo: "61초+"
+          },
+          customMinPlaceholder: {
+            common: ah,
+            duration: "최소(초)"
+          },
+          customMaxPlaceholder: {
+            common: ai,
+            duration: "최대(초)"
+          }
+        },
+        donationFilterSet: {
+          country: {
+            name: g,
+            desc: "선택한 국가의 채널에게 전송된 유료 채팅만 조회합니다."
+          },
+          category: {
+            name: h,
+            desc: "선택한 카테고리로 지정된 라이브 방송에서 전송된 유료 채팅만 조회합니다."
+          },
+          donationType: {
+            name: "유료 채팅 종류",
+            desc: "선택한 종류의 유료 채팅만 조회합니다."
+          },
+          videoType: {
+            name: aj,
+            desc: "선택한 종류의 영상에서 전송된 유료 채팅만 조회합니다."
+          }
+        },
+        liveList: {
+          loginRequired: {
+            liveQuantity: {
+              message: z,
+              buttonLabel: m
+            }
+          },
+          upgradeRequired: {
+            liveQuantity: {
+              message: A,
+              buttonLabel: "더 많은 라이브 보기"
+            }
+          }
+        },
+        navigation: {
+          searchPlaceHolder: "채널 \u002F 영상의 링크 또는 키워드로 검색"
+        },
+        notice: {
+          "2022-year-end-chart-released": "2022년 연말 차트가 공개되었습니다.",
+          "2022-year-chart-released": "2022년 차트가 공개되었습니다.",
+          "avg-views-changed": "2023.07.12 부터 채널의 영상 평균 조회수는 Shorts 를 제외하고 집계됩니다.",
+          orgFeatures: "동료를 초대하여 유료 플랜의 기능을 함께 이용하세요.",
+          "2023-year-end-chart-released": "2023년 연말 차트가 공개되었습니다."
+        },
+        orgName: "팀 이름",
+        orgMemberRole: {
+          member: ak,
+          owner: "소유자"
+        },
+        orgMemberStatus: {
+          active: "활성",
+          inactive: "비활성",
+          removed: i
+        },
+        invitationStatus: {
+          pending: "초대 수락 대기중",
+          accepted: "수락됨",
+          rejected: "거부됨",
+          cancelled: al
+        },
+        deleteOrgPopup: {
+          title: am,
+          deleted: "팀이 삭제되었습니다.",
+          terms: {
+            title: "팀을 삭제함으로써 발생할 수 있는 결과를 신중히 검토해주세요.",
+            allDeleteMember: "모든 멤버가 팀에서 탈퇴됩니다.",
+            nonRefundable: "유료 플랜의 남은 이용 기간은 말소되며 지불한 금액은 환불되지 않습니다.",
+            unableToViewBillingHistory: "과거의 결제내역을 더이상 열람할 수 없습니다.",
+            cannotUndo: "모든 변경 사항은 되돌릴 수 없습니다."
+          },
+          error: {
+            subscriptionIsActive: "유료 플랜을 구독중입니다. 구독을 취소한 뒤 팀을 삭제해주세요."
+          }
+        },
+        createOrgPopup: {
+          title: an,
+          desc: n,
+          tip: ao,
+          error: {
+            nameRequired: n,
+            nameShort: "팀 이름을 2자이상 입력해주세요."
+          }
+        },
+        leaveOrgPopup: {
+          title: ap,
+          completed: "팀에서 나왔습니다.",
+          terms: {
+            title: "팀에서 나감으로써 발생할 수 있는 결과를 신중히 검토해주세요.",
+            limitPadiPlanAccess: "팀에서 구독중인 유료 플랜이 제공하는 기능과 정보를 더이상 이용할 수 없습니다.",
+            cannotUndo: "팀의 정보에 더이상 접근할 수 없습니다."
+          }
+        },
+        removeMemberPopup: {
+          title: "멤버 제거",
+          msg: "{name}님을 팀에서 제거하시겠습니까?",
+          removed: "{name}님이 팀에서 제거되었습니다.",
+          error: {
+            soleOwner: "유일한 팀의 소유자를 제거할 수 없습니다. 다른 멤버를 팀 소유자로 변경한 후 다시 시도해주세요."
+          }
+        },
+        activateMemberPopup: {
+          title: "멤버 활성화",
+          msg: "{name}님을 활성 상태로 변경하시겠습니까?",
+          removed: "{name}님이 활성 상태가 되었습니다.",
+          error: {
+            noSeats: "더이상 활성 멤버를 추가할 수 없습니다. 구독중인 유료 플랜에 따라 팀의 최대 멤버수가 설정됩니다. 더 많은 멤버를 추가하려면 더 높은 등급의 유료플랜으로 변경해주세요."
+          }
+        },
+        changeMemberRolePopup: {
+          title: "멤버 역할 변경",
+          msg: "{name}님의 역할을 선택해주세요.",
+          warn: "팀 소유자는 팀의 모든 정보를 수정할 수 있으며, 멤버를 추가하거나 삭제할 수 있습니다.",
+          completed: "{name}님의 역할이 변경되었습니다.",
+          error: {
+            soleOwner: "팀에는 한명 이상의 소유자가 있어야 합니다. 다른 멤버를 팀 소유자로 변경한 후 다시 시도해주세요."
+          }
+        },
+        cancelInvitationPopup: {
+          title: aq,
+          msg: "{email} 로 발송한 초대를 취소하시겠습니까?",
+          completed: "초대가 취소되었습니다."
+        },
+        resendInvitationPopup: {
+          title: ar,
+          msg: "{email} 로 초대 메일을 다시 발송하시겠습니까?",
+          completed: "초대 메일이 다시 발송되었습니다."
+        },
+        invitePopup: {
+          title: "멤버 초대",
+          msg: "초대할 이메일을 입력해주세요.",
+          orgNameTitle: n,
+          orgNameDesc: ao,
+          sendLinkByEmail: "이메일로 초대장이 발송됩니다.",
+          linkExpireTime: "7일 이내에 초대가 수락되지 않을 경우 초대가 취소됩니다.",
+          completed: "초대 메일이 발송되었습니다.",
+          error: {
+            orgNameRequired: n,
+            orgNameShort: "팀 이름을 2자 이상 입력해주세요.",
+            emailRequired: "이메일을 입력해주세요.",
+            invalidEmail: "이메일을 정확하게 입력해주세요.",
+            alreadyInvitedEmail: "이미 초대한 이메일입니다.",
+            alreadyJoinedEmail: "이미 팀에 가입한 멤버의 이메일입니다."
+          }
+        },
+        orgMemberAdminAction: {
+          removeMember: "팀에서 제거",
+          activateMember: "활성화",
+          changeMemberRole: "역할 변경",
+          resendInvitation: ar,
+          cancelInvitation: aq
+        },
+        payment: as,
+        paymentMethod: "결제 수단",
+        changePaymentMethod: "결제 수단 변경",
+        noPaymentMethod: "등록된 결제수단 없음",
+        taxIncluded: "부가세 포함",
+        taxNIncluded: "부가세 {amount} 포함",
+        paymentHistory: "결제 내역",
+        paymentAmount: at,
+        paymentTotalAmount: au,
+        paymentTotalAmountShort: au,
+        noPaymentHistoryMessage: "결제 내역이 없습니다.",
+        billingCycle: "결제 주기",
+        cardNumber: "카드번호",
+        cardExpirationDate: "유효기간",
+        cardOwnderIdentity: "주민등록번호 앞6자리 또는 사업자등록번호",
+        cardOwnderIdentityDesc: "카드에 내 이름이 적혀있는 경우 주민번호 앞 6자리를\u003Cbr \u002F\u003E회사 이름이 적혀있는 경우 사업자 등록번호를 입력해 주세요.",
+        cardPassword: "비밀번호(앞 2자리)",
+        cardPaymentAggrement: "{terms} 및 {privacyPolicies}에 동의합니다.",
+        cardPaymentButtonLabel: as,
+        paypalPaymentAggrement: "아래의 버튼을 클릭하면 플레이보드의 {terms} 및 {privacyPolicies}에 동의하게 됩니다.",
+        paypalPaymentButtonLabel: "Payment with Paypal",
+        paypalSlogan: "The safer, easier way to pay",
+        taxNotIncluded: "VAT별도",
+        nextBillingDate: "다음 결제일",
+        nextBillingInfoLabel: "다음 결제",
+        nextBillingDateMessage: "다음 결제일은 {date} 입니다.",
+        receipt: "영수증",
+        transactionTime: "결제 시간",
+        transactionId: "결제 ID",
+        cardPaymentErrors: {
+          cardNumberRequired: "카드번호를 올바르게 입력해 주세요.",
+          invalidExpirationDate: "유효기간을 올바르게 입력해 주세요. ( 25년 1월 까지인 경우 \"01\u002F25\" 로 입력 )",
+          invalidOwnderIdentity: "주민등록번호 또는 사업자등록번호를 정확히 입력해 주세요.",
+          invalidPassword: "비밀번호(앞 2자리)를 정확히 입력해주세요.",
+          invalidCardNumber: "카드 번호가 올바르지 않습니다.",
+          expirationDateMismatch: "카드 유효기간이 일치하지 않습니다",
+          ownderIdentityMismatch: "주민등록번호 또는 사업자등록번호가 일치하지 않습니다",
+          passwordMismatch: "카드 비밀번호가 일치하지 않습니다.",
+          suspendedCard: "정지된 카드입니다.",
+          limitExcess: "카드 한도 또는 잔액이 부족합니다.",
+          approvalDenied: "카드사에서 승인이 거절되었습니다. 카드사에 문의해주세요.",
+          notSupportCard: "사용할 수 없는 카드입니다. 다른 카드를 사용해주세요."
+        },
+        paymentErrors: {
+          billingInProgress: "구독 갱신을 위한 정기결제가 진행 중입니다. 구독 갱신이 완료된 후 다시 시도해 주세요.",
+          paymentInProgress: "결제가 진행 중입니다. 잠시 후 다시 시도해 주세요.",
+          expiredInvoice: "결제 정보가 만료되었습니다. 다시 시도해주세요."
+        },
+        billingInterval: {
+          w: "주 1회",
+          m: "월 1회",
+          y: "년 1회"
+        },
+        currencies: {
+          krw: "{amount}원",
+          usd: "${amount} USD"
+        },
+        planUpgrade: o,
+        quota: "쿼타",
+        quotaUsage: "사용량",
+        currentQuotaUsage: "현재 사용량",
+        quotaLimit: "사용한도",
+        increaseLimit: "한도 늘리기",
+        quotaResetTime: "{time} 에 사용량 초기화",
+        quotaBucket: {
+          channelBasicAnalysis: {
+            name: av,
+            desc: "\u003Cdiv class='section'\u003E채널의 주요 지표를 확인할 수 있습니다.\u003C\u002Fdiv\u003E\u003Cdiv class='section'\u003E\u003Cspan class='section__title'\u003E제공 데이터\u003C\u002Fspan\u003E\u003Cul\u003E\u003Cli\u003E구독자 추세\u003C\u002Fli\u003E\u003Cli\u003E조회수 추세\u003C\u002Fli\u003E\u003Cli\u003E영상 평균 조회수\u003C\u002Fli\u003E\u003Cli\u003E영상 조회수 증가 속도\u003C\u002Fli\u003E\u003Cli\u003E라이브 방송에 대한 간략한 통계\u003C\u002Fli\u003E\u003Cli\u003E슈퍼쳇에 대한 간략한 통계\u003C\u002Fli\u003E\u003C\u002Ful\u003E\u003C\u002Fdiv\u003E"
+          },
+          channelAdvancedAnalysis: {
+            name: aw,
+            desc: "\u003Cdiv class='section'\u003E보다 깊이있는 분석을 위한 고급 데이터를 확인할 수 있습니다.\u003C\u002Fdiv\u003E\u003Cdiv class='section'\u003E\u003Cspan class='section__title'\u003E제공 데이터\u003C\u002Fspan\u003E\u003Cul\u003E\u003Cli\u003E유료 광고가 포함된 영상의 성과 분석\u003C\u002Fli\u003E\u003Cli\u003E슈퍼챗 추세\u003C\u002Fli\u003E\u003Cli\u003E라이브 방송 시청자 추세\u003C\u002Fli\u003E\u003C\u002Ful\u003E\u003C\u002Fdiv\u003E"
+          },
+          videoAnalysis: {
+            name: ax,
+            desc: "\u003Cdiv class='section'\u003E영상의 성과를 분석할 수 있는 다양한 통계 데이터를 제공합니다.\u003C\u002Fdiv\u003E\u003Cdiv class='section'\u003E\u003Cspan class='section__title'\u003E제공 데이터\u003C\u002Fspan\u003E\u003Cul\u003E\u003Cli\u003E조회수 추세\u003C\u002Fli\u003E\u003Cli\u003E인게이지먼트(좋아요\u002F댓글) 추세\u003C\u002Fli\u003E\u003C\u002Ful\u003E\u003C\u002Fdiv\u003E"
+          }
+        },
+        quotaExceed: {
+          guest: {
+            title: "이 정보를 보려면 로그인이 필요합니다.",
+            desc: "로그인 후 더 많은 정보를 열람할 수 있습니다."
+          },
+          member: {
+            title: "무료 사용 한도를 초과했습니다.",
+            desc: "지금 플랜을 업그레이드하거나 사용량이 초기화될 때까지 기다려주세요."
+          }
+        },
+        emptyChannelTrend: "정보를 업데이트 하고 있습니다. 24시간 이후 다시 확인해주세요.",
+        plan: "플랜",
+        changePlan: C,
+        currentPlan: "현재 플랜",
+        noSubscriptionStatusMessage: "무료 플랜을 사용 중입니다. 지금 업그레이드하세요.",
+        cancelSubscription: ay,
+        restartSubscription: "구독 재시작",
+        closeCancelSubscriptionPopupButtonLabel: "계속 구독",
+        cancelSubscriptionDowngrade: "플랜 변경 취소",
+        subscriptionDowngradeSchedule: az,
+        currentSubscriptionStatus: "구독 상태",
+        subscriptionExpireDate: "구독 만료일",
+        nextPaymentAmount: "결제 예정 금액",
+        planFullname: "{planName} 플랜",
+        planName: {
+          free: "무료",
+          basic: "베이직",
+          standard: "스탠다드",
+          business: "비즈니스+",
+          enterprise: "엔터프라이즈"
+        },
+        subscriptionAmount: {
+          w: "주 {amount}",
+          m: "월 {amount}",
+          y: "년 {amount}"
+        },
+        subscriptionStatus: {
+          cancelled: al
+        },
+        subscriptionCycleStartTime: "서비스 시작",
+        subscriptionCycleEndTime: "서비스 종료",
+        subscriptionUpgrade: o,
+        subscriptionUpgradeCompletionMessage: "{planName} 플랜으로 변경되었습니다.",
+        subscriptionDowngrade: "다운그레이드",
+        subscriptionDowngradeCompletionMessage: "다음 결제일에 {planName} 플랜으로 변경됩니다.",
+        subscriptionStarted: "구독이 시작되었습니다.",
+        paymentMethodChanged: "결제 수단이 변경되었습니다.",
+        planPrice: aA,
+        planTax: "부가세 10%",
+        planChange: B,
+        subscriptionErrors: {
+          alreadySubscribed: "이미 구독중입니다."
+        },
+        subscriptionUpgradeDiscount: "업그레이드 할인",
+        subscriptionUpgradeDiscountDesc: "더 높은 등급의 플랜으로 변경하는 경우 기존 플랜의 잔여기간에 따라 첫 달의 이용 요금이 할인됩니다.",
+        avgViewsWidget: {
+          title: aB,
+          desc: "최근 30개 영상의 평균 조회수입니다. 주 1회 업데이트됩니다.\u003Cbr \u002F\u003E\u003Cp class='footnote'\u003EShorts 영상은 집계에서 제외됩니다.\u003C\u002Fp\u003E",
+          playRate: "구독자 대비 {playRate}",
+          gauge: {
+            desc: "비슷한 구독자를 보유한 채널들의 평균 조회수는 \u003Cb\u003E{avg}\u003C\u002Fb\u003E 입니다."
+          }
+        },
+        engagementStatsWidget: {
+          title: "인게이지먼트",
+          desc: "채널 시청자의 참여도를 확인할 수 있습니다. 최근 영상 30개를 대상으로 집계되며, 주 1회 업데이트됩니다.\u003Cbr \u002F\u003E\u003Cp class='footnote'\u003EShorts 영상은 집계에서 제외됩니다.\u003C\u002Fp\u003E",
+          likeRate: {
+            title: p,
+            desc: "영상의 조회 수 대비 좋아요 비율입니다. 이 채널의 콘텐츠에 대한 시청자의 긍정적 반응률을 확인할 수 있습니다. 비슷한 구독자를 보유한 채널들의 평균값은 \u003Cb\u003E{avgRate}%\u003C\u002Fb\u003E 입니다."
+          },
+          commentRate: {
+            title: D,
+            desc: "영상의 조회 수 대비 댓글 비율입니다. 이 채널의 시청자들이 얼마나 적극적으로 소통하는지 확인할 수 있습니다. 비슷한 구독자를 보유한 채널들의 평균값은 \u003Cb\u003E{avgRate}%\u003C\u002Fb\u003E 입니다."
+          }
+        },
+        chartVideoTicker: {
+          headline: "이 차트를 영상으로 보기",
+          desc: "시간에 따른 순위 변화를 확인하세요."
+        },
+        datePicker: {
+          chooseCustomPeriod: "기간 직접 선택",
+          lockedPeriodNotice: "선택한 기간의 데이터를 보려면\u003Cbr \u002F\u003E플랜 업그레이드가 필요합니다.",
+          notSelected: "선택되지 않음"
+        },
+        animals: "애완동물\u002F동물",
+        music: "음악",
+        gaming: "게임",
+        vlog: "인물\u002F블로그",
+        travel: "여행\u002F이벤트",
+        sports: "스포츠",
+        vehicles: "자동차\u002F교통",
+        comedy: "코메디",
+        entertainment: "엔터테인먼트",
+        news: "뉴스\u002F정치",
+        film: "영화\u002F애니메이션",
+        howto: "노하우\u002F스타일",
+        education: "교육",
+        science: "과학기술",
+        nonprofits: "비영리\u002F사회운동",
+        serviceName: aC,
+        ranking: aD,
+        rank: aD,
+        chart: E,
+        channel: e,
+        total: ac,
+        totalPeriod: aE,
+        sum: F,
+        period: G,
+        count: "횟수",
+        countPerDay: "{count} \u002F 일",
+        countPer7Day: "{count} \u002F 7일",
+        shareRate: "점유율",
+        avgVideoViews: aB,
+        live: b,
+        onair: aF,
+        country: g,
+        location: "위치",
+        keyword: aG,
+        unlimited: "제한없음",
+        livestream: aH,
+        nowLivestream: "라이브 방송 중",
+        premiere: "최초공개(프리미어)",
+        nowPremiere: "최초공개 중",
+        caution: "주의사항",
+        deleted: "삭제됨",
+        delete: i,
+        dayCount: "{count}일차",
+        summary: aI,
+        advertisement: l,
+        avgMonthlyVideos: "{count}개 \u002F 월",
+        lastUpdate: H,
+        signin: m,
+        signup: "새 계정 만들기",
+        signout: aJ,
+        email: "이메일",
+        fullname: "이름",
+        password: "비밀번호",
+        organization: "회사",
+        privacyPolicy: "개인정보 처리방침",
+        termsOfService: "서비스 이용약관",
+        signinWithGoogle: "구글 아이디로 로그인",
+        language: "언어",
+        currency: "통화",
+        title: aK,
+        hasBeenSaved: "저장되었습니다.",
+        saved: "저장됨",
+        added: "추가됨",
+        favoriteGroupName: "즐겨찾기 목록 이름",
+        addToFavorite: aL,
+        favorite: aM,
+        replay: "다시보기",
+        totalLiveStreamingTime: $,
+        totalLiveStreams: "전체 라이브 횟수",
+        peakConcurrentViewers: q,
+        avgConcurrentViewers: I,
+        minConcurrentViewers: "최저 동시 시청자",
+        yes: "예",
+        no: "아니오",
+        linkCopied: "링크가 복사되었습니다.",
+        error: "에러가 발생했습니다",
+        apply: "적용",
+        confirm: d,
+        cancel: "취소",
+        save: "저장",
+        fold: "접기",
+        noMatchingItems: "일치하는 항목이 없습니다.",
+        max: ai,
+        min: ah,
+        quantity: J,
+        returnToHome: "홈 화면으로 가기",
+        refresh: "새로 고침",
+        retry: "재시도",
+        upgrade: o,
+        upgradeNow: o,
+        backToTheTop: "맨 위로 가기",
+        silverCA: "실버",
+        goldCA: "골드",
+        diamondCA: "다이아몬드",
+        customCA: "커스텀",
+        redDiamondCA: "레드 다이아몬드",
+        silverCASubs: "10만 구독자",
+        goldCASubs: "100만 구독자",
+        diamondCASubs: "1,000만 구독자",
+        customCASubs: "5,000만 구독자",
+        redDiamondCASubs: "1억 구독자",
+        redDiamondCADesc: "1억명 이상이 구독하는 채널입니다.",
+        customCADesc: "5,000만명 이상이 구독하는 채널입니다.",
+        popularRanking: K,
+        superchatRanking: r,
+        subscriberRanking: L,
+        topChannel: "TOP 채널",
+        artistRanking: "아티스트 순위",
+        trendingChannel: aN,
+        fallingChannel: aO,
+        today: "오늘",
+        yesterday: "어제",
+        lastNDays: "최근 {count}일",
+        youtubeRanking: "유튜브 순위",
+        selectedYoutubeRanking: "{selected} 유튜브 순위",
+        etc: "기타",
+        unknown: "알 수 없음",
+        unspecified: "미지정",
+        popular: aP,
+        mostPopular: "인기순",
+        mostSubscribed: "구독자순",
+        mostSuperChated: f,
+        mostGrowth: aN,
+        mostDecline: aO,
+        mostLiveWatched: "라이브 시청자가 많은",
+        subscriber: aQ,
+        totalSubscriber: "전체 구독자",
+        newSubscriber: "신규 구독자",
+        subscribersCountAndLabel: "{count}명 구독",
+        totalViews: "전체 조회수",
+        viewsIncrease: "조회수 증가",
+        worldwide: aR,
+        global: "글로벌",
+        play: aS,
+        publishedAt: "{at} 등록",
+        streamStartAt: "{ago}에 라이브 시작",
+        streamedLiveOn: "라이브 방송 : {at}",
+        premieredAt: "{at} 최초공개",
+        updatedAt: "{at} 업데이트",
+        updatedFromNow: "{fromNow} 업데이트",
+        privateSubsCount: aT,
+        privatePlayCount: aT,
+        playCount: "{count}",
+        playCountAndLabel: "{count}번 조회",
+        viewerCountAndLabel: "{count}명 시청 중",
+        viewer: "시청자",
+        cumulativeViewers: "누적 시청자",
+        peopleCount: "{count}명",
+        video: y,
+        videoCount: J,
+        videoCountAndLabel: "{count}개 영상",
+        newVideoPerWeek: "주간 {count}개 업뎃",
+        newVideo: "신규 영상",
+        popularVideoInChannel: "이 채널의 인기영상",
+        countryAndCategory: "국가\u002F카테고리",
+        category: h,
+        about: "정보",
+        aboutPlayboard: aU,
+        description: "설명",
+        similarChannels: "비슷한 채널",
+        videoPopularity: "영상 인기도",
+        videoPopularityInfoIsEmpty: "영상 인기도 분석 정보가 없습니다.",
+        todayPopularVideos: "오늘의 인기 영상",
+        recentVideos: "최신 영상",
+        subscriberTrend: "구독자 추세",
+        subscriberTrendIsEmpty: "구독자 추세 분석 정보가 없습니다.",
+        commentsCountLabel: M,
+        likesCountLabel: N,
+        like: N,
+        dislike: aV,
+        comment: M,
+        viewingCount: "{count}명 시청중",
+        dislikesCountLabel: aV,
+        playCountLabel: O,
+        playCountPerDaylabel: "조회수\u002F일",
+        totalPlayCountLabel: "누적 조회수",
+        unsubscribed: ay,
+        joinDate: "가입일",
+        channelCreationDate: "유튜브 가입일",
+        dateOfRegPlayboard: "플레이보드 등록일",
+        viewOnYoutube: aW,
+        search: "검색",
+        LPV: "LPV",
+        viewership: aX,
+        viewershipShort: aX,
+        viewershipDesc: "플레이보드의 시청률은 채널이 운영되는 국가의 전체 영상 조회 수 중 해당 채널이 점유한 비율을 말합니다.\u003Cbr \u002F\u003E따라서 수많은 채널 중 특정 채널이 얼마나 많은 인기를 얻고 있는지를 직관적으로 확인할 수 있습니다.",
+        views: O,
+        videoViews: "동영상 조회수",
+        likeCountUnit: N,
+        playCountUnit: aS,
+        commentCountUnit: M,
+        subscribeCountUnit: "구독",
+        isNotScanedYet: "아직 데이터가 수집되지 않았습니다. 데이터 수집은 하루 한번 진행됩니다.",
+        learnMore: "자세히 보기",
+        more: "더보기",
+        close: "닫기",
+        tagRanking: "태그랭킹",
+        keywordGroup: {
+          index: {
+            relatedVideoCount: {
+              label: "관련 영상",
+              description: "키워드 관련 영상 개수입니다."
+            },
+            relatedPlayFluc: {
+              label: "관련 영상 조회",
+              description: "키워드 관련 영상이 조회된 횟수입니다.",
+              shareOfTotal: "전체 조회수 대비 점유율입니다."
+            },
+            relatedActiveVideoCount: {
+              label: "활성 영상",
+              description: "조회가 발생한 키워드 관련 영상 수입니다."
+            },
+            relatedAvtiveChannelCount: {
+              label: "활성 채널",
+              description: "조회가 발생한 키워드 관련 채널이 등록된 채널 수입니다."
+            },
+            relatedNewVideoCount: {
+              label: "새로운 관련 영상",
+              description: "새로 등록된 키워드 관련 영상 수입니다."
+            },
+            relatedNewVideoChannelCount: {
+              label: "관련 영상 등록 채널",
+              description: "키워드 관련 영상을 신규 등록한 채널 수입니다."
+            },
+            relatedLiveCount: {
+              label: "관련 라이브",
+              description: "키워드 관련 라이브 개수입니다."
+            },
+            relatedMaxLiveViewerCount: {
+              label: "최대 동시 시청자",
+              description: "키워드 관련 라이브 방송의 최고 동시 시청자 수 입니다."
+            },
+            relatedSumLiveViewerCount: {
+              label: "총 시청자",
+              description: "키워드 관련 라이브 방송의 최고 동시 시청자 수 합계입니다."
+            },
+            relatedAvgLiveViewerCount: {
+              label: I,
+              description: "키워드 관련 라이브 방송의 평균 동시 시청자 수 입니다."
+            },
+            relatedSumLength: {
+              label: "총 라이브 시간",
+              description: "키워드 관련 라이브의 총 라이브 시간 합계입니다."
+            },
+            relatedAvgLength: {
+              label: "평균 라이브 시간",
+              description: "키워드 관련 라이브의 총 평균 라이브 시간입니다."
+            }
+          },
+          videoCountiresPage: {
+            chartTitle: "국가별 조회수 추세"
+          }
+        },
+        index: {
+          channel: {
+            avgPlayCount: {
+              label: aY,
+              description: "최근 30개 영상의 평균 조회수입니다.\u003Cspan class=\"footnote\"\u003E주 1회 업데이트됩니다.\u003C\u002Fspan\u003E"
+            },
+            likeRate: {
+              label: p,
+              description: "최근 30개 영상의 조회수 대비 좋아요 비율입니다. 시청자의 긍정적 반응 비율을 확인할 수 있습니다.\u003Cspan class=\"footnote\"\u003E주 1회 업데이트됩니다.\u003C\u002Fspan\u003E"
+            },
+            commentRate: {
+              label: D,
+              description: "최근 30개 영상의 조회수 대비 댓글 비율입니다. 시청자의 적극적 참여율을 확인할 수 있습니다.\u003Cspan class=\"footnote\"\u003E주 1회 업데이트됩니다.\u003C\u002Fspan\u003E"
+            },
+            pis: {
+              label: "PIS",
+              description: "영상의 \u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 광고 미포함 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            },
+            adSpreadVelocity: {
+              play: {
+                label: "광고 {days}일 평균 조회수",
+                description: "채널에 등록된 광고 포함 영상의 등록 {days}일차 평균 조회수입니다. 이 채널과 광고 콘텐츠를 제작할 경우 첫 {days}일간 얼마나 조회될지 예상할 수 있습니다.\u003Cspan class=\"footnote\"\u003E최근 90일 이내에 등록된 영상을 대상으로 집계되며 주 1회 업데이트됩니다.\u003C\u002Fspan\u003E"
+              }
+            },
+            originalSpreadVelocity: {
+              play: {
+                label: "일반 영상 {days}일 평균 조회수",
+                description: "광고가 포함되지 않은 영상의 등록 {days}일차 평균 조회수입니다.\u003Cspan class=\"footnote\"\u003E최근 90일 이내에 등록된 영상을 대상으로 집계되며 주 1회 업데이트됩니다.\u003C\u002Fspan\u003E"
+              }
+            },
+            videoSpreadVelocity: {
+              play: {
+                label: "영상 {days}일 평균 조회수",
+                description: "영상의 등록 {days}일차 평균 조회수입니다.\u003Cspan class=\"footnote\"\u003E최근 90일 이내에 등록된 영상을 대상으로 집계되며 주 1회 업데이트됩니다.\u003C\u002Fspan\u003E"
+              }
+            },
+            organicAvgPlayCount: {
+              label: "오가닉 평균 조회",
+              description: "채널에 등록된 광고가 포함되지 않은 영상의 평균 조회수입니다.\u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            },
+            organicEr: {
+              label: "오가닉 평균 ER",
+              description: "채널에 등록된 광고가 포함되지 않은 영상의 평균 ER(Like + Comment \u002F View) 입니다.\u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            },
+            organicAvgPlayRate: {
+              label: "오가닉 조회율",
+              description: "채널에 등록된 광고가 포함되지 않은 영상의 구독자 수 대비 평균 조회수 비율입니다.\u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            },
+            paidAvgPlayCount: {
+              label: "광고 평균 조회",
+              description: "채널에 등록된 광고가 포함된 영상의 평균 조회수입니다.\u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            },
+            paidEr: {
+              label: "광고 평균 ER",
+              description: "채널에 등록된 광고가 포함된 영상의 평균 PER(Like + Comment \u002F View) 입니다.\u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            },
+            paidAvgPlayRate: {
+              label: "광고 조회율",
+              description: "채널에 등록된 광고가 포함된 영상의 구독자 수 대비 평균 조회수 비율입니다.\u003Cspan class=\"footnote\"\u003E최근 {days}일 이내에 등록된 영상을 대상으로 측정됩니다.\u003C\u002Fspan\u003E"
+            }
+          }
+        },
+        homePage: {
+          pageTitle: "유튜브 순위:플레이보드",
+          pageDesc: "유튜브 구독자 순위, 조회수 순위, 슈퍼챗 순위를 통해 가장 인기있는 유튜브 채널을 찾아보세요.",
+          headline: "전 세계 \u003Cspan class=\"num\"\u003E{count}\u003C\u002Fspan\u003E 유튜브 채널을\u003Cbr \u002F\u003E전문가용 필터로 검색하고 분석하세요.",
+          searchBtnLabel: "채널 검색",
+          chartTitle: {
+            channel: {
+              popular: K,
+              donation: r,
+              liveViewer: P,
+              growth: aZ
+            },
+            video: {
+              view: "최다 조회 영상"
+            },
+            ad: {
+              view: "최다 조회 광고"
+            }
+          },
+          topics: {
+            title: "토픽 차트",
+            desc: "AI가 채널을 주제별로 분류하여 선정한 인기 차트입니다.",
+            viewAllTopics: "전체 토픽 보기"
+          }
+        },
+        dataStatsWidget: {
+          title: "데이터 분석 현황",
+          itemTitle: {
+            channel: "분석 중인 채널",
+            video: "분석 중인 영상",
+            live: "분석 중인 라이브",
+            ad: "분석 중인 광고"
+          }
+        },
+        liveListWidget: {
+          title: "실시간 인기 라이브",
+          onair: aF,
+          onairCount: J,
+          more: "전체보기"
+        },
+        validationError: {
+          required: "내용을 입력해 주세요.",
+          tooShort: "{threshold} 글자 이상 입력해주세요.",
+          tooLong: "{threshold} 글자 미만으로 입력해주세요."
+        },
+        unit: {
+          percent: "{count}%",
+          duration: ag,
+          withinNDays: "최근 24시간 | 최근 {count}일",
+          beforeNDays: "{count}일 이전",
+          overN: "{number}+",
+          underN: "{number} 이하"
+        },
+        channelChartIndexDimension: {
+          popular: K,
+          play: a_,
+          subscriber: L,
+          growth: aZ,
+          decline: "구독자 급하락 순위",
+          liveViewer: P,
+          donation: r
+        },
+        videoChartIndexDimension: {
+          viewed: a_,
+          liked: "좋아요 순위",
+          disliked: "싫어요 순위",
+          commented: "댓글 순위",
+          watched: P,
+          superchatted: r
+        },
+        videoStatus: {
+          published: "공개",
+          deactivated: i,
+          unlisted: "미노출"
+        },
+        videoType: {
+          upload: "업로드",
+          liveStream: aH,
+          premire: "최초공개"
+        },
+        monetizableStatus: {
+          enable: "광고게시",
+          share: "수익공유",
+          disable: "광고제외",
+          block: "광고차단",
+          restrict: "광고제한",
+          unknown: "미확인"
+        },
+        channelSearchSortType: {
+          relevance: a$,
+          mostSubscribed: ba,
+          mostViewed: "재생수가 많은 순",
+          mostSuperchated: bb,
+          mostLiveWatched: bc
+        },
+        videoSearchSortType: {
+          relevance: a$,
+          newest: "최근 등록 순",
+          oldest: "오래된 순",
+          mostViewed: bd,
+          mostSuperchated: bb,
+          mostLiked: "좋아요가 많은 순",
+          mostDisliked: "싫어요가 많은 순",
+          mostCommented: "댓글이 많은 순",
+          mostLiveWatched: bc
+        },
+        favoriteChannelSortType: {
+          default: be,
+          mostSubscribed: ba
+        },
+        favoriteVideoSortType: {
+          default: be,
+          mostPlayed: bd
+        },
+        videoAdType: {
+          includesPaidPromotion: "유료 광고가 포함된 영상"
+        },
+        adNoticeType: {
+          meta: "플레이어",
+          top: "설명 상단",
+          underMiddle: "설명 중간\u002F하단"
+        },
+        videoThumbnail: {
+          includeAd: "광고포함",
+          upcomingLabel: "대기중"
+        },
+        gauge: {
+          high: "높음",
+          vhigh: "매우 높음",
+          low: "낮음",
+          vlow: "매우 낮음",
+          middle: "보통"
+        },
+        liveDashBoardWidget: {
+          totalLiveStream: {
+            title: "누적 방송 횟수",
+            count: "{count}번",
+            weeklyUpdate: "주간 {count}번 방송",
+            lastUpdate: "{date} 마지막 방송"
+          }
+        },
+        rtRankingWidget: {
+          nowRanking: "현재(실시간)",
+          upwardTrend: "상승 추세",
+          downwardTrend: "하락 추세",
+          steady: "보합"
+        },
+        subsRankingWidget: {
+          title: L
+        },
+        channelChartTable: {
+          head: {
+            donationScore: {
+              amount: j,
+              count: bf
+            },
+            maxConcurrentViewer: q,
+            videos: y
+          },
+          popularScore: {
+            dailyPscoreDesc: "\u003Cdiv class=\"section\"\u003E일간 인기차트는 최근 3일 이내에 등록된 영상의 조회수와 좋아요수를 기준으로 선정됩니다.\u003Cp class=\"quote\"\u003E인기점수 = 조회수 + ( 좋아요 수 * 10 )\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E이 채널의 일간 인기점수는 아래와 같습니다.\u003Cp class=\"quote quote--boldnum\"\u003E{pscore} 점\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E* 60초 이하의 동영상에서 발생한 인기점수는 20%만 적용됩니다.\u003C\u002Fdiv\u003E",
+            weeklyPscoreDesc: "\u003Cdiv class=\"section\"\u003E주간 인기차트는 최근 30일 이내에 등록된 영상의 조회수와 좋아요수를 기준으로 선정됩니다.\u003Cp class=\"quote\"\u003E인기점수 = 조회수 + ( 좋아요 수 * 10 )\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E이 채널의 주간 인기점수는 아래와 같습니다.\u003Cp class=\"quote quote--boldnum\"\u003E{pscore} 점\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E* * 60초 이하의 동영상에서 발생한 인기점수는 20%만 적용됩니다.\u003C\u002Fdiv\u003E",
+            monthlyPscoreDesc: "\u003Cdiv class=\"section\"\u003E월간 인기차트는 최근 30일 이내에 등록된 영상의 조회수와 좋아요수를 기준으로 선정됩니다.\u003Cp class=\"quote\"\u003E인기점수 = 조회수 + ( 좋아요 수 * 10 )\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E이 채널의 월간 인기점수는 아래와 같습니다.\u003Cp class=\"quote quote--boldnum\"\u003E{pscore} 점\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"section\"\u003E* * 60초 이하의 동영상에서 발생한 인기점수는 20%만 적용됩니다.\u003C\u002Fdiv\u003E"
+          },
+          menus: {
+            excludeFromTopicChart: {
+              label: "{topicName} 차트에서 제외",
+              completeTitle: "알려주셔서 감사합니다.",
+              completeMessage: "3~5영업일 이내에 검토 후 반영하겠습니다."
+            }
+          }
+        },
+        videoChartTable: {
+          head: {
+            videoTitle: aK,
+            donationScore: {
+              amount: j,
+              count: bf
+            },
+            maxConcurrentViewer: q
+          }
+        },
+        channelListCell: {
+          score: {
+            play7: {
+              name: bg,
+              desc: "이 채널에 새롭게 등록된 영상이 등록 후 7일간 평균적으로 조회되는 횟수입니다. 채널의 파급력, 광고효과 등을 가늠하는데 활용할 수 있습니다."
+            },
+            likeRate: {
+              name: p,
+              desc: "영상의 조회수 대비 좋아요 비율입니다. 영상에 대한 시청자의 긍정적 반응 비율을 확인할 수 있습니다."
+            },
+            donationAmount: {
+              name: f,
+              desc: "이 채널이 받은 슈퍼챗 총액 입니다. 시청자의 충성도를 가늠하는 지표로 활용할 수 있습니다."
+            },
+            videoUpdatedAt: {
+              name: "업데이트",
+              desc: "이 채널에 마지막으로 새로운 영상이 등록된 시점입니다."
+            }
+          }
+        },
+        channelPage: {
+          tabNames: {
+            ad: l
+          },
+          liveStreamingStats: {
+            title: "라이브 방송 통계",
+            desc: "이 채널의 라이브 방송을 얼마나 많은 사람이 시청하고 반응하는지 알 수 있습니다.",
+            averageViewers: {
+              title: I,
+              desc: "이 채널의 라이브 방송을 시청하는 평균 동시 시청자 수 입니다. 최근의 라이브 방송(최대15개)을 기준으로 집계되었습니다.\u003Cbr \u002F\u003E비슷한 구독자를 보유한 채널들의 평균 시청자는 \u003Cb\u003E{avgViewers}\u003C\u002Fb\u003E명 입니다."
+            },
+            maxViewers: {
+              title: q,
+              desc: "이 채널의 라이브 방송이 기록한 최고 동시 시청자 수 입니다. 최근의 라이브 방송(최대15개)을 기준으로 집계되었습니다.\u003Cbr \u002F\u003E비슷한 구독자를 보유한 채널들의 평균 최고 시청자는 \u003Cb\u003E{avgViewers}\u003C\u002Fb\u003E명 입니다."
+            }
+          },
+          spreadVelocity: {
+            playGrowth: {
+              title: bh,
+              desc: "이 채널에 새로 등록된 영상의 조회수가 얼마나 빠르게 증가하는지 확인할 수 있습니다. 최근 90일 이내에 등록된 영상의 일자별 조회수 증가 추세를 분석하여 산정됩니다.\u003Cp class='footnote'\u003EShorts 영상은 집계에서 제외됩니다.\u003C\u002Fp\u003E"
+            }
+          }
+        },
+        trendNote: {
+          backdated: "시스템 오류로 이 채널의 업데이트가 중단되었다가 이 날 다시 시작되었습니다. 업데이트가 중단된 기간 동안의 변동량이 이 날짜에 소급되어 표시됩니다.",
+          channelViewsUpdateResumed_20201102: "유튜브 오류로 채널의 누적 조회수 업데이트가 중단 되었다가 이날 다시 시작되었습니다.( 중단 기간 : 2020.10.18 ~ 2020.11.01 )",
+          negativeViews: "채널에서 일부 영상이 삭제된 경우, 삭제된 영상의 조회수만큼 채널의 전체 조회수가 감소합니다."
+        },
+        searchPage: {
+          filtered: "필터링됨",
+          noSearchResults: "\u003Cspan class=\"keyword\"\u003E\"{q}\"\u003C\u002Fspan\u003E에 대한 검색 결과가 없습니다.",
+          totalChannels: "전세계 \u003Cspan class=\"num\"\u003E{count}\u003C\u002Fspan\u003E개 채널중에서 검색한 결과입니다.",
+          totalVideos: "전세계 \u003Cspan class=\"num\"\u003E{count}\u003C\u002Fspan\u003E개 영상 중에서 검색한 결과입니다.",
+          filter: {
+            showAllFilter: "전체 필터",
+            requestNewFilter: "새로운 필터가 필요하신가요?",
+            requestNewFilterLink: "https:\u002F\u002Fforms.gle\u002FKmJVRv9368931U3V8"
+          }
+        },
+        videoSearchPage: {
+          title: "{q} \u003E 영상 - 플레이보드",
+          desc: "{q} 관련 유튜브 영상 목록입니다. {firstChannelName} 등 {total}개의 유튜브 영상이 검색되었습니다.",
+          resultsTitle: "\u003Cspan class=\"keyword\"\u003E\"{keyword}\"\u003C\u002Fspan\u003E 관련 영상 검색 결과입니다.\u003Cspan class=\"suffix\"\u003E{suffix}\u003C\u002Fspan\u003E",
+          allResultsTitle: "최근 30일 이내에 등록된 모든 영상이 검색되었습니다.\u003Cspan class=\"suffix\"\u003E{suffix}\u003C\u002Fspan\u003E",
+          filter: {
+            play: {
+              name: O,
+              desc: "영상의 조회수를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            videoType: {
+              name: aj,
+              desc: "영상의 종류를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            videoStatus: {
+              name: "영상 상태",
+              desc: "영상의 공개상태를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            videoAdType: {
+              name: l,
+              desc: "크리에이터가 영상에 유료광고가 포함되었다고 표기한 영상만 골라볼 수 있습니다."
+            },
+            adNoticeType: {
+              name: "광고 표시방법",
+              desc: "유료 광고가 포함된 영상을 시청자에게 공지하는 방법을 기준으로 목록을 필터링할 수 있습니다."
+            },
+            monetizableStatus: {
+              name: "수익창출",
+              desc: "영상의 수익창출 상태를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            donationAmount: {
+              name: f,
+              desc: "영상이 받은 슈퍼챗 총액을 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            keyword: {
+              name: aG,
+              desc: "영상의 키워드를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            duration: {
+              name: "길이",
+              desc: "영상의 길이를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            publishedAt: {
+              name: "등록일",
+              desc: "영상의 등록일을 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            category: {
+              name: h,
+              desc: "영상의 카테고리를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            country: {
+              name: g,
+              desc: "영상의 국가를 기준으로 검색 결과를 필터링할 수 있습니다."
+            }
+          }
+        },
+        channelSearchPage: {
+          title: "{q} 관련 유튜브 - 플레이보드",
+          desc: "{q} 관련 유튜브 채널 목록입니다. {firstChannelName} 등 {total}개의 유튜브 채널이 검색되었습니다.",
+          resultsTitle: "\u003Cspan class=\"keyword\"\u003E\"{keyword}\"\u003C\u002Fspan\u003E 관련채널 \u003Cspan class=\"count\"\u003E{count}\u003C\u002Fspan\u003E개가 검색되었습니다.\u003Cspan class=\"suffix\"\u003E{suffix}\u003C\u002Fspan\u003E",
+          allResultsTitle: "등록된 모든 채널이 검색되었습니다.\u003Cspan class=\"suffix\"\u003E{suffix}\u003C\u002Fspan\u003E",
+          filter: {
+            subscribers: {
+              name: aQ,
+              desc: "채널 구독자수를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            playTotal: {
+              name: "누적조회",
+              desc: "채널에 등록된 모든 영상의 조회수 합계를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            play7: {
+              name: bg,
+              desc: "새로 등록된 영상이 등록 후 7일간 조회되는 횟수로 검색 결과를 필터링할 수 있습니다."
+            },
+            play15: {
+              name: "15일 조회",
+              desc: "새로 등록된 영상이 등록 후 15일간 조회되는 횟수로 검색 결과를 필터링할 수 있습니다."
+            },
+            play30: {
+              name: "30일 조회",
+              desc: "새로 등록된 영상이 등록 후 30일간 조회되는 횟수로 검색 결과를 필터링할 수 있습니다."
+            },
+            donationAmount: {
+              name: f,
+              desc: "채널이 받은 슈퍼챗 총액을 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            category: {
+              name: h,
+              desc: "채널의 카테고리를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            country: {
+              name: g,
+              desc: "채널의 국가를 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            liveStreamAvgViewer: {
+              name: "라이브 시청자",
+              desc: "채널의 라이브 방송 평균 시청자수로 검색 결과를 필터링할 수 있습니다."
+            },
+            playRate: {
+              name: "조회 비율",
+              desc: "구독자 수 대비 영상 조회 수로 검색 결과를 필터링할 수 있습니다."
+            },
+            likeRate: {
+              name: p,
+              desc: "영상의 조회수 대비 좋아요 비율로 검색 결과를 필터링할 수 있습니다."
+            },
+            commentRate: {
+              name: D,
+              desc: "영상의 조회수 대비 댓글 비율로 검색 결과를 필터링할 수 있습니다."
+            },
+            avgWeeklyVideos: {
+              name: "주간 업데이트",
+              desc: "주간 업데이트되는 영상 개수로 검색 결과를 필터링할 수 있습니다."
+            },
+            lastVideoAt: {
+              name: H,
+              desc: "마지막으로 영상을 업데이트한 시간을 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            lastAdAt: {
+              name: "마지막 광고",
+              desc: "마지막으로 유료 광고가 포함된 영상을 업데이트한 시간을 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            lastLiveStreamAt: {
+              name: "마지막 라이브",
+              desc: "마지막으로 라이브 방송을 진행한 시간을 기준으로 검색 결과를 필터링할 수 있습니다."
+            },
+            lastPremierAt: {
+              name: "마지막 프리미어",
+              desc: "마지막으로 프리미어 영상을 공개한 시간을 기준으로 검색 결과를 필터링할 수 있습니다."
+            }
+          }
+        },
+        dailyTrends: "일간 추세",
+        currencyWarnMsg: "달러 환율 변동에 따라 표시되는 금액이 변경될 수 있습니다.",
+        countryOverallRankingLinkTitle: "{countryName} 유튜브 {dimensionName} 순위",
+        countryOverallRankingPageTitle: "{countryName} 유튜브 {dimensionName} 순위 - 플레이보드",
+        countryOverallRankingPageDesc: "{countryName} {dimensionName} 유튜브 순위입니다. 플레이보드의 유튜브 순위는 다양한 데이터를 분석하여 공정하게 선정됩니다. 매일매일 업데이트되는 유튜브 순위를 지금 확인해보세요.",
+        categoryRankingLinkTitle: "{categoryName} 유튜브 {dimensionName} 순위",
+        categoryRankingPageTitle: "{categoryName} 유튜브 {dimensionName} 순위 - 플레이보드",
+        categoryRankingPageDesc: "{categoryName} 카테고리의 {dimensionName} 유튜브 순위입니다. 플레이보드의 유튜브 순위는 다양한 데이터를 분석하여 공정하게 선정됩니다. 매일매일 업데이트되는 유튜브 순위를 지금 확인해보세요.",
+        countryCategoryRankingLinkTitle: "{countryName} {categoryName} 유튜브 {dimensionName} 순위",
+        countryCategoryRankingPageTitle: "{countryName} {categoryName} 유튜브 {dimensionName} 순위 - 플레이보드",
+        countryCategoryRankingPageDesc: "{countryName}의 {categoryName} 카테고리 {dimensionName} 유튜브 순위입니다. 플레이보드의 유튜브 순위는 다양한 데이터를 분석하여 공정하게 선정됩니다. 매일매일 업데이트되는 유튜브 순위를 지금 확인해보세요.",
+        topViewingLive: "시청자 1위",
+        topDonatingLive: "슈퍼챗 1위",
+        livesLinkTitle: b,
+        livesPageTitle: "{countryName} 라이브 - {categoryName} - 플레이보드",
+        livesPageDesc: "{countryName} {categoryName} 카테고리의 라이브 방송 목록 입니다.",
+        artistRankingsLinkTitle: "{countryName} TOP 아티스트 채널",
+        artistRankingsPageTitle: "{countryName} TOP 아티스트 채널 - 플레이보드",
+        artistRankingsPageDesc: "{countryName} 아티스트의 공식 채널의 순위를 확인해보세요.플레이보드의 유튜브 순위는 다양한 데이터를 분석하여 공정하게 선정됩니다. 매일매일 업데이트되는 유튜브 순위를 지금 확인해보세요.",
+        trendingChannelLinkTitle: "{countryName} 급상승 채널 - {categoryName}",
+        trendingChannelPageTitle: "{countryName} 급상승 채널 - {categoryName} - 플레이보드",
+        trendingChannelPageDesc: "{countryName} {categoryName} 카테고리의 인기 급상승 채널 순위입니다. 오늘 {countryName}에서 구독자가 많이 증가한 채널들을 확인해보세요.",
+        fallingChannelLinkTitle: "{countryName} 급하락 채널 - {categoryName}",
+        fallingChannelPageTitle: "{countryName} 급하락 채널 - {categoryName} - 플레이보드",
+        fallingChannelPageDesc: "{countryName} {categoryName} 카테고리의 급하락 채널 순위입니다. 오늘 {countryName}에서 구독자가 가장 많이 감소한 채널들을 확인해보세요.",
+        channelLinkTitle: "{channelName} 유튜브 채널 분석 리포트",
+        channelPageTitle: "{channelName} 유튜브 채널 분석 리포트 - 플레이보드",
+        channelPageDesc: "{channelName}의 구독자 순위, 평균 조회수, 슈퍼챗 수입, 유료 광고 영상의 실적 분석 리포트를 제공합니다.",
+        channelCountryRankingDesc: "{countryName}의 채널 중 유튜브 순위는 {rank}",
+        channelGlobalRankingDesc: "전세계의 채널 중 유튜브 순위는 {rank}",
+        channelCategoryRankingLabel: "{countryName} {categoryName} 카테고리",
+        channelCategoryRankingDesc: "{countryName}의 {categoryName} 카테고리 채널 중 유튜브 순위는 {rank}",
+        howToSelectRanking: "선정기준",
+        videoMonetizationStatus: "영상 수익 창출 현황",
+        monetizationIconGuide: "아이콘 설명 보기",
+        noRankedChannel: "이 채널은 순위 집계 대상이 아닙니다.",
+        channelAdPage: {
+          metaTitle: "{channelName}의 광고 컨텐츠 분석",
+          metaDesc: "{channelName} 채널에 등록된 광고 컨텐츠(브랜디드 컨텐츠, PPL 포함 컨텐츠)의 분석 리포트",
+          pageDesc: "이 채널에 등록된 영상 중 크리에이터가 \u003Ca href=\"https:\u002F\u002Fsupport.google.com\u002Fyoutube\u002Fanswer\u002F154235\" target=\"_blank\"\u003E유료 광고를 포함\u003C\u002Fa\u003E한 영상으로 표시한 영상의 성과를 확인할 수 있습니다.",
+          stats: {
+            title: "광고 영상 현황",
+            adVideoCount: Q,
+            playTotal: "누적 재생",
+            likeTotal: "누적 좋아요",
+            commentTotal: "누적 댓글",
+            avg: "영상당 평균 {avg}번",
+            noAdVideo: "광고 영상 없음",
+            sort: {
+              total: aE,
+              recent: "최근 3개월"
+            }
+          },
+          compare: {
+            title: "일반 컨텐츠와 성과 비교",
+            tableHead: {
+              item: R,
+              original: bi,
+              ad: Q,
+              diff: bj
+            },
+            items: {
+              updateFrequency: "업데이트 주기",
+              videoCount: bk,
+              lastUpdate: H,
+              avgViews: aY,
+              likeRate: "평균 좋아요 비율",
+              commentRate: "평균 댓글 비율"
+            }
+          },
+          spread: {
+            title: bh,
+            tableHead: {
+              period: G,
+              originalVideo: bi,
+              adVideo: Q,
+              diff: bj
+            },
+            empty: {
+              title: "표본 영상이 없습니다.",
+              desc: "정확한 정보 제공을 위해 최근 90일 내 등록되어 등록 후 30일이 경과된 영상이 있을 경우에만 정보를 제공하고 있습니다."
+            }
+          },
+          videos: {
+            title: "광고 영상 목록",
+            empty: {
+              title: bl
+            }
+          }
+        },
+        channelAboutLinkTitle: "{channelName} 채널 정보",
+        channelAboutPageTitle: "{channelName} 채널 정보 - 플레이보드",
+        channelAboutDescCategory: "이 채널은 {categoryName} 카테고리의 영상을 주로 업데이트 합니다.",
+        channelAboutDescJoinDate: "이 채널은 {date}에 개설되었습니다.",
+        tagRankingLinkTitle: "#{tag} 태그의 유튜브 순위",
+        tagRankingPageTitle: "#{tag} 태그의 유튜브 순위 - 플레이보드",
+        tagRankingPageDesc: "#{tag} 로 태깅된 유튜브 순위입니다. ",
+        channelViewershipLinkTitle: "{channelName} 채널의 영상 조회수 추세",
+        channelViewershipPageTitle: "{channelName} 채널의 영상 조회수 추세 - 플레이보드",
+        channelViewershipPageDesc: "{channelName} 채널의 영상 조회수 추세를 확인해보세요. 매일 업데이트됩니다.",
+        isViewershipInGlobal: "채널에 국가가 지정되어 있지 않아 전세계 조회수를 기준으로 시청률이 계산 되었습니다.",
+        channelDonationPage: {
+          metaTitle: "{channelName} 채널의 슈퍼챗 수입",
+          metaDesc: "{channelName} 채널이 팬들로부터 얼마나 많은 슈퍼챗을 받고 있는지 확인하세요.",
+          pageTitle: j,
+          stats: {
+            title: j
+          }
+        },
+        channelSubscribersLinkTitle: "{channelName} 채널의 유튜브 구독자 통계",
+        channelSubscribersPageTitle: "{channelName} 채널의 유튜브 구독자 통계 - 플레이보드",
+        channelSubscribersPageDesc: "{channelName} 채널의 유튜브 구독자 통계를 확인해보세요. 매일 업데이트됩니다.",
+        channelVideosPage: {
+          pageTitle: "{channelName} 채널의 영상 분석 리포트 - 플레이보드",
+          pageDesc: "{channelName} 채널에 등록된 모든 영상과 각 영상의 실적을 확인해보세요.",
+          listTitle: "\u003Cspan class=\"count\"\u003E{count}\u003C\u002Fspan\u003E개",
+          empty: bl
+        },
+        channelLivePage: {
+          pageTitle: "{channelName} 채널의 라이브 방송 분석 리포트 - 플레이보드",
+          pageDesc: "{channelName} 채널가 진행한 라이브 방송의 분석 리포트를 확인해보세요."
+        },
+        chartNavigation: {
+          navigationGridTitles: {
+            topicAndCategory: "토픽\u002F카테고리",
+            category: h,
+            topic: "토픽",
+            dimension: "기준",
+            country: g,
+            period: G,
+            date: af
+          },
+          notices: {
+            doantionDataIsOutRange: "슈퍼챗 집계는 2020년 1월 10일부터 시작되었으며,\u003Cbr \u002F\u003E그 이전에 진행된 라이브 방송과 프리미어에서 발생한 슈퍼챗은 다시보기가 채팅과 함께 저장된 경우만 집계됩니다.",
+            liveViewerDataIsOutRange: "라이브 시청자 집계는 2020년 1월 10일부터 시작되었습니다.",
+            adChartCriteria: "\u003Ca href='\u002Finsights\u002Fad-notice'\u003E유료 광고가 포함된\u003C\u002Fa\u003E 영상만 집계한 차트입니다. 유료 광고가 포함되었음을 표기하지 않은 시점에 발생한 실적은 집계에서 제외됩니다.",
+            artistChartCriteria: "유튜브가 \u003Ca href='https:\u002F\u002Fsupport.google.com\u002Fyoutube\u002Fanswer\u002F7336634' target='_blank'\u003E공식 아티스트 채널\u003C\u002Fa\u003E로 인증한 채널만 집계한 차트입니다.",
+            shortChartCriteria: "영상 길이가 60초 이하인 숏폼 영상만 집계한 차트입니다.",
+            shortAdChartCriteria: "\u003Ca href='\u002Finsights\u002Fad-notice'\u003E유료 광고가 포함된\u003C\u002Fa\u003E 길이 60초 이하의 영상만 집계한 차트입니다. 유료 광고가 포함되었음을 표기하지 않은 시점에 발생한 실적은 집계에서 제외됩니다.",
+            yearEndChartCriteria: "연말 차트는 1월 1일부터 12월 9일까지의 데이터를 집계하여 선정됩니다. ( 협정 세계시 UTC+0 시준 )"
+          }
+        },
+        channelChartPage: {
+          metaTitle: {
+            popular: "{countryName} 유튜브 인기 순위 - {periodType} | {countryName} {groupName} 유튜브 인기 순위 - {periodType}",
+            viewed: "{countryName} 유튜브 조회수 순위 - {periodType} | {countryName} {groupName} 유튜브 조회수 순위 - {periodType}",
+            subscribed: "{countryName} 유튜브 구독자 순위 - {periodType} | {countryName} {groupName} 유튜브 구독자 순위 - {periodType}",
+            growth: "{countryName} 유튜브 구독자 급상승 순위 - {periodType} | {countryName} {groupName} 유튜브 구독자 급상승 순위 - {periodType}",
+            decline: "{countryName} 유튜브 구독자 급하락 순위 - {periodType} | {countryName} {groupName} 유튜브 구독자 급하락 순위 - {periodType}",
+            watched: "{countryName} 유튜브 라이브 시청자 순위 - {periodType} | {countryName} {groupName} 유튜브 라이브 시청자 순위 - {periodType}",
+            superchatted: "{countryName}유튜브 슈퍼챗 순위 - {periodType} | {countryName} {groupName} 유튜브 슈퍼챗 순위 - {periodType}"
+          },
+          metaDescription: "{countryName} 유튜브 채널 {periodType} 순위와 채널 분석 리포트를 확인해보세요."
+        },
+        artistChartPage: {
+          metaTitle: {
+            popular: "{countryName} 아티스트 인기 순위 - {periodType}",
+            viewed: "{countryName} 아티스트 조회수 순위 - {periodType}",
+            subscribed: "{countryName} 아티스트 구독자 순위 - {periodType}",
+            growth: "{countryName} 아티스트 구독자 증가량 순위 - {periodType}",
+            decline: "{countryName} 아티스트 구독자 감소량 순위 - {periodType}",
+            watched: "{countryName}아티스트 라이브 시청자 순위 - {periodType}",
+            superchatted: "{countryName} 아티스트 채널 슈퍼챗 순위 - {periodType}"
+          },
+          metaDescription: "{countryName} 아티스트의 유튜브 채널 {periodType} 순위와 채널 분석 리포트를 확인해보세요."
+        },
+        videoChartPage: {
+          metaTitle: {
+            viewed: "{countryName} 유튜브 영상 조회수 순위 - {periodType} | {countryName} 유튜브 {groupName} 영상 조회수 순위 - {periodType}",
+            liked: "{countryName} 유튜브 영상 좋아요 순위 - {periodType} | {countryName} 유튜브 {groupName} 영상 좋아요 순위 - {periodType}",
+            disliked: "{countryName} 유튜브 영상 싫어요 순위 - {periodType} | {countryName} 유튜브 {groupName} 영상 싫어요 순위 - {periodType}",
+            commented: "{countryName} 유튜브 영상 댓글 순위 - {periodType} | {countryName} 유튜브 {groupName} 영상 댓글 순위 - {periodType}",
+            watched: "{countryName} 유튜브 라이브 시청자 순위 - {periodType} | {countryName} 유튜브 {groupName} 라이브 시청자 순위 - {periodType} ",
+            superchatted: "{countryName} 유튜브 라이브 슈퍼챗 순위 - {periodType} | {countryName} 유튜브 {groupName} 라이브 슈퍼챗 순위 - {periodType}"
+          },
+          metaDescription: "({countryName}) 유튜브 채널의 영상 {periodType} 순위와 실적 분석 리포트를 확인해보세요."
+        },
+        shortChartPage: {
+          metaTitle: {
+            viewed: "{countryName} 유튜브 숏폼(SHORTS) 영상 조회수 순위 - {periodType} | {countryName} 유튜브 {groupName} 숏폼(SHORTS) 영상 조회수 순위 - {periodType}",
+            liked: "{countryName} 유튜브 숏폼(SHORTS) 영상 좋아요 순위 - {periodType} | {countryName} 유튜브 {groupName} 숏폼(SHORTS) 영상 좋아요 순위 - {periodType}",
+            commented: "{countryName} 유튜브 숏폼(SHORTS) 영상 댓글 순위 - {periodType} | {countryName} 유튜브 {groupName} 숏폼(SHORTS) 영상 댓글 순위 - {periodType}"
+          },
+          metaDescription: "{countryName} 유튜브 채널의 Shorts {periodType} 순위와 실적 분석 리포트를 확인해보세요."
+        },
+        shortAdChartPage: {
+          metaTitle: {
+            viewed: "{countryName} 유튜브 숏폼(SHORTS) 광고 조회수 순위 - {periodType} | 유튜브 {groupName} 숏폼(Shorts) 광고 조회수 순위 - {periodType}",
+            liked: "{countryName} 유튜브 숏폼(SHORTS) 광고 좋아요 순위 - {periodType} | 유튜브 {groupName} 숏폼(Shorts) 광고 좋아요 순위 - {periodType}",
+            commented: "{countryName} 유튜브 숏폼(SHORTS) 광고 댓글 순위 - {periodType} | 유튜브 {groupName} 숏폼(Shorts) 광고 댓글 순위 - {periodType}"
+          },
+          metaDescription: "{countryName} 유튜브 채널의 Shorts 광고\u002FPPL 영상 {periodType} 순위와 실적 분석 리포트를 확인해보세요."
+        },
+        adChartPage: {
+          metaTitle: {
+            viewed: "{countryName} 유튜브 광고 조회수 순위 - {periodType} | {countryName} 유튜브 {groupName} 광고 조회수 순위 - {periodType}",
+            liked: "{countryName} 유튜브 광고 좋아요 순위 - {periodType} | {countryName} 유튜브 {groupName} 광고 좋아요 순위 - {periodType}",
+            disliked: "{countryName} 유튜브 광고 싫어요 순위 - {periodType} | {countryName} 유튜브 {groupName} 광고 싫어요 순위 - {periodType}",
+            commented: "{countryName} 유튜브 광고 댓글 순위 - {periodType} | {countryName} 유튜브 {groupName} 광고 댓글 순위 - {periodType}"
+          },
+          metaDescription: "{countryName} 유튜브 채널의 광고\u002FPPL 영상 {periodType} 순위와 실적 분석 리포트를 확인해보세요."
+        },
+        videoPage: {
+          metaTitle: "{title} - 동영상 통계",
+          titleBadges: {
+            ad: "유료 광고 포함"
+          }
+        },
+        perViews: "조회수 대비",
+        perViewers: "시청자 대비",
+        channelAverage: "채널 평균",
+        average: "평균",
+        playOnYoutube: aW,
+        ratioOfLikesToViewsOnVideo: "조회수 대비 좋아요 비율",
+        ratioOfLikesToViewersOnVideo: "시청자 대비 좋아요 비율",
+        ratioOfLikesToViewsOnChannel: "이 채널의 조회수 대비 좋아요 비율 평균",
+        ratioOfDislikesToViewsOnVideo: "조회수 대비 싫어요 비율",
+        ratioOfDislikesToViewersOnVideo: "시청자 대비 싫어요 비율",
+        ratioOfDislikesToViewsOnChannel: "이 채널의 조회수 대비 싫어요 비율 평균",
+        ratioOfCommentToViewsOnVideo: "조회수 대비 댓글 비율",
+        ratioOfCommentToViewsOnChannel: "이 채널의 조회수 대비 댓글 비율 평균",
+        methodology: "조사방법",
+        playTrends: "조회 추세",
+        feedbackTrends: "피드백 추세",
+        viewsGrowth: "조회수 증가량",
+        viewerStats: "시청자 통계",
+        liveAnalytics: "라이브 분석",
+        updatingLive: "실시간 업데이트 중",
+        mostPlayed: "조회수 베스트",
+        mostCommented: "댓글수 베스트",
+        mostLiked: "좋아요 베스트",
+        mostDisliked: "최다 싫어요",
+        playFlucDesc: "{count} 조회수 증가",
+        likeFlucDesc: "{count} 새로운 좋아요",
+        commentFlucDesc: "{count} 새로운 댓글",
+        mostPlayedVideosLinkTitle: "조회수 베스트 영상",
+        mostPlayedVideosPageTitle: "{countryName}의 조회수 베스트 영상 - {categoryName} : 플레이보드",
+        mostPlayedVideosPageDesc: "{countryName}에서 가장 많이 조회된 {categoryName} 영상을 확인해보세요. 매일 업데이트 됩니다.",
+        mostCommentedVideosLinkTitle: "댓글수 베스트 영상",
+        mostCommentedVideosPageTitle: "{countryName}의 댓글수 베스트 영상 - {categoryName} : 플레이보드",
+        mostCommentedVideosPageDesc: "{countryName}에서 가장 많은 댓글이 달린 {categoryName} 영상을 확인해보세요. 매일 업데이트 됩니다.",
+        mostLikedVideosLinkTitle: "좋아요 베스트 영상",
+        mostLikedVideosPageTitle: "{countryName}의 좋아요 베스트 영상 - {categoryName} : 플레이보드",
+        mostLikedVideosPageDesc: "{countryName}에서 가장 많은 좋아요를 받은 {categoryName} 영상을 확인해보세요. 매일 업데이트 됩니다.",
+        todayRevenue: "오늘 수입",
+        yesterdayRevenue: "어제 수입",
+        lastNDaysRevenue: "최근 {count}일 수입",
+        totalRevenue: "전체 수입",
+        newRevenue: "신규 수입",
+        totalSuperchats: "전체 슈퍼챗",
+        periodSuperchats: "기간 내 슈퍼챗",
+        chatCount: "슈퍼챗 {count} 번",
+        avgChatAmount: "평균 액수 {count}",
+        avgChatAmountLabel: "슈퍼챗 평균 금액",
+        revenue: "수입",
+        chat: "채팅",
+        isNotReceivedSuperChatsIn30Days: "최근 30일간 슈퍼챗을 받은 기록이 없습니다.",
+        superchatRevenue: j,
+        channelTotalRevenue: "채널 총 수입",
+        unsubscribeDesc: "크리에이터를 위한 유튜브 트렌드 분석 데이터 수신을 거부하시겠습니까?",
+        unsubscribeCompleted: "수신이 거부되었습니다.",
+        insights: S,
+        insightsPageTitle: S,
+        insightsPageDesc: "다양한 유튜브 트렌드 분석 데이터를 제공합니다.",
+        creatorAwardsLinkTitle: "유튜브 크리에이터 어워즈 통계",
+        creatorAwardsPageTitle: "유튜브 크리에이터 어워즈 통계 : 플레이보드",
+        creatorAwardsPageDesc: "유튜브 크리에이어 어워즈(플레이버튼 트로피)를 받은 채널들의 통계입니다.",
+        creatorAwardsPageSummary: "유튜브는 채널의 구독자 수에 따라 플레이버튼 모양의 트로피를 수여하는 \u003Ca class=\"link\" href=\"{link}\"\u003ECreator Awards\u003C\u002Fa\u003E를 운영하고 있습니다.\u003Cbr\u003E이 페이지에서 Creator Awards 를 받은 채널들의 통계를 확인해보세요.",
+        unknownCountryToolTip: "채널 소유자가 국가를 선택하지 않은 채널입니다.",
+        ge21Title: "유튜브로 전망하는 21대 총선",
+        signinPage: {
+          dividerLabel: "또는",
+          keepalive: "로그인 유지",
+          forgetPassword: "비밀번호를 잊으셨나요?",
+          agreementNotice: "로그인 또는 새 계정 만들기 버튼을 클릭하면 \u003Ca href=\"{privacyPolicyLink}\"\u003E개인정보 보호정책\u003C\u002Fa\u003E과 \u003Ca href=\"{termsLink}\"\u003E이용약관\u003C\u002Fa\u003E에 동의하게 됩니다.",
+          errors: {
+            invalidClient: bm,
+            accountNotFound: s,
+            deactivatedAccount: "해지된 계정입니다.",
+            passwordNotMatched: "비밀번호가 일치하지 않습니다.",
+            googleSSOAccount: "구글 아이디로 로그인해 주세요.",
+            invalidEmail: s,
+            passwordIsShort: t,
+            passwordIsLong: u,
+            invalidPassword: v
+          }
+        },
+        signupPage: {
+          agreementNotice: "새 계정 만들기 버튼을 클릭하면 \u003Ca href=\"{privacyPolicyLink}\"\u003E개인정보 보호정책\u003C\u002Fa\u003E과 \u003Ca href=\"{termsLink}\"\u003E이용약관\u003C\u002Fa\u003E에 동의하게 됩니다.",
+          gotoSignin: "이미 계정이 있으신가요?",
+          errors: {
+            invalidClient: bm,
+            invalidEmail: "이메일을 정확히 입력해주세요.",
+            bannedEmail: "사용할 수 없는 이메일입니다.",
+            emailIsLong: "이메일을 100자 미만으로 입력해주세요.",
+            duplicateEmail: "이미 사용 중인 이메일입니다.",
+            fullnameIsShort: "이름은 3자 이상으로 입력해주세요.",
+            fullnameIsLong: "이름은 50자 미만으로 입력해주세요.",
+            fullnameContainSpecialChar: "이름에 특수문자가 포함될 수 없습니다.",
+            invalidPassword: v,
+            passwordIsShort: t,
+            passwordIsLong: u
+          }
+        },
+        signupComplete: {
+          title: bn,
+          leadMessage: "이메일로 인증 링크가 발송되었습니다.\u003Cbr \u002F\u003E이메일에 포함된 링크를 클릭하면 계정 생성이 완료됩니다.",
+          openInbox: "내 메일함 열기",
+          signedUpEmail: "가입한 이메일",
+          resendBtnLabel: "인증메일 재발송",
+          caution: "3분이상 기다려도 메일이 도착하지 않는 경우 스펨메일함을 확인해주세요.",
+          verifyEmailResent: "인증 메일이 재발송되었습니다."
+        },
+        signupEmailVerifyPage: {
+          title: bn,
+          verifyingNow: "정보를 확인하고 있습니다...",
+          failedTitle: "만료된 링크입니다.",
+          failedDesc: "계정 생성 후 24시간 동안만 유효합니다",
+          succeedTitle: "계정이 생성되었습니다.",
+          succeedDesc: "지금부터 모든 회원전용 서비스를 이용할 수 있습니다.",
+          goFinishPage: d
+        },
+        resetPasswordPage: {
+          title: w,
+          desc: "비밀번호를 잊으셨나요? 이메일을 입력하면 비밀번호를 재설정할 수 있는 링크를 보내드립니다.",
+          resetPasswordBtnLabel: w,
+          goBackToSignin: "로그인 페이지로 이동",
+          mailSentDesc: "메일로 비밀번호 재설정 링크가 발송되었습니다.",
+          errors: {
+            invalidEmail: s,
+            accountNotFound: s
+          }
+        },
+        resetPasswordFormPage: {
+          title: w,
+          desc: "새로 사용할 비밀번호를 두번 입력해주세요.",
+          confirmPassword: "비밀번호 확인",
+          changePasswordBtnLabel: T,
+          failedMsg: "이 링크는 만료되었습니다.",
+          succeedMsg: "비밀번호가 변경되었습니다. 지금 로그인하세요.",
+          resetPasswordBtnLabel: w,
+          errors: {
+            invalidPassword: v,
+            passwordIsShort: t,
+            passwordIsLong: u,
+            confirmPasswordNotMatched: bo
+          }
+        },
+        ssoFailedPage: {
+          title: "오류가 발생했습니다.",
+          errors: {
+            temporary: "일시적인 오류가 발생했습니다\u003Cbr \u002F\u003E로그인을 다시 시도해주세요.",
+            expiredCsrfToken: "로그인 대기 기간이 초과되었습니다.\u003Cbr \u002F\u003E로그인을 다시 시도해주세요.",
+            missingEmail: "이메일이 없거나, 인증되지 않은 계정입니다.\u003Cbr \u002F\u003E다른 계정을 선택하거나 이메일로 가입해주세요.",
+            missingName: "로그인할 수 없는 계정입니다. 다른 계정을 선택하거나 이메일로 가입해 주세요."
+          }
+        },
+        signoutPage: {
+          title: aJ,
+          desc: "안전하게 로그아웃 되었습니다."
+        },
+        accountDeletePage: {
+          title: U,
+          keywordConfirmGuide: "아래에 '\u003Cspan class=\"keyword\"\u003E{keyword}\u003C\u002Fspan\u003E' 라고 입력해주세요.",
+          confirmKeyword: i,
+          deleteComplete: "계정이 삭제되었습니다.",
+          errors: {
+            subscriptionActivated: "구독중에는 계정을 삭제할 수 없습니다. 먼저 구독을 취소해주세요.",
+            ownOrganization: "팀 소유자는 계정을 삭제할 수 없습니다. 팀을 삭제하거나, 팀의 소유자를 변경한 후 다시 시도해 주세요."
+          }
+        },
+        mePage: {
+          lnbHeaderLabel: bp
+        },
+        meProfilePage: {
+          title: bp,
+          basicInformation: {
+            title: "기본정보"
+          },
+          deleteAccount: {
+            title: U,
+            caution: "한번 삭제한 계정은 복구할 수 없습니다.",
+            privateDataAllDelete: "즐겨찾기 목록 등 개인 편의를 위해 저장한 모든 데이터가 영구적으로 삭제됩니다.",
+            allPaidServicesCancel: "이용중인 모든 유료서비스가 해지되며 결제한 금액은 환불되지 않습니다.",
+            btnLabel: U
+          },
+          errors: {
+            organizationIsLong: "회사 이름을 25자 미만으로 입력해주세요."
+          },
+          profileUpdateComplete: "프로필이 변경되었습니다."
+        },
+        mePasswordPage: {
+          title: T,
+          currentPassword: "현재 비밀번호",
+          newPassword: "새로운 비밀번호",
+          confirmNewPassword: "새로운 비밀번호 확인",
+          passwordChangeComplete: "비밀번호가 변경되었습니다.",
+          changePasswordBtnLabel: T,
+          setPasswordBtnLabel: "비밀번호 설정",
+          passwordNotSet: "구글 로그인을 통해 계정이 생성되었기 때문에 아직 비밀번호가 설정되지 않았습니다.\u003Cbr \u002F\u003E비밀번호를 설정하려면 아래의 링크를 눌러주세요.",
+          errors: {
+            invalidPassword: v,
+            passwordIsShort: t,
+            passwordIsLong: u,
+            confirmPasswordNotMatched: bo,
+            currentPasswordNotMatched: "현재 비밀번호가 일치하지 않습니다."
+          }
+        },
+        offlinePage: {
+          title: "오프라인 상태입니다.",
+          desc: "오프라인 상태입니다.\u003Cbr \u002F\u003E인터넷에 연결 후 접속해주세요."
+        },
+        shortcutPopup: {
+          signedInAs: "로그인한 계정",
+          aboutPlayboard: aU,
+          pricing: "유료 플랜",
+          myFavorites: bq,
+          share: "공유하기 ..."
+        },
+        companyInfo: {
+          nameLabel: "회사명",
+          name: "(주)디프닷",
+          ceoNameLabel: "대표",
+          ceoName: "왕효근",
+          addressLabel: "주소",
+          address: "서울특별시 강남구 테헤란로79길 6, 5층 브이852호",
+          country: "대한민국",
+          regNumLabel: "사업자등록번호",
+          regNum: "841-86-01821",
+          commRegNumLabel: "통신판매업신고번호",
+          commRegNum: "제2022-서울강남-05034호",
+          telLabel: "대표전화",
+          tel: "1668-3054(유료)"
+        },
+        globalNavigationBar: {
+          menus: {
+            home: "홈",
+            chart: E,
+            insights: S,
+            live: br,
+            favorite: aM
+          },
+          favorite: {
+            channelGroupsTitle: "채널 즐겨찾기",
+            videoGroupsTitle: "동영상 즐겨찾기",
+            emptyChannelGroup: "즐겨찾는 채널이 없습니다.",
+            emptyVideoGroup: "즐겨찾는 동영상이 없습니다.",
+            loadFailed: "목록을 가져오지 못했습니다."
+          }
+        },
+        favoriteGroupPage: {
+          deleteConfirmMessage: "정말 삭제하시겠습니까?\n삭제된 내용은 복구할 수 없습니다.",
+          actions: {
+            deleteGroup: "즐겨찾기 목록 삭제"
+          },
+          errors: {
+            forbidden: "즐겨찾기 목록을 볼 수 있는 권한이 없습니다.",
+            notFound: "즐겨찾기 목록을 찾을 수 없습니다."
+          }
+        },
+        favoriteChannelGroupPage: {
+          menu: {
+            channel: e,
+            channelsVideos: "채널의 동영상",
+            dashboard: "대시보드"
+          },
+          itemActions: {
+            deleteChannel: "{listName}에서 삭제"
+          },
+          empty: "등록된 채널이 없습니다."
+        },
+        favoriteVideoGroupPage: {
+          itemActions: {
+            deleteVideo: i
+          },
+          empty: "등록된 영상이 없습니다."
+        },
+        addFavoriteItemPopup: {
+          title: aL,
+          createGroupButtonLabel: "새 목록 만들기",
+          multipleItemAdded: "{count}개 항목이 선택한 목록에 추가되었습니다.",
+          errors: {
+            exceededGroupCapacity: "목록에 최대 {count} 개의 항목만 담을 수 있습니다."
+          },
+          newGroupNamePlaceholder: "새 즐겨찾기 목록 이름",
+          addedToNewGroup: "{name} 목록에 추가되었습니다.",
+          noFavoriteGroupTitle: bs,
+          noFavoriteGroupDesc: V
+        },
+        favoriteGroupListPage: {
+          title: bq,
+          menu: {
+            channel: e,
+            video: bk
+          },
+          requiredSignin: V,
+          noFavoriteGroupTitle: bs,
+          noFavoriteGroupDesc: V
+        },
+        aboutPage: {
+          meta: {
+            title: "플레이보드 서비스소개",
+            desc: "플레이보드는 유튜브 채널 분석 리포트와 카테고리별 인기 채널 차트를 제공합니다."
+          }
+        },
+        basePage: {
+          meta: {
+            title: aC,
+            desc: "유튜브 순위, 전 세계 유튜브 순위, 국가별 유튜브 순위, 오늘 가장 인기 있는 유튜브 순위, 구독자가 많은 유튜브 순위, 카테고리별 유튜브 순위 실시간 제공."
+          }
+        },
+        GO: aR,
+        GH: "가나",
+        GA: "가봉",
+        GY: "가이아나",
+        GM: "감비아",
+        GG: "건지섬",
+        GP: "과들루프",
+        GT: "과테말라",
+        GU: "괌",
+        GD: "그레나다",
+        GR: "그리스",
+        GL: "그린란드",
+        GN: "기니",
+        GW: "기니비사우",
+        NA: "나미비아",
+        NR: "나우루",
+        NG: "나이지리아",
+        AQ: "남극",
+        SS: "남수단",
+        ZA: "남아프리카 공화국",
+        NL: "네덜란드",
+        AN: "네덜란드령 안틸레스",
+        NP: "네팔",
+        NO: "노르웨이",
+        NF: "노퍽섬",
+        NC: "누벨칼레도니",
+        NZ: "뉴질랜드",
+        NU: "니우에",
+        NE: "니제르",
+        NI: "니카라과",
+        KR: "한국",
+        DK: "덴마크",
+        DO: "도미니카 공화국",
+        DM: "도미니카 연방",
+        DE: "독일",
+        TL: "동티모르",
+        LA: "라오스",
+        LR: "라이베리아",
+        LV: "라트비아",
+        RU: "러시아",
+        LB: "레바논",
+        LS: "레소토",
+        RE: "레위니옹",
+        RO: "루마니아",
+        LU: "룩셈부르크",
+        RW: "르완다",
+        LY: "리비아",
+        LT: "리투아니아",
+        LI: "리히텐슈타인",
+        MG: "마다가스카르",
+        MQ: "마르티니크",
+        MH: "마셜 제도",
+        YT: "마요트",
+        MO: "마카오",
+        MK: "북마케도니아",
+        MW: "말라위",
+        MY: "말레이시아",
+        ML: "말리",
+        IM: "맨섬",
+        MX: "멕시코",
+        MC: "모나코",
+        MA: "모로코",
+        MU: "모리셔스",
+        MR: "모리타니",
+        MZ: "모잠비크",
+        ME: "몬테네그로",
+        MS: "몬트세랫",
+        MD: "몰도바",
+        MV: "몰디브",
+        MT: "몰타",
+        MN: "몽골",
+        US: "미국",
+        UM: "미국령 군소 제도",
+        VI: "미국령 버진아일랜드",
+        MM: "미얀마",
+        FM: "미크로네시아 연방",
+        VU: "바누아투",
+        BH: "바레인",
+        BB: "바베이도스",
+        VA: "바티칸 시국",
+        BS: "바하마",
+        BD: "방글라데시",
+        BM: "버뮤다",
+        BJ: "베냉",
+        VE: "베네수엘라",
+        VN: "베트남",
+        BE: "벨기에",
+        BY: "벨라루스",
+        BZ: "벨리즈",
+        BA: "보스니아 헤르체고비나",
+        BW: "보츠와나",
+        BO: "볼리비아",
+        BI: "부룬디",
+        BF: "부르키나파소",
+        BV: "부베섬",
+        BT: "부탄",
+        MP: "북마리아나 제도",
+        BG: "불가리아",
+        BR: "브라질",
+        BN: "브루나이",
+        WS: "사모아",
+        SA: "사우디아라비아",
+        GS: "사우스조지아 사우스샌드위치 제도",
+        SM: "산마리노",
+        ST: "상투메 프린시페",
+        PM: "생피에르 미클롱",
+        EH: "서사하라",
+        SN: "세네갈",
+        RS: "세르비아",
+        SC: "세이셸",
+        LC: "세인트루시아",
+        VC: "세인트빈센트 그레나딘",
+        KN: "세인트키츠 네비스",
+        SH: "세인트헬레나",
+        SO: "소말리아",
+        SB: "솔로몬 제도",
+        SD: "수단",
+        SR: "수리남",
+        LK: "스리랑카",
+        SJ: "스발바르 얀마옌",
+        SE: "스웨덴",
+        CH: "스위스",
+        ES: "스페인",
+        SK: "슬로바키아",
+        SI: "슬로베니아",
+        SY: "시리아",
+        SL: "시에라리온",
+        SX: "신트마르턴",
+        SG: "싱가포르",
+        AE: "아랍에미리트",
+        AW: "아루바",
+        AM: "아르메니아",
+        AR: "아르헨티나",
+        AS: "아메리칸사모아",
+        IS: "아이슬란드",
+        HT: "아이티",
+        IE: "아일랜드",
+        AZ: "아제르바이잔",
+        AF: "아프가니스탄",
+        AD: "안도라",
+        AL: "알바니아",
+        DZ: "알제리",
+        AO: "앙골라",
+        AG: "앤티가 바부다",
+        AI: "앵귈라",
+        ER: "에리트레아",
+        SZ: "에스와티니",
+        EE: "에스토니아",
+        EC: "에콰도르",
+        ET: "에티오피아",
+        SV: "엘살바도르",
+        GB: "영국",
+        VG: "영국령 버진아일랜드",
+        IO: "영국령 인도양 지역",
+        YE: "예멘",
+        OM: "오만",
+        AU: "오스트레일리아",
+        AT: "오스트리아",
+        HN: "온두라스",
+        AX: "올란드 제도",
+        JO: "요르단",
+        UG: "우간다",
+        UY: "우루과이",
+        UZ: "우즈베키스탄",
+        UA: "우크라이나",
+        WF: "왈리스 퓌튀나",
+        IQ: "이라크",
+        IR: "이란",
+        IL: "이스라엘",
+        EG: "이집트",
+        IT: "이탈리아",
+        IN: "인도",
+        ID: "인도네시아",
+        JP: "일본",
+        JM: "자메이카",
+        ZM: "잠비아",
+        JE: "저지섬",
+        GQ: "적도 기니",
+        KP: "조선민주주의인민공화국",
+        GE: "조지아",
+        CN: "중국",
+        CF: "중앙아프리카 공화국",
+        DJ: "지부티",
+        GI: "지브롤터",
+        ZW: "짐바브웨",
+        TD: "차드",
+        CZ: "체코",
+        CL: "칠레",
+        CM: "카메룬",
+        CV: "카보베르데",
+        KZ: "카자흐스탄",
+        QA: "카타르",
+        KH: "캄보디아",
+        CA: "캐나다",
+        KE: "케냐",
+        KY: "케이맨 제도",
+        KM: "코모로",
+        CR: "코스타리카",
+        CC: "코코스 제도",
+        CI: "코트디부아르",
+        CO: "콜롬비아",
+        CG: "콩고 공화국",
+        CD: "콩고 민주 공화국",
+        CU: "쿠바",
+        KW: "쿠웨이트",
+        CK: "쿡 제도",
+        HR: "크로아티아",
+        CX: "크리스마스 섬",
+        KG: "키르기스스탄",
+        KI: "키리바시",
+        CY: "키프로스",
+        TW: "타이완",
+        TJ: "타지키스탄",
+        TZ: "탄자니아",
+        TH: "태국",
+        TC: "터크스 케이커스 제도",
+        TR: "튀르키예",
+        TG: "토고",
+        TK: "토켈라우",
+        TO: "통가",
+        TM: "투르크메니스탄",
+        TV: "투발루",
+        TN: "튀니지",
+        TT: "트리니다드 토바고",
+        PA: "파나마",
+        PY: "파라과이",
+        PK: "파키스탄",
+        PG: "파푸아뉴기니",
+        PW: "팔라우",
+        PS: "팔레스타인",
+        FO: "페로 제도",
+        PE: "페루",
+        PT: "포르투갈",
+        FK: "포클랜드 제도",
+        PL: "폴란드",
+        PR: "푸에르토리코",
+        FR: "프랑스",
+        GF: "프랑스령 기아나",
+        TF: "프랑스령 남방 및 남극",
+        PF: "프랑스령 폴리네시아",
+        FJ: "피지",
+        FI: "핀란드",
+        PH: "필리핀",
+        PN: "핏케언 제도",
+        HM: "허드 맥도널드 제도",
+        HU: "헝가리",
+        HK: "홍콩",
+        BQ: "보네르, 신트 유스 타티 우스 및 사바",
+        MF: "생 마르탱",
+        BL: "세인트 바르 톨 로메오",
+        CW: "쿠라 사오",
+        topViewing: "시청자가 많은",
+        topSuperChatting: "슈퍼챗을 많이 받은",
+        ko: "한국어",
+        en: "영어",
+        hourly: ae,
+        daily: "일간",
+        weekly: "주간",
+        monthly: "월간",
+        quarterly: "분기",
+        yearend: "연말",
+        yearly: "연간",
+        recently: "최근",
+        pages: {
+          billing: {
+            receipt: {
+              summary: {
+                title: aI
+              },
+              items: {
+                title: R,
+                header: {
+                  description: R,
+                  price: "금액"
+                },
+                price: aA,
+                discount: "할인",
+                subtotal: F,
+                tax: "부가세",
+                amount: at
+              }
+            }
+          },
+          me: {
+            org: {
+              title: ak,
+              noOrg: {
+                desc: "팀을 생성하고 동료를 초대할 수 있습니다.\u003Cbr \u002F\u003E유료 플랜을 이용 중인 경우 동료들도 함께 유료 플랜의 기능을 이용할 수 있습니다.",
+                createOrgButtonLabel: an
+              },
+              memberList: "멤버 목록",
+              addMember: "멤버 추가",
+              settings: "설정",
+              activeMember: "활성 멤버",
+              seats: "최대 {count}명",
+              seatsInfo: "팀의 최대 멤버수는 유료 플랜에 따라 변경됩니다. 더 많은 멤버를 추가하려면 더 높은 등급의 유료 플랜으로 변경해 주세요.",
+              changeSeats: "멤버 한도 늘리기",
+              leaveOrgButton: ap,
+              youAreOwner: "{name}님은 이 팀의 소유자입니다. 동료를 초대하여 유료 플랜의 기능을 함께 이용하세요."
+            },
+            orgSetting: {
+              title: "팀 설정",
+              deleteOrg: am,
+              orgNameUpdate: {
+                updated: "팀 이름이 변경되었습니다.",
+                error: {
+                  nameRequired: "팀 이름을 입력해 주세요.",
+                  nameShort: "팀 이름을 2자 이상 입력해 주세요."
+                }
+              }
+            },
+            subscription: {
+              title: "구독 & 결제",
+              errors: {
+                alreadySuspendedSubscription: "구독이 이미 해지되었습니다.",
+                alreadyActivatedSubscription: "구독이 이미 활성화되었습니다.",
+                cannotActivateCanceledSubscription: "구독을 활성화할 수 없습니다.",
+                cancelledPgSubscription: "페이팔의 구독이 해지되어 구독을 다시 활성화할 수 없습니다.",
+                failedInitialSubscriptionPayment: "결제에 실패하여 구독이 취소되었습니다. 다른 결제 수단을 이용해 주세요.",
+                failedUpgradeSubscriptionPayment: "결제에 실패하여 플랜 업그레이드가 취소되었습니다. 다른 결제 수단을 이용해 주세요."
+              },
+              paymentStatus: {
+                title: "결제 상태",
+                msg: "결제가 진행 중입니다. 잠시 후 결제 결과가 업데이트됩니다."
+              },
+              cancelSubscriptionPopup: {
+                expiryTimeWarn: "현재 구독 중인 플랜의 혜택은 \u003Cb\u003E{expiryTime}\u003C\u002Fb\u003E 까지 제공됩니다.",
+                stopPaymentNoti: "구독을 취소하면 더 이상 비용이 청구되지 않습니다.",
+                dataDeletionWarn: "현재 구독 중인 플랜의 기능을 통해 생성된 정보는 구독 기간 종료와 함께 삭제되거나 더 이상 열람하지 못할 수 있습니다. 구독 취소 전 백업하시기를 바랍니다."
+              },
+              restartSubscriptionPopup: {
+                restartNoti: "구독을 재시작하면 플랜의 기능을 계속 이용할 수 있습니다.",
+                nextPaymentDateNoti: "다음 결제일은 \u003Cb\u003E{nextPaymentDate}\u003C\u002Fb\u003E 입니다."
+              },
+              cancelDowngradePopup: {
+                confirmMessage: "플랜 변경을 취소하고 \u003Cb\u003E{planName}\u003C\u002Fb\u003E 플랜을 계속 이용하시겠습니까?"
+              }
+            }
+          },
+          org: {
+            invitation: {
+              title: "초대",
+              headline: "{name}님이 {orgName} 에 당신을 초대했습니다.",
+              accpetMethod: "초대를 수락하려면 아래의 버튼을 눌러주세요.",
+              accpetBtnLabel: "{orgName} 에 가입",
+              acceptOnlyEmailReceiver: "초대 메일을 수신한 이메일 &lt;{email}&gt; 로 가입된 계정만 팀에 가입할 수 있습니다.",
+              completed: "{orgName} 에 가입되었습니다.",
+              error: {
+                alreadyMember: {
+                  message: "이미 이 팀에 가입되어 있습니다.",
+                  action: bt
+                },
+                conflictMembership: {
+                  message: "다른 팀에 가입되어 있습니다.\u003Cbr \u002F\u003E현재의 팀에서 탈퇴 후 다시 시도해 주세요.",
+                  action: bt
+                },
+                noSeats: {
+                  message: "팀의 멤버 한도가 초과되어 더이상 가입할 수 없습니다.\u003Cbr \u002F\u003E 초대장을 보낸 {inviterName} &lt;{inviterEmail}&gt; 님에게 문의해 주세요.",
+                  action: d
+                },
+                emailMissmatch: {
+                  message: "이메일이 일치하지 않습니다.\u003Cbr \u002F\u003E초대장을 수신한 이메일 &lt;{email}&gt; 로 가입된 계정만 팀에 가입할 수 있습니다.",
+                  action: "다른 계정으로 로그인"
+                },
+                invalidInvitationStatus: {
+                  message: bu,
+                  action: d
+                },
+                expiredInvitation: {
+                  message: bu,
+                  action: d
+                }
+              }
+            }
+          },
+          plan: {
+            change: {
+              title: C,
+              discountedUpgrade: {
+                headline: "할인된 금액으로 플랜을 업그레이드 할 수 있습니다.",
+                desc: "결제 후 플랜이 변경됩니다."
+              },
+              upgrade: {
+                headline: "결제 후 {planName} 플랜으로 변경됩니다.",
+                priceSubtotal: F
+              },
+              downgrade: {
+                headline: az,
+                desc: "변경전까지 현재 플랜의 기능을 모두 사용할 수 있습니다."
+              },
+              currentPlanLabel: ad,
+              destPlanLabel: B,
+              changeConfirmLabel: C
+            },
+            index: {
+              headline: {
+                title: "전문가용 플랜으로 업그레이드하세요.",
+                desc: "바로 시작하고 언제나 취소할 수 있습니다."
+              },
+              plan: {
+                includeLowerGradePlanFeatures: "{plan} 플랜의 모든 기능 포함",
+                popularPlanLabel: aP,
+                basic: {
+                  desc: "가벼운 리서치를 진행 중인 개인에게 추천합니다.",
+                  feature1: "월 150개 채널의 분석 리포트 조회",
+                  feature2: "월 100개 영상의 분석 리포트 조회",
+                  feature3: "히스토리컬 데이터 내보내기"
+                },
+                standard: {
+                  desc: "콘텐츠 벤치마크를 진행 중인 유튜버와 유튜브 마케팅을 시작하려는 팀에게 추천합니다.",
+                  feature1: "월 1,000개 채널의 분석 리포트 조회",
+                  feature2: "월 500개 영상의 분석 리포트 조회"
+                },
+                business: {
+                  desc: "많은 유튜버와 협업 콘텐츠를 제작 중인 마케팅팀에 추천합니다.",
+                  feature1: "최대 2년간의 히스토리컬 데이터 조회",
+                  feature4: "월 2,500개 채널의 분석 리포트 조회",
+                  feature5: "월 1,500개 영상의 분석 리포트 조회"
+                },
+                enterprise: {
+                  desc: "광고 대행사나 MCN 기업에게 추천합니다.",
+                  feature1: "기간 제한 없는 히스토리컬 데이터 조회",
+                  feature3: "월 10,000개 채널의 분석 리포트 조회",
+                  feature4: "월 5,500개 영상의 분석 리포트 조회"
+                }
+              },
+              compare: {
+                title: "플랜 비교"
+              },
+              companies: {
+                title: "전 세계의 수많은 미디어와 브랜드가 플레이보드를 신뢰합니다."
+              },
+              features: {
+                collaboration: {
+                  title: "협업",
+                  account: {
+                    title: Z,
+                    desc: "동료를 초대하여 유료 플랜의 모든 기능을 함께 사용할 수 있습니다."
+                  }
+                },
+                charts: {
+                  title: E,
+                  units: {
+                    chartItemLimit: "{limit}위 까지"
+                  },
+                  items: {
+                    channelCharts: {
+                      title: "채널 차트",
+                      desc: "높은 성과를 내고 있는 채널들을 주제와 지표별로 쉽게 확인할 수 있습니다.",
+                      limitationOfOver200: bv
+                    },
+                    videoCharts: {
+                      title: "영상 차트",
+                      desc: "높은 성과를 내고 있는 영상들을 주제와 지표별로 쉽게 확인할 수 있습니다.",
+                      limitationOfOver200: bv,
+                      limitationOfOver1000: "2022년 12월 26일 이후 업데이트된 차트에서 제공됩니다."
+                    },
+                    exportData: {
+                      title: "차트 내보내기",
+                      desc: "차트의 채널\u002F영상 목록을 엑셀 파일로 내려받아 사용할 수 있습니다."
+                    }
+                  }
+                },
+                channelBasicAnalysis: {
+                  title: av,
+                  report: {
+                    title: W
+                  },
+                  subsTrend: {
+                    title: "구독자\u002F조회수 추세",
+                    desc: "채널의 구독자와 조회수의 추세를 확인할 수 있습니다.\u003Cspan class='footnote'\u003E높은 등급의 플랜에서 더 많은 기간의 데이터를 제공합니다.\u003C\u002Fspan\u003E"
+                  }
+                },
+                channelAdvancedAnalysis: {
+                  title: aw,
+                  report: {
+                    title: W
+                  },
+                  liveViewerTrend: {
+                    title: "라이브 시청자 추세",
+                    desc: "라이브 방송의 시청자 추세를 확인할 수 있습니다.\u003Cspan class='footnote'\u003E높은 등급의 플랜에서 더 많은 기간의 데이터를 제공합니다.\u003C\u002Fspan\u003E"
+                  },
+                  superchatTrend: {
+                    title: "슈퍼챗 추세",
+                    desc: "각 채널의 슈퍼챗 추세를 확인할 수 있습니다.\u003Cspan class='footnote'\u003E높은 등급의 플랜에서 더 많은 기간의 데이터를 제공합니다.\u003C\u002Fspan\u003E"
+                  }
+                },
+                videoAnalysis: {
+                  title: ax,
+                  report: {
+                    title: W
+                  }
+                },
+                live: {
+                  title: b,
+                  trendingLive: {
+                    title: br,
+                    desc: "실시간으로 업데이트되는 전 세계에서 가장 인기 있는 라이브스트림 목록을 열람할 수 있습니다."
+                  }
+                },
+                convenience: {
+                  title: "편의 기능",
+                  removeAd: {
+                    title: "광고 제거",
+                    desc: "대부분의 페이지에서 광고가 삭제되어 보다 쾌적하게 서비스를 이용할 수 있습니다."
+                  }
+                },
+                exportData: {
+                  title: "데이터 내보내기",
+                  desc: "히스토리컬 데이터를 엑셀로 다운로드할 수 있습니다. 다른 데이터와 결합하여 더 복잡한 분석을 수행하거나 보고서나 제안서 작성 시 활용할 수 있습니다."
+                },
+                unlimitedPeriod: {
+                  title: bw,
+                  limitation: "2019년 08월 05일 이후의 데이터부터 제공됩니다."
+                },
+                unlimitedQuantity: {
+                  title: bw
+                }
+              },
+              faq: {
+                title: "자주 묻는 질문",
+                paymentMethod: {
+                  q: "어떤 결제 수단을 사용할 수 있나요?",
+                  a: "신용카드 또는 직불카드를 사용하여 결제할 수 있습니다.\u003Cbr \u002F\u003E최초 결제한 날로부터 1개월 주기로 구독료가 자동 결제됩니다."
+                },
+                planChange: {
+                  q: "구독을 시작한 뒤 플랜을 변경할 수 있나요?",
+                  a: "현재 플랜보다 낮은 등급의 플랜으로 변경할 경우 다음 결제일에 플랜이 변경됩니다.\u003Cbr \u002F\u003E현재 플랜보다 높은 등급의 플랜으로 변경할 경우 차액을 결제하고 플랜을 변경할 수 있습니다."
+                },
+                cancelSubscription: {
+                  q: "구독을 취소하고 결제금액을 환불받을 수 있나요?",
+                  a: "구독 관리 페이지에서 언제라도 구독을 취소하여 결제를 중지할 수 있습니다. 구독이 취소되어도 구독 만료시까지 플랜의 혜택을 그대로 누리실 수 있습니다.\u003Cbr \u002F\u003E\u003Cbr \u002F\u003E결제 후 서비스를 이용한 기록이 있는 경우 환불이 불가하거나 일부 금액만 환불될 수 있습니다.\u003Cbr \u002F\u003E자세한 내용은 \u003Ca href=\"{link}\"\u003E환불 정책\u003C\u002Fa\u003E에서 확인하실 수 있습니다."
+                },
+                customPlan: {
+                  q: "우리에게 최적화된 맞춤 플랜 또는 기능을 요청할 수 있나요?",
+                  a: "네, 가능합니다. 이미 많은 기업이 맞춤 플랜 또는 기능을 이용하고 있습니다. 요청사항을 hello@playboard.co 로 보내주시면 빠르게 답변드리겠습니다."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
+
