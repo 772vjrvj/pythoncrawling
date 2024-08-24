@@ -95,7 +95,7 @@ def start_processing():
         new_print(f"Processing URL {index}: {url}")
 
         video_url = None
-        if "/watch" in url:
+        if not any(substring in url for substring in ["/c/", "/channel/", "/@"]):
             video_url = process_author_info(url)
         if not video_url:
             video_url = url

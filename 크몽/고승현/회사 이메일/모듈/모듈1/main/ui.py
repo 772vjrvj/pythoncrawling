@@ -4,12 +4,12 @@ import threading
 import tkinter as tk
 from tkinter import messagebox
 from .common import setup_driver, get_current_time, fetch_excel
-from .company.ti import fetch_product_ids as ti_ids, fetch_product_detail as ti_detail
+# from .company.ti import fetch_product_ids as ti_ids, fetch_product_detail as ti_detail
 from .company.el import fetch_product_ids as el_ids, fetch_product_detail as el_detail
 from .company.gm import fetch_product_ids as gm_ids, fetch_product_detail as gm_detail
 from .company.cp import fetch_product_ids as cp_ids, fetch_product_detail as cp_detail
 from .company.oh import fetch_product_ids as oh_ids, fetch_product_detail as oh_detail
-from .company.we import fetch_product_ids as we_ids, fetch_product_detail as we_detail
+# from .company.we import fetch_product_ids as we_ids, fetch_product_detail as we_detail
 import pandas as pd
 
 
@@ -109,8 +109,10 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
 
     excel_len = 0
 
-    companies_ids = ["ti", "el", "gm", "cp", "oh", "we"]
-    companies_names = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
+    # companies_ids = ["ti", "el", "gm", "cp", "oh", "we"]
+    companies_ids = ["el", "gm", "cp", "oh"]
+    # companies_names = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
+    companies_names = {"el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집"}
 
     for page in range(init_page, end_page + 1):
 
@@ -124,6 +126,7 @@ def actual_crawling_function(kwd, email_count, init_page=1, end_page=10):
             break
 
         # 티몬 -> 11번가 -> G마켓 -> 쿠팡 -> 오늘의집 -> 위메프
+        # 11번가 -> G마켓 -> 쿠팡 -> 오늘의집
         for company in companies_ids:
 
             if is_stop(driver):
@@ -295,7 +298,8 @@ def start_app():
 
     tk.Label(order_frame, text="순서:").pack(side=tk.LEFT, padx=5)
 
-    companies = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
+    # companies = {"ti": "티몬", "el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집", "we": "위메프"}
+    companies = {"el": "11번가", "gm": "G마켓", "cp": "쿠팡", "oh": "오늘의집"}
     company_labels = {}
 
     for company, name in companies.items():

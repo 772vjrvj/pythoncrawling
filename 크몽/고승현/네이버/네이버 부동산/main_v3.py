@@ -208,11 +208,36 @@ def remove_duplicates(details):
     seen = set()
     unique_details = []
     for detail in details:
-        # 물건, 위치, 대표자, 중개소이름을 기준으로 중복 체크
-        detail_key = (detail.get("물건"), detail.get("위치"), detail.get("대표자"))
-        if detail_key not in seen:
-            seen.add(detail_key)
-            unique_details.append(detail)
+        # 전화번호 1과 2를 가져옵니다. 없을 경우 빈 문자열로 처리
+        phone_1 = detail.get("전화번호 1", "")
+        phone_2 = detail.get("전화번호 2", "")
+
+        # 전화번호가 둘 다 없으면 해당 항목을 건너뜀
+        if not phone_1 and not phone_2:
+            continue
+
+        # 키를 저장할 리스트
+        keys = []
+
+        # 전화번호 1이 있으면 키로 추가
+        if phone_1:
+            keys.append((detail.get("물건"), detail.get("위치"), phone_1))
+
+        # 전화번호 2가 있으면 키로 추가
+        if phone_2:
+            keys.append((detail.get("물건"), detail.get("위치"), phone_2))
+
+        # 중복 확인: 키들 중 하나라도 이미 seen에 있다면 중복으로 간주
+        if any(key in seen for key in keys):
+            continue
+
+        # 중복이 아니라면 키들을 seen에 추가
+        for key in keys:
+            seen.add(key)
+
+        # 유니크한 항목으로 추가
+        unique_details.append(detail)
+
     return unique_details
 
 

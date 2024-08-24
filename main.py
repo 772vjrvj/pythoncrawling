@@ -1,2537 +1,611 @@
-import requests
-from bs4 import BeautifulSoup
-import json
-import re
+import tkinter as tk
+from tkinter import ttk, messagebox
+import threading
 import time
-import random
+from datetime import timedelta
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+import requests
 import pandas as pd
-from openpyxl import load_workbook
-from datetime import datetime
+import random
+import json
 
 
-def fetch_search_results(query, page):
+stop_flag = threading.Event()
+
+# 매물유형과 구이름 설정
+property_types = {
+    "아파트": "APT",
+    "오피스텔": "OPST",
+    "빌라": "VL",
+    "아파트분양권": "ABYG",
+    "오피스텔분양권": "OBYG",
+    "재건축": "JGC",
+    "상가": "SG",
+    "사무실": "SMS"
+}
+
+districts = {
+    ## ver1
+    "강남구": "https://m.land.naver.com/map/37.517408:127.047313:12:1168000000/{property_type}/A1:B1:B2",
+    "송파구": "https://m.land.naver.com/map/37.514592:127.105863:12:1171000000/{property_type}/A1:B1:B2",
+    "서초구": "https://m.land.naver.com/map/37.483564:127.032594:12:1165000000/{property_type}/A1:B1:B2",
+    "용산구": "https://m.land.naver.com/map/37.538825:126.96535:12:1117000000/{property_type}/A1:B1:B2",
+    "성동구": "https://m.land.naver.com/map/37.563475:127.036838:12:1120000000/{property_type}/A1:B1:B2",
+    "영등포구": "https://m.land.naver.com/map/37.526367:126.896213:12:1156000000/{property_type}/A1:B1:B2",
+
+    ## 신규 추가 ver2 2024-08-19
+    "강서구": "https://m.land.naver.com/map/37.550985:126.849534:12:1150000000/{property_type}/A1:B1:B2",
+    "종로구": "https://m.land.naver.com/map/37.573025:126.979638:12:1111000000/{property_type}/A1:B1:B2",
+    "중구": "https://m.land.naver.com/map/37.563842:126.9976:12:1114000000/{property_type}/A1:B1:B2",
+    "구로구": "https://m.land.naver.com/map/37.49551:126.887532:12:1153000000/{property_type}/A1:B1:B2",
+    "동작구": "https://m.land.naver.com/map/37.51245:126.9395:12:1159000000/{property_type}/A1:B1:B2",
+    "강동구": "https://m.land.naver.com/map/37.530126:127.123771:12:1174000000/{property_type}/A1:B1:B2"
+}
+
+# 각 구별 URL 템플릿
+district_url_templates = {
+    ## ver1
+    "강남구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.517408&lon=127.047313&btm=37.4257185&lft=126.7865594&top=37.608985&rgt=127.3080666&showR0=&cortarNo=1168000000&sort=rank&page={page}",
+    "송파구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.514592&lon=127.105863&btm=37.4228991&lft=126.8451094&top=37.6061724&rgt=127.3666166&showR0=&cortarNo=1171000000&sort=rank&page={page}",
+    "서초구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.483564&lon=127.032594&btm=37.391833&lft=126.7718404&top=37.5751825&rgt=127.2933476&showR0=&cortarNo=1165000000&sort=rank&page={page}",
+    "용산구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.538825&lon=126.96535&btm=37.4471618&lft=126.7045964&top=37.6303756&rgt=127.2261036&showR0=&cortarNo=1117000000&sort=rank&page={page}",
+    "성동구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.563475&lon=127.036838&btm=37.4718421&lft=126.7760844&top=37.6549953&rgt=127.2975916&showR0=&cortarNo=1120000000&sort=rank&page={page}",
+    "영등포구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.526367&lon=126.896213&btm=37.4346885&lft=126.6354594&top=37.617933&rgt=127.1569666&showR0=&cortarNo=1156000000&sort=rank&page={page}",
+
+    ## 신규 추가 ver2 2024-08-19
+    "강서구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.550985&lon=126.849534&btm=37.4593367&lft=126.5887804&top=37.6425207&rgt=127.1102876&showR0=&cortarNo=1150000000&sort=rank&page={page}",
+    "종로구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.573025&lon=126.979638&btm=37.4814038&lft=126.7188844&top=37.6645336&rgt=127.2403916&showR0=&cortarNo=1111000000&sort=rank&page={page}",
+    "중구":   "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.563842&lon=126.9976&btm=37.4722095&lft=126.7368464&top=37.6553619&rgt=127.2583536&showR0=&cortarNo=1114000000&sort=rank&page={page}",
+    "구로구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.49551&lon=126.887532&btm=37.4037936&lft=126.6267784&top=37.5871139&rgt=127.1482856&showR0=&cortarNo=1153000000&sort=rank&page={page}",
+    "동작구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.51245&lon=126.9395&btm=37.4207544&lft=126.6787464&top=37.6040331&rgt=127.2002536&showR0=&cortarNo=1159000000&sort=rank&page={page}",
+    "강동구": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd={rletTpCd}&tradTpCd=A1%3AB1%3AB2&z=12&lat=37.530126&lon=127.123771&btm=37.4384521&lft=126.8630174&top=37.6216873&rgt=127.3845246&showR0=&cortarNo=1174000000&sort=rank&page={page}"
+}
+
+
+# 웹드라이버 설정 함수
+def setup_driver():
+    driver = None
     try:
-        url = f"https://map.naver.com/p/api/search/allSearch?query={query}&type=all&searchCoord=&boundary=&page={page}"
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to fetch search results: {e}")
-    return None
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # Uncomment if you want to run in headless mode
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--incognito")  # Use incognito mode
 
-def fetch_place_info(place_id):
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                  get: () => undefined
+                })
+            '''
+        })
+
+        driver.maximize_window()  # Maximize the window
+
+        return driver
+    except WebDriverException as e:
+        new_print(f"Error setting up the WebDriver: {e}")
+        if driver:
+            driver.quit()
+        return None
+
+
+def print_article_count(driver, gu_urls):
+    total_count = 0
+    for gu_url in gu_urls:
+        url = gu_url.format(property_type=get_selected_property_types())
+        try:
+            driver.get(url)
+            time.sleep(3)  # Wait for page to load
+            btn_option = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "btn_option._article"))
+            )
+            txt_number = WebDriverWait(btn_option, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "txt_number._count"))
+            )
+            count_str = txt_number.text.replace('+', '').replace(',', '').strip()
+
+            # count_str이 공백이면 0으로 처리
+            if not count_str:
+                count_str = '0'
+
+            total_count += int(count_str)
+        except Exception as e:
+            new_print(f"Error while fetching article count for {gu_url}: {e}")
+    return total_count
+
+
+def fetch_article_list(gu, page):
+    rletTpCd = get_selected_property_types()
+    url_template = district_url_templates[gu].format(rletTpCd=rletTpCd, page=page)
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    response = requests.get(url_template, headers=headers)
+    if response.status_code != 200:
+        return [], []
+
+    data = response.json()
+    articles = data.get('body', [])
+    if not articles:
+        return [], []
+
+    article_numbers = [article['atclNo'] for article in articles]
+    new_print(f"구 : {gu}, 페이지 : {page}, 대표목록: {article_numbers}")
+    details = fetch_article_details(article_numbers, gu, page)
+
+    return details, article_numbers
+
+
+def save_to_excel(details, mode='w'):
+    file_name = 'real_estate_data.xlsx'
     try:
-        url = f"https://m.place.naver.com/place/{place_id}"
-        headers = {
-            'authority': 'm.place.naver.com',
-            'method': 'GET',
-            'scheme': 'https',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'accept-encoding': 'gzip, deflate, br, zstd',
-            'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-            'priority': 'u=0, i',
-            'sec-ch-ua': '"Not/A)Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers)
-        response.encoding = 'utf-8'
+        if mode == 'a':
+            existing_df = pd.read_excel(file_name)
+            new_df = pd.DataFrame(details)
+            df = pd.concat([existing_df, new_df], ignore_index=True)
+        else:
+            df = pd.DataFrame(details)
+        df.to_excel(file_name, index=False)
+    except FileNotFoundError:
+        df = pd.DataFrame(details)
+        df.to_excel(file_name, index=False)
+    new_print(f"엑셀 저장 {file_name}")
 
-        if response.status_code == 200:
+
+def fetch_article_details(article_numbers, gu, page):
+    details = []
+    url_template = "https://m.land.naver.com/article/getSameAddrArticle?articleNo={}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    new_print(f"구 : {gu}, 페이지 : {page}, 전체목록 수집중 ...")
+
+    for atclNo in article_numbers:
+        if stop_flag.is_set():  # stop_flag 체크
+            break
+        time.sleep(random.uniform(2, 3))
+        try:
+            response = requests.get(url_template.format(atclNo), headers=headers)
+            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+        except requests.RequestException as e:
+            new_print(f"Request failed: {e}")
+            continue
+
+        try:
+            datas = response.json()
+            for data in datas:
+                details.append(data['atclNo'])
+        except ValueError:
+            new_print(f"fetch_article_details JSON decode error: {response.text[:100]}")  # 응답이 JSON이 아닌 경우 내용의 일부를 출력
+        except Exception as e:
+            new_print(f"fetch_article_details Unexpected error: {e}")
+
+    new_print(f"구 : {gu}, 페이지 : {page}, 전체목록: {details}")
+
+    return fetch_additional_info(details)
+
+
+def remove_duplicates(details):
+    seen = set()
+    unique_details = []
+    for detail in details:
+        # 전화번호 1과 2를 가져옵니다. 없을 경우 빈 문자열로 처리
+        phone_1 = detail.get("전화번호 1", "")
+        phone_2 = detail.get("전화번호 2", "")
+
+        # 전화번호가 둘 다 없으면 해당 항목을 건너뜀
+        if not phone_1 and not phone_2:
+            continue
+
+        # 키를 저장할 리스트
+        keys = []
+
+        # 전화번호 1이 있으면 키로 추가
+        if phone_1:
+            keys.append((detail.get("물건"), detail.get("위치"), phone_1))
+
+        # 전화번호 2가 있으면 키로 추가
+        if phone_2:
+            keys.append((detail.get("물건"), detail.get("위치"), phone_2))
+
+        # 중복 확인: 키들 중 하나라도 이미 seen에 있다면 중복으로 간주
+        if any(key in seen for key in keys):
+            continue
+
+        # 중복이 아니라면 키들을 seen에 추가
+        for key in keys:
+            seen.add(key)
+
+        # 유니크한 항목으로 추가
+        unique_details.append(detail)
+
+    return unique_details
+
+
+def fetch_additional_info(details):
+    base_url = "https://fin.land.naver.com/articles/{}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    results = []
+
+    for idx, atclNo in enumerate(details, start=1):
+        if stop_flag.is_set():
+            break
+        time.sleep(random.uniform(2, 3))
+        try:
+            response = requests.get(base_url.format(atclNo), headers=headers)
+            response.raise_for_status()  # 요청이 실패할 경우 예외 발생
+        except requests.RequestException as e:
+            new_print(f"Request failed atclNo : {atclNo}, e : {e}")
+            continue
+
+        try:
             soup = BeautifulSoup(response.text, 'html.parser')
-            script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
+            item = soup.select_one('.ArticleSummary_info-complex__uti3v').text if soup.select_one('.ArticleSummary_info-complex__uti3v') else ""
+            item_type = soup.select_one('.ArticleSummary_highlight__zEvdA').text if soup.select_one('.ArticleSummary_highlight__zEvdA') else ""
+            representative = soup.select_one('.ArticleAgent_broker-name__IrVqj').text if soup.select_one('.ArticleAgent_broker-name__IrVqj') else ""
+            agency = soup.select_one('.ArticleAgent_info-agent__tWe2j').text.replace(representative, '').strip() if soup.select_one('.ArticleAgent_info-agent__tWe2j') else ""
+            phone_elements = soup.select('.ArticleAgent_link-telephone__RPK6B')
+            phone_numbers = [phone.text for phone in phone_elements]
 
-            if script_tag:
-                json_text = re.search(r'window\.__APOLLO_STATE__\s*=\s*(\{.*\});', script_tag.string)
-                if json_text:
-                    data = json.loads(json_text.group(1))
+            if not item_type:
+                continue
 
-                    name = data.get(f"PlaceDetailBase:{place_id}", {}).get("name", "")
-                    address = data.get(f"PlaceDetailBase:{place_id}", {}).get("address", "")
-                    roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
-                    category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
-                    visitorReviewsScore = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsScore", "")
-                    visitorReviewsTotal = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsTotal", "")
+            # 위치 추출
+            location = ""
+            location_area = soup.select_one('.ArticleComplexInfo_list-data__mMqCQ')
+            if location_area:
+                first_li = location_area.find('li')
+                if first_li:
+                    location_element = first_li.select_one('.DataList_definition__d9KY1 .ArticleComplexInfo_area-data__EAsta')
+                    if location_element and location_element.contents:
+                        location = location_element.contents[0].strip()
 
-                    root_query = data.get("ROOT_QUERY", {})
-                    place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+            dong = ""
+            gu = ""
+            if location:
+                parts = location.split()
+                if len(parts) > 2:
+                    dong = parts[2]
+                    gu = parts[1]
+                else:
+                    dong = ""
+                    gu = ""
 
-                    # 기본 place_detail_key 값이 없으면 checkRedirect 포함된 key로 재시도
-                    if place_detail_key not in root_query:
-                        place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+            # <script> 태그 내의 JSON 데이터 추출
+            if not location:
+                script_tag = soup.find('script', {'id': '__NEXT_DATA__'})
+                if script_tag:
+                    try:
+                        json_data = json.loads(script_tag.string)
 
-                    fsasReviewsTotal = root_query.get(place_detail_key, {}).get('fsasReviews', {}).get("total", "")
-                    if not fsasReviewsTotal:
-                        fsasReviewsTotal = root_query.get(place_detail_key, {}).get("fsasReviews({\"fsasReviewsType\":\"restaurant\"})", {}).get("total", "")
+                        # pnu 값 추출
+                        pnu_value = json_data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['result']['address']['legalDivisionNumber']
 
-                    # business_hours 초기 시도
-                    business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
+                        # GET 요청을 보낼 URL 생성
+                        url = f"https://fin.land.naver.com/front-api/v1/legalDivision/infoList?legalDivisionNumbers={pnu_value}"
 
-                    # business_hours 값이 없으면 다른 source를 시도
-                    if not business_hours:
-                        business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
+                        # GET 요청 보내기
+                        response = requests.get(url)
+                        response.raise_for_status()  # 요청이 실패할 경우 예외 발생
 
-                    new_business_hours_json = root_query.get(place_detail_key, {}).get('newBusinessHours', [])
+                        # 요청이 성공한 경우 응답 데이터를 JSON으로 파싱
+                        response_data = response.json()
 
-                    if not new_business_hours_json:
-                        new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
+                        # result에서 pnu_value 키를 사용하여 해당 데이터를 추출
+                        result_data = response_data['result'].get(pnu_value, {})
 
-                    # 별점, 방문자 리뷰 수, 블로그 리뷰 수가 0이거나 없으면 공백 처리
-                    visitorReviewsScore = visitorReviewsScore if visitorReviewsScore and visitorReviewsScore != "0" else ""
-                    visitorReviewsTotal = visitorReviewsTotal if visitorReviewsTotal and visitorReviewsTotal != "0" else ""
-                    fsasReviewsTotal = fsasReviewsTotal if fsasReviewsTotal and fsasReviewsTotal != "0" else ""
+                        location = result_data.get('regionName', '')
+                        gu = result_data.get('divisionName', '')
+                        dong = result_data.get('sectorName', '')
 
-                    # category를 대분류와 소분류로 나누기
-                    category_list = category.split(',') if category else ["", ""]
-                    main_category = category_list[0] if len(category_list) > 0 else ""
-                    sub_category = category_list[1] if len(category_list) > 1 else ""
+                    except (json.JSONDecodeError, KeyError, requests.RequestException) as e:
+                        new_print(f"Error processing JSON data: {e}")
+                        continue
+                else:
+                    new_print("Script tag with id '__NEXT_DATA__' not found.")
+                    continue
 
-                    url = f"https://m.place.naver.com/place/{place_id}/home"
-                    map_url = f"https://map.naver.com/p/entry/place/{place_id}"
+            # 중개소 위치 추출
+            agency_location = ""
+            agent_area = soup.select_one('.ArticleAgent_area-agent__DV2Nc')
+            if agent_area:
+                lis = agent_area.find_all('li')
+                for li in lis:
+                    term_element = li.select_one('.DataList_term__Tks7l')
+                    if term_element and term_element.text.strip() == "위치":
+                        location_element = li.select_one('.DataList_definition__d9KY1')
+                        if location_element:
+                            agency_location = location_element.text.strip()
+                            break
 
-                    result = {
-                        "이름": name,
-                        "주소(지번)": address,
-                        "주소(도로명)": roadAddress,
-                        "대분류": main_category,
-                        "소분류": sub_category,
-                        "별점": visitorReviewsScore,
-                        "방문자리뷰수": visitorReviewsTotal,
-                        "블로그리뷰수": fsasReviewsTotal,
-                        "이용시간1": format_business_hours(business_hours),
-                        "이용시간2": format_new_business_hours(new_business_hours_json),
-                        "카테고리": category,
-                        "URL": url,
-                        "지도": map_url
-                    }
-
-                    return result
-    except requests.exceptions.RequestException as e:
-        new_print(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
-    except Exception as e:
-        new_print(f"Error processing data for Place ID: {place_id}: {e}")
-    return None
+            # 최초게재 날짜 추출 및 포맷 변환
+            first_li_article = soup.select_one('.ArticleBaseInfo_article__XXWMw .DataSource_article__6OjKi ul li')
+            published_date = ""
+            if first_li_article and "최초게재" in first_li_article.text:
+                # 공백을 모두 제거하고, "최초게재" 부분을 제거
+                raw_text = first_li_article.text.replace(" ", "").replace("최초게재", "")
+                if raw_text.endswith("."):
+                    raw_text = raw_text[:-1]  # 마지막의 "." 제거
+                published_date = raw_text  # "2024.8.9" 형식으로 남음
 
 
-def format_business_hours(business_hours):
-    formatted_hours = []
+            result = {
+                "물건번호": atclNo,
+                "구": gu,
+                "동": dong,
+                "물건종류": item_type,
+                "물건": item,
+                "등록일": published_date,
+                "위치": location,
+                "대표자": representative,
+                "중개소이름": agency,
+                "중개소위치": agency_location,
+            }
+
+            # Add phone numbers as separate fields
+            for i, phone_number in enumerate(phone_numbers, start=1):
+                result[f"전화번호 {i}"] = phone_number
+
+            result["URL"] = f"https://fin.land.naver.com/articles/{atclNo}"
+
+            log_message = f"{result}"
+            new_print(log_message)
+
+            results.append(result)
+
+        except Exception as e:
+            new_print(f"Unexpected error for atclNo {atclNo}: {e}")
+            continue
+
+    return remove_duplicates(results)
+
+
+def start_crawling():
+    if not any(property_vars[prop].get() for prop in property_vars):
+        messagebox.showwarning("경고", "매물 유형을 선택하세요.")
+        return
+
+    if not any(district_vars[district].get() for district in district_vars):
+        messagebox.showwarning("경고", "구 이름을 선택하세요.")
+        return
+
+    if start_button["text"] == "시작":
+        start_button.config(text="중지", fg="white", bg="red")
+        stop_flag.clear()  # 중지 플래그 초기화
+        log_text_widget.delete('1.0', tk.END)  # 로그 초기화
+        progress['value'] = 0  # 진행률 초기화
+        progress_label.config(text="진행률: 0%")
+        eta_label.config(text="예상 소요 시간: 00:00:00")
+        threading.Thread(target=actual_crawling_function).start()
+    else:
+        stop_flag.set()  # 중지 플래그 설정
+        new_print("크롤링 중지")
+        start_button.config(text="시작", fg="black", bg="lightgreen")
+
+
+def actual_crawling_function():
     try:
-        if business_hours:
-            for hour in business_hours:
-                day = hour.get('day', '') or ''
-                start_time = hour.get('startTime', '') or ''
-                end_time = hour.get('endTime', '') or ''
-                if day and start_time and end_time:
-                    formatted_hours.append(f"{day} {start_time} - {end_time}")
+        new_print(f"크롤링 시작")
+        selected_gus = get_selected_districts()
+        if not selected_gus:
+            new_print("구이름을 선택해주세요.")
+            return
+
+        driver = setup_driver()
+        if not driver:
+            return
+
+        new_print(f"전체 매물 수 계산중 ...")
+        gu_urls = [districts[gu] for gu in selected_gus]
+        total_count = print_article_count(driver, gu_urls)
+        new_print(f"전체 매물 수 : {total_count}")
+
+        # 전체 매물 수를 계산한 후 진행률 및 예상 소요 시간 초기화
+        progress['maximum'] = total_count
+        progress['value'] = 0
+        progress_label.config(text=f"진행률: 0% (0/{total_count})")
+        remaining_time = total_count * 15
+        eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
+        eta_label.config(text=f"예상 소요 시간: {eta}")
+        progress.update_idletasks()
+
+        driver.quit()
+
+        all_details = []
+
+        for gu in selected_gus:
+            page = 1
+            while True:
+                if stop_flag.is_set():
+                    break
+
+                new_print(f"구 : {gu} , 페이지 : {page}")
+                details, article_numbers = fetch_article_list(gu, page)
+
+                if not details:
+                    break
+
+                all_details.extend(details)
+
+                progress['value'] += len(article_numbers)
+                progress_label.config(text=f"진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
+                remaining_time = (progress['maximum'] - progress['value']) * 15
+                eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
+                eta_label.config(text=f"예상 소요 시간: {eta}")
+                progress.update_idletasks()
+
+                page += 1
+            if stop_flag.is_set():
+                break
+
+        # 중복 제거 후 엑셀 저장
+        new_print("중복 데이터 제거 중...")
+        all_details = remove_duplicates(all_details)
+
+        new_print("엑셀 저장 중 잠시만 기다려주세요...")
+        save_to_excel(all_details, mode='w')
+        new_print("최종 데이터 저장 완료")
+
+        new_print("크롤링이 완료 되었습니다.")
+        messagebox.showinfo("알림", "크롤링이 완료 되었습니다.")
+
     except Exception as e:
-        new_print(f"Unexpected error: {e}")
-        return ""
-    return '\n'.join(formatted_hours).strip() if formatted_hours else ""
+        new_print(f"actual_crawling_function Error during crawling: {e}")
+        messagebox.showerror("에러", f"크롤링 중 에러가 발생했습니다: {e}")
 
 
-def format_new_business_hours(new_business_hours):
-    formatted_hours = []
-    try:
-        if new_business_hours:
-            for item in new_business_hours:
-                status_description = item.get('businessStatusDescription', {}) or {}
-                status = status_description.get('status', '') or ''
-                description = status_description.get('description', '') or ''
+def get_selected_districts():
+    return [district for district in districts if district_vars[district].get() == 1]
 
-                if status:
-                    formatted_hours.append(status)
-                if description:
-                    formatted_hours.append(description)
 
-                for info in item.get('businessHours', []) or []:
-                    day = info.get('day', '') or ''
-                    business_hours = info.get('businessHours', {}) or {}
-                    start_time = business_hours.get('start', '') or ''
-                    end_time = business_hours.get('end', '') or ''
-
-                    break_hours = info.get('breakHours', []) or []
-                    break_times = [f"{bh.get('start', '') or ''} - {bh.get('end', '') or ''}" for bh in break_hours]
-                    break_times_str = ', '.join(break_times) + ' 브레이크타임' if break_times else ''
-
-                    last_order_times = info.get('lastOrderTimes', []) or []
-                    last_order_times_str = ', '.join([f"{lo.get('type', '')}: {lo.get('time', '')}" for lo in last_order_times]) + ' 라스트오더' if last_order_times else ''
-
-                    if day:
-                        formatted_hours.append(day)
-                    if start_time and end_time:
-                        formatted_hours.append(f"{start_time} - {end_time}")
-                    if break_times_str:
-                        formatted_hours.append(break_times_str)
-                    if last_order_times_str:
-                        formatted_hours.append(last_order_times_str)
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        return ""
-    return '\n'.join(formatted_hours).strip() if formatted_hours else ""
-
+def get_selected_property_types():
+    selected_types = [property_types[prop] for prop in property_types if property_vars[prop].get() == 1]
+    if not selected_types:
+        return "APT:OPST:VL:ABYG:OBYG:JGC:SG:SMS"  # 기본값은 전체 선택
+    return ":".join(selected_types)
 
 
 def new_print(text, level="INFO"):
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     formatted_text = f"[{timestamp}] [{level}] {text}"
     print(formatted_text)
-
-def append_to_excel(data, filename="서울시 맛집1.xlsx"):
-    df = pd.DataFrame(data)
-
-    try:
-        # 기존 파일이 있을 경우 파일을 열고 데이터를 추가
-        with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-            workbook = load_workbook(filename)
-            sheet_name = workbook.sheetnames[0]  # 첫 번째 시트 이름 가져오기
-            startrow = writer.sheets[sheet_name].max_row  # 기존 데이터의 마지막 행 번호
-            df.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=startrow)
-    except FileNotFoundError:
-        # 파일이 없을 경우 새로 생성
-        df.to_excel(filename, index=False)
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
+    log_text_widget.see(tk.END)
 
 
-def main(query):
-    try:
-        page = 1
-        results = []
-        all_ids = set()
+def start_app():
+    global root, property_vars, district_vars, progress, start_button, log_text_widget, progress_label, eta_label
 
-        new_print(f"크롤링 시작")
-        while True:
-            result = fetch_search_results(query, page)
-            if not result:
-                break
+    root = tk.Tk()
+    root.title("네이버 부동산 리스트")
+    root.geometry("700x700")  # 화면 너비를 현재 크기의 2/3로 조정
 
-            place_list = result.get("result", {}).get("place", {}).get("list", [])
-            ids_this_page = [place.get("id") for place in place_list if place.get("id")]
+    font_large = ('Helvetica', 10)
 
-            new_print(f"페이지 : {page}, 목록 : {ids_this_page}")
+    # 옵션 프레임
+    option_frame = tk.Frame(root)
+    option_frame.pack(fill=tk.X, padx=10, pady=10)
 
-            if not ids_this_page:
-                break
+    # 매물유형
+    type_label = tk.Label(option_frame, text="매물유형:", font=font_large)
+    type_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
 
-            all_ids.update(ids_this_page)
-            page += 1
-            time.sleep(random.uniform(1, 2))
+    all_properties_var = tk.IntVar(value=1)  # 전체 선택 기본값을 선택으로 설정
+    property_vars = {prop: tk.IntVar(value=1) for prop in property_types}  # 기본값을 전체 선택으로 설정
+    chk_all_properties = tk.Checkbutton(option_frame, text="전체 선택", variable=all_properties_var,
+                                        command=lambda: select_all(property_vars, all_properties_var), font=font_large)
+    chk_all_properties.grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
-        all_ids_list = list(all_ids)
-        total_count = len(all_ids_list)
-        new_print(f"전체 매물 수 : {total_count}")
+    # 매물유형 체크박스 배치
+    props = list(property_types.keys())
+    for i, prop in enumerate(props):
+        row = (i // 4) + 1
+        col = (i % 4) + 1
+        chk = tk.Checkbutton(option_frame, text=prop, variable=property_vars[prop], font=font_large,
+                             command=lambda: update_all_var(all_properties_var, property_vars))
+        chk.grid(row=row, column=col, padx=5, pady=5, sticky='w')
 
-        for idx, place_id in enumerate(all_ids_list, start=1):
-            place_info = fetch_place_info(place_id)
-            if place_info:
-                place_info["검색어"] = query
-                place_info["식당이름"] = query.split()[-1]
-                new_print(place_info)
-                results.append(place_info)
-                time.sleep(random.uniform(1, 2))
+    # 구이름
+    gu_label = tk.Label(option_frame, text="구이름:", font=font_large)
+    gu_label.grid(row=3, column=0, padx=5, pady=5, sticky='w')
 
-        return results
+    all_districts_var = tk.IntVar(value=1)  # 전체 선택 기본값을 선택으로 설정
+    district_vars = {district: tk.IntVar(value=1) for district in districts}  # 기본값을 전체 선택으로 설정
+    chk_all_districts = tk.Checkbutton(option_frame, text="전체 선택", variable=all_districts_var,
+                                       command=lambda: select_all(district_vars, all_districts_var), font=font_large)
+    chk_all_districts.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
-    except Exception as e:
-        print(f"Unexpected error: {e}")
+    col = 2
+    for i, district in enumerate(districts.keys()):  # .keys()를 추가하여 dictionary의 key를 사용
+        row = 4 + (i // 4)  # 행을 4열씩 정렬하도록 변경
+        col = (i % 4) + 1
+        chk = tk.Checkbutton(option_frame, text=district, variable=district_vars[district], font=font_large,
+                             command=lambda: update_all_var(all_districts_var, district_vars))
+        chk.grid(row=row, column=col, padx=5, pady=5, sticky='w')
+
+    # 버튼 프레임
+    button_frame = tk.Frame(root)
+    button_frame.pack(pady=10)
+
+    # 시작 및 중지 버튼
+    start_button = tk.Button(button_frame, text="시작", command=start_crawling, fg="black", bg="lightgreen", font=font_large, width=20)
+    start_button.pack()
+
+    # 버튼 프레임을 중앙에 배치
+    button_frame.pack(anchor=tk.CENTER)
+
+
+    # 로그 화면
+    log_label = tk.Label(root, text="로그 화면:", font=font_large)
+    log_label.pack(fill=tk.X, padx=10)
+
+    log_frame = tk.Frame(root)
+    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
+    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    x_scrollbar.config(command=log_text_widget.xview)
+    y_scrollbar.config(command=log_text_widget.yview)
+
+
+    # 진행률
+    progress_frame = tk.Frame(root)
+    progress_frame.pack(fill=tk.X, padx=10, pady=10)
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
+    eta_label = tk.Label(progress_frame, text="예상 소요 시간: 00:00:00", font=font_large)
+
+    progress_label.pack(side=tk.TOP, padx=5)
+    eta_label.pack(side=tk.TOP, padx=5)
+
+    style = ttk.Style()
+    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+    progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+
+    root.mainloop()
+
+
+def select_all(vars_dict, all_var):
+    value = all_var.get()
+    for var in vars_dict.values():
+        var.set(value)
+
+
+def update_all_var(all_var, vars_dict):
+    if all(v.get() for v in vars_dict.values()):
+        all_var.set(1)
+    else:
+        all_var.set(0)
+
 
 if __name__ == "__main__":
-    names = [
-        "롤링파스타",
-        "곱창왕김형재",
-        "오제제",
-        "연돈볼카츠",
-        "아웃백스테이크",
-        "우기식당바다점",
-        "신촌황소곱창",
-        "미도인",
-        "무월식탁",
-        "구구당",
-        "감탄성신",
-        "연남토마",
-        "마초쉐프",
-        "멜로우가든",
-        "미분당",
-        "정돈",
-        "위트앤미트",
-        "꼼다비뛰드",
-        "송포갈비",
-        "동래정",
-        "삼육가",
-        "송씨해물점",
-        "포크댄스",
-        "후문포차",
-        "반피차이",
-        "인량훠궈",
-        "영동소곱창",
-        "목포집",
-        "온달집",
-        "샤블리샤브샤브",
-        "갓덴스시",
-        "은행골",
-        "야사이마끼쿠이신보",
-        "칙피스",
-        "콴안다오",
-        "삼창교자",
-        "고반식당",
-        "미미면가",
-        "파치노",
-        "오리지널팬케이크하우스가로수길",
-        "로마옥",
-        "장서는날",
-        "기리야마",
-        "양파이",
-        "정통집",
-        "강남돼지상회",
-        "쭈꾸미랩소디",
-        "땀땀",
-        "알부자",
-        "구찌라쿠",
-        "오리지널팬케이크하우스",
-        "히노카츠",
-        "작은공간",
-        "미면정양재칼국수샤브샤브",
-        "불이아",
-        "부베트",
-        "치즈룸 안다즈",
-        "원조닭한마리",
-        "홍명",
-        "현우동",
-        "평양면옥",
-        "압구정제주집",
-        "빠레뜨한남",
-        "마일스톤",
-        "한추",
-        "무탄",
-        "포브라더스",
-        "카츠오우",
-        "하노이스토리",
-        "보슬보슬",
-        "오봉집",
-        "진가와",
-        "이도곰탕",
-        "카페413프로젝트",
-        "뱅뱅막국수",
-        "가츠오",
-        "껠끄쇼즈",
-        "은화계",
-        "신사전",
-        "프론트서울",
-        "콘유",
-        "브루클린버거",
-        "효계",
-        "핫쵸",
-        "진도켄",
-        "모던오뎅",
-        "새들러하우스",
-        "쮸즈",
-        "샌드커피논탄토",
-        "미미면가2호점",
-        "모소리",
-        "우시야",
-        "우정양곱창",
-        "신사쭈꾸미",
-        "세시셀라",
-        "카멜커피",
-        "도산분식",
-        "더타코부스",
-        "꽁티드툴레아",
-        "리틀넥",
-        "최가네버섯샤브매운탕칼국수",
-        "미뉴트빠삐용",
-        "칼삼겹살",
-        "웍셔너리",
-        "다운타우너",
-        "솔솥",
-        "마르르",
-        "도산뚝배기",
-        "오아시스",
-        "호시카츠",
-        "영천영화",
-        "리사르커피",
-        "상무초밥",
-        "육개옥",
-        "일상정원",
-        "두어마리",
-        "라브리크서울",
-        "자매수산",
-        "이대팔쭈꾸미",
-        "강남곱창이야기",
-        "유타로라멘",
-        "까사생갈비",
-        "매우매오",
-        "호미호식",
-        "천진영감",
-        "후추포인트",
-        "바비레드",
-        "비야게레로",
-        "황소곱창",
-        "팀호완",
-        "홍대돈부리",
-        "에그슬럿",
-        "하루",
-        "스시히로바",
-        "오성식당",
-        "보영만두",
-        "청국장서갈비",
-        "우리집만두",
-        "이태리부대찌개",
-        "브라운돈까스",
-        "카페델꼬또네",
-        "한미옥",
-        "아베크",
-        "메종드라카테고리",
-        "하랑돈가스",
-        "류창희국수",
-        "정가네손칼국수",
-        "백암왕순대",
-        "한사발포차",
-        "해목",
-        "까폼",
-        "카츠바이콘반",
-        "도산정육",
-        "히키니쿠토코메",
-        "센자이료쿠",
-        "이웃집통통이",
-        "심양",
-        "심양양꼬치",
-        "밀각",
-        "장정정",
-        "신동궁감자탕",
-        "백암순대",
-        "마담밍",
-        "을지다락",
-        "신미식당",
-        "마사타코",
-        "에뚜왈",
-        "어썸로즈",
-        "달링키친",
-        "청초수물회",
-        "카이센동",
-        "해가쭈꾸미",
-        "봄의정원",
-        "노모어피자",
-        "도슬박",
-        "압구정곱창",
-        "달마시안",
-        "밀토스트맘마미아",
-        "플르서라구뜨",
-        "하우스도산",
-        "누데이크",
-        "압구정진주",
-        "장다리곱창",
-        "클랩피자",
-        "골드피쉬딤섬퀴진",
-        "인딕슬로우",
-        "온기정",
-        "더블트러블유니온",
-        "서강쇠떡볶이",
-        "새우공장",
-        "알카페",
-        "마녀김밥",
-        "미에뜨",
-        "삼원가든",
-        "조개사냥",
-        "맛짱조개",
-        "백삼십육길육미",
-        "한성칼국수",
-        "잠수교집",
-        "갓잇",
-        "호족반",
-        "묵전",
-        "키친마이야르",
-        "신사치킨클럽",
-        "뱃고동",
-        "압구정뱃고동",
-        "닭으로가",
-        "만월",
-        "두레국수",
-        "대낚식당",
-        "돝고기506",
-        "돝고기",
-        "돈까스해",
-        "곱",
-        "농민백암왕순대",
-        "가가솥밥",
-        "뽕나무쟁이족발",
-        "ebt",
-        "플랜튜드",
-        "길목",
-        "고운님",
-        "중앙해장",
-        "블루보틀",
-        "알라보",
-        "남도분식",
-        "빌즈",
-        "딤딤섬",
-        "딤딤섬파르나스몰점",
-        "치즈룸멜팅샵",
-        "노티드",
-        "신동궁뼈숯불구이",
-        "신동궁감자탕뼈숯불구이",
-        "나이스샤워",
-        "장인닭갈비",
-        "떡도리탕",
-        "리춘시장",
-        "호천당",
-        "갓포돈",
-        "바게트케이",
-        "뽕족",
-        "뽕나무쟁이",
-        "고쿠텐",
-        "맥쓰세계치킨",
-        "돌깨마을",
-        "미랑",
-        "원아베뉴",
-        "김이정숯불구이",
-        "부타이",
-        "육전식당",
-        "노란상소갈비",
-        "진미평양냉면",
-        "창우수산",
-        "삼성원조양곱창",
-        "류몽민",
-        "토가라시",
-        "함지곱창",
-        "우기식당",
-        "리북집",
-        "천사곱창",
-        "아부라소바",
-        "육덕식당",
-        "옥면가",
-        "바르다김선생",
-        "이한진숙성회",
-        "스시혼",
-        "대팔이네",
-        "스시이안앤",
-        "다온",
-        "동신상회",
-        "태양수산",
-        "고추장구이",
-        "마포소금구이",
-        "용문칼국수",
-        "스시꽃피다",
-        "솜솜베이커리",
-        "육돈식당",
-        "꿀꿀진순대",
-        "재성이네코다리찜",
-        "멘야세븐",
-        "골목식당",
-        "풍년상회",
-        "굴한마당",
-        "키친사계",
-        "돈사돈",
-        "아카루이",
-        "와고참숯갈비",
-        "스시공간",
-        "족발선생",
-        "봉평옹심이메밀칼국수",
-        "삼끼막창",
-        "해바라기정육식당",
-        "종로빈대떡",
-        "온도계",
-        "시집그릴하우스",
-        "안녕식당",
-        "푸지미곱창",
-        "풍년상회쪽갈비",
-        "누룽지통닭구이",
-        "유미마라탕",
-        "쭉삼이",
-        "하다식당",
-        "청화가든",
-        "인수재",
-        "대광어회집",
-        "육두막",
-        "흥부전놀부던",
-        "연탄돼지갈비",
-        "겹",
-        "무너미",
-        "명륜진사갈비",
-        "황주집",
-        "상미규카츠",
-        "조개일번지",
-        "진호횟집",
-        "고메스퀘어",
-        "엘림들깨칼국수",
-        "우리콩순두부",
-        "카페산아래",
-        "다래함박",
-        "소문난멸치국수",
-        "진미갈매기",
-        "김군네짬뽕",
-        "방천회수산",
-        "원조할매곱창",
-        "미아리곰장어아나고",
-        "경성양꼬치",
-        "수유장곱창",
-        "왕십리곱창본점",
-        "장수마늘보쌈",
-        "조연탄",
-        "계원",
-        "똑순이아구찜",
-        "발산한우진곱창",
-        "한우진곱창",
-        "와카츠",
-        "충북식당",
-        "젠틀한식탁",
-        "목동분식",
-        "호현돈까스",
-        "광선집",
-        "수구레",
-        "하양옥",
-        "백채김치찌개",
-        "서울홍성원",
-        "녹지",
-        "탄탄면공방",
-        "오백년장어",
-        "봄담아등촌점",
-        "육갑식당",
-        "태양수제갈비",
-        "감성초밥",
-        "고양이똥",
-        "유림보신원",
-        "유림",
-        "칼스토랑",
-        "방화동쭈꾸미마을",
-        "사모님짬뽕",
-        "교동짬뽕",
-        "모던꿀꿀",
-        "산청숯불가든",
-        "베이글리스트",
-        "금고깃집",
-        "마부자생삼겹살",
-        "오남매닭갈비",
-        "마부자",
-        "수초밥",
-        "계딴라멘",
-        "도야지",
-        "옥소반",
-        "타이투고",
-        "또보겠지떡볶이",
-        "금별맥주",
-        "두꺼비숙성횟집",
-        "어부블루스",
-        "돼슐랭",
-        "호호방",
-        "고드니",
-        "겸손돈가스",
-        "경아식당",
-        "봄담아",
-        "고성막국수",
-        "시골칼국수",
-        "이조면옥",
-        "화로상회",
-        "도쿄화로",
-        "화곡영양족발",
-        "영양족발",
-        "꾸이꾸이돼지촌쭈꾸미",
-        "냐항바바바",
-        "모락우동",
-        "최월선칼국수",
-        "띠아낭",
-        "계탄언니",
-        "코코미",
-        "산골",
-        "차이나",
-        "포케올데이",
-        "방콕야시장",
-        "앤미",
-        "몽중인",
-        "오지편한식당",
-        "올더플레이트",
-        "아궁이빙수",
-        "동경산책",
-        "박명주브라더",
-        "혼네",
-        "안녕쿠마",
-        "고기굽는사람들",
-        "데일리오아시스",
-        "쿠모식당",
-        "문득",
-        "청주댁",
-        "꼬르동",
-        "로향양꼬치",
-        "숙이네조개전골",
-        "생생조개",
-        "차이나당",
-        "사케바히토리",
-        "가츠가게",
-        "쟝블랑제리",
-        "털보네왕족발",
-        "경식이네알삼쭈꾸미",
-        "미남참치",
-        "깡통닭갈비",
-        "서울갈비",
-        "팔공",
-        "모리츠",
-        "행운동조개",
-        "청기와타운",
-        "더낙원양꼬치",
-        "오첨지",
-        "독도쭈꾸미",
-        "정숙성",
-        "안녕부산",
-        "킷사서울",
-        "투머트",
-        "멘쇼우라멘",
-        "만월당",
-        "삼백돈",
-        "돼지마을포차",
-        "구땡식당",
-        "고래가주",
-        "북돈이부추삼겹살",
-        "청송산오징어",
-        "두리닭발",
-        "하정식당",
-        "텐동요츠야",
-        "신림정",
-        "스시",
-        "제일막창",
-        "가람숙성대광어",
-        "도모야회포차",
-        "베이컨시",
-        "록갈비",
-        "신텐",
-        "춘천골숯불닭갈비",
-        "스시나마",
-        "복돈이부추삼겹살",
-        "아재포차",
-        "무궁화반점",
-        "유천냉면",
-        "바다수다",
-        "만양순대국",
-        "에버그릭",
-        "정직한명품한우",
-        "목포산낙지철판해물",
-        "구로곱창",
-        "카츠오도",
-        "도림항",
-        "진순자계란말이김밥",
-        "부림식당",
-        "논밭골",
-        "행운당",
-        "스시노칸도",
-        "빠오즈푸",
-        "뱃놈",
-        "범가",
-        "수작나베",
-        "스시텐",
-        "토리아에즈",
-        "찌마기",
-        "요마시",
-        "멘쇼",
-        "후타리",
-        "이이요",
-        "하이디라오",
-        "겐로쿠우동",
-        "서울돼지구이",
-        "이화만두",
-        "대명소곱창",
-        "계탄집",
-        "마쿠에",
-        "피읖",
-        "도톰",
-        "하나",
-        "호야초밥참치",
-        "호야",
-        "해남닭집",
-        "초라멘",
-        "시홍쓰",
-        "깍뚝",
-        "대한곱창본점",
-        "고메",
-        "멕시칼리",
-        "텐동한",
-        "남한강민물매운탕",
-        "봉자마라탕",
-        "매운향솥",
-        "구구향훠궈",
-        "육성회비",
-        "일광",
-        "순곱이네",
-        "후토",
-        "심술집",
-        "포비",
-        "영미오리탕",
-        "고이장",
-        "송화산시도삭면",
-        "이자카야하루",
-        "백소정",
-        "칠린다이너",
-        "몽움",
-        "성수완당",
-        "꼼주",
-        "환이네갈비살",
-        "아찌떡볶이",
-        "원조부안집",
-        "장미술상",
-        "신사소곱창",
-        "제주바다",
-        "훈춘양꼬치",
-        "전설의잠뽕",
-        "인계동껍데기",
-        "숙고",
-        "횃불",
-        "매복식당",
-        "복이네곱창",
-        "워커힐피자",
-        "명월관",
-        "서북면옥",
-        "원조할아버지손두부",
-        "원조할아버지순두부",
-        "불난닭발",
-        "모두랑",
-        "신토불이떡볶이",
-        "순금이깻잎떡볶이",
-        "소소막창",
-        "샤오롱바오",
-        "송림식당",
-        "등촌샤브칼국수",
-        "청와옥",
-        "소바쿠",
-        "스시안",
-        "황순애",
-        "열불날개",
-        "목돈72",
-        "좀비곱창",
-        "꿀돼지솥뚜껑삼겹살",
-        "봉고기",
-        "우월소곱창",
-        "팔각도",
-        "문어부인삼교비",
-        "신도림참족발",
-        "참족발",
-        "이도식당",
-        "교대이층집",
-        "컴포",
-        "매운집",
-        "강촌숯불닭갈비",
-        "미나리우리삼겹",
-        "라도맨션골드",
-        "엉베흐",
-        "낭만부대찌개",
-        "은보가츠",
-        "최우영스시",
-        "제주은희네해장국",
-        "월래순교자관",
-        "원래순교자관",
-        "김형제고기의철학",
-        "신림춘천집",
-        "육품",
-        "신들린술집",
-        "구공탄곱창",
-        "아리가또맘마",
-        "옹기종기감자옹심이",
-        "수목원국수",
-        "스시초이",
-        "오늘돈카츠",
-        "카레업자",
-        "김사부샤브샤브",
-        "진영면옥",
-        "호세가",
-        "영향",
-        "고기싸롱",
-        "아웃백",
-        "문정곱창",
-        "왕김말이랑떡볶이",
-        "평일주점",
-        "팔람까오",
-        "순댕이네얼큰수제비",
-        "스시쟁이",
-        "쪼매매운떡볶이",
-        "페페그라노",
-        "경복식당",
-        "야채곱창집",
-        "전민규의황제누릉지탕",
-        "고집불통강곱창",
-        "땅코참숯구이",
-        "닭한마리본점",
-        "노원돈부리",
-        "스시웨이",
-        "위안바오",
-        "제일콩집",
-        "에그머니",
-        "위플랜트위커피",
-        "마롱카롱",
-        "꿀삼겹",
-        "휴돈정",
-        "이모네연탄불곱창",
-        "다리떡볶이",
-        "72420노원",
-        "신미방",
-        "경양카츠",
-        "화포식당",
-        "노원목식당",
-        "쪽갈비대통령",
-        "소한마리정육식당",
-        "시즌",
-        "홍두깨칼국수",
-        "피노키오냉면",
-        "감동식당",
-        "마쯔무라",
-        "천지연",
-        "고기굽는베베",
-        "동적불고기깡통구이",
-        "맥반석조개구이",
-        "옹기꽃게장",
-        "종로찌개마을",
-        "백수씨심야식당",
-        "고기야미안해",
-        "고기하다",
-        "연어이야기",
-        "성천막국수",
-        "놀부만두",
-        "이모네왕파전",
-        "홍익돈까스",
-        "삼삼뼈국",
-        "나정순할매쭈꾸미",
-        "홍릉각",
-        "돈부각",
-        "혜성칼국수",
-        "뼈구이",
-        "어머니대성집",
-        "허브족발",
-        "할머니냉면",
-        "다이닝원",
-        "촨커",
-        "양지함박왕돈까스",
-        "부부횟집",
-        "신원식당",
-        "최원석의돼지한판&서해쭈꾸미",
-        "장원닭한마리",
-        "은하곱창",
-        "동강오리",
-        "칠기마라탕",
-        "조조상회",
-        "신가네왕코등갈비",
-        "장안동영동교집",
-        "콘반",
-        "시키카츠",
-        "오관스시",
-        "모코모코",
-        "멍군집",
-        "왕족발보쌈",
-        "일구구삼고기",
-        "도훈",
-        "홍곱창",
-        "영화장",
-        "빈빈양꼬치",
-        "뚱보집",
-        "형제상회",
-        "다독이네",
-        "다독이네숯불구이",
-        "더한강카페",
-        "해와달",
-        "외양간",
-        "호요",
-        "낙성곱창",
-        "칠리사이공",
-        "방배양곱창",
-        "스시로로",
-        "원조",
-        "더풍년",
-        "곱창나라",
-        "문어가",
-        "제줏간",
-        "방배김밥",
-        "오센",
-        "애플하우스",
-        "경성모밀",
-        "육대장",
-        "미스피츠",
-        "생생집",
-        "초와밥",
-        "전주전집",
-        "동래모듬전",
-        "윤공",
-        "사당광안리",
-        "광안리",
-        "오드리곱창",
-        "천하무족",
-        "꿀때기곱창",
-        "훈감동",
-        "양자호떡",
-        "모스키친",
-        "백제갈비",
-        "뚱보롱",
-        "정원분식",
-        "쩡곱도리탕",
-        "우리회포차",
-        "우미노식탁",
-        "사당돈",
-        "농부쌈밥",
-        "상도실내포장마차",
-        "바지락손칼국수",
-        "알렉스플레이스",
-        "은희네온집닭떡볶이",
-        "꿈꾸는돼지",
-        "서일순대국",
-        "일진아구찜",
-        "운봉산장",
-        "꼴통",
-        "장승황소곱창",
-        "온다옴",
-        "수저가",
-        "디어모먼트",
-        "마포원조떡볶이",
-        "다락",
-        "산동만두",
-        "산까치냉면",
-        "부산갈매기",
-        "정든그릇",
-        "황태뚝배기해장국",
-        "스미비부타동",
-        "앵춘",
-        "하카타분코",
-        "커츠",
-        "피쉬버켓",
-        "멕시코식당",
-        "시오",
-        "물고기초밥",
-        "육지",
-        "호맥",
-        "단디",
-        "피오니",
-        "나루토",
-        "카레시",
-        "더피자보이즈",
-        "카와카츠",
-        "멘야준",
-        "하연옥",
-        "우아하게",
-        "쿠시노주방",
-        "청년화로",
-        "스시지현",
-        "포가레",
-        "그동네떡볶이",
-        "랫댓",
-        "해피치즈스마일",
-        "랜디스도넛",
-        "벨라쿠키",
-        "발리문",
-        "평화연남",
-        "히츠지야",
-        "치플레",
-        "하하",
-        "하쿠텐",
-        "소주방",
-        "하쿠텐라멘",
-        "소이연남",
-        "아노브",
-        "상해소흘",
-        "구황작물",
-        "브릭베이글",
-        "본전횟집",
-        "만두란",
-        "즉석우동돈가스",
-        "강화통통생고기",
-        "기요한",
-        "카밀로라자네리아",
-        "바다애",
-        "동꾼",
-        "연남물갈비",
-        "마포곱창타운",
-        "바다회사랑",
-        "작당모의",
-        "작당모이",
-        "무명요리사",
-        "미나리삼겹살풀뜯는돼지",
-        "풀뜯는돼지",
-        "하나킨",
-        "뚜이연남",
-        "뉴오더클럽",
-        "라무진",
-        "오랑지",
-        "양식구옥",
-        "쿄다이텐동",
-        "계담다",
-        "고시고시",
-        "미쁘동",
-        "슬로우캘리",
-        "대승곱창",
-        "연어롭다",
-        "아뜨뜨",
-        "연남고집",
-        "수라간",
-        "조앤도슨",
-        "월량관",
-        "콰페",
-        "과페",
-        "포가",
-        "쿄라멘",
-        "저스트텐동",
-        "연피랑",
-        "리차드하우스",
-        "헤이죠지",
-        "얹다",
-        "연주방",
-        "마들젠",
-        "아로",
-        "소바식당",
-        "헤키",
-        "잠두봉더나인",
-        "잠두봉선착장",
-        "파파호",
-        "팟타이로얄",
-        "진미식당",
-        "김명자굴국밥",
-        "도쿄술집",
-        "진대감",
-        "고도식",
-        "오향족발",
-        "영광보쌈",
-        "무슈부부커피스탠드",
-        "한강껍데기",
-        "샐러마리",
-        "청어람",
-        "웅파이",
-        "아틀리에크레타",
-        "커피가게동경",
-        "유어다이닝",
-        "서울미트볼",
-        "월명식당",
-        "아이엠베이글",
-        "우동이요이요",
-        "오롯로바타",
-        "닥터로빈",
-        "계꼬기집",
-        "계고기집",
-        "사운드키친",
-        "정정",
-        "오롯",
-        "아소정",
-        "souper",
-        "아소비바",
-        "기노",
-        "올드상해",
-        "소문난쭈꾸미",
-        "프릳츠커피",
-        "뫼촌",
-        "포옹남",
-        "서서갈비",
-        "산울림",
-        "츠케루",
-        "연남살롱",
-        "카페티크닉",
-        "티크닉",
-        "얼스어스",
-        "콩카페",
-        "요코쵸",
-        "카페레이어드",
-        "툭툭누들타이",
-        "코리코카페",
-        "스콘",
-        "쌉",
-        "연남제비",
-        "장끼전",
-        "오복수산",
-        "비전스트롤",
-        "탕탕",
-        "소점",
-        "땡스오트",
-        "브래디스커피",
-        "목화씨라운지",
-        "카페잼잼",
-        "오츠커피",
-        "옥자",
-        "심원",
-        "이자카야라쿤",
-        "파롤앤랑그",
-        "옥자회관",
-        "일미락",
-        "구리돌곱창",
-        "교다이아",
-        "교다이야",
-        "을밀대",
-        "최고집염리점",
-        "탐스피자",
-        "티엔미미",
-        "하이디라오홍대점",
-        "쉑쉑버거",
-        "바쿠단야끼",
-        "서가앤쿡",
-        "원조남산돈까스",
-        "88로타리집",
-        "손오공마라탕",
-        "동보성",
-        "미장플라쎄",
-        "합정고깃집",
-        "돼지전",
-        "간코",
-        "스파카나폴리",
-        "동두천솥뚜껑삼겹살",
-        "알배기",
-        "피자네버슬립스",
-        "금성회관",
-        "옥동식",
-        "세상끝의라멘",
-        "우동카덴",
-        "콩불",
-        "훠궈나라",
-        "홍스쭈꾸미",
-        "황곱",
-        "서교주담",
-        "사루카메",
-        "연하동",
-        "연하당",
-        "파델라",
-        "코코로카라",
-        "밀라노식당",
-        "페블스",
-        "어썸마운틴",
-        "졸리연남",
-        "앤티크커피",
-        "제스티살룬",
-        "루바브",
-        "오이지",
-        "연남취향",
-        "리틀빅토리",
-        "카멜로연남",
-        "연교",
-        "버터밀크",
-        "비스트로큐슈",
-        "카츠오모이",
-        "냉장고",
-        "요코스카쓰나미",
-        "구스토타코",
-        "김덕후의곱창조",
-        "더핏짜",
-        "타코몽",
-        "스탠스커피",
-        "윤씨밀방",
-        "모센즈스위트",
-        "감성타코",
-        "우와",
-        "카미야",
-        "씨부엉",
-        "혼카츠",
-        "혼가츠",
-        "비스트로주라",
-        "프리모바치오바치",
-        "지로우라멘",
-        "더파이브올스",
-        "림가기",
-        "치킨인더키친",
-        "진만두",
-        "스아게",
-        "부탄츄",
-        "코테츠",
-        "우리바다수산",
-        "순대일번지",
-        "고미태",
-        "행진",
-        "너랑나랑호프",
-        "프롬하노이",
-        "어글리베이커리",
-        "파동",
-        "오시",
-        "코랏",
-        "소금집델리",
-        "투떰즈업",
-        "모을",
-        "대세박목살",
-        "백두한우곱창",
-        "함반",
-        "따식갈비파스타",
-        "두두리두팡",
-        "최강금돈까스",
-        "형제한우곱창",
-        "카즈",
-        "담택",
-        "김영섭초밥",
-        "토종골",
-        "마이클돈까스",
-        "식락",
-        "오한수",
-        "김치도가",
-        "락희돈",
-        "무다이",
-        "천하의문타로",
-        "온타이키친",
-        "낙지낚찌",
-        "버바나",
-        "홍맛술",
-        "나성타코",
-        "이치류",
-        "코노미",
-        "멘야하나비",
-        "구락부",
-        "옛맛서울불고기",
-        "마포옥",
-        "조박집",
-        "서울돈카츠",
-        "이요이요",
-        "용강동숯불쭈꾸미",
-        "당도",
-        "이치젠",
-        "이치젠텐동",
-        "잇텐고",
-        "헤이로라",
-        "라무라",
-        "웨스트빌",
-        "태양식당",
-        "정주일가",
-        "모아새",
-        "천지양꼬치",
-        "심야식당오밤중",
-        "크레이지카츠",
-        "크리이지카츠",
-        "훈훈호떡",
-        "마이클식당",
-        "우이락",
-        "미자카야",
-        "가미우동",
-        "노루목황소곱창",
-        "홍대파스타리코",
-        "포썸",
-        "고미푸딩",
-        "라오삐약",
-        "밀로밀",
-        "맛있는집",
-        "심야식당텐조",
-        "엠브로",
-        "소바연구소",
-        "카타쯔무리",
-        "가타쯔무리",
-        "연탄생고기집",
-        "서호파이",
-        "진돈부리",
-        "가화반점",
-        "봉평막국수",
-        "호밀밭",
-        "라구식당",
-        "공복식당",
-        "소담식당",
-        "쟁반집8292",
-        "소신이쏘",
-        "보승회관",
-        "파이홀",
-        "부추곱창",
-        "정육면체",
-        "기꾸스시",
-        "담산",
-        "매거진스탠딩",
-        "한림돈가",
-        "카라멘야",
-        "야바이",
-        "신촌황소곱창구이",
-        "연희보리밥",
-        "만동제과",
-        "편의방",
-        "밀스",
-        "사모님돈가스",
-        "그레인",
-        "매뉴팩트커피",
-        "에브리띵베이글",
-        "라이라이",
-        "녹원쌈밥",
-        "그로어스",
-        "베어스덴",
-        "올레무스",
-        "월순철판동태찜",
-        "1994양과점",
-        "리정원",
-        "청송함흥냉면",
-        "대성도가니탕",
-        "대패상회",
-        "유소바",
-        "가야가야",
-        "윈즈오운",
-        "쿳사",
-        "고릴라",
-        "남양",
-        "하노이",
-        "모범떡볶이",
-        "팔팔껍데기",
-        "홍제파스타",
-        "어머니와아들",
-        "까사드선주",
-        "산들해",
-        "세광양대창",
-        "영동교집",
-        "꿉당",
-        "영동설렁탕",
-        "정석초밥",
-        "미우야",
-        "임병주산동칼국수",
-        "장꼬방",
-        "금복주류",
-        "마루심",
-        "신사고집",
-        "예술의전당",
-        "영동족발",
-        "황소양곱창",
-        "황재벌",
-        "태국식당356",
-        "호키포키",
-        "주탕수육",
-        "주",
-        "라비드쿤",
-        "한국순대",
-        "백화네부엌",
-        "뱅스시",
-        "송쉐프르쁘띠",
-        "번패티번",
-        "삼산회관",
-        "카츠공방",
-        "봉산옥",
-        "스시사구",
-        "우주돈",
-        "메종엠오",
-        "묘오또",
-        "옹심이감자탕",
-        "장수원",
-        "태양커피",
-        "화씨이육공",
-        "맛집곱창구이",
-        "호시라멘",
-        "바다당",
-        "키친피콜로",
-        "남미플랜트랩",
-        "강고집",
-        "장어만",
-        "하프커피",
-        "자매수산2호점",
-        "혜장국",
-        "고양이부엌",
-        "해몽",
-        "복태포차",
-        "청실홍실",
-        "손욱정힘불끈황소곱창",
-        "더플라잉팬레드",
-        "하노이애",
-        "성림돼지",
-        "이누식당",
-        "미국식",
-        "설눈",
-        "평상집",
-        "그림나베",
-        "서관면옥",
-        "가장맛있는족발",
-        "온센",
-        "서울주막",
-        "낙원타코",
-        "청류벽",
-        "칼맞은삼겹살",
-        "강남명전",
-        "진구곱창",
-        "덕자네방앗간",
-        "고에몬",
-        "자주테이블",
-        "빌라드스파이시",
-        "일번지육개장",
-        "미소의집",
-        "라멘모토",
-        "부다스벨리",
-        "호호식당",
-        "한신치킨호프",
-        "플랫오",
-        "한양돈까스",
-        "올드페리도넛잠원점",
-        "족황상제",
-        "애슐리퀸즈",
-        "한소반",
-        "비비스",
-        "코이라멘",
-        "금돈옥",
-        "제일곱창",
-        "맛나곱창",
-        "무쇠막생고기",
-        "산청화로",
-        "해물찜칼국수",
-        "아우프글렛",
-        "크로넛",
-        "오뜨로부엔디아",
-        "로우키",
-        "성수다락",
-        "인생한우",
-        "악어떡볶이",
-        "용용선생",
-        "마쿠마라탕",
-        "이돈집",
-        "곱순이네",
-        "육감식당",
-        "부안집",
-        "평이담백뼈칼국수",
-        "르셀",
-        "문츠",
-        "대성갈비",
-        "밥밥디라라",
-        "누메로도스",
-        "브레디포스트",
-        "호미담",
-        "개나리아구찜",
-        "피키니키라자냐",
-        "빙봉",
-        "로와이드",
-        "차만다",
-        "웨이크앤베이크",
-        "체다앤올리",
-        "윤경양식당",
-        "엘더버거",
-        "테디스오븐",
-        "테디스",
-        "파르코",
-        "성수파르코",
-        "할머니의레시피",
-        "오후",
-        "베이킹스류디오",
-        "중화카츠",
-        "라프레플루트",
-        "올댓커피",
-        "유가츠",
-        "쵸리상경",
-        "난포",
-        "콩카세",
-        "훈연",
-        "온량",
-        "만학",
-        "꾸아",
-        "밸런스포케",
-        "하노이102",
-        "오거트",
-        "서울앵무새",
-        "제제",
-        "베티버",
-        "조개도",
-        "다반",
-        "메종파이프그라운드",
-        "데이릿",
-        "고우성수",
-        "규카츠정",
-        "텅플래닛",
-        "마리오네",
-        "노이",
-        "메이플탑",
-        "세스크멘슬",
-        "보다버거",
-        "오우드",
-        "우리마키",
-        "찐짜솥뚜껑삼겹살갈비",
-        "옹근달",
-        "hdd피자",
-        "오래노카츠",
-        "성수동양갈비",
-        "핀즈",
-        "bep",
-        "롸카두들",
-        "중앙감속기",
-        "성수노루",
-        "에르제",
-        "뚝도농원",
-        "달래해장",
-        "송계옥",
-        "성수낙낙",
-        "오근내닭갈비",
-        "호랑이초밥",
-        "권식족발",
-        "성수족발",
-        "프롤라",
-        "죠죠",
-        "성수명당",
-        "앤드밀",
-        "춘하추우동",
-        "카카모루",
-        "탐광",
-        "고투웍",
-        "이오로비스트로",
-        "쿠나",
-        "르프리크",
-        "화화담",
-        "대림국수",
-        "시옹마오",
-        "호감도",
-        "이로우",
-        "오와리",
-        "외가집갈매기살",
-        "가조쿠",
-        "파스트팔레트",
-        "레이더",
-        "도도한면",
-        "텐바",
-        "성수부두",
-        "능동미나리",
-        "소문난성수감자탕",
-        "성수감자탕",
-        "매란방",
-        "꽃팟",
-        "청담동샤브",
-        "스시도쿠",
-        "팩피",
-        "소인수서울",
-        "우동가조쿠",
-        "고기를품다",
-        "밀도",
-        "타코튜즈데이",
-        "한음",
-        "오프트",
-        "몽련",
-        "무식당",
-        "다로베",
-        "스시이치바",
-        "진작다이닝",
-        "야마타니",
-        "춘향미엔",
-        "애리꼼닭발",
-        "돈까스전원",
-        "만석갈비",
-        "뚜르띠에르",
-        "희릿",
-        "목금",
-        "카린지",
-        "대파집",
-        "소바마에",
-        "버섯집",
-        "비사벌콩나물국밥",
-        "까까를로",
-        "미테이블",
-        "고집132",
-        "봉평메밀면사무소",
-        "부루커피",
-        "금호모소리",
-        "고기선수촌",
-        "제이드앤워터",
-        "청춘극증",
-        "만두전골집",
-        "굴과찜사랑",
-        "푸줏간생고기",
-        "오리사냥",
-        "동우설렁탕",
-        "마이버터드림",
-        "안동반점",
-        "청담꺼멍",
-        "꽌부이",
-        "팔백집",
-        "야마토",
-        "야마토텐동",
-        "약주터",
-        "면옥집",
-        "수아당",
-        "애정마라샹궈",
-        "초이양식",
-        "라라면가",
-        "언앨리셰프",
-        "방목",
-        "종로곱창",
-        "엽기꼼닭발",
-        "천막집",
-        "국수찾아닭만리",
-        "인생전집",
-        "방목2호점",
-        "공푸",
-        "자연에서왔소",
-        "성북동소곱창",
-        "카레",
-        "밀곳간",
-        "수연산방",
-        "누룽지백숙",
-        "옛날칼국수",
-        "불타는돼지",
-        "제주고깃집",
-        "청년다방",
-        "장수식당",
-        "문가네정육식당",
-        "파파타코",
-        "스시만",
-        "우정초밥",
-        "제뉴어리피크닉",
-        "남해바다마차",
-        "그레도",
-        "제나키친",
-        "송파감자국",
-        "장칼집",
-        "내고향순대국",
-        "프라자손칼국수",
-        "미강식당",
-        "온수반송파점",
-        "온수반",
-        "토마루",
-        "호석촌",
-        "진지아",
-        "오잘전맥집",
-        "본디",
-        "니주마루",
-        "금금",
-        "하얼빈양갈비엔양꼬치",
-        "피제리아라고",
-        "엘리스리틀이태리",
-        "진저베어",
-        "필앳홈",
-        "사사노하",
-        "글로리식당",
-        "콘메",
-        "카페페퍼",
-        "돈부리파스타",
-        "오레노라멘",
-        "초이다이닝",
-        "메밀집",
-        "또올래곱창",
-        "모타운",
-        "토닭토닭",
-        "멘야하나비서울본점",
-        "세컨디포레스트",
-        "유목카츠",
-        "다케오호르몬데판야끼",
-        "헤세드",
-        "쭈꾸미도사",
-        "부산양곱창",
-        "명서식당",
-        "해주냉면",
-        "생생아구",
-        "한점",
-        "연탄부락",
-        "형제화로",
-        "늘푸른목장",
-        "봉황당",
-        "나무젓가락",
-        "우사기",
-        "흥도식당",
-        "부리나케",
-        "돈까스의",
-        "담은갈비",
-        "군산오징어",
-        "주은감자탕",
-        "고기공원",
-        "창룡",
-        "칫챗",
-        "위커파크웨스트",
-        "니커버커베이글",
-        "뉴질랜드스토리",
-        "니커버커",
-        "BBQ치킨송리단길점",
-        "라이언하트",
-        "스시이안",
-        "몽촌닭갈비",
-        "봉평메밀막국수",
-        "효모",
-        "와구이닭",
-        "오향가",
-        "가락골마산아구찜",
-        "수원집",
-        "양산도",
-        "함경도찹쌀순대",
-        "냠냠물고기",
-        "오린지",
-        "벽제갈비",
-        "뭉돼지",
-        "우직",
-        "떡볶이감성채널",
-        "별미곱창",
-        "원조마포소금구이",
-        "할머니포장마차멸치국수",
-        "청화초밥",
-        "이카리",
-        "방이돈가",
-        "일월고기",
-        "라라브레드",
-        "미엔아이",
-        "입분식가정집",
-        "서보",
-        "더빛남",
-        "이성원쉐프의청년감자탕",
-        "방이샤브샤브칼국수",
-        "하늘이네장칼국수",
-        "비엘라",
-        "아그라",
-        "버터핑거팬케이크",
-        "홍콩다방",
-        "브루클린더버거",
-        "온더보더",
-        "고든램지버거",
-        "방이동",
-        "경미양꼬치",
-        "표현식당",
-        "방이광안리",
-        "배키욘방",
-        "방이옥",
-        "육화식당",
-        "더마칸",
-        "서호생갈비",
-        "츠쿠모",
-        "시부야돈까스",
-        "치마오",
-        "한국계",
-        "돈애당",
-        "프로퍼커피바",
-        "소피텔",
-        "후라토식당",
-        "리프레쉬커피",
-        "서울꽃삼",
-        "목동우대갈비",
-        "우대갈비",
-        "옛날빈대떡",
-        "엉털네꼼장어",
-        "오목교곱창",
-        "강릉스낵",
-        "브런치빈",
-        "해밀",
-        "밀림",
-        "히노야마",
-        "강모집",
-        "젠틀한식당",
-        "남춘네숯불닭갈비",
-        "포코아",
-        "밥초",
-        "만석생고기전문",
-        "마장동김씨",
-        "화덕고깃간",
-        "다쯔미",
-        "광명대창집",
-        "스몰",
-        "폰트",
-        "대다",
-        "러스트베이커리",
-        "계옥정",
-        "그믐족발",
-        "엉클피자",
-        "콘타이",
-        "청수우동메밀냉면",
-        "가양칼국수",
-        "브루클린더버거조인트",
-        "라공방",
-        "이와타라멘",
-        "진주집",
-        "모퉁이네",
-        "여의도셋째집",
-        "진진만두",
-        "작은술집원지",
-        "한성삼계탕",
-        "구석집",
-        "오돌본점",
-        "연타발",
-        "정인면옥",
-        "아리수만찬",
-        "대왕곱창구이",
-        "텐진라멘",
-        "스몰톡",
-        "초대창",
-        "고기주방",
-        "월화",
-        "계륵장군",
-        "카멜",
-        "데미그라스",
-        "덮밥장사장",
-        "미락카츠",
-        "대관원",
-        "딘딘향",
-        "준이네당산양꼬치",
-        "당산회관",
-        "옛날곱창",
-        "당산옛날곱창",
-        "당산허브족발",
-        "디데이원",
-        "구로원조강뚝꼬치구이전문점",
-        "신풍낙지",
-        "봉평막국수메밀",
-        "원조호수삼계탕",
-        "올드문래",
-        "양키스버거",
-        "웨이브스",
-        "솥돈",
-        "양키스그릴",
-        "찰랑",
-        "해월",
-        "철판희",
-        "목화원",
-        "문래옥상",
-        "오복순대국",
-        "갈빗",
-        "몽밀",
-        "채윤희",
-        "로라멘",
-        "골방",
-        "은진포차",
-        "야키톤",
-        "맛집통통",
-        "양키통닭",
-        "영일분식",
-        "냐옹지마",
-        "문래동냉삼",
-        "송죽장",
-        "숙달돼지",
-        "코끼리베이글",
-        "선식당",
-        "제주올래국수",
-        "문래그집",
-        "이한스시",
-        "대박집",
-        "또순이네",
-        "골목집",
-        "훈카츠",
-        "긴자료코",
-        "동해반점",
-        "신풍파전닭갈비",
-        "다래칼국수",
-        "목포회집",
-        "농부와닭동네",
-        "소몽",
-        "하동관",
-        "이탈리",
-        "로라스블랑",
-        "랑만",
-        "나의가야",
-        "수티",
-        "밀본",
-        "호우섬",
-        "덕인관",
-        "세상의모든아침",
-        "화목순대국",
-        "무끼",
-        "삼해집",
-        "전봇대곱창",
-        "대한옥꼬리수육",
-        "맨홀커피",
-        "미즈컨테이너",
-        "토끼정",
-        "딘타이펑",
-        "니뽕내뽕",
-        "명동식당",
-        "곱창팩토리",
-        "승남집",
-        "부일갈비",
-        "비엣남",
-        "더베이커스테이블",
-        "헤미안",
-        "보마켓",
-        "챔프커피",
-        "부다스밸리",
-        "한남물고기",
-        "강가네빈대떡",
-        "방울과꼬막",
-        "한냄비",
-        "초장집",
-        "김종용누룽지통닭",
-        "한남동한방통닭",
-        "한방통닭",
-        "바바라스키친",
-        "잭슨피자",
-        "라도집",
-        "알프키친",
-        "남산드럼통",
-        "타케모토",
-        "구복만두",
-        "도노",
-        "서울역",
-        "한강로칼국수",
-        "아우즈",
-        "열정도쭈꾸미",
-        "방콕상회",
-        "고가길구공탄",
-        "몽탄",
-        "용산양꼬치",
-        "로우앤슬로우",
-        "단골집",
-        "돼지래스토랑",
-        "쟈니덤플링",
-        "용산골막창",
-        "한담곱창",
-        "손문갈매기살",
-        "손문대구막창",
-        "북천",
-        "그랜드하얏트호텔",
-        "이이네라멘",
-        "이이네",
-        "후암돈까스",
-        "세몰리나클럽",
-        "노스트레스버거",
-        "성광대도",
-        "데칼코마니",
-        "팟카파우",
-        "오파토",
-        "무니",
-        "더백푸드트럭",
-        "해방식당",
-        "에그앤플라워",
-        "보니스피자펍",
-        "보니스피자",
-        "토터스",
-        "우사단고기",
-        "부송국수",
-        "눅",
-        "야스노야지로",
-        "베이커리무이",
-        "식캣사인",
-        "작은도쿄텐동",
-        "작은도쿄",
-        "동빙고",
-        "르번미",
-        "르미야",
-        "라이너스바베큐",
-        "왕타이",
-        "정글수산",
-        "알페도",
-        "멘야산다이메",
-        "세르클한남",
-        "기다스시",
-        "벽돌해피푸드",
-        "해피벽돌푸드",
-        "나리의집",
-        "바다식당",
-        "브라이리퍼블릭",
-        "바토스",
-        "알탭",
-        "카오산",
-        "야상해",
-        "키에리",
-        "자성당주점",
-        "네번째집",
-        "주휴소",
-        "고우",
-        "야키토리고우",
-        "타파스바",
-        "베베베",
-        "공기",
-        "ltp",
-        "아스티에드빌라트",
-        "데이로우",
-        "은마양대창",
-        "미트볼라운지",
-        "재인",
-        "한남동자리",
-        "한남베르그",
-        "힠",
-        "비스트로루틴",
-        "파르크",
-        "우육미엔",
-        "부지피자",
-        "썸머레인",
-        "다츠",
-        "휴",
-        "한남작업실",
-        "굴다리소곱창",
-        "까치네분식",
-        "미호식당",
-        "한입소반",
-        "비일",
-        "마시바시",
-        "네코노스시",
-        "상록수",
-        "히츠지야용산점",
-        "느루",
-        "제주항",
-        "씨티보이",
-        "카데뜨",
-        "명화원",
-        "조대포",
-        "메시야",
-        "돈까스잔치",
-        "장홍",
-        "홍철책빵",
-        "북천돈가스",
-        "화양연화",
-        "금은돈",
-        "마루",
-        "미미옥",
-        "바통밀카페",
-        "바통",
-        "쇼니노",
-        "오스테리아이아드",
-        "올드페리도넛",
-        "낙원테산도",
-        "몽상가",
-        "먼치",
-        "숯불애닭갈비",
-        "산동",
-        "제주아방",
-        "범스피자",
-        "효뜨",
-        "양인환대",
-        "유명돈",
-        "로스트인홍콩",
-        "포카치아델라스트라다",
-        "주도락",
-        "꺼거",
-        "쿠모비스트로",
-        "이태리이층집",
-        "키보",
-        "쌤쌤쌤",
-        "심퍼티쿠시",
-        "어항로",
-        "버뮤다삼각지",
-        "도토리용산점",
-        "도토리",
-        "도야집",
-        "주식",
-        "타파코파",
-        "마케집",
-        "가타부타",
-        "원동미나리삼겹살",
-        "하이타이",
-        "카토",
-        "평화남영",
-        "밤피장",
-        "남영돈",
-        "초원",
-        "양문",
-        "앤더슨씨",
-        "현선이네떡볶이",
-        "한남동뇨끼바",
-        "이속우화",
-        "타크",
-        "마일스톤커피",
-        "맥코이",
-        "33아파트먼트",
-        "파이프그라운드",
-        "계업식",
-        "한남동감자탕",
-        "로코스비비큐",
-        "선데이아보",
-        "싱싱나라김밥",
-        "효공잉어빵",
-        "일미집",
-        "후암편백",
-        "야스노야",
-        "죠우",
-        "도동집",
-        "신사한우곱창",
-        "양반집",
-        "가야밀냉면",
-        "송추가마골",
-        "차이몬스터",
-        "플롭",
-        "옥탑방삼겹살",
-        "홍제동30년우동국수",
-        "횟집울릉도",
-        "금돈",
-        "태백산생고기",
-        "태백산",
-        "유라쿠",
-        "1인1잔",
-        "부엉이산장",
-        "중화원",
-        "h3bistro",
-        "주다",
-        "원조두꺼비집불오징어",
-        "수정불막창",
-        "라화방",
-        "삼천리골돼지집",
-        "청솔집",
-        "멸치국수",
-        "뭉텅",
-        "편편집",
-        "벙구갈비",
-        "머슴과마님",
-        "통김치삼겹살",
-        "탕면",
-        "넙딱집본점",
-        "서부집",
-        "파술타",
-        "한판승부",
-        "다온상회",
-        "스시쿠니",
-        "시카노이에",
-        "아이노가든키친",
-        "고가빈커리하우스",
-        "도토리브라더스",
-        "일월카츠",
-        "밀양손만두",
-        "애호락",
-        "어니언",
-        "서울김밥",
-        "고기공방",
-        "동화",
-        "혜화곱창",
-        "소친친",
-        "육식주",
-        "메밀향그집",
-        "깔리",
-        "중차이",
-        "무제스시",
-        "풍년집",
-        "오죽이네",
-        "미갈매기살",
-        "만석골",
-        "노다치포차",
-        "기러기둥지",
-        "달랭이",
-        "광주집",
-        "익선디미방",
-        "송암여관",
-        "온천집",
-        "청수당",
-        "이경문순대곱창",
-        "하이웨스트",
-        "익선애뜻",
-        "익선반주",
-        "감꽃당",
-        "살라댕방콕",
-        "반기다",
-        "계림닭도리탕",
-        "혜화어묵당",
-        "부부김밥",
-        "창신육회",
-        "벅벅",
-        "자하손만두",
-        "계열사",
-        "스미레",
-        "큰기와집",
-        "대장장이화덕피자",
-        "황칠가",
-        "차마시는뜰",
-        "도담",
-        "레이어드",
-        "플롭피자",
-        "깡통만두",
-        "런던베이글",
-        "풍년쌀농산",
-        "안암국밥",
-        "안국",
-        "황생가칼국수",
-        "부빙",
-        "홈보이서울",
-        "포담",
-        "대성집",
-        "효도치킨",
-        "사발",
-        "일일주",
-        "스태픽스",
-        "택이네",
-        "오카구라라멘",
-        "종로돈부리",
-        "수정식당",
-        "종로찌게마을",
-        "을지면옥",
-        "롤인익선",
-        "삼청동수제비",
-        "스미스가좋아하는한옥",
-        "부띠끄경성",
-        "삼청빙수",
-        "청수정",
-        "도트블랭킷",
-        "포시즌스호텔",
-        "광화문뚝감",
-        "뚝감",
-        "돈수백",
-        "박순례손말이고기산정집",
-        "종로돈가",
-        "동경우동",
-        "우리술집다람쥐",
-        "서울집시",
-        "천향록",
-        "페르시안궁전",
-        "서울식품",
-        "장군굴보쌈",
-        "익선잡방",
-        "동백양과점",
-        "익선취향",
-        "온화",
-        "삐딱",
-        "담솥",
-        "창화당",
-        "빠리가옥",
-        "낙원역",
-        "통돼지집",
-        "히타토제면소",
-        "공평동꼼장어",
-        "아티스트베이커리안국",
-        "프릳츠",
-        "기와탭룸",
-        "조선김밥",
-        "경춘자의라면땡기는날",
-        "커피브론즈",
-        "잘빠진메밀",
-        "개성만두",
-        "팔오삼",
-        "스토구",
-        "엄용백돼지국밥",
-        "포장마차거리",
-        "향교나주곰탕",
-        "마늘보쌈",
-        "도마",
-        "토오베",
-        "효자동초밥",
-        "창성갈비",
-        "오스테리아소띠",
-        "mk2",
-        "준수방키친",
-        "통인시장",
-        "안덕",
-        "뼈탄집",
-        "서촌계단집",
-        "계단집",
-        "체부동잔치집",
-        "안주마을",
-        "김진목삼",
-        "쏘리에스프레소바",
-        "계미산장",
-        "국빈관",
-        "종로",
-        "토속촌",
-        "대하식당",
-        "디퍼카페테리아",
-        "칸다소바",
-        "후니도니",
-        "미진",
-        "서린낙지",
-        "정일백",
-        "대화정",
-        "우가육회",
-        "부촌육회",
-        "육회자매집",
-        "광장시장찹쌀꽈배기",
-        "진향족발",
-        "까치화방",
-        "대련집",
-        "선비옥",
-        "유진식당",
-        "순희네빈대떡",
-        "나주댁육회",
-        "백제정육점",
-        "쿠우쿠우",
-        "광화문석갈비",
-        "모던샤브하우스",
-        "디타워멜팅샵",
-        "진옥화할매원조닭한마리",
-        "진옥화할매",
-        "종로등심",
-        "어머니국시방",
-        "동묘집",
-        "동묘가라지",
-        "백부장집닭한마리",
-        "손가네닭한마리",
-        "우육면관",
-        "안래홍",
-        "와인한잔",
-        "육미안",
-        "혜화수산",
-        "총각네붕어빵",
-        "6번지버거",
-        "진작카키",
-        "천하보쌈",
-        "도넛정수",
-        "레이지버거",
-        "란저우",
-        "복국집뽁찌",
-        "해물점",
-        "독립밀방",
-        "시우식당",
-        "오버트서울",
-        "누하의",
-        "어퍼스트로피",
-        "대충유원지",
-        "고트델리",
-        "공기식당",
-        "명륜손칼국수",
-        "레스피레",
-        "아키비스트",
-        "빅토리아베이커리",
-        "애드라이크",
-        "애즈라이크",
-        "직화장인",
-        "야채호떡",
-        "다전식당",
-        "리틀파파포",
-        "농민백암순대",
-        "애성회관한우곰탕",
-        "만선호프",
-        "라라당",
-        "통통김밥",
-        "가메골손왕만두",
-        "왕성식당",
-        "중앙갈치식당",
-        "희락갈치",
-        "맛있는삼겹살",
-        "가쯔야",
-        "매운녀석들",
-        "금돼지식당",
-        "호박식당",
-        "신당한우곱창",
-        "진성한우곱창",
-        "퀸즈베리도넛하우스",
-        "백송",
-        "마복림떡볶이",
-        "연해장",
-        "해남순대국",
-        "리에제와플",
-        "곱창명가",
-        "신라호텔",
-        "사랑방칼국수",
-        "우리집국수집",
-        "만포막국수",
-        "약수순대",
-        "약수순대국",
-        "오장동함흥냉면",
-        "오장면옥",
-        "오장동흥남집",
-        "니즈버거",
-        "평래옥",
-        "황평집",
-        "공일부엌",
-        "서울부티끄",
-        "국민회관",
-        "서울로ph",
-        "유즈라멘",
-        "명동닭한마리",
-        "명동교자",
-        "명동피자",
-        "꽁시면관",
-        "반티엔야오카오위명동점",
-        "쯔루하시",
-        "쯔루하시후게츠",
-        "미성옥",
-        "몰또",
-        "르빵",
-        "카페마마스",
-        "정신라멘",
-        "멘텐",
-        "이남장",
-        "커피한약방",
-        "커피앤시가렛",
-        "만족오향족발",
-        "유림면",
-        "반포식스",
-        "카돈마리",
-        "봉이밥",
-        "낙원의소바",
-        "필동면옥",
-        "온센텐동",
-        "디라이프스타일",
-        "디라이프스타일키친",
-        "띤띤",
-        "잉꼬",
-        "현대칼국수",
-        "진주회관",
-        "조조칼국수",
-        "히바리",
-        "풍년닭도리탕",
-        "숭례도담",
-        "동강나루터",
-        "금국",
-        "까사빠보",
-        "마츠노하나",
-        "란주라미엔",
-        "란주칼면",
-        "금산제면소",
-        "남산돈까스",
-        "을지로회관",
-        "콘부",
-        "촙촙",
-        "줄리아",
-        "을지로줄리아",
-        "전주집",
-        "을지로골목집",
-        "공간갑",
-        "풍남골뱅이",
-        "을지로양대장",
-        "양대장",
-        "진작",
-        "박지후스시",
-        "돗제",
-        "태태삼겹",
-        "무학",
-        "을지로전주옥",
-        "호랑이카페",
-        "델리커리",
-        "롯데호텔",
-        "이나니와요스케",
-        "을지장만옥",
-        "장만옥",
-        "을지깐깐",
-        "꽃지로",
-        "을지육점",
-        "다원닭한마리",
-        "다원닭한마리빈대떡",
-        "미팅룸",
-        "을지로미팅룸",
-        "명인돈까스",
-        "죠지서울",
-        "화육계",
-        "빽돈",
-        "뮌헨",
-        "경일옥핏제리아",
-        "마포쭈꾸미",
-        "향촌식당",
-        "삼미정",
-        "무교동북어국집",
-        "삼수갑산",
-        "시골집",
-        "산청숯불가든을지로",
-        "다동황소막창",
-        "안즈",
-        "콘드에뻬뻬",
-        "르풀",
-        "덕수정",
-        "두툼",
-        "해구제철소",
-        "우래옥",
-        "꾸왁칼국수",
-        "원형들",
-        "백만불식품",
-        "대원식당",
-        "칠점팔",
-        "은주정",
-        "강산옥",
-        "호수집",
-        "기내식서울",
-        "드로우에스프레소바",
-        "중림장",
-        "충무로칼국수",
-        "올디스",
-        "토리카미",
-        "드므",
-        "육전면사무소",
-        "해랑스시",
-        "서울카츠",
-        "그릴1492",
-        "심세정",
-        "주신당",
-        "하니칼국수",
-        "연길반점",
-        "회현카페",
-        "조박사등갈비",
-        "목멱산방",
-        "동원집",
-        "희나리서울",
-        "회현식당",
-        "청해",
-        "룽키",
-        "보스호프",
-        "존라멘",
-        "우정",
-        "골목길",
-        "재구네닭발",
-        "산전이자카야",
-        "옥경이네건생선",
-        "옥경이네",
-        "계류관",
-        "중앙풍천민물장어",
-        "무명스키야키",
-        "제일제면소",
-        "먹골닭한마리",
-        "노브랜드버거",
-        "박가뼈다귀감자탕",
-        "여봉닭발",
-        "커피스터프",
-        "찡어찡어",
-        "봉일천돼지부속",
-        "장어굽는총각들",
-        "육미제당",
-        "이주소곱창",
-        "맛집묵은지생삽겹살",
-        "만주리양꼬치",
-        "만보카야",
-        "토평한우소곱창",
-        "울타리곱창",
-        "동적깡통구이",
-        "다운이네"
-    ]
-    names = ["대한불교진각종 밀각심인당"]
-    # 현재 시간 가져오기
-    current_time = datetime.now().strftime("%Y%m%d%H%M")
-    # 파일 이름에 시간 추가
-    filename = f"서울시 맛집_{current_time}.xlsx"
-    for index, name in enumerate(names, start=1):
-        new_print(f"Total : {len(names)}, index : {index}, name : {name}==============================================")
-        query = f"서울시 {name}"
-        rs = main(query)
-        if rs:
-            append_to_excel(rs, filename=filename)
-
-        new_print(f"============================================================================")
+    start_app()
