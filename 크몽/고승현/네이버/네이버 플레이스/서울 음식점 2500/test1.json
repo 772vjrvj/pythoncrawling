@@ -1,0 +1,926 @@
+{
+  "placeDetail({\"input\":{\"deviceType\":\"pc\",\"id\":\"1596425774\",\"isNx\":false}})": {
+    "__typename": "PlaceDetail",
+    "base": {
+      "__ref": "PlaceDetailBase:1596425774"
+    },
+    "images({\"source\":[\"starbucks\",\"tpirates\"]})": {
+      "__typename": "PlaceDetailImages",
+      "images": [
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240717_124\u002F1721176665216WmFHM_PNG\u002F%B7%D1%B8%B5%C6%C4%BD%BA%C5%B8_%C5%AC%B7%A1%BD%C4_%C7%D4%B9%DA%BD%BA%C5%D7%C0%CC%C5%A9_%BF%AC%C3%E2%C4%C6_%B3%D7%C0%CC%B9%F6%C7%C3%B7%B9%C0%CC%BD%BA%BF%EB.png",
+          "number": null,
+          "infoTitle": null,
+          "url": null,
+          "desc": null,
+          "width": 2121,
+          "height": 3182,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20201015_250\u002F1602755939772zHGtz_PNG\u002F9UobklwRwQuqLPAD0ynncnuq.png",
+          "number": null,
+          "infoTitle": null,
+          "url": null,
+          "desc": null,
+          "width": 641,
+          "height": 641,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231204_188\u002F1701661433926dXBuE_JPEG\u002F%B7%D1%B8%B5%C6%C4%BD%BA%C5%B8_%C5%C2%BA%ED%B8%B4%BF%C0%B4%F5_%C0%CE%C6%AE%B7%CE%BD%BD%B6%F3%C0%CC%B5%E5_1280x800px_%B8%DE%B4%BA%BF%AC%C3%E2.jpg",
+          "number": null,
+          "infoTitle": null,
+          "url": null,
+          "desc": null,
+          "width": 1280,
+          "height": 800,
+          "source": null
+        },
+        {
+          "__typename": "Image",
+          "origin": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231204_177\u002F1701661444356GcXVm_PNG\u002F%BD%C5%B8%DE%B4%BA_%B8%C0%C0%D6%B4%C2%C6%C4%C6%BC.png",
+          "number": null,
+          "infoTitle": null,
+          "url": null,
+          "desc": null,
+          "width": 1894,
+          "height": 2661,
+          "source": null
+        }
+      ],
+      "totalImages": 4
+    },
+    "menuImages": [
+      {
+        "__typename": "MenuImage",
+        "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240717_256\u002F1721180545758zTwFK_PNG\u002F%B7%D1%B8%B5%C6%C4%BD%BA%C5%B8_%B8%DE%B4%BA%C6%C7_%B8%AE%B4%BA%BE%F3_%BE%D5%B8%E9_%B5%B7%B1%EE%BD%BAO_%BC%F6%C1%A4%BA%BB_fn.png"
+      },
+      {
+        "__typename": "MenuImage",
+        "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240717_256\u002F1721180539233UkfYi_PNG\u002F%B7%D1%B8%B5%C6%C4%BD%BA%C5%B8_%B8%DE%B4%BA%C6%C7_%B8%AE%B4%BA%BE%F3_%B5%DE%B8%E9_%B5%B7%B1%EE%BD%BAX_%BC%F6%C1%A4%BA%BB_fn.png"
+      },
+      {
+        "__typename": "MenuImage",
+        "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240717_193\u002F1721176883499D6KuX_PNG\u002F%B7%D1%B8%B5%C6%C4%BD%BA%C5%B8_%B7%D1%B8%B5%C7%D4%B9%DA%BD%BA%C5%D7%C0%CC%C5%A9_%B8%DE%B4%BA%BA%CF%BB%F0%C1%F6_%C8%AE%C0%CE%BF%EB%28%BE%D5X%B5%DA%29.png"
+      }
+    ],
+    "cpImages({\"source\":[\"ugcImage\"]})": {
+      "__typename": "CPImages",
+      "total": 0,
+      "images": []
+    },
+    "michelinGuide": null,
+    "bookingAwards": null,
+    "mfds": null,
+    "naverBooking({\"bookingType\":\"restaurant\"})": {
+      "__typename": "PlaceDetailNaverBooking",
+      "bookingBusinessId": null,
+      "naverBookingUrl": null,
+      "bookingDisplayName": "방문",
+      "bookingButtonName": "예약",
+      "bookingHubButtonName": null,
+      "naverBookingHubUrl": null,
+      "naverBookingPromotion": null,
+      "promotionTitle": null,
+      "nPayPromotion": null,
+      "hasSmartOrder": false
+    },
+    "menuSource": null,
+    "menus({\"source\":[\"tpirates\"]})": [
+      {
+        "__ref": "Menu:1596425774_0"
+      },
+      {
+        "__ref": "Menu:1596425774_1"
+      },
+      {
+        "__ref": "Menu:1596425774_2"
+      },
+      {
+        "__ref": "Menu:1596425774_3"
+      },
+      {
+        "__ref": "Menu:1596425774_4"
+      },
+      {
+        "__ref": "Menu:1596425774_5"
+      },
+      {
+        "__ref": "Menu:1596425774_6"
+      },
+      {
+        "__ref": "Menu:1596425774_7"
+      },
+      {
+        "__ref": "Menu:1596425774_8"
+      },
+      {
+        "__ref": "Menu:1596425774_9"
+      },
+      {
+        "__ref": "Menu:1596425774_10"
+      },
+      {
+        "__ref": "Menu:1596425774_11"
+      },
+      {
+        "__ref": "Menu:1596425774_12"
+      },
+      {
+        "__ref": "Menu:1596425774_13"
+      },
+      {
+        "__ref": "Menu:1596425774_14"
+      },
+      {
+        "__ref": "Menu:1596425774_15"
+      },
+      {
+        "__ref": "Menu:1596425774_16"
+      },
+      {
+        "__ref": "Menu:1596425774_17"
+      },
+      {
+        "__ref": "Menu:1596425774_18"
+      },
+      {
+        "__ref": "Menu:1596425774_19"
+      },
+      {
+        "__ref": "Menu:1596425774_20"
+      },
+      {
+        "__ref": "Menu:1596425774_21"
+      },
+      {
+        "__ref": "Menu:1596425774_22"
+      },
+      {
+        "__ref": "Menu:1596425774_23"
+      },
+      {
+        "__ref": "Menu:1596425774_24"
+      },
+      {
+        "__ref": "Menu:1596425774_25"
+      },
+      {
+        "__ref": "Menu:1596425774_26"
+      },
+      {
+        "__ref": "Menu:1596425774_27"
+      },
+      {
+        "__ref": "Menu:1596425774_28"
+      },
+      {
+        "__ref": "Menu:1596425774_29"
+      },
+      {
+        "__ref": "Menu:1596425774_30"
+      },
+      {
+        "__ref": "Menu:1596425774_31"
+      },
+      {
+        "__ref": "Menu:1596425774_32"
+      },
+      {
+        "__ref": "Menu:1596425774_33"
+      },
+      {
+        "__ref": "Menu:1596425774_34"
+      },
+      {
+        "__ref": "Menu:1596425774_35"
+      },
+      {
+        "__ref": "Menu:1596425774_36"
+      },
+      {
+        "__ref": "Menu:1596425774_37"
+      },
+      {
+        "__ref": "Menu:1596425774_38"
+      },
+      {
+        "__ref": "Menu:1596425774_39"
+      },
+      {
+        "__ref": "Menu:1596425774_40"
+      },
+      {
+        "__ref": "Menu:1596425774_41"
+      },
+      {
+        "__ref": "Menu:1596425774_42"
+      },
+      {
+        "__ref": "Menu:1596425774_43"
+      },
+      {
+        "__ref": "Menu:1596425774_44"
+      },
+      {
+        "__ref": "Menu:1596425774_45"
+      },
+      {
+        "__ref": "Menu:1596425774_46"
+      }
+    ],
+    "baemin": null,
+    "relatedLinks": [
+      {
+        "__typename": "RelatedLink",
+        "name": "식신",
+        "iconName": "siksin",
+        "url": "https:\u002F\u002Fwww.siksinhot.com\u002FP\u002F1620316",
+        "clickCode": "siksin"
+      },
+      {
+        "__typename": "RelatedLink",
+        "name": "다이닝코드",
+        "iconName": "diningcode",
+        "url": "https:\u002F\u002Fdiningcode.com\u002Fprofile.php?rid=LjOoROM7POXa",
+        "clickCode": "dcode"
+      }
+    ],
+    "businessStats": {
+      "__typename": "BusinessStats",
+      "contexts": null,
+      "daily": null,
+      "gender": null,
+      "age": null,
+      "lastUpdated": null,
+      "weather": null,
+      "bestMonths": null,
+      "alsoSearched": null
+    },
+    "brandPromotion": {
+      "__typename": "BrandPromotion",
+      "promotionMobileUrl": null,
+      "promotionType": null,
+      "promotionDetail": null,
+      "promotionSdayOfWeek": null,
+      "brandDirNum": null,
+      "brandPcUrl": null,
+      "promotionPcUrl": null,
+      "promotionImage": null,
+      "promotionEdayOfWeek": null,
+      "brandMobileUrl": null,
+      "promotionEdate": null,
+      "brandLogoImage": null,
+      "brandPhone": null,
+      "sDate": null,
+      "promotionSdate": null,
+      "promotionPlaceImage": null,
+      "promotionDetailColor": null,
+      "eDate": null,
+      "brandTitle": null,
+      "status": null
+    },
+    "fsasReviews({\"fsasReviewsType\":\"restaurant\"})": {
+      "__typename": "FsasReviewsResult",
+      "total": 15,
+      "maxItemCount": 15,
+      "items": [
+        {
+          "__ref": "FsasReview:blog_토디의 사심공간_223551789381_롤링파스타 우삼겹 도리아 까르보나라 먹은 후기 메뉴판 가격"
+        },
+        {
+          "__ref": "FsasReview:blog_방랑 여행 일지_223465393965_서울 동대문, 가성비 좋은 파스타 ”롤링 파스타“"
+        },
+        {
+          "__ref": "FsasReview:blog_라붕이의 오만가지 기록_223488837332_[동대문맛집] 두타몰 롤링파스타"
+        }
+      ]
+    },
+    "visitorReviewStats": {
+      "__ref": "VisitorReviewStatsResult:1596425774"
+    },
+    "subwayStations": [
+      {
+        "__typename": "SubwayStation",
+        "no": "1호선",
+        "name": "1",
+        "type": 1,
+        "typeDesc": "동대문역 1호선",
+        "color": "#263c96",
+        "priority": 1,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "4호선",
+            "name": "4",
+            "type": 4,
+            "color": "#2c9ede",
+            "priority": 4
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:128"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "4호선",
+        "name": "4",
+        "type": 4,
+        "typeDesc": "동대문역 4호선",
+        "color": "#2c9ede",
+        "priority": 4,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "1호선",
+            "name": "1",
+            "type": 1,
+            "color": "#263c96",
+            "priority": 1
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:421"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "5호선",
+        "name": "5",
+        "type": 5,
+        "typeDesc": "동대문역사문화공원역 5호선",
+        "color": "#8936e0",
+        "priority": 5,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "2호선",
+            "name": "2",
+            "type": 2,
+            "color": "#3cb44a",
+            "priority": 2
+          },
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "4호선",
+            "name": "4",
+            "type": 4,
+            "color": "#2c9ede",
+            "priority": 4
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:536"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "4호선",
+        "name": "4",
+        "type": 4,
+        "typeDesc": "동대문역사문화공원역 4호선",
+        "color": "#2c9ede",
+        "priority": 4,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "2호선",
+            "name": "2",
+            "type": 2,
+            "color": "#3cb44a",
+            "priority": 2
+          },
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "5호선",
+            "name": "5",
+            "type": 5,
+            "color": "#8936e0",
+            "priority": 5
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:422"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "2호선",
+        "name": "2",
+        "type": 2,
+        "typeDesc": "동대문역사문화공원역 2호선",
+        "color": "#3cb44a",
+        "priority": 2,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "4호선",
+            "name": "4",
+            "type": 4,
+            "color": "#2c9ede",
+            "priority": 4
+          },
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "5호선",
+            "name": "5",
+            "type": 5,
+            "color": "#8936e0",
+            "priority": 5
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:205"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "6호선",
+        "name": "6",
+        "type": 6,
+        "typeDesc": "동묘앞역 6호선",
+        "color": "#b5500b",
+        "priority": 6,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "1호선",
+            "name": "1",
+            "type": 1,
+            "color": "#263c96",
+            "priority": 1
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:636"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "1호선",
+        "name": "1",
+        "type": 1,
+        "typeDesc": "동묘앞역 1호선",
+        "color": "#263c96",
+        "priority": 1,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "6호선",
+            "name": "6",
+            "type": 6,
+            "color": "#b5500b",
+            "priority": 6
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:199"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "2호선",
+        "name": "2",
+        "type": 2,
+        "typeDesc": "신당역 2호선",
+        "color": "#3cb44a",
+        "priority": 2,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "6호선",
+            "name": "6",
+            "type": 6,
+            "color": "#b5500b",
+            "priority": 6
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:206"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "6호선",
+        "name": "6",
+        "type": 6,
+        "typeDesc": "신당역 6호선",
+        "color": "#b5500b",
+        "priority": 6,
+        "transfers": [
+          {
+            "__typename": "SubwayStationTransfer",
+            "no": "2호선",
+            "name": "2",
+            "type": 2,
+            "color": "#3cb44a",
+            "priority": 2
+          }
+        ],
+        "station": {
+          "__ref": "SubwayStationInfo:635"
+        }
+      },
+      {
+        "__typename": "SubwayStation",
+        "no": "1호선",
+        "name": "1",
+        "type": 1,
+        "typeDesc": "종로5가역 1호선",
+        "color": "#263c96",
+        "priority": 1,
+        "transfers": [],
+        "station": {
+          "__ref": "SubwayStationInfo:129"
+        }
+      }
+    ],
+    "busStations": [
+      {
+        "__ref": "BusStation:110259"
+      },
+      {
+        "__ref": "BusStation:206214"
+      },
+      {
+        "__ref": "BusStation:55012226"
+      },
+      {
+        "__ref": "BusStation:98015"
+      },
+      {
+        "__ref": "BusStation:206064"
+      },
+      {
+        "__ref": "BusStation:55012217"
+      }
+    ],
+    "datalabPhotos": null,
+    "tvcasts": null,
+    "hasCoupon": {
+      "__typename": "HasCoupon",
+      "count": 0
+    },
+    "hasFeed": {
+      "__typename": "HasFeed",
+      "blogExist": null,
+      "feedExist": true
+    },
+    "shopWindow": {
+      "__typename": "ShopWindow",
+      "total": null,
+      "naverPayYn": null,
+      "sales": null,
+      "description": null,
+      "itemsFromChannelNo": null,
+      "itemsFromInterlockId": null,
+      "branchNews": null,
+      "url": null,
+      "typeName": null,
+      "branchYn": null,
+      "isTraditionalMarket": null,
+      "homepages": {
+        "__typename": "Homepage",
+        "etc": [
+          {
+            "__typename": "HomepageRepr",
+            "url": "https:\u002F\u002Fwww.instagram.com\u002Ftheborn_tasty",
+            "landingUrl": "https:\u002F\u002Fwww.instagram.com\u002Ftheborn_tasty",
+            "isDeadUrl": false,
+            "type": "인스타그램",
+            "order": 1,
+            "isRep": null
+          }
+        ],
+        "repr": {
+          "__typename": "HomepageRepr",
+          "url": "http:\u002F\u002Fwww.rolling-pasta.com",
+          "landingUrl": "http:\u002F\u002Fwww.rolling-pasta.com",
+          "isDeadUrl": false,
+          "type": "홈페이지",
+          "order": 0,
+          "isRep": null
+        }
+      },
+      "businessHours": null
+    },
+    "restaurantBookingItems": {
+      "__typename": "RestaurantBookingItems",
+      "bookingItems": null,
+      "takeOut": null,
+      "tableOrder": null,
+      "preOrder": null,
+      "driveThru": null,
+      "delivery": null
+    },
+    "restaurantInfoTabDetails": null,
+    "businessTools": {
+      "__typename": "BusinessTools",
+      "tools": [
+        {
+          "__typename": "BusinessTool",
+          "type": "smartOrder",
+          "title": "네이버 주문",
+          "countInString": null,
+          "description": "매장 내 주문부터 포장주문까지 편하게",
+          "link": "https:\u002F\u002Fpartner.booking.naver.com\u002Forder\u002Fguide",
+          "using": false
+        },
+        {
+          "__typename": "BusinessTool",
+          "type": "naverBooking",
+          "title": "네이버예약",
+          "countInString": null,
+          "description": "실시간 예약관리를 온라인으로 한번에",
+          "link": "https:\u002F\u002Fblog.naver.com\u002Fn_bookingmt01\u002F221388650554",
+          "using": false
+        },
+        {
+          "__typename": "BusinessTool",
+          "type": "smartCall",
+          "title": "스마트콜",
+          "countInString": "50만",
+          "description": "전화를 대신 받고 응대까지 해드려요!",
+          "link": "https:\u002F\u002Ftv.naver.com\u002Fv\u002F2015533",
+          "using": true
+        }
+      ],
+      "hideAnnouncement": false
+    },
+    "excludeTargets": null,
+    "cesco": null,
+    "kinQna": {
+      "__typename": "KinQna",
+      "answerCount": null,
+      "answerList": null,
+      "profileUrl": null
+    },
+    "newBusinessHours({\"format\":\"restaurant\"})": [
+      {
+        "__typename": "NewBusinessHour",
+        "name": "",
+        "businessStatusDescription": {
+          "__typename": "BusinessStatusDescription",
+          "status": "영업 중",
+          "blindDescription": "21시 30분에 라스트오더",
+          "description": "21:30에 라스트오더"
+        },
+        "businessHours": [
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "토",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "일",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "월",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "화",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "수",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "목",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "__typename": "WorkingHoursInfo",
+            "day": "금",
+            "businessHours": {
+              "__typename": "StartEndTime",
+              "start": "10:30",
+              "end": "22:00"
+            },
+            "breakHours": [],
+            "description": null,
+            "lastOrderTimes": [
+              {
+                "__typename": "LastOrderTimes",
+                "type": "영업시간",
+                "time": "21:30"
+              }
+            ]
+          }
+        ],
+        "comingIrregularClosedDays": [],
+        "comingRegularClosedDays": "",
+        "freeText": "추석 및 설날 휴무"
+      }
+    ],
+    "businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})": null,
+    "gift": {
+      "__typename": "Gift",
+      "gifticonId": null,
+      "gifticonMoreUrl": null
+    },
+    "broadcastInfos": null,
+    "informationTab({\"providerSource\":[\"pbp\"]})": {
+      "__typename": "InformationTab",
+      "parkingInfo": {
+        "__typename": "InformationParking",
+        "description": null,
+        "basicParking": {
+          "__typename": "InformationBasicParking",
+          "isFree": null,
+          "normalFeeDescription": null,
+          "extraFeeDescription": null
+        },
+        "valetParking": null
+      },
+      "facilities": [
+        {
+          "__ref": "InformationFacilities:8"
+        },
+        {
+          "__ref": "InformationFacilities:13"
+        }
+      ],
+      "keywordList": [
+        "파스타",
+        "피자",
+        "스테이크",
+        "필라프",
+        "샐러드"
+      ]
+    },
+    "homepages": {
+      "__typename": "Homepage",
+      "etc": [
+        {
+          "__typename": "HomepageRepr",
+          "url": "https:\u002F\u002Fwww.instagram.com\u002Ftheborn_tasty",
+          "landingUrl": "https:\u002F\u002Fwww.instagram.com\u002Ftheborn_tasty",
+          "isDeadUrl": false,
+          "type": "인스타그램",
+          "typeI18n": "인스타그램",
+          "order": 1,
+          "isRep": null
+        }
+      ],
+      "repr": {
+        "__typename": "HomepageRepr",
+        "url": "http:\u002F\u002Fwww.rolling-pasta.com",
+        "landingUrl": "http:\u002F\u002Fwww.rolling-pasta.com",
+        "isDeadUrl": false,
+        "type": "홈페이지",
+        "typeI18n": "홈페이지",
+        "order": 0,
+        "isRep": null
+      }
+    },
+    "festivalPerformance": {
+      "__typename": "FestivalPerformance",
+      "headInfo": "",
+      "festivalSectionHeadInfo": "",
+      "festivalsTotal": 0,
+      "festivals": [],
+      "performancesTotal": 0,
+      "performances": []
+    },
+    "cp0Videos": [],
+    "goodPrice": null,
+    "paiUpperImage": {
+      "__typename": "PaiUpperImage",
+      "images": [
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzEyMzFfMTkz\u002FMDAxNzA0MDAwNTY4MDUz.TwrsGg4L1W5Aa7mFXGgELCcu_XuLHAX63EU7ELiZEKAg.ZjQjTtpnaCQq5BJqfIHIyY8mqCLcMgBmkdNQcPhISvwg.JPEG\u002F20231229_180805.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA2MTNfMTE0\u002FMDAxNzE4MjQ2ODk1NDU4.LUsXPEsy-fd62E8-PgbeTMZgSQTvllHrPil6S7257D8g.qUgXIORcRdOqir2nydHBzR3ffGKEupPb8F65h1mWl_kg.JPEG\u002F1716892265534.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA2MDJfMjIz\u002FMDAxNzE3MzEzNzc4NDQz.HdoFsfWiP0xp-IP7AO1b-BsLAhTzlmRjSNEkNJQSw8Yg.4USsjrqEBi9__-GNgjyM8m_M6UCj9N-cIUuXHyUWshgg.JPEG\u002F1000069709.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDAyMjdfMTQx\u002FMDAxNzA5MDQwMjM5ODQy.7N6gZd2mRtjS3MtkA3x6jk78DYLmWg3lNUezbLQm0Hkg.OHY_bBb8ciyNLtQ3OPJ0-5ITT_cAhSEC6wkkGaOAYZEg.JPEG\u002F1000014912.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA2MTNfNTQg\u002FMDAxNzE4MjQ2ODk1ODg4.6ZCHccy8MvbKqrzdAOl9iRYbZb3jwalc5UP6ffSPf3Yg.rUtWH3_G-eVk1K4PXYQFfhkYwNTAkkwMXhHQ0EY7hlkg.JPEG\u002F1716892268023.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA2MDlfMTY4\u002FMDAxNzE3OTA5NzA4MDQ0.dUjWGn0BMPzTX8xLMOrObHJkPfNJKRsZHidARcvFmgUg.Y5t9wZBl0ymlmVFdJVQYs4Mbjra9xYQYHA6fMj1qGyYg.JPEG\u002F89A71634-EE93-4733-8A4C-908019E1E1C7.jpeg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA0MTVfMjQ5\u002FMDAxNzEzMTU2NTkyOTA3.9LiQ6ui4yHYMuL677GB8Eq2H75jMkE5w9wc4xGmwhzsg.1URBSIO1wEbcECFYEJtilGdD2teJS1FbbeaeAmSdIE0g.JPEG\u002F20240407_133751.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMTJfMTE1\u002FMDAxNjk5Nzk5MTc0NzEw.MDCI3P4O14wJDiRf4XFVgpWPi4N1E71tZwoOTWBeL9wg.B-UC1hGszLlfDWey3dTV3lcq58xa0DeYW7PgenvcbOUg.JPEG\u002F20231111_115538.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA0MjRfMzMg\u002FMDAxNzEzOTUzMDI2OTA4.8UQCoa0LouZ-ShaP_rI7oY-SY2LDT2ZCaVuuytD-rt0g.yzt63NxNqw6VcSx6Xu4wVT-BqbXAlEfO44IYk5h-BGwg.JPEG\u002FIMG_20240424_121726.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMTJfMTIg\u002FMDAxNjk5Nzk5MTc1NDcy.8dFpTLFOh5XJRr1PtO4wH0VqmjbOAmVNzDSUmkjzuTMg.HDUQ16qd7oQ9KqZ1WfV5IQ6BImWiwqMofArYZzHYevAg.JPEG\u002F20231111_115258.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzEyMjFfMjM1\u002FMDAxNzAzMTM2NzIxNzU5._2WI2sZWYWHpxldp13DY6lEldtbvRTx0fEVrSeqFsoIg.SMSmQZMsRHV3605ux-7CI3vQf-SF9S7ij5fEsg_U65gg.JPEG\u002F20231221_133805.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzEwMDhfMTEy\u002FMDAxNjk2NzM2Nzg4MTYz.u2LH8Y13alOKn-2FzYwmVLodBw1hAGJgC_GErJR181Yg.4AFcSO63YzIgJfVADoyrx-emW11tO4qSTcqPwANZ8CMg.JPEG\u002F20231008_124447.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMTJfMjM4\u002FMDAxNjk5Nzk5MTc1Mjg1.6qgge1wtyz3vqHpSHSRvq5v56x9wI_kxloNaK8iMi9gg.RxMaGTm4PHIP49kd-rsvCYsOTw-5bwchiIMHI8jLHxkg.JPEG\u002F20231111_115546.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMDZfMTE0\u002FMDAxNjk5MTk4ODk4MzU5.eCoRdpOg6c_PslC3X56Wmw-E7iR-6zbA7d6mFqQWC38g.cg8Kd6fX6DA44pRnC30gnMc0ILeKBXXqpXEIgFMIRW0g.JPEG\u002F20231105_174330.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzA5MTlfMTg1\u002FMDAxNjk1MTAzMDUwMDk5.UurMy49Bo16G1v8ezp_PrCEQ2auUCNpTqRHpgqmP6zkg.Bo7rGKdkp5W9AfK-yiCXpRM7qo2BDuHSWscc9guHPvIg.JPEG\u002F04C20AE8-9733-4C32-8F16-F43351E49522.jpeg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA3MDVfNjIg\u002FMDAxNzIwMTgxOTA2NTYy.Kov8OYv85giN6xAXPCL-XzUPU1m8y5yJu0U15TkcKc4g.DwdRRHq1XCAxBmHb7E935Wja5FT6f5LN2i1Mp_L2fBMg.JPEG\u002F20240628_125442.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA2MThfMTQ3\u002FMDAxNzE4NzEyNDI4MDMy.yIP-iA4KKClcBFRg8Da11M09KlvDpHGOs80l7nYdvVog.p_UmCHs8-67aGcPvRhe7AiWc51v9Xv28vX3tgzkXjlcg.JPEG\u002F20240606_125847.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDAxMjFfMTM5\u002FMDAxNzA1ODI3MzMzNDc3.G56ngko6BgeuqsFTy4Rsh7oz_w0OIZv0sl8nIhNhT4Yg.Ma3Wr-_MMUo1gt5JX9-JUeLQ0gNGQJ2iNvwpnrADBOYg.JPEG\u002F20240105_191519.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMDZfOTgg\u002FMDAxNjk5MTk4ODk3MDE2.UJvLNTlyyvv8POv6IOCXtp5mok041hkTNxKF5uT387Ig.D9Bfo6g_7_qY2gI2BVWY9Tio1xG61qWctEEEvXP1cIkg.JPEG\u002F20231105_174321.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA3MDVfMTM0\u002FMDAxNzIwMTgxOTA4NjI2.5OgdgTicQfJtOAZ6KzHrfSA-NvitU2WK0lhsZpp09Bsg.FqQrLOtr26GD0Rp6MXQDPpznW8tsFSCa_vr8FYBt_eog.JPEG\u002F20240628_125450.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA3MDVfMzAw\u002FMDAxNzIwMTgxOTA3NjA3.aJ6kjvfWiKuD_Dgt-m8y3zMDgrzPbCo4inFqp91v-XYg.ZoNbcmehUktgGdBj_8vwRTM7niTKKGrCE9ssCept3tQg.JPEG\u002F20240628_125445.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMjVfNzcg\u002FMDAxNzAwOTAzNTIyMzI1.XgOqO2-9rT_cGfx3QW5Znzo51bFRPWPmIr_QYfFhtg0g.SWwC9fShc4aqhPLh3Fsc1hq_VYMotUVlRBXMJ_w5kS0g.JPEG\u002F20231125_174046.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA3MDVfMzkg\u002FMDAxNzIwMTkxMzcyMDcw.XDh0mOJGDEkoiB876lcsK20kcrEZKZhNYhqealbSFQ4g.pu8jn_jq2tqhLiZ7e5-7NDm-dSs0Uw72OE3omkhWKr8g.JPEG\u002F20240616_122327.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMDNfMjQ0\u002FMDAxNjk4OTc3OTE1MzYy.Dqs55Xg2bsrWPviZ7w6k78nIc5hjrgEJDR0PQbEzoZ8g._5n4Jd3qMbIRc2pCP9NZHgHR_ZB13LgO6r2OM3faw50g.JPEG\u002F20231103_110523.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDAzMjZfMjg3\u002FMDAxNzExNDMxNzQ3MDA1.u-OWQIprB80QVdGNJrjK3zoNUJMem_evGotKrAbUJD0g.ziCj9axp6BwYpqbU-GzZgHvxaBhLmE0VCu-560IkTwgg.JPEG\u002F20240326_143318.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMDZfMjkx\u002FMDAxNjk5MTk4ODk1OTk5.ugJcVTKR17RslhTPL0YHshgQapwlHWVDWV0SJrA6qdgg.dfnxvqZXUZQShSbi1NSEYJtOU4Ygjr-dIoeE0nfzlC0g.JPEG\u002F20231105_174314.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzEwMDlfNjMg\u002FMDAxNjk2ODIwNTIwNzgx.8sID1nhuQnrbIGo5JzWybwULzaqU-b2WOVYlquZnUoIg.yu4-L9sdQ5o9eL-uuXVxI8KY_J6FuE-bGHnNvG9zpOYg.JPEG\u002F20231008_120405.jpg.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyMzExMTBfMTA5\u002FMDAxNjk5NTgzODUyMTU3.r5-IUuAF9047hmHtPRndXdw4tJR3I0Y7i1q8kUA8_2gg.OQUDjLxU2IzlzQkX_5dnrunMNInLQZ8tq0MyH8coLZsg.JPEG\u002F20231110_113619.jpg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA1MjVfMTQg\u002FMDAxNzE2NjA4NzUyNjkx.TBY8sIBokQDWda0udOVdRal32jGVukGrvbzamOaoqKog.qixStNt6xSkpuBwoIxFvAoJz8DD9-O6DchtoJMQ3btgg.JPEG\u002FC389E3B3-2526-443F-9F16-FBC4C6CDD97E.jpeg",
+        "https:\u002F\u002Fpup-review-phinf.pstatic.net\u002FMjAyNDA1MTRfNzEg\u002FMDAxNzE1Njg0Nzg3MTY3.tz9os4O2HAW0KoiLy3Ad8uD9AlqOngmJxGyDSu6vpmsg.OXYKK9q4CzhI2rT8KjNdktaA4ri3PQRBYyYVslbVtgAg.JPEG\u002FIMG_20240513_115616.jpg"
+      ]
+    },
+    "staticMapUrl({\"markerType\":\"restaurant\"})": "https:\u002F\u002Fsimg.pstatic.net\u002Fstatic.map\u002Fv2\u002Fmap\u002Fstaticmap.bin?center=127.0087831%2C37.5688912&level=16&dataversion=172.29&caller=naver_mstore&markers=pos%3A127.0087831%2037.5688912%7Ctype%3Ac%7Ccolor%3Ablue%7Clabel%3Arestaurant",
+    "isRelaxRestaurant": null,
+    "isStarbucks": null,
+    "is100YearCertified": null,
+    "is100YearSmallManufacturer": null,
+    "isNFASafetyCertified": null,
+    "newOpening": null,
+    "themes": [
+      "데이트하기 좋은",
+      "특별한 날",
+      "아이와 함께"
+    ],
+    "description({\"source\":[\"shopWindow\"]})": "백종원 파스타로 유명한 가성비갑 롤링파스타"
+  }
