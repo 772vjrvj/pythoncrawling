@@ -64,15 +64,36 @@ def fetch_place_info(place_id):
 
                     root_query = data.get("ROOT_QUERY", {})
                     place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+
+                    # 기본 place_detail_key 값이 없으면 checkRedirect 포함된 key로 재시도
+                    if place_detail_key not in root_query:
+                        place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+
                     fsasReviewsTotal = root_query.get(place_detail_key, {}).get('fsasReviews', {}).get("total", "")
                     if not fsasReviewsTotal:
                         fsasReviewsTotal = root_query.get(place_detail_key, {}).get("fsasReviews({\"fsasReviewsType\":\"restaurant\"})", {}).get("total", "")
 
+                    # business_hours 초기 시도
                     business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
+
+                    # business_hours 값이 없으면 다른 source를 시도
+                    if not business_hours:
+                        business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
+
                     new_business_hours_json = root_query.get(place_detail_key, {}).get('newBusinessHours', [])
 
                     if not new_business_hours_json:
                         new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
+
+                    # 별점, 방문자 리뷰 수, 블로그 리뷰 수가 0이거나 없으면 공백 처리
+                    visitorReviewsScore = visitorReviewsScore if visitorReviewsScore and visitorReviewsScore != "0" else ""
+                    visitorReviewsTotal = visitorReviewsTotal if visitorReviewsTotal and visitorReviewsTotal != "0" else ""
+                    fsasReviewsTotal = fsasReviewsTotal if fsasReviewsTotal and fsasReviewsTotal != "0" else ""
+
+                    # category를 대분류와 소분류로 나누기
+                    category_list = category.split(',') if category else ["", ""]
+                    main_category = category_list[0] if len(category_list) > 0 else ""
+                    sub_category = category_list[1] if len(category_list) > 1 else ""
 
                     url = f"https://m.place.naver.com/place/{place_id}/home"
                     map_url = f"https://map.naver.com/p/entry/place/{place_id}"
@@ -81,12 +102,14 @@ def fetch_place_info(place_id):
                         "이름": name,
                         "주소(지번)": address,
                         "주소(도로명)": roadAddress,
-                        "대분류": category,
+                        "대분류": main_category,
+                        "소분류": sub_category,
                         "별점": visitorReviewsScore,
                         "방문자리뷰수": visitorReviewsTotal,
                         "블로그리뷰수": fsasReviewsTotal,
                         "이용시간1": format_business_hours(business_hours),
                         "이용시간2": format_new_business_hours(new_business_hours_json),
+                        "카테고리": category,
                         "URL": url,
                         "지도": map_url
                     }
@@ -97,6 +120,7 @@ def fetch_place_info(place_id):
     except Exception as e:
         new_print(f"Error processing data for Place ID: {place_id}: {e}")
     return None
+
 
 def format_business_hours(business_hours):
     formatted_hours = []
@@ -2498,6 +2522,12 @@ if __name__ == "__main__":
         "동적깡통구이",
         "다운이네"
     ]
+    names = [
+        "프론트서울",
+        "마일스톤",
+        "오아시스",
+    ]
+
 
     # 현재 시간 가져오기
     current_time = datetime.now().strftime("%Y%m%d%H%M")
