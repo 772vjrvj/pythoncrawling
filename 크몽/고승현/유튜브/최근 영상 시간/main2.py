@@ -94,13 +94,19 @@ def start_processing():
             break
         new_print(f"Processing URL {index}: {url}")
 
-        video_url = None
         if not any(substring in url for substring in ["/c/", "/channel/", "/@"]):
             video_url = process_author_info(url)
-        if not video_url:
+        elif "/videos" in url:
             video_url = url
+        else:
+            video_url = url.rstrip('/') + "/videos"
 
-        result = extract_published_time(video_url)
+        print(f"video_url : {video_url}")
+
+        result = ""
+        if  video_url:
+            result = extract_published_time(video_url)
+
         new_print(f"Result for URL {index}: {result or 'Not found'}")
         extracted_data_list.append(result)
 
@@ -111,7 +117,7 @@ def start_processing():
         remaining_time = (total_urls - (index)) * 2.5  # 남은 URL 개수 * 2초
         eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
 
-        time.sleep(random.uniform(2, 3))
+        time.sleep(random.uniform(2, 5))
 
     if not stop_flag:
         save_to_excel(extracted_data_list)

@@ -898,6 +898,9 @@ async function fetchProductDetails(productDetail, url) {
         productDetail["상품 상세(html)*"] = productDetailHtml;
 
 
+
+        //상품 이미지 중복제거 2024.08.25
+        //공통화를 위해 공통 class xans-element-.xans-product.xans-product-image이거를 잡고 내부 이미지중 필요 없는 것고 중복을 제거하는 방식으로 진행
         const productImages = await retry(async () => {
             return await page.evaluate(() => {
                 const imgElements = document.querySelectorAll('.xans-element-.xans-product.xans-product-image img');
@@ -918,10 +921,10 @@ async function fetchProductDetails(productDetail, url) {
                     }
                 });
 
-                return imgUrls;
+                // 중복 제거
+                return [...new Set(imgUrls)];
             });
         }, 3, 2000, []);
-
         productDetail["상품 이미지*"] = JSON.stringify(productImages, null, 2);
         console.log("상품 이미지* : ", productImages);
 
@@ -978,11 +981,6 @@ async function fetchProductDetails(productDetail, url) {
                             // 유효한 옵션 값만 처리
                             if (value !== '*' && value !== '**' && value) {
                                 optionValues.add(text);
-                                optionItem.selected = true;
-                                optionItem.dispatchEvent(new Event('change', { bubbles: true }));
-                                //select box의 option 선택시 선택 상품이 추가 된다.
-                                optionItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                                await new Promise(resolve => setTimeout(resolve, 1000));
                             }
                         }
 
@@ -992,37 +990,13 @@ async function fetchProductDetails(productDetail, url) {
                             "밸류": Array.from(optionValues),
                         });
 
-                        //select box에서 클릭한 판매중 상품 목록
-                        const optionProductElements = document.querySelectorAll('.option_product .product span');
-
                         for (const optionValue of optionValues) {
-                            const normalizedOptionValue = normalizeString(optionValue);
-                            let matchedElementText = '';
-                            let optionPrice = 0;
-
-                            for (const element of optionProductElements) {
-                                const elementText = element.innerText.trim();
-
-                                if (normalizeString(elementText) === normalizedOptionValue) {
-                                    matchedElementText = optionValue;
-                                    optionPrice = extractPrice(optionValue);
-                                    break;
-                                }
-                            }
-
-                            //옵션정보에 중복되는지 확인
-                            const isDuplicate = optionsInfos.some(info =>
-                                normalizeString(info['옵션1']) === normalizedOptionValue
-                            );
-
                             //옵션정보에 추가
-                            if (!isDuplicate) {
-                                optionsInfos.push({
-                                    '옵션1': optionValue,
-                                    '옵션가격': optionPrice,
-                                    '옵션상태': matchedElementText ? '판매중' : '품절',
-                                });
-                            }
+                            optionsInfos.push({
+                                '옵션1': optionValue,
+                                '옵션가격': extractPrice(optionValue),
+                                '옵션상태': optionValue.includes('품절') ? '품절' : '판매중',
+                            });
                         }
                     }
                 }
@@ -1032,9 +1006,8 @@ async function fetchProductDetails(productDetail, url) {
                     const option1Element = optionElements[0];
                     const option2Element = optionElements[1];
                     const option1Values = [];
-                    let option2Values = new Set();
+                    let option2ValuesSet = new Set();
 
-                    const optionsInfos = [];
                     let option1Title = "";
                     let option2Title = "";
 
@@ -1065,51 +1038,25 @@ async function fetchProductDetails(productDetail, url) {
                                     option2Title = th2.innerText.trim();
                                     const option2Items = select2.querySelectorAll('option');
 
+                                    const option2Values = []
+
                                     for (const option2Item of option2Items) {
                                         const value2 = option2Item.value.trim();
                                         const text2 = option2Item.innerText.trim();
 
                                         if (value2 !== '*' && value2 !== '**' && value2) {
-                                            option2Values.add(text2);
-
-                                            option2Item.selected = true;
-                                            option2Item.dispatchEvent(new Event('change', { bubbles: true }));
-                                            option2Item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                                            await new Promise(resolve => setTimeout(resolve, 1000));
+                                            option2Values.push(text2);
+                                            option2ValuesSet.add(text2);
                                         }
                                     }
 
-                                    const optionProductElements = document.querySelectorAll('.option_product .product span');
-
                                     for (const option2Value of option2Values) {
-                                        const normalizedOption2Value = normalizeString(option2Value);
-                                        let matchedElementText = '';
-                                        let optionPrice = 0;
-
-                                        for (const element of optionProductElements) {
-                                            const elementText = element.innerText.trim();
-                                            const elementRightPart = elementText.split('/').pop().trim();
-
-                                            if (normalizeString(elementRightPart) === normalizedOption2Value) {
-                                                matchedElementText = option2Value;
-                                                optionPrice = extractPrice(option2Value);
-                                                break;
-                                            }
-                                        }
-
-                                        const isDuplicate = optionsInfos.some(info =>
-                                            normalizeString(info['옵션1']) === normalizeString(text1) &&
-                                            normalizeString(info['옵션2']) === normalizedOption2Value
-                                        );
-
-                                        if (!isDuplicate) {
-                                            optionsInfos.push({
-                                                '옵션1': text1,
-                                                '옵션2': option2Value,
-                                                '옵션가격': optionPrice,
-                                                '옵션상태': matchedElementText ? '판매중' : '품절',
-                                            });
-                                        }
+                                        optionsInfos.push({
+                                            '옵션1': text1,
+                                            '옵션2': option2Value,
+                                            '옵션가격': extractPrice(option2Value),
+                                            '옵션상태': option2Value.includes('품절') ? '품절' : '판매중',
+                                        });
                                     }
                                 }
                             }
@@ -1125,7 +1072,7 @@ async function fetchProductDetails(productDetail, url) {
                     //두번째 옵션(구륩)
                     options.push({
                         "이름": option2Title,
-                        "밸류": Array.from(option2Values),
+                        "밸류": Array.from(option2ValuesSet),
                     });
                 }
 
@@ -1267,11 +1214,16 @@ async function fetchProductReviews(page, productDetail, url) {
                 return await frame.$$('.sf_review_user_info.blindTextArea.review_wrapper_info.set_report');
             }, 3, 2000, []);
             for (const reviewElement of reviewElements) {
-                const imageElement = await reviewElement.$('.sf_review_user_photo img');
-                const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
+                // const imageElement = await reviewElement.$('.sf_review_user_photo img');
+                // const image = imageElement ? await frame.evaluate(img => img.src, imageElement) : '';
 
                 const imageElements = await reviewElement.$$('.sf_review_user_photo img');
-                const images = imageElements.length > 0 ? await frame.evaluate(imgs => imgs.map(img => img.src), imageElements) : [];
+                const images = [];
+                for (const imageElement of imageElements) {
+                    const src = await frame.evaluate(img => img.getAttribute('src') || img.getAttribute('data-src'), imageElement);
+                    images.push(src);
+                }
+
 
                 const scoreElement = await reviewElement.$('.sf_review_user_score');
                 let score = '';
@@ -1539,11 +1491,19 @@ async function testDetail(url)
     // let href = "https://ba-on.com/product/baonhaus-%EC%97%90%ED%83%80%EC%9D%B4-%EC%8A%A4%ED%8A%B8%EB%9D%BC%EC%9D%B4%ED%94%84-%EC%98%A4%EB%B2%84-%EC%85%94%EC%B8%A0-2color/18402/category/39/display/2/";
 
     //2개 옵션 테스트
-    let href = 'https://www.hotping.co.kr/product/set%EB%AA%A8%EB%8D%B8%EC%BD%94%EB%94%94-%ED%95%A0%EC%9D%B8%EA%B5%AC%EB%A7%A4made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%ED%85%8C%EC%9D%BC%EB%9F%AC%EB%93%9C%EB%8D%94%EB%B8%94%EC%9E%90%EC%BC%93made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%EB%92%B7%EB%B0%B4%EB%94%A9-%EB%A1%B1-%EC%99%80%EC%9D%B4%EB%93%9C-%EC%8A%AC%EB%9E%99%EC%8A%A4%ED%88%AC%ED%94%BC%EC%8A%A4%EC%85%8B%EC%97%85-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EB%A9%B4%EC%A0%91%EB%A3%A9/44485/category/620/display/1/';
+    // let href = 'https://www.hotping.co.kr/product/set%EB%AA%A8%EB%8D%B8%EC%BD%94%EB%94%94-%ED%95%A0%EC%9D%B8%EA%B5%AC%EB%A7%A4made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%ED%85%8C%EC%9D%BC%EB%9F%AC%EB%93%9C%EB%8D%94%EB%B8%94%EC%9E%90%EC%BC%93made-%EC%A0%9C%EC%8A%A4%ED%8B%B0-%EB%92%B7%EB%B0%B4%EB%94%A9-%EB%A1%B1-%EC%99%80%EC%9D%B4%EB%93%9C-%EC%8A%AC%EB%9E%99%EC%8A%A4%ED%88%AC%ED%94%BC%EC%8A%A4%EC%85%8B%EC%97%85-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EC%A0%95%EC%9E%A5%EC%84%B8%ED%8A%B8-%EB%A9%B4%EC%A0%91%EB%A3%A9/44485/category/620/display/1/';
     // let href = 'https://dailyjou.com/product/%EB%94%94%EB%A0%89%ED%8A%B8-%EC%BB%B7%ED%8C%85-%EB%8D%B0%EB%AF%B8%EC%A7%80-%EB%8D%B0%EB%8B%98-%EC%88%8F%ED%8C%AC%EC%B8%A0/18520/category/214/display/1/';
     // let href = 'https://ba-on.com/product/%ED%94%8C%EB%A3%A8%ED%82%A4-%EC%98%A4%EB%B2%84-%ED%9B%84%EB%93%9C-%EA%B8%B4%ED%8C%94-%EC%85%94%EC%B8%A0-2color/18939/category/34/display/1/';
     // let href = 'https://beidelli.com/product/detail.html?product_no=4184&cate_no=49&display_group=2';
+    // let href = 'https://beidelli.com/product/detail.html?product_no=4184&cate_no=24&display_group=1';
+    // let href = 'https://www.hotping.co.kr/product/made-%EB%A3%A8%EC%9D%B4%EC%8A%A4-%EC%9E%90%EC%88%98%EB%A1%B1%EC%9B%90%ED%94%BC%EC%8A%A444110/25527/category/25/display/1/'
+    // let href = 'https://dailyjou.com/product/%EC%B9%B4%EC%8B%9C%ED%83%80-%EB%A0%88%EC%9D%B4%EC%8A%A4-%EB%82%98%EC%8B%9C-%EB%A1%B1-%EC%9B%90%ED%94%BC%EC%8A%A4%EB%81%88-%EC%A1%B0%EC%A0%88%EA%B0%80%EB%8A%A5/18722/category/214/display/1/'
+    // let href = 'https://www.hotping.co.kr/product/2%EA%B8%B0%EC%9E%A5%EB%8D%B0%EC%9D%BC%EB%A6%AC%ED%95%84%EC%88%98%F0%9F%92%95made-%EC%97%90%EB%94%94%EC%85%98-%EA%B8%B0%EB%B3%B8%EC%88%8F-%EC%8A%AC%EB%A6%AC%EB%B8%8C%EB%A6%AC%EC%8A%A4-%EC%9D%B4%EB%84%88%ED%8B%B044110-%EB%B9%85%EC%82%AC%EC%9D%B4%EC%A6%88%EB%82%98%EC%8B%9C-%EC%9D%B4%EB%84%88%EB%82%98%EC%8B%9C-%EB%8D%B0%EC%9D%BC%EB%A6%AC%EB%82%98%EC%8B%9C-%EB%B2%A0%EC%9D%B4%EC%A7%81%EB%82%98%EC%8B%9C-%EB%AC%B4%EC%A7%80%EB%82%98%EC%8B%9C-%ED%81%AC%EB%A1%AD%EB%82%98%EC%8B%9C/39923/category/25/display/1/'
+    // let href = 'https://dailyjou.com/product/%EC%9D%B4%EB%A0%88%ED%94%84-%EB%A9%80%ED%8B%B0-%EC%8A%A4%ED%8A%B8%EB%9E%A9-%EC%83%8C%EB%93%A4/18164/category/214/display/1/'
+    // let href = 'https://beidelli.com/product/detail.html?product_no=4164&cate_no=24&display_group=1'
 
+    // let href = 'https://ba-on.com/product/3%EC%B2%9C%EC%9E%A5%EB%8F%8C%ED%8C%8Cunisex-%EC%9D%B4%EC%A7%80%EC%98%A4-%EB%A0%88%ED%84%B0%EB%A7%81-%EB%82%98%EC%9D%BC%EB%A1%A0-%EC%98%A4%EB%B2%84-%ED%9B%84%EB%93%9C-3color/17337/category/786/display/1/'
+    let href = 'https://dailyjou.com/product/%EC%B9%B4%EC%8B%9C%ED%83%80-%EB%A0%88%EC%9D%B4%EC%8A%A4-%EB%82%98%EC%8B%9C-%EB%A1%B1-%EC%9B%90%ED%94%BC%EC%8A%A4%EB%81%88-%EC%A1%B0%EC%A0%88%EA%B0%80%EB%8A%A5/18722/category/214/display/1/';
 
     const productDetails = [];
     const productRepls = [];
