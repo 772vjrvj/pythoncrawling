@@ -205,8 +205,10 @@ def fetch_article_details(article_numbers, gu, page):
 
 
 def remove_duplicates(details):
-    seen = set()
+    seen_phone_1 = set()
+    seen_phone_2 = set()
     unique_details = []
+
     for detail in details:
         # 전화번호 1과 2를 가져옵니다. 없을 경우 빈 문자열로 처리
         phone_1 = detail.get("전화번호 1", "")
@@ -216,24 +218,19 @@ def remove_duplicates(details):
         if not phone_1 and not phone_2:
             continue
 
-        # 키를 저장할 리스트
-        keys = []
-
-        # 전화번호 1이 있으면 키로 추가
-        if phone_1:
-            keys.append((detail.get("물건"), detail.get("위치"), phone_1))
-
-        # 전화번호 2가 있으면 키로 추가
-        if phone_2:
-            keys.append((detail.get("물건"), detail.get("위치"), phone_2))
-
-        # 중복 확인: 키들 중 하나라도 이미 seen에 있다면 중복으로 간주
-        if any(key in seen for key in keys):
+        # 전화번호 1이 이미 seen_phone_1에 있으면 중복으로 간주
+        if phone_1 and phone_1 in seen_phone_1:
             continue
 
-        # 중복이 아니라면 키들을 seen에 추가
-        for key in keys:
-            seen.add(key)
+        # 전화번호 2가 이미 seen_phone_2에 있으면 중복으로 간주
+        if phone_2 and phone_2 in seen_phone_2:
+            continue
+
+        # 중복이 아니라면 전화번호를 각각의 seen 집합에 추가
+        if phone_1:
+            seen_phone_1.add(phone_1)
+        if phone_2:
+            seen_phone_2.add(phone_2)
 
         # 유니크한 항목으로 추가
         unique_details.append(detail)
@@ -379,7 +376,7 @@ def fetch_additional_info(details):
             new_print(f"Unexpected error for atclNo {atclNo}: {e}")
             continue
 
-    return remove_duplicates(results)
+    return results
 
 
 def start_crawling():
