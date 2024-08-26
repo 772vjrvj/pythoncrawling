@@ -222,32 +222,53 @@ async function extractBannerInfo(page, baseUrl) {
     try {
         return await page.evaluate((baseUrl) => {
             const banners = [];
+            const seenLinks = new Set(); // 중복된 링크를 추적하기 위한 Set
 
-            const processBanner = (img, aTag) => {
-                const imgUrl = img ? (img.getAttribute('src').startsWith('http') ? img.getAttribute('src') : new URL(img.getAttribute('src'), baseUrl).href) : '';
-                const linkUrl = aTag ? (aTag.getAttribute('href').startsWith('http') ? aTag.getAttribute('href') : new URL(aTag.getAttribute('href'), baseUrl).href) : '';
-                const bannerName = aTag ? aTag.textContent.trim() : 'Unnamed Banner';
-                banners.push({'배너이미지 URL': imgUrl, '배너 링크': linkUrl, '배너 이름': bannerName});
-            };
+            //https://ba-on.com/
+            const anchorTags1 = document.querySelectorAll('.main_slide a');
 
-            // 이미지 배너 처리
-            // https://ba-on.com
-            const topBanners = document.querySelectorAll('#topbanner, [app4you-smart-banner]');
-            topBanners.forEach(banner => {
-                const img = banner.querySelector('img');
-                const aTag = banner.querySelector('a');
-                if (aTag) {
-                    processBanner(img, aTag);
+            //https://beidelli.com
+            const anchorTags2 = document.querySelectorAll('.mainslide a');
+
+            //https://www.hotping.co.kr/
+            const anchorTags3 = document.querySelectorAll('.imgimg1 a');
+            const anchorTags4 = document.querySelectorAll('.imgimg2 a');
+            const anchorTags5 = document.querySelectorAll('.mainbn1 a');
+            const anchorTags6 = document.querySelectorAll('.mainbn2 a');
+
+            //https://dailyjou.com/
+            const anchorTags7 = document.querySelectorAll('.yg_banner_05 a');
+
+
+            // 모든 선택자 배열을 합침
+            const allAnchorTags = [
+                ...anchorTags1,
+                ...anchorTags2,
+                ...anchorTags3,
+                ...anchorTags4,
+                ...anchorTags5,
+                ...anchorTags6,
+                ...anchorTags7
+            ];
+
+            // 선택된 모든 anchorTags에서 배너 정보 추출
+            allAnchorTags.forEach(anchor => {
+                const imgTag = anchor.querySelector('img');
+                if (imgTag) {
+                    const bannerLink = anchor.href ? new URL(anchor.href, baseUrl).href : '';
+                    // 중복된 배너 링크는 추가하지 않음
+                    if (!seenLinks.has(bannerLink)) {
+                        banners.push({
+                            '배너 링크': bannerLink,
+                            '배너이미지 URL': imgTag.src ? new URL(imgTag.src, baseUrl).href : '',
+                            '배너 이름': imgTag.alt || '' // alt 속성이 없으면 빈 문자열로 처리
+                        });
+                        seenLinks.add(bannerLink); // 중복 방지를 위해 Set에 추가
+                    }
                 }
             });
 
-            // 슬라이더 배너 처리
-            // https://beidelli.com
-            const sliderBanners = document.querySelectorAll('#topbanner[data-slider="true"] ul li a');
-            sliderBanners.forEach(sliderBanner => {
-                processBanner(null, sliderBanner);
-            });
-
+            // 배너가 하나라도 있으면 그 목록을 반환하고, 없으면 기본값 반환
             return banners.length > 0 ? banners : [{'배너이미지 URL': '', '배너 링크': '', '배너 이름': ''}];
         }, baseUrl);
     } catch (error) {
@@ -1414,6 +1435,8 @@ async function main(url) {
     const metaTags = await extractMetaTags(page);
 
     const bannerInfo = await extractBannerInfo(page, url);
+    console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
+
 
     const footerInfo = await extractFooterInfo(page);
 
@@ -1429,11 +1452,10 @@ async function main(url) {
 
     // const categoryInfo = testJson;
 
-    console.log('categoryInfo len : ', categoryInfo.length);
+    // console.log('categoryInfo len : ', categoryInfo.length);
 
-    console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
+    // console.log('categoryInfo : ', JSON.stringify(categoryInfo, null, 2));
 
-    console.log('bannerInfo : ', JSON.stringify(bannerInfo, null, 2));
 
     const shopInfo = {
         '쇼핑몰 이름': metaTags.siteName,
