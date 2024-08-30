@@ -142,12 +142,12 @@ def print_article_count(driver, gu_urls):
     return total_count
 
 
-def fetch_article_list(gu, page):
+def fetch_article_list(gu, page, user_agent):
     rletTpCd = get_selected_property_types()
     url_template = district_url_templates[gu].format(rletTpCd=rletTpCd, page=page)
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": user_agent
     }
 
     response = requests.get(url_template, headers=headers)
@@ -161,7 +161,7 @@ def fetch_article_list(gu, page):
 
     article_numbers = [article['atclNo'] for article in articles]
     new_print(f"구 : {gu}, 페이지 : {page}, 대표목록: {article_numbers}")
-    details = fetch_article_details(article_numbers, gu, page)
+    details = fetch_article_details(article_numbers, gu, page, user_agent)
 
     return details, article_numbers
 
@@ -182,11 +182,11 @@ def save_to_excel(details, mode='w'):
     new_print(f"엑셀 저장 {file_name}")
 
 
-def fetch_article_details(article_numbers, gu, page):
+def fetch_article_details(article_numbers, gu, page, user_agent):
     details = []
     url_template = "https://m.land.naver.com/article/getSameAddrArticle?articleNo={}"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": user_agent
     }
 
     new_print(f"구 : {gu}, 페이지 : {page}, 전체목록 수집중 ...")
@@ -213,7 +213,7 @@ def fetch_article_details(article_numbers, gu, page):
 
     new_print(f"구 : {gu}, 페이지 : {page}, 전체목록: {details}")
 
-    return fetch_additional_info(details)
+    return fetch_additional_info(details, user_agent)
 
 
 def remove_duplicates(details):
@@ -250,10 +250,10 @@ def remove_duplicates(details):
     return unique_details
 
 
-def fetch_additional_info(details):
+def fetch_additional_info(details, user_agent):
     base_url = "https://fin.land.naver.com/articles/{}"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": user_agent
     }
 
     results = []
@@ -456,7 +456,7 @@ def actual_crawling_function(user_agent):
                     break
 
                 new_print(f"구 : {gu} , 페이지 : {page}")
-                details, article_numbers = fetch_article_list(gu, page)
+                details, article_numbers = fetch_article_list(gu, page, user_agent)
 
                 if not details:
                     break
