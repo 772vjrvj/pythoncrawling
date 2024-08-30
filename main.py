@@ -464,7 +464,13 @@ def actual_crawling_function(user_agent):
                 all_details.extend(details)
 
                 progress['value'] += len(article_numbers)
-                progress_label.config(text=f"진행률: {progress['value'] / progress['maximum'] * 100:.2f}% ({progress['value']}/{progress['maximum']})")
+
+                if progress['maximum'] > 0:
+                    progress_percentage = progress['value'] / progress['maximum'] * 100
+                    progress_label.config(text=f"진행률: {progress_percentage:.2f}% ({progress['value']}/{progress['maximum']})")
+                else:
+                    progress_label.config(text="진행률: 0% (0/0)")
+
                 remaining_time = (progress['maximum'] - progress['value']) * 15
                 eta = str(timedelta(seconds=remaining_time)).split(".")[0]  # 소수점 제거
                 eta_label.config(text=f"예상 소요 시간: {eta}")
