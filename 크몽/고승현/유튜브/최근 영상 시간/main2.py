@@ -23,6 +23,7 @@ def read_excel_file(filepath):
     url_list = df.iloc[:, 0].tolist()
     return url_list
 
+
 def update_log(url_list):
     log_text_widget.delete(1.0, tk.END)
     for url in url_list:
@@ -30,12 +31,14 @@ def update_log(url_list):
     log_text_widget.insert(tk.END, f"\n총 {len(url_list)}개의 URL이 있습니다.\n")
     log_text_widget.see(tk.END)
 
+
 def new_print(text, level="INFO"):
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     formatted_text = f"[{timestamp}] [{level}] {text}"
     print(formatted_text)
     log_text_widget.insert(tk.END, f"{formatted_text}\n")
     log_text_widget.see(tk.END)
+
 
 def extract_prdtNo(url):
     # URL에서 prdtNo 값을 추출하는 함수
@@ -45,22 +48,51 @@ def extract_prdtNo(url):
         return prdtNo
     return None
 
-def get_soup(url):
-    response = requests.get(url)
-    return BeautifulSoup(response.text, 'html.parser')
+
+def get_soup(url, timeout=10, retries=3):
+    while retries > 0:
+        try:
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()  # 요청에 실패할 경우 예외를 발생시킴
+            return BeautifulSoup(response.text, 'html.parser')
+        except requests.exceptions.InvalidURL as e:
+            print(f"Invalid URL: {url}. Skipping.")
+            break  # Invalid URL이면 바로 다음으로 넘어감
+        except requests.exceptions.HTTPError as e:
+            # 404나 400 범주의 에러는 재시도 없이 바로 종료
+            if response.status_code == 404 or response.status_code == 400:
+                print(f"Request error: {e}. Status code: {response.status_code}. Skipping URL.")
+                break
+            print(f"Request error: {e}. Retrying... ({retries} retries left)")
+            retries -= 1
+            time.sleep(2)  # 재시도 전 잠시 대기
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}. Retrying... ({retries} retries left)")
+            retries -= 1
+            time.sleep(2)  # 재시도 전 잠시 대기
+    return None
+
 
 def process_author_info(url):
     soup = get_soup(url)
+    if not soup:  # soup이 None이면 다음으로 넘어감
+        new_print(f"Skipping URL due to failed request or parsing: {url}", level="WARNING")
+        return None
+
     author_span = soup.find("span", itemprop="author", itemscope=True, itemtype="http://schema.org/Person")
     if author_span:
         author_url = author_span.find("link", itemprop="url")["href"]
         return f"{author_url}/videos"
     return None
 
+
 def extract_published_time(url):
     soup = get_soup(url)
-    scripts = soup.find_all("script")
+    if not soup:
+        print("Failed to retrieve the page or parse HTML.")
+        return None
 
+    scripts = soup.find_all("script")
     for script in scripts:
         if script.string and "ytInitialData" in script.string:
             json_text = re.search(r"var ytInitialData = ({.*?});", script.string, re.DOTALL)
@@ -77,6 +109,7 @@ def extract_published_time(url):
                 except json.JSONDecodeError as e:
                     print(f"JSON Decode Error: {e}")
                     return None
+    print("Failed to find published time.")
     return None
 
 
@@ -101,7 +134,7 @@ def start_processing():
         else:
             video_url = url.rstrip('/') + "/videos"
 
-        print(f"video_url : {video_url}")
+        new_print(f"video_url : {video_url}")
 
         result = ""
         if  video_url:
@@ -129,6 +162,7 @@ def start_processing():
 
 flashing = True  # 깜빡임 상태를 관리하는 플래그
 
+
 def flash_window(root):
     global flashing
 
@@ -151,6 +185,7 @@ def flash_window(root):
 
     threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
 
+
 def stop_flash_window(root):
     global flashing
     flashing = False
@@ -167,7 +202,9 @@ def stop_flash_window(root):
     flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
     ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
 
+
 file_path = None
+
 
 def save_to_excel(data):
     global file_path
@@ -193,6 +230,7 @@ def on_drop(event):
     update_log(url_list)
     check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
 
+
 def browse_file():
     global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
     file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
@@ -200,6 +238,7 @@ def browse_file():
         url_list = read_excel_file(file_path)
         update_log(url_list)
         check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
 
 def toggle_start_stop():
     if not url_list:
@@ -212,11 +251,13 @@ def toggle_start_stop():
     else:
         stop_processing()
 
+
 def stop_processing():
     global stop_flag, url_list
     stop_flag = True
     url_list = []  # 배열 초기화
     start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+
 
 def check_list_and_toggle_button():
     if url_list:
