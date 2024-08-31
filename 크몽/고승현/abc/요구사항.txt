@@ -69,6 +69,14 @@ https://grandstage.a-rt.com/product/new?prdtNo=1020101338&page=1
 
 
 
+■ 2024-08-31
+    순수한토끼6077
+    수정 가격 사이트와 가격 불일치
+    json_data.get("productPrice", {}).get("sellAmt") -> json_data.get("displayProductPrice") 로 수정
+
+
+
+
 pyinstaller --onefile --noconsole --add-data "C:\Users\772vj\AppData\Local\Programs\Python\Python312\tcl\tkdnd2.8;tkdnd2.8" main.py
 
 https://sourceforge.net/projects/tkdnd/files/Windows%20Binaries/TkDND%202.8/

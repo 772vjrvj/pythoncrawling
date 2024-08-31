@@ -101,11 +101,16 @@ def start_processing():
                 product_status = "품절" if total_stock_qty == 0 else "정상"
 
                 # 판매가 포맷 설정
-                sellAmt = json_data.get("productPrice", {}).get("sellAmt")
+                # sellAmt = json_data.get("productPrice", {}).get("sellAmt")
+                # if sellAmt is not None:
+                #     sellAmt = f"{sellAmt:,}"
+
+                sellAmt = json_data.get("displayProductPrice")
                 if sellAmt is not None:
                     sellAmt = f"{sellAmt:,}"
 
-                # 빈 배열일 경우 공백으로 설정
+
+            # 빈 배열일 경우 공백으로 설정
                 if not sold_out_options:
                     sold_out_options = ""
                 if not available_options:

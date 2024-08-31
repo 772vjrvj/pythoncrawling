@@ -9,10 +9,6 @@ import requests
 import os
 from tkinter import ttk  # 진행률 표시를 위한 모듈 추가
 import ctypes
-from bs4 import BeautifulSoup
-import re
-import json
-
 
 url_list = []
 extracted_data_list = []  # 모든 데이터 저장용
@@ -23,14 +19,12 @@ def read_excel_file(filepath):
     url_list = df.iloc[:, 0].tolist()
     return url_list
 
-
 def update_log(url_list):
     log_text_widget.delete(1.0, tk.END)
     for url in url_list:
         log_text_widget.insert(tk.END, url + "\n")
     log_text_widget.insert(tk.END, f"\n총 {len(url_list)}개의 URL이 있습니다.\n")
     log_text_widget.see(tk.END)
-
 
 def new_print(text, level="INFO"):
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -39,109 +33,133 @@ def new_print(text, level="INFO"):
     log_text_widget.insert(tk.END, f"{formatted_text}\n")
     log_text_widget.see(tk.END)
 
-
-def get_soup(url, timeout=10, retries=3):
-    while retries > 0:
-        try:
-            response = requests.get(url, timeout=timeout)
-            response.raise_for_status()  # 요청에 실패할 경우 예외를 발생시킴
-            return BeautifulSoup(response.text, 'html.parser')
-        except requests.exceptions.InvalidURL as e:
-            print(f"Invalid URL: {url}. Skipping.")
-            break  # Invalid URL이면 바로 다음으로 넘어감
-        except requests.exceptions.HTTPError as e:
-            # 404나 400 범주의 에러는 재시도 없이 바로 종료
-            if response.status_code == 404 or response.status_code == 400:
-                print(f"Request error: {e}. Status code: {response.status_code}. Skipping URL.")
-                break
-            print(f"Request error: {e}. Retrying... ({retries} retries left)")
-            retries -= 1
-            time.sleep(2)  # 재시도 전 잠시 대기
-        except requests.exceptions.RequestException as e:
-            print(f"Request error: {e}. Retrying... ({retries} retries left)")
-            retries -= 1
-            time.sleep(2)  # 재시도 전 잠시 대기
+def extract_prdtNo(url):
+    # URL에서 prdtNo 값을 추출하는 함수
+    if "prdtNo=" in url:
+        prdtNo_part = url.split("prdtNo=")[-1]
+        prdtNo = prdtNo_part.split("&")[0]  # prdtNo 값 추출
+        return prdtNo
     return None
-
-
-def process_author_info(url):
-    soup = get_soup(url)
-    if not soup:  # soup이 None이면 다음으로 넘어감
-        new_print(f"Skipping URL due to failed request or parsing: {url}", level="WARNING")
-        return None
-
-    author_span = soup.find("span", itemprop="author", itemscope=True, itemtype="http://schema.org/Person")
-    if author_span:
-        author_url = author_span.find("link", itemprop="url")["href"]
-        return f"{author_url}/videos"
-    return None
-
-
-def extract_published_time(url):
-    soup = get_soup(url)
-    if not soup:
-        print("Failed to retrieve the page or parse HTML.")
-        return ""
-
-    scripts = soup.find_all("script")
-    for script in scripts:
-        if script.string and "ytInitialData" in script.string:
-            json_text = re.search(r"var ytInitialData = ({.*?});", script.string, re.DOTALL)
-            if json_text:
-                try:
-                    yt_data = json.loads(json_text.group(1))
-                    tabs = yt_data.get("contents", {}).get("twoColumnBrowseResultsRenderer", {}).get("tabs", [])
-                    for tab in tabs:
-                        rich_grid_renderer = tab.get("tabRenderer", {}).get("content", {}).get("richGridRenderer", {})
-                        for item in rich_grid_renderer.get("contents", []):
-                            video_renderer = item.get("richItemRenderer", {}).get("content", {}).get("videoRenderer", {})
-                            if video_renderer.get("publishedTimeText"):
-                                return video_renderer["publishedTimeText"]["simpleText"]
-                except json.JSONDecodeError as e:
-                    print(f"JSON Decode Error: {e}")
-                    return ""
-    print("Failed to find published time.")
-    return ""
-
 
 def start_processing():
     global stop_flag, extracted_data_list, root
     stop_flag = False
     log_text_widget.delete(1.0, tk.END)  # 기존 로그 화면 초기화
+    headers = {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Connection": "keep-alive",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest"
+    }
 
     extracted_data_list = []
     total_urls = len(url_list)
     progress["maximum"] = total_urls
 
-    for index, url in enumerate(url_list, start=1):
+    for index, url in enumerate(url_list):
         if stop_flag:
             break
-        new_print(f"Processing URL {index}: {url}")
+        try:
+            # prdtNo 값을 추출
+            prdtNo = extract_prdtNo(url)
+            if prdtNo:
+                # URL에 따라 request_url 분기
+                if "abcmart" in url:
+                    request_url = f"https://abcmart.a-rt.com/product/info?prdtNo={prdtNo}"
+                    Retailer = "ABC-MART"
+                elif "grandstage" in url:
+                    request_url = f"https://grandstage.a-rt.com/product/info?prdtNo={prdtNo}"
+                    Retailer = "GRAND STAGE"
+                else:
+                    new_print(f"Unsupported URL: {url}", level="ERROR")
+                    continue
 
-        if not any(substring in url for substring in ["/c/", "/channel/", "/@"]):
-            video_url = process_author_info(url)
-        elif "/videos" in url:
-            video_url = url
-        else:
-            video_url = url.rstrip('/') + "/videos"
+                new_print(f"Requesting URL: {request_url}")
 
-        new_print(f"video_url : {video_url}")
+                # 요청을 보내고 JSON 응답 받기
+                response = requests.get(request_url, headers=headers)
+                response.raise_for_status()  # 요청 오류가 있으면 예외 발생
+                json_data = response.json()
 
-        result = ""
-        if  video_url:
-            result = extract_published_time(video_url)
+                # 품절된 옵션과 구매 가능한 옵션을 분리
+                sold_out_options = []
+                available_options = []
+                total_stock_qty = 0
 
-        new_print(f"Result for URL {index}: {result or 'Not found'}")
-        extracted_data_list.append(result)
+                for option in json_data.get("productOption", []):
+                    optnName = option.get("optnName")
+                    totalStockQty = option.get("totalStockQty", 0)
+                    if totalStockQty == 0:
+                        sold_out_options.append(optnName)
+                    else:
+                        available_options.append(optnName)
+                    total_stock_qty += totalStockQty
+
+                # 상품상태 결정
+                product_status = "품절" if total_stock_qty == 0 else "정상"
+
+                # 판매가 포맷 설정
+                # sellAmt = json_data.get("productPrice", {}).get("sellAmt")
+                # if sellAmt is not None:
+                #     sellAmt = f"{sellAmt:,}"
+
+                sellAmt = json_data.get("displayProductPrice")
+                if sellAmt is not None:
+                    sellAmt = f"{sellAmt:,}"
+
+
+                # 빈 배열일 경우 공백으로 설정
+                if not sold_out_options:
+                    sold_out_options = ""
+                if not available_options:
+                    available_options = ""
+
+                # 원하는 값을 추출하여 객체로 구성
+                extracted_data = {
+                    "상품명": json_data.get("prdtName"),
+                    "상품 상태": product_status,
+                    "브랜드": json_data.get("brand", {}).get("brandName"),
+                    "상품상세url": url,
+                    "판매가": sellAmt,
+                    "구매 가능한 옵션": available_options,
+                    "품절된 옵션": sold_out_options,
+                    "스타일코드": json_data.get("styleInfo"),
+                    "색상코드": json_data.get("prdtColorInfo"),
+                    "판매처": Retailer
+                }
+
+                extracted_data_list.append(extracted_data)
+
+                new_print(extracted_data, level="DATA")
+            else:
+                new_print(f"Invalid URL or prdtNo not found: {url}", level="ERROR")
+        except Exception as e:
+            new_print(f"WARN processing {url}: {str(e)}", level="WARN")
+            extracted_data = {
+                "상품명": "",
+                "상품 상태": "판매 종료",
+                "브랜드": "",
+                "상품상세url": url,
+                "구매 가능한 옵션": "",
+                "품절된 옵션": "",
+                "스타일코드": "",
+                "판매가": "",
+                "색상코드": "",
+                "판매처": ""
+            }
+            extracted_data_list.append(extracted_data)
+            new_print(extracted_data, level="WARN")
 
         # 진행률 업데이트
-        progress["value"] = index
-        progress_label.config(text=f"진행률: {int((index) / total_urls * 100)}%")
+        progress["value"] = index + 1
+        progress_label.config(text=f"진행률: {int((index + 1) / total_urls * 100)}%")
 
-        remaining_time = (total_urls - (index)) * 2.5  # 남은 URL 개수 * 2초
+        remaining_time = (total_urls - (index + 1)) * 2.5  # 남은 URL 개수 * 2초
         eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
 
-        time.sleep(random.uniform(2, 5))
+        time.sleep(random.uniform(2, 3))
 
     if not stop_flag:
         save_to_excel(extracted_data_list)
@@ -152,7 +170,6 @@ def start_processing():
 
 
 flashing = True  # 깜빡임 상태를 관리하는 플래그
-
 
 def flash_window(root):
     global flashing
@@ -177,6 +194,7 @@ def flash_window(root):
     threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
 
 
+
 def stop_flash_window(root):
     global flashing
     flashing = False
@@ -194,42 +212,33 @@ def stop_flash_window(root):
     ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
 
 
-file_path = None
-
 
 def save_to_excel(data):
-    global file_path
-    if file_path:
-        # 기존 엑셀 파일 불러오기
-        df = pd.read_excel(file_path, sheet_name=0)
+    df = pd.DataFrame(data)
 
-        # B열에 결과값 추가
-        df['최신 업데이트 일'] = data
+    # 현재 시간 가져오기
+    current_time = time.strftime("%Y%m%d_%H%M%S")
+    filename = f"ABC마트 데이터_{current_time}.xlsx"
 
-        # 동일한 파일에 덮어쓰기
-        df.to_excel(file_path, index=False)
+    df.to_excel(filename, index=False)
+    new_print(f"Data saved to {filename}", level="INFO")
 
-        new_print(f"Data saved to {file_path}", level="INFO")
-    else:
-        new_print("No file selected for saving.", level="WARNING")
 
 
 def on_drop(event):
-    global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
-    file_path = event.data.strip('{}')
-    url_list = read_excel_file(file_path)
+    global url_list  # url_list 변수를 전역으로 선언
+    filepath = event.data.strip('{}')
+    url_list = read_excel_file(filepath)
     update_log(url_list)
     check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
 
-
 def browse_file():
-    global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
-    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
-    if file_path:
-        url_list = read_excel_file(file_path)
+    global url_list  # url_list 변수를 전역으로 선언
+    filepath = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
+    if filepath:
+        url_list = read_excel_file(filepath)
         update_log(url_list)
         check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
-
 
 def toggle_start_stop():
     if not url_list:
@@ -242,13 +251,11 @@ def toggle_start_stop():
     else:
         stop_processing()
 
-
 def stop_processing():
     global stop_flag, url_list
     stop_flag = True
     url_list = []  # 배열 초기화
     start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
-
 
 def check_list_and_toggle_button():
     if url_list:
@@ -262,7 +269,7 @@ def main():
 
 
     root = TkinterDnD.Tk()
-    root.title("유튜브 데이터 수집 프로그램")
+    root.title("ABC마트 데이터 수집 프로그램")
     root.geometry("600x600")
 
     font_large = font.Font(size=10)
