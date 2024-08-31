@@ -334,7 +334,7 @@ def run_extraction(start_page, end_page):
     global extracted_data
     extracted_data = detailed_articles
 
-# 데이터 저장
+
 # 데이터 저장
 def save_data(format_type):
     if not extracted_data:
