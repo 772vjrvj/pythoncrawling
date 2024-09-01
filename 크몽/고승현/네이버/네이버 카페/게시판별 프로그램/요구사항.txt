@@ -15,3 +15,5 @@ https://cafe.naver.com/wtac
 
 https://m.cafe.naver.com/
 https://m.cafe.naver.com/wtac
+
+pyinstaller --onefile --noconsole main.py
