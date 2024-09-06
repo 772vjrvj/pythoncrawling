@@ -3,8 +3,6 @@ import os
 import pandas as pd
 from PIL import Image as PILImage
 from io import BytesIO
-from openpyxl import load_workbook
-from openpyxl.drawing.image import Image as ExcelImage
 import re
 import time
 
@@ -21,14 +19,16 @@ def remove_html_tags(text):
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text).replace('\n', '\r\n')  # 줄바꿈 유지
 
-# 이미지 저장 함수
+
+# 이미지 저장 함수 (단순 이미지 다운로드)
 def save_image_from_url(url, filename):
     try:
+        # 이미지 다운로드 요청
         response = requests.get(url, stream=True)
         if response.status_code == 200:
-            img = PILImage.open(BytesIO(response.content))
-            img.save(filename)
-            print(f"Image saved: {filename}")
+            with open(filename, 'wb') as out_file:
+                out_file.write(response.content)
+            print(f"Image successfully saved: {filename}")
             return True  # 이미지 저장 성공 시 True 반환
         else:
             print(f"Failed to fetch image: {url} (Status code: {response.status_code})")
@@ -36,6 +36,7 @@ def save_image_from_url(url, filename):
     except Exception as e:
         print(f"Error fetching image from {url}: {e}")
         return False  # 이미지 저장 실패 시 False 반환
+
 
 # 상품 상세 정보를 가져오는 함수
 def fetch_product_details(product_id):
@@ -127,32 +128,10 @@ def save_to_excel_append(data, filename="products.xlsx"):
         df = pd.concat([existing_df, df], ignore_index=True)
 
     df.to_excel(filename, index=False)
-
-    # 이미지 삽입을 위해 openpyxl 로드
-    wb = load_workbook(filename)
-    ws = wb.active
-
-    row_num = ws.max_row - len(data) + 1  # 현재 행부터 이미지 삽입 시작
-    for index, row in enumerate(data):
-        real_second_image_path = row['second_image']
-        real_last_image_path = row['last_image']
-
-        # second_image 삽입
-        if os.path.exists(real_second_image_path):
-            img = ExcelImage(real_second_image_path)
-            img.width, img.height = 100, 100  # 이미지 크기 조정
-            ws.add_image(img, f"H{row_num + index}")  # F열에 이미지 삽입
-
-        # last_image 삽입
-        if os.path.exists(real_last_image_path):
-            img = ExcelImage(real_last_image_path)
-            img.width, img.height = 100, 100  # 이미지 크기 조정
-            ws.add_image(img, f"I{row_num + index}")  # G열에 이미지 삽입
-
-    wb.save(filename)
-    print(f"Data and images saved to {filename}")
+    print(f"Data saved to {filename}")
 
 # 모든 페이지 처리 함수
+# 이미지 처리 및 저장 부분 수정
 def fetch_all_pages(total_pages, per_page=120):
     global product_data
     for page in range(1, total_pages + 1):
@@ -162,59 +141,55 @@ def fetch_all_pages(total_pages, per_page=120):
         if result and 'hits' in result:
             hits = result['hits']
 
-            for hit in hits:
+            for index, hit in enumerate(hits):
                 product_id = str(int(hit.get('productId', '0')))  # '0444' => '444'
-                print(f"Fetching details for product {product_id}...")
-                time.sleep(2)
+                print(f"(index: {index + 1}) Fetching details for product {product_id} ...")
+                time.sleep(1)
                 product_details = fetch_product_details(product_id)
 
                 if product_details:
                     name = product_details.get('name', '')
+                    slug = product_details.get('slug', '')
                     description = remove_html_tags(product_details.get('description', ''))
                     brand_name = "See all " + product_details.get('brand', {}).get('name', '')
 
                     # 이미지 처리
                     options = product_details.get('options', [])
                     if options and len(options) > 0:
-                        media = options[0].get('media', {}).get('standard', [])
-                        second_image = media[1] if len(media) > 1 else ''
+                        media = options[0].get('media', {}).get('large', [])
+                        second_image = media[0] if len(media) > 1 else ''
                         last_image = media[-1] if len(media) > 1 else ''
 
-                        # 이미지 저장
-                        product_dir = f"{product_id}"
-                        create_directory(product_dir)
+                        # 이미지 저장 (metastyle 폴더 안에 product_id별로 저장)
+                        product_dir = os.path.join("metastyle", f"{product_id}")  # 각 product_id 폴더를 metastyle 폴더 안에 생성
+                        create_directory(product_dir)  # 디렉토리 생성
+
                         second_image_path = ""
                         last_image_path = ""
 
                         if second_image:
-                            second_image_path = os.path.join(product_dir, f"{product_id}_second_image.jpg")
-                            second_image_success = save_image_from_url(second_image, second_image_path)
-                        else:
-                            second_image_success = False
+                            second_image_path = os.path.join(product_dir, f"{product_id}_second_large_image.jpg")
+                            save_image_from_url(second_image, second_image_path)
 
                         if last_image:
-                            last_image_path = os.path.join(product_dir, f"{product_id}_last_image.jpg")
-                            last_image_success = save_image_from_url(last_image, last_image_path)
-                        else:
-                            last_image_success = False
+                            last_image_path = os.path.join(product_dir, f"{product_id}_last_large_image.jpg")
+                            save_image_from_url(last_image, last_image_path)
 
-                        # 엑셀에 삽입할 이미지가 존재하는지 확인
-                        if second_image_success or last_image_success:
-                            obj = {
-                                "productId": str(product_id),  # product_id를 문자열로 저장
-                                "name": name,
-                                "description": description,
-                                "tag": brand_name,
-                                "second_image_url": second_image,  # 실제 이미지 파일 경로
-                                "last_image_url": last_image,  # 실제 이미지 파일 경로
-                                "second_image": second_image_path if second_image_success else '',  # 이미지 경로가 없으면 빈 문자열
-                                "last_image": last_image_path if last_image_success else '',  # 이미지 경로가 없으면 빈 문자열
-                            }
+                        # 데이터를 엑셀에 삽입
+                        obj = {
+                            "productId": str(product_id),  # product_id를 문자열로 저장
+                            "url": f"https://www.saksfifthave.kr/en-kr/product/{slug}/0{product_id}",
+                            "name": name,
+                            "description": description,
+                            "tag": brand_name,
+                            "second_image_url": second_image,  # 이미지 URL
+                            "last_image_url": last_image,  # 이미지 URL
+                        }
 
-                            print(f"obj : {obj}")
+                        print(f"obj : {obj}")
 
-                            # 엑셀 데이터 저장
-                            product_data.append(obj)
+                        # 엑셀 데이터 저장
+                        product_data.append(obj)
 
             # 각 페이지 끝날 때마다 엑셀에 저장
             save_to_excel_append(product_data)
@@ -225,6 +200,7 @@ def fetch_all_pages(total_pages, per_page=120):
 
         time.sleep(2)  # 요청 사이에 2초 대기
 
+
 if __name__ == "__main__":
     # 1페이지부터 총 2페이지까지 데이터를 가져오는 예시
-    fetch_all_pages(total_pages=1, per_page=50)
+    fetch_all_pages(total_pages=173, per_page=120)

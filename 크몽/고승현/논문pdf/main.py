@@ -19,13 +19,8 @@ def extract_title_from_pdf(pdf_path):
             text = first_page.extract_text()
 
             # 논문 제목 추출 (패턴은 필요에 따라 조정 가능)
-            title_pattern = re.compile(r'(?i)(?:title:|abstract|study).*?\n([^\n]+)')
-            match = title_pattern.search(text)
+            print(f"text : {text}")
 
-            if match:
-                return match.group(1).strip()
-            else:
-                return "Title not found"
     except Exception as e:
         return f"Error reading {pdf_path}: {e}"
 
