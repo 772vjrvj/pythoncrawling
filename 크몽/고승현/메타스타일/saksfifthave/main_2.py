@@ -198,9 +198,9 @@ def fetch_all_pages(total_pages, per_page=120):
         else:
             print(f"Failed to fetch page {page}")
 
-        time.sleep(2)  # 요청 사이에 2초 대기
+        time.sleep(1)  # 요청 사이에 2초 대기
 
 
 if __name__ == "__main__":
     # 1페이지부터 총 2페이지까지 데이터를 가져오는 예시
-    fetch_all_pages(total_pages=173, per_page=120)
+    fetch_all_pages(total_pages=5, per_page=10)

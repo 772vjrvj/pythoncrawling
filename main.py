@@ -5,6 +5,7 @@ from PIL import Image as PILImage
 from io import BytesIO
 import re
 import time
+from datetime import datetime, timedelta
 
 # 엑셀 파일 저장을 위한 전역 리스트
 product_data = []
@@ -19,6 +20,9 @@ def remove_html_tags(text):
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text).replace('\n', '\r\n')  # 줄바꿈 유지
 
+# 현재 시간을 'yyyy.mm.dd hh:mm:ss' 형식으로 반환하는 함수
+def get_current_time():
+    return datetime.now().strftime("%Y.%m.%d %H:%M:%S")
 
 # 이미지 저장 함수 (단순 이미지 다운로드)
 def save_image_from_url(url, filename):
@@ -28,20 +32,19 @@ def save_image_from_url(url, filename):
         if response.status_code == 200:
             with open(filename, 'wb') as out_file:
                 out_file.write(response.content)
-            print(f"Image successfully saved: {filename}")
+            print(f"{get_current_time()} Image successfully saved: {filename}")
             return True  # 이미지 저장 성공 시 True 반환
         else:
-            print(f"Failed to fetch image: {url} (Status code: {response.status_code})")
+            print(f"{get_current_time()} Failed to fetch image: {url} (Status code: {response.status_code})")
             return False  # 이미지 저장 실패 시 False 반환
     except Exception as e:
-        print(f"Error fetching image from {url}: {e}")
+        print(f"{get_current_time()} Error fetching image from {url}: {e}")
         return False  # 이미지 저장 실패 시 False 반환
-
 
 # 상품 상세 정보를 가져오는 함수
 def fetch_product_details(product_id):
     url = f"https://www.saksfifthave.kr/api/product/s/0{product_id}?lang=en&siteTag=SA_KR"
-    print(f"url : {url}")
+    print(f"{get_current_time()} url : {url}")
 
     headers = {
         "authority": "www.saksfifthave.kr",
@@ -66,13 +69,13 @@ def fetch_product_details(product_id):
     try:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            print("성공")
+            print(f"{get_current_time()} 성공")
             return response.json()
         else:
-            print(f"Error fetching product details for ID {product_id} (Status code: {response.status_code})")
+            print(f"{get_current_time()} Error fetching product details for ID {product_id} (Status code: {response.status_code})")
             return None
     except Exception as e:
-        print(f"An error occurred while fetching product details: {e}")
+        print(f"{get_current_time()} An error occurred while fetching product details: {e}")
         return None
 
 # 페이지별 상품 리스트 가져오는 함수
@@ -112,10 +115,10 @@ def fetch_products(page, per_page):
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"Error fetching product list (Status code: {response.status_code})")
+            print(f"{get_current_time()} Error fetching product list (Status code: {response.status_code})")
             return None
     except Exception as e:
-        print(f"An error occurred while fetching products: {e}")
+        print(f"{get_current_time()} An error occurred while fetching products: {e}")
         return None
 
 # 페이지별 데이터를 엑셀에 추가 저장하는 함수
@@ -128,22 +131,24 @@ def save_to_excel_append(data, filename="products.xlsx"):
         df = pd.concat([existing_df, df], ignore_index=True)
 
     df.to_excel(filename, index=False)
-    print(f"Data saved to {filename}")
+    print(f"{get_current_time()} Data saved to {filename}")
 
 # 모든 페이지 처리 함수
-# 이미지 처리 및 저장 부분 수정
 def fetch_all_pages(total_pages, per_page=120):
     global product_data
+    start_time = datetime.now()  # 스크립트 시작 시간 기록
+    print(f"{get_current_time()} 스크립트 시작")
+
     for page in range(1, total_pages + 1):
-        print(f"Fetching page {page}...")
+        print(f"{get_current_time()} Fetching page {page}...")
         result = fetch_products(page, per_page)
 
         if result and 'hits' in result:
             hits = result['hits']
 
             for index, hit in enumerate(hits):
-                product_id = str(int(hit.get('productId', '0')))  # '0444' => '444'
-                print(f"(index: {index + 1}) Fetching details for product {product_id} ...")
+                product_id = str(int(hit.get('productId', '0')))
+                print(f"{get_current_time()} (index: {index + 1}) Fetching details for product {product_id} ...")
                 time.sleep(1)
                 product_details = fetch_product_details(product_id)
 
@@ -160,12 +165,9 @@ def fetch_all_pages(total_pages, per_page=120):
                         second_image = media[0] if len(media) > 1 else ''
                         last_image = media[-1] if len(media) > 1 else ''
 
-                        # 이미지 저장 (metastyle 폴더 안에 product_id별로 저장)
-                        product_dir = os.path.join("metastyle", f"{product_id}")  # 각 product_id 폴더를 metastyle 폴더 안에 생성
+                        # 이미지 저장 (metastyle/페이지번호/제품ID 폴더 안에 저장)
+                        product_dir = os.path.join("metastyle", f"page_{page}", f"{product_id}")  # 각 페이지 안에 제품 폴더 생성
                         create_directory(product_dir)  # 디렉토리 생성
-
-                        second_image_path = ""
-                        last_image_path = ""
 
                         if second_image:
                             second_image_path = os.path.join(product_dir, f"{product_id}_second_large_image.jpg")
@@ -186,7 +188,7 @@ def fetch_all_pages(total_pages, per_page=120):
                             "last_image_url": last_image,  # 이미지 URL
                         }
 
-                        print(f"obj : {obj}")
+                        print(f"{get_current_time()} obj : {obj}")
 
                         # 엑셀 데이터 저장
                         product_data.append(obj)
@@ -196,11 +198,20 @@ def fetch_all_pages(total_pages, per_page=120):
             product_data = []  # 데이터를 비워서 다음 페이지 준비
 
         else:
-            print(f"Failed to fetch page {page}")
+            print(f"{get_current_time()} Failed to fetch page {page}")
 
         time.sleep(2)  # 요청 사이에 2초 대기
+
+    # 스크립트 종료 및 최종 시간 계산
+    end_time = datetime.now()
+    total_time = end_time - start_time
+    total_seconds = total_time.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    print(f"{get_current_time()} 스크립트 종료")
+    print(f"총 걸린 시간: {int(hours)}시간 {int(minutes)}분 {int(seconds)}초")
 
 
 if __name__ == "__main__":
     # 1페이지부터 총 2페이지까지 데이터를 가져오는 예시
-    fetch_all_pages(total_pages=173, per_page=120)
+    fetch_all_pages(total_pages=2, per_page=2)
