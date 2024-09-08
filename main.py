@@ -1,217 +1,616 @@
-import requests
 import os
+import pdfplumber
+import fitz  # PyMuPDF
 import pandas as pd
-from PIL import Image as PILImage
-from io import BytesIO
-import re
-import time
-from datetime import datetime, timedelta
 
-# 엑셀 파일 저장을 위한 전역 리스트
-product_data = []
 
-# 디렉토리가 없으면 생성
-def create_directory(dir_name):
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
+months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+]
 
-# HTML 태그 제거 함수
-def remove_html_tags(text):
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text).replace('\n', '\r\n')  # 줄바꿈 유지
+def find_tilde_number_pattern(text):
+    # 문자열의 앞뒤 공백을 제거
+    text = text.strip()
 
-# 현재 시간을 'yyyy.mm.dd hh:mm:ss' 형식으로 반환하는 함수
-def get_current_time():
-    return datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+    # 문자열이 "~ 숫자 ~" 패턴을 포함하는지 확인
+    if len(text) >= 5 and text[0] == '~' and text[-1] == '~':
+        middle_part = text[1:-1].strip()  # 틸다 사이의 숫자 부분을 추출하고 공백 제거
+        if middle_part.isdigit():  # 숫자인지 확인
+            return True
+    return False
 
-# 이미지 저장 함수 (단순 이미지 다운로드)
-def save_image_from_url(url, filename):
+
+
+def is_accepted_date_format(text):
+    global months
+
+    # 텍스트가 "Accepted "로 시작하는지 확인
+    if not text.startswith("Accepted "):
+        return False
+
+    # "Accepted " 이후의 부분을 추출
+    rest_of_text = text[len("Accepted "):]
+
+    # 나머지 텍스트를 공백으로 나누기
+    parts = rest_of_text.split()
+
+    # parts 리스트가 날짜 형식에 맞는지 확인
+    if len(parts) != 4:
+        return False
+
+    day = parts[0]
+    month = parts[1].strip(',')
+    year = parts[2].strip(',')
+
+    # 날짜가 숫자인지 확인
+    if not day.isdigit():
+        return False
+
+    # 달이 months 배열에 있는지 확인
+    if month not in months:
+        return False
+
+    # 연도가 숫자인지 확인
+    if not year.isdigit():
+        return False
+
+    return True
+
+
+
+# 함수: PDF 파일의 첫 번째 페이지에서 텍스트를 읽어들이는 함수
+def read_pages(file_path):
     try:
-        # 이미지 다운로드 요청
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            with open(filename, 'wb') as out_file:
-                out_file.write(response.content)
-            print(f"{get_current_time()} Image successfully saved: {filename}")
-            return True  # 이미지 저장 성공 시 True 반환
-        else:
-            print(f"{get_current_time()} Failed to fetch image: {url} (Status code: {response.status_code})")
-            return False  # 이미지 저장 실패 시 False 반환
+        # PDF 파일 열기
+        with pdfplumber.open(file_path) as pdf:
+            text = ""
+
+            # 첫 번째와 두 번째 페이지가 있는지 확인 후 추출
+            for page_number in range(min(3, len(pdf.pages))):  # 페이지가 2개 이상 있는지 확인
+                page = pdf.pages[page_number]
+                text += page.extract_text() + "\n"
+
+            return text
+    except FileNotFoundError:
+        print(f"Error: {file_path} 파일을 찾을 수 없습니다.")
+        return None
     except Exception as e:
-        print(f"{get_current_time()} Error fetching image from {url}: {e}")
-        return False  # 이미지 저장 실패 시 False 반환
-
-# 상품 상세 정보를 가져오는 함수
-def fetch_product_details(product_id):
-    url = f"https://www.saksfifthave.kr/api/product/s/0{product_id}?lang=en&siteTag=SA_KR"
-    print(f"{get_current_time()} url : {url}")
-
-    headers = {
-        "authority": "www.saksfifthave.kr",
-        "method": "GET",
-        "scheme": "https",
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "cache-control": "max-age=0",
-        "priority": "u=0, i",
-        "sec-ch-ua": '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "document",
-        "sec-fetch-mode": "navigate",
-        "sec-fetch-site": "none",
-        "sec-fetch-user": "?1",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-    }
-
-    try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            print(f"{get_current_time()} 성공")
-            return response.json()
-        else:
-            print(f"{get_current_time()} Error fetching product details for ID {product_id} (Status code: {response.status_code})")
-            return None
-    except Exception as e:
-        print(f"{get_current_time()} An error occurred while fetching product details: {e}")
+        print(f"Error: {str(e)}")
         return None
 
-# 페이지별 상품 리스트 가져오는 함수
-def fetch_products(page, per_page):
-    url = "https://1zeqokjjx6-dsn.algolia.net/1/indexes/prd-product-SA-KR/query?x-algolia-agent=Algolia%20for%20JavaScript%20(4.24.0)%3B%20Browser"
 
-    headers = {
-        "accept": "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "x-algolia-api-key": "1ebbbdc18b025ec3b2d4e296a82f97d9",
-        "x-algolia-application-id": "1ZEQOKJJX6"
-    }
-
-    payload = {
-        "query": "",
-        "analyticsTags": ["productlistingpage", "womenclothing-promo"],
-        "attributesToRetrieve": "*",
-        "clickAnalytics": True,
-        "facetFilters": [["categories.tag:saks/womens-apparel"]],
-        "facetingAfterDistinct": False,
-        "facets": [
-            "brand.tag", "categories.tag", "collections.tag",
-            "color.tag", "size.tag", "productId", "price.KRW-KR.sale"
-        ],
-        "filters": "availabilityFlag < 3",
-        "length": per_page,
-        "numericFilters": ["price.KRW-KR.sale > 0"],
-        "offset": (page - 1) * per_page,
-        "optionalFilters": [],
-        "analytics": True,
-        "userToken": "8c595326-01c3-400f-87bc-dc1e0b065a04"
-    }
-
+# 함수: PDF 파일의 첫 번째와 두 번째 페이지에서 텍스트를 읽어들이는 함수
+def read_pages_with_pymupdf(file_path):
     try:
-        response = requests.post(url, headers=headers, json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"{get_current_time()} Error fetching product list (Status code: {response.status_code})")
-            return None
+        # PDF 파일 열기
+        pdf_document = fitz.open(file_path)
+        text = ""
+
+        # 첫 번째와 두 번째 페이지에서 텍스트 추출
+        for page_number in range(min(3, pdf_document.page_count)):  # 페이지 수 확인
+            if page_number < len(pdf_document):
+                page = pdf_document.load_page(page_number)  # 페이지 인덱스는 0부터 시작
+                page_text = page.get_text("text")  # "text" 옵션으로 페이지의 텍스트 추출
+
+                if '...' in page_text and page_number == 0:  # [15].pdf 의 유일한 예외 케이스 때문에 추라
+                    pdf_document.close()
+                    return False, ''
+
+                text += page_text + "\n"
+
+        pdf_document.close()
+        return True, text
+
+    except FileNotFoundError:
+        print(f"Error: {file_path} 파일을 찾을 수 없습니다.")
+        return None
     except Exception as e:
-        print(f"{get_current_time()} An error occurred while fetching products: {e}")
+        print(f"Error: {str(e)}")
         return None
 
-# 페이지별 데이터를 엑셀에 추가 저장하는 함수
-def save_to_excel_append(data, filename="products.xlsx"):
-    df = pd.DataFrame(data)
 
-    # 엑셀 파일이 이미 존재하면 추가로 데이터를 기록
-    if os.path.exists(filename):
-        existing_df = pd.read_excel(filename)
-        df = pd.concat([existing_df, df], ignore_index=True)
+# 함수: PDF 폴더 내에서 첫 번째 페이지만 읽는 함수
+def read_pdf_from_folder(pdf_folder, file_name):
+    file_path = os.path.join(pdf_folder, file_name)
 
-    df.to_excel(filename, index=False)
-    print(f"{get_current_time()} Data saved to {filename}")
+    tf, text = read_pages_with_pymupdf(file_path)
 
-# 모든 페이지 처리 함수
-def fetch_all_pages(total_pages, per_page=120):
-    global product_data
-    start_time = datetime.now()  # 스크립트 시작 시간 기록
-    print(f"{get_current_time()} 스크립트 시작")
+    if not tf:
+        return read_pages(file_path)
 
-    for page in range(1, total_pages + 1):
-        print(f"{get_current_time()} Fetching page {page}...")
-        result = fetch_products(page, per_page)
+    return text
 
-        if result and 'hits' in result:
-            hits = result['hits']
 
-            for index, hit in enumerate(hits):
-                product_id = str(int(hit.get('productId', '0')))
-                print(f"{get_current_time()} (index: {index + 1}) Fetching details for product {product_id} ...")
-                time.sleep(1)
-                product_details = fetch_product_details(product_id)
 
-                if product_details:
-                    name = product_details.get('name', '')
-                    slug = product_details.get('slug', '')
-                    description = remove_html_tags(product_details.get('description', ''))
-                    brand_name = "See all " + product_details.get('brand', {}).get('name', '')
+def should_skip_if_number_and_space(line):
+    # 문자열의 길이가 5이고, 앞의 4자리가 숫자, 마지막 자리가 공백인지 확인
+    if len(line) == 5 and line[:4].isdigit() and line[4] == ' ':
+        return True
+    return False
 
-                    # 이미지 처리
-                    options = product_details.get('options', [])
-                    if options and len(options) > 0:
-                        media = options[0].get('media', {}).get('large', [])
-                        second_image = media[0] if len(media) > 1 else ''
-                        last_image = media[-1] if len(media) > 1 else ''
 
-                        # 이미지 저장 (metastyle/페이지번호/제품ID 폴더 안에 저장)
-                        product_dir = os.path.join("metastyle", f"page_{page}", f"{product_id}")  # 각 페이지 안에 제품 폴더 생성
-                        create_directory(product_dir)  # 디렉토리 생성
+def should_skip_if_number_and_space_3(line):
+    # 문자열의 길이가 3이고, 앞의 3자리가 숫자
+    if len(line) == 3 and line[:3].isdigit():
+        return True
+    return False
 
-                        if second_image:
-                            second_image_path = os.path.join(product_dir, f"{product_id}_second_large_image.jpg")
-                            save_image_from_url(second_image, second_image_path)
 
-                        if last_image:
-                            last_image_path = os.path.join(product_dir, f"{product_id}_last_large_image.jpg")
-                            save_image_from_url(last_image, last_image_path)
+def should_skip_if_number_and_space_2(line):
+    # 문자열의 길이가 5이고, 앞의 4자리가 숫자, 마지막 자리가 공백인지 확인
+    if len(line) == 3 and line[0].isdigit() and line[1] == ' ' and line[2].isdigit():
+        return True
+    return False
 
-                        # 데이터를 엑셀에 삽입
-                        obj = {
-                            "productId": str(product_id),  # product_id를 문자열로 저장
-                            "url": f"https://www.saksfifthave.kr/en-kr/product/{slug}/0{product_id}",
-                            "name": name,
-                            "description": description,
-                            "tag": brand_name,
-                            "second_image_url": second_image,  # 이미지 URL
-                            "last_image_url": last_image,  # 이미지 URL
-                        }
 
-                        print(f"{get_current_time()} obj : {obj}")
 
-                        # 엑셀 데이터 저장
-                        product_data.append(obj)
+def find_capital_dot_space_pattern(text):
+    # 문자열 길이가 6 이상일 때만 검사
+    for i in range(len(text) - 5):  # 패턴이 6글자이므로 len(text) - 5까지 확인
+        if (text[i].isupper() and               # 첫 번째는 대문자
+                text[i + 1] == '.' and              # 두 번째는 점
+                text[i + 2] == ' ' and              # 세 번째는 공백
+                text[i + 3].isupper() and           # 네 번째는 대문자
+                text[i + 4] == '.' and              # 다섯 번째는 점
+                text[i + 5] == ' '):                # 여섯 번째는 공백
+            return True  # 패턴이 발견되면 True 반환
+    return False  # 패턴이 없으면 False 반환
 
-            # 각 페이지 끝날 때마다 엑셀에 저장
-            save_to_excel_append(product_data)
-            product_data = []  # 데이터를 비워서 다음 페이지 준비
 
-        else:
-            print(f"{get_current_time()} Failed to fetch page {page}")
+def find_capital_dot_pattern(text):
+    # 문자열 길이가 4 이상일 때만 검사 (F.V.는 4글자)
+    for i in range(len(text) - 3):  # 패턴이 4글자이므로 len(text) - 3까지 확인
+        if (text[i].isupper() and       # 첫 번째는 대문자
+                text[i + 1] == '.' and  # 두 번째는 점
+                text[i + 2].isupper() and  # 세 번째는 대문자
+                text[i + 3] == '.'):    # 네 번째는 점
+            return True  # 패턴이 발견되면 True 반환
+    return False  # 패턴이 없으면 False 반환
 
-        time.sleep(2)  # 요청 사이에 2초 대기
+def find_capital_dot_pattern_2(text):
+    # 문자열 길이가 4 이상일 때만 검사 (F.V.는 4글자)
+    for i in range(len(text) - 4):  # 패턴이 4글자이므로 len(text) - 3까지 확인
+        if (text[i].isupper() and       # 첫 번째는 대문자
+                text[i + 1] == '.' and  # 두 번째는 점
+                text[i + 2].isupper() and  # 세 번째는 대문자
+                text[i + 3] == '.' and    # 네 번째는 점
+                text[i + 4] == ' '):    # 네 번째는 점
+            return True  # 패턴이 발견되면 True 반환
+    return False  # 패턴이 없으면 False 반환
 
-    # 스크립트 종료 및 최종 시간 계산
-    end_time = datetime.now()
-    total_time = end_time - start_time
-    total_seconds = total_time.total_seconds()
-    hours, remainder = divmod(total_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    print(f"{get_current_time()} 스크립트 종료")
-    print(f"총 걸린 시간: {int(hours)}시간 {int(minutes)}분 {int(seconds)}초")
 
+
+
+# [1].pdf [2].pdf
+def should_skip_line_with_number_pattern(line):
+    # ':' 기준으로 나눈 각 부분을 확인
+    parts = line.split(':')
+    for part in parts:
+        cleaned_part = part.replace(" ", "")  # 모든 공백 제거
+
+        # '-' 또는 '–'를 기준으로 나눠서 숫자 4개 - 숫자 4개 패턴을 찾음
+        if '-' in cleaned_part or '–' in cleaned_part:  # 일반 대시('-') 또는 긴 대시('–')를 모두 처리
+            left_right = cleaned_part.split('-') if '-' in cleaned_part else cleaned_part.split('–')
+            if len(left_right) == 2:
+                left, right = left_right
+
+                # 숫자 3개 - 숫자 3개 패턴을 찾음
+                if left.isdigit() and right.isdigit() and len(left) == 3 and len(right) == 3:
+                    return True
+    return False
+
+def find_number_space_number_pattern(text):
+    # 문자열의 길이가 3인지 확인하고, 숫자 공백 숫자 패턴인지 확인
+    if len(text) == 3 and text[0].isdigit() and text[1] == ' ' and text[2].isdigit():
+        return True
+    return False
+
+
+# [15].pdf
+# '...' 뒤에 숫자 3개가 있는 경우 건너뜀
+def should_skip_line_with_dots_and_numbers(line):
+    parts = line.split()
+    # '...' 뒤에 숫자 3개가 있는 경우 확인
+    for i, part in enumerate(parts):
+        if '...' in part and i + 1 < len(parts) and parts[i + 1].isdigit() and len(parts[i + 1]) == 3:
+            return True
+    return False
+
+def is_four_digit_number(line):
+    # 문자열의 길이가 4인지 확인하고, 모두 숫자인지 확인
+    if len(line) == 4 and line.isdigit():
+        return True
+    return False
+
+def find_month_in_text(text):
+    months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    for month in months:
+        if month in text:
+            return True  # 달이 발견되면 해당 달 이름 반환
+    return False  # 달이 없으면 None 반환
+
+
+# 함수: 텍스트에서 제목 추출
+def extract_title_from_text(text_lines, skip_keywords, break_keywords, small_values):
+    title = ""
+    process_title = True
+    research_paper = True
+
+    for line in text_lines:
+
+        # "Cien. Inv. Agr."를 찾을 경우 "research paper"까지 continue
+        if "IJCS" in line:
+            process_title = False
+            continue
+
+        # "research paper"가 나올 때까지 continue
+        if not process_title:
+            if "Effect of different" in line:
+                title += line + "\n"
+                process_title = True
+            continue
+
+        # "Cien. Inv. Agr."를 찾을 경우 "research paper"까지 continue
+        if "Cien. Inv. Agr." in line:
+            research_paper = False
+            continue
+
+        # "research paper"가 나올 때까지 continue
+        if not research_paper:
+            if "research paper" in line.lower():
+                research_paper = True
+            continue
+
+        # skip_keywords 중 하나라도 포함되어 있으면 건너뜀
+        if any(skip_keyword in line for skip_keyword in skip_keywords):
+            continue
+
+        # '... 공백 숫자 3개' 조건을 만족하는 경우 건너뜀
+        if should_skip_line_with_dots_and_numbers(line):
+            continue
+
+        if any(small_value == line for small_value in small_values):
+            continue
+
+        if should_skip_if_number_and_space(line):
+            continue
+
+        if should_skip_line_with_number_pattern(line):
+            continue
+
+        if find_number_space_number_pattern(line):
+            continue
+
+        if should_skip_if_number_and_space_3(line.strip()):
+            continue
+
+        if is_four_digit_number(line):
+            continue
+
+        if find_tilde_number_pattern(line):
+            continue
+
+        if any(break_keyword in line for break_keyword in break_keywords):
+            if '1, ' in line and '1, 4' in line:
+                title += line + "\n"
+                continue
+            break
+
+        if find_capital_dot_pattern_2(line):
+            break
+
+        if find_capital_dot_space_pattern(line):
+            break
+
+
+        # 조건을 만족하지 않으면 제목에 라인 추가
+        title += line + "\n"
+
+    return title.strip()
+
+# 함수: 텍스트에서 ABSTRACT와 INTRODUCTION 사이의 텍스트 추출
+def extract_abstract_from_text(text_lines, skip_keywords, small_values):
+    # ABSTRACT와 INTRODUCTION 위치 찾기
+    abstract_start_idx = -1
+    introduction_start_idx = -1
+    abstract_lines = []
+
+    key_words = False
+    dataset_link = False
+
+    # 줄에서 ABSTRACT와 INTRODUCTION 위치 찾기
+    for idx, line in enumerate(text_lines):
+
+        if 'Dataset link:' in line:
+            dataset_link = True
+            continue
+
+        if dataset_link and 'a b s t r a c t' not in line:
+            continue
+
+        if dataset_link and 'a b s t r a c t' in line:
+            abstract_start_idx = idx
+            dataset_link = False
+
+        if 'Speciﬁcations Table' in line:
+            introduction_start_idx = idx
+            break
+
+        if abstract_start_idx == -1 and is_accepted_date_format(line):
+            abstract_start_idx = idx + 2
+
+        if "Cien. Inv. Agr." in line:
+            key_words = True
+            continue
+
+        if "Accepted " in line:
+            key_words = True
+            continue
+
+        if (abstract_start_idx == -1
+                and ('ABSTRACT' in line.upper() or 'A B S T R A C T' in line.upper() or 'a b s t r a c t ' in line)):
+            abstract_start_idx = idx
+
+        if 'Medical Science,' in line:
+            abstract_start_idx = idx + 1
+
+        if abstract_start_idx != -1 and 'Received ' in line  and 'Received in' not in line and find_month_in_text(line) and 'history:' not in text_lines[idx-1]:
+            introduction_start_idx = idx
+
+        if (abstract_start_idx != -1 and introduction_start_idx == -1
+                and ('INTRODUCTION' in line.upper() or 'Statement of Novelty' in line or 'Background ' in line or 'INTRODUCCIÓN' in line)):
+
+            if idx == abstract_start_idx + 1:
+                continue
+
+            introduction_start_idx = idx
+            break
+
+
+        if (abstract_start_idx != -1 and introduction_start_idx == -1
+                and ('Key words' in line) and key_words == True):
+            introduction_start_idx = idx + 2
+            break
+
+
+    # ABSTRACT가 존재하고, INTRODUCTION이 그 뒤에 존재할 때
+    if abstract_start_idx != -1 and introduction_start_idx != -1 and abstract_start_idx < introduction_start_idx:
+        # ABSTRACT 다음 줄부터 INTRODUCTION 전까지 텍스트를 한 줄씩 추가
+        for i in range(abstract_start_idx, introduction_start_idx):
+            line = text_lines[i].strip()
+
+            # if any(skip_keyword in line for skip_keyword in skip_keywords):
+            #     continue
+
+            if any(small_value == line for small_value in small_values):
+                continue
+
+            # if should_skip_if_number_and_space_3(line):
+            #     continue
+            #
+            # if should_skip_if_number_and_space_2(line):
+            #     continue
+            #
+            # if should_skip_line_with_number_pattern(line):
+            #     continue
+
+            if '_____________________________________________________________________________________________' in line:
+                break
+
+            if '____________________________________________________________________________________________' in line:
+                break
+
+            # if 'Abbreviations:' in line:
+            #     break
+
+            if 'Received:' in line:
+                abstract_lines.append('Article history')
+
+            if '* Correspondence' in line:
+                break
+
+            abstract_lines.append(line)
+
+        # 추출한 ABSTRACT 텍스트 반환
+        return "\n".join(abstract_lines).strip()
+    else:
+        return ""
+
+
+def is_accepted_date_format(text):
+    global months
+
+    # 텍스트가 "Accepted "로 시작하는지 확인
+    if not text.startswith("Accepted "):
+        return False
+
+    # "Accepted " 이후의 부분을 추출
+    rest_of_text = text[len("Accepted "):]
+
+    # 나머지 텍스트를 공백으로 나누기
+    parts = rest_of_text.split()
+
+    # parts 리스트가 날짜 형식에 맞는지 확인
+    if len(parts) != 3:
+        return False
+
+    day = parts[0]
+    month = parts[1].strip(',')
+    year = parts[2].strip(',')
+
+    # 날짜가 숫자인지 확인
+    if not day.isdigit():
+        return False
+
+    # 달이 months 배열에 있는지 확인
+    if month not in months:
+        return False
+
+    # 연도가 숫자인지 확인
+    if not year.isdigit():
+        return False
+
+    return True
+
+
+
+
+# 메인 함수
+def main():
+    # 현재 디렉토리의 pdf 폴더 경로 설정
+    # 프로그램이 실행되는 경로에 pdf폴더 안에 pdf파일들을 넣으면 됩니다.
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf_folder = os.path.join(current_dir, 'pdf')
+
+    # pdf_folder 안에 있는 모든 파일 이름을 확장자 포함해서 배열로 가져오기
+    pdf_files = [file for file in os.listdir(pdf_folder) if os.path.isfile(os.path.join(pdf_folder, file))]
+
+    extracted_data = []
+
+    for pdf_file_name in pdf_files:
+        # PDF 파일의 첫 페이지 텍스트 읽기
+        text = read_pdf_from_folder(pdf_folder, pdf_file_name)
+
+        # 텍스트가 존재하는 경우 줄바꿈 단위로 리스트로 분리
+        if text:
+            text_lines = text.splitlines()  # 줄바꿈을 기준으로 배열로 분리
+
+            # skip_keywords 정의
+            skip_keywords = ['Available online',
+                             'www.',
+                             'Journal of',
+                             'ISSN',
+                             'Research Article',
+                             'CODEN',
+                             'Contents lists available at',
+                             'Food Chemistry',
+                             'Article no.',
+                             'Journal International',
+                             'author:',
+                             'E-mail:',
+                             '_____________________________________________________________________________________________________',
+                             '_____________________________________________________________________________________________',
+                             '______',
+                             'DOI:',
+                             'GLOBAL JOURNAL OF',
+                             'https:',
+                             'http:',
+                             'Vol.',
+                             'Vol ',
+                             'ORIGINAL PAPER',
+                             '*	 ',
+                             '@gmail.com',
+                             'Graphical Abstract',
+                             'Extended author information available',
+                             'Nomico Journal',
+                             'Education Publishing',
+                             'Science and Biotechnology',
+                             'Global Science Books',
+                             'Research Journal',
+                             'Corresponding author',
+                             'Email:',
+                             'DOI',
+                             'All Rights Reserved',
+                             'Scientiﬁc African',
+                             'Pharmaceutical Biology',
+                             'Full Terms & Conditions of access',
+                             'ARTÍCULO ORIGINAL',
+                             'Academic Publishers.',
+                             'Mycopathologia',
+                             'A multifaceted review journal',
+                             'CARICA PAPAYA ON PITUITARY–GONADAL AXIS',
+                             ', Ltd.',
+                             '. Res.',
+                             'PHYTOTHERAPY RESEARCH',
+                             'SHORT COMMUNICATION',
+                             '© Universiti ',
+                             'E-mail addresses:',
+                             'Article history:',
+                             'SCIENCE & TECHNOLOGY',
+                             '& Technol.',
+                             'ARTICLE INFO',
+                             '(Chia Chay Tay)',
+                             'Published:',
+                             'Accepted:',
+                             'Received:',
+                             'Research ',
+                             'Review ',
+                             'RESEARCH ARTICLE',
+                             'Open Access',
+                             'Reports |',
+                             'This is an open access',
+                             'article under the CC BY',
+                             'NLM ID:',
+                             'Data in Brief',
+                             'Data Article',
+                             'Science and Technology',
+                             'Published by'
+                             ]
+
+            # break_keywords 정의
+            break_keywords = ['* ,',
+                              '*,',
+                              ',⁎',
+                              'Article · ',
+                              '1 · ',
+                              '2 · ',
+                              ',1,',
+                              ',2,',
+                              ',3,',
+                              '* • ',
+                              '∗,',
+                              'CITATIONS',
+                              'I,',
+                              'II,',
+                              'III,',
+                              '1* ',
+                              '* and',
+                              ' A, ',
+                              '1, ',
+                              ', and',
+                              ' Q. ',
+                              'Natural Science · '
+                              ]
+
+            small_values = ["T", " ", "",
+                            "1","2","3","4","5","6","7","8","9",
+                            "1 ","2 ","3 ","4 ","5 ","6 ","7 ","8 ","9 "
+                            ]
+
+            # 제목 추출
+            title = extract_title_from_text(text_lines, skip_keywords, break_keywords, small_values)
+
+            # 추출한 제목 출력
+
+            # ABSTRACT 추출
+            abstract = extract_abstract_from_text(text_lines, skip_keywords, small_values)
+
+            # 추출한 Abstract 출력
+            # 데이터를 객체 배열에 추가
+            obj = {
+                "file_name": pdf_file_name,
+                "title": title,
+                "abstract": abstract if abstract else "ABSTRACT 또는 INTRODUCTION을 찾을 수 없습니다."
+            }
+            print(f"=============================================================================")
+            print(f"file_name : {pdf_file_name}")
+            print(f"title : {title}")
+            print(f"abstract : {abstract}")
+            print(f"=============================================================================")
+
+            extracted_data.append(obj)
+
+
+    # DataFrame 생성 및 엑셀 파일로 저장
+    df = pd.DataFrame(extracted_data)
+    output_file = os.path.join(current_dir, 'extracted_data.xlsx')
+    df.to_excel(output_file, index=False)
+
+    print(f"데이터가 {output_file}에 저장되었습니다.")
 
 if __name__ == "__main__":
-    # 1페이지부터 총 2페이지까지 데이터를 가져오는 예시
-    fetch_all_pages(total_pages=2, per_page=2)
+    main()
