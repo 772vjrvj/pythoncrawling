@@ -1,616 +1,292 @@
-import os
-import pdfplumber
-import fitz  # PyMuPDF
 import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+import time
+import traceback
 
+def setup_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1080,750")
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    chrome_options.add_argument(f'user-agent={user_agent}')
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
 
-months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-]
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+        'source': '''
+            Object.defineProperty(navigator, 'webdriver', {
+              get: () => undefined
+            })
+        '''
+    })
+    return driver
 
-def find_tilde_number_pattern(text):
-    # 문자열의 앞뒤 공백을 제거
-    text = text.strip()
-
-    # 문자열이 "~ 숫자 ~" 패턴을 포함하는지 확인
-    if len(text) >= 5 and text[0] == '~' and text[-1] == '~':
-        middle_part = text[1:-1].strip()  # 틸다 사이의 숫자 부분을 추출하고 공백 제거
-        if middle_part.isdigit():  # 숫자인지 확인
-            return True
-    return False
-
-
-
-def is_accepted_date_format(text):
-    global months
-
-    # 텍스트가 "Accepted "로 시작하는지 확인
-    if not text.startswith("Accepted "):
-        return False
-
-    # "Accepted " 이후의 부분을 추출
-    rest_of_text = text[len("Accepted "):]
-
-    # 나머지 텍스트를 공백으로 나누기
-    parts = rest_of_text.split()
-
-    # parts 리스트가 날짜 형식에 맞는지 확인
-    if len(parts) != 4:
-        return False
-
-    day = parts[0]
-    month = parts[1].strip(',')
-    year = parts[2].strip(',')
-
-    # 날짜가 숫자인지 확인
-    if not day.isdigit():
-        return False
-
-    # 달이 months 배열에 있는지 확인
-    if month not in months:
-        return False
-
-    # 연도가 숫자인지 확인
-    if not year.isdigit():
-        return False
-
-    return True
-
-
-
-# 함수: PDF 파일의 첫 번째 페이지에서 텍스트를 읽어들이는 함수
-def read_pages(file_path):
+def parse_naver(driver, Name, Naver_url, limit_count):
+    merge_list = []
     try:
-        # PDF 파일 열기
-        with pdfplumber.open(file_path) as pdf:
-            text = ""
+        driver.get(Naver_url)
+        time.sleep(3)
 
-            # 첫 번째와 두 번째 페이지가 있는지 확인 후 추출
-            for page_number in range(min(3, len(pdf.pages))):  # 페이지가 2개 이상 있는지 확인
-                page = pdf.pages[page_number]
-                text += page.extract_text() + "\n"
+        driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="카드할인가 정렬"]')[0].click()  # 카드할인
+        time.sleep(0.5)
 
-            return text
-    except FileNotFoundError:
-        print(f"Error: {file_path} 파일을 찾을 수 없습니다.")
-        return None
+        opt_name = driver.execute_script('return document.querySelector("#section_price em").closest("div");').text.split(" : ")[0].split(',')[-1]
+        print(f"Naver 옵션 이름: {opt_name}")
+
+        if len(driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')) != 0:
+            Qtys = driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')
+        elif len(driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')) != 0:
+            Qtys = driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')
+
+        Qlist = [q.text for q in Qtys]
+        print(f"Naver 옵션 리스트: {Qlist}")
+
+        for p in range(len(Qtys)):
+            driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-id="{Qlist[p]}"]').click()
+            time.sleep(2)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, 0);")
+
+            uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')
+            for e in uls:
+                if 'productList_list_seller' in e.get_attribute('class'):
+                    ul_class = e.get_attribute('class').replace(' ', '.')
+
+            prod_list = driver.find_elements(By.CSS_SELECTOR, f'#section_price .{ul_class} li')
+
+            action = ActionChains(driver)
+            action.move_to_element(prod_list[0]).perform()
+            time.sleep(1)
+
+            for e in prod_list:
+                try:
+                    mall_name = e.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.mall"] img').get_attribute('alt')
+                    prod_name = e.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.pd"]').text
+                    price = e.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.price"]').text.replace('최저', '').strip()
+
+                    temp_list = [Name, '네이버', Qlist[p], mall_name, '', prod_name, price]
+                    merge_list.append(temp_list)
+                except Exception as err:
+                    print(f"Error parsing Naver: {traceback.format_exc()}")
     except Exception as e:
-        print(f"Error: {str(e)}")
-        return None
+        print(f"Error during Naver parsing: {traceback.format_exc()}")
 
+    return merge_list
 
-# 함수: PDF 파일의 첫 번째와 두 번째 페이지에서 텍스트를 읽어들이는 함수
-def read_pages_with_pymupdf(file_path):
+def parse_danawa(driver, Name, Danawa_url, limit_count):
+    merge_list = []
     try:
-        # PDF 파일 열기
-        pdf_document = fitz.open(file_path)
-        text = ""
+        driver.get(Danawa_url)
+        time.sleep(2)
 
-        # 첫 번째와 두 번째 페이지에서 텍스트 추출
-        for page_number in range(min(3, pdf_document.page_count)):  # 페이지 수 확인
-            if page_number < len(pdf_document):
-                page = pdf_document.load_page(page_number)  # 페이지 인덱스는 0부터 시작
-                page_text = page.get_text("text")  # "text" 옵션으로 페이지의 텍스트 추출
+        if driver.find_elements(By.XPATH, '//*[@id="bundleProductMoreOpen"]') != []:
+            driver.find_element(By.XPATH, '//*[@id="bundleProductMoreOpen"]').click()
 
-                if '...' in page_text and page_number == 0:  # [15].pdf 의 유일한 예외 케이스 때문에 추라
-                    pdf_document.close()
-                    return False, ''
+        danawa_opt_url_list = [e.get_attribute('href') for e in driver.find_elements(By.CSS_SELECTOR, '[class="othr_list"] li .chk a')]
+        danawa_opt_text_list = [e.text for e in driver.find_elements(By.CSS_SELECTOR, '[class="othr_list"] li .chk a')]
 
-                text += page_text + "\n"
+        for ii in range(len(danawa_opt_url_list)):
+            if danawa_opt_text_list[ii] == '1개':
+                continue
 
-        pdf_document.close()
-        return True, text
+            driver.get(danawa_opt_url_list[ii])
+            time.sleep(2)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, 0);")
+            driver.find_elements(By.CSS_SELECTOR, '.cardSaleChkbox')[0].click()
+            time.sleep(1)
 
-    except FileNotFoundError:
-        print(f"Error: {file_path} 파일을 찾을 수 없습니다.")
-        return None
+            html = driver.page_source
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+            free_dil_prod_e_list = soup.select('.columm.left_col .diff_item')
+            for ei in range(len(free_dil_prod_e_list)):
+                if ei > limit_count: break
+                try:
+                    mall_name = soup.select('.columm.left_col .diff_item')[ei].select('img')[0].get('alt')
+                    prod_name = soup.select('.columm.left_col .diff_item')[ei].select('.info_line')[0].text.strip()
+                    price = soup.select('.columm.left_col .diff_item')[ei].select('.prc_c')[0].text
+                    temp_list = [Name, '다나와', danawa_opt_text_list[ii], mall_name, '무료배송', prod_name, price]
+                    merge_list.append(temp_list)
+                except Exception as err:
+                    print(f"Error parsing Danawa: {traceback.format_exc()}")
     except Exception as e:
-        print(f"Error: {str(e)}")
-        return None
+        print(f"Error during Danawa parsing: {traceback.format_exc()}")
 
+    return merge_list
 
-# 함수: PDF 폴더 내에서 첫 번째 페이지만 읽는 함수
-def read_pdf_from_folder(pdf_folder, file_name):
-    file_path = os.path.join(pdf_folder, file_name)
+def parse_enuri(driver, Name, Enuri_url, limit_count):
+    merge_list = []
+    try:
+        driver.get(Enuri_url)
+        time.sleep(0.5)
 
-    tf, text = read_pages_with_pymupdf(file_path)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        driver.execute_script("window.scrollTo(0, 0);")
 
-    if not tf:
-        return read_pages(file_path)
+        time.sleep(0.5)
 
-    return text
+        if len(driver.find_elements(By.CSS_SELECTOR, '#prod_option .adv-search__btn--more')) != 0:
+            driver.find_element(By.CSS_SELECTOR, '#prod_option .adv-search__btn--more').click()
 
+        time.sleep(1)
 
+        radio_opts = driver.find_elements(By.CSS_SELECTOR, '[name="radioOPTION"]')
+        xpath_list = [ '//*[@for="' + e.get_attribute('id') + '"]' for e in radio_opts]
 
-def should_skip_if_number_and_space(line):
-    # 문자열의 길이가 5이고, 앞의 4자리가 숫자, 마지막 자리가 공백인지 확인
-    if len(line) == 5 and line[:4].isdigit() and line[4] == ' ':
-        return True
-    return False
+        for eei, e in enumerate(radio_opts):
+            time.sleep(0.5)
+            driver.execute_script("window.scrollTo(0, 0);")
 
+            elem = driver.find_element(By.XPATH, xpath_list[eei])
 
-def should_skip_if_number_and_space_3(line):
-    # 문자열의 길이가 3이고, 앞의 3자리가 숫자
-    if len(line) == 3 and line[:3].isdigit():
-        return True
-    return False
-
-
-def should_skip_if_number_and_space_2(line):
-    # 문자열의 길이가 5이고, 앞의 4자리가 숫자, 마지막 자리가 공백인지 확인
-    if len(line) == 3 and line[0].isdigit() and line[1] == ' ' and line[2].isdigit():
-        return True
-    return False
-
-
-
-def find_capital_dot_space_pattern(text):
-    # 문자열 길이가 6 이상일 때만 검사
-    for i in range(len(text) - 5):  # 패턴이 6글자이므로 len(text) - 5까지 확인
-        if (text[i].isupper() and               # 첫 번째는 대문자
-                text[i + 1] == '.' and              # 두 번째는 점
-                text[i + 2] == ' ' and              # 세 번째는 공백
-                text[i + 3].isupper() and           # 네 번째는 대문자
-                text[i + 4] == '.' and              # 다섯 번째는 점
-                text[i + 5] == ' '):                # 여섯 번째는 공백
-            return True  # 패턴이 발견되면 True 반환
-    return False  # 패턴이 없으면 False 반환
-
-
-def find_capital_dot_pattern(text):
-    # 문자열 길이가 4 이상일 때만 검사 (F.V.는 4글자)
-    for i in range(len(text) - 3):  # 패턴이 4글자이므로 len(text) - 3까지 확인
-        if (text[i].isupper() and       # 첫 번째는 대문자
-                text[i + 1] == '.' and  # 두 번째는 점
-                text[i + 2].isupper() and  # 세 번째는 대문자
-                text[i + 3] == '.'):    # 네 번째는 점
-            return True  # 패턴이 발견되면 True 반환
-    return False  # 패턴이 없으면 False 반환
-
-def find_capital_dot_pattern_2(text):
-    # 문자열 길이가 4 이상일 때만 검사 (F.V.는 4글자)
-    for i in range(len(text) - 4):  # 패턴이 4글자이므로 len(text) - 3까지 확인
-        if (text[i].isupper() and       # 첫 번째는 대문자
-                text[i + 1] == '.' and  # 두 번째는 점
-                text[i + 2].isupper() and  # 세 번째는 대문자
-                text[i + 3] == '.' and    # 네 번째는 점
-                text[i + 4] == ' '):    # 네 번째는 점
-            return True  # 패턴이 발견되면 True 반환
-    return False  # 패턴이 없으면 False 반환
-
-
-
-
-# [1].pdf [2].pdf
-def should_skip_line_with_number_pattern(line):
-    # ':' 기준으로 나눈 각 부분을 확인
-    parts = line.split(':')
-    for part in parts:
-        cleaned_part = part.replace(" ", "")  # 모든 공백 제거
-
-        # '-' 또는 '–'를 기준으로 나눠서 숫자 4개 - 숫자 4개 패턴을 찾음
-        if '-' in cleaned_part or '–' in cleaned_part:  # 일반 대시('-') 또는 긴 대시('–')를 모두 처리
-            left_right = cleaned_part.split('-') if '-' in cleaned_part else cleaned_part.split('–')
-            if len(left_right) == 2:
-                left, right = left_right
-
-                # 숫자 3개 - 숫자 3개 패턴을 찾음
-                if left.isdigit() and right.isdigit() and len(left) == 3 and len(right) == 3:
-                    return True
-    return False
-
-def find_number_space_number_pattern(text):
-    # 문자열의 길이가 3인지 확인하고, 숫자 공백 숫자 패턴인지 확인
-    if len(text) == 3 and text[0].isdigit() and text[1] == ' ' and text[2].isdigit():
-        return True
-    return False
-
-
-# [15].pdf
-# '...' 뒤에 숫자 3개가 있는 경우 건너뜀
-def should_skip_line_with_dots_and_numbers(line):
-    parts = line.split()
-    # '...' 뒤에 숫자 3개가 있는 경우 확인
-    for i, part in enumerate(parts):
-        if '...' in part and i + 1 < len(parts) and parts[i + 1].isdigit() and len(parts[i + 1]) == 3:
-            return True
-    return False
-
-def is_four_digit_number(line):
-    # 문자열의 길이가 4인지 확인하고, 모두 숫자인지 확인
-    if len(line) == 4 and line.isdigit():
-        return True
-    return False
-
-def find_month_in_text(text):
-    months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ]
-    for month in months:
-        if month in text:
-            return True  # 달이 발견되면 해당 달 이름 반환
-    return False  # 달이 없으면 None 반환
-
-
-# 함수: 텍스트에서 제목 추출
-def extract_title_from_text(text_lines, skip_keywords, break_keywords, small_values):
-    title = ""
-    process_title = True
-    research_paper = True
-
-    for line in text_lines:
-
-        # "Cien. Inv. Agr."를 찾을 경우 "research paper"까지 continue
-        if "IJCS" in line:
-            process_title = False
-            continue
-
-        # "research paper"가 나올 때까지 continue
-        if not process_title:
-            if "Effect of different" in line:
-                title += line + "\n"
-                process_title = True
-            continue
-
-        # "Cien. Inv. Agr."를 찾을 경우 "research paper"까지 continue
-        if "Cien. Inv. Agr." in line:
-            research_paper = False
-            continue
-
-        # "research paper"가 나올 때까지 continue
-        if not research_paper:
-            if "research paper" in line.lower():
-                research_paper = True
-            continue
-
-        # skip_keywords 중 하나라도 포함되어 있으면 건너뜀
-        if any(skip_keyword in line for skip_keyword in skip_keywords):
-            continue
-
-        # '... 공백 숫자 3개' 조건을 만족하는 경우 건너뜀
-        if should_skip_line_with_dots_and_numbers(line):
-            continue
-
-        if any(small_value == line for small_value in small_values):
-            continue
-
-        if should_skip_if_number_and_space(line):
-            continue
-
-        if should_skip_line_with_number_pattern(line):
-            continue
-
-        if find_number_space_number_pattern(line):
-            continue
-
-        if should_skip_if_number_and_space_3(line.strip()):
-            continue
-
-        if is_four_digit_number(line):
-            continue
-
-        if find_tilde_number_pattern(line):
-            continue
-
-        if any(break_keyword in line for break_keyword in break_keywords):
-            if '1, ' in line and '1, 4' in line:
-                title += line + "\n"
-                continue
-            break
-
-        if find_capital_dot_pattern_2(line):
-            break
-
-        if find_capital_dot_space_pattern(line):
-            break
-
-
-        # 조건을 만족하지 않으면 제목에 라인 추가
-        title += line + "\n"
-
-    return title.strip()
-
-# 함수: 텍스트에서 ABSTRACT와 INTRODUCTION 사이의 텍스트 추출
-def extract_abstract_from_text(text_lines, skip_keywords, small_values):
-    # ABSTRACT와 INTRODUCTION 위치 찾기
-    abstract_start_idx = -1
-    introduction_start_idx = -1
-    abstract_lines = []
-
-    key_words = False
-    dataset_link = False
-
-    # 줄에서 ABSTRACT와 INTRODUCTION 위치 찾기
-    for idx, line in enumerate(text_lines):
-
-        if 'Dataset link:' in line:
-            dataset_link = True
-            continue
-
-        if dataset_link and 'a b s t r a c t' not in line:
-            continue
-
-        if dataset_link and 'a b s t r a c t' in line:
-            abstract_start_idx = idx
-            dataset_link = False
-
-        if 'Speciﬁcations Table' in line:
-            introduction_start_idx = idx
-            break
-
-        if abstract_start_idx == -1 and is_accepted_date_format(line):
-            abstract_start_idx = idx + 2
-
-        if "Cien. Inv. Agr." in line:
-            key_words = True
-            continue
-
-        if "Accepted " in line:
-            key_words = True
-            continue
-
-        if (abstract_start_idx == -1
-                and ('ABSTRACT' in line.upper() or 'A B S T R A C T' in line.upper() or 'a b s t r a c t ' in line)):
-            abstract_start_idx = idx
-
-        if 'Medical Science,' in line:
-            abstract_start_idx = idx + 1
-
-        if abstract_start_idx != -1 and 'Received ' in line  and 'Received in' not in line and find_month_in_text(line) and 'history:' not in text_lines[idx-1]:
-            introduction_start_idx = idx
-
-        if (abstract_start_idx != -1 and introduction_start_idx == -1
-                and ('INTRODUCTION' in line.upper() or 'Statement of Novelty' in line or 'Background ' in line or 'INTRODUCCIÓN' in line)):
-
-            if idx == abstract_start_idx + 1:
+            how_many = elem.text.split()[0]
+            if how_many == '1개':
                 continue
 
-            introduction_start_idx = idx
-            break
+            elem.click()
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, 0);")
+            time.sleep(0.5)
 
+            check_box = driver.find_element(By.CSS_SELECTOR, '#cardsaleInc-3')
+            if not check_box.is_selected():
+                try:
+                    driver.execute_script("arguments[0].click();", check_box)  # 자바스크립트로 클릭 강제 실행
+                except Exception as e:
+                    print(f"Error clicking the checkbox: {e}")
 
-        if (abstract_start_idx != -1 and introduction_start_idx == -1
-                and ('Key words' in line) and key_words == True):
-            introduction_start_idx = idx + 2
-            break
+            html = driver.page_source
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
 
+            # 'tb-compare__list' 클래스 내부의 tbody 태그에서 모든 tr 태그를 찾음
+            free_dil_prod_e_list = soup.select('.tb-compare__list tbody tr')
 
-    # ABSTRACT가 존재하고, INTRODUCTION이 그 뒤에 존재할 때
-    if abstract_start_idx != -1 and introduction_start_idx != -1 and abstract_start_idx < introduction_start_idx:
-        # ABSTRACT 다음 줄부터 INTRODUCTION 전까지 텍스트를 한 줄씩 추가
-        for i in range(abstract_start_idx, introduction_start_idx):
-            line = text_lines[i].strip()
+            for ei in range(len(free_dil_prod_e_list)):
+                if ei > limit_count: break
+                try:
+                    mall_name = soup.select(".comparison__lt .comprod__item img")[ei].get('alt')
+                    prod_name = soup.select(".comparison__lt .comprod__item")[ei].select('.tx_prodname')[0].text.strip()
+                    price = soup.select(".comparison__lt .comprod__item")[ei].select('.tx_price')[0].text.strip()
 
-            # if any(skip_keyword in line for skip_keyword in skip_keywords):
-            #     continue
+                    temp_list = [Name, '에누리', how_many, mall_name, '무료배송', prod_name, price]
+                    merge_list.append(temp_list)
+                except Exception as err:
+                    print(f"Error parsing Enuri: {traceback.format_exc()}")
 
-            if any(small_value == line for small_value in small_values):
-                continue
+            pay_dil_prod_e_list = soup.select('.comparison__rt .comprod__item')
+            for ei in range(len(pay_dil_prod_e_list)):
+                if ei > limit_count: break
+                try:
+                    mall_name = soup.select(".comparison__rt .comprod__item img")[ei].get('alt')
+                    prod_name = soup.select(".comparison__rt .comprod__item")[ei].select('.tx_prodname')[0].text.strip()
+                    price = soup.select(".comparison__rt .comprod__item")[ei].select('.tx_price')[0].text.strip()
 
-            # if should_skip_if_number_and_space_3(line):
-            #     continue
-            #
-            # if should_skip_if_number_and_space_2(line):
-            #     continue
-            #
-            # if should_skip_line_with_number_pattern(line):
-            #     continue
+                    temp_list = [Name, '에누리', how_many, mall_name, '유/무료배송', prod_name, price]
+                    merge_list.append(temp_list)
+                except Exception as err:
+                    print(f"Error parsing Enuri: {traceback.format_exc()}")
+    except Exception as e:
+        print(f"Error during Enuri parsing: {traceback.format_exc()}")
 
-            if '_____________________________________________________________________________________________' in line:
-                break
+    return merge_list
 
-            if '____________________________________________________________________________________________' in line:
-                break
+# 가격 기준 정하기 함수
+def set_price_reference(df, whole_df, idx):
+    except_list = df.loc[idx, '수집제외몰'].split(',')
 
-            # if 'Abbreviations:' in line:
-            #     break
+    condition = (
+            (whole_df['상품명'] == df.loc[idx, '상품명']) &
+            (whole_df['사이트'] == '네이버') &  # 사이트 = 네이버
+            (~whole_df['쇼핑몰'].isin(except_list))  # 제외 목록 판매처 제외
+    )
+    filtered_df = whole_df[condition].reset_index(drop=True)
 
-            if 'Received:' in line:
-                abstract_lines.append('Article history')
-
-            if '* Correspondence' in line:
-                break
-
-            abstract_lines.append(line)
-
-        # 추출한 ABSTRACT 텍스트 반환
-        return "\n".join(abstract_lines).strip()
+    # 기준가격(네이버) 계산
+    if not filtered_df.empty:
+        df.loc[idx, '기준가격(네이버)'] = int(
+            int(''.join(filter(str.isdigit, filtered_df.loc[0, '가격']))) /
+            int(''.join(filter(str.isdigit, filtered_df.loc[0, '갯수'])))
+        )
     else:
-        return ""
+        df.loc[idx, '기준가격(네이버)'] = None  # 필터링 결과 없을 때 처리
 
+# 나머지 칸 채우기 함수
+def fill_remaining_columns(df, whole_df, idx):
+    condition = (
+        (whole_df['상품명'] == df.loc[idx, '상품명'])
+    )
+    filtered_df = whole_df[condition].reset_index(drop=True)
 
-def is_accepted_date_format(text):
-    global months
+    if not filtered_df.empty:
+        # 가격/갯수 계산
+        filtered_df['가격/갯수'] = 0
+        for ii in range(len(filtered_df)):
+            filtered_df.loc[ii, '가격/갯수'] = int(
+                int(''.join(filter(str.isdigit, filtered_df.loc[ii, '가격']))) /
+                int(''.join(filter(str.isdigit, filtered_df.loc[ii, '갯수'])))
+            )
 
-    # 텍스트가 "Accepted "로 시작하는지 확인
-    if not text.startswith("Accepted "):
-        return False
+        # 가격/갯수 순으로 정렬
+        filtered_df = filtered_df.sort_values(by='가격/갯수').reset_index(drop=True)
 
-    # "Accepted " 이후의 부분을 추출
-    rest_of_text = text[len("Accepted "):]
+        # 상위 3개 정보를 df에 저장
+        df.loc[idx, '판매처1'] = filtered_df.loc[0, '쇼핑몰']
+        df.loc[idx, '상품명1'] = filtered_df.loc[0, '제품명']
+        df.loc[idx, '가격1'] = filtered_df.loc[0, '가격/갯수']
+        df.loc[idx, '판매처2'] = filtered_df.loc[1, '쇼핑몰']
+        df.loc[idx, '상품명2'] = filtered_df.loc[1, '제품명']
+        df.loc[idx, '가격2'] = filtered_df.loc[1, '가격/갯수']
+        df.loc[idx, '판매처3'] = filtered_df.loc[2, '쇼핑몰']
+        df.loc[idx, '상품명3'] = filtered_df.loc[2, '제품명']
+        df.loc[idx, '가격3'] = filtered_df.loc[2, '가격/갯수']
 
-    # 나머지 텍스트를 공백으로 나누기
-    parts = rest_of_text.split()
-
-    # parts 리스트가 날짜 형식에 맞는지 확인
-    if len(parts) != 3:
-        return False
-
-    day = parts[0]
-    month = parts[1].strip(',')
-    year = parts[2].strip(',')
-
-    # 날짜가 숫자인지 확인
-    if not day.isdigit():
-        return False
-
-    # 달이 months 배열에 있는지 확인
-    if month not in months:
-        return False
-
-    # 연도가 숫자인지 확인
-    if not year.isdigit():
-        return False
-
-    return True
-
-
-
-
-# 메인 함수
 def main():
-    # 현재 디렉토리의 pdf 폴더 경로 설정
-    # 프로그램이 실행되는 경로에 pdf폴더 안에 pdf파일들을 넣으면 됩니다.
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    pdf_folder = os.path.join(current_dir, 'pdf')
+    # 엑셀 데이터 불러오기
+    df = pd.read_excel("프로그램.xlsx")
+    limit_count = 3
+    driver = setup_driver()
 
-    # pdf_folder 안에 있는 모든 파일 이름을 확장자 포함해서 배열로 가져오기
-    pdf_files = [file for file in os.listdir(pdf_folder) if os.path.isfile(os.path.join(pdf_folder, file))]
+    for i in range(len(df)):
+        Name = df.loc[i, '상품명']
+        Naver_url = df.loc[i, '네이버 URL']
+        Danawa_url = df.loc[i, '다나와 URL']
+        Enuri_url = df.loc[i, '에누리 URL']
 
-    extracted_data = []
+        # 각 상품마다 merge_list 초기화
+        merge_list = []
 
-    for pdf_file_name in pdf_files:
-        # PDF 파일의 첫 페이지 텍스트 읽기
-        text = read_pdf_from_folder(pdf_folder, pdf_file_name)
+        # 네이버, 다나와, 에누리 각각 함수 호출
+        merge_list.extend(parse_naver(driver, Name, Naver_url, limit_count))
+        merge_list.extend(parse_danawa(driver, Name, Danawa_url, limit_count))
+        merge_list.extend(parse_enuri(driver, Name, Enuri_url, limit_count))
 
-        # 텍스트가 존재하는 경우 줄바꿈 단위로 리스트로 분리
-        if text:
-            text_lines = text.splitlines()  # 줄바꿈을 기준으로 배열로 분리
+        # DataFrame 생성
+        whole_df = pd.DataFrame(merge_list, columns=['상품명', '사이트', '갯수', '쇼핑몰', '배송', '제품명', '가격'])
 
-            # skip_keywords 정의
-            skip_keywords = ['Available online',
-                             'www.',
-                             'Journal of',
-                             'ISSN',
-                             'Research Article',
-                             'CODEN',
-                             'Contents lists available at',
-                             'Food Chemistry',
-                             'Article no.',
-                             'Journal International',
-                             'author:',
-                             'E-mail:',
-                             '_____________________________________________________________________________________________________',
-                             '_____________________________________________________________________________________________',
-                             '______',
-                             'DOI:',
-                             'GLOBAL JOURNAL OF',
-                             'https:',
-                             'http:',
-                             'Vol.',
-                             'Vol ',
-                             'ORIGINAL PAPER',
-                             '*	 ',
-                             '@gmail.com',
-                             'Graphical Abstract',
-                             'Extended author information available',
-                             'Nomico Journal',
-                             'Education Publishing',
-                             'Science and Biotechnology',
-                             'Global Science Books',
-                             'Research Journal',
-                             'Corresponding author',
-                             'Email:',
-                             'DOI',
-                             'All Rights Reserved',
-                             'Scientiﬁc African',
-                             'Pharmaceutical Biology',
-                             'Full Terms & Conditions of access',
-                             'ARTÍCULO ORIGINAL',
-                             'Academic Publishers.',
-                             'Mycopathologia',
-                             'A multifaceted review journal',
-                             'CARICA PAPAYA ON PITUITARY–GONADAL AXIS',
-                             ', Ltd.',
-                             '. Res.',
-                             'PHYTOTHERAPY RESEARCH',
-                             'SHORT COMMUNICATION',
-                             '© Universiti ',
-                             'E-mail addresses:',
-                             'Article history:',
-                             'SCIENCE & TECHNOLOGY',
-                             '& Technol.',
-                             'ARTICLE INFO',
-                             '(Chia Chay Tay)',
-                             'Published:',
-                             'Accepted:',
-                             'Received:',
-                             'Research ',
-                             'Review ',
-                             'RESEARCH ARTICLE',
-                             'Open Access',
-                             'Reports |',
-                             'This is an open access',
-                             'article under the CC BY',
-                             'NLM ID:',
-                             'Data in Brief',
-                             'Data Article',
-                             'Science and Technology',
-                             'Published by'
-                             ]
+        # 가격 기준 정하기
+        set_price_reference(df, whole_df, i)
 
-            # break_keywords 정의
-            break_keywords = ['* ,',
-                              '*,',
-                              ',⁎',
-                              'Article · ',
-                              '1 · ',
-                              '2 · ',
-                              ',1,',
-                              ',2,',
-                              ',3,',
-                              '* • ',
-                              '∗,',
-                              'CITATIONS',
-                              'I,',
-                              'II,',
-                              'III,',
-                              '1* ',
-                              '* and',
-                              ' A, ',
-                              '1, ',
-                              ', and',
-                              ' Q. ',
-                              'Natural Science · '
-                              ]
+        # 나머지 칸 채우기
+        fill_remaining_columns(df, whole_df, i)
 
-            small_values = ["T", " ", "",
-                            "1","2","3","4","5","6","7","8","9",
-                            "1 ","2 ","3 ","4 ","5 ","6 ","7 ","8 ","9 "
-                            ]
+        # 엑셀 파일에 즉시 업데이트
+        with pd.ExcelWriter("프로그램.xlsx", engine='openpyxl', mode='a', if_sheet_exists="replace") as writer:
+            df.to_excel(writer, index=False, sheet_name='Updated')
 
-            # 제목 추출
-            title = extract_title_from_text(text_lines, skip_keywords, break_keywords, small_values)
-
-            # 추출한 제목 출력
-
-            # ABSTRACT 추출
-            abstract = extract_abstract_from_text(text_lines, skip_keywords, small_values)
-
-            # 추출한 Abstract 출력
-            # 데이터를 객체 배열에 추가
-            obj = {
-                "file_name": pdf_file_name,
-                "title": title,
-                "abstract": abstract if abstract else "ABSTRACT 또는 INTRODUCTION을 찾을 수 없습니다."
-            }
-            print(f"=============================================================================")
-            print(f"file_name : {pdf_file_name}")
-            print(f"title : {title}")
-            print(f"abstract : {abstract}")
-            print(f"=============================================================================")
-
-            extracted_data.append(obj)
-
-
-    # DataFrame 생성 및 엑셀 파일로 저장
-    df = pd.DataFrame(extracted_data)
-    output_file = os.path.join(current_dir, 'extracted_data.xlsx')
-    df.to_excel(output_file, index=False)
-
-    print(f"데이터가 {output_file}에 저장되었습니다.")
+    driver.quit()
 
 if __name__ == "__main__":
     main()
