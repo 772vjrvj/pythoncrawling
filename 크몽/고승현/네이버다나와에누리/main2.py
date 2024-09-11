@@ -35,141 +35,141 @@ for i in range(len(df)):
     Enuri_url = df.loc[i,'에누리 URL']
 
     ###### 네이버 파트 #######
-
-    driver.get(Naver_url)
-    time.sleep(3)
-
-    # 카드할인 토클 클릭 ON으로 둘다 변경 (위 아래 있음)
-    driver.find_elements(By.CSS_SELECTOR,'[data-shp-contents-type="카드할인가 정렬"]')[0].click() #카드할인
-    time.sleep(0.5)
-    # 상품구성: 1개
-    opt_name = driver.execute_script('return document.querySelector("#section_price em").closest("div");').text.split(" : ")[0].split(',')[-1] ## 옵션 이름 ex)수량, 개수, 상품구성 등등
-    print(opt_name)
-    #상품구성: 1개 아래 ['1개', '2개', '3개', '4개', '5개'] ...
-    if len(driver.find_elements(By.CSS_SELECTOR,f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')) != 0:
-        Qtys = driver.find_elements(By.CSS_SELECTOR,f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')
-
-    elif len(driver.find_elements(By.CSS_SELECTOR,'.condition_area a .info')) != 0:
-        Qtys = driver.find_elements(By.CSS_SELECTOR,'.condition_area a .info') ## 수량, 개수 옵션이 없다면 2번째 옵션으로 지정
-    #['1개', '2개', '3개', '4개', '5개']
-    Qlist = [ q.text for q in Qtys ]
-    print(Qlist)
-
-    for p in range(len(Qtys)):
-
-        driver.find_element(By.CSS_SELECTOR,f'[data-shp-contents-id="{Qlist[p]}"]').click()
-        time.sleep(2)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        driver.execute_script("window.scrollTo(0, 0);")
-
-        uls =  driver.find_elements(By.CSS_SELECTOR,'#section_price ul') ## ul 목록
-
-        for e in uls: # ul안에 li class 이름 가져오기
-            if 'productList_list_seller' in e.get_attribute('class'):
-                ul_class = e.get_attribute('class').replace(' ','.')
-
-        prod_list = driver.find_elements(By.CSS_SELECTOR,f'#section_price .{ul_class} li')
-
-        action = ActionChains(driver)
-        action.move_to_element(prod_list[0]).perform()
-        time.sleep(1)
-
-        for e in prod_list: #[판매처, 상품명, 판매가] [옥션, 써클, 8,320원]
-            while True: ### 셀레늄 에러 발생시 재시도도
-                try:
-                    try:     mall_name = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.mall"] img').get_attribute('alt')
-                    except:  mall_name = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.mall"]').text.split('\n')[0]
-
-                    prod_name = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.pd"]').text
-                    price = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.price"]').text.replace('최저','').strip()
-                    # ['GNM자연의품격 맥주효모환 120g', '네이버', '1개', '롯데ON', '', '[GNM자연의품격]GNM 건조 맥주효모환 120g x 1병 / 베타글루칸', '10,470원']
-                    temp_list = [ Name, '네이버', Qlist[p], mall_name , '' , prod_name, price ]
-
-                    merge_list.append(temp_list)
-                    break
-                except:
-                    print(traceback.format_exc())
-                    True
-
-
-    ##### 다나와 파트 #######
-
-    driver.get(Danawa_url)
-
-    if driver.find_elements(By.XPATH,'//*[@id="bundleProductMoreOpen"]') != []:  ##구성 상품열기 #다른 구성상품5개 (아래화살표)
-        driver.find_element(By.XPATH,'//*[@id="bundleProductMoreOpen"]').click()
-
-    danawa_opt_url_list = [ e.get_attribute('href') for e in driver.find_elements(By.CSS_SELECTOR,'[class="othr_list"] li .chk a') ]
-    danawa_opt_text_list = [ e.text for e in driver.find_elements(By.CSS_SELECTOR,'[class="othr_list"] li .chk a') ]
-    # ['1개', '2개', '3개', '4개', '5개'] #['https://prod.danawa.com/info/?pcode=5970722', 'https://prod.danawa.com/info/?pcode=5970724', 'https://prod.danawa.com/info/?pcode=5970731', 'https://prod.danawa.com/info/?pcode=5970748', 'https://prod.danawa.com/info/?pcode=5970738']
-    print(danawa_opt_url_list)
-    print(danawa_opt_text_list)
-
-    for ii in range(len(danawa_opt_url_list)):
-
-        print(danawa_opt_url_list[ii])
-        print(danawa_opt_text_list[ii])
-
-        if danawa_opt_text_list[ii] == '1개': ## 1개는 스킵 # 복수 구성이 없는 상품은 에러처리안나게 건너 뛰기
-            continue
-
-        driver.get(danawa_opt_url_list[ii])
-        time.sleep(2)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        driver.execute_script("window.scrollTo(0, 0);")
-        driver.find_elements(By.CSS_SELECTOR,'.cardSaleChkbox')[0].click()  ## 카드할인가 클릭 (최저가순 빠른배송 배송비포함 V카드할인가
-        time.sleep(1)
-
-
-        html = driver.page_source
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-        # 좌측 : 무료배송, 우측 : 배송비 유/무료 (좌측)
-        free_dil_prod_e_list = soup.select('.columm.left_col .diff_item') ### 다나와 무료베송
-        time.sleep(1)
-
-        for ei in range(len(free_dil_prod_e_list)):
-            if ei > limit_count: break
-
-            while True:
-                try:
-                    try:    mall_name = soup.select('.columm.left_col .diff_item')[ei].select('img')[0].get('alt')
-                    except: mall_name = soup.select('.columm.left_col .diff_item')[ei].select('a .txt_logo')[0].text
-
-                    prod_name = soup.select('.columm.left_col .diff_item')[ei].select('.info_line')[0].text.strip()
-                    price = soup.select('.columm.left_col .diff_item')[ei].select('.prc_c')[0].text
-
-                    temp_list = [ Name, '다나와' , danawa_opt_text_list[ii] , mall_name , '무료배송' , prod_name , price ]
-                    merge_list.append(temp_list) # ['GNM자연의품격 맥주효모환 120g', '다나와', '2개', '옥션', '무료배송', 'GNM자연의품격 100% 건조 맥주효모환 베타글루칸 120g x 2병', '13,230']
-                    break
-                except:
-                    print(traceback.format_exc())
-                    True
-
-
-
-        pay_dil_prod_e_list = soup.select('.columm.rgt_col .diff_item') ### 다나와 유/무료베송
-        time.sleep(1)
-
-        for ei in range(len(pay_dil_prod_e_list)):
-            if ei > limit_count: break
-
-            while True:
-                try:
-                    try:    mall_name = soup.select('.columm.rgt_col .diff_item')[ei].select('img')[0].get('alt')
-                    except: mall_name = soup.select('.columm.rgt_col .diff_item')[ei].select('a .txt_logo')[0].text
-
-                    prod_name = soup.select('.columm.rgt_col .diff_item')[ei].select('.info_line')[0].text.strip()
-                    price = soup.select('.columm.rgt_col .diff_item')[ei].select('.prc_c')[0].text
-
-                    temp_list = [ Name, '다나와' , danawa_opt_text_list[ii] , mall_name , '유/무료배송' , prod_name , price ]
-                    merge_list.append(temp_list)
-                    break
-                except:
-                    print(traceback.format_exc())
-                    True
+    #
+    # driver.get(Naver_url)
+    # time.sleep(3)
+    #
+    # # 카드할인 토클 클릭 ON으로 둘다 변경 (위 아래 있음)
+    # driver.find_elements(By.CSS_SELECTOR,'[data-shp-contents-type="카드할인가 정렬"]')[0].click() #카드할인
+    # time.sleep(0.5)
+    # # 상품구성: 1개
+    # opt_name = driver.execute_script('return document.querySelector("#section_price em").closest("div");').text.split(" : ")[0].split(',')[-1] ## 옵션 이름 ex)수량, 개수, 상품구성 등등
+    # print(opt_name)
+    # #상품구성: 1개 아래 ['1개', '2개', '3개', '4개', '5개'] ...
+    # if len(driver.find_elements(By.CSS_SELECTOR,f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')) != 0:
+    #     Qtys = driver.find_elements(By.CSS_SELECTOR,f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')
+    #
+    # elif len(driver.find_elements(By.CSS_SELECTOR,'.condition_area a .info')) != 0:
+    #     Qtys = driver.find_elements(By.CSS_SELECTOR,'.condition_area a .info') ## 수량, 개수 옵션이 없다면 2번째 옵션으로 지정
+    # #['1개', '2개', '3개', '4개', '5개']
+    # Qlist = [ q.text for q in Qtys ]
+    # print(Qlist)
+    #
+    # for p in range(len(Qtys)):
+    #
+    #     driver.find_element(By.CSS_SELECTOR,f'[data-shp-contents-id="{Qlist[p]}"]').click()
+    #     time.sleep(2)
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #     driver.execute_script("window.scrollTo(0, 0);")
+    #
+    #     uls =  driver.find_elements(By.CSS_SELECTOR,'#section_price ul') ## ul 목록
+    #
+    #     for e in uls: # ul안에 li class 이름 가져오기
+    #         if 'productList_list_seller' in e.get_attribute('class'):
+    #             ul_class = e.get_attribute('class').replace(' ','.')
+    #
+    #     prod_list = driver.find_elements(By.CSS_SELECTOR,f'#section_price .{ul_class} li')
+    #
+    #     action = ActionChains(driver)
+    #     action.move_to_element(prod_list[0]).perform()
+    #     time.sleep(1)
+    #
+    #     for e in prod_list: #[판매처, 상품명, 판매가] [옥션, 써클, 8,320원]
+    #         while True: ### 셀레늄 에러 발생시 재시도도
+    #             try:
+    #                 try:     mall_name = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.mall"] img').get_attribute('alt')
+    #                 except:  mall_name = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.mall"]').text.split('\n')[0]
+    #
+    #                 prod_name = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.pd"]').text
+    #                 price = e.find_element(By.CSS_SELECTOR,'[data-shp-area="prc.price"]').text.replace('최저','').strip()
+    #                 # ['GNM자연의품격 맥주효모환 120g', '네이버', '1개', '롯데ON', '', '[GNM자연의품격]GNM 건조 맥주효모환 120g x 1병 / 베타글루칸', '10,470원']
+    #                 temp_list = [ Name, '네이버', Qlist[p], mall_name , '' , prod_name, price ]
+    #
+    #                 merge_list.append(temp_list)
+    #                 break
+    #             except:
+    #                 print(traceback.format_exc())
+    #                 True
+    #
+    #
+    # ##### 다나와 파트 #######
+    #
+    # driver.get(Danawa_url)
+    #
+    # if driver.find_elements(By.XPATH,'//*[@id="bundleProductMoreOpen"]') != []:  ##구성 상품열기 #다른 구성상품5개 (아래화살표)
+    #     driver.find_element(By.XPATH,'//*[@id="bundleProductMoreOpen"]').click()
+    #
+    # danawa_opt_url_list = [ e.get_attribute('href') for e in driver.find_elements(By.CSS_SELECTOR,'[class="othr_list"] li .chk a') ]
+    # danawa_opt_text_list = [ e.text for e in driver.find_elements(By.CSS_SELECTOR,'[class="othr_list"] li .chk a') ]
+    # # ['1개', '2개', '3개', '4개', '5개'] #['https://prod.danawa.com/info/?pcode=5970722', 'https://prod.danawa.com/info/?pcode=5970724', 'https://prod.danawa.com/info/?pcode=5970731', 'https://prod.danawa.com/info/?pcode=5970748', 'https://prod.danawa.com/info/?pcode=5970738']
+    # print(danawa_opt_url_list)
+    # print(danawa_opt_text_list)
+    #
+    # for ii in range(len(danawa_opt_url_list)):
+    #
+    #     print(danawa_opt_url_list[ii])
+    #     print(danawa_opt_text_list[ii])
+    #
+    #     if danawa_opt_text_list[ii] == '1개': ## 1개는 스킵 # 복수 구성이 없는 상품은 에러처리안나게 건너 뛰기
+    #         continue
+    #
+    #     driver.get(danawa_opt_url_list[ii])
+    #     time.sleep(2)
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #     driver.execute_script("window.scrollTo(0, 0);")
+    #     driver.find_elements(By.CSS_SELECTOR,'.cardSaleChkbox')[0].click()  ## 카드할인가 클릭 (최저가순 빠른배송 배송비포함 V카드할인가
+    #     time.sleep(1)
+    #
+    #
+    #     html = driver.page_source
+    #     soup = BeautifulSoup(driver.page_source, 'html.parser')
+    #
+    #     # 좌측 : 무료배송, 우측 : 배송비 유/무료 (좌측)
+    #     free_dil_prod_e_list = soup.select('.columm.left_col .diff_item') ### 다나와 무료베송
+    #     time.sleep(1)
+    #
+    #     for ei in range(len(free_dil_prod_e_list)):
+    #         if ei > limit_count: break
+    #
+    #         while True:
+    #             try:
+    #                 try:    mall_name = soup.select('.columm.left_col .diff_item')[ei].select('img')[0].get('alt')
+    #                 except: mall_name = soup.select('.columm.left_col .diff_item')[ei].select('a .txt_logo')[0].text
+    #
+    #                 prod_name = soup.select('.columm.left_col .diff_item')[ei].select('.info_line')[0].text.strip()
+    #                 price = soup.select('.columm.left_col .diff_item')[ei].select('.prc_c')[0].text
+    #
+    #                 temp_list = [ Name, '다나와' , danawa_opt_text_list[ii] , mall_name , '무료배송' , prod_name , price ]
+    #                 merge_list.append(temp_list) # ['GNM자연의품격 맥주효모환 120g', '다나와', '2개', '옥션', '무료배송', 'GNM자연의품격 100% 건조 맥주효모환 베타글루칸 120g x 2병', '13,230']
+    #                 break
+    #             except:
+    #                 print(traceback.format_exc())
+    #                 True
+    #
+    #
+    #
+    #     pay_dil_prod_e_list = soup.select('.columm.rgt_col .diff_item') ### 다나와 유/무료베송
+    #     time.sleep(1)
+    #
+    #     for ei in range(len(pay_dil_prod_e_list)):
+    #         if ei > limit_count: break
+    #
+    #         while True:
+    #             try:
+    #                 try:    mall_name = soup.select('.columm.rgt_col .diff_item')[ei].select('img')[0].get('alt')
+    #                 except: mall_name = soup.select('.columm.rgt_col .diff_item')[ei].select('a .txt_logo')[0].text
+    #
+    #                 prod_name = soup.select('.columm.rgt_col .diff_item')[ei].select('.info_line')[0].text.strip()
+    #                 price = soup.select('.columm.rgt_col .diff_item')[ei].select('.prc_c')[0].text
+    #
+    #                 temp_list = [ Name, '다나와' , danawa_opt_text_list[ii] , mall_name , '유/무료배송' , prod_name , price ]
+    #                 merge_list.append(temp_list)
+    #                 break
+    #             except:
+    #                 print(traceback.format_exc())
+    #                 True
 
     #### 에누리 파트 ###########
 
