@@ -82,13 +82,13 @@ def process_excel_and_download_images(file_path):
         print(f"처리 중: FID={fid}, X_Code={x_code}, Y_Code={y_code}")
 
         # 크롤링 감지 방지를 위한 지연시간
-        time.sleep(2)
+        time.sleep(1)
 
         # Panorama 데이터 가져오기
         panorama_id = get_panorama_data(x_code, y_code)
 
         # 크롤링 감지 방지를 위한 지연시간
-        time.sleep(2)
+        time.sleep(1)
 
         # 이미지를 FID 이름의 폴더에 저장
         save_folder = os.path.join("panorama_images", f"FID_{fid}")
