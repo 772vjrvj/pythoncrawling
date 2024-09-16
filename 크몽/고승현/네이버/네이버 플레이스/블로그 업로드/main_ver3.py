@@ -26,7 +26,6 @@ def fetch_search_results(query, page):
             'Accept-Encoding': 'gzip, deflate, br, zstd',
             'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
             'Cache-Control': 'max-age=0',
-            'If-None-Match': 'W/"cc8e-p62VZFyMnUKal/n+PziFTq6yy3I"',
             'Priority': 'u=0, i',
             'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
             'Sec-Ch-Ua-Mobile': '?0',
