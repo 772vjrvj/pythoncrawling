@@ -36,8 +36,6 @@ def fetch_data(date_str):
         print(f"Error fetching data for {date_str}: {response.status_code}")
         return []
 
-
-
 # 날짜 범위를 설정하여 데이터 수집
 def collect_data(start_date_str, end_date_str):
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
@@ -56,13 +54,25 @@ def collect_data(start_date_str, end_date_str):
 
     return all_data
 
+# 'CREATE_DT'와 'UPDATE_DT' 열의 형식을 yyyy-mm-dd hh:mm:ss으로 변환
+def format_datetime_columns(data):
+    df = pd.DataFrame(data)
+
+    # CREATE_DT 열 형식 변환
+    if 'CREATE_DT' in df.columns:
+        df['CREATE_DT'] = pd.to_datetime(df['CREATE_DT']).dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    # UPDATE_DT 열 형식 변환
+    if 'UPDATE_DT' in df.columns:
+        df['UPDATE_DT'] = pd.to_datetime(df['UPDATE_DT']).dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    return df
 
 # 수집한 데이터를 엑셀로 저장
 def save_to_excel(data):
-    df = pd.DataFrame(data)
+    df = format_datetime_columns(data)  # 데이터 포맷 적용
     df.to_excel("collected_data.xlsx", index=False)
     print("Data saved to collected_data.xlsx")
-
 
 if __name__ == "__main__":
     # 시작일과 종료일을 설정
