@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import json
 import pandas as pd
 
+
+
 def scrape_page_items(page_number):
     url = f"https://ecoandcompany.com/shop/?&page={page_number}&sort=recent"
     # 헤더 설정 (cookie 제외)
@@ -77,6 +79,7 @@ def scrape_all_pages():
         page_number += 1
 
     return all_items
+
 
 def fetch_reviews(result_id, result_title):
     all_reviews = []
