@@ -25,6 +25,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from tkinter import messagebox
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 url_list = []
@@ -174,6 +175,29 @@ def extract_published_time(url):
     return ""
 
 
+def process_address(address):
+    # 공백으로 쪼갠다
+    parts = address.split()
+
+    # 마지막 단어가 '층' 또는 '호'를 포함하는지 확인
+    if parts[-1].endswith('층') or parts[-1].endswith('호'):
+        # 마지막 전까지의 값을 공백으로 이어서 만듦
+        temp_text = ' '.join(parts[:-1])
+
+        # 다시 공백으로 쪼개서 처리
+        temp_parts = temp_text.split()
+        if temp_parts[-1].endswith('층') or temp_parts[-1].endswith('호'):
+            # 마지막 전까지의 값을 공백으로 이어서 만듦
+            a = ' '.join(temp_parts[:-1])
+        else:
+            a = temp_text
+    else:
+        # 마지막 단어가 '층' 또는 '호'를 포함하지 않으면 전체 텍스트 사용
+        a = address
+
+    return a
+
+
 def start_processing():
     global stop_flag, extracted_data_list, root, global_cookies
     stop_flag = False
@@ -226,22 +250,28 @@ def start_processing():
                     )
                     driver.switch_to.frame(iframe)
 
-                    # time.sleep(2)
-                    # # 이제 iframe 내에서 요소를 찾음
-                    # popup_button = WebDriverWait(driver, 10).until(
-                    #     EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-cancel'))
-                    # )
-                    # popup_button.click()
+                    if index == 1:
+
+                        try:
+                            # 작성중인글 확인
+                            time.sleep(2)
+                            # 이제 iframe 내에서 요소를 찾음
+                            popup_button = WebDriverWait(driver, 3).until(
+                                EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-cancel'))
+                            )
+                            popup_button.click()
+
+                        except TimeoutException:
+                            # close_button이 없을 경우에 실행될 코드 (필요에 따라 생략 가능)
+                            print("close_button이 존재하지 않습니다.")
 
 
-                    time.sleep(2)
-                    # 이제 iframe 내에서 요소를 찾음
-                    close_button = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'se-help-panel-close-button'))
-                    )
-                    close_button.click()
-
-                    print('close_button')
+                        time.sleep(2)
+                        # 이제 iframe 내에서 요소를 찾음
+                        close_button = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-help-panel-close-button'))
+                        )
+                        close_button.click()
 
                     # 3초 후 텍스트 입력 (클래스 이름 'se-ff-nanumgothic se-fs32 __se-node' 내부에 텍스트 '1234' 입력)
                     time.sleep(2)
@@ -255,7 +285,7 @@ def start_processing():
                     # 클릭 후 텍스트 삽입
                     bb.click()
                     actions = ActionChains(driver)
-                    actions.send_keys(url.제목).perform()
+                    actions.send_keys(url.블로그제목).perform()
 
 
                     time.sleep(2)
@@ -276,7 +306,7 @@ def start_processing():
                     base_folder_name = next(os.walk(images_dir))[1][0]
 
                     # 폴더 이름을 구성
-                    folder_name = f"{index + 1}. {url.이름}"
+                    folder_name = f"{index}. {url.이름}"
 
                     # 전체 경로 생성
                     full_path = os.path.join(images_dir, base_folder_name, folder_name)
@@ -314,39 +344,94 @@ def start_processing():
                     # 파일 열기(확인) 버튼 클릭 (Windows 기준)
                     pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
 
-                    time.sleep(3)
+                    time.sleep(2)
 
                     # 스크롤을 맨 위로 올리기
                     driver.execute_script("window.scrollTo(0, 0);")
                     time.sleep(1)
-
 
                     # 이제 iframe 내에서 요소를 찾음 (이미지 업로드 후 추가 작업)
                     image_upload_button = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
                     )
 
-                    print('test1')
-                    # JavaScript로 강제 클릭
                     driver.execute_script("arguments[0].click();", image_upload_button)
 
+                    time.sleep(10)
                     # 활성화된 요소 가져오기
                     active_element = driver.switch_to.active_element
 
                     # ActionChains로 클릭 후 텍스트 입력 시도
                     actions = ActionChains(driver)
-                    actions.move_to_element(active_element).click().send_keys("여기에 입력할 텍스트").perform()
-                    print('test2')
+                    actions.move_to_element(active_element).click().send_keys(url.블로그게시글).perform()
 
-                    # # 더 세밀하게 특정 요소를 클릭하고 텍스트 입력
-                    # bb = WebDriverWait(driver, 10).until(
-                    #     EC.presence_of_element_located((By.XPATH, '//span[contains(text(),"본문에")]'))
-                    # )
-                    # # 클릭 후 텍스트 삽입
-                    # bb.click()
-                    # actions = ActionChains(driver)
-                    # actions.send_keys("입력할 텍스트").perform()
+                    a = process_address(url.주소)
 
+                    time.sleep(2)
+                    # 이제 iframe 내에서 요소를 찾음
+                    image_map_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-map-toolbar-button'))
+                    )
+                    image_map_button.click()
+
+                    time.sleep(2)
+                    # input 필드 찾기
+                    input_field = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "react-autosuggest__input"))
+                    )
+
+                    # input 필드에 'a' 입력
+                    input_field.send_keys(a)
+
+                    # 검색 버튼 찾기
+                    search_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
+                    )
+
+                    # 검색 버튼 클릭
+                    search_button.click()
+
+                    time.sleep(2)
+
+                    try:
+                        # class가 'se-place-map-search-result-list'인 첫 번째 li 내의 'se-place-add-button' 찾기
+                        search_result_list = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-place-map-search-result-list'))
+                        )
+                        time.sleep(2)
+
+                        # 'se-place-map-search-result-list' 안에서 첫 번째 'li' 요소를 기다리며 찾음
+                        first_li = WebDriverWait(search_result_list, 10).until(
+                            EC.presence_of_element_located((By.TAG_NAME, 'li'))
+                        )
+
+                        # 마우스를 'first_li' 위로 오버
+                        actions = ActionChains(driver)
+                        actions.move_to_element(first_li).perform()  # 마우스를 해당 요소 위로 이동
+
+                        time.sleep(2)
+                        # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                        add_button = WebDriverWait(first_li, 10).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
+                        )
+                        add_button.click()
+
+                        time.sleep(2)
+                        # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                        confirm_map_button = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                        )
+                        confirm_map_button.click()
+
+                    except (NoSuchElementException, TimeoutException):
+                        # 'se-place-add-button'이 없으면 'se-popup-close-button'을 찾아 클릭
+                        try:
+                            close_button = WebDriverWait(driver, 10).until(
+                                EC.element_to_be_clickable((By.CLASS_NAME, 'se-popup-close-button'))
+                            )
+                            close_button.click()
+                        except (NoSuchElementException, TimeoutException):
+                            print("close_button을 찾을 수 없습니다.")
 
 
 
@@ -364,21 +449,14 @@ def start_processing():
                     )
                     driver.execute_script("arguments[0].click();", confirm_button)
 
-
-
-
-
                 except Exception as e:
                     print(f"에러 발생: {e}")
-
-                time.sleep(200)
-
 
                 # 진행률 업데이트
                 progress["value"] = index
                 progress_label.config(text=f"진행률: {int((index) / total_urls * 100)}%")
 
-                remaining_time = (total_urls - (index)) * 2.5  # 남은 URL 개수 * 2초
+                remaining_time = (total_urls - (index)) * 60  # 남은 URL 개수 * 2초
                 eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
 
                 time.sleep(random.uniform(2, 5))
@@ -437,7 +515,6 @@ def upload_images(driver, folder_path):
         EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
     )
 
-    print('test1')
     # JavaScript로 강제 클릭
     driver.execute_script("arguments[0].click();", image_upload_button)
 
@@ -447,19 +524,6 @@ def upload_images(driver, folder_path):
     # ActionChains로 클릭 후 텍스트 입력 시도
     actions = ActionChains(driver)
     actions.move_to_element(active_element).click().send_keys("여기에 입력할 텍스트").perform()
-    print('test2')
-
-    # # 더 세밀하게 특정 요소를 클릭하고 텍스트 입력
-    # bb = WebDriverWait(driver, 10).until(
-    #     EC.presence_of_element_located((By.XPATH, '//span[contains(text(),"본문에")]'))
-    # )
-    # # 클릭 후 텍스트 삽입
-    # bb.click()
-    # actions = ActionChains(driver)
-    # actions.send_keys("입력할 텍스트").perform()
-
-
-
 
     # 3초 후 'publish_btn__m9KHH' 클래스 버튼 클릭
     time.sleep(3)
@@ -474,7 +538,6 @@ def upload_images(driver, folder_path):
         EC.presence_of_element_located((By.CLASS_NAME, 'confirm_btn__WEaBq'))
     )
     driver.execute_script("arguments[0].click();", confirm_button)
-
 
 
 
@@ -589,8 +652,8 @@ def main():
     global log_text_widget, start_button, progress, progress_label, eta_label, login_input, root
 
     root = TkinterDnD.Tk()
-    root.title("유튜브 데이터 수집 프로그램")
-    root.geometry("600x600")
+    root.title("네이버 블로그 자동 등록 프로그램")
+    root.geometry("600x800")
 
     font_large = font.Font(size=10)
 
