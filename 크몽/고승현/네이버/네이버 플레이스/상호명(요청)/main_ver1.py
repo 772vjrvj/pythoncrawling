@@ -60,6 +60,7 @@ def fetch_place_info(place_id):
                     address = data.get(f"PlaceDetailBase:{place_id}", {}).get("address", "")
                     roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
                     category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
+                    conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", "")
                     visitorReviewsScore = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsScore", "")
                     visitorReviewsTotal = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsTotal", "")
 
@@ -112,7 +113,8 @@ def fetch_place_info(place_id):
                         "이용시간2": format_new_business_hours(new_business_hours_json),
                         "카테고리": category,
                         "URL": url,
-                        "지도": map_url
+                        "지도": map_url,
+                        "편의시설": ', '.join(conveniences)
                     }
 
                     return result
