@@ -255,7 +255,7 @@ def start_processing():
                     # 클릭 후 텍스트 삽입
                     bb.click()
                     actions = ActionChains(driver)
-                    actions.send_keys(url.제목).perform()
+                    actions.send_keys(url.블로그제목).perform()
 
 
                     time.sleep(2)
@@ -276,7 +276,7 @@ def start_processing():
                     base_folder_name = next(os.walk(images_dir))[1][0]
 
                     # 폴더 이름을 구성
-                    folder_name = f"{index + 1}. {url.이름}"
+                    folder_name = f"{index}. {url.이름}"
 
                     # 전체 경로 생성
                     full_path = os.path.join(images_dir, base_folder_name, folder_name)
@@ -314,7 +314,7 @@ def start_processing():
                     # 파일 열기(확인) 버튼 클릭 (Windows 기준)
                     pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
 
-                    time.sleep(3)
+                    time.sleep(10)
 
                     # 스크롤을 맨 위로 올리기
                     driver.execute_script("window.scrollTo(0, 0);")
@@ -330,12 +330,14 @@ def start_processing():
                     # JavaScript로 강제 클릭
                     driver.execute_script("arguments[0].click();", image_upload_button)
 
+
+                    time.sleep(25)
                     # 활성화된 요소 가져오기
                     active_element = driver.switch_to.active_element
 
                     # ActionChains로 클릭 후 텍스트 입력 시도
                     actions = ActionChains(driver)
-                    actions.move_to_element(active_element).click().send_keys("여기에 입력할 텍스트").perform()
+                    actions.move_to_element(active_element).click().send_keys(url.블로그게시글).perform()
                     print('test2')
 
                     # # 더 세밀하게 특정 요소를 클릭하고 텍스트 입력
@@ -366,12 +368,8 @@ def start_processing():
 
 
 
-
-
                 except Exception as e:
                     print(f"에러 발생: {e}")
-
-                time.sleep(200)
 
 
                 # 진행률 업데이트
