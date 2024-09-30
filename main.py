@@ -226,7 +226,7 @@ def main(query):
 
             all_ids.update(ids_this_page)
             page += 1
-            time.sleep(random.uniform(1, 2))
+            time.sleep(random.uniform(2, 3))
 
         all_ids_list = list(all_ids)
         total_count = len(all_ids_list)
