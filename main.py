@@ -60,7 +60,7 @@ def fetch_place_info(place_id):
                     address = data.get(f"PlaceDetailBase:{place_id}", {}).get("address", "")
                     roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
                     category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
-                    conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", "")
+                    conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", [])
                     visitorReviewsScore = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsScore", "")
                     visitorReviewsTotal = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsTotal", "")
 
@@ -114,7 +114,7 @@ def fetch_place_info(place_id):
                         "카테고리": category,
                         "URL": url,
                         "지도": map_url,
-                        "편의시설": ', '.join(conveniences)
+                        "편의시설": ', '.join(conveniences) if conveniences else ''
                     }
 
                     return result
@@ -238,7 +238,7 @@ def main(query):
                 place_info["식당이름"] = query.split()[-1]
                 new_print(place_info)
                 results.append(place_info)
-                time.sleep(random.uniform(1, 2))
+                time.sleep(random.uniform(2, 3))
 
         return results
 
@@ -247,38 +247,38 @@ def main(query):
 
 if __name__ == "__main__":
     names = [
-        "가락 진성한우곱창",
-        "가락시장 홍홍",
-        "가산 매드포갈릭",
-        "가산 북창동순두부",
-        "가산 서천집",
-        "가산 스시천",
-        "가산 용호동낙지",
-        "가산 으뜸명가",
-        "가산 코미오",
-        "가산 펀비어킹",
-        "가산디지털단지 민소푸",
-        "가양 동두천솥뚜껑삼겹살",
-        "갈현동 은평갈비",
-        "감나무기사식당",
-        "강남 82올리언즈",
-        "강남 강남교자",
-        "강남 강남쪽갈비",
-        "강남 개판포차",
-        "강남 게새장터",
-        "강남 고베규카츠",
-        "강남 고베큐카츠",
-        "강남 규네",
-        "강남 기리야마본진",
-        "강남 나노하나",
-        "강남 나에코",
-        "강남 나이쏘이",
-        "강남 남소관우육도삭면",
-        "강남 노티드",
-        "강남 뉴욕식타코",
-        "강남 다몽집",
-        "강남 대우부대찌개",
-        "강남 대치동집",
+        # "가락 진성한우곱창",
+        # "가락시장 홍홍",
+        # "가산 매드포갈릭",
+        # "가산 북창동순두부",
+        # "가산 서천집",
+        # "가산 스시천",
+        # "가산 용호동낙지",
+        # "가산 으뜸명가",
+        # "가산 코미오",
+        # "가산 펀비어킹",
+        # "가산디지털단지 민소푸",
+        # "가양 동두천솥뚜껑삼겹살",
+        # "갈현동 은평갈비",
+        # "감나무기사식당",
+        # "강남 82올리언즈",
+        # "강남 강남교자",
+        # "강남 강남쪽갈비",
+        # "강남 개판포차",
+        # "강남 게새장터",
+        # "강남 고베규카츠",
+        # "강남 고베큐카츠",
+        # "강남 규네",
+        # "강남 기리야마본진",
+        # "강남 나노하나",
+        # "강남 나에코",
+        # "강남 나이쏘이",
+        # "강남 남소관우육도삭면",
+        # "강남 노티드",
+        # "강남 뉴욕식타코",
+        # "강남 다몽집",
+        # "강남 대우부대찌개",
+        # "강남 대치동집",
         "강남 돈그리아",
         "강남 두레촌",
         "강남 딘타이펑",
