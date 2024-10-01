@@ -396,6 +396,7 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
         print(f"Error in Enuri scraping: {e}")
         return []
 
+
 # 숫자를 추출할 때 빈 문자열을 처리하기 위한 함수
 def extract_numeric_price(price_str):
     """ 가격 문자열에서 숫자만 추출하는 함수, '원' 앞에 있는 숫자만 추출 """
@@ -589,3 +590,6 @@ if __name__ == "__main__":
 # 5% 할인 적용 판매처 (five_per_mall_name) 문자열 -> 배열로 변경
 # 갯수없는 것 일반구매 해외구매 -> 1개로 수정
 # [6] 숫자로만 수정
+
+# 2024-10-01 ver_3
+

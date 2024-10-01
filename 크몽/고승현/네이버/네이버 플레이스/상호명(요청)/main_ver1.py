@@ -40,6 +40,7 @@ def fetch_place_info(place_id):
             'sec-fetch-dest': 'document',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
+            'referer': '',
             'sec-fetch-user': '?1',
             'upgrade-insecure-requests': '1',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
@@ -60,7 +61,7 @@ def fetch_place_info(place_id):
                     address = data.get(f"PlaceDetailBase:{place_id}", {}).get("address", "")
                     roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
                     category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
-                    conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", "")
+                    conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", [])
                     visitorReviewsScore = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsScore", "")
                     visitorReviewsTotal = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsTotal", "")
 
@@ -114,7 +115,7 @@ def fetch_place_info(place_id):
                         "카테고리": category,
                         "URL": url,
                         "지도": map_url,
-                        "편의시설": ', '.join(conveniences)
+                        "편의시설": ', '.join(conveniences) if conveniences else ''
                     }
 
                     return result
@@ -225,7 +226,7 @@ def main(query):
 
             all_ids.update(ids_this_page)
             page += 1
-            time.sleep(random.uniform(1, 2))
+            time.sleep(random.uniform(2, 3))
 
         all_ids_list = list(all_ids)
         total_count = len(all_ids_list)
@@ -238,7 +239,7 @@ def main(query):
                 place_info["식당이름"] = query.split()[-1]
                 new_print(place_info)
                 results.append(place_info)
-                time.sleep(random.uniform(1, 2))
+                time.sleep(random.uniform(2, 3))
 
         return results
 
