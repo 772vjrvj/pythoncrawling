@@ -1,122 +1,99 @@
-<!doctype html>
-<html>
-<head>
-    <script>
-        window.$ENV = 'production';
-        window.$TIMESTAMP = '1724164922507';
-        window.$RELEASE = 'f217f6698dc30c06950dab55d575ed25b530796b';
-        window.$BUILDDATE = '1724164919479';
-        window.$COUNTRYFOLDER = '';
-        window.$VERSION = '7.26.2';
-        window.$EXCEPTION_LIST = '{"de.saks.com":"de.saks.localised.com","hk.saks.com":"hk.saks.localised.com","tw.saks.com":"tw.saks.localised.com","ae.saks.com":"ae.saks.localised.com","ch.saks.com":"ch.saks.localised.com","jp.saks.com":"jp.saks.localised.com","bh.saks.com":"bh.saks.localised.com","www.saksfifthave.kr":"kr.saks.localised.com","mx.saks.com":"mx.saks.localised.com","fr.saks.com":"fr.saks.localised.com","kw.saks.com":"kw.saks.localised.com","sa.saks.com":"sa.saks.localised.com","qa.saks.com":"qa.saks.localised.com","au.saks.com":"au.saks.localised.com","sg.saks.com":"sg.saks.localised.com","gb.saks.com":"gb.saks.localised.com","ca.saks.com":"ca.saks.localised.com"}';
-    </script>
-    <script>
-        function $loadSiteAnalytics() {
-            var siteAnalyticsScript = document.createElement("script");
-            siteAnalyticsScript.src = "" + "/themes/site-analytics.js" + "?cb=" + Date.now();
-            document.head.appendChild(siteAnalyticsScript);
-        }
-        var $isTracking = (function() {
-                try {
-                    if (Boolean(URLSearchParams)) {
-                        var urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.has("internal")) {
-                            return false;
-                        }
-                    }
-                    if (window.localStorage && window.localStorage.getItem("disableTracking") === "true") {
-                        return false;
-                    }
-                    if (window.location.host && window.location.host.includes("preview.localised")) {
-                        return false;
-                    }
-                } catch (e) {}
-                return true;
-            }
-        )();
-        if ($isTracking) {
-            $loadSiteAnalytics();
-        }
-    </script>
-    <script>
-        window.onerror = function() {
-            var n = new XMLHttpRequest()
-
-            n.onreadystatechange = function() {
-                try {
-                    this.readyState === 4 && this.status === 200 && (window.location.href = "/pages/unsupported_" + (function(res) {
-                        res = res || {
-                            languages: []
-                        }
-                        const e = navigator.language.split("-")[0]
-                        return res.languages.includes(e) ? e : "en"
-                    }(this.responseText)) + ".html" + '?redirect_source=' + encodeURIComponent(window.location.href))
-                } catch (e) {
-                    window.location.href = "/pages/unsupported_en.html" + '?redirect_source=' + encodeURIComponent(window.location.href)
-                }
-            }
-
-            n.open("GET", "/" + window.location.host + "-current/metadata-v2.json", !0)
-            n.send()
-        }
-    </script>
-    <meta charset="utf-8">
-    <title></title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="">
-    <meta name="og:title" content="">
-    <meta name="og:description" content="">
-    <meta name="og:image" content="">
-    <meta name="keywords" content="">
-    <link rel="canonical" href=""/>
-    <link rel="icon" href="/themes/images/favicon/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/themes/images/favicon/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/themes/images/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="/data/manifest.json">
-</head>
-<body>
-<div id="root">
-    <div style="display: flex; align-items: center; height: 100vh;width: 100vw; justify-content: center;">
-        <svg style="width: 100px;">
-            <use href="/themes/icons/sprites.svg#logo"/>
-        </svg>
+<div class="clearfix _review_modal_body">
+    <div class="modal-left float_l">
+        <div class="owl-carousel owl-theme">
+            <div class="item">
+                <img class="item-image" src="https://cdn.imweb.me/upload/S201902115c60f0dbb0b37/8cc2afa95b14a.jpeg" alt="">
+            </div>
+            <div class="item">
+                <img class="item-image" src="https://cdn.imweb.me/upload/S201902115c60f0dbb0b37/f77a7241e0791.jpeg" alt="">
+            </div>
+            <div class="item">
+                <img class="item-image" src="https://cdn.imweb.me/upload/S201902115c60f0dbb0b37/9bb86aa54ea11.jpeg" alt="">
+            </div>
+            <div class="item">
+                <img class="item-image" src="https://cdn.imweb.me/upload/S201902115c60f0dbb0b37/9b156a3f34773.jpeg" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="modal-right float_l">
+        <div class="modal-header no-border">
+            <div class="tabled full-width">
+                <div class="table-cell vertical-top use_info">
+                    <img src="/common/img/default_profile.png" width="40" height="40">
+                </div>
+                <div class="table-cell vertical-top use_title">
+                    <div class="interlock_star_point star_point_wrap">
+                        <a class="bts bt-star active"></a><a class="bts bt-star active"></a><a class="bts bt-star active"></a><a class="bts bt-star active"></a><a class="bts bt-star active"></a>
+                    </div>
+                    <p class="no-margin text-13 body_font_color_60 write_info clearfix">
+                        <span class="inline-blocked">전재경</span>
+                        <span class="inline-blocked">2024-08-28</span>
+                    </p>
+                </div>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="review_detail_close">
+                <i class="btl bt-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="text-area margin-bottom-xxxl text-14">
+                <div class="fr-view">
+                    <span class="txt">
+                        머리부터 발끝까지 트래블 키트 하나로 끝낼 수 있는 구성이라 좋네요!<br>
+                        이번 여행에 챙겨갔는데 거품도 잘 나고 향도 좋아서 거부감 없이 사용할 수 있더라구요.<br>
+                        앞으로도 에코앤드 트래블 키트로<br>
+                        나와 지구에 무해한 여행을 하기로 다짐했습니다!!
+                    </span>
+                </div>
+            </div>
+            <div class="tabled full-width prod_thumb_wrap margin-bottom-xxxl" style="cursor: pointer" onclick="window.open('https://ecoandcompany.com/59/?idx=302')">
+                <div class="table-cell vertical-middle" style="width: 62px">
+                    <img class="prod_thumb" src="https://cdn.imweb.me/thumbnail/20240710/f46f6e8b18938.png" width="48" height="48" alt="">
+                </div>
+                <div class="table-cell vertical-middle">
+                    <p class="no-margin text-15 prod_name">
+                        <a href="javascript:;">제로웨이스트 트래블 키트</a>
+                    </p>
+                </div>
+            </div>
+            <div class="clearfix margin-bottom-xxl">
+                <span class="text-13 float_l">댓글 <span class="text-brand"  id="comment_count">0</span></span>
+                <span class="text-13 float_r"><a class="text-brand" href="javascript:;" onclick="$('#modal_review_comment_body').focus();">댓글쓰기</a></span>
+            </div>
+            <div class="comment_section" id="review_comment_section_c20240828b7af28faac725">
+            </div>
+        </div>
     </div>
 </div>
-<div id="modal"></div>
-<div id="scripts">
-    <script defer="defer" src="/js/vendor_7ab20206c9b6ae48d629.js"></script>
-    <script defer="defer" src="/js/app_acb29a9aba595bc7e73c.js"></script>
-    <link href="/css/app_acb29a9aba595bc7e73c.css" rel="preload" as="style" onload="this.rel='stylesheet'">
-</div>
+
 <script>
-    function makeStylesheet(href) {
-        var link = document.createElement("link");
-        var timestamped = href.concat(`?v=${new Date().toISOString().replace(/[^0-9]/g, '')}`)
-
-        link.addEventListener("load", () => {
-                link.rel = "stylesheet";
-            }
-        );
-
-        link.as = "style";
-        link.href = timestamped;
-        link.rel = "preload";
-        return link;
-    }
-
-    function loadCssWithTimestamps() {
-        var scriptsContainer = document.getElementById("scripts");
-
-        var sheets = ["/themes/customProperties.css", "/themes/styles.css", "/themes/fonts/fonts.css", ].forEach( (href) => {
-                scriptsContainer.appendChild(makeStylesheet(href));
-            }
-        );
-    }
-
-    loadCssWithTimestamps();
+    $(function(){
+        SHOP_REVIEW_COMMENT.getReviewCommentHtml('c20240828b7af28faac725','modal');
+    });
 </script>
-</body>
-</html>
+<script>
+    function startCarousel(){
+        var checkWidth = $(window).width();
+        var owl = $('._review_modal_body .owl-carousel');
+        if ( checkWidth > 768 ) {
+            owl.owlCarousel({
+                'loop': owl.children().length > 1,
+                'margin':0,
+                'nav':false,
+                'items': 1
+            });
+        }
+    };
+    $(document).ready(function(){
+        startCarousel();
+    });
+    $(window).resize(function(){
+        startCarousel();
+    });
+    var img_count = 4;
+    if ( img_count <= 0 ) {
+        $('body').toggleClass('no-images', true);
+    } else {
+        $('body').toggleClass('no-images', false);
+    }
+</script>
