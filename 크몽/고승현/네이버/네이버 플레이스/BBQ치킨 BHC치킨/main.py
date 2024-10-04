@@ -5357,7 +5357,7 @@ if __name__ == "__main__":
     # ]
 
     #키워드
-    keywords = ["BBQ치킨"]
+    keywords = ["BBQ치킨", "BHC치킨"]
 
     #신규 여부
     new_yn = "Y"
