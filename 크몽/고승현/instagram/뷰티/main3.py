@@ -1,18 +1,18 @@
+import json
 import pandas as pd
-import re
+import math
+import requests
 import time
-
-import pandas as pd
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
-
+import random
 from selenium import webdriver
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, WebDriverException
+from selenium.webdriver.common.action_chains import ActionChains
 
 # 드라이버 세팅
 def setup_driver():
@@ -43,29 +43,6 @@ def setup_driver():
         print(f"Error setting up the WebDriver: {e}")
         return None
 
-def save_to_excel(results, output_file='instagram_search_results.xlsx'):
-    # 기존 엑셀 파일이 있으면 그 내용을 불러와서 이어서 저장
-    try:
-        df_existing = pd.read_excel(output_file)
-        df_results = pd.DataFrame(results)
-        df_combined = pd.concat([df_existing, df_results], ignore_index=True)
-    except FileNotFoundError:
-        # 기존 파일이 없으면 바로 새로운 데이터 저장
-        df_combined = pd.DataFrame(results)
-
-    df_combined.to_excel(output_file, index=False)
-    print(f"Results saved to {output_file}")
-
-def remove_non_bmp_characters(text):
-    # BMP 범위 내의 문자(알파벳, 숫자, 공백 포함)만 남기고 나머지는 제거
-    cleaned_text = ''.join(c for c in text if ord(c) <= 0xFFFF)
-
-    # 이모지 및 특수 문자를 제거하고 알파벳, 숫자, 공백만 남김
-    # cleaned_text = re.sub(r'[^a-zA-Z0-9\s]', '', cleaned_text)
-
-    return cleaned_text
-
-
 def main():
     driver = setup_driver()
 
@@ -86,7 +63,6 @@ def main():
         return
 
     results = []  # 상위 리스트 생성
-    output_file = 'instagram_search_results.xlsx'  # 엑셀 파일 경로
 
     # 엑셀 파일에서 데이터 읽어들이기
     input_file = 'instagram_hashtag.xlsx'
@@ -98,8 +74,7 @@ def main():
 
     # 각 keyword에 대해 검색 처리
     for i, keyword in enumerate(usernames):
-        cleaned_keyword = remove_non_bmp_characters(keyword)  # 이모지와 같은 BMP 밖의 문자 제거
-        print(f"Searching for keyword: {cleaned_keyword}===============")
+        print(f"Searching for keyword: {keyword}===============")
 
         # PolarisNavigationIcons 클래스명을 가진 두 번째 div 안의 a 태그 클릭
         try:
@@ -113,18 +88,21 @@ def main():
             pressable_link.click()
         except (NoSuchElementException, TimeoutException) as e:
             print(f"Error finding the second navigation icon or 'a' tag: {e}")
-            continue
+            driver.quit()
+            return
 
-        # 검색 input 필드에 keyword 입력
+        # 검색 input 필드에 'SKINSIDER' 입력
         try:
             search_input = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@aria-label='입력 검색']"))
             )
             search_input.clear()
-            search_input.send_keys(cleaned_keyword)
+            search_input.send_keys(keyword)
         except (NoSuchElementException, TimeoutException) as e:
             print(f"Error finding search input: {e}")
-            continue
+            driver.quit()
+            return
+
 
         # div 내부의 모든 a 태그의 href 속성 추출
         try:
@@ -142,10 +120,12 @@ def main():
             print(hrefs)
         except (NoSuchElementException, TimeoutException) as e:
             print(f"Error finding a tags: {e}")
-            continue
+            driver.quit()
+            return
 
-        # href 배열의 각 값으로 새로운 페이지를 열기 (상위 10개의 href만 처리)
-        for href in hrefs[:10]:
+        # href 배열의 각 값으로 새로운 페이지를 열기
+        # 상위 10개의 href만 처리
+        for href in hrefs[:2]:
             driver.get(href)
             print(f"Opened {href}")
             time.sleep(3)  # 페이지가 로드될 시간을 주기 (필요에 따라 조정 가능)
@@ -161,7 +141,7 @@ def main():
             except (NoSuchElementException, TimeoutException):
                 print("Element to click not found, continuing without clicking.")
 
-            # user 텍스트 추출
+            # user 텍스트 추출 (여러 클래스 이름을 포함하는 요소)
             try:
                 user = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located(
@@ -169,7 +149,7 @@ def main():
                     )
                 ).text
             except (NoSuchElementException, TimeoutException):
-                user = ""
+                user = ""  # 못 찾으면 빈 값으로 설정
                 print("User not found.")
 
             # 두 번째 follower 텍스트 추출
@@ -178,9 +158,9 @@ def main():
                     EC.presence_of_all_elements_located(
                         (By.XPATH, "//*[contains(@class, 'xdj266r') and contains(@class, 'x11i5rnm') and contains(@class, 'xat24cr') and contains(@class, 'x1mh8g0r') and contains(@class, 'xexx8yu') and contains(@class, 'x4uap5') and contains(@class, 'x18d9i69') and contains(@class, 'xkhd6sd') and contains(@class, 'x1hl2dhg') and contains(@class, 'x16tdsg8') and contains(@class, 'x1vvkbs')]")
                     )
-                )[1].text
+                )[1].text  # 두 번째 요소 선택
             except (NoSuchElementException, TimeoutException, IndexError):
-                follower = ""
+                follower = ""  # 못 찾으면 N/A로 설정
                 print("Follower not found.")
 
             # content 텍스트 추출
@@ -191,7 +171,7 @@ def main():
                     )
                 ).text
             except (NoSuchElementException, TimeoutException):
-                content = ""
+                content = ""  # 못 찾으면 빈 값으로 설정
                 print("Content not found.")
 
             # url 텍스트 추출
@@ -202,7 +182,7 @@ def main():
                     )
                 ).text
             except (NoSuchElementException, TimeoutException):
-                url = ""
+                url = ""  # 못 찾으면 빈 값으로 설정
                 print("URL not found.")
 
             # 데이터 객체 생성
@@ -220,12 +200,16 @@ def main():
             # 중복 확인 후 리스트에 추가 (객체 전체가 동일해야 추가되지 않음)
             if not any(d == data for d in results):
                 results.append(data)
-                print(f'results 갯수 {len(results)}')
 
-        # 한 번의 검색이 끝날 때마다 저장
-        save_to_excel(results, output_file)
+    print(f'results : {results}')
 
-    print("모든 검색이 완료되었습니다.")
+    # 검색 결과를 새로운 엑셀 파일로 저장
+    output_file = 'instagram_search_results.xlsx'
+    df_results = pd.DataFrame(results)
+    df_results.to_excel(output_file, index=False)
+    print(f"Results saved to {output_file}")
+
+    time.sleep(2)
     driver.quit()
 
 # 인스타
