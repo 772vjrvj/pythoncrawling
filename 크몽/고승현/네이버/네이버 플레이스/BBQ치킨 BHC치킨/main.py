@@ -16,12 +16,13 @@ def generate_query(place, city, loc, keyword):
     return f"{place} {city} {loc} {keyword}"
 
 
+
 def fetch_zipcode(id):
 
     # 요청을 보낼 URL
     url = "https://pcmap-api.place.naver.com/graphql"
 
-        # 요청에 사용할 헤더
+    # 요청에 사용할 헤더
     headers = {
         "authority": "pcmap-api.place.naver.com",
         "method": "POST",
@@ -30,19 +31,20 @@ def fetch_zipcode(id):
         "accept": "*/*",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko",
-        "content-length": "370",
+        "content-length": "368",
         "content-type": "application/json",
+        "cookie": "NAC=OsXJBQA7C4Wj; NNB=FOXBS434SDKGM; ASID=da9384ec00000191d00facf700000072; NFS=2; BUC=MPi5gQVIh_2aO0xV9oH3Grahwc5WbD51MCmp1AAiq2c=",
         "origin": "https://pcmap.place.naver.com",
         "priority": "u=1, i",
         "referer": "",
-        "sec-ch-ua": "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"",
+        "sec-ch-ua": '"Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
         "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua-platform": '"Windows"',
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-site",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-        "x-wtm-graphql": "eyJhcmciOiLsiJjsm5Drp53tj6zsoJAgYmJxIiwidHlwZSI6InBsYWNlIiwic291cmNlIjoicGxhY2UifQ"
+        "x-wtm-graphql": "eyJhcmciOiLshJzsmrgg64-Z64yA66y46rWsIOyLoOyEpCIsInR5cGUiOiJyZXN0YXVyYW50Iiwic291cmNlIjoicGxhY2UifQ"
     }
 
     # 요청에 사용할 페이로드 (JSON 데이터)
@@ -56,16 +58,32 @@ def fetch_zipcode(id):
         }
     }
 
-    # POST 요청을 보냄
-    response = requests.post(url, headers=headers, json=payload)
+    try:
+        # POST 요청을 보냄
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()  # 요청에 실패했을 때 예외 발생
+        data = response.json()
 
-    # 응답을 JSON 형식으로 변환
-    data = response.json()
+        # 응답 데이터가 None이 아닌지 확인
+        if data and 'data' in data and 'searchZipCodeByQuery' in data['data']:
+            # zipcode 추출
+            zipcode = data['data']['searchZipCodeByQuery'].get('zipCode', "")
+        else:
+            # 응답 데이터가 예상과 다를 경우 공백 반환
+            zipcode = ""
 
-    # zipcode 추출
-    zipcode = data['data']['searchZipCodeByQuery']['zipCode']
+        return zipcode
 
-    return zipcode
+    except requests.exceptions.RequestException as e:
+        # 네트워크 문제 또는 요청 실패 시 에러 처리
+        print(f"HTTP 요청 중 에러 발생: {e}")
+        return ""
+    except Exception as e:
+        # 기타 예외 처리
+        print(f"데이터 처리 중 에러 발생: {e}")
+        return ""
+
+
 
 
 
@@ -74,22 +92,25 @@ def fetch_search_results(query, page):
     url = f"https://map.naver.com/p/api/search/allSearch?query={query}&type=all&searchCoord=&boundary=&page={page}"
     print(f"url : {url}")
     headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'max-age=0',
-        'If-None-Match': 'W/"cc8e-p62VZFyMnUKal/n+PziFTq6yy3I"',
-        'Referer': '',
-        'Priority': 'u=0, i',
-        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+        "authority": "map.naver.com",
+        "method": "GET",
+        "scheme": "https",
+        "accept": "application/json, text/plain, */*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4",
+        "cache-control": "no-cache",
+        "cookie": "NACT=1; NAC=OsXJBQA7C4Wj; NNB=FOXBS434SDKGM; ASID=da9384ec00000191d00facf700000072; NFS=2; BUC=3HH_7dIUyxIgVL8SJWY4gpjjyx8k_Fj2166PCGSOzK4=",
+        "expires": "Sat, 01 Jan 2000 00:00:00 GMT",
+        "pragma": "no-cache",
+        "priority": "u=1, i",
+        "referer": "",
+        "sec-ch-ua": '"Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
     }
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
@@ -232,13 +253,12 @@ def main(new_yn, file_name, cities, keywords):
 
                 page += 1
                 print(f"===== 500단위 카운트 : {len(results_dict)}")
-                print(f"===== 500단위 : {results_dict}")
                 # print(f"===== 현재까지 작업한 기존 전체 카운트: {old_total_count}")
                 # print(f"===== 현재까지 작업한 신규 전체 카운트: {new_total_count}")
                 print(f"===== 현재까지 작업한 total 전체 카운트: {new_total_count + old_total_count}")
 
                 # 500개마다 저장
-                if len(results_dict) >= 500:
+                if len(results_dict) >= 3:
 
                     if new_yn == "N":
                         save_to_excel(results_dict, file_name)
@@ -5360,10 +5380,10 @@ if __name__ == "__main__":
     keywords = ["BBQ치킨", "BHC치킨"]
 
     #신규 여부
-    new_yn = "Y"
+    new_yn = "N"
 
     #중복 사용할 파일이름
-    file_name = "search_results_all.xlsx"
+    file_name = "BBQ.xlsx"
 
     main(new_yn, file_name, cities, keywords)
 
