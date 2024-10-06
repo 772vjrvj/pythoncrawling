@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import time
+import unicodedata
 
 import pandas as pd
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
@@ -58,7 +59,11 @@ def save_to_excel(results, output_file='instagram_search_results.xlsx'):
 
 def remove_non_bmp_characters(text):
     # BMP 범위 내의 문자(알파벳, 숫자, 공백 포함)만 남기고 나머지는 제거
-    cleaned_text = ''.join(c for c in text if ord(c) <= 0xFFFF)
+    # Unicode 정규화를 통해 서체 변형 문자들을 일반 문자로 변환
+    normalized_text = unicodedata.normalize('NFKD', text)
+
+    # UTF-16 범위 내에 있는 문자만 남기기 (이모지는 제거)
+    cleaned_text = ''.join(c for c in normalized_text if ord(c) <= 0xFFFF)
 
     # 이모지 및 특수 문자를 제거하고 알파벳, 숫자, 공백만 남김
     # cleaned_text = re.sub(r'[^a-zA-Z0-9\s]', '', cleaned_text)
@@ -101,9 +106,12 @@ def main():
         cleaned_keyword = remove_non_bmp_characters(keyword)  # 이모지와 같은 BMP 밖의 문자 제거
         print(f"Searching for keyword: {cleaned_keyword}===============")
 
+        if not cleaned_keyword.strip():
+            continue
+
         # PolarisNavigationIcons 클래스명을 가진 두 번째 div 안의 a 태그 클릭
         try:
-            navigation_icons = WebDriverWait(driver, 10).until(
+            navigation_icons = WebDriverWait(driver, 3).until(
                 EC.presence_of_all_elements_located(
                     (By.XPATH, "//*[contains(@class, 'x1iyjqo2') and contains(@class, 'xh8yej3')]")
                 )
@@ -117,7 +125,8 @@ def main():
 
         # 검색 input 필드에 keyword 입력
         try:
-            search_input = WebDriverWait(driver, 10).until(
+            time.sleep(2)
+            search_input = WebDriverWait(driver, 3).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@aria-label='입력 검색']"))
             )
             search_input.clear()
@@ -129,13 +138,13 @@ def main():
         # div 내부의 모든 a 태그의 href 속성 추출
         try:
             time.sleep(2)
-            div_element = WebDriverWait(driver, 10).until(
+            div_element = WebDriverWait(driver, 3).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//*[contains(@class, 'x9f619') and contains(@class, 'x78zum5') and contains(@class, 'xdt5ytf') and contains(@class, 'x1iyjqo2') and contains(@class, 'x6ikm8r') and contains(@class, 'x1odjw0f') and contains(@class, 'xh8yej3') and contains(@class, 'xocp1fn')]")
                 )
             )
             time.sleep(2)
-            a_tags = WebDriverWait(div_element, 10).until(
+            a_tags = WebDriverWait(div_element, 3).until(
                 EC.presence_of_all_elements_located((By.TAG_NAME, "a"))
             )
             hrefs = [a.get_attribute("href") for a in a_tags]
@@ -145,7 +154,7 @@ def main():
             continue
 
         # href 배열의 각 값으로 새로운 페이지를 열기 (상위 10개의 href만 처리)
-        for href in hrefs[:10]:
+        for href in hrefs[:4]:
             driver.get(href)
             print(f"Opened {href}")
             time.sleep(3)  # 페이지가 로드될 시간을 주기 (필요에 따라 조정 가능)
@@ -163,7 +172,7 @@ def main():
 
             # user 텍스트 추출
             try:
-                user = WebDriverWait(driver, 10).until(
+                user = WebDriverWait(driver, 3).until(
                     EC.presence_of_element_located(
                         (By.XPATH, "//*[contains(@class, 'x1lliihq') and contains(@class, 'x193iq5w') and contains(@class, 'x6ikm8r') and contains(@class, 'x10wlt62') and contains(@class, 'xlyipyv') and contains(@class, 'xuxw1ft')]")
                     )
@@ -174,7 +183,7 @@ def main():
 
             # 두 번째 follower 텍스트 추출
             try:
-                follower = WebDriverWait(driver, 10).until(
+                follower = WebDriverWait(driver, 3).until(
                     EC.presence_of_all_elements_located(
                         (By.XPATH, "//*[contains(@class, 'xdj266r') and contains(@class, 'x11i5rnm') and contains(@class, 'xat24cr') and contains(@class, 'x1mh8g0r') and contains(@class, 'xexx8yu') and contains(@class, 'x4uap5') and contains(@class, 'x18d9i69') and contains(@class, 'xkhd6sd') and contains(@class, 'x1hl2dhg') and contains(@class, 'x16tdsg8') and contains(@class, 'x1vvkbs')]")
                     )
@@ -185,7 +194,7 @@ def main():
 
             # content 텍스트 추출
             try:
-                content = WebDriverWait(driver, 10).until(
+                content = WebDriverWait(driver, 3).until(
                     EC.presence_of_element_located(
                         (By.XPATH, "//*[contains(@class, '_ap3a') and contains(@class, '_aaco') and contains(@class, '_aacu') and contains(@class, '_aacx') and contains(@class, '_aad7') and contains(@class, '_aade')]")
                     )
@@ -196,7 +205,7 @@ def main():
 
             # url 텍스트 추출
             try:
-                url = WebDriverWait(driver, 10).until(
+                url = WebDriverWait(driver, 3).until(
                     EC.presence_of_element_located(
                         (By.XPATH, "//*[contains(@class, 'x1lliihq') and contains(@class, 'x1plvlek') and contains(@class, 'xryxfnj') and contains(@class, 'x1n2onr6') and contains(@class, 'x1ff1cvt') and contains(@class, 'xatrb82') and contains(@class, 'x193iq5w') and contains(@class, 'xeuugli') and contains(@class, 'x1fj9vlw') and contains(@class, 'x13faqbe') and contains(@class, 'x1vvkbs') and contains(@class, 'x1s928wv') and contains(@class, 'xhkezso') and contains(@class, 'x1gmr53x') and contains(@class, 'x1cpjm7i') and contains(@class, 'x1fgarty') and contains(@class, 'x1943h6x') and contains(@class, 'x1i0vuye') and contains(@class, 'xvs91rp') and contains(@class, 'x1s688f') and contains(@class, 'x7l2uk3') and contains(@class, 'x10wh9bi') and contains(@class, 'x1wdrske') and contains(@class, 'x8viiok') and contains(@class, 'x18hxmgj')]")
                     )
@@ -222,8 +231,11 @@ def main():
                 results.append(data)
                 print(f'results 갯수 {len(results)}')
 
-        # 한 번의 검색이 끝날 때마다 저장
-        save_to_excel(results, output_file)
+        if i != 0 and i % 10 == 0:
+            # 한 번의 검색이 끝날 때마다 저장
+            save_to_excel(results, output_file)
+
+    save_to_excel(results, output_file)
 
     print("모든 검색이 완료되었습니다.")
     driver.quit()
