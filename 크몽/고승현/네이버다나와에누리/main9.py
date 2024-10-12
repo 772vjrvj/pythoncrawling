@@ -114,7 +114,6 @@ def process_product_list(driver, ul_class, name, qty, naver_temp_list):
 
 def scrape_naver(driver, name, naver_url):
     try:
-        print("============================== 네이버 시작 ==============================")
         if not naver_url:
             return []
         driver.get(naver_url)
@@ -151,11 +150,25 @@ def scrape_naver(driver, name, naver_url):
             qlist = [q.text for q in qtys]
             print(qlist)
 
+            delivery_option = 0
+
             for p in range(len(qtys)):
+                print(qlist[p])
                 driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-id="{qlist[p]}"]').click()
                 time.sleep(2)
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 driver.execute_script("window.scrollTo(0, 0);")
+
+
+                if qlist[p] != '1개' and delivery_option == 0:
+                    delivery_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="배송비포함 필터"]')
+                    if delivery_elements:
+                        delivery_elements[0].click()  # 배송비포함 클릭
+                        time.sleep(0.5)
+                        delivery_option = 1
+                    else:
+                        print("카드할인가 정렬 옵션을 찾을 수 없습니다. 중지합니다.")
+                        return []
 
                 process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
 
@@ -182,7 +195,6 @@ def scrape_naver(driver, name, naver_url):
             # 수량 옵션이 없는 경우 제품 목록 처리
             process_product_list(driver, ul_class, name, '1개', naver_temp_list)
 
-        print("============================== 네이버 끝 ==============================")
         return naver_temp_list
 
     except (NoSuchElementException, TimeoutException) as e:
@@ -191,9 +203,8 @@ def scrape_naver(driver, name, naver_url):
 
 
 # 다나와 크롤링 함수
-def scrape_danawa(driver, name, danawa_url, limit_count, on_on_off):
+def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
     try:
-        print("============================== 다나와 시작 ==============================")
         if not danawa_url:
             return []
         driver.get(danawa_url)
@@ -234,7 +245,7 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_on_off):
             print(danawa_opt_text_list[ii])
 
             if danawa_opt_url_list[ii] != 1:
-                if on_on_off == 0 and danawa_opt_text_list[ii] == '1개':  # 1개는 스킵 # 복수 구성이 없는 상품은 에러처리안나게 건너 뛰기
+                if on_and_off == 0 and danawa_opt_text_list[ii] == '1개':  # 1개는 스킵 # 복수 구성이 없는 상품은 에러처리안나게 건너 뛰기
                     continue
 
                 driver.get(danawa_opt_url_list[ii])
@@ -260,8 +271,17 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_on_off):
                         mall_name = soup.select('.columm.left_col .diff_item')[ei].select('a .txt_logo')[0].text
 
                     prod_name = soup.select('.columm.left_col .diff_item')[ei].select('.info_line')[0].text.strip()
-                    price_str = soup.select('.columm.left_col .diff_item')[ei].select('.prc_c')[0].text
-                    numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
+
+                    # card_line이 존재하는지 확인하고 적절한 price_str을 설정
+                    card_line = soup.select('.columm.left_col .diff_item')[ei].select('.card_line')
+                    if card_line:
+                        price_str = card_line[0].select('.prc_t')[0].text
+                    else:
+                        price_str = soup.select('.columm.left_col .diff_item')[ei].select('.prc_line')[0].select('.prc_c')[0].text
+
+                    # 숫자만 추출한 가격
+                    numeric_price = extract_numeric_price(price_str)
+
 
                     # danawa_opt_text_list[ii] 값이 숫자를 포함하지 않으면 '1개' 할당
                     # (일반구매, 해외구매) case
@@ -310,7 +330,6 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_on_off):
                     print(f"Error in scraping Danawa (paid shipping): {e}")
                     continue  # 에러 발생 시 다음 루프 항목으로 이동
 
-        print("============================== 다나와 끝 ==============================")
         return danawa_temp_list
 
     except Exception as e:
@@ -319,11 +338,10 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_on_off):
 
 
 # 에누리 크롤링 함수
-def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
+def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
     try:
         # 테스트를 위한 에러 발생
         # raise Exception("테스트를 위한 에러 발생")
-        print("============================== 에누리 시작 ==============================")
         merge_list = []
         if not enuri_url:
             return []
@@ -358,8 +376,6 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
         xpath_list = ['//*[@for="' + e.get_attribute('id') + '"]' for e in radio_opts] # 라디오옵션을 감싸고 있는 label
         time.sleep(1)
 
-        card_toggle = 0
-
         # 카드 할인 토글 클릭
         try:
             # 두 개의 클래스를 가진 label 요소를 바로 찾습니다.
@@ -384,6 +400,22 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
             radio_opts = [1]
             xpath_list = [1]
 
+        list_names = []
+        for eei, e in enumerate(radio_opts):
+            elem = driver.find_element(By.XPATH, xpath_list[eei])
+            elem_text = elem.text.split()
+
+            if elem_text:
+                how_many = elem_text[0]
+                list_names.append(how_many)  # 리스트에 추가
+            else:
+                print(f"Warning: No text found for element at index {eei}")
+
+        # 리스트를 쉼표로 구분한 문자열로 결합
+        list_names_str = ', '.join(list_names)
+        print(f'{list_names_str}')
+
+
         for eei, e in enumerate(radio_opts):
 
             time.sleep(0.5)
@@ -396,7 +428,9 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
                 elem = driver.find_element(By.XPATH, xpath_list[eei])  # 갯수 엘리먼트
 
                 how_many = elem.text.split()[0]  # 갯수 텍스트
-                if on_on_off == 0 and how_many == '1개':  # 1개는 스킵
+
+                print(how_many)
+                if on_and_off == 0 and how_many == '1개':  # 1개는 스킵
                     continue
 
                 elem.click()  # 갯수 클릭
@@ -432,7 +466,7 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
             soup = BeautifulSoup(html, 'html.parser')
 
             # 배송비 포함, 카드할인 아래 이미지, 쇼핑몰, 상품명, 배송비, 판매가, 무이자 할부...  테이블 아래 list tr:  'tb-compare__list' 클래스 내부의 tbody 태그에서 모든 tr 태그를 찾음
-            free_dil_prod_e_list = soup.select('.tb-compare__list tbody tr')
+            free_dil_prod_e_list = soup.select('.tb-compare__list tbody tr[data-plno]')
 
             for ei in range(min(len(free_dil_prod_e_list), limit_count)):
                 try:
@@ -441,7 +475,8 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
                     shop_td = free_dil_prod_e_list[ei].find('td', class_='tb-col--shop')
                     if shop_td:
                         img_tag = shop_td.find('img')
-                        mall_name = img_tag['alt'] if img_tag and 'alt' in img_tag.attrs else shop_td.get_text(strip=True)
+                        mall_name_origin = img_tag['alt'] if img_tag and 'alt' in img_tag.attrs else shop_td.get_text(strip=True)
+                        mall_name = mall_name_change(mall_name_origin)
 
                     # 제품명 추출
                     prod_name = ""
@@ -480,7 +515,6 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_on_off):
                     print(f"Error in scraping Enuri free shipping list (index {ei}): {e}")
                     continue
 
-        print("============================== 에누리 끝 ==============================")
         return merge_list
     except Exception as e:
         print(f"Error in Enuri scraping: {e}")
@@ -502,6 +536,13 @@ def extract_numeric_price(price_str):
         print(f"Error extracting price from: {price_str}, {e}")
         return None
 
+
+def mall_name_change(mall_name_origin):
+    name_mapping = {
+        "GS SHOP": "GS샵",
+        # 다른 이름도 추가할 수 있음
+    }
+    return name_mapping.get(mall_name_origin, mall_name_origin) # 값이 없으면 원래 값 반환
 
 # 숫자변환
 def convert_to_int(value, default=1):
@@ -592,14 +633,14 @@ def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name):
 
 
 # 중복 체크 함수
-def is_duplicate(entry, naver_entries):
-    # 동일한 판매처, 상품명, 구성 개수인 경우 중복으로 판단
-    return any(
-        naver_entry[3] == entry[3] and  # 판매처
-        naver_entry[4] == entry[4] and  # 구성 개수
-        naver_entry[5] == entry[5]      # 상품명
-        for naver_entry in naver_entries
-    )
+def is_duplicate(entry, merge_list):
+    for merge_entry in merge_list:
+        if (merge_entry[2] == entry[2] and  # 구성 개수
+                merge_entry[3] == entry[3] and  # 판매처
+                merge_entry[5] == entry[5]):    # 상품명
+            print(f'중복 발견: {merge_entry}')
+            return True
+    return False
 
 
 # 크롤링 결과를 확인하고 에러 리스트에 반영하는 함수
@@ -615,6 +656,10 @@ def add_non_duplicates(merge_list, new_entries):
     for entry in new_entries:
         if not is_duplicate(entry, merge_list):
             merge_list.append(entry)
+
+def result_print(result, name):
+    for idx, obj in enumerate(result):
+        print(f'{name} {idx + 1}: {obj}')
 
 
 # 메인 함수
@@ -642,17 +687,38 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name):
         merge_list = []
 
         # 1. 네이버 크롤링 처리
+        print("============================== 네이버 시작 ==============================")
         naver_result = scrape_naver(driver, name, naver_url)
-        print(f'naver_result : {naver_result}')
+        result_print(naver_result, '네이버')
+        print(f'네이버 수: {len(naver_result)}')
+        print("============================== 네이버 끝 ==============================")
         handle_scraping_result(naver_result, 0, err_list, merge_list)
+        print(f'\n\n')
 
         # 2. 다나와 크롤링 처리
+        print("============================== 다나와 시작 ==============================")
         danawa_result = scrape_danawa(driver, name, danawa_url, limit_count, on_and_off)
+        result_print(danawa_result, '다나와')
+        print(f'다나와 수: {len(danawa_result)}')
+        print('===================================================')
         handle_scraping_result(danawa_result, 1, err_list, merge_list)
+        print("============================== 다나와 끝 ==============================")
+        print(f'\n\n')
 
         # 3. 에누리 크롤링 처리
+        print("============================== 에누리 시작 ==============================")
         enuri_result = scrape_enuri(driver, name, enuri_url, limit_count, on_and_off)
+        result_print(enuri_result, '에누리')
+        print(f'에누리 수: {len(enuri_result)}')
         handle_scraping_result(enuri_result, 2, err_list, merge_list)
+        print("============================== 에누리 끝 ==============================")
+        print(f'\n\n')
+
+        # 4. 전체 목록
+        print("============================== 전체 시작 ==============================")
+        result_print(merge_list, '전체')
+        print(f'전체 수: {len(enuri_result)}')
+        print("============================== 전체 끝 ==============================")
 
         # 엑셀로 저장 (각 행별로 저장)
         save_row_to_excel(ws, merge_list, i, err_list, five_per_mall_name)
@@ -666,9 +732,9 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name):
 if __name__ == "__main__":
 
     # 원하는 값을 여기에 입력하세요.
-    excel_path = "테스트9.xlsx"    # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
+    excel_path = "프로그램.xlsx"    # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
     limit_count = 3                    # 수집 갯수
-    on_and_off = 1                     # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
+    on_and_off = 0                     # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
     five_per_mall_name = ['11번가', '옥션']        # 5% 할인 적용 판매처 (옥션, G마켓, 11번가...)
 
     # 메인실행 함수
@@ -694,7 +760,6 @@ if __name__ == "__main__":
 # 2024-10-01 ver_3
 
 
-# 2024-10-12 ver_3
-# 카드할인 가격으로 반영 에누리 다나와 카드 할인 적용되면 태그 가격이 새로 추가됨 -> 반영완료
-# 네이버 배송비 포함 안끔 - 수정 완료
-# 중복 건너뛰기 수정 - GS SHOP,  GS 샵
+# 2024-10-04 ver_4
+# 에누리 카드할인 반영 안됨 X -> 중복데이터 해결
+
