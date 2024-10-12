@@ -1,22 +1,37 @@
+import tkinter as tk
+from tkinterdnd2 import DND_FILES, TkinterDnD
+import pandas as pd
+from tkinter import filedialog, font, messagebox
+import time
+import random
+import threading
+import requests
+import os
+from tkinter import ttk  # 진행률 표시를 위한 모듈 추가
+import ctypes
+from bs4 import BeautifulSoup
+import re
+import json
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from openpyxl import load_workbook
-from openpyxl.styles import PatternFill
-from bs4 import BeautifulSoup
+import os
+import pyautogui
 import time
-import traceback
-from selenium.common.exceptions import ElementNotInteractableException
+import pyperclip
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from tkinter import messagebox
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
+url_list = []
+extracted_data_list = []  # 모든 데이터 저장용
+stop_flag = False  # 중지를 위한 플래그
 
-# 드라이버 설정 함수
 def setup_driver():
     chrome_options = Options()
     chrome_options.add_argument("--disable-gpu")
@@ -28,738 +43,742 @@ def setup_driver():
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option('useAutomationExtension', False)
 
-    try:
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': '''
-                Object.defineProperty(navigator, 'webdriver', {
-                  get: () => undefined
-                })
-            '''
-        })
-    except Exception as e:
-        print(f"Error setting up the driver: {e}")
-        driver = None
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+        'source': '''
+            Object.defineProperty(navigator, 'webdriver', {
+              get: () => undefined
+            })
+        '''
+    })
     return driver
 
 
-# 네이버 크롤링 함수
-def extract_product_info(idx, element, name, qty):
-    """ 제품 정보를 추출하는 함수 """
-    try:
-        # 상점 이름 추출
+
+class PlaceData:
+    def __init__(self, 아이디, 이름, 블로그제목, 블로그게시글, 주소, 이미지, 정보URL, 지도URL, 공유URL):
+        self.아이디 = 아이디
+        self.이름 = 이름
+        self.블로그제목 = 블로그제목
+        self.블로그게시글 = 블로그게시글
+        self.주소 = 주소
+        self.이미지 = 이미지
+        self.정보URL = 정보URL
+        self.지도URL = 지도URL
+        self.공유URL = 공유URL
+
+    def __repr__(self):
+        return (f"PlaceData(아이디: {self.아이디}, 이름: {self.이름}, 블로그제목: {self.블로그제목}, "
+                f"블로그게시글: {self.블로그게시글}, 주소: {self.주소}, 이미지: {self.이미지}, "
+                f"정보URL: {self.정보URL}, 지도URL: {self.지도URL}), 공유URL: {self.공유URL})")
+
+
+
+def read_excel_file(filepath):
+    df = pd.read_excel(filepath, sheet_name=0)
+
+    place_data_list = []
+
+    # 각 열을 객체에 담아 리스트로 변환
+    for index, row in df.iterrows():
+        place_data = PlaceData(
+            아이디=row['아이디'],
+            이름=row['이름'],
+            블로그제목=row['블로그 제목'],
+            블로그게시글=row['블로그 게시글'],
+            주소=row['주소'],
+            이미지=row['이미지'],
+            정보URL=row['정보 URL'],
+            지도URL=row['지도 URL'],
+            공유URL=row['공유 URL']
+        )
+        place_data_list.append(place_data)
+
+    return place_data_list
+
+
+def update_log(url_list):
+    log_text_widget.delete(1.0, tk.END)
+    for url in url_list:
+        log_text_widget.insert(tk.END, str(url.아이디) + "\n")  # 아이디 속성에 직접 접근
+    log_text_widget.insert(tk.END, f"\n총 {len(url_list)}개의 URL이 있습니다.\n")
+    log_text_widget.see(tk.END)
+
+
+def new_print(text, level="INFO"):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_text = f"[{timestamp}] [{level}] {text}"
+    print(formatted_text)
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
+    log_text_widget.see(tk.END)
+
+
+def get_soup(url, timeout=10, retries=3):
+    while retries > 0:
         try:
-            mall_name = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.mall"] img').get_attribute('alt')
-        except NoSuchElementException:
-            mall_name = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.mall"]').text.split('\n')[0]
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()  # 요청에 실패할 경우 예외를 발생시킴
+            return BeautifulSoup(response.text, 'html.parser')
+        except requests.exceptions.InvalidURL as e:
+            print(f"Invalid URL: {url}. Skipping.")
+            break  # Invalid URL이면 바로 다음으로 넘어감
+        except requests.exceptions.HTTPError as e:
+            # 404나 400 범주의 에러는 재시도 없이 바로 종료
+            if response.status_code == 404 or response.status_code == 400:
+                print(f"Request error: {e}. Status code: {response.status_code}. Skipping URL.")
+                break
+            print(f"Request error: {e}. Retrying... ({retries} retries left)")
+            retries -= 1
+            time.sleep(2)  # 재시도 전 잠시 대기
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}. Retrying... ({retries} retries left)")
+            retries -= 1
+            time.sleep(2)  # 재시도 전 잠시 대기
+    return None
 
-        # 제품 이름 추출
-        prod_name = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.pd"]').text
 
-        # 가격 추출
-        price_str = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.price"]').text.replace('최저', '').strip()
-        numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
-        # 임시 리스트 생성
-
-        # qty 값이 숫자를 포함하지 않으면 '1개' 할당
-        # (일반구매, 해외구매) case
-        if not any(char.isdigit() for char in qty):
-            qt = '1개'
-        else:
-            qt = qty
-
-        temp_list = [name, '네이버', qt, mall_name, '', prod_name, numeric_price]
-
-        print(f"네이버 제품 {idx}: {temp_list}")
-
-        return temp_list
-    except NoSuchElementException as e:
-        print(f"Error in extracting product info: {e}")
+def process_author_info(url):
+    soup = get_soup(url)
+    if not soup:  # soup이 None이면 다음으로 넘어감
+        new_print(f"Skipping URL due to failed request or parsing: {url}", level="WARNING")
         return None
 
+    author_span = soup.find("span", itemprop="author", itemscope=True, itemtype="http://schema.org/Person")
+    if author_span:
+        author_url = author_span.find("link", itemprop="url")["href"]
+        return f"{author_url}/videos"
+    return None
 
-def extract_ul_class(driver):
-    """ ul 클래스 이름 추출 함수 """
-    uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')  # ul 목록
-    for e in uls:  # ul 안에 li class 이름 가져오기
-        if 'productList_list_seller' in e.get_attribute('class'):
-            return e.get_attribute('class').replace(' ', '.')
+
+def extract_published_time(url):
+    soup = get_soup(url)
+    if not soup:
+        print("Failed to retrieve the page or parse HTML.")
+        return ""
+
+    scripts = soup.find_all("script")
+    for script in scripts:
+        if script.string and "ytInitialData" in script.string:
+            json_text = re.search(r"var ytInitialData = ({.*?});", script.string, re.DOTALL)
+            if json_text:
+                try:
+                    yt_data = json.loads(json_text.group(1))
+                    tabs = yt_data.get("contents", {}).get("twoColumnBrowseResultsRenderer", {}).get("tabs", [])
+                    for tab in tabs:
+                        rich_grid_renderer = tab.get("tabRenderer", {}).get("content", {}).get("richGridRenderer", {})
+                        for item in rich_grid_renderer.get("contents", []):
+                            video_renderer = item.get("richItemRenderer", {}).get("content", {}).get("videoRenderer", {})
+                            if video_renderer.get("publishedTimeText"):
+                                return video_renderer["publishedTimeText"]["simpleText"]
+                except json.JSONDecodeError as e:
+                    print(f"JSON Decode Error: {e}")
+                    return ""
+    print("Failed to find published time.")
     return ""
 
 
-def process_product_list(driver, ul_class, name, qty, naver_temp_list):
-    """ 제품 목록 처리 함수 """
-    prod_list = driver.find_elements(By.CSS_SELECTOR, f'#section_price .{ul_class} li')
+def process_address(address):
+    # 공백으로 쪼갠다
+    parts = address.split()
 
-    # 첫 번째 제품 목록으로 스크롤
-    action = ActionChains(driver)
-    action.move_to_element(prod_list[0]).perform()
-    time.sleep(1)
+    # 마지막 단어가 '층' 또는 '호'를 포함하는지 확인
+    if parts[-1].endswith('층') or parts[-1].endswith('호'):
+        # 마지막 전까지의 값을 공백으로 이어서 만듦
+        temp_text = ' '.join(parts[:-1])
 
-    # 공통 함수 호출하여 제품 정보 추출
-    for idx, e in enumerate(prod_list):
-
-        if qty == '1개' and idx > 0:
-            break
-
-        if qty != '1개' and idx > 2:
-            break
-
-        temp_list = extract_product_info(idx, e, name, qty)
-        if temp_list:
-            naver_temp_list.append(temp_list)
+        # 다시 공백으로 쪼개서 처리
+        temp_parts = temp_text.split()
+        if temp_parts[-1].endswith('층') or temp_parts[-1].endswith('호'):
+            # 마지막 전까지의 값을 공백으로 이어서 만듦
+            a = ' '.join(temp_parts[:-1])
         else:
-            print(f"Error in scraping 네이버: index {idx}")
-
-
-def scrape_naver(driver, name, naver_url):
-    try:
-        if not naver_url:
-            return []
-        driver.get(naver_url)
-        print(naver_url)
-        naver_temp_list = []
-        time.sleep(3)
-
-
-        # 카드할인 토글 클릭 ON으로 둘 다 변경 (위, 아래 있음)
-        discount_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="카드할인가 정렬"]')
-        if discount_elements:
-            discount_elements[0].click()  # 카드할인 클릭
-            time.sleep(0.5)
-        else:
-            print("카드할인가 정렬 옵션을 찾을 수 없습니다. 중지합니다.")
-            return []
-
-
-        # 옵션 이름 ex) 수량, 개수, 상품구성 등등
-        opt_name = driver.execute_script('return document.querySelector("#section_price em").closest("div");').text.split(" : ")[0].split(',')[-1]
-        print(opt_name)
-
-        # 상품구성: 1개, 2개, 3개 등 옵션 처리
-        qtys = []
-        if len(driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')) != 0:
-            qtys = driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')
-        elif len(driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')) != 0:
-            qtys = driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')  # 수량, 개수 옵션이 없다면 2번째 옵션으로 지정
-
-        ul_class = extract_ul_class(driver)  # ul 클래스 추출
-
-        if len(qtys) > 0:
-            # ['1개', '2개', '3개', '4개', '5개']
-            qlist = [q.text for q in qtys]
-            print(qlist)
-
-            delivery_option = 0
-
-            for p in range(len(qtys)):
-                print(qlist[p])
-                driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-id="{qlist[p]}"]').click()
-                time.sleep(2)
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                driver.execute_script("window.scrollTo(0, 0);")
-
-
-                if qlist[p] != '1개' and delivery_option == 0:
-                    delivery_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="배송비포함 필터"]')
-                    if delivery_elements:
-                        delivery_elements[0].click()  # 배송비포함 클릭
-                        time.sleep(0.5)
-                        delivery_option = 1
-                    else:
-                        print("카드할인가 정렬 옵션을 찾을 수 없습니다. 중지합니다.")
-                        return []
-
-                process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
-
-                # 1개는 1개 , 1개 이상은 3개로 제한을 두었기 때문에 페이징 처리 필요 없음
-                # try:
-                #     # 페이지네이션 처리
-                #     pagination_wrap = driver.find_element(By.CLASS_NAME, 'productList_seller_wrap__FZtUS')
-                #     pagination = pagination_wrap.find_element(By.CLASS_NAME, 'pagination_pagination__JW7zT')
-                #     page_links = pagination.find_elements(By.TAG_NAME, 'a')
-                #
-                #     # 페이지가 있는 경우 처리
-                #     for page_link in page_links:
-                #         page_link.click()  # 페이지 클릭
-                #         time.sleep(2)  # 페이지 로드 대기
-                #         # 제품 목록 처리
-                #         process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
-                #
-                # except Exception as e:
-                #     # 페이지네이션이 없는 경우 예외 처리
-                #     print(f"Pagination not found for item {qlist[p]}. Processing product list without pagination.")
-                #     process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
-
-        else:
-            # 수량 옵션이 없는 경우 제품 목록 처리
-            process_product_list(driver, ul_class, name, '1개', naver_temp_list)
-
-        return naver_temp_list
-
-    except (NoSuchElementException, TimeoutException) as e:
-        print(f"Error in Naver scraping: {e}")
-        return []
-
-
-# 다나와 크롤링 함수
-def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
-    try:
-        if not danawa_url:
-            return []
-        driver.get(danawa_url)
-        print(danawa_url)
-        danawa_temp_list = []
-
-        # 구성 상품 열기 클릭 시 에러 발생 시 빈 리스트 반환
-        try:
-            if driver.find_elements(By.XPATH, '//*[@id="bundleProductMoreOpen"]'):
-                driver.find_element(By.XPATH, '//*[@id="bundleProductMoreOpen"]').click()
-                print("구성 상품을 성공적으로 열었습니다.")
-            else:
-                print("구성 상품을 찾을 수 없습니다. 계속 진행합니다.")
-        except ElementNotInteractableException as e:
-            # 버튼이 있지만 상호작용이 불가능한 경우에만 넘어감
-            print(f"구성 상품 열기 버튼이 있지만 상호작용이 불가능하여 넘어갑니다: {e}")
-            pass  # 다음 라인으로 넘어가서 계속 진행
-        except Exception as e:
-            # 다른 예외는 발생 시 빈 리스트 반환
-            print(f"Error occurred while trying to open 구성 상품: {e}")
-            return []
-
-
-        danawa_opt_url_list = [e.get_attribute('href') for e in driver.find_elements(By.CSS_SELECTOR, '[class="othr_list"] li .chk a')]
-        danawa_opt_text_list = [e.text for e in driver.find_elements(By.CSS_SELECTOR, '[class="othr_list"] li .chk a')]
-        # ['1개', '2개', '3개', '4개', '5개'] #['https://prod.danawa.com/info/?pcode=5970722', 'https://prod.danawa.com/info/?pcode=5970724', 'https://prod.danawa.com/info/?pcode=5970731', 'https://prod.danawa.com/info/?pcode=5970748', 'https://prod.danawa.com/info/?pcode=5970738']
-
-        print(danawa_opt_url_list)
-        print(danawa_opt_text_list)
-
-        # 수량옵션이 없는경우 1개로 처리하기 위한 세팅
-        if not danawa_opt_url_list:
-            danawa_opt_url_list = [1]
-            danawa_opt_text_list = [1]
-
-        for ii in range(len(danawa_opt_url_list)):
-            print(danawa_opt_url_list[ii])
-            print(danawa_opt_text_list[ii])
-
-            if danawa_opt_url_list[ii] != 1:
-                if on_and_off == 0 and danawa_opt_text_list[ii] == '1개':  # 1개는 스킵 # 복수 구성이 없는 상품은 에러처리안나게 건너 뛰기
-                    continue
-
-                driver.get(danawa_opt_url_list[ii])
-                time.sleep(2)
-
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            driver.execute_script("window.scrollTo(0, 0);")
-            driver.find_elements(By.CSS_SELECTOR, '.cardSaleChkbox')[0].click()  # 카드할인가 클릭
-            time.sleep(1)
-
-            html = driver.page_source
-            soup = BeautifulSoup(html, 'html.parser')
-
-            # 좌측: 무료배송
-            free_dil_prod_e_list = soup.select('.columm.left_col .diff_item')
-            time.sleep(1)
-
-            for ei in range(min(len(free_dil_prod_e_list), limit_count)):
-                try:
-                    try:
-                        mall_name = soup.select('.columm.left_col .diff_item')[ei].select('img')[0].get('alt')
-                    except:
-                        mall_name = soup.select('.columm.left_col .diff_item')[ei].select('a .txt_logo')[0].text
-
-                    prod_name = soup.select('.columm.left_col .diff_item')[ei].select('.info_line')[0].text.strip()
-
-                    # card_line이 존재하는지 확인하고 적절한 price_str을 설정
-                    card_line = soup.select('.columm.left_col .diff_item')[ei].select('.card_line')
-                    if card_line:
-                        price_str = card_line[0].select('.prc_t')[0].text
-                    else:
-                        price_str = soup.select('.columm.left_col .diff_item')[ei].select('.prc_line')[0].select('.prc_c')[0].text
-
-                    # 숫자만 추출한 가격
-                    numeric_price = extract_numeric_price(price_str)
-
-
-                    # danawa_opt_text_list[ii] 값이 숫자를 포함하지 않으면 '1개' 할당
-                    # (일반구매, 해외구매) case
-                    qty = '1개'
-
-                    if danawa_opt_text_list[ii] != 1:
-                        if not any(char.isdigit() for char in danawa_opt_text_list[ii]):
-                            qty = '1개'
-                        else:
-                            qty = danawa_opt_text_list[ii]
-
-                    temp_list = [name, '다나와', qty, mall_name, '무료배송', prod_name, numeric_price]
-                    print(f"다나와 {ei} : {temp_list}")
-                    danawa_temp_list.append(temp_list)
-                except Exception as e:
-                    print(f"Error in scraping Danawa (free shipping): {e}")
-                    continue  # 에러 발생 시 다음 루프 항목으로 이동
-
-            # 우측: 유/무료 배송
-            pay_dil_prod_e_list = soup.select('.columm.rgt_col .diff_item')
-            time.sleep(1)
-
-            for ei in range(min(len(pay_dil_prod_e_list), limit_count)):
-                try:
-                    try:
-                        mall_name = soup.select('.columm.rgt_col .diff_item')[ei].select('img')[0].get('alt')
-                    except:
-                        mall_name = soup.select('.columm.rgt_col .diff_item')[ei].select('a .txt_logo')[0].text
-
-                    prod_name = soup.select('.columm.rgt_col .diff_item')[ei].select('.info_line')[0].text.strip()
-                    price_str = soup.select('.columm.rgt_col .diff_item')[ei].select('.prc_c')[0].text
-                    numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
-
-                    qty = '1개'
-                    if danawa_opt_text_list[ii] != 1:
-                        # (일반구매, 해외구매) case
-                        if not any(char.isdigit() for char in danawa_opt_text_list[ii]):
-                            qty = '1개'
-                        else:
-                            qty = danawa_opt_text_list[ii]
-
-                    temp_list = [name, '다나와', qty, mall_name, '유/무료배송', prod_name, numeric_price]
-                    print(f"다나와 {ei} : {temp_list}")
-                    danawa_temp_list.append(temp_list)
-                except Exception as e:
-                    print(f"Error in scraping Danawa (paid shipping): {e}")
-                    continue  # 에러 발생 시 다음 루프 항목으로 이동
-
-        return danawa_temp_list
-
-    except Exception as e:
-        print(f"Error in Danawa scraping: {e}")
-        return []
-
-
-# 에누리 크롤링 함수
-def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
-    try:
-        # 테스트를 위한 에러 발생
-        # raise Exception("테스트를 위한 에러 발생")
-        merge_list = []
-        if not enuri_url:
-            return []
-        print(f"enuri_url : {enuri_url}")
-
-        driver.get(enuri_url)
-        time.sleep(0.5)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") # SCroll 맨 아래로
-        driver.execute_script("window.scrollTo(0, 0);") # SCroll 맨 위로
-        time.sleep(0.5)
-
-        # 가격비교 구매옵션의 라디오: 1개 2개 3개 4개 5개 라디오 아래 더보기 버튼
-        try:
-            if len(driver.find_elements(By.CSS_SELECTOR, '#prod_option .adv-search__btn--more')) != 0:
-                driver.find_element(By.CSS_SELECTOR, '#prod_option .adv-search__btn--more').click()
-                print("더보기 버튼을 성공적으로 클릭했습니다.")
-            else:
-                print("더보기 버튼을 찾을 수 없습니다. 계속 진행합니다.")
-        except ElementNotInteractableException as e:
-            # 더보기 버튼이 있지만 상호작용이 불가능한 경우에만 넘어감
-            print(f"더보기 버튼이 있지만 상호작용이 불가능하여 넘어갑니다: {e}")
-            pass  # 다음 라인으로 넘어가서 계속 진행
-        except Exception as e:
-            # 다른 예외는 발생 시 빈 리스트 반환
-            print(f"Error occurred while trying to click 더보기 버튼: {e}")
-            return []
-
-
-        time.sleep(1)
-        # 가격비교 구매옵션의 라디오 : 1개 2개 3개 4개 5개 라디오 아래 더보기 버튼
-        radio_opts = driver.find_elements(By.CSS_SELECTOR, '[name="radioOPTION"]')
-        xpath_list = ['//*[@for="' + e.get_attribute('id') + '"]' for e in radio_opts] # 라디오옵션을 감싸고 있는 label
-        time.sleep(1)
-
-        # 카드 할인 토글 클릭
-        try:
-            # 두 개의 클래스를 가진 label 요소를 바로 찾습니다.
-            label = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'label.model__cb--card.inp-switch')) # 카드할인 토글 (배송비 포함 옆에)
-            )
-
-            # 카드할인 토글 요소가 화면에 보이도록 스크롤
-            driver.execute_script("arguments[0].scrollIntoView(true);", label)
-            time.sleep(1)  # 스크롤 후 잠시 대기
-
-            # JavaScript로 강제로 클릭
-            driver.execute_script("arguments[0].click();", label)
-            print("카드할인 클릭")
-
-        except Exception as e:
-            print(f"Error clicking the label with JavaScript: {e}")
-
-
-        # 수량옵션이 없는경우 1개로 처리하기 위한 세팅
-        if not radio_opts:
-            radio_opts = [1]
-            xpath_list = [1]
-
-        list_names = []
-        for eei, e in enumerate(radio_opts):
-            elem = driver.find_element(By.XPATH, xpath_list[eei])
-            elem_text = elem.text.split()
-
-            if elem_text:
-                how_many = elem_text[0]
-                list_names.append(how_many)  # 리스트에 추가
-            else:
-                print(f"Warning: No text found for element at index {eei}")
-
-        # 리스트를 쉼표로 구분한 문자열로 결합
-        list_names_str = ', '.join(list_names)
-        print(f'{list_names_str}')
-
-
-        for eei, e in enumerate(radio_opts):
-
-            time.sleep(0.5)
-            driver.execute_script("window.scrollTo(0, 0);") # SCroll 맨 위로
-
-            how_many = '1개'
-
-            if xpath_list[eei] != 1:
-
-                elem = driver.find_element(By.XPATH, xpath_list[eei])  # 갯수 엘리먼트
-
-                how_many = elem.text.split()[0]  # 갯수 텍스트
-
-                print(how_many)
-                if on_and_off == 0 and how_many == '1개':  # 1개는 스킵
-                    continue
-
-                elem.click()  # 갯수 클릭
-
-
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") # SCroll 맨 아래로
-            driver.execute_script("window.scrollTo(0, 0);") # SCroll 맨 위로
-            time.sleep(1)
-
-            max_wait_time = 10  # 최대 대기 시간 (초)
-            start_time = time.time()
-
-            while True:
-                try:
-                    # 로딩 상태가 아직 보이는지 확인
-                    if driver.find_element(By.XPATH, '//*[@class="comm-loader"]').get_attribute('style') != "display: none;":
-                        time.sleep(0.5)
-
-                        # 최대 대기 시간이 넘으면 루프 탈출
-                        if time.time() - start_time > max_wait_time:
-                            print("Loader is taking too long. Skipping this step.")
-                            break
-                    else:
-                        # 로딩이 끝났으면 루프 탈출
-                        break
-                except Exception as e:
-                    # 에러가 발생했을 경우 에러 메시지 출력 후 루프 탈출
-                    print(f"Error while waiting for loader: {e}")
-                    print(traceback.format_exc())
-                    break
-
-            html = driver.page_source
-            soup = BeautifulSoup(html, 'html.parser')
-
-            # 배송비 포함, 카드할인 아래 이미지, 쇼핑몰, 상품명, 배송비, 판매가, 무이자 할부...  테이블 아래 list tr:  'tb-compare__list' 클래스 내부의 tbody 태그에서 모든 tr 태그를 찾음
-            free_dil_prod_e_list = soup.select('.tb-compare__list tbody tr[data-plno]')
-
-            for ei in range(min(len(free_dil_prod_e_list), limit_count)):
-                try:
-                    # 판매처 추출
-                    mall_name = ""
-                    shop_td = free_dil_prod_e_list[ei].find('td', class_='tb-col--shop')
-                    if shop_td:
-                        img_tag = shop_td.find('img')
-                        mall_name_origin = img_tag['alt'] if img_tag and 'alt' in img_tag.attrs else shop_td.get_text(strip=True)
-                        mall_name = mall_name_change(mall_name_origin)
-
-                    # 제품명 추출
-                    prod_name = ""
-                    name_td = free_dil_prod_e_list[ei].find('td', class_='tb-col--name')
-                    if name_td:
-                        name_div = name_td.find('div', class_='tb-col__tx--name')
-                        if name_div:
-                            # <i> 태그 제거 후 텍스트만 추출
-                            [i_tag.extract() for i_tag in name_div.find_all('i')]
-                            prod_name = name_div.get_text(strip=True)
-
-                    # 가격 추출
-                    price_str = ""
-                    price_div = free_dil_prod_e_list[ei].find('div', class_='tx-price')
-                    if price_div:
-                        em_tag = price_div.find('em')
-                        price_str = em_tag.get_text(strip=True) if em_tag else ""
-
-                    # 가격 추출 및 숫자만 저장
-                    numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
-
-
-                    # how_many 값이 숫자를 포함하지 않으면 '1개' 할당
-                    # (일반구매, 해외구매) case
-                    if not any(char.isdigit() for char in how_many):
-                        qty = '1개'
-                    else:
-                        qty = how_many
-
-                    # 리스트에 데이터 추가
-                    temp_list = [name, '에누리', qty, mall_name, '무료배송', prod_name, numeric_price]
-                    print(f"에누리 {ei} : {temp_list}")
-                    merge_list.append(temp_list)
-
-                except Exception as e:
-                    print(f"Error in scraping Enuri free shipping list (index {ei}): {e}")
-                    continue
-
-        return merge_list
-    except Exception as e:
-        print(f"Error in Enuri scraping: {e}")
-        return []
-
-
-# 숫자를 추출할 때 빈 문자열을 처리하기 위한 함수
-def extract_numeric_price(price_str):
-    """ 가격 문자열에서 숫자만 추출하는 함수, '원' 앞에 있는 숫자만 추출 """
-    try:
-        # '원' 이전까지의 부분에서 숫자만 추출
-        price_str = price_str.split('원')[0]
-        numeric_part = ''.join(filter(str.isdigit, price_str))
-        if numeric_part:
-            return int(numeric_part)
-        else:
-            return None
-    except Exception as e:
-        print(f"Error extracting price from: {price_str}, {e}")
-        return None
-
-
-def mall_name_change(mall_name_origin):
-    name_mapping = {
-        "GS SHOP": "GS샵",
-        # 다른 이름도 추가할 수 있음
-    }
-    return name_mapping.get(mall_name_origin, mall_name_origin) # 값이 없으면 원래 값 반환
-
-# 숫자변환
-def convert_to_int(value, default=1):
-    """숫자로 변환할 수 없을 경우 기본값을 반환"""
-    try:
-        return int(value.replace('개', '').strip())
-    except (ValueError, AttributeError):
-        return default  # 기본값을 반환 (예: 수량이 '일반구매'일 경우 1)
-
-
-# 행별로 데이터를 처리하고 엑셀에 업데이트하는 함수
-def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name):
-    try:
-        name = ws[f'E{row_index}'].value
-        except_list = ws[f'A{row_index}'].value.split(',') if ws[f'A{row_index}'].value else []
-
-        # 데이터를 필터링하고 가격/갯수 계산 후 병합 리스트 업데이트
-        filtered_list = [entry for entry in merge_list if entry[0] == name]
-
-        # 5% 할인을 적용할 상점 이름과 비교
-        for entry in filtered_list:
-            mall_name = entry[3]  # entry[3]은 mall_name을 의미
-            if mall_name in five_per_mall_name:  # 배열 내에서 mall_name을 찾음
-                price_value = entry[6]  # 이제 index 6은 숫자
-
-                # 50000 미만일 경우에만 5% 할인 적용
-                if price_value < 50000:
-                    price_value *= 0.95  # 5% 할인 적용
-
-                # 할인된 가격 저장
-                entry[6] = price_value
-
-        # 기준가격(네이버) 계산
-        filtered_list_naver = [entry for entry in filtered_list if entry[1] == '네이버' and entry[3] not in except_list]
-        if filtered_list_naver:
-            numeric_price = filtered_list_naver[0][6]
-            numeric_qty = convert_to_int(filtered_list_naver[0][2])  # 숫자로 변환, 실패 시 기본값 사용
-            if numeric_price and numeric_qty:
-                naver_price = numeric_price / numeric_qty
-                ws[f'G{row_index}'] = naver_price  # 기준가격(네이버) 셀
-
-        # 나머지 판매처 및 상품 업데이트 (정렬 후) [가격 / 수량] 해서 오름차순으로 정렬 맨위가 가격이 가장 쌈
-        filtered_list.sort(key=lambda x: x[6] / convert_to_int(x[2]) if x[6] else float('inf'))
-
-        # 1개짜리 수집인 경우 네이버는 제외 2024-10-01
-        filtered_list = [
-            item for item in filtered_list
-            if not (item[1] == '네이버' and convert_to_int(item[2]) == 1)
-        ]
-
-        if len(filtered_list) > 0:
-            numeric_qty_0 = convert_to_int(filtered_list[0][2])  # 숫자로 변환
-            numeric_price_0 = filtered_list[0][6]
-            ws[f'H{row_index}'] = f"{filtered_list[0][1]}-{filtered_list[0][2]}-{filtered_list[0][3]}"  # 판매처1
-            ws[f'I{row_index}'] = filtered_list[0][5]  # 상품명1
-            ws[f'J{row_index}'] = numeric_price_0 / numeric_qty_0  # 가격1
-
-        if len(filtered_list) > 1:
-            numeric_price_1 = filtered_list[1][6]
-            numeric_qty_1 = convert_to_int(filtered_list[1][2])  # 숫자로 변환
-            ws[f'K{row_index}'] = f"{filtered_list[1][1]}-{filtered_list[1][2]}-{filtered_list[1][3]}"  # 판매처2
-            ws[f'L{row_index}'] = filtered_list[1][5]  # 상품명2
-            ws[f'M{row_index}'] = numeric_price_1 / numeric_qty_1  # 가격2
-
-        if len(filtered_list) > 2:
-            numeric_price_2 = filtered_list[2][6]
-            numeric_qty_2 = convert_to_int(filtered_list[2][2])  # 숫자로 변환
-            ws[f'N{row_index}'] = f"{filtered_list[2][1]}-{filtered_list[2][2]}-{filtered_list[2][3]}"  # 판매처3
-            ws[f'O{row_index}'] = filtered_list[2][5]  # 상품명3
-            ws[f'P{row_index}'] = numeric_price_2 / numeric_qty_2  # 가격3
-
-        # 배경색 설정 (빨간색)
-        red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
-
-        # err_list 값에 따라 배경색 변경
-        if err_list[0] == 1:
-            ws[f'B{row_index}'].fill = red_fill  # "네이버 URL" 셀
-        if err_list[1] == 1:
-            ws[f'C{row_index}'].fill = red_fill  # "다나와 URL" 셀
-        if err_list[2] == 1:
-            ws[f'D{row_index}'].fill = red_fill  # "에누리 URL" 셀
-
-        print(f"Row {row_index} 엑셀에 업데이트됨.")
-
-    except Exception as e:
-        print(f"Error saving row {row_index} to Excel:")
-        traceback.print_exc()  # 에러 위치와 호출 스택을 출력
-
-
-# 중복 체크 함수
-def is_duplicate(entry, merge_list):
-    for merge_entry in merge_list:
-        if (merge_entry[2] == entry[2] and  # 구성 개수
-            merge_entry[3] == entry[3] and  # 판매처
-            merge_entry[5] == entry[5]):    # 상품명
-            print(f'중복 발견: {merge_entry}')
-            return True
-    return False
-
-
-# 크롤링 결과를 확인하고 에러 리스트에 반영하는 함수
-def handle_scraping_result(result_list, index, err_list, merge_list):
-    if len(result_list) == 0:
-        err_list[index] = 1  # 크롤링 실패 시 해당 인덱스에 에러 표시
+            a = temp_text
     else:
-        add_non_duplicates(merge_list, result_list)
+        # 마지막 단어가 '층' 또는 '호'를 포함하지 않으면 전체 텍스트 사용
+        a = address
+
+    return a
 
 
-# 중복 체크 후 리스트에 추가하는 함수
-def add_non_duplicates(merge_list, new_entries):
-    for entry in new_entries:
-        if not is_duplicate(entry, merge_list):
-            merge_list.append(entry)
+def start_processing():
+    global stop_flag, extracted_data_list, root, global_cookies
+    stop_flag = False
+    log_text_widget.delete(1.0, tk.END)  # 기존 로그 화면 초기화
 
-def result_print(result, name):
-    for idx, obj in enumerate(result):
-        print(f'{name} {idx + 1}: {obj}')
+    extracted_data_list = []
+    total_urls = len(url_list)
+    progress["maximum"] = total_urls
 
-
-# 메인 함수
-def main(excel_path, limit_count, on_and_off, five_per_mall_name):
-    # 엑셀 파일 열기 (openpyxl로 읽기)
-    wb = load_workbook(excel_path)
-    ws = wb.active
+    input_value = login_input.get()  # 입력창에서 값 읽어오기
 
     driver = setup_driver()
-    if not driver:
-        print("Failed to initialize the web driver.")
+    driver.get("https://nid.naver.com/nidlogin.login")  # 네이버 로그인 페이지로 이동
+
+    logged_in = False
+    max_wait_time = 300  # 최대 대기 시간 (초)
+    start_time = time.time()
+
+    while not logged_in:
+        print('진행중...')
+        time.sleep(1)
+        elapsed_time = time.time() - start_time
+
+        if elapsed_time > max_wait_time:
+            messagebox.showwarning("경고", "로그인 실패: 300초 내에 로그인하지 않았습니다.")
+            break
+
+        cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
+
+        if 'NID_AUT' in cookies and 'NID_SES' in cookies:
+            logged_in = True
+            global_cookies = cookies
+            messagebox.showinfo("로그인 성공", "정상 로그인 되었습니다.")
+
+            start_num = int(start_input.get())  # 문자열을 정수로 변환
+            end_num = int(end_input.get())      # 문자열을 정수로 변환
+
+            for index, url in enumerate(url_list, start=1):
+
+                if stop_flag:
+                    break
+
+                if index < start_num or index > end_num:
+                    continue
+
+                new_print(f"Processing ID {index}: {url.아이디}")
+
+                time.sleep(1)
+                driver.get(input_value + "?Redirect=Write&")
+
+                try:
+                    time.sleep(5)  # 페이지 로드 시간 추가
+
+                    # iframe으로 전환
+                    iframe = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, 'mainFrame'))  # iframe의 ID로 전환
+                    )
+                    driver.switch_to.frame(iframe)
+
+                    try:
+                        # 작성중인글 확인
+                        time.sleep(2)
+                        # 이제 iframe 내에서 요소를 찾음
+                        popup_button = WebDriverWait(driver, 3).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-cancel'))
+                        )
+                        popup_button.click()
+
+                    except TimeoutException:
+                        # close_button이 없을 경우에 실행될 코드 (필요에 따라 생략 가능)
+                        print("작성중인글이 존재하지 않습니다.")
+
+                    if index == start_num:
+
+                        time.sleep(2)
+                        # 이제 iframe 내에서 요소를 찾음
+                        close_button = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-help-panel-close-button'))
+                        )
+                        close_button.click()
+
+                    # 3초 후 텍스트 입력 (클래스 이름 'se-ff-nanumgothic se-fs32 __se-node' 내부에 텍스트 '1234' 입력)
+                    time.sleep(2)
+
+                    # 요소 찾기
+
+                    # 더 세밀하게 특정 요소를 클릭하고 텍스트 입력
+                    bb = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, '//span[contains(text(),"제목")]'))
+                    )
+                    # 클릭 후 텍스트 삽입
+                    bb.click()
+                    actions = ActionChains(driver)
+                    actions.send_keys(url.블로그제목).perform()
+
+
+                    time.sleep(2)
+                    # 이제 iframe 내에서 요소를 찾음
+                    image_upload_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-image-toolbar-button'))
+                    )
+                    image_upload_button.click()
+
+
+                    # 현재 프로그램이 실행되는 경로
+                    current_dir = os.getcwd()
+
+                    # 'images' 폴더의 경로
+                    images_dir = os.path.join(current_dir, 'images')
+
+                    # 'images' 폴더 내 첫 번째 폴더 이름을 가져옴
+                    base_folder_name = next(os.walk(images_dir))[1][0]
+
+                    # 폴더 이름을 구성
+                    folder_name = f"{index}. {url.이름}"
+
+                    # 전체 경로 생성
+                    full_path = os.path.join(images_dir, base_folder_name, folder_name)
+
+                    # Windows 파일 선택 창에서 경로를 입력하고 '열기' 버튼을 누름
+                    time.sleep(2)  # 파일 선택 창이 열릴 때까지 대기
+
+                    # 경로가 정확한지 확인
+                    if not os.path.exists(full_path):
+                        messagebox.showerror("경로 오류", f"경로가 존재하지 않습니다: {full_path}")
+                        return
+
+                    # 상단 경로 입력창에 포커스 맞추기 (탐색기 창에서 경로 입력)
+                    pyautogui.hotkey('alt', 'd')  # 상단 경로창 선택
+                    time.sleep(1)
+
+                    # 클립보드를 사용해 경로 입력
+                    pyperclip.copy(full_path)  # 경로를 클립보드에 복사
+                    pyautogui.hotkey('ctrl', 'v')  # 클립보드에서 붙여넣기 (Ctrl + V)
+                    pyautogui.press('enter')  # 엔터키로 폴더 열기
+
+                    time.sleep(2)  # 폴더 열리는 시간 대기
+
+                    # 파일 목록에 포커스 맞추기 (탐색기 창에서 파일 선택으로 이동)
+                    pyautogui.press('tab')  # 경로창에서 파일 목록으로 이동하기 위해 탭 누르기
+                    pyautogui.press('tab')  # 두 번째 탭을 누르면 파일 목록에 포커스가 맞춰짐
+                    pyautogui.press('tab')  # 세 번째 탭을 누르면 포커스가 맞춰짐
+                    pyautogui.press('tab')  # 네 번째 탭을 누르면 포커스가 맞춰짐
+                    pyautogui.press('down')  # 파일 목록의 첫 번째 파일로 이동
+
+                    # 전체 파일 선택 (Ctrl + A)
+                    pyautogui.hotkey('ctrl', 'a')  # 모든 파일 선택
+                    time.sleep(1)
+
+                    # 파일 열기(확인) 버튼 클릭 (Windows 기준)
+                    pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
+
+                    time.sleep(2)
+
+                    # 스크롤을 맨 위로 올리기
+                    driver.execute_script("window.scrollTo(0, 0);")
+                    time.sleep(1)
+
+                    # 이제 iframe 내에서 요소를 찾음 (이미지 업로드 후 추가 작업)
+                    image_upload_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
+                    )
+
+                    driver.execute_script("arguments[0].click();", image_upload_button)
+
+                    time.sleep(10)
+                    # 활성화된 요소 가져오기
+                    active_element = driver.switch_to.active_element
+
+                    # ActionChains로 클릭 후 텍스트 입력 시도
+                    actions = ActionChains(driver)
+                    actions.move_to_element(active_element).click().send_keys(url.블로그게시글).perform()
+
+
+                    # 링크로 지도 위치 올리기
+                    oglink_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-oglink-toolbar-button'))
+                    )
+
+                    oglink_button.click()
+
+                    oglink_input = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "se-popup-oglink-input"))
+                    )
+
+                    # input 필드에 '공유URL' 입력
+                    oglink_input.send_keys(url.공유URL)
+
+
+                    # 검색 버튼 찾기
+                    oglink_search_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.CLASS_NAME, "se-popup-oglink-button"))
+                    )
+
+                    # 검색 버튼 클릭
+                    oglink_search_button.click()
+
+                    time.sleep(5)
+
+                    oglink_confirm_map_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                    )
+                    oglink_confirm_map_button.click()
+
+
+
+                    # 장소 Map (상단 도구 모임)
+                    # a = process_address(url.주소)
+                    # time.sleep(2)
+                    # image_map_button = WebDriverWait(driver, 10).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, 'se-map-toolbar-button'))
+                    # )
+                    # image_map_button.click()
+                    #
+                    # time.sleep(2)
+                    # # input 필드 찾기
+                    # input_field = WebDriverWait(driver, 10).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, "react-autosuggest__input"))
+                    # )
+                    #
+                    # # input 필드에 'a' 입력
+                    # input_field.send_keys(a)
+                    #
+                    # # 검색 버튼 찾기
+                    # search_button = WebDriverWait(driver, 10).until(
+                    #     EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
+                    # )
+                    #
+                    # # 검색 버튼 클릭
+                    # search_button.click()
+                    #
+                    # time.sleep(2)
+                    #
+                    # try:
+                    #     # class가 'se-place-map-search-result-list'인 첫 번째 li 내의 'se-place-add-button' 찾기
+                    #     search_result_list = WebDriverWait(driver, 10).until(
+                    #         EC.presence_of_element_located((By.CLASS_NAME, 'se-place-map-search-result-list'))
+                    #     )
+                    #     time.sleep(2)
+                    #
+                    #     # 'se-place-map-search-result-list' 안에서 첫 번째 'li' 요소를 기다리며 찾음
+                    #     first_li = WebDriverWait(search_result_list, 10).until(
+                    #         EC.presence_of_element_located((By.TAG_NAME, 'li'))
+                    #     )
+                    #
+                    #     # 마우스를 'first_li' 위로 오버
+                    #     actions = ActionChains(driver)
+                    #     actions.move_to_element(first_li).perform()  # 마우스를 해당 요소 위로 이동
+                    #
+                    #     time.sleep(2)
+                    #     # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                    #     add_button = WebDriverWait(first_li, 10).until(
+                    #         EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
+                    #     )
+                    #     add_button.click()
+                    #
+                    #     time.sleep(2)
+                    #     # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                    #     confirm_map_button = WebDriverWait(driver, 10).until(
+                    #         EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                    #     )
+                    #     confirm_map_button.click()
+                    #
+                    # except (NoSuchElementException, TimeoutException):
+                    #     # 'se-place-add-button'이 없으면 'se-popup-close-button'을 찾아 클릭
+                    #     try:
+                    #         close_button = WebDriverWait(driver, 10).until(
+                    #             EC.element_to_be_clickable((By.CLASS_NAME, 'se-popup-close-button'))
+                    #         )
+                    #         close_button.click()
+                    #     except (NoSuchElementException, TimeoutException):
+                    #         print("close_button을 찾을 수 없습니다.")
+
+
+
+                    # 3초 후 'publish_btn__m9KHH' 클래스 버튼 클릭
+                    # 발행
+                    time.sleep(3)
+                    publish_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'publish_btn__m9KHH'))
+                    )
+                    driver.execute_script("arguments[0].click();", publish_button)
+
+                    # 3초 후 'confirm_btn__WEaBq' 클래스 버튼 클릭
+                    time.sleep(3)
+                    confirm_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'confirm_btn__WEaBq'))
+                    )
+                    driver.execute_script("arguments[0].click();", confirm_button)
+
+                except Exception as e:
+                    print(f"에러 발생: {e}")
+
+                # 진행률 업데이트
+                progress["value"] = index
+                progress_label.config(text=f"진행률: {int((index) / total_urls * 100)}%")
+
+                remaining_time = (total_urls - (index)) * 60  # 남은 URL 개수 * 2초
+                eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
+
+                time.sleep(random.uniform(2, 5))
+
+            if not stop_flag:
+                driver.quit()  # 작업이 끝난 후 드라이버 종료
+                new_print("작업 완료.", level="SUCCESS")
+                flash_window(root)
+                messagebox.showinfo("알림", "작업이 완료되었습니다.")
+                stop_flash_window(root)  # 메시지박스 확인 후 깜빡임 중지
+
+
+def upload_images(driver, folder_path):
+    # Windows 파일 선택 창에서 경로를 입력하고 '열기' 버튼을 누름
+    time.sleep(2)  # 파일 선택 창이 열릴 때까지 대기
+
+    # 경로가 정확한지 확인
+    if not os.path.exists(folder_path):
+        messagebox.showerror("경로 오류", f"경로가 존재하지 않습니다: {folder_path}")
         return
 
-    # 엑셀의 각 행을 처리
-    for i in range(2, ws.max_row + 1):
-        name = ws[f'E{i}'].value
-        naver_url = ws[f'B{i}'].value
-        danawa_url = ws[f'C{i}'].value
-        enuri_url = ws[f'D{i}'].value
+    # 상단 경로 입력창에 포커스 맞추기 (탐색기 창에서 경로 입력)
+    pyautogui.hotkey('alt', 'd')  # 상단 경로창 선택
+    time.sleep(1)
 
-        # 에러 리스트 초기화 (각 크롤링 사이트별 에러 체크)
-        err_list = [0, 0, 0]
+    # 클립보드를 사용해 경로 입력
+    pyperclip.copy(folder_path)  # 경로를 클립보드에 복사
+    pyautogui.hotkey('ctrl', 'v')  # 클립보드에서 붙여넣기 (Ctrl + V)
+    pyautogui.press('enter')  # 엔터키로 폴더 열기
 
-        # 전체 병합 리스트 초기화
-        merge_list = []
+    time.sleep(2)  # 폴더 열리는 시간 대기
 
-        # 1. 네이버 크롤링 처리
-        print("============================== 네이버 시작 ==============================")
-        naver_result = scrape_naver(driver, name, naver_url)
-        result_print(naver_result, '네이버')
-        print(f'네이버 수: {len(naver_result)}')
-        print("============================== 네이버 끝 ==============================")
-        handle_scraping_result(naver_result, 0, err_list, merge_list)
-        print(f'\n\n')
+    # 파일 목록에 포커스 맞추기 (탐색기 창에서 파일 선택으로 이동)
+    pyautogui.press('tab')  # 경로창에서 파일 목록으로 이동하기 위해 탭 누르기
+    pyautogui.press('tab')  # 두 번째 탭을 누르면 파일 목록에 포커스가 맞춰짐
+    pyautogui.press('tab')  # 세 번째 탭을 누르면 포커스가 맞춰짐
+    pyautogui.press('tab')  # 네 번째 탭을 누르면 포커스가 맞춰짐
+    pyautogui.press('down')  # 파일 목록의 첫 번째 파일로 이동
 
-        # 2. 다나와 크롤링 처리
-        print("============================== 다나와 시작 ==============================")
-        danawa_result = scrape_danawa(driver, name, danawa_url, limit_count, on_and_off)
-        result_print(danawa_result, '다나와')
-        print(f'다나와 수: {len(danawa_result)}')
-        print('===================================================')
-        handle_scraping_result(danawa_result, 1, err_list, merge_list)
-        print("============================== 다나와 끝 ==============================")
-        print(f'\n\n')
+    # 전체 파일 선택 (Ctrl + A)
+    pyautogui.hotkey('ctrl', 'a')  # 모든 파일 선택
+    time.sleep(1)
 
-        # 3. 에누리 크롤링 처리
-        print("============================== 에누리 시작 ==============================")
-        enuri_result = scrape_enuri(driver, name, enuri_url, limit_count, on_and_off)
-        result_print(enuri_result, '에누리')
-        print(f'에누리 수: {len(enuri_result)}')
-        handle_scraping_result(enuri_result, 2, err_list, merge_list)
-        print("============================== 에누리 끝 ==============================")
-        print(f'\n\n')
+    # 파일 열기(확인) 버튼 클릭 (Windows 기준)
+    pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
 
-        # 4. 전체 목록
-        print("============================== 전체 시작 ==============================")
-        result_print(merge_list, '전체')
-        print(f'전체 수: {len(enuri_result)}')
-        print("============================== 전체 끝 ==============================")
+    time.sleep(3)
 
-        # 엑셀로 저장 (각 행별로 저장)
-        save_row_to_excel(ws, merge_list, i, err_list, five_per_mall_name)
-
-        # 엑셀 파일을 즉시 저장
-        wb.save(excel_path)
-
-    driver.quit()
+    # 스크롤을 맨 위로 올리기
+    driver.execute_script("window.scrollTo(0, 0);")
+    time.sleep(1)
 
 
-if __name__ == "__main__":
-
-    # 원하는 값을 여기에 입력하세요.
-    excel_path = "프로그램.xlsx"    # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
-    limit_count = 3                    # 수집 갯수
-    on_and_off = 0                     # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
-    five_per_mall_name = ['11번가', '옥션']        # 5% 할인 적용 판매처 (옥션, G마켓, 11번가...)
-
-    # 메인실행 함수
-    main(
-        excel_path,
-        limit_count,
-        on_and_off,
-        five_per_mall_name
+    # 이제 iframe 내에서 요소를 찾음 (이미지 업로드 후 추가 작업)
+    image_upload_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
     )
 
+    # JavaScript로 강제 클릭
+    driver.execute_script("arguments[0].click();", image_upload_button)
+
+    # 활성화된 요소 가져오기
+    active_element = driver.switch_to.active_element
+
+    # ActionChains로 클릭 후 텍스트 입력 시도
+    actions = ActionChains(driver)
+    actions.move_to_element(active_element).click().send_keys("여기에 입력할 텍스트").perform()
+
+    # 3초 후 'publish_btn__m9KHH' 클래스 버튼 클릭
+    time.sleep(3)
+    publish_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'publish_btn__m9KHH'))
+    )
+    driver.execute_script("arguments[0].click();", publish_button)
+
+    # 3초 후 'confirm_btn__WEaBq' 클래스 버튼 클릭
+    time.sleep(3)
+    confirm_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'confirm_btn__WEaBq'))
+    )
+    driver.execute_script("arguments[0].click();", confirm_button)
 
 
-# 변경이력 history
 
-# 2024-09-11 ver_1
-
-# 2024-09-12 ver_2
-# 5% 할인 적용 판매처 (five_per_mall_name) 문자열 -> 배열로 변경
-# 갯수없는 것 일반구매 해외구매 -> 1개로 수정
-# [6] 숫자로만 수정
+flashing = True  # 깜빡임 상태를 관리하는 플래그
 
 
-# 2024-10-01 ver_3
+def flash_window(root):
+    global flashing
+
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    FLASHW_ALL = 3  # 모든 플래시
+    hwnd = root.winfo_id()  # Tkinter 창의 윈도우 핸들 얻기
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, FLASHW_ALL, 0, 0)
+
+    def flash():
+        while flashing:
+            ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+            time.sleep(0.5)  # 0.5초 간격으로 깜빡임
+
+    threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
 
 
-# 2024-10-04 ver_4
-# 에누리 카드할인 반영 안됨 X -> 중복데이터 해결
+def stop_flash_window(root):
+    global flashing
+    flashing = False
 
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    hwnd = root.winfo_id()
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
+    ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+
+
+file_path = None
+
+
+def save_to_excel(data):
+    global file_path
+    if file_path:
+        # 기존 엑셀 파일 불러오기
+        df = pd.read_excel(file_path, sheet_name=0)
+
+        # B열에 결과값 추가
+        df['최신 업데이트 일'] = data
+
+        # 동일한 파일에 덮어쓰기
+        df.to_excel(file_path, index=False)
+
+        new_print(f"Data saved to {file_path}", level="INFO")
+    else:
+        new_print("No file selected for saving.", level="WARNING")
+
+
+def on_drop(event):
+    global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
+    file_path = event.data.strip('{}')
+    url_list = read_excel_file(file_path)
+    update_log(url_list)
+    check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
+
+def browse_file():
+    global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
+    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
+    if file_path:
+        url_list = read_excel_file(file_path)
+        update_log(url_list)
+        check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
+
+def toggle_start_stop():
+    if not url_list:
+        messagebox.showwarning("경고", "목록을 찾을 수 없습니다.")
+        return
+
+    if start_button.config('text')[-1] == '시작':
+        start_button.config(text="중지", bg="red", fg="white")
+        threading.Thread(target=start_processing).start()
+    else:
+        stop_processing()
+
+
+def stop_processing():
+    global stop_flag, url_list
+    stop_flag = True
+    url_list = []  # 배열 초기화
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+
+
+def check_list_and_toggle_button():
+    if url_list:
+        start_button.config(state=tk.NORMAL)
+    else:
+        start_button.config(state=tk.DISABLED)
+
+
+
+def main():
+    global log_text_widget, start_button, progress, progress_label, eta_label, login_input, start_input, end_input, root
+
+    root = TkinterDnD.Tk()
+    root.title("네이버 블로그 자동 등록 프로그램")
+    root.geometry("600x800")
+
+    font_large = font.Font(size=10)
+
+    # blog 주소 입력창과 라벨 추가
+    input_frame = tk.Frame(root)
+    input_frame.pack(pady=10)
+
+    blog_label = tk.Label(input_frame, text="blog 주소 (https포함) :", font=font_large)
+    blog_label.pack(side=tk.LEFT)
+
+    # input_frame_2 = tk.Frame(root)
+    # input_frame_2.pack(pady=10)
+    #
+    # blog_label_2 = tk.Label(input_frame_2, text="예시 https://blog.naver.com/1234", font=font_large, bg="green", fg="white")
+    # blog_label_2.pack(side=tk.LEFT)
+
+    # 로그인 입력창 추가
+    login_input = tk.Entry(root, font=font_large, width=25)
+    login_input.pack(pady=10)  # 패딩으로 적절한 간격 추가
+
+    # 시작 및 끝 입력창을 위한 프레임
+    start_end_frame = tk.Frame(root)  # 프레임을 정의
+    start_end_frame.pack(pady=10)
+
+    # 시작 입력창
+    start_label = tk.Label(start_end_frame, text="시작 :", font=font_large)
+    start_label.pack(side=tk.LEFT)  # 오른쪽 패딩 추가
+    start_input = tk.Entry(start_end_frame, font=font_large, width=10)
+    start_input.pack(side=tk.LEFT)  # 오른쪽 패딩 추가
+
+    # 끝 입력창
+    end_label = tk.Label(start_end_frame, text="끝 :", font=font_large)
+    end_label.pack(side=tk.LEFT, padx=(0, 5))  # 왼쪽 패딩 추가
+    end_input = tk.Entry(start_end_frame, font=font_large, width=10)
+    end_input.pack(side=tk.LEFT)
+
+
+    lbl_or = tk.Label(root, text="또는", font=font_large)
+    lbl_or.pack(pady=5)
+
+    lbl_drop = tk.Label(root, text="여기에 파일을 드래그 앤 드롭하세요", relief="solid", width=40, height=5, font=font_large, bg="white")
+    lbl_drop.pack(pady=10)
+
+    lbl_drop.drop_target_register(DND_FILES)
+    lbl_drop.dnd_bind('<<Drop>>', on_drop)
+
+    # 시작 버튼
+    start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
+    start_button.pack(pady=10)
+
+    log_label = tk.Label(root, text="로그 화면", font=font_large)
+    log_label.pack(fill=tk.X, padx=10)
+
+    log_frame = tk.Frame(root)
+    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
+    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    x_scrollbar.config(command=log_text_widget.xview)
+    y_scrollbar.config(command=log_text_widget.yview)
+
+    # 진행률
+    progress_frame = tk.Frame(root)
+    progress_frame.pack(fill=tk.X, padx=10, pady=10)
+
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
+    eta_label = tk.Label(progress_frame, text="남은 시간: 00:00:00", font=font_large)
+
+    progress_label.pack(side=tk.TOP, padx=5)
+    eta_label.pack(side=tk.TOP, padx=5)
+
+    style = ttk.Style()
+    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+    progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()

@@ -56,7 +56,7 @@ def setup_driver():
 
 
 class PlaceData:
-    def __init__(self, 아이디, 이름, 블로그제목, 블로그게시글, 주소, 이미지, 정보URL, 지도URL):
+    def __init__(self, 아이디, 이름, 블로그제목, 블로그게시글, 주소, 이미지, 정보URL, 지도URL, 공유URL):
         self.아이디 = 아이디
         self.이름 = 이름
         self.블로그제목 = 블로그제목
@@ -65,11 +65,12 @@ class PlaceData:
         self.이미지 = 이미지
         self.정보URL = 정보URL
         self.지도URL = 지도URL
+        self.공유URL = 공유URL
 
     def __repr__(self):
         return (f"PlaceData(아이디: {self.아이디}, 이름: {self.이름}, 블로그제목: {self.블로그제목}, "
                 f"블로그게시글: {self.블로그게시글}, 주소: {self.주소}, 이미지: {self.이미지}, "
-                f"정보URL: {self.정보URL}, 지도URL: {self.지도URL})")
+                f"정보URL: {self.정보URL}, 지도URL: {self.지도URL}), 공유URL: {self.공유URL})")
 
 
 
@@ -88,7 +89,8 @@ def read_excel_file(filepath):
             주소=row['주소'],
             이미지=row['이미지'],
             정보URL=row['정보 URL'],
-            지도URL=row['지도 URL']
+            지도URL=row['지도 URL'],
+            공유URL=row['공유 URL']
         )
         place_data_list.append(place_data)
 
@@ -232,9 +234,16 @@ def start_processing():
             global_cookies = cookies
             messagebox.showinfo("로그인 성공", "정상 로그인 되었습니다.")
 
+            start_num = int(start_input.get())  # 문자열을 정수로 변환
+            end_num = int(end_input.get())      # 문자열을 정수로 변환
+
             for index, url in enumerate(url_list, start=1):
+
                 if stop_flag:
                     break
+
+                if index < start_num or index > end_num:
+                    continue
 
                 new_print(f"Processing ID {index}: {url.아이디}")
 
@@ -250,21 +259,20 @@ def start_processing():
                     )
                     driver.switch_to.frame(iframe)
 
-                    if index == 1:
+                    try:
+                        # 작성중인글 확인
+                        time.sleep(2)
+                        # 이제 iframe 내에서 요소를 찾음
+                        popup_button = WebDriverWait(driver, 3).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-cancel'))
+                        )
+                        popup_button.click()
 
-                        try:
-                            # 작성중인글 확인
-                            time.sleep(2)
-                            # 이제 iframe 내에서 요소를 찾음
-                            popup_button = WebDriverWait(driver, 3).until(
-                                EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-cancel'))
-                            )
-                            popup_button.click()
+                    except TimeoutException:
+                        # close_button이 없을 경우에 실행될 코드 (필요에 따라 생략 가능)
+                        print("작성중인글이 존재하지 않습니다.")
 
-                        except TimeoutException:
-                            # close_button이 없을 경우에 실행될 코드 (필요에 따라 생략 가능)
-                            print("close_button이 존재하지 않습니다.")
-
+                    if index == start_num:
 
                         time.sleep(2)
                         # 이제 iframe 내에서 요소를 찾음
@@ -365,77 +373,110 @@ def start_processing():
                     actions = ActionChains(driver)
                     actions.move_to_element(active_element).click().send_keys(url.블로그게시글).perform()
 
-                    a = process_address(url.주소)
 
-                    time.sleep(2)
-                    # 이제 iframe 내에서 요소를 찾음
-                    image_map_button = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'se-map-toolbar-button'))
-                    )
-                    image_map_button.click()
-
-                    time.sleep(2)
-                    # input 필드 찾기
-                    input_field = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.CLASS_NAME, "react-autosuggest__input"))
+                    # 링크로 지도 위치 올리기
+                    oglink_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-oglink-toolbar-button'))
                     )
 
-                    # input 필드에 'a' 입력
-                    input_field.send_keys(a)
+                    oglink_button.click()
+
+                    oglink_input = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "se-popup-oglink-input"))
+                    )
+
+                    # input 필드에 '공유URL' 입력
+                    oglink_input.send_keys(url.공유URL)
+
 
                     # 검색 버튼 찾기
-                    search_button = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
+                    oglink_search_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.CLASS_NAME, "se-popup-oglink-button"))
                     )
 
                     # 검색 버튼 클릭
-                    search_button.click()
+                    oglink_search_button.click()
 
-                    time.sleep(2)
+                    time.sleep(5)
 
-                    try:
-                        # class가 'se-place-map-search-result-list'인 첫 번째 li 내의 'se-place-add-button' 찾기
-                        search_result_list = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'se-place-map-search-result-list'))
-                        )
-                        time.sleep(2)
+                    oglink_confirm_map_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                    )
+                    oglink_confirm_map_button.click()
 
-                        # 'se-place-map-search-result-list' 안에서 첫 번째 'li' 요소를 기다리며 찾음
-                        first_li = WebDriverWait(search_result_list, 10).until(
-                            EC.presence_of_element_located((By.TAG_NAME, 'li'))
-                        )
 
-                        # 마우스를 'first_li' 위로 오버
-                        actions = ActionChains(driver)
-                        actions.move_to_element(first_li).perform()  # 마우스를 해당 요소 위로 이동
 
-                        time.sleep(2)
-                        # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
-                        add_button = WebDriverWait(first_li, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
-                        )
-                        add_button.click()
-
-                        time.sleep(2)
-                        # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
-                        confirm_map_button = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
-                        )
-                        confirm_map_button.click()
-
-                    except (NoSuchElementException, TimeoutException):
-                        # 'se-place-add-button'이 없으면 'se-popup-close-button'을 찾아 클릭
-                        try:
-                            close_button = WebDriverWait(driver, 10).until(
-                                EC.element_to_be_clickable((By.CLASS_NAME, 'se-popup-close-button'))
-                            )
-                            close_button.click()
-                        except (NoSuchElementException, TimeoutException):
-                            print("close_button을 찾을 수 없습니다.")
+                    # 장소 Map (상단 도구 모임)
+                    # a = process_address(url.주소)
+                    # time.sleep(2)
+                    # image_map_button = WebDriverWait(driver, 10).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, 'se-map-toolbar-button'))
+                    # )
+                    # image_map_button.click()
+                    #
+                    # time.sleep(2)
+                    # # input 필드 찾기
+                    # input_field = WebDriverWait(driver, 10).until(
+                    #     EC.presence_of_element_located((By.CLASS_NAME, "react-autosuggest__input"))
+                    # )
+                    #
+                    # # input 필드에 'a' 입력
+                    # input_field.send_keys(a)
+                    #
+                    # # 검색 버튼 찾기
+                    # search_button = WebDriverWait(driver, 10).until(
+                    #     EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
+                    # )
+                    #
+                    # # 검색 버튼 클릭
+                    # search_button.click()
+                    #
+                    # time.sleep(2)
+                    #
+                    # try:
+                    #     # class가 'se-place-map-search-result-list'인 첫 번째 li 내의 'se-place-add-button' 찾기
+                    #     search_result_list = WebDriverWait(driver, 10).until(
+                    #         EC.presence_of_element_located((By.CLASS_NAME, 'se-place-map-search-result-list'))
+                    #     )
+                    #     time.sleep(2)
+                    #
+                    #     # 'se-place-map-search-result-list' 안에서 첫 번째 'li' 요소를 기다리며 찾음
+                    #     first_li = WebDriverWait(search_result_list, 10).until(
+                    #         EC.presence_of_element_located((By.TAG_NAME, 'li'))
+                    #     )
+                    #
+                    #     # 마우스를 'first_li' 위로 오버
+                    #     actions = ActionChains(driver)
+                    #     actions.move_to_element(first_li).perform()  # 마우스를 해당 요소 위로 이동
+                    #
+                    #     time.sleep(2)
+                    #     # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                    #     add_button = WebDriverWait(first_li, 10).until(
+                    #         EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
+                    #     )
+                    #     add_button.click()
+                    #
+                    #     time.sleep(2)
+                    #     # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                    #     confirm_map_button = WebDriverWait(driver, 10).until(
+                    #         EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                    #     )
+                    #     confirm_map_button.click()
+                    #
+                    # except (NoSuchElementException, TimeoutException):
+                    #     # 'se-place-add-button'이 없으면 'se-popup-close-button'을 찾아 클릭
+                    #     try:
+                    #         close_button = WebDriverWait(driver, 10).until(
+                    #             EC.element_to_be_clickable((By.CLASS_NAME, 'se-popup-close-button'))
+                    #         )
+                    #         close_button.click()
+                    #     except (NoSuchElementException, TimeoutException):
+                    #         print("close_button을 찾을 수 없습니다.")
 
 
 
                     # 3초 후 'publish_btn__m9KHH' 클래스 버튼 클릭
+                    # 발행
                     time.sleep(3)
                     publish_button = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CLASS_NAME, 'publish_btn__m9KHH'))
@@ -649,7 +690,7 @@ def check_list_and_toggle_button():
 
 
 def main():
-    global log_text_widget, start_button, progress, progress_label, eta_label, login_input, root
+    global log_text_widget, start_button, progress, progress_label, eta_label, login_input, start_input, end_input, root
 
     root = TkinterDnD.Tk()
     root.title("네이버 블로그 자동 등록 프로그램")
@@ -674,8 +715,22 @@ def main():
     login_input = tk.Entry(root, font=font_large, width=25)
     login_input.pack(pady=10)  # 패딩으로 적절한 간격 추가
 
-    btn_browse = tk.Button(root, text="엑셀 파일 선택", command=browse_file, font=font_large, width=20)
-    btn_browse.pack(pady=10)
+    # 시작 및 끝 입력창을 위한 프레임
+    start_end_frame = tk.Frame(root)  # 프레임을 정의
+    start_end_frame.pack(pady=10)
+
+    # 시작 입력창
+    start_label = tk.Label(start_end_frame, text="시작 :", font=font_large)
+    start_label.pack(side=tk.LEFT)  # 오른쪽 패딩 추가
+    start_input = tk.Entry(start_end_frame, font=font_large, width=10)
+    start_input.pack(side=tk.LEFT)  # 오른쪽 패딩 추가
+
+    # 끝 입력창
+    end_label = tk.Label(start_end_frame, text="끝 :", font=font_large)
+    end_label.pack(side=tk.LEFT, padx=(0, 5))  # 왼쪽 패딩 추가
+    end_input = tk.Entry(start_end_frame, font=font_large, width=10)
+    end_input.pack(side=tk.LEFT)
+
 
     lbl_or = tk.Label(root, text="또는", font=font_large)
     lbl_or.pack(pady=5)
