@@ -236,7 +236,6 @@ def ydata_history(symbol, end_date_str):
     else:
         return f"요청 실패: 상태 코드 {response.status_code}"
 
-
 def main():
     symbol = "AAPL"  # 사용할 심볼
     description = ydata_description(symbol)
