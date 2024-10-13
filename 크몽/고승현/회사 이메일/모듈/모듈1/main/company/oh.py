@@ -20,25 +20,20 @@ def fetch_total_pages(driver, kwd, page, product_id):
 def fetch_product_ids(driver, kwd, page, product_id):
     url = f"https://ohou.se/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20"
     headers = {
-        'authority': 'ohou.se',
-        'method': 'GET',
-        'path': f'/productions/feed.json?v=7&type=store&query={kwd}&page={page}&per=20',
-        'scheme': 'https',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'max-age=0',
-        'If-None-Match': 'W/"45a142fe1a5df378810859e6665519dc"',
-        'Priority': 'u=0, i',
-        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-encoding': 'gzip, deflate, br, zstd',
+        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        'priority': 'u=0, i',
+        'sec-ch-ua': '"Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'none',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
     }
 
     # 세션 생성
@@ -118,7 +113,7 @@ def fetch_product_detail(driver, kwd, page, product_id):
         print(f"li_elements : {len(li_elements)}")
 
         for li in li_elements:
-            if "배송" in li.text or "환불" in li.text or "반품" in li.text or "취소" in li.text:
+            if "배송" in li.text or "환불" in li.text or "반품" in li.text or "취소" in li.text or "배송/환불" in li.text:
                 try:
                     driver.execute_script("arguments[0].scrollIntoView(true);", li)
                     time.sleep(2)
@@ -129,7 +124,7 @@ def fetch_product_detail(driver, kwd, page, product_id):
                     break
 
         # 페이지 끝까지 스크롤
-        scroll_to_bottom(driver)
+        # scroll_to_bottom(driver)
 
         time.sleep(3)
 
