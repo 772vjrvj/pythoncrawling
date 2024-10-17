@@ -5,8 +5,6 @@ import re
 
 # 이메일 주소를 찾기 위한 정규식 패턴
 email_pattern = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
-# 이메일 무단수집 거부 문구를 찾기 위한 패턴
-no_collect_pattern = re.compile(r'이메일\s*무단\s*수집\s*거부', re.IGNORECASE)
 
 # email.xlsx 파일을 열어 Website 컬럼을 읽어옴
 def load_websites_from_excel(file_path):
@@ -26,29 +24,18 @@ def get_email_from_website(url):
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'lxml')
 
-            # HTML 본문에서 '이메일 무단수집 거부' 문구가 있는지 확인
+            # HTML 본문에서 이메일 추출
             text = soup.get_text()
-            if no_collect_pattern.search(text):
-                print("이메일 무단수집 거부")
-                return "이메일 무단수집 거부"
-
-            # 본문에서 이메일 추출
             emails = email_pattern.findall(text)
-
-            if emails:
-                print(f"{emails[0]}")
-                return emails[0]  # 첫 번째 이메일 반환
 
             # 메타 태그에서 이메일 추출
             for meta in soup.find_all('meta'):
                 content = meta.get('content')
                 if content:
                     meta_emails = email_pattern.findall(content)
-                    if meta_emails:
-                        print(f"{meta_emails[0]}")
-                        return meta_emails[0]  # 첫 번째 메타 이메일 반환
+                    emails.extend(meta_emails)
 
-            return None  # 이메일이 없으면 None 반환
+            return emails[0] if emails else None
         else:
             print(f"Failed to access {url}: Status Code {response.status_code}")
             return None
