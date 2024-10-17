@@ -1,0 +1,185 @@
+{
+  "@context": "http://schema.org/",
+  "@id": "https://www.diningcode.com/",
+  "@type": "FoodEstablishment",
+  "address": {
+    "streetAddress": "경기도 수원시 영통구 망포동 332-1"
+  },
+  "aggregateRating": {
+    "bestRating": 5,
+    "worstRating": 1,
+    "reviewCount": 18,
+    "ratingValue": "4.6"
+  },
+  "hasMenu": {
+    "@type": "Menu",
+    "hasMenuItem": [
+      {
+        "@type": "MenuItem",
+        "name": "표고버섯탕수",
+        "offers": {
+          "@type": "Offer",
+          "price": "25,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "깐풍기",
+        "offers": {
+          "@type": "Offer",
+          "price": "27,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "라조기",
+        "offers": {
+          "@type": "Offer",
+          "price": "27,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "짜장면",
+        "offers": {
+          "@type": "Offer",
+          "price": "8,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "짬뽕",
+        "offers": {
+          "@type": "Offer",
+          "price": "12,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "새우쟁반짜장(2인)",
+        "offers": {
+          "@type": "Offer",
+          "price": "20,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "새우쟁반짜장(3인)",
+        "offers": {
+          "@type": "Offer",
+          "price": "25,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "잡채밥",
+        "offers": {
+          "@type": "Offer",
+          "price": "13,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "가마솥탕수육",
+        "offers": {
+          "@type": "Offer",
+          "price": "22,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "깐풍육",
+        "offers": {
+          "@type": "Offer",
+          "price": "25,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "유산슬밥",
+        "offers": {
+          "@type": "Offer",
+          "price": "20,000원",
+          "priceCurrency": "KRW"
+        }
+      },
+      {
+        "@type": "MenuItem",
+        "name": "우동",
+        "offers": {
+          "@type": "Offer",
+          "price": "12,000원",
+          "priceCurrency": "KRW"
+        }
+      }
+    ]
+  },
+  "image": "https://d12zq4w4guyljn.cloudfront.net/300_300_20240821121104_photo1_6166639be845.jpg",
+  "name": "금화루",
+  "openingHours": [
+    "매일 11:00-21:00",
+    " "
+  ],
+  "priceRange": "",
+  "review": [
+    {
+      "author": "오후3시",
+      "description": "n차 방문하는 망포동 중국집~ 배달은 안되고 매장에서만 먹을수 있는데 맛있어요ㅎ 탕수육 맛있고 짜장면도 맛있어요 중국음식 생각날때 여기만 갑니당 \n주차장은 좁아서 아쉬워요 주말에 식사시간에 방문하면 웨이팅이 있을 수 있어요",
+      "inLanguage": "ko",
+      "datePublished": "2024-02-24 08:57:26",
+      "reviewRating": {
+        "bestRating": 5,
+        "worstRating": 1,
+        "ratingValue": "5"
+      }
+    },
+    {
+      "author": "아렘",
+      "description": "배달은 안되지만 포장은 가능한 망포 짜장면 맛집! 후기가 워낙 좋아 기대했는데 기대 이상의 맛이라 깜짝 놀랐어요 가마솥탕수육은 무난했는데 짜장면 원탑!!!! 인생 짜장면 맛집을 찾았어요",
+      "inLanguage": "ko",
+      "datePublished": "2024-02-24 10:10:34",
+      "reviewRating": {
+        "bestRating": 5,
+        "worstRating": 1,
+        "ratingValue": "5"
+      }
+    },
+    {
+      "author": "alice612",
+      "description": "춘장향이 진한 쟁반짜장도 맛있고 적당하게 잘 튀겨진 탕수육도 잡내없이 좋았습니다",
+      "inLanguage": "ko",
+      "datePublished": "2024-08-21 12:11:07",
+      "reviewRating": {
+        "bestRating": 5,
+        "worstRating": 1,
+        "ratingValue": "5"
+      }
+    }
+  ],
+  "servesCuisine": [
+    "표고버섯탕수 - 25,000원",
+    "깐풍기 - 27,000원",
+    "라조기 - 27,000원",
+    "짜장면 - 8,000원",
+    "짬뽕 - 12,000원",
+    "새우쟁반짜장(2인) - 20,000원",
+    "새우쟁반짜장(3인) - 25,000원",
+    "잡채밥 - 13,000원",
+    "가마솥탕수육 - 22,000원",
+    "깐풍육 - 25,000원",
+    "유산슬밥 - 20,000원",
+    "우동 - 12,000원"
+  ],
+  "telephone": "031-205-0203",
+  "url": "https://www.diningcode.com/profile.php?rid=AIk0w7AXhi4A"
+}
