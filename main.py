@@ -49,6 +49,7 @@ def fetch_place_info(place_id):
         response.encoding = 'utf-8'
 
         if response.status_code == 200:
+            print(f'response.status_code : {response.status_code}')
             soup = BeautifulSoup(response.text, 'html.parser')
             script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
 
@@ -118,11 +119,15 @@ def fetch_place_info(place_id):
                         "편의시설": ', '.join(conveniences) if conveniences else ''
                     }
 
+                    print(f'name : {name}')
+
                     return result
     except requests.exceptions.RequestException as e:
         new_print(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
     except Exception as e:
         new_print(f"Error processing data for Place ID: {place_id}: {e}")
+
+    print(f'None : {None}')
     return None
 
 
@@ -231,8 +236,10 @@ def main(query):
         all_ids_list = list(all_ids)
         total_count = len(all_ids_list)
         new_print(f"전체 매물 수 : {total_count}")
+        new_print(f"전체 매물 : {all_ids_list}")
 
         for idx, place_id in enumerate(all_ids_list, start=1):
+            print(f'place_id : {place_id}')
             place_info = fetch_place_info(place_id)
             if place_info:
                 place_info["가게번호"] = place_id
@@ -249,18 +256,7 @@ def main(query):
 
 if __name__ == "__main__":
     names = [
-        # "인천송도 미용실",
-        # "인천송도 네일샵",
-        # "인천송도 속눈썹펌",
-        # "인천송도 피부관리샵",
-        # "인천송도 마사지",
-        # "인천송도 화장품 가게",
-        # "인천송도 주얼리샵",
-        # "인천송도 옷가게",
-        # "인천송도 신발가게",
-        # "인천송도 동물병원",
-        # "인천송도 동물미용실",
-        "인천송도 Pet Shop",
+        # "인천송도 Pet Shop",
         # "인천송도 키즈카페",
         # "인천송도 산후조리원",
         # "인천송도 학원",
@@ -272,16 +268,27 @@ if __name__ == "__main__":
         # "인천송도 당구장",
         # "인천송도 병원",
         # "인천송도 안경점",
-        # "인천송도 식당",
-        # "인천송도 카페",
-        # "인천송도 정육점",
-        # "인천송도 반찬가게",
-        # "인천송도 자동차 정비소",
-        # "인천송도 문구점",
-        # "인천송도 전자용품 매장",
-        # "인천송도 세탁소",
-        # "인천송도 스튜디오",
-        # "인천송도 꽃집",
+        "인천송도 식당",
+        "인천송도 카페",
+        "인천송도 정육점",
+        "인천송도 반찬가게",
+        "인천송도 자동차 정비소",
+        "인천송도 문구점",
+        "인천송도 전자용품 매장",
+        "인천송도 세탁소",
+        "인천송도 스튜디오",
+        "인천송도 꽃집",
+        "인천송도 미용실",
+        "인천송도 네일샵",
+        "인천송도 속눈썹펌",
+        "인천송도 피부관리샵",
+        "인천송도 마사지",
+        "인천송도 화장품 가게",
+        "인천송도 주얼리샵",
+        "인천송도 옷가게",
+        "인천송도 신발가게",
+        "인천송도 동물병원",
+        "인천송도 동물미용실",
     ]
     # names = ["가락 진성한우곱창", "가락시장 홍홍"]
     # 현재 시간 가져오기
