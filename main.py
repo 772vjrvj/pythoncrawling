@@ -55,7 +55,7 @@ def main():
             homepage = homepage_tag.find_next_sibling('td').text.strip() if homepage_tag else ""
 
             # 'https://'가 없으면 추가
-            if homepage and not homepage.startswith("https://"):
+            if homepage and not homepage.startswith("http"):
                 homepage = "https://" + homepage
 
             # 회사이메일 정보 가져오기
