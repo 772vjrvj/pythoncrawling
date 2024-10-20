@@ -47,12 +47,19 @@ def setup_driver():
 
 # 숫자와 소수점을 포함한 숫자만 추출하는 함수
 def extract_numbers(input_string):
-    return ''.join(re.findall(r'\d+\.\d+|\d+', input_string))
-
+    try:
+        return ''.join(re.findall(r'\d+\.\d+|\d+', input_string))
+    except Exception as e:
+        print(f"Error in extracting numbers from {input_string}: {e}")
+        return ''  # 에러 발생 시 빈 문자열 반환
 
 # 문자와 단위(g, kg 등)만 추출하는 함수
 def extract_non_numbers(input_string):
-    return ''.join(re.findall(r'[^\d\.]+', input_string))
+    try:
+        return ''.join(re.findall(r'[^\d\.]+', input_string))
+    except Exception as e:
+        print(f"Error in extracting non-numbers from {input_string}: {e}")
+        return ''  # 에러 발생 시 빈 문자열 반환
 
 
 # 네이버 크롤링 함수
@@ -71,15 +78,12 @@ def extract_product_info(idx, element, name, qty):
         # 가격 추출
         price_str = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.price"]').text.replace('최저', '').strip()
         numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
-        # 임시 리스트 생성
 
         # qty 값이 숫자를 포함하지 않으면 '1개' 할당
-        # (일반구매, 해외구매) case
         if not any(char.isdigit() for char in qty):
             qt = f'{stnd_cnt}{unit}'
         else:
             qt = qty
-
 
         one_price = (numeric_price / convert_to_float(qt)) * float(stnd_cnt)
 
@@ -88,45 +92,51 @@ def extract_product_info(idx, element, name, qty):
         print(f"네이버 제품 {idx}: {temp_list}")
 
         return temp_list
-    except NoSuchElementException as e:
+    except Exception as e:
         print(f"Error in extracting product info: {e}")
-        return None
+        return None  # 에러 발생 시 None 반환
 
 
 def extract_ul_class(driver):
     """ ul 클래스 이름 추출 함수 """
-    uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')  # ul 목록
-    for e in uls:  # ul 안에 li class 이름 가져오기
-        if 'productList_list_seller' in e.get_attribute('class'):
-            return e.get_attribute('class').replace(' ', '.')
+    try:
+        uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')  # ul 목록
+        for e in uls:  # ul 안에 li class 이름 가져오기
+            if 'productList_list_seller' in e.get_attribute('class'):
+                return e.get_attribute('class').replace(' ', '.')
+    except Exception as e:
+        print(f"Error in extracting ul class: {e}")
     return ""
 
 
 def process_product_list(driver, ul_class, name, qty, naver_temp_list):
     """ 제품 목록 처리 함수 """
-    prod_list = driver.find_elements(By.CSS_SELECTOR, f'#section_price .{ul_class} li')
+    try:
+        prod_list = driver.find_elements(By.CSS_SELECTOR, f'#section_price .{ul_class} li')
 
-    # 첫 번째 제품 목록으로 스크롤
-    action = ActionChains(driver)
-    action.move_to_element(prod_list[0]).perform()
-    time.sleep(1)
+        # 첫 번째 제품 목록으로 스크롤
+        action = ActionChains(driver)
+        action.move_to_element(prod_list[0]).perform()
+        time.sleep(1)
 
-    # 공통 함수 호출하여 제품 정보 추출
-    for idx, e in enumerate(prod_list):
+        # 공통 함수 호출하여 제품 정보 추출
+        for idx, e in enumerate(prod_list):
 
-        # 기준인건 1개까지
-        if qty == f'{stnd_cnt}{unit}' and idx > 0:
-            break
+            # 기준인건 1개까지
+            if qty == f'{stnd_cnt}{unit}' and idx > 0:
+                break
 
-        # 기준이 아닌건 3개까지
-        if qty != f'{stnd_cnt}{unit}' and idx > 2:
-            break
+            # 기준이 아닌건 3개까지
+            if qty != f'{stnd_cnt}{unit}' and idx > 2:
+                break
 
-        temp_list = extract_product_info(idx, e, name, qty)
-        if temp_list:
-            naver_temp_list.append(temp_list)
-        else:
-            print(f"Error in scraping 네이버: index {idx}")
+            temp_list = extract_product_info(idx, e, name, qty)
+            if temp_list:
+                naver_temp_list.append(temp_list)
+            else:
+                print(f"Error in scraping 네이버: index {idx}")
+    except Exception as e:
+        print(f"Error in processing product list: {e}")
 
 
 def scrape_naver(driver, name, naver_url):
@@ -712,60 +722,65 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name):
 
     # 엑셀의 각 행을 처리
     for i in range(2, ws.max_row + 1):
-        name = ws[f'E{i}'].value
-        naver_url = ws[f'B{i}'].value
-        danawa_url = ws[f'C{i}'].value
-        enuri_url = ws[f'D{i}'].value
+        try:
+            name = ws[f'E{i}'].value
+            naver_url = ws[f'B{i}'].value
+            danawa_url = ws[f'C{i}'].value
+            enuri_url = ws[f'D{i}'].value
 
-        # 에러 리스트 초기화 (각 크롤링 사이트별 에러 체크)
-        err_list = [0, 0, 0]
+            # 에러 리스트 초기화 (각 크롤링 사이트별 에러 체크)
+            err_list = [0, 0, 0]
 
-        # 전체 병합 리스트 초기화
-        merge_list = []
+            # 전체 병합 리스트 초기화
+            merge_list = []
 
-        # 1. 네이버 크롤링 처리
-        print("============================== 네이버 시작 ==============================")
-        naver_result = scrape_naver(driver, name, naver_url)
-        sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
-        result_print(sorted_merge_list, '네이버')
-        print(f'네이버 수: {len(naver_result)}')
-        print("============================== 네이버 끝 ==============================")
-        handle_scraping_result(naver_result, 0, err_list, merge_list)
-        print(f'\n\n')
+            # 1. 네이버 크롤링 처리
+            print("============================== 네이버 시작 ==============================")
+            naver_result = scrape_naver(driver, name, naver_url)
+            sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
+            result_print(sorted_merge_list, '네이버')
+            print(f'네이버 수: {len(naver_result)}')
+            print("============================== 네이버 끝 ==============================")
+            handle_scraping_result(naver_result, 0, err_list, merge_list)
+            print(f'\n\n')
 
-        # 2. 다나와 크롤링 처리
-        print("============================== 다나와 시작 ==============================")
-        danawa_result = scrape_danawa(driver, name, danawa_url, limit_count, on_and_off)
-        sorted_merge_list = sorted(danawa_result, key=lambda x: x[-1])
-        result_print(sorted_merge_list, '다나와')
-        print(f'다나와 수: {len(danawa_result)}')
-        print('===================================================')
-        handle_scraping_result(danawa_result, 1, err_list, merge_list)
-        print("============================== 다나와 끝 ==============================")
-        print(f'\n\n')
+            # 2. 다나와 크롤링 처리
+            print("============================== 다나와 시작 ==============================")
+            danawa_result = scrape_danawa(driver, name, danawa_url, limit_count, on_and_off)
+            sorted_merge_list = sorted(danawa_result, key=lambda x: x[-1])
+            result_print(sorted_merge_list, '다나와')
+            print(f'다나와 수: {len(danawa_result)}')
+            print('===================================================')
+            handle_scraping_result(danawa_result, 1, err_list, merge_list)
+            print("============================== 다나와 끝 ==============================")
+            print(f'\n\n')
 
-        # 3. 에누리 크롤링 처리
-        print("============================== 에누리 시작 ==============================")
-        enuri_result = scrape_enuri(driver, name, enuri_url, limit_count, on_and_off)
-        sorted_merge_list = sorted(enuri_result, key=lambda x: x[-1])
-        result_print(sorted_merge_list, '에누리')
-        print(f'에누리 수: {len(enuri_result)}')
-        handle_scraping_result(enuri_result, 2, err_list, merge_list)
-        print("============================== 에누리 끝 ==============================")
-        print(f'\n\n')
+            # 3. 에누리 크롤링 처리
+            print("============================== 에누리 시작 ==============================")
+            enuri_result = scrape_enuri(driver, name, enuri_url, limit_count, on_and_off)
+            sorted_merge_list = sorted(enuri_result, key=lambda x: x[-1])
+            result_print(sorted_merge_list, '에누리')
+            print(f'에누리 수: {len(enuri_result)}')
+            handle_scraping_result(enuri_result, 2, err_list, merge_list)
+            print("============================== 에누리 끝 ==============================")
+            print(f'\n\n')
 
-        # 4. 전체 목록
-        print("============================== 전체 시작 ==============================")
-        sorted_merge_list = sorted(merge_list, key=lambda x: x[-1])
-        result_print(sorted_merge_list, '전체')
-        print(f'전체 수: {len(merge_list)}')
-        print("============================== 전체 끝 ==============================")
+            # 4. 전체 목록
+            print("============================== 전체 시작 ==============================")
+            sorted_merge_list = sorted(merge_list, key=lambda x: x[-1])
+            result_print(sorted_merge_list, '전체')
+            print(f'전체 수: {len(merge_list)}')
+            print("============================== 전체 끝 ==============================")
 
-        # 엑셀로 저장 (각 행별로 저장)
-        save_row_to_excel(ws, merge_list, i, err_list, five_per_mall_name)
+            # 엑셀로 저장 (각 행별로 저장)
+            save_row_to_excel(ws, merge_list, i, err_list, five_per_mall_name)
 
-        # 엑셀 파일을 즉시 저장
-        wb.save(excel_path)
+            # 엑셀 파일을 즉시 저장
+            wb.save(excel_path)
+
+        except Exception as e:
+            print(f"Error processing row {i}: {e}")
+            # 특정 행에서 에러가 발생하더라도 계속 진행하도록 함
 
     driver.quit()
 
