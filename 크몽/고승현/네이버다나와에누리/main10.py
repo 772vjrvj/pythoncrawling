@@ -113,11 +113,11 @@ def process_product_list(driver, ul_class, name, qty, naver_temp_list):
 
     # 공통 함수 호출하여 제품 정보 추출
     for idx, e in enumerate(prod_list):
-        
+
         # 기준인건 1개까지
         if qty == f'{stnd_cnt}{unit}' and idx > 0:
             break
-        
+
         # 기준이 아닌건 3개까지
         if qty != f'{stnd_cnt}{unit}' and idx > 2:
             break
