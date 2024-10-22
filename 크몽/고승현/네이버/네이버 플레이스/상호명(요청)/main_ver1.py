@@ -125,7 +125,6 @@ def fetch_place_info(place_id):
         new_print(f"Error processing data for Place ID: {place_id}: {e}")
     return None
 
-
 def format_business_hours(business_hours):
     formatted_hours = []
     try:
@@ -140,7 +139,6 @@ def format_business_hours(business_hours):
         new_print(f"Unexpected error: {e}")
         return ""
     return '\n'.join(formatted_hours).strip() if formatted_hours else ""
-
 
 def format_new_business_hours(new_business_hours):
     formatted_hours = []
@@ -181,8 +179,6 @@ def format_new_business_hours(new_business_hours):
         print(f"Unexpected error: {e}")
         return ""
     return '\n'.join(formatted_hours).strip() if formatted_hours else ""
-
-
 
 def new_print(text, level="INFO"):
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")

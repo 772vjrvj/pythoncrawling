@@ -1,579 +1,254 @@
 [
   {
-    "link_product_list": "/category/상시할인-5/364/",
-    "name": "상시할인 5%",
-    "param": "?cate_no=364",
-    "cate_no": 364,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
+    'id': '6714e6a40691d083fcdcf0e9',
+    'rating': None,
+    'author': {
+      'nickname': '나는양95',
+      'imageUrl': None
+    },
+    'body': '맛이 있어요',
+    'created': '10.20.일',
+    'tags': None,
+    'media': []
   },
   {
-    "link_product_list": "/category/상시할인-7/359/",
-    "name": "상시할인 7%",
-    "param": "?cate_no=359",
-    "cate_no": 359,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/상시할인-8/366/",
-    "name": "상시할인 8%",
-    "param": "?cate_no=366",
-    "cate_no": 366,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/상시할인-9/360/",
-    "name": "상시할인 9%",
-    "param": "?cate_no=360",
-    "cate_no": 360,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/상시할인-10/361/",
-    "name": "상시할인 10%",
-    "param": "?cate_no=361",
-    "cate_no": 361,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/상시할인-13/362/",
-    "name": "상시할인 13%",
-    "param": "?cate_no=362",
-    "cate_no": 362,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/상시할인-11/365/",
-    "name": "상시할인 11%",
-    "param": "?cate_no=365",
-    "cate_no": 365,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/상시할인-15/363/",
-    "name": "상시할인 15%",
-    "param": "?cate_no=363",
-    "cate_no": 363,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/🏷bellide/240/",
-    "name": "🏷Bellide",
-    "param": "?cate_no=240",
-    "cate_no": 240,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
+    'id': '6715b58ae2cd19b6ae055de9',
+    'rating': None,
+    'author': {
+      'nickname': '뭉돌이형',
+      'imageUrl': 'https://myplace-phinf.pstatic.net/20230331_73/1680222840932u74PT_JPEG/F0015134-8E6C-47D1-988D-B9F1C7DB6685.jpeg'
+    },
+    'body': '곱창이 먹고싶어서 방문했는데, 주말 꽤 늦은시간임에도 웨이팅이 좀 있었어요. 하지만 그 웨이팅을 기다리는 이유를 알 수 있을정도로 아주 맛있었습니다.. 한우 곱창임에도 가격이 비싸지 않은데, 곱이 정말 가득 차있고 직접 다 구워주시고 잘라주셔서 너무 편하고 맛있게 잘 먹었습니다. 가락동에서 곱창집 찾고계시면 꼭 방문해보세요!',
+    'created': '10.21.월',
+    'tags': None,
+    'media': [
       {
-        "link_product_list": "/category/아우터/257/",
-        "name": "아우터",
-        "param": "?cate_no=257",
-        "cate_no": 257,
-        "parent_cate_no": 240,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfNjgg/MDAxNzI5NDc1OTc2NDA4.7achbpwUduby7toSxl843QSFkvemB3S3z3s5rGVShBYg.nMdmSAqb5zWc6E4NaZs931PWC3xlQArfl1URjGJrrogg.JPEG/0752827B-C998-4741-A17D-A2214D1EDDF0.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/상의/259/",
-        "name": "상의",
-        "param": "?cate_no=259",
-        "cate_no": 259,
-        "parent_cate_no": 240,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTky/MDAxNzI5NDc1OTc2NDMx.QQ2oj0OvFEbKq1IqYpG7Mlc08-Qb2SsMjVOhOcKSnjMg.HZfZVLOday-T59KCnxbX9M53v0qUpYA-7l0meFQ2rYEg.JPEG/AB107FB1-82B3-4214-9B57-8179FCAD93C5.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/하의/260/",
-        "name": "하의",
-        "param": "?cate_no=260",
-        "cate_no": 260,
-        "parent_cate_no": 240,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTA2/MDAxNzI5NDc1OTc2MTUw.R-Z_KS975obAz0AGnzT48Ghg5Pgs6hPq_AW41w19rnYg.Y2xURZLfCLEDaIqyKrYUX8CIHWpwhpFuX96LyOLeb3gg.JPEG/EC5282B4-B221-4A1A-B1F4-B8F141C6BEFF.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/세트원피스/261/",
-        "name": "세트/원피스",
-        "param": "?cate_no=261",
-        "cate_no": 261,
-        "parent_cate_no": 240,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/acc/303/",
-        "name": "ACC",
-        "param": "?cate_no=303",
-        "cate_no": 303,
-        "parent_cate_no": 240,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfOTAg/MDAxNzI5NDc1OTc1OTkx.fIM0kiZSaCTnfpO2HpNi5UmaF2fx2GsR0I-XQfXT4_Ag.sHL92Jqw8id63qi7ie5aJoG6cERQcrO0W9RFcPOK37Mg.JPEG/980E6FF9-8A67-49DD-B639-A6DDACA2EE80.jpeg?type=w1500_60_sharpen'
       }
     ]
   },
   {
-    "link_product_list": "/category/best/24/",
-    "name": "BEST",
-    "param": "?cate_no=24",
-    "cate_no": 24,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/당일출고/61/",
-    "name": "당일출고",
-    "param": "?cate_no=61",
-    "cate_no": 61,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
+    'id': '67161a8696398b4eee253d88',
+    'rating': None,
+    'author': {
+      'nickname': '달달한돼지력',
+      'imageUrl': 'https://phinf.pstatic.net/contact/20210802_122/1627910418250P6A9O_JPEG/image.jpg'
+    },
+    'body': '가락시장역과 경찰병원역 사이에 있는 한우곱창 식당이에요.\n가락동에서 유명한 맛집으로 평일 저녁6시만 되면 자리가 꽉차요.\n원형 테이블에 등받이 없는 의자라 앉기 불편하고 4명이서 한테이블 앉으면 많이 좁아요.\n매장은 엄청 북적이고 소란스럽고 정신없어요.\n원래 세트메뉴 있었는데 없고 곱창 대창 막창 3가지 있어요.\n첫 주문은 2인분 이상 해야해요.\n곱창대창막창 하나씩 주문하고 채소랑 같이 불판에 올려져 나와요.\n떡 숙주나물 감자 부추 김치가 나와요.\n익히는데 10분 정도 걸리고 타이머로 재고 직원이 직접 잘라줘요.\n곱창 대창은 신선하고 아주 맛있는데 막창은 조금 질겨요.\n여기 양념장도 너무 맛있고 대파김치 갓김치 무김치 전부 다 맛있어요.\n2인분만 먼저 주문하고 추가해야 채소를 더 주니까 2인분 먹고 추가해요',
+    'created': '10.21.월',
+    'tags': None,
+    'media': [
       {
-        "link_product_list": "/category/top/103/",
-        "name": "TOP",
-        "param": "?cate_no=103",
-        "cate_no": 103,
-        "parent_cate_no": 61,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfOTgg/MDAxNzI5NTAxODE1NTYy.ZNPvNlcBump6Jg29CJbfjaxMaNdKtdtp4DSZZs4GfDUg.kwlldzp0pATya64_N_j_PyGWMRKbRDLeN1VPtojHbkAg.JPEG/1000036259.jpg.jpg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/outer/105/",
-        "name": "OUTER",
-        "param": "?cate_no=105",
-        "cate_no": 105,
-        "parent_cate_no": 61,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjU5/MDAxNzI5NTAxODE1MzQ4.r5v9MnhcDlm5vW_jkyXwmBtYkRNwse0_33S36LOprP0g.kf7ei_yd3xugrQ9LucSBnsCRnn7HKVa70qXaV4ckO6Yg.JPEG/1000036260.jpg.jpg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/pants/107/",
-        "name": "PANTS",
-        "param": "?cate_no=107",
-        "cate_no": 107,
-        "parent_cate_no": 61,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjc1/MDAxNzI5NTAxODE2Mjg3.NBbF7uWp_2_LEEZbGAPJokwot5drmnoXYP3qbFogsLcg.WoaFluF96cY7Z0mBIYvnputgwl-9Ic_MIbek7LB_Y1gg.JPEG/1000036261.jpg.jpg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/skirt/109/",
-        "name": "SKIRT",
-        "param": "?cate_no=109",
-        "cate_no": 109,
-        "parent_cate_no": 61,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTI4/MDAxNzI5NTAxODE1NDkx.r_lUfVEl6vOC-ZDZdBM-qqH4utwnGwWURQpJr3U7rZwg.2sLSSOU2V7zd9RClak5MW-6LSiVJ0Q36kDtU-59ss6cg.JPEG/1000036262.jpg.jpg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/opsset/110/",
-        "name": "OPS/SET",
-        "param": "?cate_no=110",
-        "cate_no": 110,
-        "parent_cate_no": 61,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfNzEg/MDAxNzI5NTAxODE1NTgx.RAKhAIux1KEUZ2ZGXtz0hthPYfyY1HPjWgO61m3Vvy0g.2hvBldQtDOsweXr-orAQWGBV4EfPl9jAm_iMyoF1pTAg.JPEG/1000036263.jpg.jpg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/acc/111/",
-        "name": "ACC",
-        "param": "?cate_no=111",
-        "cate_no": 111,
-        "parent_cate_no": 61,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTE0/MDAxNzI5NTAxODE3MDYx.ACOBpAbJ5MNCW5GGQhuwQKymC9_oj6WGYfpijT-9Wggg.JaNQMEG0666zsgkepUms8ObxedJxyLCyVnTEyBe9OpYg.JPEG/1000036264.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTMg/MDAxNzI5NTAxODE3MjUy.ZzFdiqk46EakNQuoSXZZ_iqxHgeFk5jL-t0NEl4atrsg.lTpdfgwGOuLGTlhQD66z_bT3oBLk_NFLOCwttE-FkIIg.JPEG/1000036265.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTk3/MDAxNzI5NTAxODE3MzA0.CDitG4WfLq1PzK5dyJBG4erRivVR8SOJRW1loklMJ0Ig.kNJmydoj2exNGyVRlwqqozbEL5U1x85IexcNE19A3jYg.JPEG/1000036266.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjIz/MDAxNzI5NTAxODE3NDUx.kx51n_vOUpkiC9HDfNjJN_TH8kLnkNO70pvtG34yJxAg.WyARBAEeVLgyiiXUFefyDgqviPUZ_riOhyq6fc8g6JAg.JPEG/1000036267.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjQ1/MDAxNzI5NTAxODE4MjQx.WMfaomPgYbeVlsjeKsmP7NpEVvyRnealdO_EpUwHUiwg.x845T_nhlJbT0XiGkN5AKQDUmglcXlLVSpjRwp-LBHcg.JPEG/1000036268.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTI2/MDAxNzI5NTAxODE4ODQ5.RpuVFMjUfPPMrsr0MtC_bw9ntv8OMmOp9h-LRgdI1qAg.o6wNKOP8uLgBInoO7aSQUnyh2udiH-DcF1zwfHbeqKMg.JPEG/1000036269.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'video',
+        'thumbnail': 'https://video-phinf.pstatic.net/20241021_280/1729501821494dc2ay_JPEG/PKzJUUvp2F_03.jpg'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjAg/MDAxNzI5NTAxODE5MjE5.Ev4cFaLdVssVgjtIrPwJbMV8f2ocFP0wQiLtXt_xKOAg.kc9iTVyH0hjwpkf6Fubo164QSA7e5U_5eeus_06fDREg.JPEG/1000036274.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjIg/MDAxNzI5NTAxODE5MjUy.EABw3E6CFiqi5a3jZZ_sRqMDJ0IEhojjTdEvGTG_kJgg.6TcAD8m05EnCfpBFkeTheE4v_tS_lN6whRMTW4NZd8og.JPEG/1000036275.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTgz/MDAxNzI5NTAxODIwMzMx.5QxLpDoUYq9sGSwE982DB-3hioLZnlbgYX8JTM1hzQQg.lnvWwr6fMMhFJcyhNXNqwyJ0J9TZ3EloA4Ej3a1UDyAg.JPEG/1000036276.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTIx/MDAxNzI5NTAxODIwMjYx.-9s1yrdgj_FLUhM5lqSYx3mD6-jydrTheBBR33i7mbAg.Gc4icvTLbcH1K3lQ74rY-uzc_A0wrasF8lbiYwSSyokg.JPEG/1000036277.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMjA0/MDAxNzI5NTAxODIxMDEw.jV5m2COz5Bvvalk1p0TE8yl-ns87tw6EYqTkjS7KlBwg.AGDxd_B2oN3TVSHiMJd3ZG5VSGJcfDTnT6A6kuYYdPwg.JPEG/1000036278.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfNzkg/MDAxNzI5NTAxODIwOTgx.tbfUC4mrGGTiltV5G_2OmQ6l-ADomqc_cXCpCLHfm_cg.PODrLO87w84N3PFSf3g626mCYZiWshgYRhsS606LJiEg.JPEG/1000036279.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTYy/MDAxNzI5NTAxODIyNDMx.nRGf_BmspZnZGdJqp8S9_4Z41F6yP9MI0xsA0Zb0N9gg.q27M_7BpAFqj3tIx5MKjxdi7t-Vi426vfL5gvZickPog.JPEG/1000036280.jpg.jpg?type=w1500_60_sharpen'
+      },
+      {
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjFfMTM5/MDAxNzI5NTAxODIyMTY5.xa8Tzd7iCvtZupAFllKreLg-Bm_NjfEP3aYrazIGlAEg.KGpP3FDCKsROjy5RRblR_B_fbfuoMFRvZ1N7Gp0oNzAg.JPEG/1000036281.jpg.jpg?type=w1500_60_sharpen'
       }
     ]
   },
   {
-    "link_product_list": "/category/all-item/59/",
-    "name": "ALL ITEM",
-    "param": "?cate_no=59",
-    "cate_no": 59,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/summer🩵/192/",
-    "name": "Summer🩵",
-    "param": "?cate_no=192",
-    "cate_no": 192,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": []
-  },
-  {
-    "link_product_list": "/category/outer/26/",
-    "name": "OUTER",
-    "param": "?cate_no=26",
-    "cate_no": 26,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
+    'id': '67150441bde31ebea56d4937',
+    'rating': None,
+    'author': {
+      'nickname': '밥사먹는여자',
+      'imageUrl': 'https://myplace-phinf.pstatic.net/20230118_211/16740182691664VduJ_PNG/89D95F4A-DD92-438B-970D-C017BFF5181D.png'
+    },
+    'body': 'n년째 단골집. 맛은 당연 보장, 밑반찬 훌륭, 주차장 넓음, 볶음밥은 필수예요~!! :)',
+    'created': '10.20.일',
+    'tags': None,
+    'media': [
       {
-        "link_product_list": "/category/바람막이/68/",
-        "name": "바람막이",
-        "param": "?cate_no=68",
-        "cate_no": 68,
-        "parent_cate_no": 26,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjBfNjQg/MDAxNzI5NDMwNTkxOTc4.rV5qVFZS-cge7a6rxUv-8-_YplyAVzLEDhRhMVdgpFUg.k1neMcGTruGwBi5dgu_Ed3GUiYJxquICYZTgK7TfUtcg.JPEG/431031D0-FF00-4004-8796-A9124C64073B.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/가디건/64/",
-        "name": "가디건",
-        "param": "?cate_no=64",
-        "cate_no": 64,
-        "parent_cate_no": 26,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjBfNDMg/MDAxNzI5NDMwNTkxODQ5.0eemqtj-dT74WqwaTn1hFcZ9-ZWTEDshvxRT-ZoFSRkg.uVNemCwi-jDsh0DByvhAZdvWtfVW_CzDBK2kHUFw-egg.JPEG/DA47274C-5EAD-4829-9902-5BEE7DCB3450.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/집업후드집업/67/",
-        "name": "집업/후드집업",
-        "param": "?cate_no=67",
-        "cate_no": 67,
-        "parent_cate_no": 26,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjBfMTc5/MDAxNzI5NDMwNTkxODI3.bkGjfd_mbTl46xvomqPl_Rrm6e-dtKBCil17F7K3Pocg.KNPH1iPJllr-WZqEJAqjEoCuWTB2nut7Z7he-_eehWgg.JPEG/B63AD7ED-34B9-4E55-937D-4343AA9B9893.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/자켓점퍼/65/",
-        "name": "자켓/점퍼",
-        "param": "?cate_no=65",
-        "cate_no": 65,
-        "parent_cate_no": 26,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjBfNyAg/MDAxNzI5NDMwNTkxOTAy.xVWv-kDo27ioZxKg94kWF9yb2R9xmx8Q6uUO1tBS4UIg.7DHxIj1g4GQaqMLvxnJg92_J-3VD9gp0cVjCZbxTpvYg.JPEG/1D9C287C-234F-46CD-A68A-9721A7C16FBD.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/코트/66/",
-        "name": "코트",
-        "param": "?cate_no=66",
-        "cate_no": 66,
-        "parent_cate_no": 26,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/패딩/69/",
-        "name": "패딩",
-        "param": "?cate_no=69",
-        "cate_no": 69,
-        "parent_cate_no": 26,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMjBfMjE0/MDAxNzI5NDMwNTkyMDM4.dANK-RvWUftBHE6lkcJrPuAIciK6vIAW1zaRvDv-Ki0g.wz1a3HHbXUxuIVLOnOY0km6hC8YrjLj3aWlV4apcdxIg.JPEG/E5D4D706-B608-471A-8CE0-C0854D627A65.jpeg?type=w1500_60_sharpen'
       }
     ]
   },
   {
-    "link_product_list": "/category/top/320/",
-    "name": "TOP",
-    "param": "?cate_no=320",
-    "cate_no": 320,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
+    'id': '6711b713cab9d53876fea478',
+    'rating': None,
+    'author': {
+      'nickname': '백현23',
+      'imageUrl': None
+    },
+    'body': '좋아요',
+    'created': '10.18.금',
+    'tags': None,
+    'media': []
+  },
+  {
+    'id': '6705e1d017ffb1b9cac02e1a',
+    'rating': None,
+    'author': {
+      'nickname': '747****',
+      'imageUrl': None
+    },
+    'body': '송파 가락동 맛집! 진성한우곱창!\n매장에서 직접 담은 김치와 질 좋은 한우 곱창!\n너무 맛있게 잘 먹었습니다.\n곱창을 먹고 깍두기 양 볶음밥도 먹었는데,\n볶음밥도 정말 맛있었습니다👍👍\n가락동 한우곱창맛집 진성한우곱창!\n곱창을 좋아한다면 꼭 방문해보세요💕💕',
+    'created': '10.9.수',
+    'tags': None,
+    'media': [
       {
-        "link_product_list": "/category/나시슬리브리스/324/",
-        "name": "나시/슬리브리스",
-        "param": "?cate_no=324",
-        "cate_no": 324,
-        "parent_cate_no": 320,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDlfMzgg/MDAxNzI4NDM4NzM0OTA2.Ev7gsJ52a2UtPp_y7RZwIKNoSsgfcc1FfQeZFXeSHrcg.FRT0Yo6bwdZsaNCdejGFdKA16e8IHGChT4piFjsNDAsg.JPEG/EC0FF9F7-EA84-48C0-8474-E63C1300FED9.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/티셔츠/323/",
-        "name": "티셔츠",
-        "param": "?cate_no=323",
-        "cate_no": 323,
-        "parent_cate_no": 320,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDlfODgg/MDAxNzI4NDM4NzM0NzQ4.WIwvpP8P7kOeDfDSApvXTAEvGPTunYd7JZcpRRUJSugg.enLw5wXzdkydrzizKc815tn6cbKjJmVQyJf9H5Hmruwg.JPEG/E929AC82-DF92-4281-AFF4-0DAA7D556E8F.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/셔츠블라우스/327/",
-        "name": "셔츠/블라우스",
-        "param": "?cate_no=327",
-        "cate_no": 327,
-        "parent_cate_no": 320,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDlfMTI0/MDAxNzI4NDM4NzM0OTc2.a9B9QE5aEbilRRdd7pCzovGDz_4Th9nslPHxiqJt-kUg._vJ7wG6xND_nopRkiM3fCrvqLOebCL2vR7qYLsvXQ6cg.JPEG/4FD6FDA9-41F1-429F-9843-936F47930E5F.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/니트/322/",
-        "name": "니트",
-        "param": "?cate_no=322",
-        "cate_no": 322,
-        "parent_cate_no": 320,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/맨투맨/325/",
-        "name": "맨투맨",
-        "param": "?cate_no=325",
-        "cate_no": 325,
-        "parent_cate_no": 320,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/후드티/326/",
-        "name": "후드티",
-        "param": "?cate_no=326",
-        "cate_no": 326,
-        "parent_cate_no": 320,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDlfMjQ0/MDAxNzI4NDM4NzM1MTQ2.YcGO3hbg-zm4BI9Ks_aNhaJeDeLexKqOmAEjoN09wzgg.A_RzNQ38syaL1sEZDZ_lYdIrG8b5TPO8OsKX7Up_aPwg.JPEG/3F9D565F-F55C-4CFB-8064-194C68AFA5AC.jpeg?type=w1500_60_sharpen'
       }
     ]
   },
   {
-    "link_product_list": "/category/pants/28/",
-    "name": "PANTS",
-    "param": "?cate_no=28",
-    "cate_no": 28,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
+    'id': '670136c6905839fda0b7a528',
+    'rating': None,
+    'author': {
+      'nickname': 'ssh****',
+      'imageUrl': 'https://phinf.pstatic.net/contact/20210924_139/1632468449774yf1Uf_JPEG/%C8%AD%B8%E9_%C4%B8%C3%B3_2021-09-24_162643.jpg'
+    },
+    'body': '오랫만에 왔드니 더 맛도리🫠\n눙물날뻔 !! 곱가득에 4종김치셋뚜 완벽!!!',
+    'created': '10.5.토',
+    'tags': None,
+    'media': [
       {
-        "link_product_list": "/category/숏팬츠/70/",
-        "name": "숏팬츠",
-        "param": "?cate_no=70",
-        "cate_no": 70,
-        "parent_cate_no": 28,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfODQg/MDAxNzI4MTMyODA0MzM2.j4ToivCD5YYVtx0M9I-vXNiAzlz2SKwXe8KvfX9IGMsg.ivP4_ujiiBGx9JDwmy3V4kH_6N0LWVo05m9UjKSfgI4g.JPEG/503D26C8-2D56-48DF-B1B1-3F0E3FD90E12.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/데님팬츠/49/",
-        "name": "데님팬츠",
-        "param": "?cate_no=49",
-        "cate_no": 49,
-        "parent_cate_no": 28,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfMjk4/MDAxNzI4MTMyODA0MzA3.Yd_t9RmvOcNeWpvkGJhXysAaADhf5QthObUIamFcVM8g.KMA5xbp5w1GtTB540yr52YKfriNRFvX4qa9KH6Zz3Mkg.JPEG/09298EC0-7807-4E95-9A03-90C57EE5EFAA.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/트레이닝팬츠/71/",
-        "name": "트레이닝팬츠",
-        "param": "?cate_no=71",
-        "cate_no": 71,
-        "parent_cate_no": 28,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfMTE4/MDAxNzI4MTMyODA0MTg3.yzzgV6ovRUFTGIlxAuQz3zao-Is9t_vvILmJOyb4QQog.z9KO-P23PFkPkFacLeLQoJiuYwHQxTfWRAwPLgyNdIEg.JPEG/D7EE470C-9154-4280-9301-A6B7E7AE4565.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/슬랙스/72/",
-        "name": "슬랙스",
-        "param": "?cate_no=72",
-        "cate_no": 72,
-        "parent_cate_no": 28,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfMTAy/MDAxNzI4MTMyODA0NTgz.Iz1ixueYToX_MeZM3FM9ou7IbWsVNCvru1jYlXPEVDsg.CCxDSz-L3LAipU9lg-IR47JpLfHmaWx0YFSbBGA-7T8g.JPEG/55B2AD1B-5272-4A04-8EA8-B4B2185D3FF0.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/겨울팬츠기모모직/184/",
-        "name": "겨울팬츠(기모,모직)",
-        "param": "?cate_no=184",
-        "cate_no": 184,
-        "parent_cate_no": 28,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      }
-    ]
-  },
-  {
-    "link_product_list": "/category/skirt/48/",
-    "name": "SKIRT",
-    "param": "?cate_no=48",
-    "cate_no": 48,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
-      {
-        "link_product_list": "/category/숏/265/",
-        "name": "숏",
-        "param": "?cate_no=265",
-        "cate_no": 265,
-        "parent_cate_no": 48,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfNyAg/MDAxNzI4MTMyODA0OTIw.MRfbuSHR8uyP932wPB6a2WZjayT-OtPAW-DTj12kukAg.zfPNXl_cFwOzFRBvzPzIo6D-Y-pR1ui5gDUenPzKXvYg.JPEG/C71CA035-1929-4C73-859C-3B77143490AD.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/롱/268/",
-        "name": "롱",
-        "param": "?cate_no=268",
-        "cate_no": 268,
-        "parent_cate_no": 48,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      }
-    ]
-  },
-  {
-    "link_product_list": "/category/opsset/42/",
-    "name": "OPS/SET",
-    "param": "?cate_no=42",
-    "cate_no": 42,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
-      {
-        "link_product_list": "/category/원피스/63/",
-        "name": "원피스",
-        "param": "?cate_no=63",
-        "cate_no": 63,
-        "parent_cate_no": 42,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfMTEw/MDAxNzI4MTMyODA1MTMw.f-7QrX0d0ULJmoKJQjPrIKP2nkxO3hp4qwHxR_aJXVMg.Q_gj1Vn-uXjSNnVwG8n1gGrr9XTegFpg-K9rs-JNnB0g.JPEG/ED3E5F2B-65BD-420E-93A6-B514C4418616.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/투피스/62/",
-        "name": "투피스",
-        "param": "?cate_no=62",
-        "cate_no": 62,
-        "parent_cate_no": 42,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      }
-    ]
-  },
-  {
-    "link_product_list": "/category/acc/43/",
-    "name": "ACC",
-    "param": "?cate_no=43",
-    "cate_no": 43,
-    "parent_cate_no": 1,
-    "design_page_url": "product/list.html",
-    "like_count": 0,
-    "data_list": [
-      {
-        "link_product_list": "/category/가방/46/",
-        "name": "가방",
-        "param": "?cate_no=46",
-        "cate_no": 46,
-        "parent_cate_no": 43,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfMjg5/MDAxNzI4MTMyODA1MzM3.fSj0Kezwny0_TkQ13KavqWPltFCixkyD3LlCCFSCLr4g.kLFpLt3tCy4pQpdpq9rtepJ9Mr3gjRqjf8rCtByjJJ8g.JPEG/D8CE7657-7B02-4060-A1F0-6025213A0F55.jpeg?type=w1500_60_sharpen'
       },
       {
-        "link_product_list": "/category/신발/53/",
-        "name": "신발",
-        "param": "?cate_no=53",
-        "cate_no": 53,
-        "parent_cate_no": 43,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/쥬얼리/60/",
-        "name": "쥬얼리",
-        "param": "?cate_no=60",
-        "cate_no": 60,
-        "parent_cate_no": 43,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/헤어/95/",
-        "name": "헤어",
-        "param": "?cate_no=95",
-        "cate_no": 95,
-        "parent_cate_no": 43,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/머플러/97/",
-        "name": "머플러",
-        "param": "?cate_no=97",
-        "cate_no": 97,
-        "parent_cate_no": 43,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
-      },
-      {
-        "link_product_list": "/category/기타/76/",
-        "name": "기타",
-        "param": "?cate_no=76",
-        "cate_no": 76,
-        "parent_cate_no": 43,
-        "design_page_url": "product/list.html",
-        "like_count": 0,
-        "data_list": []
+        'type': 'image',
+        'thumbnail': 'https://pup-review-phinf.pstatic.net/MjAyNDEwMDVfMTAg/MDAxNzI4MTMyODA1NjAy.GmSqQJqKbOQkuJLQIjkJ29SYgoH88rxrBNSdZMEeJY8g.b7f2aHYqGfUmz7Rl83S3_JZctkz3cLe5to3BSFi9Zocg.JPEG/8600F852-9057-4A94-BD43-8230C34CD08E.jpeg?type=w1500_60_sharpen'
       }
     ]
   }
