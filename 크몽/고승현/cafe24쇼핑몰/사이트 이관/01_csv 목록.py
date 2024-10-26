@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 def create_destination_folder(destination_folder):
     """대상 폴더가 없으면 생성하는 함수"""
@@ -7,44 +8,43 @@ def create_destination_folder(destination_folder):
         os.makedirs(destination_folder)
         print(f'폴더를 생성했습니다: {destination_folder}')
 
-def copy_csv_files(source_folder, destination_folder):
-    """모든 CSV 파일을 지정된 폴더로 복사하는 함수"""
-    for first_level_folder in os.listdir(source_folder):
-        first_level_path = os.path.join(source_folder, first_level_folder)
+def move_image_files(source_folder, destination_folder):
+    """모든 이미지 파일을 지정된 폴더로 이동하는 함수"""
+    # 이미지 확장자 리스트
+    # image_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.tif', '.webp', '.svg', '.heic']
+    # image_extensions = ['.png', '.jpg']
+    # image_extensions = ['.webp', '.gif']
+    image_extensions = ['.jpeg']
 
-        if os.path.isdir(first_level_path):  # 1차 폴더 확인
-            # 1차 폴더에 CSV 파일이 있는지 확인
-            csv_files_in_first_level = [file for file in os.listdir(first_level_path) if file.endswith('.csv')]
-            if csv_files_in_first_level:
-                # 1차 폴더에서 CSV 파일 복사
-                for file in csv_files_in_first_level:
-                    source_file_path = os.path.join(first_level_path, file)
-                    new_file_name = f'{first_level_folder}.csv'  # 새로운 파일 이름
-                    destination_file_path = os.path.join(destination_folder, new_file_name)
-                    shutil.copy(source_file_path, destination_file_path)
-                    print(f'파일을 복사했습니다: {source_file_path} -> {destination_file_path}')
-            else:
-                # 1차 폴더에 CSV 파일이 없고 2차 폴더가 있는 경우
-                for second_level_folder in os.listdir(first_level_path):
-                    second_level_path = os.path.join(first_level_path, second_level_folder)
+    # os.walk()를 사용하여 소스 폴더 내의 모든 하위 폴더와 파일을 탐색합니다.
+    # 이미지 파일 확장자 목록에 따라 파일이 이미지인지 확인합니다.
+    # 확인된 이미지 파일을 대상 폴더로 이동합니다.
 
-                    if os.path.isdir(second_level_path):  # 2차 폴더 확인
-                        for file in os.listdir(second_level_path):
-                            if file.endswith('.csv'):
-                                source_file_path = os.path.join(second_level_path, file)
-                                new_file_name = f'{first_level_folder}_{second_level_folder}.csv'  # 1차 폴더 이름을 접두사로 추가
-                                destination_file_path = os.path.join(destination_folder, new_file_name)
-                                shutil.copy(source_file_path, destination_file_path)
-                                print(f'파일을 복사했습니다: {source_file_path} -> {destination_file_path}')
+    for root, dirs, files in os.walk(source_folder):
+        for file in files:
+            # 파일의 확장자가 이미지 확장자 리스트에 있는지 확인
+            if any(file.lower().endswith(ext) for ext in image_extensions):
+                source_file_path = os.path.join(root, file)
+                destination_file_path = os.path.join(destination_folder, file)
+
+                # 파일 이동
+                shutil.move(source_file_path, destination_file_path)
+                print(f'파일을 이동했습니다: {source_file_path} -> {destination_file_path}')
 
 def main():
-    source_folder = '카페24_상품자료'  # 1차 폴더의 경로
-    destination_folder = '모든_csv파일'  # 모든 CSV 파일을 옮길 폴더
+    source_folder = r'D:\cafe24\product'  # 소스 폴더의 경로
+    destination_folder = r'D:\cafe24\move_product'  # 모든 이미지 파일을 옮길 폴더
 
     create_destination_folder(destination_folder)  # 대상 폴더 생성
-    copy_csv_files(source_folder, destination_folder)  # CSV 파일 복사
 
-    print("모든 CSV 파일을 성공적으로 이동했습니다.")
+    start_time = time.time()  # 시작 시간 기록
+    print(f'start : {start_time}')
+    move_image_files(source_folder, destination_folder)  # 이미지 파일 이동
+    end_time = time.time()  # 종료 시간 기록
+    print(f'end : {end_time}')
+
+    duration = end_time - start_time
+    print(f"모든 이미지 파일을 성공적으로 이동했습니다. 소요 시간: {duration:.2f} 초")
 
 if __name__ == "__main__":
     main()
