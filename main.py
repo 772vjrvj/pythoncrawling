@@ -12,7 +12,9 @@ def move_image_files(source_folder, destination_folder):
     """모든 이미지 파일을 지정된 폴더로 이동하는 함수"""
     # 이미지 확장자 리스트
     # image_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.tif', '.webp', '.svg', '.heic']
-    image_extensions = ['.png', '.jpg']
+    # image_extensions = ['.png', '.jpg']
+    # image_extensions = ['.webp', '.gif']
+    image_extensions = ['.jpeg']
 
     # os.walk()를 사용하여 소스 폴더 내의 모든 하위 폴더와 파일을 탐색합니다.
     # 이미지 파일 확장자 목록에 따라 파일이 이미지인지 확인합니다.
