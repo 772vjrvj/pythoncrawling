@@ -1,385 +1,14 @@
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-import json
+import os
+import csv
+import re
+import pandas as pd
 
-# 웹 드라이버 초기화 (크롬 드라이버 사용 예시, 드라이버 경로에 맞게 설정)
-driver = webdriver.Chrome()
-
-def wait_for_login():
-    input("로그인이 완료되면 엔터를 눌러주세요.")
-
-def fetch_category_data(categorys):
-    results = []
-
-    for category in categorys:
-        # part_index에 따라 URL 결정
-        if category['part_index'] == 1:
-            base_url = "https://blang.shop/wb_admin/category/category_edit1.php"
-        elif category['part_index'] == 2:
-            base_url = "https://blang.shop/wb_admin/category/category_edit2.php"
-
-        url = f"{base_url}?idx={category['idx']}&part_index={category['part_index']}"
-        driver.get(url)
-
-        try:
-            time.sleep(1)
-            # part_name 요소가 나타날 때까지 기다림
-            part_name = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.NAME, "part_name"))
-            ).get_attribute("value")
-
-            part1_code = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.NAME, "part1_code"))
-            ).get_attribute("value")
-
-            # part2_code 요소 바로 찾기 (에러 처리 포함)
-            try:
-                part2_code = driver.find_element(By.NAME, "part2_code").get_attribute("value")
-                part2_code = part2_code if part2_code else ""
-            except NoSuchElementException:
-                print(f"'part2_code' 요소가 존재하지 않습니다. (idx: {category['idx']})")
-                part2_code = ""
-            except Exception as e:
-                print(f"'part2_code' 요소 검색 중 예상치 못한 오류 발생 (idx: {category['idx']}): {e}")
-                part2_code = ""
-
-            # parent_name 설정
-            parent_name = ""
-            if part2_code:  # part2_code가 있는 경우에만 부모 찾기
-                for previous_obj in reversed(results):
-                    if previous_obj["part1_code"] == part1_code and not previous_obj["part2_code"]:
-                        parent_name = previous_obj["name"]
-                        break
-
-            # 객체 생성 및 결과에 추가
-            obj = {
-                "part_index": category['part_index'],
-                "idx": category['idx'],
-                "name": part_name,
-                "part1_code": part1_code,
-                "part2_code": part2_code,
-                "parent_name": parent_name
-            }
-            print(obj)
-            results.append(obj)
-
-        except TimeoutException:
-            print(f"요소를 찾는 데 타임아웃이 발생했습니다. (idx: {category['idx']})")
-        except Exception as e:
-            print(f"페이지 로딩 중 예상치 못한 오류 발생 (idx: {category['idx']}): {e}")
-
-    return results
-
-def main():
-    driver.get("https://blang.shop/wb_admin/index.php")
-    wait_for_login()  # 로그인 대기
-
-    categorys = [
-        {
-            "part_index": 1,
-            "idx": 393
-        },
-        {
-            "part_index": 1,
-            "idx": 391
-        },
-        {
-            "part_index": 1,
-            "idx": 410
-        },
-        {
-            "part_index": 1,
-            "idx": 389
-        },
-        {
-            "part_index": 1,
-            "idx": 442
-        },
-        {
-            "part_index": 1,
-            "idx": 32
-        },
-        {
-            "part_index": 2,
-            "idx": 120
-        },
-        {
-            "part_index": 2,
-            "idx": 163
-        },
-        {
-            "part_index": 2,
-            "idx": 336
-        },
-        {
-            "part_index": 2,
-            "idx": 396
-        },
-        {
-            "part_index": 2,
-            "idx": 397
-        },
-        {
-            "part_index": 2,
-            "idx": 398
-        },
-        {
-            "part_index": 2,
-            "idx": 399
-        },
-        {
-            "part_index": 2,
-            "idx": 400
-        },
-        {
-            "part_index": 2,
-            "idx": 401
-        },
-        {
-            "part_index": 2,
-            "idx": 402
-        },
-        {
-            "part_index": 2,
-            "idx": 403
-        },
-        {
-            "part_index": 2,
-            "idx": 404
-        },
-        {
-            "part_index": 2,
-            "idx": 405
-        },
-        {
-            "part_index": 2,
-            "idx": 406
-        },
-        {
-            "part_index": 2,
-            "idx": 407
-        },
-        {
-            "part_index": 2,
-            "idx": 408
-        },
-        {
-            "part_index": 2,
-            "idx": 409
-        },
-        {
-            "part_index": 1,
-            "idx": 328
-        },
-        {
-            "part_index": 2,
-            "idx": 331
-        },
-        {
-            "part_index": 2,
-            "idx": 329
-        },
-        {
-            "part_index": 2,
-            "idx": 330
-        },
-        {
-            "part_index": 2,
-            "idx": 411
-        },
-        {
-            "part_index": 2,
-            "idx": 412
-        },
-        {
-            "part_index": 2,
-            "idx": 413
-        },
-        {
-            "part_index": 2,
-            "idx": 414
-        },
-        {
-            "part_index": 2,
-            "idx": 415
-        },
-        {
-            "part_index": 2,
-            "idx": 416
-        },
-        {
-            "part_index": 2,
-            "idx": 417
-        },
-        {
-            "part_index": 2,
-            "idx": 418
-        },
-        {
-            "part_index": 2,
-            "idx": 419
-        },
-        {
-            "part_index": 2,
-            "idx": 420
-        },
-        {
-            "part_index": 2,
-            "idx": 421
-        },
-        {
-            "part_index": 2,
-            "idx": 422
-        },
-        {
-            "part_index": 2,
-            "idx": 423
-        },
-        {
-            "part_index": 2,
-            "idx": 424
-        },
-        {
-            "part_index": 2,
-            "idx": 425
-        },
-        {
-            "part_index": 2,
-            "idx": 426
-        },
-        {
-            "part_index": 1,
-            "idx": 34
-        },
-        {
-            "part_index": 1,
-            "idx": 235
-        },
-        {
-            "part_index": 1,
-            "idx": 33
-        },
-        {
-            "part_index": 2,
-            "idx": 151
-        },
-        {
-            "part_index": 2,
-            "idx": 152
-        },
-        {
-            "part_index": 2,
-            "idx": 168
-        },
-        {
-            "part_index": 2,
-            "idx": 427
-        },
-        {
-            "part_index": 2,
-            "idx": 428
-        },
-        {
-            "part_index": 2,
-            "idx": 429
-        },
-        {
-            "part_index": 2,
-            "idx": 430
-        },
-        {
-            "part_index": 1,
-            "idx": 204
-        },
-        {
-            "part_index": 2,
-            "idx": 206
-        },
-        {
-            "part_index": 2,
-            "idx": 333
-        },
-        {
-            "part_index": 2,
-            "idx": 334
-        },
-        {
-            "part_index": 2,
-            "idx": 335
-        },
-        {
-            "part_index": 2,
-            "idx": 431
-        },
-        {
-            "part_index": 2,
-            "idx": 432
-        },
-        {
-            "part_index": 2,
-            "idx": 433
-        },
-        {
-            "part_index": 1,
-            "idx": 382
-        },
-        {
-            "part_index": 2,
-            "idx": 383
-        },
-        {
-            "part_index": 2,
-            "idx": 384
-        },
-        {
-            "part_index": 2,
-            "idx": 434
-        },
-        {
-            "part_index": 1,
-            "idx": 385
-        },
-        {
-            "part_index": 1,
-            "idx": 386
-        },
-        {
-            "part_index": 2,
-            "idx": 387
-        },
-        {
-            "part_index": 2,
-            "idx": 388
-        },
-        {
-            "part_index": 1,
-            "idx": 203
-        },
-        {
-            "part_index": 1,
-            "idx": 437
-        }
-    ]
-
-    results = fetch_category_data(categorys)
-    print(f"총 객체 수: {len(results)}")
-    print(json.dumps(results, indent=4, ensure_ascii=False))
-
-    driver.quit()
-
-if __name__ == "__main__":
-    main()
-
-
+# 1. 카테고리 정보를 담고 있는 리스트
 category_obj = [
     {
         "part_index": 1,
         "idx": 393,
-        "name": "TODAY REVIEW",
+        "name": "TODAYS REVIEW",
         "part1_code": "1728286931",
         "part2_code": "",
         "parent_name": ""
@@ -413,14 +42,6 @@ category_obj = [
         "idx": 442,
         "name": "바로배송",
         "part1_code": "1728559852",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 32,
-        "name": "BAG",
-        "part1_code": "1422929956",
         "part2_code": "",
         "parent_name": ""
     },
@@ -559,14 +180,6 @@ category_obj = [
         "part1_code": "1422929956",
         "part2_code": "1728305201",
         "parent_name": "BAG"
-    },
-    {
-        "part_index": 1,
-        "idx": 328,
-        "name": "SHOE",
-        "part1_code": "1603683335",
-        "part2_code": "",
-        "parent_name": ""
     },
     {
         "part_index": 2,
@@ -737,14 +350,6 @@ category_obj = [
         "parent_name": ""
     },
     {
-        "part_index": 1,
-        "idx": 33,
-        "name": "FORMAN",
-        "part1_code": "1422930473",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
         "part_index": 2,
         "idx": 151,
         "name": "LV",
@@ -799,14 +404,6 @@ category_obj = [
         "part1_code": "1422930473",
         "part2_code": "1728305616",
         "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 1,
-        "idx": 204,
-        "name": "CLOTH",
-        "part1_code": "1554563027",
-        "part2_code": "",
-        "parent_name": ""
     },
     {
         "part_index": 2,
@@ -865,14 +462,6 @@ category_obj = [
         "parent_name": "CLOTH"
     },
     {
-        "part_index": 1,
-        "idx": 382,
-        "name": "ACC",
-        "part1_code": "1728121360",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
         "part_index": 2,
         "idx": 383,
         "name": "모자/벨트/헤어밴드",
@@ -901,14 +490,6 @@ category_obj = [
         "idx": 385,
         "name": "홈인테리어",
         "part1_code": "1728121423",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 386,
-        "name": "NO BRAND",
-        "part1_code": "1728121435",
         "part2_code": "",
         "parent_name": ""
     },
@@ -945,3 +526,127 @@ category_obj = [
         "parent_name": ""
     }
 ]
+
+# 2. 새로운 객체 클래스 정의
+class Product:
+    def __init__(self):
+        self.카테고리이름 = ""
+        self.대표_상품명 = ""
+        self.이차상품명_또는_옵션명 = ""
+        self.필수_또는_모델_또는_옵션 = ""
+        self.상품가격 = 0
+        self.옵션가격 = 0
+        self.옵션항목명 = ""
+        self.옵션값 = ""
+        self.썸네일_이미지 = ""
+        self.상품안내 = ""
+        self.카테고리_코드 = ""
+        self.상품_코드 = ""
+        self.상품주요특징 = ""
+        self.상품이미지_2 = ""
+        self.상품이미지_3 = ""
+        self.상품노출 = "Y"
+
+def read_csv_files(folder_path):
+    result = []
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.csv'):
+            with open(os.path.join(folder_path, file_name), newline='', encoding='utf-8') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    product = Product()
+                    # 5-8. 각 필드 설정
+                    product.대표_상품명 = row["상품명"]
+                    product.이차상품명_또는_옵션명 = row["상품명"]  # 2차 상품명에 상품명 넣기
+                    product.필수_또는_모델_또는_옵션 = row["상품명"]  # 필요시 업데이트
+                    product.상품가격 = float(row["판매가"])  # 판매가
+                    product.옵션가격 = float(row.get("판매가", 0))  # 옵션가격 (없을 경우 0)
+
+                    # 7. 옵션입력 처리
+                    option_input = row.get("옵션입력", "")
+                    if "//" in option_input:
+                        option_input = option_input.split("//")[0]  # 첫 번째 옵션만 사용
+                    match = re.match(r"(\w+)\{(.*?)\}", option_input)
+                    if match:
+                        product.옵션항목명 = match.group(1)
+                        product.옵션값 = match.group(2).replace("|", "/")
+
+                    # 8. 썸네일 이미지
+
+                    # 썸네일 이미지 가져오기
+                    thumbnail_image_path = row.get("이미지등록(목록)", "")
+                    if thumbnail_image_path:
+                        # 슬래시로 분리하고 마지막 요소를 선택
+                        product.썸네일_이미지 = thumbnail_image_path.split('/')[-1]  # 슬래시 뒤의 값만 가져오기
+                    else:
+                        product.썸네일_이미지 = ""  # 값이 없으면 빈 문자열
+
+                    # 9. 상품안내
+                    goods_path = "/upload/goods/"
+                    image_html_list = []
+                    for key in ["이미지등록(상세)", "이미지등록(작은목록)", "이미지등록(축소)"]:
+                        image_path = row.get(key, "")
+                        if image_path:
+                            # 파일 이름만 추출하여 HTML 태그로 변환
+                            file_name_only = image_path.split('/')[-1]  # 마지막 부분만 추출
+                            image_html_list.append(f'<div align="center" style="text-align: center;"><img src="{goods_path}{file_name_only}" alt="" /></div>')
+
+                    product.상품안내 = "".join(image_html_list)
+
+                    cleaned_name = re.sub(r'[\d_-]', '', file_name.split('.')[0])  # 숫자, _ 및 - 제거
+                    cleaned_name = cleaned_name.replace(" ", "")  # 띄어쓰기 한 칸 제거
+                    product.카테고리이름 = cleaned_name
+
+                    for category in category_obj:
+                        # category['name']을 트리밍하고 부모 이름을 추가한 후 비교
+                        full_name = (category['parent_name'] + category['name'].strip()).replace("/", "").replace("-", "").upper()  # / 제거 후 대문자로 변환
+                        if full_name.replace(" ", "") == cleaned_name.upper():  # cleaned_name도 대문자로 변환
+                            product.카테고리_코드 = category['part1_code'] if category['part2_code'] == "" else category['part2_code']
+                            break
+
+                    # 11. 기본 항목 설정
+                    product.상품코드 = ""
+                    product.상품주요특징 = ""
+                    product.상품이미지_2 = ""
+                    product.상품이미지_3 = ""
+
+                    result.append(product)
+    return result
+
+def save_to_excel(products, output_file):
+    # 제품 데이터를 DataFrame으로 변환
+    data = [{
+        "카테고리 이름": product.카테고리이름,
+        "카테고리 코드": product.카테고리_코드,
+        "상품 코드": product.상품_코드,
+        "대표 상품명": product.대표_상품명,
+        "상품주요특징": product.상품주요특징,
+        "상품노출": product.상품노출,
+        "필수or모델or옵션": product.필수_또는_모델_또는_옵션,
+        "2차상품명 or 옵션명": product.이차상품명_또는_옵션명,
+        "상품가격": product.상품가격,
+        "옵션항목명": product.옵션항목명,
+        "옵션값": product.옵션값,
+        "옵션가격": product.옵션가격,
+        "썸네일 이미지": product.썸네일_이미지,
+        "상품 이미지[2]": product.상품이미지_2,
+        "상품 이미지[3]": product.상품이미지_3,
+        "상품안내\n(HTML 사용 가능)": product.상품안내,
+    } for product in products]
+
+    df = pd.DataFrame(data)
+    df.to_excel(output_file, index=False)
+
+def main():
+    folder_path = os.path.join(os.getcwd(), "모든_csv파일 - test")  # 현재 실행 경로에 "모든_csv파일" 폴더
+    products = read_csv_files(folder_path)
+
+    # 결과를 Excel 파일로 저장
+    output_file = os.path.join(os.getcwd(), "제품정보.xlsx")  # 저장할 엑셀 파일 경로
+    save_to_excel(products, output_file)
+
+    print(f"Total products: {len(products)}")
+    print(f"Results saved to: {output_file}")
+
+if __name__ == "__main__":
+    main()
