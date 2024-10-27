@@ -550,6 +550,7 @@ class Product:
 def read_csv_files(folder_path):
     result = []
     for file_name in os.listdir(folder_path):
+        print(file_name)
         if file_name.endswith('.csv'):
             with open(os.path.join(folder_path, file_name), newline='', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
@@ -560,7 +561,7 @@ def read_csv_files(folder_path):
                     product.이차상품명_또는_옵션명 = row["상품명"]  # 2차 상품명에 상품명 넣기
                     product.필수_또는_모델_또는_옵션 = row["상품명"]  # 필요시 업데이트
                     product.상품가격 = float(row["판매가"])  # 판매가
-                    product.옵션가격 = float(row.get("판매가", 0))  # 옵션가격 (없을 경우 0)
+                    product.옵션가격 = 0  # 옵션가격 (없을 경우 0)
 
                     # 7. 옵션입력 처리
                     option_input = row.get("옵션입력", "")
@@ -638,11 +639,11 @@ def save_to_excel(products, output_file):
     df.to_excel(output_file, index=False)
 
 def main():
-    folder_path = os.path.join(os.getcwd(), "모든_csv파일 - test")  # 현재 실행 경로에 "모든_csv파일" 폴더
+    folder_path = os.path.join(os.getcwd(), "모든_csv파일_241027")  # 현재 실행 경로에 "모든_csv파일" 폴더
     products = read_csv_files(folder_path)
 
     # 결과를 Excel 파일로 저장
-    output_file = os.path.join(os.getcwd(), "제품정보.xlsx")  # 저장할 엑셀 파일 경로
+    output_file = os.path.join(os.getcwd(), "제품정보_241027.xlsx")  # 저장할 엑셀 파일 경로
     save_to_excel(products, output_file)
 
     print(f"Total products: {len(products)}")

@@ -44,6 +44,8 @@ def main():
 if __name__ == "__main__":
     main()
 
+# 카테고리 상세보기를 위한 번호
+
 categorys = [
     {
         "part_index": 1,

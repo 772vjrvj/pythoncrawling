@@ -48,3 +48,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# 이미지 한 폴더로 이동
