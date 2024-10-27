@@ -2,6 +2,8 @@
 웨어이즈포스트블로그 검색 노출 누락 확인 이런
 사이트 같은 프로그램을 만들려고 합니다. 문의 가능할까요?
 
+https://whereispost.com/
+
 https://itemscout.io/
 
 https://blog.naver.com/772vjrvj
