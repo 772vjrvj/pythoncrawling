@@ -1,8 +1,9 @@
 import requests
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 import math
 import time
 import random
+import pandas as pd  # pandas 임포트 추가
 
 # 공통 헤더 정의
 LIST_HEADERS = {
@@ -76,9 +77,6 @@ def fetch_search_titles_by_page(url, page_num, skip_first=False):
 
     return titles
 
-
-
-
 def process_list_url(url):
     total_count = fetch_list_total_count(url)
     print(f'총 추출건수 : {total_count}')
@@ -111,6 +109,11 @@ def process_search_url(url):
 
     return all_titles
 
+def save_titles_to_excel(titles, output_file):
+    # 제품 데이터를 DataFrame으로 변환
+    df = pd.DataFrame(titles, columns=["제목"])
+    df.to_excel(output_file, index=False)
+
 def main(url):
     if "list.naver" in url:
         all_titles = process_list_url(url)
@@ -120,8 +123,13 @@ def main(url):
         print("지원하지 않는 URL 형식입니다.")
         return
 
+    # 결과를 Excel 파일로 저장
+    output_file = "추출한_제목들.xlsx"  # 저장할 엑셀 파일 경로
+    save_titles_to_excel(all_titles, output_file)
+
     print("총 제목 리스트:", all_titles)
     print("총 제목 수:", len(all_titles))
+    print(f"결과가 {output_file}로 저장되었습니다.")
 
 if __name__ == "__main__":
     url = "https://terms.naver.com/search.naver?query=%ED%9B%84%EC%A7%80%EC%82%B0&searchType=text&dicType=&subject="  # URL을 필요에 따라 변경

@@ -280,7 +280,7 @@ def on_search():
     query = search_entry.get().strip()
     if query:
         if ("https://terms.naver.com/search.naver" not in query and
-            "https://terms.naver.com/list.naver" not in query):
+                "https://terms.naver.com/list.naver" not in query):
             new_print("지원하지 않는 URL 형식입니다.")
 
         elif search_thread and search_thread.is_alive():
