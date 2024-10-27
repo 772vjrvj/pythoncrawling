@@ -83,8 +83,10 @@ def fetch_post_titles(blog_id, current_page):
 
 
 def main(blog_id):
-    total_pages = 0
+    global total_pages
     content = fetch_blog_page(blog_id)
+
+    # 전체 페이지 및 1페이지 글
 
     # 전체 개수글 수
     numbers = extract_numbers_from_elements(content, "category_title pcol2")
@@ -101,8 +103,11 @@ def main(blog_id):
             print(post)
 
 
+    # 특정 페이지 검색
+    # fetch_post_titles(blog_id, 2)
 
 # 실행
 if __name__ == "__main__":
+    global blog_id
     blog_id = "772vjrvj"
     main(blog_id)

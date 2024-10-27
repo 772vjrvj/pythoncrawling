@@ -111,8 +111,7 @@ def main(userID, keyword):
 
         search_counts["SUM"] = search_counts["MO"] + search_counts["PC"]
 
-        # 객체 출력
-        print("검색 결과:", search_counts)
+        return search_counts
 
     except TimeoutException:
         print("요소를 찾을 수 없습니다.")
@@ -128,7 +127,10 @@ if __name__ == "__main__":
     print(f"시작 시간: {start_time}")
     userID = '772vj'
     keyword = "강남포차"
-    main(userID, keyword)
+    search_counts = main(userID, keyword)
+
+    # 객체 출력
+    print("검색 결과:", search_counts)
 
     end_time = datetime.now()  # 종료 시간
     print(f"종료 시간: {end_time}")
