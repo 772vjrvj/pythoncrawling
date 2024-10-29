@@ -1,5 +1,4 @@
 import os
-import csv
 import re
 import pandas as pd
 
@@ -547,73 +546,91 @@ class Product:
         self.상품이미지_3 = ""
         self.상품노출 = "Y"
 
-def read_csv_files(folder_path):
+
+def replace_image_paths(html_content):
+    """HTML 콘텐츠에서 이미지 경로를 변경하는 함수"""
+    # 정규 표현식 패턴: /web/upload/NNEditor/YYYYMMDD/filename.jpg
+    pattern = r'/web/upload/NNEditor/\d{8}/([a-zA-Z0-9_.-]+\.jpg)'
+
+    # 변환 함수 정의
+    def replace_path(match):
+        filename = match.group(1)  # 추출한 파일 이름
+        return f'/upload/goods/{filename}'  # 새로운 경로 생성
+
+    # 이미지 경로 변경
+    modified_content = re.sub(pattern, replace_path, html_content)
+    return modified_content
+
+def read_xlsx_files(folder_path):
     result = []
     for file_name in os.listdir(folder_path):
         print(file_name)
-        if file_name.endswith('.csv'):
-            with open(os.path.join(folder_path, file_name), newline='', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    product = Product()
-                    # 5-8. 각 필드 설정
-                    product.대표_상품명 = row["상품명"]
-                    product.이차상품명_또는_옵션명 = row["상품명"]  # 2차 상품명에 상품명 넣기
-                    product.필수_또는_모델_또는_옵션 = row["상품명"]  # 필요시 업데이트
-                    product.상품가격 = float(row["판매가"])  # 판매가
-                    product.옵션가격 = 0  # 옵션가격 (없을 경우 0)
+        if file_name.endswith('.xlsx'):
+            file_path = os.path.join(folder_path, file_name)
+            try:
+                # XLSX 파일 읽기, openpyxl 엔진 사용
+                df = pd.read_excel(file_path, engine='openpyxl')
+            except Exception as e:
+                print(f"Error reading {file_name}: {e}")
+                continue  # 파일을 읽지 못하면 다음 파일로 넘어감
 
-                    # 7. 옵션입력 처리
-                    option_input = row.get("옵션입력", "")
-                    if "//" in option_input:
-                        option_input = option_input.split("//")[0]  # 첫 번째 옵션만 사용
-                    match = re.match(r"(\w+)\{(.*?)\}", option_input)
-                    if match:
-                        product.옵션항목명 = match.group(1)
-                        product.옵션값 = match.group(2).replace("|", "/")
+            for index, row in df.iterrows():
+                product = Product()
+                # 5-8. 각 필드 설정
+                product.대표_상품명 = row["상품명"]
+                product.이차상품명_또는_옵션명 = row["상품명"]  # 2차 상품명에 상품명 넣기
+                product.필수_또는_모델_또는_옵션 = row["상품명"]  # 필요시 업데이트
+                product.상품가격 = float(row["판매가"])  # 판매가
+                product.옵션가격 = 0  # 옵션가격 (없을 경우 0)
 
-                    # 8. 썸네일 이미지
+                # 7. 옵션입력 처리
+                option_input = row.get("옵션입력", "")
+                # option_input이 float일 경우 str로 변환
+                if isinstance(option_input, float):
+                    option_input = str(option_input)
 
-                    # 썸네일 이미지 가져오기
-                    thumbnail_image_path = row.get("이미지등록(목록)", "")
-                    if thumbnail_image_path:
-                        # 슬래시로 분리하고 마지막 요소를 선택
-                        product.썸네일_이미지 = thumbnail_image_path.split('/')[-1]  # 슬래시 뒤의 값만 가져오기
-                    else:
-                        product.썸네일_이미지 = ""  # 값이 없으면 빈 문자열
+                # 문자열에서 "//"가 있는지 확인
+                if "//" in option_input:
+                    option_input = option_input.split("//")[0]  # 첫 번째 옵션만 사용
 
-                    # 9. 상품안내
-                    goods_path = "/upload/goods/"
-                    image_html_list = []
-                    for key in ["이미지등록(상세)", "이미지등록(작은목록)", "이미지등록(축소)"]:
-                        image_path = row.get(key, "")
-                        if image_path:
-                            # 파일 이름만 추출하여 HTML 태그로 변환
-                            file_name_only = image_path.split('/')[-1]  # 마지막 부분만 추출
-                            image_html_list.append(f'<div align="center" style="text-align: center;"><img src="{goods_path}{file_name_only}" alt="" /></div>')
+                match = re.match(r"(\w+)\{(.*?)\}", option_input)
+                if match:
+                    product.옵션항목명 = match.group(1)
+                    product.옵션값 = match.group(2).replace("|", "/")
 
-                    product.상품안내 = "".join(image_html_list)
+                # 8. 썸네일 이미지
+                thumbnail_image_path = row.get("이미지등록(목록)", "")
+                if thumbnail_image_path:
+                    # 슬래시로 분리하고 마지막 요소를 선택
+                    product.썸네일_이미지 = thumbnail_image_path.split('/')[-1]  # 슬래시 뒤의 값만 가져오기
+                else:
+                    product.썸네일_이미지 = ""  # 값이 없으면 빈 문자열
 
-                    cleaned_name = re.sub(r'[\d_-]', '', file_name.split('.')[0])  # 숫자, _ 및 - 제거
-                    cleaned_name = cleaned_name.replace(" ", "")  # 띄어쓰기 한 칸 제거
-                    product.카테고리이름 = cleaned_name
+                # 9. 상품안내
+                html_content = row.get("상품 상세설명", "")
+                # 이미지 경로 변경 실행
+                modified_html_content = replace_image_paths(html_content)
+                product.상품안내 = modified_html_content
 
-                    for category in category_obj:
-                        # category['name']을 트리밍하고 부모 이름을 추가한 후 비교
-                        full_name = (category['parent_name'] + category['name'].strip()).replace("/", "").replace("-", "").upper()  # / 제거 후 대문자로 변환
-                        if full_name.replace(" ", "") == cleaned_name.upper():  # cleaned_name도 대문자로 변환
-                            product.카테고리_코드 = category['part1_code'] if category['part2_code'] == "" else category['part2_code']
-                            break
+                cleaned_name = re.sub(r'[\d_-]', '', file_name.split('.')[0])  # 숫자, _ 및 - 제거
+                cleaned_name = cleaned_name.replace(" ", "")  # 띄어쓰기 한 칸 제거
+                product.카테고리이름 = cleaned_name
 
-                    # 11. 기본 항목 설정
-                    product.상품코드 = ""
-                    product.상품주요특징 = ""
-                    product.상품이미지_2 = ""
-                    product.상품이미지_3 = ""
+                for category in category_obj:
+                    # category['name']을 트리밍하고 부모 이름을 추가한 후 비교
+                    full_name = (category['parent_name'] + category['name'].strip()).replace("/", "").replace("-", "").upper()  # / 제거 후 대문자로 변환
+                    if full_name.replace(" ", "") == cleaned_name.upper():  # cleaned_name도 대문자로 변환
+                        product.카테고리_코드 = category['part1_code'] if category['part2_code'] == "" else category['part2_code']
+                        break
 
-                    result.append(product)
+                # 11. 기본 항목 설정
+                product.상품코드 = ""
+                product.상품주요특징 = ""
+                product.상품이미지_2 = ""
+                product.상품이미지_3 = ""
+
+                result.append(product)
     return result
-
 def save_to_excel(products, output_file):
     # 제품 데이터를 DataFrame으로 변환
     data = [{
@@ -639,11 +656,11 @@ def save_to_excel(products, output_file):
     df.to_excel(output_file, index=False)
 
 def main():
-    folder_path = os.path.join(os.getcwd(), "모든_csv파일_241027")  # 현재 실행 경로에 "모든_csv파일" 폴더
-    products = read_csv_files(folder_path)
+    folder_path = os.path.join(os.getcwd(), "모든_xlsx파일_241028")  # 현재 실행 경로에 "모든_xlsx파일" 폴더
+    products = read_xlsx_files(folder_path)
 
     # 결과를 Excel 파일로 저장
-    output_file = os.path.join(os.getcwd(), "제품정보_241027.xlsx")  # 저장할 엑셀 파일 경로
+    output_file = os.path.join(os.getcwd(), "제품정보_241029.xlsx")  # 저장할 엑셀 파일 경로
     save_to_excel(products, output_file)
 
     print(f"Total products: {len(products)}")

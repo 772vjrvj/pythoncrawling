@@ -17,6 +17,9 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 class MainWindow(QWidget):
+
+    total_pages = 0  # 클래스 변수로 total_pages 선언
+
     def __init__(self):
         super().__init__()
 
@@ -66,11 +69,13 @@ class MainWindow(QWidget):
         self.current_page = 0
         self.rows_per_page = 10
         self.data = []
+        self.now_page = 1  # now_page 인스턴스 변수 초기화
 
         # 메인 레이아웃 설정
         main_layout = QVBoxLayout()
+        self.pagination_layout = QHBoxLayout()  # pagination_layout 초기화
 
-        # 검색 레이아웃
+        # 검색 레이아웃 설정
         search_layout = QHBoxLayout()
         self.search_input = QLineEdit(self)
         self.search_input.setPlaceholderText("블로그 주소를 입력하세요")
@@ -91,13 +96,26 @@ class MainWindow(QWidget):
         self.table.setColumnCount(6)  # 컬럼 수를 6으로 수정
         self.table.setHorizontalHeaderLabels(["작성일", "제목", "순위 (키워드)", "PC", "MO", "SUM"])  # 헤더 수정
 
-        self.load_table_data()  # 테이블에 데이터 로드
+        # 메인 레이아웃에 검색 창과 테이블 추가
+        main_layout.addLayout(search_layout)
+        main_layout.addWidget(self.table)
+        main_layout.addLayout(self.pagination_layout)  # 페이지 레이아웃 추가
 
-        # 페이징 버튼 레이아웃
-        pagination_layout = QHBoxLayout()
-        pagination_layout.addStretch(1)
+        main_layout.addLayout(self.pagination_layout)  # 페이지 레이아웃 추가
 
-        # 고정 버튼 추가
+        self.setLayout(main_layout)
+
+        # 엣지 웹 브라우저 등록
+        webbrowser.register('edge', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"))
+
+    def create_page_buttons(self):
+        """페이지 버튼을 동적으로 생성하여 레이아웃에 추가합니다."""
+        self.page_buttons = []  # 페이지 버튼 초기화
+
+        # 최대 10개의 페이지 버튼 생성
+        num_buttons = min(self.total_pages, 10)  # total_pages와 10 중 작은 값 선택
+
+        """페이지 탐색 버튼을 생성하여 레이아웃에 추가합니다."""
         first_button = QPushButton("처음")
         first_button.clicked.connect(self.on_first_clicked)
         prev_button = QPushButton("이전")
@@ -107,31 +125,25 @@ class MainWindow(QWidget):
         last_button = QPushButton("마지막")
         last_button.clicked.connect(self.on_last_clicked)
 
-        pagination_layout.addWidget(first_button)
-        pagination_layout.addWidget(prev_button)
+        # 버튼 크기 조정
+        first_button.setFixedSize(80, 30)
+        prev_button.setFixedSize(80, 30)
+        next_button.setFixedSize(80, 30)
+        last_button.setFixedSize(80, 30)
 
-        # 동적 페이지 버튼 최대 10개 추가
-        self.page_buttons = []
-        for i in range(10):
+        self.pagination_layout.addWidget(first_button)
+        self.pagination_layout.addWidget(prev_button)
+
+        for i in range(num_buttons):
             page_button = QPushButton(str(i + 1))
-            page_button.setFixedSize(40, 30)
+            page_button.setFixedSize(40, 30)  # 페이지 버튼 크기 설정
             page_button.clicked.connect(lambda _, x=i: self.on_page_button_clicked(x))
-            pagination_layout.addWidget(page_button)
-            self.page_buttons.append(page_button)
+            self.page_buttons.append(page_button)  # 생성한 버튼을 리스트에 추가
+            self.pagination_layout.addWidget(page_button)  # 버튼을 레이아웃에 추가
 
-        pagination_layout.addWidget(next_button)
-        pagination_layout.addWidget(last_button)
-        pagination_layout.addStretch(1)
+        self.pagination_layout.addWidget(next_button)
+        self.pagination_layout.addWidget(last_button)
 
-        # 메인 레이아웃에 검색 창과 테이블 추가
-        main_layout.addLayout(search_layout)
-        main_layout.addWidget(self.table)
-        main_layout.addLayout(pagination_layout)
-
-        self.setLayout(main_layout)
-
-        # 엣지 웹 브라우저 등록
-        webbrowser.register('edge', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"))
 
     # 컬럼의 너비를 설정하여 테이블이 적절하게 보이도록 합니다.
     def set_column_widths(self):
@@ -206,10 +218,10 @@ class MainWindow(QWidget):
 
         # 정규 표현식을 사용하여 사용자 ID를 추출합니다.
         user_id = self.extract_user_id(search_text)
-
+        
         # 데이터 세팅
         if user_id:
-            posts, total_pages = self.start_blog(user_id)
+            posts = self.start_blog(user_id)
             # ["작성일", "제목", "순위 (키워드)", "PC", "MO", "SUM"]
             result_list = []
             for item in posts:
@@ -225,6 +237,7 @@ class MainWindow(QWidget):
             self.data = result_list
             self.load_table_data()
 
+            self.create_page_buttons()  # 페이지 버튼 생성 함수 호출
 
 
         else:
@@ -364,7 +377,7 @@ class MainWindow(QWidget):
 
 
     def start_blog(self, blog_id):
-        total_pages = 0
+        self.total_pages = 0  # 클래스 변수 초기화
         posts = []
         content = self.fetch_blog_page(blog_id)
 
@@ -376,12 +389,12 @@ class MainWindow(QWidget):
 
         # 전체 페이지
         if numbers:  # numbers 리스트가 비어있지 않을 경우
-            total_pages = math.ceil(int(numbers[0]) / 10)
+            self.total_pages = math.ceil(int(numbers[0]) / 10)  # 클래스 변수에 저장
 
-        if total_pages > 1:
+        if self.total_pages > 1:
             posts = self.fetch_post_titles(blog_id, 1)
 
-        return posts, total_pages
+        return posts  # 클래스 변수를 포함하여 반환
 
     # ========== 블로그 게시글 조회 [시작] ==========
 
