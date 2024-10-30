@@ -1,23 +1,21 @@
 import sys
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
-    QLineEdit, QPushButton, QLabel, QHeaderView
+    QLineEdit, QPushButton, QLabel, QHeaderView, QMessageBox
 )
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QTimer
 import webbrowser
-from PyQt5.QtCore import QTimer
 import requests
 from bs4 import BeautifulSoup
 import re
 import math
 import urllib.parse
 import json
-from PyQt5.QtWidgets import QMessageBox
-
 
 class MainWindow(QWidget):
 
     total_pages = 0  # 클래스 변수로 total_pages 선언
+    page_group_size = 10  # 페이지 그룹 크기 설정
 
     def __init__(self):
         super().__init__()
@@ -67,8 +65,8 @@ class MainWindow(QWidget):
         # 데이터 및 페이징 설정
         self.current_page = 0
         self.rows_per_page = 10
+        self.current_page_group = 0  # 현재 페이지 그룹 인스턴스 변수 초기화
         self.data = []
-        self.now_page = 1  # now_page 인스턴스 변수 초기화
 
         # 메인 레이아웃 설정
         main_layout = QVBoxLayout()
@@ -100,21 +98,29 @@ class MainWindow(QWidget):
         main_layout.addWidget(self.table)
         main_layout.addLayout(self.pagination_layout)  # 페이지 레이아웃 추가
 
-        main_layout.addLayout(self.pagination_layout)  # 페이지 레이아웃 추가
-
         self.setLayout(main_layout)
 
         # 엣지 웹 브라우저 등록
         webbrowser.register('edge', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"))
 
+
     def create_page_buttons(self):
         """페이지 버튼을 동적으로 생성하여 레이아웃에 추가합니다."""
-        self.page_buttons = []  # 페이지 버튼 초기화
+        # 기존 페이지 버튼 제거
+        for i in reversed(range(self.pagination_layout.count())):
+            widget = self.pagination_layout.itemAt(i).widget()
+            if widget is not None:
+                self.pagination_layout.removeWidget(widget)
+                widget.deleteLater()  # 버튼 메모리 해제
 
-        # 최대 10개의 페이지 버튼 생성
-        num_buttons = min(self.total_pages, 10)  # total_pages와 10 중 작은 값 선택
+        # 최대 페이지 그룹 수 계산
+        total_page_groups = math.ceil(self.total_pages / self.page_group_size)
 
-        """페이지 탐색 버튼을 생성하여 레이아웃에 추가합니다."""
+        # 첫 번째 페이지 그룹의 시작 페이지와 끝 페이지 계산
+        start_page = self.current_page_group * self.page_group_size
+        end_page = min(start_page + self.page_group_size, self.total_pages)
+
+        # 버튼 생성
         first_button = QPushButton("처음")
         first_button.clicked.connect(self.on_first_clicked)
         prev_button = QPushButton("이전")
@@ -130,18 +136,21 @@ class MainWindow(QWidget):
         next_button.setFixedSize(80, 30)
         last_button.setFixedSize(80, 30)
 
+        # 버튼을 레이아웃에 추가
         self.pagination_layout.addWidget(first_button)
         self.pagination_layout.addWidget(prev_button)
 
-        for i in range(num_buttons):
+        for i in range(start_page, end_page):
             page_button = QPushButton(str(i + 1))
             page_button.setFixedSize(40, 30)  # 페이지 버튼 크기 설정
             page_button.clicked.connect(lambda _, x=i: self.on_page_button_clicked(x))
-            self.page_buttons.append(page_button)  # 생성한 버튼을 리스트에 추가
-            self.pagination_layout.addWidget(page_button)  # 버튼을 레이아웃에 추가
+            self.pagination_layout.addWidget(page_button)
 
         self.pagination_layout.addWidget(next_button)
         self.pagination_layout.addWidget(last_button)
+
+        # 전체 레이아웃 중앙 정렬 설정
+        self.pagination_layout.setAlignment(Qt.AlignCenter)  # 수평 중앙 정렬
 
 
     # 컬럼의 너비를 설정하여 테이블이 적절하게 보이도록 합니다.
@@ -172,7 +181,6 @@ class MainWindow(QWidget):
                     title_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)  # 클릭 가능하도록 설정
                     self.table.setItem(row_idx, col_idx, title_item)
                     self.table.item(row_idx, col_idx).setData(Qt.UserRole, "https://www.naver.com")  # URL 저장
-                    # 스타일링: 파란색 글자에 아래줄 추가
                     title_item.setBackground(Qt.transparent)  # 배경을 투명하게 설정
                     title_item.setForeground(Qt.blue)  # 글자색을 파란색으로 설정
                 elif col_idx == 2:  # '검색' 버튼 추가
@@ -235,10 +243,7 @@ class MainWindow(QWidget):
                 result_list.append(row)
             self.data = result_list
             self.load_table_data()
-
             self.create_page_buttons()  # 페이지 버튼 생성 함수 호출
-
-
         else:
             # 사용자 ID를 찾을 수 없을 경우 알림창 띄우기
             self.show_alert("사용자 ID를 찾을 수 없습니다.")
@@ -250,24 +255,31 @@ class MainWindow(QWidget):
             return match.group(1)  # 그룹 1의 값을 반환
         return None  # 일치하는 값이 없을 경우 None 반환
 
-    # 처음 버튼 클릭 시 호출되어 첫 페이지로 이동합니다.
     def on_first_clicked(self):
+        self.current_page_group = 0  # 첫 페이지 그룹으로 이동
         self.change_page(0)
+        self.create_page_buttons()  # 페이지 버튼 재생성
         print("처음 버튼 클릭")
 
-    # 이전 버튼 클릭 시 호출되어 이전 페이지로 이동합니다.
     def on_prev_clicked(self):
-        self.change_page(self.current_page - 1)
+        if self.current_page_group > 0:  # 현재 페이지 그룹이 0보다 큰 경우에만
+            self.current_page_group -= 1
+            self.change_page(self.current_page_group * self.page_group_size)
+            self.create_page_buttons()  # 페이지 버튼 재생성
         print("이전 버튼 클릭")
 
-    # 다음 버튼 클릭 시 호출되어 다음 페이지로 이동합니다.
     def on_next_clicked(self):
-        self.change_page(self.current_page + 1)
+        total_page_groups = math.ceil(self.total_pages / self.page_group_size)
+        if self.current_page_group < total_page_groups - 1:  # 마지막 페이지 그룹이 아닐 경우
+            self.current_page_group += 1
+            self.change_page(self.current_page_group * self.page_group_size)
+            self.create_page_buttons()  # 페이지 버튼 재생성
         print("다음 버튼 클릭")
 
-    # 마지막 버튼 클릭 시 호출되어 마지막 페이지로 이동합니다.
     def on_last_clicked(self):
-        self.change_page(len(self.data) // self.rows_per_page)
+        self.current_page_group = math.ceil(self.total_pages / self.page_group_size) - 1  # 마지막 페이지 그룹으로 이동
+        self.change_page(self.current_page_group * self.page_group_size)
+        self.create_page_buttons()  # 페이지 버튼 재생성
         print("마지막 버튼 클릭")
 
     # 페이지 버튼 클릭 시 호출되어 해당 페이지로 이동합니다.
@@ -288,8 +300,8 @@ class MainWindow(QWidget):
     def change_page(self, page_number):
         if page_number < 0:
             page_number = 0
-        elif page_number > len(self.data) // self.rows_per_page:
-            page_number = len(self.data) // self.rows_per_page
+        elif page_number >= math.ceil(len(self.data) / self.rows_per_page):
+            page_number = math.ceil(len(self.data) / self.rows_per_page) - 1
 
         self.current_page = page_number
         self.load_table_data()
@@ -300,6 +312,7 @@ class MainWindow(QWidget):
         super().resizeEvent(event)
 
     # ========== 블로그 게시글 조회 [시작] ==========
+
     def fetch_blog_page(self, blog_id):
         url = f"https://blog.naver.com/PostList.naver?blogId={blog_id}&widgetTypeCall=true&noTrackingCode=true&directAccess=true"
         headers = {
@@ -332,7 +345,6 @@ class MainWindow(QWidget):
             text = element.get_text()
             numbers.extend(re.findall(r'\d+', text))
         return numbers
-
 
     def fetch_post_titles(self, blog_id, current_page):
         url = f"https://blog.naver.com/PostTitleListAsync.naver?blogId={blog_id}&viewdate=&currentPage={current_page}&categoryNo=&parentCategoryNo=&countPerPage=10"
@@ -382,7 +394,6 @@ class MainWindow(QWidget):
 
         # 전체 개수글 수
         numbers = self.extract_numbers_from_elements(content, "category_title pcol2")
-
 
         # 전체 페이지
         if numbers:  # numbers 리스트가 비어있지 않을 경우
