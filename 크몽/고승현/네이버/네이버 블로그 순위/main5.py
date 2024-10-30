@@ -92,9 +92,7 @@ class MainWindow(QWidget):
 
         webbrowser.register('edge', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"))
 
-
     def create_page_buttons(self):
-        # 기존 페이지 버튼 제거
         for i in reversed(range(self.pagination_layout.count())):
             widget = self.pagination_layout.itemAt(i).widget()
             if widget is not None:
@@ -105,7 +103,6 @@ class MainWindow(QWidget):
         start_page = self.current_page_group * self.page_group_size
         end_page = min(start_page + self.page_group_size, self.total_pages)
 
-        # 버튼 생성
         first_button = QPushButton("처음")
         first_button.clicked.connect(self.on_first_clicked)
         prev_button = QPushButton("이전")
@@ -123,12 +120,10 @@ class MainWindow(QWidget):
         self.pagination_layout.addWidget(first_button)
         self.pagination_layout.addWidget(prev_button)
 
-        # 페이지 버튼 생성
         for page_number in range(start_page, end_page):
-            page_button = QPushButton(str(page_number + 1))  # 버튼 텍스트 설정
+            page_button = QPushButton(str(page_number + 1))
             page_button.setFixedSize(40, 30)
 
-            # 각 버튼의 고유 클릭 이벤트 설정
             page_button.clicked.connect(lambda checked, btn=page_button, page=page_number: self.on_page_button_clicked(page, btn))
             self.pagination_layout.addWidget(page_button)
 
@@ -136,15 +131,12 @@ class MainWindow(QWidget):
         self.pagination_layout.addWidget(last_button)
         self.pagination_layout.setAlignment(Qt.AlignCenter)
 
-
     def change_button_color(self, button):
-        """버튼 색상을 변경하는 메서드입니다."""
         for i in range(self.pagination_layout.count()):
             widget = self.pagination_layout.itemAt(i).widget()
             if isinstance(widget, QPushButton):
-                widget.setStyleSheet("background-color: #4CAF50; color: white;")  # 초록색으로 초기화
-        button.setStyleSheet("background-color: blue; color: white;")  # 클릭된 버튼을 파란색으로 변경
-
+                widget.setStyleSheet("background-color: #4CAF50; color: white;")
+        button.setStyleSheet("background-color: blue; color: white;")
 
     def set_column_widths(self):
         total_width = self.table.width()
@@ -158,26 +150,46 @@ class MainWindow(QWidget):
 
     def load_table_data(self):
         """현재 페이지의 데이터를 테이블에 로드합니다."""
-        # 현재 페이지를 기준으로 시작과 종료 인덱스를 계산하지 않고, 전체 데이터를 표시합니다.
-        # start_row = self.current_page * self.rows_per_page
-        # end_row = start_row + self.rows_per_page
-
-        # 모든 데이터를 테이블에 로드
         self.table.setRowCount(len(self.data))  # 현재 데이터의 개수만큼 행 설정
 
         for row_idx, row_data in enumerate(self.data):  # self.data의 모든 데이터 표시
             for col_idx, item in enumerate(row_data):
-                table_item = QTableWidgetItem(item)
-                table_item.setTextAlignment(Qt.AlignCenter)
-                self.table.setItem(row_idx, col_idx, table_item)
+                if col_idx == 2:  # "순위 (키워드)" 열에 입력 필드와 버튼 추가
+                    layout = QHBoxLayout()
+                    input_field = QLineEdit()
+                    input_field.setPlaceholderText("")
+                    search_button = QPushButton("조회")
+                    search_button.clicked.connect(lambda _, idx=row_idx: self.on_keyword_search_clicked(input_field.text(), idx))
 
-        # 테이블이 비어있을 경우 적절한 메시지를 설정할 수 있습니다.
-        if not self.data:
-            self.show_alert("표시할 데이터가 없습니다.")
+                    # 높이를 셀 높이에 맞게 조정
+                    input_field.setFixedHeight(self.table.rowHeight(row_idx) - 12)  # 약간의 여백을 줄여서 조정
+                    search_button.setFixedHeight(self.table.rowHeight(row_idx) - 12)  # 버튼도 동일하게 조정
+
+
+                    # 여백 조정 (위쪽 여백을 절반으로 설정)
+                    layout.setContentsMargins(0, 0, 0, 0)
+
+                    layout.addWidget(input_field)
+                    layout.addWidget(search_button)
+
+                    # 새로운 QWidget을 생성하여 레이아웃에 추가
+                    widget = QWidget()
+                    widget.setLayout(layout)
+                    self.table.setCellWidget(row_idx, col_idx, widget)  # cell에 위젯 추가
+                elif col_idx == 1:  # "제목" 열 클릭 시 새로운 함수 호출
+                    title_item = QTableWidgetItem(item)
+                    title_item.setTextAlignment(Qt.AlignCenter)
+                    title_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                    title_item.setData(Qt.UserRole, self.data[row_idx][3])  # URL 저장
+                    self.table.setItem(row_idx, col_idx, title_item)
+                else:
+                    table_item = QTableWidgetItem(item)
+                    table_item.setTextAlignment(Qt.AlignCenter)
+                    self.table.setItem(row_idx, col_idx, table_item)
 
 
     def on_cell_clicked(self, row, column):
-        if column == 1:
+        if column == 1:  # 제목 클릭 시 브라우저 열기
             url = self.table.item(row, column).data(Qt.UserRole)
             if url:
                 webbrowser.get('edge').open(url)
@@ -222,11 +234,7 @@ class MainWindow(QWidget):
         else:
             self.show_alert("사용자 ID를 찾을 수 없습니다.")
 
-
-    # url에서 id를 추출한다.
-    # http로 시작하지 않으면 그냥 url을 그대로 리턴
     def extract_user_id(self, url):
-        # URL에 "https://"가 포함되어 있는지 확인
         if not url.startswith("https://"):
             return url  # https가 없으면 URL을 그대로 반환
 
@@ -235,13 +243,11 @@ class MainWindow(QWidget):
             return match.group(1)
         return None  # 매칭이 없으면 None 반환
 
-
     def on_first_clicked(self):
         self.current_page_group = 0
         self.change_page(0)
         self.create_page_buttons()
         print("처음 버튼 클릭")
-
 
     def on_prev_clicked(self):
         if self.current_page_group > 0:
@@ -249,7 +255,6 @@ class MainWindow(QWidget):
             self.change_page(self.current_page_group * self.page_group_size)
             self.create_page_buttons()
         print("이전 버튼 클릭")
-
 
     def on_next_clicked(self):
         total_page_groups = math.ceil(self.total_pages / self.page_group_size)
@@ -259,13 +264,11 @@ class MainWindow(QWidget):
             self.create_page_buttons()
         print("다음 버튼 클릭")
 
-
     def on_last_clicked(self):
         self.current_page_group = math.ceil(self.total_pages / self.page_group_size) - 1
         self.change_page(self.current_page_group * self.page_group_size)
         self.create_page_buttons()
         print("마지막 버튼 클릭")
-
 
     def on_page_button_clicked(self, page_number, button):
         """페이지 버튼 클릭 시 호출되어 해당 페이지로 이동하고 데이터를 로드합니다."""
@@ -294,13 +297,10 @@ class MainWindow(QWidget):
         else:
             self.show_alert("게시글을 불러오는 중 오류가 발생했습니다.")
 
-
-    def on_keyword_search_clicked(self, keyword):
-        sender = self.sender()
-        sender.setText("찾는중")
-        print(f"키워드 검색 버튼 클릭: {keyword}")
-        QTimer.singleShot(2000, lambda: sender.setText("검색"))
-
+    def on_keyword_search_clicked(self, keyword, row_index):
+        """키워드 검색 버튼 클릭 시 호출되어 검색 기능을 수행합니다."""
+        print(f"키워드 검색 버튼 클릭: {keyword} (행 인덱스: {row_index})")
+        # 여기서 keyword에 대해 필요한 검색 작업을 수행하세요.
 
     def change_page(self, page_number):
         if page_number < 0:
@@ -311,11 +311,9 @@ class MainWindow(QWidget):
         self.current_page = page_number
         self.load_table_data()
 
-
     def resizeEvent(self, event):
         self.set_column_widths()
         super().resizeEvent(event)
-
 
     def fetch_blog_page(self, blog_id):
         url = f"https://blog.naver.com/PostList.naver?blogId={blog_id}&widgetTypeCall=true&noTrackingCode=true&directAccess=true"
@@ -346,7 +344,6 @@ class MainWindow(QWidget):
             self.show_alert("블로그 페이지를 불러오는 중 오류가 발생했습니다.")
             return None
 
-
     def extract_numbers_from_elements(self, content, class_name):
         if content is None:  # content가 None인 경우 처리
             return []
@@ -357,7 +354,6 @@ class MainWindow(QWidget):
             text = element.get_text()
             numbers.extend(re.findall(r'\d+', text))
         return numbers
-
 
     def fetch_post_titles(self, blog_id, current_page):
         """주어진 블로그 ID와 현재 페이지를 사용하여 게시글 제목을 가져옵니다."""
@@ -401,7 +397,6 @@ class MainWindow(QWidget):
             print("응답 텍스트:", response.text)
             self.show_alert("게시글 제목을 처리하는 중 오류가 발생했습니다.")
             return []
-
 
     def start_blog(self, blog_id):
         self.total_pages = 0
