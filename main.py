@@ -1,725 +1,402 @@
-import os
-import re
-import pandas as pd
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
+    QLineEdit, QPushButton, QLabel, QHeaderView
+)
+from PyQt5.QtCore import Qt, QSize
+import webbrowser
+from PyQt5.QtCore import QTimer
+import requests
 from bs4 import BeautifulSoup
+import re
+import math
+import urllib.parse
+import json
+from PyQt5.QtWidgets import QMessageBox
 
-# 1. 카테고리 정보를 담고 있는 리스트
-category_obj = [
-    {
-        "part_index": 1,
-        "idx": 393,
-        "name": "TODAYS REVIEW",
-        "part1_code": "1728286931",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 391,
-        "name": "이번주신상",
-        "part1_code": "1728280612",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 410,
-        "name": "GIFT BOX",
-        "part1_code": "1728305221",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 389,
-        "name": "미러급SA",
-        "part1_code": "1728121673",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 442,
-        "name": "바로배송",
-        "part1_code": "1728559852",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 2,
-        "idx": 120,
-        "name": "CHA",
-        "part1_code": "1422929956",
-        "part2_code": "1505723217",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 163,
-        "name": "LV",
-        "part1_code": "1422929956",
-        "part2_code": "1543288636",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 336,
-        "name": "DIO",
-        "part1_code": "1422929956",
-        "part2_code": "1612325329",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 396,
-        "name": "GU",
-        "part1_code": "1422929956",
-        "part2_code": "1728301104",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 397,
-        "name": "PRA",
-        "part1_code": "1422929956",
-        "part2_code": "1728305074",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 398,
-        "name": "YSL",
-        "part1_code": "1422929956",
-        "part2_code": "1728305100",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 399,
-        "name": "CN",
-        "part1_code": "1422929956",
-        "part2_code": "1728305108",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 400,
-        "name": "HER",
-        "part1_code": "1422929956",
-        "part2_code": "1728305117",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 401,
-        "name": "BB",
-        "part1_code": "1422929956",
-        "part2_code": "1728305131",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 402,
-        "name": "FEN",
-        "part1_code": "1422929956",
-        "part2_code": "1728305145",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 403,
-        "name": "BALEN",
-        "part1_code": "1422929956",
-        "part2_code": "1728305146",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 404,
-        "name": "BV",
-        "part1_code": "1422929956",
-        "part2_code": "1728305159",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 405,
-        "name": "VT",
-        "part1_code": "1422929956",
-        "part2_code": "1728305168",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 406,
-        "name": "CHL",
-        "part1_code": "1422929956",
-        "part2_code": "1728305176",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 407,
-        "name": "GOY",
-        "part1_code": "1422929956",
-        "part2_code": "1728305185",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 408,
-        "name": "LOE",
-        "part1_code": "1422929956",
-        "part2_code": "1728305194",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 409,
-        "name": "ETC",
-        "part1_code": "1422929956",
-        "part2_code": "1728305201",
-        "parent_name": "BAG"
-    },
-    {
-        "part_index": 2,
-        "idx": 331,
-        "name": "CHA",
-        "part1_code": "1603683335",
-        "part2_code": "1603683415",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 329,
-        "name": "LV",
-        "part1_code": "1603683335",
-        "part2_code": "1603683376",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 330,
-        "name": "DIO",
-        "part1_code": "1603683335",
-        "part2_code": "1603683398",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 411,
-        "name": "GU",
-        "part1_code": "1603683335",
-        "part2_code": "1728305417",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 412,
-        "name": "PRA",
-        "part1_code": "1603683335",
-        "part2_code": "1728305427",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 413,
-        "name": "YSL",
-        "part1_code": "1603683335",
-        "part2_code": "1728305435",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 414,
-        "name": "CN",
-        "part1_code": "1603683335",
-        "part2_code": "1728305442",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 415,
-        "name": "HER",
-        "part1_code": "1603683335",
-        "part2_code": "1728305450",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 416,
-        "name": "BB",
-        "part1_code": "1603683335",
-        "part2_code": "1728305495",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 417,
-        "name": "FEN",
-        "part1_code": "1603683335",
-        "part2_code": "1728305503",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 418,
-        "name": "BALEN",
-        "part1_code": "1603683335",
-        "part2_code": "1728305510",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 419,
-        "name": "BV",
-        "part1_code": "1603683335",
-        "part2_code": "1728305520",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 420,
-        "name": "MQ",
-        "part1_code": "1603683335",
-        "part2_code": "1728305527",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 421,
-        "name": "VT",
-        "part1_code": "1603683335",
-        "part2_code": "1728305533",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 422,
-        "name": "CHL",
-        "part1_code": "1603683335",
-        "part2_code": "1728305540",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 423,
-        "name": "RV",
-        "part1_code": "1603683335",
-        "part2_code": "1728305548",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 424,
-        "name": "JC",
-        "part1_code": "1603683335",
-        "part2_code": "1728305554",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 425,
-        "name": "LORO",
-        "part1_code": "1603683335",
-        "part2_code": "1728305564",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 2,
-        "idx": 426,
-        "name": "ETC",
-        "part1_code": "1603683335",
-        "part2_code": "1728305572",
-        "parent_name": "SHOE"
-    },
-    {
-        "part_index": 1,
-        "idx": 34,
-        "name": "WALLET",
-        "part1_code": "1422930483",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 235,
-        "name": "SPORT",
-        "part1_code": "1565598696",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 2,
-        "idx": 151,
-        "name": "LV",
-        "part1_code": "1422930473",
-        "part2_code": "1538122065",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 152,
-        "name": "GU",
-        "part1_code": "1422930473",
-        "part2_code": "1538122126",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 168,
-        "name": "DIO",
-        "part1_code": "1422930473",
-        "part2_code": "1543288846",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 427,
-        "name": "PRA",
-        "part1_code": "1422930473",
-        "part2_code": "1728305592",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 428,
-        "name": "HER",
-        "part1_code": "1422930473",
-        "part2_code": "1728305601",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 429,
-        "name": "BALEN",
-        "part1_code": "1422930473",
-        "part2_code": "1728305609",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 430,
-        "name": "ETC",
-        "part1_code": "1422930473",
-        "part2_code": "1728305616",
-        "parent_name": "FORMAN"
-    },
-    {
-        "part_index": 2,
-        "idx": 206,
-        "name": "OUTER",
-        "part1_code": "1554563027",
-        "part2_code": "1554563132",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 333,
-        "name": "T-SHIRT",
-        "part1_code": "1554563027",
-        "part2_code": "1609148558",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 334,
-        "name": "BOTTOM",
-        "part1_code": "1554563027",
-        "part2_code": "1609148566",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 335,
-        "name": "SKIRT",
-        "part1_code": "1554563027",
-        "part2_code": "1609148654",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 431,
-        "name": "DRESS",
-        "part1_code": "1554563027",
-        "part2_code": "1728305626",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 432,
-        "name": "Unisex 남녀공용",
-        "part1_code": "1554563027",
-        "part2_code": "1728305635",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 433,
-        "name": "FOR MAN",
-        "part1_code": "1554563027",
-        "part2_code": "1728305644",
-        "parent_name": "CLOTH"
-    },
-    {
-        "part_index": 2,
-        "idx": 383,
-        "name": "모자/벨트/헤어밴드",
-        "part1_code": "1728121360",
-        "part2_code": "1728121372",
-        "parent_name": "ACC"
-    },
-    {
-        "part_index": 2,
-        "idx": 384,
-        "name": "귀걸이/목걸이/반지/시계",
-        "part1_code": "1728121360",
-        "part2_code": "1728121394",
-        "parent_name": "ACC"
-    },
-    {
-        "part_index": 2,
-        "idx": 434,
-        "name": "트윌리/스카프/머플러",
-        "part1_code": "1728121360",
-        "part2_code": "1728305700",
-        "parent_name": "ACC"
-    },
-    {
-        "part_index": 1,
-        "idx": 385,
-        "name": "홈인테리어",
-        "part1_code": "1728121423",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 2,
-        "idx": 387,
-        "name": "OUTER",
-        "part1_code": "1728121435",
-        "part2_code": "1728121465",
-        "parent_name": "NO BRAND"
-    },
-    {
-        "part_index": 2,
-        "idx": 388,
-        "name": "T-SHIRT",
-        "part1_code": "1728121435",
-        "part2_code": "1728121477",
-        "parent_name": "NO BRAND"
-    },
-    {
-        "part_index": 1,
-        "idx": 203,
-        "name": "개인결제",
-        "part1_code": "1548154666",
-        "part2_code": "",
-        "parent_name": ""
-    },
-    {
-        "part_index": 1,
-        "idx": 437,
-        "name": "메인섹션2",
-        "part1_code": "1728306246",
-        "part2_code": "",
-        "parent_name": ""
-    }
-]
 
-# 2. 새로운 객체 클래스 정의
-class Product:
+class MainWindow(QWidget):
+
+    total_pages = 0  # 클래스 변수로 total_pages 선언
+
     def __init__(self):
-        self.카테고리이름 = ""
-        self.대표_상품명 = ""
-        self.이차상품명_또는_옵션명 = ""
-        self.필수_또는_모델_또는_옵션 = ""
-        self.상품가격 = 0
-        self.옵션가격 = 0
-        self.옵션항목명 = ""
-        self.옵션값 = ""
-        self.썸네일_이미지 = ""
-        self.상품안내 = ""
-        self.카테고리_코드 = ""
-        self.상품_코드 = ""
-        self.상품주요특징 = ""
-        self.상품이미지_2 = ""
-        self.상품이미지_3 = ""
-        self.상품노출 = "Y"
+        super().__init__()
+
+        # 기본 설정
+        self.setWindowTitle("카페 게시글 검색기")
+        self.setGeometry(100, 100, 1000, 720)
+
+        # 스타일 설정
+        self.setStyleSheet(""" 
+            QWidget { 
+                background-color: #ffffff; 
+                font-family: Arial, sans-serif; 
+            } 
+            QLineEdit { 
+                padding: 5px; 
+                border: 1px solid #ccc; 
+                border-radius: 5px; 
+            } 
+            QPushButton { 
+                background-color: #4CAF50; 
+                color: white; 
+                padding: 5px 10px; 
+                border: none; 
+                border-radius: 5px; 
+            } 
+            QPushButton:hover { 
+                background-color: #45a049; 
+            } 
+            QPushButton:disabled { 
+                background-color: #cccccc; 
+                color: #666666; 
+            } 
+            QTableWidget { 
+                border: 1px solid #ccc; 
+                gridline-color: #ccc; 
+            } 
+            QTableWidget::item { 
+                padding: 5px; 
+            } 
+            .link { 
+                color: blue; 
+                text-decoration: underline; 
+            }
+        """)
+
+        # 데이터 및 페이징 설정
+        self.current_page = 0
+        self.rows_per_page = 10
+        self.data = []
+        self.now_page = 1  # now_page 인스턴스 변수 초기화
+
+        # 메인 레이아웃 설정
+        main_layout = QVBoxLayout()
+        self.pagination_layout = QHBoxLayout()  # pagination_layout 초기화
+
+        # 검색 레이아웃 설정
+        search_layout = QHBoxLayout()
+        self.search_input = QLineEdit(self)
+        self.search_input.setPlaceholderText("블로그 주소를 입력하세요")
+        self.search_button = QPushButton("검색")
+        self.search_button.clicked.connect(self.on_search_clicked)
+
+        search_layout.addWidget(self.search_input)
+        search_layout.addWidget(self.search_button)
+
+        # 로딩 애니메이션 및 결과 텍스트
+        self.loading_label = QLabel()
+        self.loading_label.setFixedSize(50, 50)
+        self.loading_label.setVisible(False)
+        search_layout.addWidget(self.loading_label)
+
+        # 테이블 설정
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(6)  # 컬럼 수를 6으로 수정
+        self.table.setHorizontalHeaderLabels(["작성일", "제목", "순위 (키워드)", "PC", "MO", "SUM"])  # 헤더 수정
+
+        # 메인 레이아웃에 검색 창과 테이블 추가
+        main_layout.addLayout(search_layout)
+        main_layout.addWidget(self.table)
+        main_layout.addLayout(self.pagination_layout)  # 페이지 레이아웃 추가
+
+        main_layout.addLayout(self.pagination_layout)  # 페이지 레이아웃 추가
+
+        self.setLayout(main_layout)
+
+        # 엣지 웹 브라우저 등록
+        webbrowser.register('edge', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"))
+
+    def create_page_buttons(self):
+        """페이지 버튼을 동적으로 생성하여 레이아웃에 추가합니다."""
+        self.page_buttons = []  # 페이지 버튼 초기화
+
+        # 최대 10개의 페이지 버튼 생성
+        num_buttons = min(self.total_pages, 10)  # total_pages와 10 중 작은 값 선택
+
+        """페이지 탐색 버튼을 생성하여 레이아웃에 추가합니다."""
+        first_button = QPushButton("처음")
+        first_button.clicked.connect(self.on_first_clicked)
+        prev_button = QPushButton("이전")
+        prev_button.clicked.connect(self.on_prev_clicked)
+        next_button = QPushButton("다음")
+        next_button.clicked.connect(self.on_next_clicked)
+        last_button = QPushButton("마지막")
+        last_button.clicked.connect(self.on_last_clicked)
+
+        # 버튼 크기 조정
+        first_button.setFixedSize(80, 30)
+        prev_button.setFixedSize(80, 30)
+        next_button.setFixedSize(80, 30)
+        last_button.setFixedSize(80, 30)
+
+        self.pagination_layout.addWidget(first_button)
+        self.pagination_layout.addWidget(prev_button)
+
+        for i in range(num_buttons):
+            page_button = QPushButton(str(i + 1))
+            page_button.setFixedSize(40, 30)  # 페이지 버튼 크기 설정
+            page_button.clicked.connect(lambda _, x=i: self.on_page_button_clicked(x))
+            self.page_buttons.append(page_button)  # 생성한 버튼을 리스트에 추가
+            self.pagination_layout.addWidget(page_button)  # 버튼을 레이아웃에 추가
+
+        self.pagination_layout.addWidget(next_button)
+        self.pagination_layout.addWidget(last_button)
 
 
-def replace_image_path(src_value):
-    """src 경로를 변경하는 함수"""
-    # /web/upload/NNEditor/YYYYMMDD/ 뒤에 오는 모든 파일명을 새로운 경로로 변경
-    pattern = r'/web/upload/NNEditor/\d{8}/([a-zA-Z0-9_.-]+)'
-    return re.sub(pattern, r'/upload/goods/\1', src_value)
+    # 컬럼의 너비를 설정하여 테이블이 적절하게 보이도록 합니다.
+    def set_column_widths(self):
+        total_width = self.table.width()
 
-def extract_and_replace_img_tags(html_content):
-    # BeautifulSoup으로 HTML 파싱
-    soup = BeautifulSoup(html_content, 'html.parser')
+        # 최소한의 너비를 설정하여 모든 컬럼이 적절히 보이도록 합니다.
+        self.table.setColumnWidth(0, total_width * 150 // 1000)   # 작성일: 약 100px (1)
+        self.table.setColumnWidth(1, total_width * 477 // 1000)  # 제목: 약 400px (4)
+        self.table.setColumnWidth(2, total_width * 200 // 1000)  # 순위 (키워드): 약 200px (2)
+        self.table.setColumnWidth(3, total_width * 50 // 1000)   # PC: 약 100px (1)
+        self.table.setColumnWidth(4, total_width * 50 // 1000)   # MO: 약 100px (1)
+        self.table.setColumnWidth(5, total_width * 50 // 1000)   # SUM: 약 100px (1)
 
-    # 모든 img 태그 찾기
-    img_tags = soup.find_all('img')
+    # 현재 페이지에 해당하는 데이터를 테이블에 로드합니다.
+    def load_table_data(self):
+        start_row = self.current_page * self.rows_per_page
+        end_row = start_row + self.rows_per_page
+        page_data = self.data[start_row:end_row]
 
-    # 수정된 img 태그 문자열들을 저장할 리스트
-    modified_img_tags = []
+        self.table.setRowCount(len(page_data))
 
-    # src 외의 속성 제거 및 경로 수정
-    for img in img_tags:
-        src = img.get('src')  # 현재 src 값 저장
-        # 모든 속성 제거
-        for attr in list(img.attrs):
-            del img[attr]
-        img['src'] = replace_image_path(src)  # src 속성만 남기고 경로 변경
-        modified_img_tags.append(str(img))  # 변환된 img 태그를 문자열로 리스트에 추가
-
-    # 모든 img 태그를 문자열로 연결하여 반환
-    return ''.join(modified_img_tags)
-
-
-
-def parse_options(option_input, product):
-    # "//"로 옵션을 분리
-    options = option_input.split("//")
-
-    # COLOR 또는 TYPE, 그리고 SIZE 옵션의 첫 번째 항목 찾기
-    color_or_type_option = None
-    size_option = None
-
-    for option in options:
-        if not color_or_type_option and re.search(r"(COLOR|TYPE)\{(.*?)\}", option):
-            color_or_type_match = re.search(r"(COLOR|TYPE)\{(.*?)\}", option)
-            color_or_type_name = color_or_type_match.group(1)
-            color_or_type_value = color_or_type_match.group(2).replace("|", "/")
-            color_or_type_option = (color_or_type_name, color_or_type_value)
-
-        if not size_option and "SIZE" in option:
-            size_match = re.search(r"SIZE\{(.*?)\}", option)
-            if size_match:
-                size_option = size_match.group(1).replace("|", "/")
-
-        # COLOR 또는 TYPE, 그리고 SIZE가 모두 있으면 루프 종료
-        if color_or_type_option and size_option:
-            break
-
-    # 조건에 따라 product에 데이터 설정
-    if color_or_type_option and size_option:
-        # 필수 또는 모델 또는 옵션에 COLOR 또는 TYPE 저장
-        product.필수_또는_모델_또는_옵션 = color_or_type_option[0]
-        # 이차 상품명 또는 옵션명에 COLOR 또는 TYPE 값 저장
-        product.이차상품명_또는_옵션명 = color_or_type_option[1]
-        # 옵션 항목명에 SIZE 저장
-        product.옵션항목명 = "SIZE"
-        # 옵션값에 SIZE 값 저장
-        product.옵션값 = size_option
-    else:
-        # 기본 동작: 첫 번째 옵션을 기존대로 처리
-        first_option = options[0]
-        match = re.match(r"(\w+)\{(.*?)\}", first_option)
-        if match:
-            product.옵션항목명 = match.group(1)
-            product.옵션값 = match.group(2).replace("|", "/")
-
-
-
-def read_xlsx_files(folder_path):
-    result = []
-    for file_name in os.listdir(folder_path):
-        print(file_name)
-        if file_name.endswith('.xlsx'):
-            file_path = os.path.join(folder_path, file_name)
-            try:
-                # XLSX 파일 읽기, openpyxl 엔진 사용
-                df = pd.read_excel(file_path, engine='openpyxl')
-            except Exception as e:
-                print(f"Error reading {file_name}: {e}")
-                continue  # 파일을 읽지 못하면 다음 파일로 넘어감
-
-            for index, row in df.iterrows():
-                product = Product()
-                # 5-8. 각 필드 설정
-                product.대표_상품명 = row["상품명"]
-                product.이차상품명_또는_옵션명 = row["상품명"]  # 2차 상품명에 상품명 넣기
-                product.필수_또는_모델_또는_옵션 = row["상품명"]  # 필요시 업데이트
-                product.상품가격 = float(row["판매가"])  # 판매가
-                product.옵션가격 = 0  # 옵션가격 (없을 경우 0)
-
-                # 7. 옵션입력 처리
-                option_input = row.get("옵션입력", "")
-                # option_input이 float일 경우 str로 변환
-                if isinstance(option_input, float):
-                    option_input = str(option_input)
-
-                # 옵션 항목 선택
-                parse_options(option_input, product)
-
-                # 8. 썸네일 이미지
-                thumbnail_image_path = row.get("이미지등록(목록)", "")
-                if thumbnail_image_path:
-                    # 슬래시로 분리하고 마지막 요소를 선택
-                    product.썸네일_이미지 = thumbnail_image_path.split('/')[-1]  # 슬래시 뒤의 값만 가져오기
+        for row_idx, row_data in enumerate(page_data):
+            for col_idx, item in enumerate(row_data):
+                if col_idx == 1:  # 제목 클릭 시 브라우저 열기
+                    title_item = QTableWidgetItem(item)
+                    title_item.setTextAlignment(Qt.AlignCenter)
+                    title_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)  # 클릭 가능하도록 설정
+                    self.table.setItem(row_idx, col_idx, title_item)
+                    self.table.item(row_idx, col_idx).setData(Qt.UserRole, "https://www.naver.com")  # URL 저장
+                    # 스타일링: 파란색 글자에 아래줄 추가
+                    title_item.setBackground(Qt.transparent)  # 배경을 투명하게 설정
+                    title_item.setForeground(Qt.blue)  # 글자색을 파란색으로 설정
+                elif col_idx == 2:  # '검색' 버튼 추가
+                    keyword_layout = QHBoxLayout()
+                    keyword_input = QLineEdit()
+                    keyword_button = QPushButton("검색")
+                    keyword_button.clicked.connect(lambda: self.on_keyword_search_clicked(keyword_input.text()))
+                    keyword_layout.addWidget(keyword_input)
+                    keyword_layout.addWidget(keyword_button)
+                    keyword_layout.setContentsMargins(0, 0, 0, 0)
+                    widget = QWidget()
+                    widget.setLayout(keyword_layout)
+                    self.table.setCellWidget(row_idx, col_idx, widget)
                 else:
-                    product.썸네일_이미지 = ""  # 값이 없으면 빈 문자열
+                    table_item = QTableWidgetItem(item)
+                    table_item.setTextAlignment(Qt.AlignCenter)
+                    self.table.setItem(row_idx, col_idx, table_item)
 
-                # 9. 상품안내
-                html_content = row.get("상품 상세설명", "")
-                # 이미지 경로 변경 실행
-                modified_html_content = extract_and_replace_img_tags(html_content)
-                product.상품안내 = modified_html_content
+        # 제목 클릭 이벤트 연결
+        self.table.cellClicked.connect(self.on_cell_clicked)
 
-                cleaned_name = re.sub(r'[\d_-]', '', file_name.split('.')[0])  # 숫자, _ 및 - 제거
-                cleaned_name = cleaned_name.replace(" ", "")  # 띄어쓰기 한 칸 제거
-                product.카테고리이름 = cleaned_name
+    # 셀 클릭 이벤트 핸들러로, 제목 열 클릭 시 URL을 엣지 브라우저로 엽니다.
+    def on_cell_clicked(self, row, column):
+        if column == 1:  # 제목 열 클릭
+            url = self.table.item(row, column).data(Qt.UserRole)  # 저장된 URL 가져오기
+            if url:
+                webbrowser.get('edge').open(url)  # 웹브라우저에서 URL 열기
 
-                for category in category_obj:
-                    # category['name']을 트리밍하고 부모 이름을 추가한 후 비교
-                    full_name = (category['parent_name'] + category['name'].strip()).replace("/", "").replace("-", "").upper()  # / 제거 후 대문자로 변환
-                    if full_name.replace(" ", "") == cleaned_name.upper():  # cleaned_name도 대문자로 변환
-                        product.카테고리_코드 = category['part1_code'] if category['part2_code'] == "" else category['part2_code']
-                        break
+    def show_alert(self, message):
+        """알림창을 띄우는 메서드입니다."""
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
+        msg_box.setText(message)  # 메시지 설정
+        msg_box.setWindowTitle("경고")  # 창 제목 설정
+        msg_box.setStandardButtons(QMessageBox.Ok)  # 확인 버튼 추가
+        msg_box.exec_()  # 알림창 실행
 
-                # 11. 기본 항목 설정
-                product.상품코드 = ""
-                product.상품주요특징 = ""
-                product.상품이미지_2 = ""
-                product.상품이미지_3 = ""
+    # 검색 버튼 클릭 시 호출되는 메서드입니다.
+    def on_search_clicked(self):
+        search_text = self.search_input.text()
+        print(f"입력된 URL: {search_text}")
 
-                result.append(product)
-    return result
-def save_to_excel(products, output_file):
-    # 제품 데이터를 DataFrame으로 변환
-    data = [{
-        "카테고리 이름": product.카테고리이름,
-        "카테고리 코드": product.카테고리_코드,
-        "상품 코드": product.상품_코드,
-        "대표 상품명": product.대표_상품명,
-        "상품주요특징": product.상품주요특징,
-        "상품노출": product.상품노출,
-        "필수or모델or옵션": product.필수_또는_모델_또는_옵션,
-        "2차상품명 or 옵션명": product.이차상품명_또는_옵션명,
-        "상품가격": product.상품가격,
-        "옵션항목명": product.옵션항목명,
-        "옵션값": product.옵션값,
-        "옵션가격": product.옵션가격,
-        "썸네일 이미지": product.썸네일_이미지,
-        "상품 이미지[2]": product.상품이미지_2,
-        "상품 이미지[3]": product.상품이미지_3,
-        "상품안내\n(HTML 사용 가능)": product.상품안내,
-    } for product in products]
+        # 정규 표현식을 사용하여 사용자 ID를 추출합니다.
+        user_id = self.extract_user_id(search_text)
 
-    df = pd.DataFrame(data)
-    df.to_excel(output_file, index=False)
+        # 데이터 세팅
+        if user_id:
+            posts = self.start_blog(user_id)
+            # ["작성일", "제목", "순위 (키워드)", "PC", "MO", "SUM"]
+            result_list = []
+            for item in posts:
+                row = [
+                    item['addDate'],              # 작성일
+                    item['title'],                # 제목
+                    '-',                          # 순위 (키워드) (여기서는 '-')
+                    '-',                          # PC (여기서는 '-')
+                    '-',                          # MO (여기서는 '-')
+                    '-'                           # SUM (여기서는 '-')
+                ]
+                result_list.append(row)
+            self.data = result_list
+            self.load_table_data()
 
-def main():
-    folder_path = os.path.join(os.getcwd(), "모든_xlsx파일_241028")  # 현재 실행 경로에 "모든_xlsx파일" 폴더
-    products = read_xlsx_files(folder_path)
+            self.create_page_buttons()  # 페이지 버튼 생성 함수 호출
 
-    # 결과를 Excel 파일로 저장
-    output_file = os.path.join(os.getcwd(), "제품정보_241029.xlsx")  # 저장할 엑셀 파일 경로
-    save_to_excel(products, output_file)
 
-    print(f"Total products: {len(products)}")
-    print(f"Results saved to: {output_file}")
+        else:
+            # 사용자 ID를 찾을 수 없을 경우 알림창 띄우기
+            self.show_alert("사용자 ID를 찾을 수 없습니다.")
+
+    def extract_user_id(self, url):
+        """URL에서 사용자 ID를 추출합니다."""
+        match = re.search(r'https?://blog\.naver\.com/([^/]+)/?', url)
+        if match:
+            return match.group(1)  # 그룹 1의 값을 반환
+        return None  # 일치하는 값이 없을 경우 None 반환
+
+    # 처음 버튼 클릭 시 호출되어 첫 페이지로 이동합니다.
+    def on_first_clicked(self):
+        self.change_page(0)
+        print("처음 버튼 클릭")
+
+    # 이전 버튼 클릭 시 호출되어 이전 페이지로 이동합니다.
+    def on_prev_clicked(self):
+        self.change_page(self.current_page - 1)
+        print("이전 버튼 클릭")
+
+    # 다음 버튼 클릭 시 호출되어 다음 페이지로 이동합니다.
+    def on_next_clicked(self):
+        self.change_page(self.current_page + 1)
+        print("다음 버튼 클릭")
+
+    # 마지막 버튼 클릭 시 호출되어 마지막 페이지로 이동합니다.
+    def on_last_clicked(self):
+        self.change_page(len(self.data) // self.rows_per_page)
+        print("마지막 버튼 클릭")
+
+    # 페이지 버튼 클릭 시 호출되어 해당 페이지로 이동합니다.
+    def on_page_button_clicked(self, page_number):
+        self.change_page(page_number)
+        print(f"{page_number + 1} 페이지 버튼 클릭")
+
+    # 키워드 검색 버튼 클릭 시 호출되어 검색 동작을 수행합니다.
+    def on_keyword_search_clicked(self, keyword):
+        sender = self.sender()  # 클릭된 버튼 가져오기
+        sender.setText("찾는중")  # 버튼 텍스트를 '찾는중'으로 변경
+        print(f"키워드 검색 버튼 클릭: {keyword}")
+
+        # 타이머 설정하여 2초 후 다시 "검색"으로 텍스트 변경
+        QTimer.singleShot(2000, lambda: sender.setText("검색"))
+
+    # 페이지 번호를 변경하고 데이터를 로드합니다.
+    def change_page(self, page_number):
+        if page_number < 0:
+            page_number = 0
+        elif page_number > len(self.data) // self.rows_per_page:
+            page_number = len(self.data) // self.rows_per_page
+
+        self.current_page = page_number
+        self.load_table_data()
+
+    # 윈도우 리사이즈 시 호출되어 컬럼 너비를 조정합니다.
+    def resizeEvent(self, event):
+        self.set_column_widths()
+        super().resizeEvent(event)
+
+    # ========== 블로그 게시글 조회 [시작] ==========
+    def fetch_blog_page(self, blog_id):
+        url = f"https://blog.naver.com/PostList.naver?blogId={blog_id}&widgetTypeCall=true&noTrackingCode=true&directAccess=true"
+        headers = {
+            "authority": "blog.naver.com",
+            "method": "GET",
+            "path": f"/PostList.naver?blogId={blog_id}&widgetTypeCall=true&noTrackingCode=true&directAccess=true",
+            "scheme": "https",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "referer": f"https://blog.naver.com/{blog_id}",
+            "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
+            "sec-fetch-dest": "iframe",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers)
+        return response.content
+
+    # 전체 게시글 수
+    def extract_numbers_from_elements(self, content, class_name):
+        soup = BeautifulSoup(content, 'html.parser')
+        elements = soup.find_all(class_=class_name)
+        numbers = []
+        for element in elements:
+            text = element.get_text()
+            numbers.extend(re.findall(r'\d+', text))
+        return numbers
+
+
+    def fetch_post_titles(self, blog_id, current_page):
+        url = f"https://blog.naver.com/PostTitleListAsync.naver?blogId={blog_id}&viewdate=&currentPage={current_page}&categoryNo=&parentCategoryNo=&countPerPage=10"
+        headers = {
+            "authority": "blog.naver.com",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            try:
+                # JSON 데이터를 올바르게 파싱하기 위해 불필요한 백슬래시를 제거
+                cleaned_text = re.sub(r'\\(?!["\\/bfnrt])', "", response.text)  # 잘못된 백슬래시 패턴 제거
+                data = json.loads(cleaned_text)  # JSON 파싱
+
+                posts = []
+                for post in data.get("postList", []):
+                    title = urllib.parse.unquote(post.get("title", "")).replace("+", " ")
+                    title = re.sub(r'\s+', ' ', title).strip()
+                    post_data = {
+                        "addDate": post.get("addDate"),
+                        "logNo": post.get("logNo"),
+                        "title": title,
+                        "url": f'https://blog.naver.com/{blog_id}/{post.get("logNo")}'
+                    }
+                    posts.append(post_data)
+                return posts
+
+            except json.JSONDecodeError as e:
+                print("JSONDecodeError 발생:", e)
+                print("응답 텍스트:", response.text)
+                return []
+        else:
+            print("Error: 요청이 실패했습니다.")
+            return []
+
+    # 블로그 조회 최초 시작 전체 페이지수 가져오기 첫 페이지 가져오기
+    def start_blog(self, blog_id):
+        self.total_pages = 0  # 클래스 변수 초기화
+        posts = []
+        content = self.fetch_blog_page(blog_id)
+
+        # 전체 페이지 및 1페이지 글
+
+        # 전체 개수글 수
+        numbers = self.extract_numbers_from_elements(content, "category_title pcol2")
+
+
+        # 전체 페이지
+        if numbers:  # numbers 리스트가 비어있지 않을 경우
+            self.total_pages = math.ceil(int(numbers[0]) / 10)  # 클래스 변수에 저장
+
+        if self.total_pages > 1:
+            posts = self.fetch_post_titles(blog_id, 1)
+
+        return posts  # 클래스 변수를 포함하여 반환
+
+    # ========== 블로그 게시글 조회 [시작] ==========
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())

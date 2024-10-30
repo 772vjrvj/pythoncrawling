@@ -711,11 +711,11 @@ def save_to_excel(products, output_file):
     df.to_excel(output_file, index=False)
 
 def main():
-    folder_path = os.path.join(os.getcwd(), "모든_xlsx파일_241028 - 복사본")  # 현재 실행 경로에 "모든_xlsx파일" 폴더
+    folder_path = os.path.join(os.getcwd(), "모든_xlsx파일_241028")  # 현재 실행 경로에 "모든_xlsx파일" 폴더
     products = read_xlsx_files(folder_path)
 
     # 결과를 Excel 파일로 저장
-    output_file = os.path.join(os.getcwd(), "제품정보_241029.xlsx")  # 저장할 엑셀 파일 경로
+    output_file = os.path.join(os.getcwd(), "제품정보_241030.xlsx")  # 저장할 엑셀 파일 경로
     save_to_excel(products, output_file)
 
     print(f"Total products: {len(products)}")
