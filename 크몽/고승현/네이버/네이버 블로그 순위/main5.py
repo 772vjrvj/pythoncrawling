@@ -168,7 +168,7 @@ class MainWindow(QWidget):
         for row_idx, row_data in enumerate(self.data):  # self.data의 모든 데이터 표시
             for col_idx, item in enumerate(row_data):
                 table_item = QTableWidgetItem(item)
-                table_item.setTextAlignment(Qt.AlignLeft)
+                table_item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, table_item)
 
         # 테이블이 비어있을 경우 적절한 메시지를 설정할 수 있습니다.
