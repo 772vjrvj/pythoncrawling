@@ -11,11 +11,26 @@ import re
 import math
 import urllib.parse
 import json
+import time
+import re
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+from datetime import datetime
+import os
+import pandas as pd
 
 
 class MainWindow(QWidget):
     total_pages = 0
     page_group_size = 10
+    userID = ''
 
     def __init__(self):
         super().__init__()
@@ -75,6 +90,18 @@ class MainWindow(QWidget):
         search_layout.addWidget(self.search_input)
         search_layout.addWidget(self.search_button)
 
+        # 새로운 입력 창 생성 (userID_input)
+        self.userID_input = QLineEdit(self)
+        self.userID_input.setPlaceholderText("UserID")
+        self.userID_input.setFixedWidth(200)  # 검색 버튼의 2배 크기 설정
+
+        # 입력 값 변경 시 userID 업데이트
+        self.userID_input.textChanged.connect(self.update_userID)
+
+        # 레이아웃에 userID_input 추가
+        search_layout.addWidget(self.userID_input)
+
+
         self.loading_label = QLabel()
         self.loading_label.setFixedSize(50, 50)
         self.loading_label.setVisible(False)
@@ -90,7 +117,12 @@ class MainWindow(QWidget):
 
         self.setLayout(main_layout)
 
+        self.table.cellClicked.connect(self.on_cell_clicked)
+
         webbrowser.register('edge', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"))
+
+    def update_userID(self, text):
+        MainWindow.userID = text  # 전역 변수 userID 업데이트
 
     def create_page_buttons(self):
         for i in reversed(range(self.pagination_layout.count())):
@@ -147,7 +179,6 @@ class MainWindow(QWidget):
         self.table.setColumnWidth(4, total_width * 50 // 1000)
         self.table.setColumnWidth(5, total_width * 50 // 1000)
 
-
     def load_table_data(self):
         """현재 페이지의 데이터를 테이블에 로드합니다."""
         self.table.setRowCount(len(self.data))  # 현재 데이터의 개수만큼 행 설정
@@ -159,12 +190,13 @@ class MainWindow(QWidget):
                     input_field = QLineEdit()
                     input_field.setPlaceholderText("")
                     search_button = QPushButton("조회")
-                    search_button.clicked.connect(lambda _, idx=row_idx: self.on_keyword_search_clicked(input_field.text(), idx))
+                    # search_button.clicked.connect(lambda _, idx=row_idx, field=input_field: self.on_keyword_search_clicked(field.text(), self.data[idx][6]))
+                    search_button.clicked.connect(lambda _, idx=row_idx, field=input_field, button=search_button: self.on_keyword_search_clicked(field.text(), self.data[idx][6], button))
+
 
                     # 높이를 셀 높이에 맞게 조정
                     input_field.setFixedHeight(self.table.rowHeight(row_idx) - 12)  # 약간의 여백을 줄여서 조정
                     search_button.setFixedHeight(self.table.rowHeight(row_idx) - 12)  # 버튼도 동일하게 조정
-
 
                     # 여백 조정 (위쪽 여백을 절반으로 설정)
                     layout.setContentsMargins(0, 0, 0, 0)
@@ -180,19 +212,19 @@ class MainWindow(QWidget):
                     title_item = QTableWidgetItem(item)
                     title_item.setTextAlignment(Qt.AlignCenter)
                     title_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-                    title_item.setData(Qt.UserRole, self.data[row_idx][3])  # URL 저장
+                    title_item.setData(Qt.UserRole, self.data[row_idx][6])  # URL 저장
                     self.table.setItem(row_idx, col_idx, title_item)
                 else:
                     table_item = QTableWidgetItem(item)
                     table_item.setTextAlignment(Qt.AlignCenter)
                     self.table.setItem(row_idx, col_idx, table_item)
 
-
     def on_cell_clicked(self, row, column):
-        if column == 1:  # 제목 클릭 시 브라우저 열기
-            url = self.table.item(row, column).data(Qt.UserRole)
+        if column == 1:  # 제목 클릭 시 logNo 출력
+            log_no = self.data[row][6]  # logNo를 self.data에서 가져오기
+            url = f"https://blog.naver.com/{blog_id}/{log_no}"  # URL 형식으로 설정
             if url:
-                webbrowser.get('edge').open(url)
+                webbrowser.get('edge').open(url)  # Edge 브라우저로 URL 열기
 
     def show_alert(self, message):
         msg_box = QMessageBox()
@@ -205,12 +237,10 @@ class MainWindow(QWidget):
     def on_search_clicked(self):
         global blog_id
         search_text = self.search_input.text()
-        print(f"입력된 URL: {search_text}")
         blog_id = self.extract_user_id(search_text)
 
         if blog_id:
             posts = self.start_blog(blog_id)  # 초기 데이터 가져오기
-            print(f"가져온 게시글 수: {len(posts)}")  # 가져온 게시글 수 확인
             if posts:  # 게시글이 있을 경우
                 result_list = []
                 for item in posts:
@@ -221,10 +251,10 @@ class MainWindow(QWidget):
                         '-',  # PC
                         '-',  # MO
                         '-',  # SUM
+                        item['logNo'],  # logNo 추가
                     ]
                     result_list.append(row)
                 self.data = result_list  # 데이터 설정
-                print(f"로드된 데이터: {self.data}")  # 데이터 확인
                 self.load_table_data()  # 테이블에 데이터 로드
                 self.create_page_buttons()  # 페이지 버튼 생성
             else:
@@ -245,14 +275,12 @@ class MainWindow(QWidget):
         self.current_page_group = 0
         self.change_page(0)
         self.create_page_buttons()
-        print("처음 버튼 클릭")
 
     def on_prev_clicked(self):
         if self.current_page_group > 0:
             self.current_page_group -= 1
             self.change_page(self.current_page_group * self.page_group_size)
             self.create_page_buttons()
-        print("이전 버튼 클릭")
 
     def on_next_clicked(self):
         total_page_groups = math.ceil(self.total_pages / self.page_group_size)
@@ -260,21 +288,16 @@ class MainWindow(QWidget):
             self.current_page_group += 1
             self.change_page(self.current_page_group * self.page_group_size)
             self.create_page_buttons()
-        print("다음 버튼 클릭")
 
     def on_last_clicked(self):
         self.current_page_group = math.ceil(self.total_pages / self.page_group_size) - 1
         self.change_page(self.current_page_group * self.page_group_size)
         self.create_page_buttons()
-        print("마지막 버튼 클릭")
 
     def on_page_button_clicked(self, page_number, button):
         """페이지 버튼 클릭 시 호출되어 해당 페이지로 이동하고 데이터를 로드합니다."""
         self.current_page = page_number
         self.change_button_color(button)  # 클릭된 버튼 색상 변경
-
-        print(f'page_number : {page_number}')
-        print(f'blog_id : {blog_id}')
 
         # 새로운 데이터 가져오기
         posts = self.fetch_post_titles(blog_id, page_number + 1)
@@ -289,16 +312,240 @@ class MainWindow(QWidget):
                     '-',  # PC
                     '-',  # MO
                     '-',  # SUM
+                    item['logNo'],  # logNo 추가
                 ]
                 self.data.append(row)
             self.load_table_data()  # 테이블에 새 데이터 로드
         else:
             self.show_alert("게시글을 불러오는 중 오류가 발생했습니다.")
 
-    def on_keyword_search_clicked(self, keyword, row_index):
-        """키워드 검색 버튼 클릭 시 호출되어 검색 기능을 수행합니다."""
-        print(f"키워드 검색 버튼 클릭: {keyword} (행 인덱스: {row_index})")
-        # 여기서 keyword에 대해 필요한 검색 작업을 수행하세요.
+    def on_keyword_search_clicked(self, keyword, log_no, button):
+        """키워드 검색 버튼 클릭 시 호출되어 입력값과 logNo 출력."""
+        result_number = self.find_target_log(keyword, log_no)
+        # "조회" 버튼의 텍스트를 result_number로 변경
+        button.setText(str(result_number))  # result_number는 문자열로 변환하여 설정
+
+        rs = self.item_scout(self.userID, keyword)
+
+        # rs가 유효한 결과일 때 테이블에 값 설정
+        if rs:
+            # 현재 row의 MO, PC, SUM 컬럼에 데이터 삽입
+            widget_index = self.table.indexAt(button.parentWidget().pos())
+            row_idx = widget_index.row()
+
+
+            mo_item = QTableWidgetItem(str(rs.get("MO", "-")))
+            pc_item = QTableWidgetItem(str(rs.get("PC", "-")))
+            sum_item = QTableWidgetItem(str(rs.get("SUM", "-")))
+
+            mo_item.setTextAlignment(Qt.AlignCenter)
+            pc_item.setTextAlignment(Qt.AlignCenter)
+            sum_item.setTextAlignment(Qt.AlignCenter)
+
+            self.table.setItem(row_idx, 3, mo_item)  # MO 컬럼 (3번째 인덱스)
+            self.table.setItem(row_idx, 4, pc_item)  # PC 컬럼 (4번째 인덱스)
+            self.table.setItem(row_idx, 5, sum_item)  # SUM 컬럼 (5번째 인덱스)
+
+
+    def get_naver_blog_search(self, count_per_page, current_page, keyword):
+        # URL과 파라미터 설정
+        url = "https://section.blog.naver.com/ajax/SearchList.naver"
+        params = {
+            "countPerPage": count_per_page,
+            "currentPage": current_page,
+            "endDate": "",
+            "keyword": keyword,
+            "orderBy": "sim",
+            "startDate": "",
+            "type": "post"
+        }
+
+        # 헤더 설정 (쿠키 제외)
+        headers = {
+            "authority": "section.blog.naver.com",
+            "method": "GET",
+            "path": "/ajax/SearchList.naver",
+            "scheme": "https",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "priority": "u=1, i",
+            "referer": f"https://section.blog.naver.com/BlogHome.naver?directoryNo=0&currentPage={current_page}&groupId=0",
+            "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        }
+
+        # GET 요청 보내기
+        response = requests.get(url, headers=headers, params=params)
+
+        # 응답 상태 코드 확인
+        if response.status_code == 200:
+            try:
+                # 응답을 텍스트로 읽고, 앞의 불필요한 문자열을 제거
+                text_data = response.text
+                if text_data.startswith(")]}',"):
+                    text_data = text_data[5:]  # 불필요한 문자열 제거
+
+                # JSON 파싱
+                data = json.loads(text_data)
+
+                return {
+                    "pagePerCount": data.get("result", {}).get("pagePerCount"),
+                    "totalCount": data.get("result", {}).get("totalCount"),
+                    "searchList": data.get("result", {}).get("searchList")
+                }
+            except json.JSONDecodeError:
+                e = response.text
+        else:
+            rs1 = response.status_code
+            rs2 = response.text
+
+        return None
+
+
+    def find_target_log(self, keyword, target_log_no):
+        count_per_page = 20
+        current_page = 1
+
+        # 첫 페이지 조회
+        result = self.get_naver_blog_search(count_per_page, current_page, keyword)
+
+        if result:
+            total_count = result["totalCount"]
+            totalPages = math.ceil(total_count / count_per_page)  # 전체 페이지 수 계산
+
+            # 첫 페이지에서 target_log_no 찾기
+            for index, item in enumerate(result["searchList"]):
+                if item.get("logNo") == int(target_log_no):
+                    result_index = index + 1
+                    return result_index
+
+            # 첫 페이지에 없다면 다음 페이지부터 탐색
+            for page in range(2, totalPages + 1):
+                time.sleep(1)
+                result = self.get_naver_blog_search(count_per_page, page, keyword)
+
+                if result:
+                    for index, item in enumerate(result["searchList"]):
+                        if item.get("logNo") == int(target_log_no):
+                            # 해당 페이지에서 찾은 경우
+                            result_index = count_per_page * (page - 1) + (index + 1)
+                            return result_index
+
+        return None
+
+
+    def setup_driver(self, userID):
+        try:
+            chrome_options = Options()
+            user_data_dir = f"C:\\Users\\{userID}\\AppData\\Local\\Google\\Chrome\\User Data"
+            profile = "Default"
+
+            chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+            chrome_options.add_argument(f"profile-directory={profile}")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-software-rasterizer")
+            chrome_options.add_argument("--start-maximized")
+            chrome_options.add_argument("--headless")  # Headless 모드 추가
+
+            user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            chrome_options.add_argument(f'user-agent={user_agent}')
+            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_options.add_experimental_option('useAutomationExtension', False)
+
+            download_dir = os.path.abspath("downloads")
+            os.makedirs(download_dir, exist_ok=True)
+
+            chrome_options.add_experimental_option('prefs', {
+                "download.default_directory": download_dir,
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing.enabled": True
+            })
+
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+            script = '''
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                window.navigator.chrome = { runtime: {} };
+                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+            '''
+            driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+
+            return driver
+        except WebDriverException as e:
+            a =e
+            return None
+
+
+    def item_scout(self, userID, keyword):
+        driver = self.setup_driver(userID)
+        if driver is None:
+            return
+
+        try:
+            driver.get("https://itemscout.io/")
+
+            # Wait for the input field to be present
+            input_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'input[placeholder="상품을 검색해보세요."]'))
+            )
+
+            # Set the value of the input field to the keyword
+            input_element.send_keys(keyword)
+
+            # Find the search button next to the input field and click it
+            search_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "검색")]'))
+            )
+            search_button.click()
+
+            # "검색 비율" div와 그 옆의 버튼 찾기
+            stat_title = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//div[contains(@class, "KeywordCountStat_count-title__nq7aO") and text()="검색 비율"]'))
+            )
+            button = stat_title.find_element(By.XPATH, 'following-sibling::button')
+
+            # 마우스 오버 수행
+            actions = ActionChains(driver)
+            actions.move_to_element(button).perform()
+            time.sleep(1)  # 마우스 오버 후 텍스트 로딩 시간
+
+            # 마우스 오버 후 나타난 div에서 텍스트 가져오기
+            hover_text_div = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//div[contains(@class, "KeywordCountStat_count-title__nq7aO") and text()="검색 비율"]/following-sibling::button/following-sibling::div'))
+            )
+            hover_text = hover_text_div.text
+
+            # 정규 표현식으로 "모바일 검색수"와 "PC 검색수" 값 추출
+            search_counts = {}
+            mobile_search = re.search(r"모바일 검색수\s*:\s*([\d,]+)회", hover_text)
+            pc_search = re.search(r"PC 검색수\s*:\s*([\d,]+)회", hover_text)
+
+            if mobile_search:
+                search_counts["MO"] = int(mobile_search.group(1).replace(",", ""))
+            if pc_search:
+                search_counts["PC"] = int(pc_search.group(1).replace(",", ""))
+
+            search_counts["SUM"] = search_counts["MO"] + search_counts["PC"]
+
+            return search_counts
+
+        except TimeoutException:
+            a = 1
+        except Exception as e:
+            b= 2
+        finally:
+            driver.quit()
 
     def change_page(self, page_number):
         if page_number < 0:
@@ -338,7 +585,6 @@ class MainWindow(QWidget):
             response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
             return response.content
         except requests.RequestException as e:
-            print(f"HTTP 요청 중 오류 발생: {e}")
             self.show_alert("블로그 페이지를 불러오는 중 오류가 발생했습니다.")
             return None
 
@@ -380,19 +626,14 @@ class MainWindow(QWidget):
                     "title": title,
                     "url": f'https://blog.naver.com/{blog_id}/{post.get("logNo")}'
                 }
-                print(post_data)  # 디버깅을 위한 출력
                 posts.append(post_data)
 
-            print(f"가져온 게시글 수: {len(posts)}")  # 가져온 게시글 수 출력
             return posts
 
         except requests.RequestException as e:
-            print(f"HTTP 요청 중 오류 발생: {e}")
             self.show_alert("게시글 제목을 불러오는 중 오류가 발생했습니다.")
             return []
         except json.JSONDecodeError as e:
-            print("JSONDecodeError 발생:", e)
-            print("응답 텍스트:", response.text)
             self.show_alert("게시글 제목을 처리하는 중 오류가 발생했습니다.")
             return []
 

@@ -4,14 +4,20 @@
 
 https://whereispost.com/
 
+
 https://itemscout.io/
+
 
 https://blog.naver.com/772vjrvj
 
 크롬이 모두 종료된 상태에서 가능
 
 - 사전 작업
+
+■ 엣지 경로 C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe
+
 ■ https://itemscout.io/ 에 자동 로그인 되도록 로그인 정보가 저장 되어 있어야한다.
+■ https://itemscout.io/ 에 3일간 보지 않기를 미리 체크 검색창이 나오게 세팅해놓는다.
 ■ https://itemscout.io/ 크롬 확장자가 깔려있어야한다.
 ■ 크롬은 최신버전으로 업데이트 한다.
 ■ 사용중인 크롬을 모두 종료한다.
@@ -33,3 +39,6 @@ https://blog.naver.com/772vjrvj
 
 
 
+
+
+pyinstaller --onefile --noconsole main.py
