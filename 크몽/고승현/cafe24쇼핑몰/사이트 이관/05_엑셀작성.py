@@ -1,6 +1,7 @@
 import os
 import re
 import pandas as pd
+from bs4 import BeautifulSoup
 
 # 1. 카테고리 정보를 담고 있는 리스트
 category_obj = [
@@ -547,19 +548,79 @@ class Product:
         self.상품노출 = "Y"
 
 
-def replace_image_paths(html_content):
-    """HTML 콘텐츠에서 이미지 경로를 변경하는 함수"""
-    # 정규 표현식 패턴: /web/upload/NNEditor/YYYYMMDD/filename.jpg
-    pattern = r'/web/upload/NNEditor/\d{8}/([a-zA-Z0-9_.-]+\.jpg)'
+def replace_image_path(src_value):
+    """src 경로를 변경하는 함수"""
+    # /web/upload/NNEditor/YYYYMMDD/ 뒤에 오는 모든 파일명을 새로운 경로로 변경
+    pattern = r'/web/upload/NNEditor/\d{8}/([a-zA-Z0-9_.-]+)'
+    return re.sub(pattern, r'/upload/goods/\1', src_value)
 
-    # 변환 함수 정의
-    def replace_path(match):
-        filename = match.group(1)  # 추출한 파일 이름
-        return f'/upload/goods/{filename}'  # 새로운 경로 생성
+def extract_and_replace_img_tags(html_content):
+    # BeautifulSoup으로 HTML 파싱
+    soup = BeautifulSoup(html_content, 'html.parser')
 
-    # 이미지 경로 변경
-    modified_content = re.sub(pattern, replace_path, html_content)
-    return modified_content
+    # 모든 img 태그 찾기
+    img_tags = soup.find_all('img')
+
+    # 수정된 img 태그 문자열들을 저장할 리스트
+    modified_img_tags = []
+
+    # src 외의 속성 제거 및 경로 수정
+    for img in img_tags:
+        src = img.get('src')  # 현재 src 값 저장
+        # 모든 속성 제거
+        for attr in list(img.attrs):
+            del img[attr]
+        img['src'] = replace_image_path(src)  # src 속성만 남기고 경로 변경
+        modified_img_tags.append(str(img))  # 변환된 img 태그를 문자열로 리스트에 추가
+
+    # 모든 img 태그를 문자열로 연결하여 반환
+    return ''.join(modified_img_tags)
+
+
+
+def parse_options(option_input, product):
+    # "//"로 옵션을 분리
+    options = option_input.split("//")
+
+    # COLOR 또는 TYPE, 그리고 SIZE 옵션의 첫 번째 항목 찾기
+    color_or_type_option = None
+    size_option = None
+
+    for option in options:
+        if not color_or_type_option and re.search(r"(COLOR|TYPE)\{(.*?)\}", option):
+            color_or_type_match = re.search(r"(COLOR|TYPE)\{(.*?)\}", option)
+            color_or_type_name = color_or_type_match.group(1)
+            color_or_type_value = color_or_type_match.group(2).replace("|", "/")
+            color_or_type_option = (color_or_type_name, color_or_type_value)
+
+        if not size_option and "SIZE" in option:
+            size_match = re.search(r"SIZE\{(.*?)\}", option)
+            if size_match:
+                size_option = size_match.group(1).replace("|", "/")
+
+        # COLOR 또는 TYPE, 그리고 SIZE가 모두 있으면 루프 종료
+        if color_or_type_option and size_option:
+            break
+
+    # 조건에 따라 product에 데이터 설정
+    if color_or_type_option and size_option:
+        # 필수 또는 모델 또는 옵션에 COLOR 또는 TYPE 저장
+        product.필수_또는_모델_또는_옵션 = color_or_type_option[0]
+        # 이차 상품명 또는 옵션명에 COLOR 또는 TYPE 값 저장
+        product.이차상품명_또는_옵션명 = color_or_type_option[1]
+        # 옵션 항목명에 SIZE 저장
+        product.옵션항목명 = "SIZE"
+        # 옵션값에 SIZE 값 저장
+        product.옵션값 = size_option
+    else:
+        # 기본 동작: 첫 번째 옵션을 기존대로 처리
+        first_option = options[0]
+        match = re.match(r"(\w+)\{(.*?)\}", first_option)
+        if match:
+            product.옵션항목명 = match.group(1)
+            product.옵션값 = match.group(2).replace("|", "/")
+
+
 
 def read_xlsx_files(folder_path):
     result = []
@@ -589,14 +650,8 @@ def read_xlsx_files(folder_path):
                 if isinstance(option_input, float):
                     option_input = str(option_input)
 
-                # 문자열에서 "//"가 있는지 확인
-                if "//" in option_input:
-                    option_input = option_input.split("//")[0]  # 첫 번째 옵션만 사용
-
-                match = re.match(r"(\w+)\{(.*?)\}", option_input)
-                if match:
-                    product.옵션항목명 = match.group(1)
-                    product.옵션값 = match.group(2).replace("|", "/")
+                # 옵션 항목 선택
+                parse_options(option_input, product)
 
                 # 8. 썸네일 이미지
                 thumbnail_image_path = row.get("이미지등록(목록)", "")
@@ -609,7 +664,7 @@ def read_xlsx_files(folder_path):
                 # 9. 상품안내
                 html_content = row.get("상품 상세설명", "")
                 # 이미지 경로 변경 실행
-                modified_html_content = replace_image_paths(html_content)
+                modified_html_content = extract_and_replace_img_tags(html_content)
                 product.상품안내 = modified_html_content
 
                 cleaned_name = re.sub(r'[\d_-]', '', file_name.split('.')[0])  # 숫자, _ 및 - 제거
@@ -656,7 +711,7 @@ def save_to_excel(products, output_file):
     df.to_excel(output_file, index=False)
 
 def main():
-    folder_path = os.path.join(os.getcwd(), "모든_xlsx파일_241028")  # 현재 실행 경로에 "모든_xlsx파일" 폴더
+    folder_path = os.path.join(os.getcwd(), "모든_xlsx파일_241028 - 복사본")  # 현재 실행 경로에 "모든_xlsx파일" 폴더
     products = read_xlsx_files(folder_path)
 
     # 결과를 Excel 파일로 저장
