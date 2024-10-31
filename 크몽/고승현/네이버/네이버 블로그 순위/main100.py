@@ -448,13 +448,17 @@ class MainWindow(QWidget):
 
             return results  # 제목과 LogNo의 딕셔너리 리스트를 반환
         else:
-            a=1
+            print(f"Error: {response.status_code}")
 
     def find_log_no_index(self, query, main_log_no):
         page = 0  # 초기 페이지 설정 (0부터 시작)
         attempts = 0  # 시도 횟수 초기화
+        print(f'query : {query}')
+        print(f'main_log_no : {main_log_no}')
+
         while True:
             titles = self.fetch_naver_blog_list(query, page)
+            print(titles)  # 디버깅을 위한 출력
 
             if titles:
                 for index, title in enumerate(titles):
@@ -563,6 +567,7 @@ class MainWindow(QWidget):
         }
         try:
             response = requests.get(url, headers=headers, cookies=global_cookies)
+            print(f'global_cookies : {global_cookies}')
 
             response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
             return response.content
@@ -605,6 +610,7 @@ class MainWindow(QWidget):
         }
         try:
             response = requests.get(url, headers=headers, cookies=global_cookies)
+            print(f' cookies=global_cookies : {global_cookies}')
             if response.status_code == 200:
                 json_data = response.json()
                 if json_data.get("isSuccess"):
@@ -616,6 +622,7 @@ class MainWindow(QWidget):
                             "title": item.get("titleWithInspectMessage"),
                             "addDate": self.convert_timestamp(item.get("addDate"))
                         }
+                        print(mapped_item)
                         new_items.append(mapped_item)
                     return new_items
         except requests.RequestException as e:
