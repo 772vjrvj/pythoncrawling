@@ -163,12 +163,17 @@ def save_excel_file(new_data):
     # 기존 엑셀 파일 읽기
     df = pd.read_excel(filepath, sheet_name=0)
 
+    # new_data의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 '작업중'으로 채움
+    if len(new_data) < len(df):
+        new_data.extend(['-'] * (len(df) - len(new_data)))
+    elif len(new_data) > len(df):
+        new_data = new_data[:len(df)]  # new_data가 더 길면 df 길이에 맞게 자름
+
     # 새로운 데이터를 H열에 추가
-    df['H'] = new_data  # 'H' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
+    df['F'] = new_data  # 'H' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
 
     # 업데이트된 데이터 저장
     df.to_excel(filepath, index=False)
-
 # ══════════════════════════════════════════════════════
 # endregion
 
@@ -182,9 +187,11 @@ def save_excel_file(new_data):
 def requests_get(url, headers, payload=None):
     global global_cookies
     if payload:  # payload가 존재할 때만 params를 포함
-        return requests.get(url, headers=headers, cookies=global_cookies, params=payload)
+        rs = requests.get(url, headers=headers, cookies=global_cookies, params=payload)
+        return rs
     else:
-        return requests.get(url, headers=headers, cookies=global_cookies)
+        rs = requests.get(url, headers=headers, cookies=global_cookies)
+        return rs
 
 # 네이버 로그아웃
 def naver_logout():
@@ -201,7 +208,7 @@ def naver_logout():
 # test용
 # def naver_login():
 #     global global_cookies
-#     global_cookies = 'test'
+#     global_cookies = 'NAC=OsXJBQA7C4Wj; NNB=FOXBS434SDKGM; BA_DEVICE=09b5d283-4430-4f3b-a39c-dcbb342cd55e; ASID=da9384ec00000191d00facf700000072; NFS=2; NACT=1; happybean_close=close; BUC=g0_P5NQWIcFlRt9PMhtyGNF4SYOma66zmuGcIC2pY5s=; JSESSIONID=2BA5AE1D3DAB76AB261120D87E88559D.jvm1'
 
 
 # 네이버 로그인
@@ -274,6 +281,9 @@ def fetch_naver_blog_my_logNos(blog_id, current_page):
         return []
     except json.JSONDecodeError as e:
         messagebox.showwarning("경고", "게시글을 가져오는중 에러가 발생했습니다.")
+        return []
+    except Exception as e:
+        messagebox.showwarning("경고", e)
         return []
 
 # 블로그 게시글에서 해시태그들을 가져오기
@@ -551,13 +561,16 @@ def start_processing():
             extracted_data_list.append(hash_tag_per)
 
         except Exception as e:
+            completed_process(extracted_data_list)
             new_print(e, level="WARN")
+            return
 
         # 진행률 업데이트
         remaining_time_update(index, total_contents)
 
     if not stop_flag:
         completed_process(extracted_data_list)
+        return
 
 
 def completed_process(extracted_data_list):
