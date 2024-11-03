@@ -1,262 +1,129 @@
 {
-  "result": {
-    "searchDisplayInfo": {
-      "authUrlType": "LOGIN",
-      "authUrl": "https://nid.naver.com/nidlogin.login?svctype=128&a_version=2&viewtype=1&&url=https://section.blog.naver.com/Search/Post.naver?keyword=%25EA%25B4%2591%25EB%25AA%2585%25EC%258B%259C%25ED%2598%25B8%25ED%2594%2584%25EC%25A7%2591&surl=https://section.blog.naver.com",
-      "existSuicideWord": false,
-      "keyword": "광명시호프집",
-      "eucKrEncodedKeyword": "%B1%A4%B8%ED%BD%C3%C8%A3%C7%C1%C1%FD",
-      "blockedByBifrostShield": false,
-      "displayType": "NORMAL"
+  "resultCode": "S",
+  "resultMessage": "",
+  "postList": [
+    {
+      "sellerServiceStatus": "",
+      "logNo": "223642264707",
+      "title": "%EC%84%9C%EC%9A%B8+%ED%95%9C%EA%B0%95%EB%B7%B0+%EB%A7%9B%EC%A7%91+%EC%9A%A9%EC%82%B0+%EB%8D%94%EB%A6%AC%EB%B2%84+%EB%A9%9C%ED%8A%B8+%EC%9C%84%EC%8A%A4%ED%82%A4%EB%B0%94+%EC%B6%94%EC%B2%9C+%EC%85%94%ED%8B%80+%EC%9E%88%EC%9D%8C",
+      "categoryNo": "6",
+      "parentCategoryNo": "6",
+      "sourceCode": "0",
+      "commentCount": "11",
+      "readCount": "",
+      "addDate": "2024. 11. 1.",
+      "openType": "2",
+      "searchYn": "true",
+      "greenReviewBannerYn": false,
+      "memologMovingYn": "0",
+      "isPostSelectable": "0",
+      "isPostNotOpen": "0",
+      "isPostBlocked": 0,
+      "isBlockTmpForced": 0,
+      "postProductStatus": ""
     },
-    "searchList": [
-      {
-        "domainIdOrBlogId": "sjtst",
-        "logNo": 223431669215,
-        "gdid": "90000003_00000000000000340590B5DF",
-        "postUrl": "https://blog.naver.com/sjtst/223431669215",
-        "title": "<strong class=\"search_keyword\">호프집</strong> 폴딩도어 상가 2층 경기도 <strong class=\"search_keyword\">광명시</strong> 하안동에 설치했어요",
-        "noTagTitle": "호프집 폴딩도어 상가 2층 경기도 광명시 하안동에 설치했어요",
-        "contents": "경기도 <strong class=\"search_keyword\">광명시</strong> 하안동에 위치한 상가 2층 <strong class=\"search_keyword\">호프집</strong> 외부 창으로 설치되었으며, 기존 타 업체 접는문과 화재 시 비상탈출구 문 및 통유리 철거 작업같이 진행되었습니다 철거 작업을 한 후 접는문 Folding door와 통유리, 비상탈출 공간 4면 보강 작업을 하였습니다 측면 화재 시 비상탈출구 공간은 90도... ",
-        "nickName": "서진토스템",
-        "blogName": "서진토스템 아우스바이튼 썬룸 폴딩도어",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/20151105_46/sjtst_1446709934908ggqTL_GIF/Untitled-1.gif?type=s1",
-        "addDate": 1714444080000,
-        "thumbnails": [
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MzBfMTk5/MDAxNzE0NDM0NjkxMjc4.urUKTKTp919wX60roqSfQpZ6UhlYfb9ghwI4Y3vUXn8g.oEB-zPUPLs1GojdjiO3OaFm3Q5tJxSE2poGAYis36Wwg.JPEG/temp_1714433683586.-837265807.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MzBfMTEw/MDAxNzE0NDM0NjY5NjE5.e64HUFPXr9sTWqMYT01lrhFZTnPEO8i73reWLz1cbFQg.0Ky62OVLXhuYtjajxg8OjQzd3UxYZszZcZ5EGsUulRYg.JPEG/temp_1713239878273.-1816970118.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MzBfOTgg/MDAxNzE0NDM0Njc2ODI0.iS-QGJLRRI0Uwd8jHAmSigbaUQcCHfzUZfD3Jr8DrNQg.HhfXWiNNhEKOfFC5f-rudx7czprHNPH3KaGCw-uN9PUg.JPEG/temp_1714433705109.1968314300.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MzBfMTg5/MDAxNzE0NDM0NjgxNjY5.frelP5Z5wxk_AewaNkOGFFTMIPjV8UgApmfM-JTGGMog._Xfg17tvrdmTaA-R0WO3uTFjFbWhDwjYhP03Gv3Fs_wg.JPEG/temp_1714433704917.1968314300.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          }
-        ],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": true
-      },
-      {
-        "domainIdOrBlogId": "ddari08",
-        "logNo": 223421478993,
-        "gdid": "90000003_000000000000003404F53851",
-        "postUrl": "https://blog.naver.com/ddari08/223421478993",
-        "title": "[또갔따리] <strong class=\"search_keyword\">광명시</strong> : 오비베어 철산점 (단체술집/<strong class=\"search_keyword\">호프집</strong>)",
-        "noTagTitle": "[또갔따리] 광명시 : 오비베어 철산점 (단체술집/호프집)",
-        "contents": "오비베어 철산점 경기 <strong class=\"search_keyword\">광명시</strong> 오리로856번길 13 2층 영업시간 월, 화, 수 10:30 ~ 04:00 목, 금 15:00 ~ 04:00 (금요일은 05:00 마감) 토, 일 13:00 ~ 05:00 (일요일은 04:00 마감) 라스트오더는 마감시간 1시간 전 ️ 휴무 없음  주차 가능 ✅ 예약 가능 ️ 포장 가능  배달 가능 instagram _ @obbear_chulsan 이 포스팅은... ",
-        "nickName": "따리",
-        "blogName": "따리로그",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/MjAyMzA5MDRfOTAg/MDAxNjkzODE1NDY2MTU1.Ac9uQfeJs5b682JtUXj7PfgQ0_M8I7adDszcFNOt9cEg.wTvBVUWx68-UwRkxKw7-9I0hLkMtDxnEXWCrnYk_8hsg.JPEG.srichbag/profileImage.jpg?type=s1",
-        "addDate": 1713589020000,
-        "thumbnails": [
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MTlfNTMg/MDAxNzEzNTMxNzk4OTU2.rlsKHtKZs4l7w04Wfvqnf4a8A8SqzJ1hKUBAqUAEd_Mg.yR38RZzvFjLqf5T4MreiMfqKcPNojL-a27ce27qbysgg.JPEG/1713531794498.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MTlfMTU4/MDAxNzEzNDk4NzMzNTU2.PyhvXhrbWGadyZ-Stl_i0Q8N-5_3kkznMoQNvYilIlsg.LvHgUKlvS3zfsf2cd4X_3YZXlFjoanGEzA59GHmz7nIg.JPEG/1713497803338.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MTlfMjAy/MDAxNzEzNDgzMzM2MDk0.8mfSljCsixlRo8cFC0VkRx-WLJnMA-Sw_UBrso6HmUYg.CpiJgCL4pmGt2H5qJYAxB2kZPNAXuv53S6-qhWQddDEg.JPEG/1713483305804.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDA0MTlfOTEg/MDAxNzEzNDgzMzM1OTY0.BB0REXcADLVJ3Qzp5bIGZ7P9QXvZNz1eNZVtRJxqCDEg.tDP1EZBJbDb2_GuS4umqZGdoWFsF4L_r6JUo466H7FUg.JPEG/1713483306398.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          }
-        ],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": true
-      },
-      {
-        "domainIdOrBlogId": "sh0429ryu",
-        "logNo": 223254631239,
-        "gdid": "90000003_0000000000000033FB035347",
-        "postUrl": "https://blog.naver.com/sh0429ryu/223254631239",
-        "title": "<strong class=\"search_keyword\">광명시 호프집</strong> 매장인데 설치된 포차스피커 점검과 설치 가능한가요?",
-        "noTagTitle": "광명시 호프집 매장인데 설치된 포차스피커 점검과 설치 가능한가요?",
-        "contents": "오늘 포스팅은 경기도 광명에 위치한 <strong class=\"search_keyword\">호프집</strong>에서 설치된 #포차스피커점검 문의를 주셨습니다. 전체적인 상황을 들었을때 현장 상황을 보지 않으면... 다니는 #<strong class=\"search_keyword\">호프집</strong>스피커 기존의 엠프와 연결해 보았습니다 확인된 문제는 엠프에서 출력을 내보내지 못해 문제가 발생한 것으로 판단하고 4채널... ",
-        "nickName": "명인사운드",
-        "blogName": "명인사운드",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/MjAyMDAzMjRfMjMz/MDAxNTg1MDUwOTk3NDMx.N-mNfTGLp7jQi2uU2lnV0jCqBCtowYnd2vkiJMYfbyAg.TO7PW6GPXj_Qkaa_4Zf1kDIUdRk8RaLXLmSGlwKoAc4g.JPEG.sh0429ryu/%25B8%25ED%25C0%25CE%25BB%25E7%25BF%25EE%25B5%25E5.jpg?type=s1",
-        "addDate": 1698989880000,
-        "thumbnails": [
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzExMDNfNDEg/MDAxNjk4OTg5NTI1OTQy.LmnWA7ENQbAzNY6aavHV_EVzLkeKCIa9QPcq21mX8y0g.h6P-JfghYChjaibU6vOPaYhpdi2PAZ5d3JQL86oYeDAg.JPEG.sh0429ryu/%B8%C5%C0%E5%BF%EB%BD%BA%C7%C7%C4%BF3.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzExMDNfMjcx/MDAxNjk4OTg5NTMzNTQ5.wYXmxj4WgNMhGrfcR8VTmUodGwFi9TjZYiwuyA5HlDgg.0vK22Uqeda4ZEhFNF4hA1PFgij4nJVzutennoAAcHrAg.JPEG.sh0429ryu/%B8%C5%C0%E5%BF%EB%BD%BA%C7%C7%C4%BF.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzExMDNfMjE3/MDAxNjk4OTg5NTQ0MzI3.KoBeKEITV_LAOviwbYkLc0lsWeZz5J1zuy-p37Mvgegg.vCtQHRr0LeeHwrfmRC6YOE2uh58Dxh-bRbaAvLmChXYg.JPEG.sh0429ryu/%B8%C5%C0%E5%BF%EB%BD%BA%C7%C7%C4%BF2.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzExMDNfMTEx/MDAxNjk4OTg5NTU3NDE2.Lz9iA4B3jx8EOb0s84ACY_0tmy3_cD-F18KJG_dL934g.KiK_h4D8Av9O0ldgx3aUFFOd5Vi-P1hdupIQfrD7Y-cg.JPEG.sh0429ryu/%B8%C5%C0%E5%BF%EB%BD%BA%C7%C7%C4%BF9.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          }
-        ],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": true
-      },
-      {
-        "domainIdOrBlogId": "772vjrvj",
-        "logNo": 223616675523,
-        "gdid": "90000003_00000000000000341097AEC3",
-        "postUrl": "https://blog.naver.com/772vjrvj/223616675523",
-        "title": "<strong class=\"search_keyword\">광명시호프집</strong> / 경양살롱 / 운영시간 가격 주차리뷰",
-        "noTagTitle": "광명시호프집 / 경양살롱 / 운영시간 가격 주차리뷰",
-        "contents": "경기 <strong class=\"search_keyword\">광명시</strong> 오리로854번길 21 2층 경양살롱  전화번호 0507-1383-0906 ‘경양살롱’(으)로 연결되는 스마트콜 번호입니다. 업체 전화번호 0507-1383... - 28명의 방문자분들이 &quot;기본 안주가 좋아요&quot;라고 언급했습니다. ️ 지도  경기 <strong class=\"search_keyword\">광명시</strong> 오리로854번길 21 2층 경양살롱",
-        "nickName": "기차기차",
-        "blogName": "772vjrvj님의블로그",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/MjAyMjA3MTFfMTkg/MDAxNjU3NTIzMDgwNjI2.8aPqJHBlXhQsua4kTfYouD8Lc9LAQ_Geo8IqCWs_x-og.FoHDzFEKIgwCPcMnruTTyN4i5C0ZBOxHZQekEf3gzZ0g.JPEG.772vjrvj/profileImage.jpg?type=s1",
-        "addDate": 1728748020000,
-        "thumbnails": [
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDEwMTNfMjY3/MDAxNzI4NzQ4MDAzMzgz.kSIhmOX_J1wheR0Tud27nt-fH8JGO64Enci_D9OUwo8g.I0r-XzhDpTAtFgVj3_sBj8lidvvqYtXUC9c7Da9nWbog.JPEG/%B0%E6%BE%E7%BB%EC%B7%D5_1.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDEwMTNfNzAg/MDAxNzI4NzQ4MDAzNDI2.WFUBK8Akoo35dJ4zM3LGB2VL-jN57PKKoImN-16BU0Yg.JlVt093wQNpDL5D0PFmqnXUcCApdVG_vz5sIM6TStCAg.JPEG/%B0%E6%BE%E7%BB%EC%B7%D5_2.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDEwMTNfMjU5/MDAxNzI4NzQ4MDAzNDc2.74B2nWH5nwKUZlCrQjPZ25Px1yrbW68M68Rzb9roH_Qg.NW2sRhDUM0jPeHciVqgtVI4Mgz8a7rP-hNbbxvZ9IBIg.JPEG/%B0%E6%BE%E7%BB%EC%B7%D5_3.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyNDEwMTNfMyAg/MDAxNzI4NzQ4MDAzNDA1.TWiuH8muYe27U93qQAVvOAPeUEpThJzqzwrDr8r4j_Ig.3NdXcgqM3nW6b4oybTqn_zh2yGVLg62QbcpLe6Nn-Ugg.JPEG/%B0%E6%BE%E7%BB%EC%B7%D5_4.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          }
-        ],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": true
-      },
-      {
-        "domainIdOrBlogId": "oycuvfuj26",
-        "logNo": 222899718544,
-        "gdid": "90000003_0000000000000033E5DBC990",
-        "postUrl": "https://blog.naver.com/oycuvfuj26/222899718544",
-        "title": "경기도<strong class=\"search_keyword\">광명시</strong> 노온사동 사무실 칸막이공사 <strong class=\"search_keyword\">호프집</strong> 벽 석고벽체",
-        "noTagTitle": "경기도광명시 노온사동 사무실 칸막이공사 호프집 벽 석고벽체",
-        "contents": "경기도<strong class=\"search_keyword\">광명시</strong> 노온사동 사무실 칸막이공사 <strong class=\"search_keyword\">호프집</strong> 벽 석고벽체 학업시설이나 업무를 보는 직장 등을 보더라도 근무하는 직원들의 사이마다 거의 칸막이가 쳐져 있다는 것을 볼 수 있습니다. 파티션을 일하는 것은 업체 관점에서 필수적인 부분은 아니지만 아무래도 사무원과 사무원 빈틈이 훤히... ",
-        "nickName": "칸막이전문",
-        "blogName": "칸막이전문",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/MjAyMjA3MTVfMTQ3/MDAxNjU3ODk2MDQ2Mzgz.6ZyikHVt8yVJWWzaDaqOlG2rA5klVEGiZpE_RJAdVxcg.Ak76Q-3me08VxoDi6ks-N1RavCCPDuw7HfntaH6DCPAg.JPEG.oycuvfuj26/20220714232746-100011.jpg/20220714232746-100011.jpg?type=s1",
-        "addDate": 1665676920000,
-        "thumbnails": [
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMjEwMTRfMjE1/MDAxNjY1Njc2OTQ5NDc5.MoZNSuOb4JXN-36kJIUW9YBx1BbPwIly5TJhLDXMWUog.bLoeZ1_NXGIf0MOBlZvyC1Gi9JciFDVXD5zKw66uPG8g.JPEG.oycuvfuj26/20220715021429-100758.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          }
-        ],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": true
-      },
-      {
-        "domainIdOrBlogId": "bug_119",
-        "logNo": 223175165296,
-        "gdid": "90000003_0000000000000033F646C570",
-        "postUrl": "https://blog.naver.com/bug_119/223175165296",
-        "title": "노래방 <strong class=\"search_keyword\">호프집</strong> 먼지다듬이!!!(고객상담:1533~3363)식당 인천시 <strong class=\"search_keyword\">광명시</strong> 고양시 안양시... ",
-        "noTagTitle": "부천시초파리퇴치 음식점날파리박멸 노래방 호프집 먼지다듬이!!!(고객상담:1533~3363)식당 인천시 광명시 고양시 안양시 파주시 김포시 ~",
-        "contents": "#부천시초파리퇴치#음식점날파리박멸#<strong class=\"search_keyword\">호프집</strong>초파리퇴치#식당초파리박멸#노래방초파리퇴치#방역해충닥터버그119#노래방초파리퇴치# 안녕하세요... 인천시, <strong class=\"search_keyword\">광명시</strong>, 의정부시, 수 원시, 안양시, 경기도, 강서구, 가양동, 개화동, 공항동, 과해동, 내발산동, 등촌동, 마곡동, 방화동, 염창동,인천... ",
-        "nickName": "닥터버그119",
-        "blogName": "닥터버그119 /해충방역 및 바이러스살균소독 전문",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/MjAyMzA3MjNfMjk5/MDAxNjkwMTE0OTI5ODI3.9MkyMJttH5UNAobOavChxh8VL3OM6YD7xb-bOYk4i3sg.oSrkvvJNNB9U0zTsLfLtHgdZXW-d6mPYV5YRQ74yZ-0g.JPEG.bug_119/KakaoTalk_20230220_005304636.jpg/KakaoTalk_20230220_005304636.jpg?type=s1",
-        "addDate": 1691158560000,
-        "thumbnails": [
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzA4MDRfMzAw/MDAxNjkxMTU1MjMyMzUy.x96iTy8_E4ARwDYXlLGDFLWmCj1vA4jEdwX8vgggBxkg.agg950Exf2WRQi8yWGFExt-bSeozeqLkw4U8VY5Hp9Ug.JPEG.bug_119/20230803_151238.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzA4MDRfMTQ3/MDAxNjkxMTU1MjM0MTU3.OnmKHxxKXvCPDVPQusbFsFB7x_b2x7zGpqwojFXqxQsg.6WHUJ1oncD63AuHDNF9LlMeSw0nxePFDhhLv1IJ-4u0g.JPEG.bug_119/20230803_150111.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzA4MDRfMjUy/MDAxNjkxMTU1MjM0OTg1.rprS6GlJodnFLQJbD9FNdxayHps_e-ZubeoDE-gGfrgg.C50uV_ihDYN0Zy1FP-elahmnaXxUq2WygT-Byg5154Ig.JPEG.bug_119/20230803_145810.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          },
-          {
-            "url": "https://blogthumb.pstatic.net/MjAyMzA4MDRfNzUg/MDAxNjkxMTU1MjM2MDM0.mxgPJCvY2lJY5tx3GBMgiu78LSnPxcEwt-IXbcTSHt8g.n9b5krdZxdMk7FP-OtWrzy5CpU71fYr2n6VwPKQ8xkIg.JPEG.bug_119/20230803_150004.jpg?type=s2",
-            "vrthumbnail": false,
-            "videoThumbnail": false
-          }
-        ],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": true
-      },
-      {
-        "domainIdOrBlogId": "jkm820482",
-        "logNo": 222099471740,
-        "gdid": "90000003_0000000000000033B628FD7C",
-        "postUrl": "https://blog.naver.com/jkm820482/222099471740",
-        "title": "<strong class=\"search_keyword\">광명시</strong>,소하동,<strong class=\"search_keyword\">호프집</strong>공사 화장실칸막이 큐비클 칸막이공사(퓨전술집)화장실칸막이공사",
-        "noTagTitle": "광명시,소하동,호프집공사 화장실칸막이 큐비클 칸막이공사(퓨전술집)화장실칸막이공사",
-        "contents": "경기도..<strong class=\"search_keyword\">광명시</strong>..소하2동(요리주점)화장실칸막이공사 &quot;상부몰딩없이 공사를하여 받침대가 부러지더니 전체 부서져서 상담전화를 주시는 경우가 있답니다. <strong class=\"search_keyword\">호프집</strong>공사 화장실(칸막이공사)큐비클 화장실칸막이 시공전문업체 판넬색상 : 오크샤모니 정성칸막이 는 화장실칸막이 칸막이공사 큐비클... ",
-        "nickName": "화장실칸막이",
-        "blogName": "화장실칸막이 저렴하게 해드려요",
-        "profileImgUrl": "https://blogpfthumb-phinf.pstatic.net/20110623_169/jkm820482_1308796106715_x50OZA_jpg/9.jpg?type=s1",
-        "addDate": 1602708000000,
-        "thumbnails": [],
-        "product": null,
-        "titleHead": null,
-        "titleHeadColor": null,
-        "marketPost": false,
-        "hasThumbnail": false
-      }
-    ],
-    "pagePerCount": 7,
-    "totalCount": 1774,
-    "isAdultUser": false
-  }
+    {
+      "sellerServiceStatus": "",
+      "logNo": "223638003803",
+      "title": "%EC%82%BC%EC%84%B1+%EC%BD%94%EC%97%91%EC%8A%A4+%EB%A7%9B%EC%A7%91+%EC%96%91%EA%B3%A0%EA%B8%B0+%ED%94%84%EB%A0%8C%EC%B9%98%EB%9E%99+%EC%A1%B4%EB%A7%9B+%EC%96%91%EA%BD%83+%EC%82%BC%EC%84%B1%EC%A0%90",
+      "categoryNo": "6",
+      "parentCategoryNo": "6",
+      "sourceCode": "0",
+      "commentCount": "11",
+      "readCount": "",
+      "addDate": "2024. 10. 29.",
+      "openType": "2",
+      "searchYn": "true",
+      "greenReviewBannerYn": false,
+      "memologMovingYn": "0",
+      "isPostSelectable": "0",
+      "isPostNotOpen": "0",
+      "isPostBlocked": 0,
+      "isBlockTmpForced": 0,
+      "postProductStatus": ""
+    },
+    {
+      "sellerServiceStatus": "",
+      "logNo": "223631394091",
+      "title": "%EC%B9%98%EC%95%99%EB%A7%88%EC%9D%B4+%EC%98%AC%EB%93%9C%ED%83%80%EC%9A%B4+%EB%A7%9B%EC%A7%91+%EB%B8%94%EB%A3%A8%EB%88%84%EB%93%A4+%EA%B0%88%EB%B9%84%EA%B5%AD%EC%88%98+%EB%A9%94%EB%89%B4+%EC%B6%94%EC%B2%9C+%EA%B0%80%EA%B2%A9+%EC%9B%A8%EC%9D%B4%ED%8C%85+%EC%98%81%EC%97%85%EC%8B%9C%EA%B0%84",
+      "categoryNo": "6",
+      "parentCategoryNo": "6",
+      "sourceCode": "0",
+      "commentCount": "6",
+      "readCount": "",
+      "addDate": "2024. 10. 24.",
+      "openType": "2",
+      "searchYn": "true",
+      "greenReviewBannerYn": false,
+      "memologMovingYn": "0",
+      "isPostSelectable": "0",
+      "isPostNotOpen": "0",
+      "isPostBlocked": 0,
+      "isBlockTmpForced": 0,
+      "postProductStatus": ""
+    },
+    {
+      "sellerServiceStatus": "",
+      "logNo": "223630109456",
+      "title": "%EC%A2%85%EB%A1%9C3%EA%B0%80%EC%97%AD+%EB%A7%9B%EC%A7%91+%EC%B2%AD%EA%B3%84%EC%B2%9C+%EA%B7%BC%EC%B2%98+%ED%9E%99%ED%95%9C+%EC%99%80%EC%9D%B8%EB%B0%94+%ED%8F%AC%EB%A5%B4%ED%88%AC%EA%B0%88+%EC%9A%94%EB%A6%AC+%EB%B0%94420+%EC%A1%B4%EB%A7%9B",
+      "categoryNo": "6",
+      "parentCategoryNo": "6",
+      "sourceCode": "0",
+      "commentCount": "13",
+      "readCount": "",
+      "addDate": "2024. 10. 23.",
+      "openType": "2",
+      "searchYn": "true",
+      "greenReviewBannerYn": false,
+      "memologMovingYn": "0",
+      "isPostSelectable": "0",
+      "isPostNotOpen": "0",
+      "isPostBlocked": 0,
+      "isBlockTmpForced": 0,
+      "postProductStatus": ""
+    },
+    {
+      "sellerServiceStatus": "",
+      "logNo": "223625959939",
+      "title": "%EC%84%9C%EC%9A%B8+%EB%B2%A0%EC%9D%B4%EC%A7%95%EB%8D%95+%EB%A7%9B%EC%A7%91+%EB%8D%94+%EB%A6%AC%EB%B2%84%EC%82%AC%EC%9D%B4%EB%93%9C%ED%98%B8%ED%85%94+%EB%94%B0%EB%9A%B1+%EC%A4%91%EC%8B%9D%EB%8B%B9+%EC%BD%94%EC%8A%A4",
+      "categoryNo": "6",
+      "parentCategoryNo": "6",
+      "sourceCode": "0",
+      "commentCount": "8",
+      "readCount": "",
+      "addDate": "2024. 10. 20.",
+      "openType": "2",
+      "searchYn": "true",
+      "greenReviewBannerYn": false,
+      "memologMovingYn": "0",
+      "isPostSelectable": "0",
+      "isPostNotOpen": "0",
+      "isPostBlocked": 0,
+      "isBlockTmpForced": 0,
+      "postProductStatus": ""
+    }
+  ],
+  "countPerPage": "5",
+  "totalCount": "951",
+  "pagingHtml": "<div class=\'blog2_paginate\'>    <strong class=\'blind\'>페이지 이동하기</strong>                <strong class=\'page pcol3 _goPageTop _param(1)\'>1<span class=\'blind\'>현재 페이지</span><i class=\'aline pcol2\'></i></strong>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(2)\'>2<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(3)\'>3<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(4)\'>4<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(5)\'>5<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(6)\'>6<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(7)\'>7<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(8)\'>8<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(9)\'>9<i class=\'aline\'></i></a>            <a href=\'#\' class=\'page pcol2 _goPageTop _param(10)\'>10<i class=\'aline\'></i></a>        <a href=\'#\' class=\'next pcol2 _goPageTop _param(11) aggregate_click_delegate\'  alt=\'11\'>다음<span class=\'blind\'>페이지로 이동</span><i class=\'icon\'></i></a></div>",
+  "parameters": {
+    "listType": "top",
+    "currentPage": "1",
+    "countPerPage": "5",
+    "categoryNo": "6",
+    "parentCategoryNo": "0",
+    "viewDate": "",
+    "logNo": ""
+  },
+  "blog": {
+    "blogId": "roketmissile",
+    "blogNo": "5985129"
+  },
+  "blogUser": {
+    "isBlogOwner": "0"
+  },
+  "isTagEnabled": "false",
+  "isTagEditable": "0",
+  "isAllPostSelectable": "0",
+  "tagQueryString": "&logNo=223642264707&logNo=223638003803&logNo=223631394091&logNo=223630109456&logNo=223625959939"
 }

@@ -1,20 +1,17 @@
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTableWidget,
-    QLineEdit, QPushButton, QLabel, QMessageBox, QComboBox, QDialog
-)
-from PyQt5.QtGui import QMovie  # QMovie 임포트
-
-import math
-import json
-from urllib.parse import quote
-
-import sys
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
-import time
+from tkinterdnd2 import DND_FILES, TkinterDnD
+from tkinter import ttk, filedialog, font, messagebox
+import tkinter as tk
+import pandas as pd
+import threading
 import requests
+import random
+import ctypes
+import time
+import json
+import math
 import re
-from datetime import datetime
-
+from bs4 import BeautifulSoup
+from urllib.parse import quote
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,15 +19,43 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
 
 
-# 전역 변수로 쿠키 저장
-global_cookies = {}
-attempts = 1  # 기본 시도 횟수
-blog_id = ''
 
-# 셀레니움 드라이버 설정 함수
+# region
+# ══════════════════════════════════════════════════════
+# 전역 변수
+# ══════════════════════════════════════════════════════
+
+# 엑셀 업로드 후 url 리스트
+id_list = []
+
+# 추출값 페센트 리스트
+extracted_data_list = []  # 모든 데이터 저장용
+
+# 일시 중지
+stop_flag = False
+
+# 네이버 로그인 쿠키
+global_cookies = ''
+
+# 완료후 깜빡임 상태
+flashing = True
+
+# 엑셀 경로
+filepath = None
+
+# ══════════════════════════════════════════════════════
+# endregion
+
+
+
+# region
+# ══════════════════════════════════════════════════════
+# 셀레니움
+# ══════════════════════════════════════════════════════
+
+# 드라이버 세팅
 def setup_driver():
     """
     Selenium 웹 드라이버를 설정하고 반환하는 함수입니다.
@@ -60,668 +85,562 @@ def setup_driver():
     })
     return driver
 
-
-# 네이버 로그인 스레드
-class LoginThread(QThread):
-    login_complete = pyqtSignal(dict, str)
-
-    def run(self):
-        global global_cookies
-        try:
-            driver = setup_driver()
-            driver.get("https://nid.naver.com/nidlogin.login")
-            time.sleep(2)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "id")))
-
-            logged_in = False
-            max_wait_time = 300
-            start_time = time.time()
-
-            while not logged_in:
-                time.sleep(1)
-                elapsed_time = time.time() - start_time
-
-                if elapsed_time > max_wait_time:
-                    self.login_complete.emit({}, "로그인 실패: 300초 내에 로그인하지 않았습니다.")
-                    break
-
-                cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
-                if 'NID_AUT' in cookies and 'NID_SES' in cookies:
-                    global_cookies = cookies
-                    self.login_complete.emit(cookies, "로그인 성공: 정상 로그인 되었습니다.")
-                    logged_in = True
-                    break
-        except Exception as e:
-            self.login_complete.emit({}, f"로그인 중 오류가 발생했습니다: {str(e)}")
-        finally:
-            driver.quit()
-
-
-
-class MainWindow(QWidget):
-    total_pages = 100
-    page_group_size = 10
-
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("카페 게시글 검색기")
-        self.setGeometry(100, 100, 1000, 720)
-        self.setStyleSheet(""" 
-            QWidget { background-color: #ffffff; font-family: Arial, sans-serif; } 
-            QLineEdit { padding: 5px; border: 1px solid #ccc; border-radius: 5px; } 
-            QPushButton { background-color: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 5px; }  # 기본 버튼은 초록색
-            QPushButton:hover { background-color: #45a049; } 
-            QPushButton:disabled { background-color: #cccccc; color: #666666; } 
-            QTableWidget { border: 1px solid #ccc; gridline-color: #ccc; } 
-            QTableWidget::item { padding: 5px; } 
-        """)
-
-        self.current_page = 0
-        self.rows_per_page = 10
-        self.current_page_group = 0
-        self.data = []
-
-        main_layout = QVBoxLayout()
-        self.pagination_layout = QHBoxLayout()
-        search_layout = QVBoxLayout()  # 수정: 수직 레이아웃으로 변경
-
-        # 상단 레이아웃
-        top_layout = QHBoxLayout()
-
-        self.search_input = QLineEdit(self)
-        self.search_input.setPlaceholderText("블로그 주소를 입력하세요")
-        self.search_button = QPushButton("검색")
-        self.search_button.setCursor(Qt.PointingHandCursor)  # 손가락 커서 설정
-        self.search_button.setStyleSheet("background-color: #cbd5d6; color: white;")
-        self.search_button.setEnabled(True)  # 활성화
-        self.search_button.clicked.connect(self.on_search_clicked)
-
-        # 로그인 상태 표시 및 로그인 버튼
-        self.login_status_label = QLabel("관리자님 로그인을 하세요")
-        self.login_status_label.setStyleSheet("color: red;")
-        self.login_button = QPushButton("로그인")
-        self.login_button.setStyleSheet("background-color: #72c6cf; color: white;")
-        self.login_button.setCursor(Qt.PointingHandCursor)  # 손가락 커서 설정
-        self.login_button.clicked.connect(self.on_login_clicked)
-
-        top_layout.addWidget(self.search_input)
-        top_layout.addWidget(self.search_button)
-        top_layout.addWidget(self.login_button)
-
-        # 로그인 상태 변경
-        if global_cookies:
-            self.login_button.setText("로그아웃")
-            self.login_status_label.setText("관리자님 환영합니다.")
-            self.login_status_label.setStyleSheet("color: blue;")
-
-        # 추가 UI (상태 라벨과 셀렉트 박스)
-        additional_layout = QHBoxLayout()
-
-        # 시도 횟수 설정 셀렉트 박스
-        self.attempts_selector = QComboBox(self)
-        self.attempts_selector.addItems([
-            "30개 0.5초", "60개 1초", "90개 1.5초", "120개 2초", "150개 2.5초",
-            "180개 3초", "210개 3.5초", "240개 4초", "270개 4.5초", "300개 5초"
-        ])
-        self.attempts_selector.currentIndexChanged.connect(self.update_attempts)
-
-        additional_layout.addWidget(self.login_status_label)
-        additional_layout.addWidget(self.attempts_selector)
-
-        # 테이블 설정
-        self.table = QTableWidget(self)
-        self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["작성일", "제목", "순위 (키워드)"])
-
-        search_layout.addLayout(top_layout)
-        search_layout.addLayout(additional_layout)  # 추가: 레이아웃 추가
-        main_layout.addLayout(search_layout)
-        main_layout.addWidget(self.table)
-        main_layout.addLayout(self.pagination_layout)
-        self.setLayout(main_layout)
-
-
-    def on_login_clicked(self):
-        """로그인 버튼 클릭 시 로그인 또는 로그아웃을 처리합니다."""
-        if self.login_button.text() == "로그아웃":
-            # 로그아웃 처리
-            global global_cookies
-            global_cookies = {}  # 쿠키 초기화
-            global blog_id
-            blog_id = ''  # 쿠키 초기화
-            self.login_button.setText("로그인")
-            self.login_button.setCursor(Qt.PointingHandCursor)  # 손가락 커서 설정
-            self.login_button.setStyleSheet("background-color: #72c6cf; color: white;")
-            self.login_status_label.setText("관리자님 로그인을 하세요")
-            self.login_status_label.setStyleSheet("color: red;")
-
-            self.search_button.setText("검색")
-            self.search_button.setCursor(Qt.PointingHandCursor)  # 손가락 커서 설정
-            self.search_button.setStyleSheet("background-color: #cbd5d6; color: white;")
-            self.search_button.setEnabled(False)  # 활성화
-
-            # 페이지 버튼 제거
-            self.remove_page_buttons()  # 페이지 버튼 제거 호출
-            self.data = []  # 데이터 초기화
-            self.load_table_data()  # 테이블 초기화
-            self.pagination_layout.setEnabled(False)  # 페이지 버튼 비활성화
-            QMessageBox.information(self, "로그아웃", "로그아웃 되었습니다.")
-        else:
-            # 로그인 처리 시작
-            self.login_thread = LoginThread()
-            self.login_thread.login_complete.connect(self.handle_login_complete)
-            self.login_thread.start()
-
-
-    def handle_login_complete(self, cookies, message):
-        """로그인 완료 시 호출되는 함수입니다."""
-        if cookies:
-            QMessageBox.information(self, "로그인 성공", message)
-            global_cookies.update(cookies)
-            self.login_button.setText("로그아웃")
-            self.login_button.setCursor(Qt.PointingHandCursor)  # 손가락 커서 설정
-            self.login_button.setStyleSheet("background-color: #4CAF50; color: white;")
-
-            self.login_status_label.setText("관리자님 환영합니다.")
-            self.login_status_label.setStyleSheet("color: blue;")
-
-            self.search_button.setEnabled(True)  # 활성화
-            self.search_button.setStyleSheet("background-color: #4CAF50; color: white;")
-
-            self.create_page_buttons()  # 페이지 버튼 생성
-
-            # 로그인 후 모든 버튼 색상 초록색으로 설정
-
-            for i in range(self.pagination_layout.count()):
-                widget = self.pagination_layout.itemAt(i).widget()
-                if isinstance(widget, QPushButton):
-                    widget.setStyleSheet("background-color: #4CAF50; color: white;")  # 페이징 버튼 초록색으로 설정
-
-
-    def update_attempts(self, index):
-        global attempts
-        attempts = index + 1  # 인덱스에 따라 attempts 전역 변수 업데이트
-
-
-    def create_page_buttons(self):
-        for i in reversed(range(self.pagination_layout.count())):
-            widget = self.pagination_layout.itemAt(i).widget()
-            if widget is not None:
-                self.pagination_layout.removeWidget(widget)
-                widget.deleteLater()
-
-        start_page = self.current_page_group * self.page_group_size
-        end_page = min(start_page + self.page_group_size, self.total_pages)
-
-        first_button = QPushButton("처음")
-        first_button.clicked.connect(self.on_first_clicked)
-        prev_button = QPushButton("이전")
-        prev_button.clicked.connect(self.on_prev_clicked)
-        next_button = QPushButton("다음")
-        next_button.clicked.connect(self.on_next_clicked)
-        last_button = QPushButton("마지막")
-        last_button.clicked.connect(self.on_last_clicked)
-
-        first_button.setFixedSize(80, 30)
-        prev_button.setFixedSize(80, 30)
-        next_button.setFixedSize(80, 30)
-        last_button.setFixedSize(80, 30)
-
-        self.pagination_layout.addWidget(first_button)
-        self.pagination_layout.addWidget(prev_button)
-
-        for page_number in range(start_page, end_page):
-            page_button = QPushButton(str(page_number + 1))
-            page_button.setFixedSize(40, 30)
-
-            page_button.clicked.connect(lambda checked, btn=page_button, page=page_number: self.on_page_button_clicked(page, btn))
-            self.pagination_layout.addWidget(page_button)
-
-        self.pagination_layout.addWidget(next_button)
-        self.pagination_layout.addWidget(last_button)
-        self.pagination_layout.setAlignment(Qt.AlignCenter)
-
-
-    def change_button_color(self, button):
-        for i in range(self.pagination_layout.count()):
-            widget = self.pagination_layout.itemAt(i).widget()
-            if isinstance(widget, QPushButton):
-                widget.setStyleSheet("background-color: #4CAF50; color: white;")
-        button.setStyleSheet("background-color: blue; color: white;")
-
-
-    def set_column_widths(self):
-        total_width = self.table.width()
-        self.table.setColumnWidth(0, total_width * 200 // 1000)
-        self.table.setColumnWidth(1, total_width * 527 // 1000)
-        self.table.setColumnWidth(2, total_width * 220 // 1000)
-
-
-    def load_table_data(self):
-        """현재 페이지의 데이터를 테이블에 로드합니다."""
-        self.table.setRowCount(len(self.data))  # 현재 데이터의 개수만큼 행 설정
-
-        # 각 행의 높이를 기본 높이의 1.5배로 설정
-        for row_idx, row_data in enumerate(self.data):  # self.data의 모든 데이터 표시
-            self.table.setRowHeight(row_idx, 55)
-
-            for col_idx, item in enumerate(row_data):
-                if col_idx == 0 or col_idx == 1:  # "작성일"과 "제목" 열에 QLineEdit 추가
-                    input_field = QLineEdit()
-                    input_field.setText(item)
-                    input_field.setAlignment(Qt.AlignCenter)
-                    self.table.setCellWidget(row_idx, col_idx, input_field)
-                elif col_idx == 2:  # "순위 (키워드)" 열에 입력 필드와 버튼 추가
-                    layout = QHBoxLayout()
-                    input_field = QLineEdit()
-                    input_field.setPlaceholderText("")
-                    search_button = QPushButton("조회")
-                    search_button.clicked.connect(lambda _, idx=row_idx, field=input_field, button=search_button: self.on_keyword_search_clicked(field.text(), self.data[idx][3], button))
-
-                    # 높이를 셀 높이에 맞게 조정
-                    input_field.setFixedHeight(self.table.rowHeight(row_idx) - 12)  # 약간의 여백을 줄여서 조정
-                    search_button.setFixedHeight(self.table.rowHeight(row_idx) - 12)  # 버튼도 동일하게 조정
-
-                    # 여백 조정 (위쪽 여백을 절반으로 설정)
-                    layout.setContentsMargins(0, 0, 0, 0)
-
-                    layout.addWidget(input_field)
-                    layout.addWidget(search_button)
-
-                    # 새로운 QWidget을 생성하여 레이아웃에 추가
-                    widget = QWidget()
-                    widget.setLayout(layout)
-                    self.table.setCellWidget(row_idx, col_idx, widget)  # cell에 위젯 추가
-
-
-    def show_alert(self, message):
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setText(message)
-        msg_box.setWindowTitle("경고")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec_()
-
-
-    def on_search_clicked(self):
-        global blog_id
-        if not global_cookies:  # 쿠키가 없으면 알림창 표시
-            self.show_alert("로그인 하세요")
-            return
-
-        search_text = self.search_input.text()
-        blog_id = self.extract_user_id(search_text)
-
-        if blog_id:
-            posts = self.start_blog(blog_id)  # 초기 데이터 가져오기
-            if posts:  # 게시글이 있을 경우
-                result_list = []
-                for item in posts:
-                    row = [
-                        item['addDate'],
-                        item['title'],
-                        '-',  # 순위 (키워드)
-                        item['logNo'],  # logNo 추가
-                    ]
-                    result_list.append(row)
-                self.data = result_list  # 데이터 설정
-                self.load_table_data()  # 테이블에 데이터 로드
-                self.create_page_buttons()  # 페이지 버튼 생성
-            else:
-                self.show_alert("게시글을 불러오는 중 오류가 발생했습니다.")
-        else:
-            self.show_alert("사용자 ID를 찾을 수 없습니다.")
-
-
-    def extract_user_id(self, url):
-        # 마지막 '/'가 있는지 확인하고, 있으면 그 뒤의 문자열을 리턴
-        if '/' in url:
-            return url.rsplit('/', 1)[-1]  # 마지막 '/' 뒤의 문자열 반환
-        return url  # '/'가 없으면 원래 문자열 반환
-
-
-    def on_first_clicked(self):
-        if blog_id:
-            self.current_page_group = 0
-            self.change_page(0)
-            self.create_page_buttons()
-        else:
-            self.show_alert("블로그주소 입력후 조회하세요.")
-
-
-    def on_prev_clicked(self):
-        if blog_id:
-            if self.current_page_group > 0:
-                self.current_page_group -= 1
-                self.change_page(self.current_page_group * self.page_group_size)
-                self.create_page_buttons()
-        else:
-            self.show_alert("블로그주소 입력후 조회하세요.")
-
-
-    def on_next_clicked(self):
-        if blog_id:
-            total_page_groups = math.ceil(self.total_pages / self.page_group_size)
-            if self.current_page_group < total_page_groups - 1:
-                self.current_page_group += 1
-                self.change_page(self.current_page_group * self.page_group_size)
-                self.create_page_buttons()
-        else:
-            self.show_alert("블로그주소 입력후 조회하세요.")
-
-
-    def on_last_clicked(self):
-        if blog_id:
-            self.current_page_group = math.ceil(self.total_pages / self.page_group_size) - 1
-            self.change_page(self.current_page_group * self.page_group_size)
-            self.create_page_buttons()
-        else:
-            self.show_alert("블로그주소 입력후 조회하세요.")
-
-
-    def on_page_button_clicked(self, page_number, button):
-        if blog_id:
-
-            """페이지 버튼 클릭 시 호출되어 해당 페이지로 이동하고 데이터를 로드합니다."""
-            self.current_page = page_number
-            self.change_button_color(button)  # 클릭된 버튼 색상 변경
-
-            # 새로운 데이터 가져오기
-            posts = self.fetch_post_titles(blog_id, page_number + 1)
-
-            if posts:  # 게시글이 있을 경우
-                self.data = []  # 기존 데이터 지우기
-                for item in posts:
-                    row = [
-                        item['addDate'],
-                        item['title'],
-                        '-',  # 순위 (키워드)
-                        item['logNo'],  # logNo 추가
-                    ]
-                    self.data.append(row)
-                self.load_table_data()  # 테이블에 새 데이터 로드
-            else:
-                self.show_alert("게시글을 불러오는 중 오류가 발생했습니다.")
-        else:
-            self.show_alert("블로그주소 입력후 조회하세요.")
-
-
-    def on_keyword_search_clicked(self, keyword, log_no, button):
-        if not global_cookies:  # 쿠키가 없으면 알림창 표시
-            self.show_alert("로그인 하세요")
-            return
-
-        result_number = self.find_log_no_index(keyword, log_no)
-        # "조회" 버튼의 텍스트를 result_number로 변경
-        button.setText(str(result_number))  # result_number는 문자열로 변환하여 설정
-
-
-    def fetch_naver_blog_list(self, query, page):
-        url = "https://s.search.naver.com/p/review/48/search.naver"
-
-        # 페이로드를 딕셔너리 형태로 정의
-        payload = {
-            "ssc": "tab.blog.all",
-            "api_type": 8,
-            "query": f"{query}",
-            "start": f"{page + 1}",
-            "sm": "tab_hty.top",
-            "prank": f'{page}',
-            "ngn_country": "KR"
-        }
-        query_encoding = quote(query)
-
-        # 헤더 설정
-        headers = {
-            "authority": "s.search.naver.com",
-            "method": "GET",
-            "path": "/p/review/48/search.naver",
-            "scheme": "https",
-            "accept": "application/json, text/javascript, */*; q=0.01",
-            "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            # "cookie": "",
-            "origin": "https://search.naver.com",
-            "referer": f"https://search.naver.com/search.naver?sm=tab_hty.top&ssc=tab.blog.all&query={query_encoding}&oquery={query_encoding}&tqi=iyLxLlqo1awssNDx7HsssssstkG-146063",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
-        }
-
-        # GET 요청 보내기
-        response = requests.get(url, headers=headers, params=payload)
-        if response.status_code == 200:
-            # JSON 응답 파싱
-            json_data = response.json()
-            contents = json_data.get("contents", "")
-
-            # HTML 파싱
-            soup = BeautifulSoup(contents, 'html.parser')
-
-            # class="detail_box" 안에 있는 title_area의 a 태그 찾기
-            detail_boxes = soup.find_all(class_="detail_box")
-            results = []  # 제목과 LogNo를 담을 리스트
-
-            for box in detail_boxes:
-                title_area = box.find(class_="title_area")
-                if title_area:
-                    a_tag = title_area.find('a')
-                    if a_tag:
-                        # 제목 텍스트 추출
-                        title_text = a_tag.get_text(separator=' ', strip=True)  # 띄어쓰기를 유지
-                        # href 속성에서 LogNo 추출
-                        href = a_tag['href']
-                        log_no = href.split('/')[-1]  # URL의 마지막 부분이 LogNo
-                        results.append({"title": title_text, "log_no": log_no})
-
-            return results  # 제목과 LogNo의 딕셔너리 리스트를 반환
-        else:
-            a=1
-
-
-    def find_log_no_index(self, query, main_log_no):
-        """로그 번호를 찾기 위한 인덱스를 반환합니다."""
-        page = 0
-        try_count = 0
-
-        QApplication.processEvents()  # UI 업데이트를 위한 호출
-
-        while try_count < attempts:
-            titles = self.fetch_naver_blog_list(query, page)
-            if titles:
-                for index, title in enumerate(titles):
-                    if str(title['log_no']) == str(main_log_no):
-                        # 로딩 화면 숨기기
-                        return (30 * page) + (index + 1)
-                page += 1
-                try_count += 1
-            else:
+# ══════════════════════════════════════════════════════
+# endregion
+
+
+
+# region
+# ══════════════════════════════════════════════════════
+# 엑셀 관련
+# ══════════════════════════════════════════════════════
+
+# 드래그 엑셀 파일로 이름 업로드
+def on_drop(event):
+    global id_list, filepath
+    filepath = event.data.strip('{}')
+    id_list = read_excel_file(filepath)
+    update_log(id_list)
+    # 리스트 상태 확인 및 버튼 활성화
+    check_list_and_toggle_button(id_list)
+
+# 윈도우 엑셀 파일로 이름 업로드
+def browse_file():
+    global id_list, filepath
+    filepath = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
+    if filepath:
+        id_list = read_excel_file(filepath)
+        update_log(id_list)
+        # 리스트 상태 확인 및 버튼 활성화
+        check_list_and_toggle_button(id_list)
+
+# 엑셀에 url 리스트를 가져오는 함수
+def update_log(id_list):
+    log_text_widget.delete(1.0, tk.END)
+    for url in id_list:
+        log_text_widget.insert(tk.END, url + "\n")
+    log_text_widget.insert(tk.END, f"\n총 {len(id_list)}개의 URL이 있습니다.\n")
+    log_text_widget.see(tk.END)
+
+# url들이 정상인지를 확인하여 버튼을 활성 비활성화 한다.
+def check_list_and_toggle_button(id_list):
+    if id_list:
+        start_button.config(state=tk.NORMAL)
+    else:
+        start_button.config(state=tk.DISABLED)
+
+# url에서 id를 추출
+def extract_blog_id(url):
+    # "PostList.naver"에서 blogId 추출
+    postlist_pattern = r'[?&]blogId=([^&]+)'
+    postlist_match = re.search(postlist_pattern, url)
+
+    if postlist_match:
+        return postlist_match.group(1)  # blogId 값 추가
+
+    # 기본 URL에서 ID 추출 (www 포함)
+    base_pattern = r'https?://(?:www\.)?(?:blog|m\.blog)\.naver\.com/([^/?&]+)'
+    match = re.search(base_pattern, url)
+
+    if match:
+        return match.group(1)  # 첫 번째 그룹 (ID)
+
+    return ''  # ID가 없을 경우 빈 문자열 반환
+
+# 엑셀의 url리스트를 읽어오는 함수.
+def read_excel_file(filepath):
+    df = pd.read_excel(filepath, sheet_name=0)
+    id_list = []
+    url_list = df.iloc[:, 1].tolist()
+    for url in url_list:
+        new_url = extract_blog_id(url)
+        id_list.append(new_url)
+    return id_list
+
+# 엑셀저장
+def save_excel_file(new_data):
+    global filepath
+    # 기존 엑셀 파일 읽기
+    df = pd.read_excel(filepath, sheet_name=0)
+
+    # 기존 데이터와 new_data의 길이가 맞지 않는 경우, 예외 처리
+    if len(df) != len(new_data):
+        messagebox.showwarning("경고", "기존 데이터와 새로운 데이터의 길이가 일치하지 않습니다.")
+        raise ValueError("기존 데이터와 새로운 데이터의 길이가 일치하지 않습니다.")
+
+    # 새로운 데이터를 H열에 추가
+    df['H'] = new_data  # 'H' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
+
+    # 업데이트된 데이터 저장
+    df.to_excel(filepath, index=False)
+
+# ══════════════════════════════════════════════════════
+# endregion
+
+
+
+# region
+# ══════════════════════════════════════════════════════
+# 네이버 API
+# ══════════════════════════════════════════════════════
+
+# 네이버 로그아웃
+def naver_logout():
+    global global_cookies, login_button, login_board, id_list, extracted_data_list
+    global_cookies = None
+    login_button.config(text="로그인", command=naver_login)
+    login_board.config(text="관리자님 로그인을 진행해주세요.", fg="red")
+    messagebox.showinfo("알림", "로그인 아웃: 정상 로그아웃 되었습니다.")
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+    id_list = []
+    extracted_data_list = []  # 모든 데이터 저장용
+
+# 네이버 로그인
+def naver_login():
+    global global_cookies, login_button, login_board
+    try:
+        driver = setup_driver()
+        driver.get("https://nid.naver.com/nidlogin.login")
+        time.sleep(2)
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "id")))
+
+        logged_in = False
+        max_wait_time = 300
+        start_time = time.time()
+
+        while not logged_in:
+            time.sleep(1)
+            elapsed_time = time.time() - start_time
+
+            if elapsed_time > max_wait_time:
+                messagebox.showwarning("경고", "로그인 실패: 300초 내에 로그인하지 않았습니다.")
                 break
-            time.sleep(0.5)
 
-        return None
+            cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
+            if 'NID_AUT' in cookies and 'NID_SES' in cookies:
+                global_cookies = cookies
+                messagebox.showinfo("알림", "로그인 성공: 정상 로그인 되었습니다.")
+                login_button.config(text="로그아웃", command=naver_logout)
+                login_board.config(text="관리자님 로그인 되었습니다. 작업을 진행해주세요.", fg="blue")
+                break
+    except Exception as e:
+        messagebox.showwarning("경고", f"로그인 중 오류가 발생했습니다.{e}")
+    finally:
+        driver.quit()
 
-    def get_naver_blog_search(self, count_per_page, current_page, keyword):
-        # URL과 파라미터 설정
-        url = "https://section.blog.naver.com/ajax/SearchList.naver"
-        params = {
-            "countPerPage": count_per_page,
-            "currentPage": current_page,
-            "endDate": "",
-            "keyword": keyword,
-            "orderBy": "sim",
-            "startDate": "",
-            "type": "post"
-        }
-
-        # 헤더 설정 (쿠키 제외)
-        headers = {
-            "authority": "section.blog.naver.com",
-            "method": "GET",
-            "path": "/ajax/SearchList.naver",
-            "scheme": "https",
-            "accept": "application/json, text/plain, */*",
-            "accept-encoding": "gzip",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "priority": "u=1, i",
-            "referer": f"https://section.blog.naver.com/BlogHome.naver?directoryNo=0&currentPage={current_page}&groupId=0",
-            "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
-        }
-
-        # GET 요청 보내기
-        response = requests.get(url, headers=headers, params=params)
-
-        # 응답 상태 코드 확인
+# 내 블로그 30개 번호 가져오기
+def fetch_naver_blog_my_logNos(blog_id, current_page):
+    global global_cookies
+    """주어진 블로그 ID와 현재 페이지를 사용하여 게시글 제목을 가져옵니다."""
+    url = f"https://m.blog.naver.com/api/blogs/{blog_id}/post-list?categoryNo=0&itemCount=30&page={current_page}&userId="
+    headers = {
+        "authority": "m.blog.naver.com",
+        "method": "GET",
+        "path": "/api/blogs/roketmissile/post-list?categoryNo=0&itemCount=10&page=1&userId=",
+        "scheme": "https",
+        "accept": "application/json, text/plain, */*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "priority": "u=1, i",
+        "referer": "https://m.blog.naver.com/roketmissile?tab=1",
+        "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+    }
+    try:
+        response = requests.get(url, headers=headers, cookies=global_cookies)
+        # response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            try:
-                # 응답을 텍스트로 읽고, 앞의 불필요한 문자열을 제거
-                text_data = response.text
-                if text_data.startswith(")]}',"):
-                    text_data = text_data[5:]  # 불필요한 문자열 제거
+            json_data = response.json()
+            if json_data.get("isSuccess"):
+                items = json_data['result']['items']
+                logNos = []
+                for item in items:
+                    logNos.append(item.get("logNo"),)
+                return logNos[:30]
+    except requests.RequestException as e:
+        messagebox.showwarning("경고", "게시글을 가져오는중 에러가 발생했습니다.")
+        return []
+    except json.JSONDecodeError as e:
+        messagebox.showwarning("경고", "게시글을 가져오는중 에러가 발생했습니다.")
+        return []
 
-                # JSON 파싱
-                data = json.loads(text_data)
+# 블로그 게시글에서 해시태그들을 가져오기
+def fetch_gs_tag_name(blog_id, logNo):
 
-                return {
-                    "pagePerCount": data.get("result", {}).get("pagePerCount"),
-                    "totalCount": data.get("result", {}).get("totalCount"),
-                    "searchList": data.get("result", {}).get("searchList")
-                }
-            except json.JSONDecodeError:
-                e = response.text
+    url = f'https://m.blog.naver.com/{blog_id}/{logNo}?referrerCode=1'
+
+    # HTTP GET 요청
+    headers = {
+        'authority': 'm.blog.naver.com',
+        'method': 'GET',
+        'path': f'/{blog_id}/{logNo}?referrerCode=1',
+        'scheme': 'https',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-encoding': 'gzip, deflate, br, zstd',
+        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+    }
+
+    # response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, cookies=global_cookies)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # <script> 태그 찾기
+        for script in soup.find_all('script'):
+            if 'gsTagName' in script.text:
+                # gsTagName 변수 찾기
+                start = script.text.find('gsTagName = "') + len('gsTagName = "')
+                end = script.text.find('";', start)
+                gs_tag_value = script.text[start:end]
+
+                # 콤마로 나누고 최대 5개 반환
+                tags = gs_tag_value.split(',')
+                return tags[:5]  # 최대 5개 반환
+
+    return []  # 요청 실패 시 빈 리스트 반환
+
+# 검색 블로그 20개 번호 가져오기
+def fetch_naver_blog_search_logNos(query, page):
+    url = "https://s.search.naver.com/p/review/48/search.naver"
+
+    # 페이로드를 딕셔너리 형태로 정의
+    payload = {
+        "ssc": "tab.blog.all",
+        "api_type": 8,
+        "query": f"{query}",
+        "start": f"{page + 1}",
+        "sm": "tab_hty.top",
+        "prank": f'{page}',
+        "ngn_country": "KR"
+    }
+    query_encoding = quote(query)
+
+    # 헤더 설정
+    headers = {
+        "authority": "s.search.naver.com",
+        "method": "GET",
+        "path": "/p/review/48/search.naver",
+        "scheme": "https",
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "origin": "https://search.naver.com",
+        "referer": f"https://search.naver.com/search.naver?sm=tab_hty.top&ssc=tab.blog.all&query={query_encoding}&oquery={query_encoding}&tqi=iyLxLlqo1awssNDx7HsssssstkG-146063",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+    }
+
+    # GET 요청 보내기
+    response = requests.get(url, headers=headers, params=payload, cookies=global_cookies)
+    # response = requests.get(url, headers=headers, params=payload)
+    if response.status_code == 200:
+        # JSON 응답 파싱
+        json_data = response.json()
+        contents = json_data.get("contents", "")
+
+        # HTML 파싱
+        soup = BeautifulSoup(contents, 'html.parser')
+
+        # class="detail_box" 안에 있는 title_area의 a 태그 찾기
+        detail_boxes = soup.find_all(class_="detail_box")
+        logNos = []  # 제목과 LogNo를 담을 리스트
+
+        for box in detail_boxes:
+            title_area = box.find(class_="title_area")
+            if title_area:
+                a_tag = title_area.find('a')
+                if a_tag:
+                    # href 속성에서 LogNo 추출
+                    href = a_tag['href']
+                    log_no = href.split('/')[-1]  # URL의 마지막 부분이 LogNo
+                    logNos.append(log_no)
+
+        return logNos[:30]  # LogNo 리스트
+    else:
+        new_print("조회된 해시태크 목록이 없습니다.")
+        return []
+
+# ══════════════════════════════════════════════════════
+# endregion
+
+
+
+# region
+# ══════════════════════════════════════════════════════
+# 윈도우 처리
+# ══════════════════════════════════════════════════════
+
+# 완료후 깜빡임 상태를 관리하는 함수
+def flash_window(root):
+    global flashing
+
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    FLASHW_ALL = 3  # 모든 플래시
+    hwnd = root.winfo_id()  # Tkinter 창의 윈도우 핸들 얻기
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, FLASHW_ALL, 0, 0)
+
+    def flash():
+        while flashing:
+            ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+            time.sleep(0.5)  # 0.5초 간격으로 깜빡임
+
+    threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
+
+# 중지후 깜빡임 상태를 나태나는 윈도우 함수
+def stop_flash_window(root):
+    global flashing
+    flashing = False
+
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    hwnd = root.winfo_id()
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
+    ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+
+# 시작 버튼 누르면 실행되는 함수
+def toggle_start_stop():
+    if global_cookies:
+        global id_list
+        new_print("작업시작")
+        if not id_list:
+            messagebox.showwarning("경고", "엑셀 목록이 없습니다.")
+            return
+        if start_button.config('text')[-1] == '시작':
+            start_button.config(text="중지", bg="red", fg="white")
+            threading.Thread(target=start_processing).start()
         else:
-            rs1 = response.status_code
-            rs2 = response.text
+            stop_processing()
+    else:
+        messagebox.showinfo("알림", "로그인을 진행해주세요.")
 
-        return None
+# 정지 버튼 정지 처리
+def stop_processing():
+    global stop_flag, id_list, extracted_data_list
+    stop_flag = True
+    id_list = []  # 배열 초기화
+    extracted_data_list = []  # 모든 데이터 저장용
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+    new_print(f'작업중지')
+    messagebox.showinfo("알림", "중지되었습니다..")
 
+# 화면 로그
+def new_print(text, level="INFO"):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_text = f"[{timestamp}] [{level}] {text}"
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
+    log_text_widget.see(tk.END)
 
-    def change_page(self, page_number):
-        if page_number < 0:
-            page_number = 0
-        elif page_number >= math.ceil(len(self.data) / self.rows_per_page):
-            page_number = math.ceil(len(self.data) / self.rows_per_page) - 1
-
-        self.current_page = page_number
-        self.load_table_data()
-
-
-    def remove_page_buttons(self):
-        """페이지 버튼을 제거하는 메서드입니다."""
-        for i in reversed(range(self.pagination_layout.count())):
-            widget = self.pagination_layout.itemAt(i).widget()
-            if widget is not None:
-                self.pagination_layout.removeWidget(widget)
-                widget.deleteLater()
-
-
-    def resizeEvent(self, event):
-        self.set_column_widths()
-        super().resizeEvent(event)
+# ══════════════════════════════════════════════════════
+# endregion
 
 
-    def fetch_blog_page(self, blog_id):
-        url = f"https://blog.naver.com/PostList.naver?blogId={blog_id}&widgetTypeCall=true&noTrackingCode=true&directAccess=true"
-        headers = {
-            "authority": "blog.naver.com",
-            "method": "GET",
-            "path": f"/PostList.naver?blogId={blog_id}&widgetTypeCall=true&noTrackingCode=true&directAccess=true",
-            "scheme": "https",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "referer": f"https://blog.naver.com/{blog_id}",
-            "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-fetch-dest": "iframe",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "same-origin",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
-        }
+
+# region
+# ══════════════════════════════════════════════════════
+# 실제 메인 실행 로직
+# ══════════════════════════════════════════════════════
+
+# 대기시간 처리
+def time_sleep():
+    time.sleep(random.uniform(1, 1.5))
+
+# 진행률 업데이트
+def remaining_time_update(index, total_contents):
+    progress["value"] = index + 1
+    progress_label.config(text=f"진행률: {int((index + 1) / total_contents * 100)}%")
+
+    # 30개글 x 5개 태그 x 2 번 (태그별 검색 조회) x 1.25 소요시간 = 375
+    remaining_time = (total_contents - (index + 1)) * 375
+    eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
+
+# 실제 시작 처리 메인 로직
+def start_processing():
+    global stop_flag, extracted_data_list, id_list
+
+    stop_flag = False
+    # 기존 로그 화면 초기화
+    log_text_widget.delete(1.0, tk.END)
+
+    extracted_data_list = []
+    total_contents = len(id_list) * 30
+    progress["maximum"] = total_contents
+    remaining_time_update(-1, total_contents)
+
+    # 전체 블로그 주소 id
+    for index, blog_id in enumerate(id_list):
+        new_print(f'아이디 : [{index + 1}] - {blog_id}, 계산 시작 ============================================================')
+        hash_tag_cnt = 0
+        if stop_flag:
+            completed_process(extracted_data_list)
+            return
         try:
-            response = requests.get(url, headers=headers, cookies=global_cookies)
+            # 내 블로그 30개 번호 가져오기
+            logNos = fetch_naver_blog_my_logNos(blog_id, 1)
+            new_print(f'아이디 : [{index + 1}] - {blog_id}, 게시글 수 {len(logNos)} ============================================================')
+            time_sleep()
 
-            response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
-            return response.content
-        except requests.RequestException as e:
-            self.show_alert("블로그 페이지를 불러오는 중 오류가 발생했습니다.")
-            return None
+            # 각 블로그안에 게시글 30개 리스트
+            for idx, logNo in enumerate(logNos):
+                if stop_flag:
+                    completed_process(extracted_data_list)
+                    return
+                tags = fetch_gs_tag_name(blog_id, logNo)
+                new_print(f'아이디 : [{index + 1}] - {blog_id}, 게시글 번호 : [{idx + 1}] + {logNo}, 태그 목록 : {tags}')
+                time_sleep()
 
+                exit_loops = False
+                for ix, tag in enumerate(tags):
+                    if stop_flag:
+                        completed_process(extracted_data_list)
+                        return
+                    # 검색 블로그 20개 번호 가져오기
+                    search_logNos = fetch_naver_blog_search_logNos(tag, 0)
+                    new_print(f'아이디 : [{index + 1}] - {blog_id}, 게시글 번호 : [{idx + 1}] + {logNo}, 태그 : [{ix + 1}] - {tag}, 검색글 수 : {len(search_logNos)}')
+                    time_sleep()
 
-    def extract_numbers_from_elements(self, content, class_name):
-        if content is None:  # content가 None인 경우 처리
-            return []
-        soup = BeautifulSoup(content, 'html.parser')
-        elements = soup.find_all(class_=class_name)
-        numbers = []
-        for element in elements:
-            text = element.get_text()
-            numbers.extend(re.findall(r'\d+', text))
-        return numbers
+                    for i, search_logNo in enumerate(search_logNos):
+                        if stop_flag:
+                            completed_process(extracted_data_list)
+                            return
+                        if str(search_logNo) == str(logNo):
+                            new_print(f'찾은 검색글 위치 : {i+1} 번째, URL : https://m.blog.naver.com/{blog_id}/{search_logNo}')
+                            hash_tag_cnt += 1
+                            exit_loops = True  # 플래그 변수를 True로 설정
+                            break
 
+                    if exit_loops:  # 플래그가 True인 경우 외부 루프 종료
+                        break
 
-    def fetch_post_titles(self, blog_id, current_page):
-        """주어진 블로그 ID와 현재 페이지를 사용하여 게시글 제목을 가져옵니다."""
-        url = f"https://m.blog.naver.com/api/blogs/{blog_id}/post-list?categoryNo=0&itemCount=10&page={current_page}&userId="
-        headers = {
-            "authority": "m.blog.naver.com",
-            "method": "GET",
-            "path": "/api/blogs/roketmissile/post-list?categoryNo=0&itemCount=10&page=1&userId=",
-            "scheme": "https",
-            "accept": "application/json, text/plain, */*",
-            "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            # "cookie": "NAC=OsXJBQA7C4Wj; NNB=FOXBS434SDKGM; BA_DEVICE=09b5d283-4430-4f3b-a39c-dcbb342cd55e; ASID=da9384ec00000191d00facf700000072; NFS=2; NACT=1; _naver_usersession_=1kkjBJG0A5lqAOgUfZgzWA==; page_uid=iyLxXlqVN8Vss46UhIKssssssPR-460363; BUC=cLGqDz5RgLP3gchg-PMoxv6flF9GBRPtd_quVv-ApwM=",
-            "priority": "u=1, i",
-            "referer": "https://m.blog.naver.com/roketmissile?tab=1",
-            "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
-        }
-        try:
-            response = requests.get(url, headers=headers, cookies=global_cookies)
-            if response.status_code == 200:
-                json_data = response.json()
-                if json_data.get("isSuccess"):
-                    items = json_data['result']['items']
-                    new_items = []
-                    for item in items:
-                        mapped_item = {
-                            "logNo": item.get("logNo"),
-                            "title": item.get("titleWithInspectMessage"),
-                            "addDate": self.convert_timestamp(item.get("addDate"))
-                        }
-                        new_items.append(mapped_item)
-                    return new_items
-        except requests.RequestException as e:
-            self.show_alert("게시글 제목을 불러오는 중 오류가 발생했습니다.")
-            return []
-        except json.JSONDecodeError as e:
-            self.show_alert("게시글 제목을 처리하는 중 오류가 발생했습니다.")
-            return []
+                now_cnt = (index * 30) + idx
+                remaining_time_update(now_cnt, total_contents)
 
 
-    def convert_timestamp(self, timestamp):
-        return datetime.fromtimestamp(timestamp / 1000).strftime('%Y.%m.%d')
+            # 소수점 2자리 까지 (3번째 부터 버림)
+            hash_tag_per = math.floor((hash_tag_cnt / 30) * 100 * 100) / 100
+            extracted_data_list.append(hash_tag_per)
+
+        except Exception as e:
+            extracted_data = []
+            new_print(extracted_data, level="WARN")
+
+        # 진행률 업데이트
+        remaining_time_update(index, total_contents)
+
+    if not stop_flag:
+        completed_process(extracted_data_list)
 
 
-    def start_blog(self, blog_id):
-        posts = self.fetch_post_titles(blog_id, 1)
-        return posts
+def completed_process(extracted_data_list):
+    global root
+    save_excel_file(extracted_data_list)
+    new_print("작업 완료.", level="SUCCESS")
+    start_button.config(text="시작", bg="#d0f0c0", fg="black")
+    flash_window(root)
+    messagebox.showinfo("알림", "작업이 완료되었습니다.")
+    stop_flash_window(root)  # 메시지박스 확인 후 깜빡임 중지
+
+# ══════════════════════════════════════════════════════
+# endregion
 
 
+
+# region
+# ══════════════════════════════════════════════════════
+# 메인 초기화
+# ══════════════════════════════════════════════════════
+
+# 초기화
+def main():
+    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board
+
+    root = TkinterDnD.Tk()
+    root.title("블로그 빅 프로그램")
+    root.geometry("600x700")
+
+    font_large = font.Font(size=10)
+
+    # 시작 버튼
+    login_button = tk.Button(root, text="로그인", command=naver_login, font=font_large, bg="#d0f0c0", fg="black", width=25)
+    login_button.pack(pady=10)
+
+    login_board = tk.Label(root, text="관리자님 로그인을 진행해주세요.\n(로그인 완료 되면 잠시 기다려주세요...)", width=40, height=5, font=font_large, bg="white", fg="red",
+                                 borderwidth=1, relief="solid", highlightbackground="black", highlightthickness=1)
+    login_board.pack(pady=10)
+
+    btn_browse = tk.Button(root, text="엑셀 파일 선택", command=browse_file, font=font_large, width=20)
+    btn_browse.pack(pady=10)
+
+    lbl_or = tk.Label(root, text="또는", font=font_large)
+    lbl_or.pack(pady=5)
+
+    lbl_drop = tk.Label(root, text="여기에 파일을 드래그 앤 드롭하세요", relief="solid", width=40, height=5, font=font_large, bg="white")
+    lbl_drop.pack(pady=10)
+
+    lbl_drop.drop_target_register(DND_FILES)
+    lbl_drop.dnd_bind('<<Drop>>', on_drop)
+
+    # 시작 버튼
+    start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
+    start_button.pack(pady=10)
+
+    log_label = tk.Label(root, text="로그 화면", font=font_large)
+    log_label.pack(fill=tk.X, padx=10)
+
+    log_frame = tk.Frame(root)
+    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
+    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    x_scrollbar.config(command=log_text_widget.xview)
+    y_scrollbar.config(command=log_text_widget.yview)
+
+    # 진행률
+    progress_frame = tk.Frame(root)
+    progress_frame.pack(fill=tk.X, padx=10, pady=10)
+
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
+    eta_label = tk.Label(progress_frame, text="남은 시간: 00:00:00", font=font_large)
+
+    progress_label.pack(side=tk.TOP, padx=5)
+    eta_label.pack(side=tk.TOP, padx=5)
+
+    style = ttk.Style()
+    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+    progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+
+    root.mainloop()
+
+# 최초 시작 메인
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
+    main()
+
+# ══════════════════════════════════════════════════════
+# endregion
