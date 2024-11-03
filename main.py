@@ -149,6 +149,7 @@ def extract_blog_id(url):
 
 # 엑셀의 url리스트를 읽어오는 함수.
 def read_excel_file(filepath):
+    global id_list
     df = pd.read_excel(filepath, sheet_name=0)
     id_list = []
     url_list = df.iloc[:, 1].tolist()
@@ -450,10 +451,8 @@ def toggle_start_stop():
 
 # 정지 버튼 정지 처리
 def stop_processing():
-    global stop_flag, id_list, extracted_data_list
+    global stop_flag
     stop_flag = True
-    id_list = []  # 배열 초기화
-    extracted_data_list = []  # 모든 데이터 저장용
     start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
     new_print(f'작업중지')
     messagebox.showinfo("알림", "중지되었습니다..")
@@ -510,6 +509,11 @@ def start_processing():
 
     # 전체 블로그 주소 id
     for index, blog_id in enumerate(id_list):
+
+        if index != 0 and index % 10 == 0:
+            new_print(f'{index + 1} 번째 임시 저장 ============================================================')
+            save_excel_file(extracted_data_list)
+
         new_print(f'아이디 : {blog_id} - [{index + 1}], 계산 시작 ============================================================')
         hash_tag_cnt = 0
         if stop_flag:
