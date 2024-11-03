@@ -37,7 +37,7 @@ extracted_data_list = []  # 모든 데이터 저장용
 stop_flag = False
 
 # 네이버 로그인 쿠키
-global_cookies = ''
+global_cookies = None
 
 # 완료후 깜빡임 상태
 flashing = True
@@ -163,11 +163,6 @@ def save_excel_file(new_data):
     # 기존 엑셀 파일 읽기
     df = pd.read_excel(filepath, sheet_name=0)
 
-    # 기존 데이터와 new_data의 길이가 맞지 않는 경우, 예외 처리
-    if len(df) != len(new_data):
-        messagebox.showwarning("경고", "기존 데이터와 새로운 데이터의 길이가 일치하지 않습니다.")
-        raise ValueError("기존 데이터와 새로운 데이터의 길이가 일치하지 않습니다.")
-
     # 새로운 데이터를 H열에 추가
     df['H'] = new_data  # 'H' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
 
@@ -184,6 +179,10 @@ def save_excel_file(new_data):
 # 네이버 API
 # ══════════════════════════════════════════════════════
 
+def requests_get(url, headers):
+    global global_cookies
+    return requests.get(url, headers=headers, cookies=global_cookies)
+
 # 네이버 로그아웃
 def naver_logout():
     global global_cookies, login_button, login_board, id_list, extracted_data_list
@@ -194,6 +193,13 @@ def naver_logout():
     start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
     id_list = []
     extracted_data_list = []  # 모든 데이터 저장용
+
+
+# test용
+# def naver_login():
+#     global global_cookies
+#     global_cookies = 'test'
+
 
 # 네이버 로그인
 def naver_login():
@@ -230,7 +236,6 @@ def naver_login():
 
 # 내 블로그 30개 번호 가져오기
 def fetch_naver_blog_my_logNos(blog_id, current_page):
-    global global_cookies
     """주어진 블로그 ID와 현재 페이지를 사용하여 게시글 제목을 가져옵니다."""
     url = f"https://m.blog.naver.com/api/blogs/{blog_id}/post-list?categoryNo=0&itemCount=30&page={current_page}&userId="
     headers = {
@@ -252,8 +257,7 @@ def fetch_naver_blog_my_logNos(blog_id, current_page):
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
     }
     try:
-        response = requests.get(url, headers=headers, cookies=global_cookies)
-        # response = requests.get(url, headers=headers)
+        response = requests_get(url, headers)
         if response.status_code == 200:
             json_data = response.json()
             if json_data.get("isSuccess"):
@@ -287,8 +291,7 @@ def fetch_gs_tag_name(blog_id, logNo):
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
     }
 
-    # response = requests.get(url, headers=headers)
-    response = requests.get(url, headers=headers, cookies=global_cookies)
+    response = requests_get(url, headers)
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -338,8 +341,7 @@ def fetch_naver_blog_search_logNos(query, page):
     }
 
     # GET 요청 보내기
-    response = requests.get(url, headers=headers, params=payload, cookies=global_cookies)
-    # response = requests.get(url, headers=headers, params=payload)
+    response = requests_get(url, headers)
     if response.status_code == 200:
         # JSON 응답 파싱
         json_data = response.json()
@@ -465,13 +467,20 @@ def time_sleep():
     time.sleep(random.uniform(1, 1.5))
 
 # 진행률 업데이트
-def remaining_time_update(index, total_contents):
-    progress["value"] = index + 1
-    progress_label.config(text=f"진행률: {int((index + 1) / total_contents * 100)}%")
+def remaining_time_update(now_cnt, total_contents):
+    progress["value"] = now_cnt + 1
+    progress_rate = math.floor((now_cnt + 1) / total_contents * 100 * 100) / 100  # 소수점 셋째 자리까지 버림
+    progress_label.config(text=f"진행률: {progress_rate:.2f}%")  # 소수점 둘째 자리까지 표시
 
-    # 30개글 x 5개 태그 x 2 번 (태그별 검색 조회) x 1.25 소요시간 = 375
-    remaining_time = (total_contents - (index + 1)) * 375
-    eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
+
+    # (1개글 + 5개 태그) x 1.25 소요시간 = 7.5
+    remaining_time = int((total_contents - (now_cnt + 1)) * 7.5)  # 소수점 제거
+    hours = remaining_time // 3600             # 초를 시간으로 변환
+    minutes = (remaining_time % 3600) // 60    # 남은 초를 분으로 변환
+    seconds = remaining_time % 60              # 남은 초
+
+    formatted_time = f"{hours:02}:{minutes:02}:{seconds:02}"
+    eta_label.config(text=f"남은 시간: {formatted_time}")
 
 # 실제 시작 처리 메인 로직
 def start_processing():
@@ -488,7 +497,7 @@ def start_processing():
 
     # 전체 블로그 주소 id
     for index, blog_id in enumerate(id_list):
-        new_print(f'아이디 : [{index + 1}] - {blog_id}, 계산 시작 ============================================================')
+        new_print(f'아이디 : {blog_id} - [{index + 1}], 계산 시작 ============================================================')
         hash_tag_cnt = 0
         if stop_flag:
             completed_process(extracted_data_list)
@@ -496,7 +505,7 @@ def start_processing():
         try:
             # 내 블로그 30개 번호 가져오기
             logNos = fetch_naver_blog_my_logNos(blog_id, 1)
-            new_print(f'아이디 : [{index + 1}] - {blog_id}, 게시글 수 {len(logNos)} ============================================================')
+            new_print(f'아이디 : {blog_id} - [{index + 1}], 게시글 수 {len(logNos)} ============================================================')
             time_sleep()
 
             # 각 블로그안에 게시글 30개 리스트
@@ -505,7 +514,7 @@ def start_processing():
                     completed_process(extracted_data_list)
                     return
                 tags = fetch_gs_tag_name(blog_id, logNo)
-                new_print(f'아이디 : [{index + 1}] - {blog_id}, 게시글 번호 : [{idx + 1}] + {logNo}, 태그 목록 : {tags}')
+                new_print(f'아이디 : {blog_id} - [{index + 1}], 게시글 번호 : {logNo} - [{idx + 1}], 태그 목록 : {tags}')
                 time_sleep()
 
                 exit_loops = False
@@ -515,7 +524,7 @@ def start_processing():
                         return
                     # 검색 블로그 20개 번호 가져오기
                     search_logNos = fetch_naver_blog_search_logNos(tag, 0)
-                    new_print(f'아이디 : [{index + 1}] - {blog_id}, 게시글 번호 : [{idx + 1}] + {logNo}, 태그 : [{ix + 1}] - {tag}, 검색글 수 : {len(search_logNos)}')
+                    new_print(f'아이디 : {blog_id} - [{index + 1}], 게시글 번호 : {logNo} - [{idx + 1}], 태그 : [{ix + 1}] - {tag}, 검색글 수 : {len(search_logNos)}')
                     time_sleep()
 
                     for i, search_logNo in enumerate(search_logNos):
@@ -533,7 +542,6 @@ def start_processing():
 
                 now_cnt = (index * 30) + idx
                 remaining_time_update(now_cnt, total_contents)
-
 
             # 소수점 2자리 까지 (3번째 부터 버림)
             hash_tag_per = math.floor((hash_tag_cnt / 30) * 100 * 100) / 100
