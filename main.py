@@ -179,9 +179,12 @@ def save_excel_file(new_data):
 # 네이버 API
 # ══════════════════════════════════════════════════════
 
-def requests_get(url, headers):
+def requests_get(url, headers, payload=None):
     global global_cookies
-    return requests.get(url, headers=headers, cookies=global_cookies)
+    if payload:  # payload가 존재할 때만 params를 포함
+        return requests.get(url, headers=headers, cookies=global_cookies, params=payload)
+    else:
+        return requests.get(url, headers=headers, cookies=global_cookies)
 
 # 네이버 로그아웃
 def naver_logout():
@@ -341,7 +344,7 @@ def fetch_naver_blog_search_logNos(query, page):
     }
 
     # GET 요청 보내기
-    response = requests_get(url, headers)
+    response = requests_get(url, headers, payload)
     if response.status_code == 200:
         # JSON 응답 파싱
         json_data = response.json()
@@ -548,8 +551,7 @@ def start_processing():
             extracted_data_list.append(hash_tag_per)
 
         except Exception as e:
-            extracted_data = []
-            new_print(extracted_data, level="WARN")
+            new_print(e, level="WARN")
 
         # 진행률 업데이트
         remaining_time_update(index, total_contents)
