@@ -166,7 +166,7 @@ def save_excel_file(new_data):
 
     # new_data의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 '작업중'으로 채움
     if len(new_data) < len(df):
-        new_data.extend(['-'] * (len(df) - len(new_data)))
+        new_data.extend([''] * (len(df) - len(new_data)))
     elif len(new_data) > len(df):
         new_data = new_data[:len(df)]  # new_data가 더 길면 df 길이에 맞게 자름
 
