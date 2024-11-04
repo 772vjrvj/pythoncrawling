@@ -164,14 +164,17 @@ def save_excel_file(new_data):
     # 기존 엑셀 파일 읽기
     df = pd.read_excel(filepath, sheet_name=0)
 
-    # new_data의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 '작업중'으로 채움
-    if len(new_data) < len(df):
-        new_data.extend([''] * (len(df) - len(new_data)))
-    elif len(new_data) > len(df):
-        new_data = new_data[:len(df)]  # new_data가 더 길면 df 길이에 맞게 자름
+    # new_data 복사본 생성
+    new_data_copy = new_data.copy()
 
-    # 새로운 데이터를 H열에 추가
-    df['F'] = new_data  # 'H' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
+    # new_data_copy의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 ''으로 채움
+    if len(new_data_copy) < len(df):
+        new_data_copy.extend([''] * (len(df) - len(new_data_copy)))
+    elif len(new_data_copy) > len(df):
+        new_data_copy = new_data_copy[:len(df)]  # new_data_copy가 더 길면 df 길이에 맞게 자름
+
+    # 새로운 데이터를 '퍼센트' 열에 추가
+    df['퍼센트'] = new_data_copy  # '퍼센트' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
 
     # 업데이트된 데이터 저장
     df.to_excel(filepath, index=False)
@@ -510,8 +513,8 @@ def start_processing():
     # 전체 블로그 주소 id
     for index, blog_id in enumerate(id_list):
 
-        if index != 0 and index % 10 == 0:
-            new_print(f'{index + 1} 번째 임시 저장 ============================================================')
+        if index != 0 and index % 5 == 0:
+            new_print(f'{index} 번까지 임시 저장 ============================================================')
             save_excel_file(extracted_data_list)
 
         new_print(f'아이디 : {blog_id} - [{index + 1}], 계산 시작 ============================================================')
@@ -563,7 +566,7 @@ def start_processing():
             # 소수점 2자리 까지 (3번째 부터 버림)
             hash_tag_per = math.floor((hash_tag_cnt / 30) * 100 * 100) / 100
             extracted_data_list.append(hash_tag_per)
-
+            new_print(f'작업한 전체목록 수 : {len(extracted_data_list)}')
         except Exception as e:
             completed_process(extracted_data_list)
             new_print(e, level="WARN")
