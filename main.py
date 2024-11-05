@@ -131,6 +131,9 @@ def check_list_and_toggle_button(id_list):
 
 # url에서 id를 추출
 def extract_blog_id(url):
+    # 마지막 '://' 뒤의 내용만 남기기
+    url = url.rsplit('://', 1)[-1]
+
     # "PostList.naver"에서 blogId 추출
     postlist_pattern = r'[?&]blogId=([^&]+)'
     postlist_match = re.search(postlist_pattern, url)
@@ -139,7 +142,7 @@ def extract_blog_id(url):
         return postlist_match.group(1)  # blogId 값 추가
 
     # 기본 URL에서 ID 추출 (www 포함)
-    base_pattern = r'https?://(?:www\.)?(?:blog|m\.blog)\.naver\.com/([^/?&]+)'
+    base_pattern = r'^(?:www\.)?(?:blog|m\.blog)\.naver\.com/([^/?&]+)'
     match = re.search(base_pattern, url)
 
     if match:
