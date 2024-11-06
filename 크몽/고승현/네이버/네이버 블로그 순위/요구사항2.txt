@@ -11,3 +11,6 @@
 30개의 글들중 15개의 글들이 상위 노출 된다면 50퍼센트
 
 20개의 글들이 상위 노출 된다면 66퍼센트 이런 식입니다.
+
+
+pyinstaller --onefile --noconsole --add-data "C:\Users\772vj\AppData\Local\Programs\Python\Python312\tcl\tkdnd2.8;tkdnd2.8" main.py

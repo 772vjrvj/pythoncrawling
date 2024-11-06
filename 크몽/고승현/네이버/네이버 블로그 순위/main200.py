@@ -45,6 +45,10 @@ flashing = True
 # 엑셀 경로
 filepath = None
 
+# 셀렉트 초기값을 1로 설정
+selected_value = 1
+
+
 # ══════════════════════════════════════════════════════
 # endregion
 
@@ -131,6 +135,9 @@ def check_list_and_toggle_button(id_list):
 
 # url에서 id를 추출
 def extract_blog_id(url):
+    # 마지막 '://' 뒤의 내용만 남기기
+    url = url.rsplit('://', 1)[-1]
+
     # "PostList.naver"에서 blogId 추출
     postlist_pattern = r'[?&]blogId=([^&]+)'
     postlist_match = re.search(postlist_pattern, url)
@@ -139,7 +146,7 @@ def extract_blog_id(url):
         return postlist_match.group(1)  # blogId 값 추가
 
     # 기본 URL에서 ID 추출 (www 포함)
-    base_pattern = r'https?://(?:www\.)?(?:blog|m\.blog)\.naver\.com/([^/?&]+)'
+    base_pattern = r'^(?:www\.)?(?:blog|m\.blog)\.naver\.com/([^/?&]+)'
     match = re.search(base_pattern, url)
 
     if match:
@@ -149,12 +156,13 @@ def extract_blog_id(url):
 
 # 엑셀의 url리스트를 읽어오는 함수.
 def read_excel_file(filepath):
+    global id_list
     df = pd.read_excel(filepath, sheet_name=0)
     id_list = []
     url_list = df.iloc[:, 1].tolist()
     for url in url_list:
-        new_url = extract_blog_id(url)
-        id_list.append(new_url)
+        url_blog_id = extract_blog_id(url)
+        id_list.append(url_blog_id.strip())
     return id_list
 
 # 엑셀저장
@@ -163,17 +171,26 @@ def save_excel_file(new_data):
     # 기존 엑셀 파일 읽기
     df = pd.read_excel(filepath, sheet_name=0)
 
-    # new_data의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 '작업중'으로 채움
-    if len(new_data) < len(df):
-        new_data.extend(['-'] * (len(df) - len(new_data)))
-    elif len(new_data) > len(df):
-        new_data = new_data[:len(df)]  # new_data가 더 길면 df 길이에 맞게 자름
+    # new_data 복사본 생성
+    new_data_copy = new_data.copy()
 
-    # 새로운 데이터를 H열에 추가
-    df['F'] = new_data  # 'H' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
+    # new_data_copy의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 ''으로 채움
+    if len(new_data_copy) < len(df):
+        new_data_copy.extend([''] * (len(df) - len(new_data_copy)))
+    elif len(new_data_copy) > len(df):
+        new_data_copy = new_data_copy[:len(df)]  # new_data_copy가 더 길면 df 길이에 맞게 자름
+
+    # 새로운 데이터를 '퍼센트' 열에 추가
+    df['퍼센트'] = new_data_copy  # '퍼센트' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
 
     # 업데이트된 데이터 저장
     df.to_excel(filepath, index=False)
+
+# 셀렉트
+def on_select(event):
+    global selected_value
+    selected_value = int(value_select.get())
+
 # ══════════════════════════════════════════════════════
 # endregion
 
@@ -319,7 +336,7 @@ def fetch_gs_tag_name(blog_id, logNo):
 
                 # 콤마로 나누고 최대 5개 반환
                 tags = gs_tag_value.split(',')
-                return tags[:5]  # 최대 5개 반환
+                return tags[:1]  # 최대 5개 반환
 
     return []  # 요청 실패 시 빈 리스트 반환
 
@@ -450,10 +467,8 @@ def toggle_start_stop():
 
 # 정지 버튼 정지 처리
 def stop_processing():
-    global stop_flag, id_list, extracted_data_list
+    global stop_flag
     stop_flag = True
-    id_list = []  # 배열 초기화
-    extracted_data_list = []  # 모든 데이터 저장용
     start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
     new_print(f'작업중지')
     messagebox.showinfo("알림", "중지되었습니다..")
@@ -481,13 +496,16 @@ def time_sleep():
 
 # 진행률 업데이트
 def remaining_time_update(now_cnt, total_contents):
+    global selected_value
+
     progress["value"] = now_cnt + 1
     progress_rate = math.floor((now_cnt + 1) / total_contents * 100 * 100) / 100  # 소수점 셋째 자리까지 버림
     progress_label.config(text=f"진행률: {progress_rate:.2f}%")  # 소수점 둘째 자리까지 표시
 
-
     # (1개글 + 5개 태그) x 1.25 소요시간 = 7.5
-    remaining_time = int((total_contents - (now_cnt + 1)) * 7.5)  # 소수점 제거
+    blog_tag_cnt_time = (1 + selected_value) * 1.25
+
+    remaining_time = int((total_contents - (now_cnt + 1)) * blog_tag_cnt_time)  # 소수점 제거
     hours = remaining_time // 3600             # 초를 시간으로 변환
     minutes = (remaining_time % 3600) // 60    # 남은 초를 분으로 변환
     seconds = remaining_time % 60              # 남은 초
@@ -510,6 +528,11 @@ def start_processing():
 
     # 전체 블로그 주소 id
     for index, blog_id in enumerate(id_list):
+
+        if index != 0 and index % 5 == 0:
+            new_print(f'{index} 번까지 임시 저장 ============================================================')
+            save_excel_file(extracted_data_list)
+
         new_print(f'아이디 : {blog_id} - [{index + 1}], 계산 시작 ============================================================')
         hash_tag_cnt = 0
         if stop_flag:
@@ -559,7 +582,7 @@ def start_processing():
             # 소수점 2자리 까지 (3번째 부터 버림)
             hash_tag_per = math.floor((hash_tag_cnt / 30) * 100 * 100) / 100
             extracted_data_list.append(hash_tag_per)
-
+            new_print(f'작업한 전체목록 수 : {len(extracted_data_list)}')
         except Exception as e:
             completed_process(extracted_data_list)
             new_print(e, level="WARN")
@@ -594,7 +617,8 @@ def completed_process(extracted_data_list):
 
 # 초기화
 def main():
-    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board
+    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board, value_select
+
 
     root = TkinterDnD.Tk()
     root.title("블로그 빅 프로그램")
@@ -625,6 +649,17 @@ def main():
     # 시작 버튼
     start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
     start_button.pack(pady=10)
+
+    # 레이블 추가
+    tag_count_label = tk.Label(root, text="# 태그 수", font=font_large)
+    tag_count_label.pack(pady=5)
+
+    # 셀렉트 박스 추가
+    value_select = ttk.Combobox(root, values=[1, 2, 3, 4, 5], font=font_large, state="readonly")
+    value_select.set(selected_value)  # 초기값 설정
+    value_select.pack(pady=10)
+    value_select.bind("<<ComboboxSelected>>", on_select)  # 함수 연결
+
 
     log_label = tk.Label(root, text="로그 화면", font=font_large)
     log_label.pack(fill=tk.X, padx=10)

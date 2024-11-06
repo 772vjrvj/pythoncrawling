@@ -45,6 +45,10 @@ flashing = True
 # 엑셀 경로
 filepath = None
 
+# 셀렉트 초기값을 1로 설정
+selected_value = 1  
+
+
 # ══════════════════════════════════════════════════════
 # endregion
 
@@ -181,6 +185,12 @@ def save_excel_file(new_data):
 
     # 업데이트된 데이터 저장
     df.to_excel(filepath, index=False)
+
+# 셀렉트
+def on_select(event):
+    global selected_value
+    selected_value = int(value_select.get())
+
 # ══════════════════════════════════════════════════════
 # endregion
 
@@ -486,13 +496,16 @@ def time_sleep():
 
 # 진행률 업데이트
 def remaining_time_update(now_cnt, total_contents):
+    global selected_value
+
     progress["value"] = now_cnt + 1
     progress_rate = math.floor((now_cnt + 1) / total_contents * 100 * 100) / 100  # 소수점 셋째 자리까지 버림
     progress_label.config(text=f"진행률: {progress_rate:.2f}%")  # 소수점 둘째 자리까지 표시
 
-
     # (1개글 + 5개 태그) x 1.25 소요시간 = 7.5
-    remaining_time = int((total_contents - (now_cnt + 1)) * 7.5)  # 소수점 제거
+    blog_tag_cnt_time = (1 + selected_value) * 1.25
+
+    remaining_time = int((total_contents - (now_cnt + 1)) * blog_tag_cnt_time)  # 소수점 제거
     hours = remaining_time // 3600             # 초를 시간으로 변환
     minutes = (remaining_time % 3600) // 60    # 남은 초를 분으로 변환
     seconds = remaining_time % 60              # 남은 초
@@ -604,7 +617,8 @@ def completed_process(extracted_data_list):
 
 # 초기화
 def main():
-    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board
+    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board, value_select
+
 
     root = TkinterDnD.Tk()
     root.title("블로그 빅 프로그램")
@@ -635,6 +649,17 @@ def main():
     # 시작 버튼
     start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
     start_button.pack(pady=10)
+
+    # 레이블 추가
+    tag_count_label = tk.Label(root, text="# 태그 수", font=font_large)
+    tag_count_label.pack(pady=5)
+
+    # 셀렉트 박스 추가
+    value_select = ttk.Combobox(root, values=[1, 2, 3, 4, 5], font=font_large, state="readonly")
+    value_select.set(selected_value)  # 초기값 설정
+    value_select.pack(pady=10)
+    value_select.bind("<<ComboboxSelected>>", on_select)  # 함수 연결
+
 
     log_label = tk.Label(root, text="로그 화면", font=font_large)
     log_label.pack(fill=tk.X, padx=10)
