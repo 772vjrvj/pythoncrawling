@@ -157,8 +157,8 @@ def read_excel_file(filepath):
     id_list = []
     url_list = df.iloc[:, 1].tolist()
     for url in url_list:
-        new_url = extract_blog_id(url)
-        id_list.append(new_url)
+        url_blog_id = extract_blog_id(url)
+        id_list.append(url_blog_id.strip())
     return id_list
 
 # 엑셀저장
@@ -326,7 +326,7 @@ def fetch_gs_tag_name(blog_id, logNo):
 
                 # 콤마로 나누고 최대 5개 반환
                 tags = gs_tag_value.split(',')
-                return tags[:5]  # 최대 5개 반환
+                return tags[:1]  # 최대 5개 반환
 
     return []  # 요청 실패 시 빈 리스트 반환
 
