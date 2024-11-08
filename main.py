@@ -47,6 +47,7 @@ filepath = None
 
 # 셀렉트 초기값을 1로 설정
 selected_value = 1
+selected_cont_value = 20
 
 
 # ══════════════════════════════════════════════════════
@@ -186,7 +187,14 @@ def save_excel_file(new_data):
     # 업데이트된 데이터 저장
     df.to_excel(filepath, index=False)
 
-# 셀렉트
+
+# 글수
+def on_select_cont(event):
+    global selected_cont_value
+    selected_cont_value = int(value_cont_select.get())
+
+
+# 태그
 def on_select(event):
     global selected_value
     selected_value = int(value_select.get())
@@ -292,7 +300,7 @@ def fetch_naver_blog_my_logNos(blog_id, current_page):
                 logNos = []
                 for item in items:
                     logNos.append(item.get("logNo"),)
-                return logNos[:30]
+                return logNos[:selected_cont_value]
     except requests.RequestException as e:
         messagebox.showwarning("경고", "게시글을 가져오는중 에러가 발생했습니다.")
         return []
@@ -336,7 +344,7 @@ def fetch_gs_tag_name(blog_id, logNo):
 
                 # 콤마로 나누고 최대 5개 반환
                 tags = gs_tag_value.split(',')
-                return tags[:1]  # 최대 5개 반환
+                return tags[:selected_value]  # 최대 5개 반환
 
     return []  # 요청 실패 시 빈 리스트 반환
 
@@ -503,7 +511,7 @@ def remaining_time_update(now_cnt, total_contents):
     progress_label.config(text=f"진행률: {progress_rate:.2f}%")  # 소수점 둘째 자리까지 표시
 
     # (1개글 + 5개 태그) x 1.25 소요시간 = 7.5
-    blog_tag_cnt_time = (1 + selected_value) * 1.25
+    blog_tag_cnt_time = (1 + selected_value) * 1.1
 
     remaining_time = int((total_contents - (now_cnt + 1)) * blog_tag_cnt_time)  # 소수점 제거
     hours = remaining_time // 3600             # 초를 시간으로 변환
@@ -535,6 +543,7 @@ def start_processing():
         new_print(f'아이디 : {blog_id} - [{index + 1}], 계산 시작 ============================================================')
         hash_tag_cnt = 0
         if stop_flag:
+            extracted_data_list.append(0)
             completed_process(extracted_data_list)
             return
         try:
@@ -546,6 +555,7 @@ def start_processing():
             # 각 블로그안에 게시글 30개 리스트
             for idx, logNo in enumerate(logNos):
                 if stop_flag:
+                    extracted_data_list.append(0)
                     completed_process(extracted_data_list)
                     return
                 tags = fetch_gs_tag_name(blog_id, logNo)
@@ -555,6 +565,7 @@ def start_processing():
                 exit_loops = False
                 for ix, tag in enumerate(tags):
                     if stop_flag:
+                        extracted_data_list.append(0)
                         completed_process(extracted_data_list)
                         return
                     # 검색 블로그 20개 번호 가져오기
@@ -564,6 +575,7 @@ def start_processing():
 
                     for i, search_logNo in enumerate(search_logNos):
                         if stop_flag:
+                            extracted_data_list.append(0)
                             completed_process(extracted_data_list)
                             return
                         if str(search_logNo) == str(logNo):
@@ -615,7 +627,7 @@ def completed_process(extracted_data_list):
 
 # 초기화
 def main():
-    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board, value_select
+    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board, value_select, value_cont_select
 
 
     root = TkinterDnD.Tk()
@@ -648,11 +660,23 @@ def main():
     start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
     start_button.pack(pady=10)
 
-    # 레이블 추가
+
+    # 글수 레이블 추가
+    cont_count_label = tk.Label(root, text="# 글 수", font=font_large)
+    cont_count_label.pack(pady=5)
+
+    # 글수 셀렉트 박스 추가
+    value_cont_select = ttk.Combobox(root, values=list(range(1, 31)), font=font_large, state="readonly")
+    value_cont_select.set(selected_cont_value)  # 초기값 설정
+    value_cont_select.pack(pady=10)
+    value_cont_select.bind("<<ComboboxSelected>>", on_select_cont)  # 함수 연결
+
+
+    # 태그 레이블 추가
     tag_count_label = tk.Label(root, text="# 태그 수", font=font_large)
     tag_count_label.pack(pady=5)
 
-    # 셀렉트 박스 추가
+    # 태그  셀렉트 박스 추가
     value_select = ttk.Combobox(root, values=[1, 2, 3, 4, 5], font=font_large, state="readonly")
     value_select.set(selected_value)  # 초기값 설정
     value_select.pack(pady=10)
