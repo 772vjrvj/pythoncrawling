@@ -500,7 +500,7 @@ def new_print(text, level="INFO"):
 
 # 대기시간 처리
 def time_sleep():
-    time.sleep(random.uniform(1, 1.5))
+    time.sleep(random.uniform(1, 0.5))
 
 # 진행률 업데이트
 def remaining_time_update(now_cnt, total_contents):
@@ -511,7 +511,7 @@ def remaining_time_update(now_cnt, total_contents):
     progress_label.config(text=f"진행률: {progress_rate:.2f}%")  # 소수점 둘째 자리까지 표시
 
     # (1개글 + 5개 태그) x 1.25 소요시간 = 7.5
-    blog_tag_cnt_time = (1 + selected_value) * 1.1
+    blog_tag_cnt_time = (1 + selected_value) * 0.5
 
     remaining_time = int((total_contents - (now_cnt + 1)) * blog_tag_cnt_time)  # 소수점 제거
     hours = remaining_time // 3600             # 초를 시간으로 변환
