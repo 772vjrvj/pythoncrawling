@@ -39,25 +39,22 @@ def parse_content(html, page_no, category):
         if onclick_attr:
             p_bdseq, p_dispnum = onclick_attr.split("'")[1], onclick_attr.split("'")[3]
             content["콘텐츠 주소"] = (
-                f"https://study.korean.net/servlet/action.cmt.EventAction?"
-                f"p_process=view&p_bdseq={p_bdseq}&p_pageno={page_no}&p_dispnum={p_dispnum}&p_menuCd=m404"
+                f"https://study.korean.net/servlet/action.cmt.StudentNewsAction?"
+                f"p_tabseq=161&p_process=view&p_bdseq={p_bdseq}&p_pageno={page_no}&p_dispnum={p_dispnum}&p_menuCd=m404"
             )
 
-        # 3번째 td의 텍스트
+        # 3번째 td의 "now_school_L" 클래스 내의 dt 태그 안에 a 태그 안의 span 태그의 텍스트
         content["콘텐츠 명"] = columns[2].find(class_="now_school_L").find("dt").find("a").find("span").get_text(strip=True)
 
-        # 6번째 td의 공개 연도 텍스트 (예외 처리 추가)
-        try:
-            content["콘텐츠 공개 연도"] = columns[5].get_text(strip=True)
-        except (IndexError, AttributeError):
-            content["콘텐츠 공개 연도"] = ""  # 에러 발생 시 공백으로 설정
+        # 6번째 td의 공개 연도 텍스트
+        content["콘텐츠 공개 연도"] = columns[5].get_text(strip=True)
         print(f"index : {index}, content : {content}")
         data_list.append(content)
 
     return data_list
 
 # 엑셀 저장 함수
-def save_to_excel(data_list, filename="스터디코리안 한글학교.xlsx"):
+def save_to_excel(data_list, filename="스터디코리안 학생소식.xlsx"):
     df = pd.DataFrame(data_list)
     df.to_excel(filename, index=False)
     print(f"엑셀 파일 '{filename}'로 저장되었습니다.")
@@ -66,16 +63,17 @@ def save_to_excel(data_list, filename="스터디코리안 한글학교.xlsx"):
 def main():
     all_data = []
 
-    # 2. 스터디코리안 한글학교 소식 445페이지
-    school_url = "https://study.korean.net/servlet/action.cmt.EventAction"
-    school_payload = {
+    # 1. 스터디코리안 학생소식 167페이지
+    student_url = "https://study.korean.net/servlet/action.cmt.StudentNewsAction"
+    student_payload = {
+        "p_tabseq": 161,
         "p_process": "listPage",
-        "p_menuCd": "m401"
+        "p_menuCd": "m404"
     }
-    for page_no in range(226, 446):  # 1부터 445까지
-        print(f"스터디코리안 한글학교 소식 - 페이지 {page_no} 처리 중...")
-        html = fetch_page_content(school_url, page_no, school_payload)
-        page_data = parse_content(html, page_no, "스터디코리안 한글학교 소식")
+    for page_no in range(1, 168):  # 1부터 167까지
+        print(f"스터디코리안 학생소식 - 페이지 {page_no} 처리 중...")
+        html = fetch_page_content(student_url, page_no, student_payload)
+        page_data = parse_content(html, page_no, "스터디코리안 학생소식")
         all_data.extend(page_data)
 
     # 엑셀 저장

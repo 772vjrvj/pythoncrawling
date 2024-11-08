@@ -500,11 +500,12 @@ def new_print(text, level="INFO"):
 
 # 대기시간 처리
 def time_sleep():
+    global time_sleep_val
     time.sleep(random.uniform(1, time_sleep_val))
 
 # 진행률 업데이트
 def remaining_time_update(now_cnt, total_contents):
-    global selected_value
+    global selected_value, time_sleep_val
 
     progress["value"] = now_cnt + 1
     progress_rate = math.floor((now_cnt + 1) / total_contents * 100 * 100) / 100  # 소수점 셋째 자리까지 버림

@@ -46,11 +46,8 @@ def parse_content(html, page_no, category):
         # 3번째 td의 텍스트
         content["콘텐츠 명"] = columns[2].find(class_="now_school_L").find("dt").find("a").find("span").get_text(strip=True)
 
-        # 6번째 td의 공개 연도 텍스트 (예외 처리 추가)
-        try:
-            content["콘텐츠 공개 연도"] = columns[5].get_text(strip=True)
-        except (IndexError, AttributeError):
-            content["콘텐츠 공개 연도"] = ""  # 에러 발생 시 공백으로 설정
+        # 6번째 td의 공개 연도 텍스트
+        content["콘텐츠 공개 연도"] = columns[5].get_text(strip=True)
         print(f"index : {index}, content : {content}")
         data_list.append(content)
 
@@ -72,7 +69,7 @@ def main():
         "p_process": "listPage",
         "p_menuCd": "m401"
     }
-    for page_no in range(226, 446):  # 1부터 445까지
+    for page_no in range(1, 446):  # 1부터 445까지
         print(f"스터디코리안 한글학교 소식 - 페이지 {page_no} 처리 중...")
         html = fetch_page_content(school_url, page_no, school_payload)
         page_data = parse_content(html, page_no, "스터디코리안 한글학교 소식")
