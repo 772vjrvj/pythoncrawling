@@ -50,7 +50,6 @@ selected_value = 1
 selected_cont_value = 20
 time_sleep_val = 1.1
 
-
 # ══════════════════════════════════════════════════════
 # endregion
 
