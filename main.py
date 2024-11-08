@@ -530,7 +530,7 @@ def start_processing():
     log_text_widget.delete(1.0, tk.END)
 
     extracted_data_list = []
-    total_contents = len(id_list) * 30
+    total_contents = len(id_list) * selected_cont_value
     progress["maximum"] = total_contents
     remaining_time_update(-1, total_contents)
 
@@ -587,11 +587,11 @@ def start_processing():
                     if exit_loops:  # 플래그가 True인 경우 외부 루프 종료
                         break
 
-                now_cnt = (index * 30) + idx
+                now_cnt = (index * selected_cont_value) + idx
                 remaining_time_update(now_cnt, total_contents)
 
             # 소수점 2자리 까지 (3번째 부터 버림)
-            hash_tag_per = math.floor((hash_tag_cnt / 30) * 100 * 100) / 100
+            hash_tag_per = math.floor((hash_tag_cnt / selected_cont_value) * 100 * 100) / 100
             extracted_data_list.append(hash_tag_per)
             new_print(f'작업한 전체목록 수 : {len(extracted_data_list)}')
         except Exception as e:
@@ -632,7 +632,7 @@ def main():
 
     root = TkinterDnD.Tk()
     root.title("블로그 빅 프로그램")
-    root.geometry("600x700")
+    root.geometry("600x780")
 
     font_large = font.Font(size=10)
 
