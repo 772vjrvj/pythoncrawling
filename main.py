@@ -46,7 +46,7 @@ flashing = True
 filepath = None
 
 # 셀렉트 초기값을 1로 설정
-selected_value = 1  
+selected_value = 1
 
 
 # ══════════════════════════════════════════════════════
@@ -181,7 +181,7 @@ def save_excel_file(new_data):
         new_data_copy = new_data_copy[:len(df)]  # new_data_copy가 더 길면 df 길이에 맞게 자름
 
     # 새로운 데이터를 '퍼센트' 열에 추가
-    df['퍼센트'] = new_data_copy  # '퍼센트' 컬럼이 없으면 새로 생성하고, 있으면 기존 데이터를 덮어씀
+    df['퍼센트'] = new_data_copy  # '퍼센트'라는 이름으로 F 컬럼에 데이터 저장
 
     # 업데이트된 데이터 저장
     df.to_excel(filepath, index=False)
@@ -528,7 +528,6 @@ def start_processing():
 
     # 전체 블로그 주소 id
     for index, blog_id in enumerate(id_list):
-
         if index != 0 and index % 5 == 0:
             new_print(f'{index} 번까지 임시 저장 ============================================================')
             save_excel_file(extracted_data_list)
@@ -584,9 +583,8 @@ def start_processing():
             extracted_data_list.append(hash_tag_per)
             new_print(f'작업한 전체목록 수 : {len(extracted_data_list)}')
         except Exception as e:
-            completed_process(extracted_data_list)
+            extracted_data_list.append(0)
             new_print(e, level="WARN")
-            return
 
         # 진행률 업데이트
         remaining_time_update(index, total_contents)
@@ -631,7 +629,7 @@ def main():
     login_button.pack(pady=10)
 
     login_board = tk.Label(root, text="관리자님 로그인을 진행해주세요.\n(로그인 완료 되면 잠시 기다려주세요...)", width=40, height=5, font=font_large, bg="white", fg="red",
-                                 borderwidth=1, relief="solid", highlightbackground="black", highlightthickness=1)
+                           borderwidth=1, relief="solid", highlightbackground="black", highlightthickness=1)
     login_board.pack(pady=10)
 
     btn_browse = tk.Button(root, text="엑셀 파일 선택", command=browse_file, font=font_large, width=20)
