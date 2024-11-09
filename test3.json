@@ -1,0 +1,127 @@
+{
+  "context": {
+    "client": {
+      "hl": "ko",
+      "gl": "KR",
+      "remoteHost": "218.147.132.236",
+      "deviceMake": "",
+      "deviceModel": "",
+      "visitorData": "CgtPQlRUZXRvdzhCOCiAtbu5BjIKCgJLUhIEGgAgPg%3D%3D",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36,gzip(gfe)",
+      "clientName": "WEB",
+      "clientVersion": "2.20241107.11.00",
+      "osName": "Windows",
+      "osVersion": "10.0",
+      "originalUrl": "https://www.youtube.com/@OKAKOREA/videos",
+      "screenPixelDensity": 1,
+      "platform": "DESKTOP",
+      "clientFormFactor": "UNKNOWN_FORM_FACTOR",
+      "configInfo": {
+        "appInstallData": "CIC1u7kGEJLLsQUQ7bmxBRCP17EFEKrYsAUQppOxBRDi1K4FEJ3QsAUQ26-vBRDh7LAFEI7QsQUQqKbOHBDGv7EFEJrOsQUQiIewBRC9mbAFEO_NsAUQ-KuxBRCI468FEJT-sAUQ0-GvBRCFp7EFENGUzhwQoqPOHBCJ6K4FEIzUsQUQt--vBRCrqs4cEIfDsQUQ6sOvBRCFw7EFEKSZzhwQ6KXOHBCWlbAFELaqzhwQvYqwBRDerbEFEIHWsQUQvbauBRDalM4cEI_DsQUQ2arOHBCM0LEFEKPN_xIQ8ZbOHBDGps4cEMTYsQUQmZixBRDI2LEFEImnsQUQzN-uBRCKobEFEIOdzhwQytixBRCmmrAFENDR_xIQjdSxBRD0p84cEJG3sQUQqJqwBRCi1LEFEOCN_xIQ4M2xBRDJ5rAFEJCjzhwQ9quwBRDrmbEFEMn3rwUQmoG4IhDBzbEFEPClzhwQ6pDOHBCZ0v8SEIPDsQUQ1t2wBRCBw7EFEMvRsQUQ5bmxBRDN0bEFENCNsAUQjcywBRCQzLEFELfq_hIQ18GxBRCZjbEFEMaksQUQjZSxBRDB2v8SEKidzhwQppKxBRDK1LEFENXWsQUQnaawBRCinbEFEN2dzhwQ6-j-EhDmz7EFEOi-sQUQ_ZyxBSosQ0FNU0hCVWZvTDJ3RE5Ia0J1MklvQUNPM01nQ2pfUU9xQXpoY3RaOEhRYz0%3D"
+      },
+      "screenDensityFloat": 1.25,
+      "userInterfaceTheme": "USER_INTERFACE_THEME_LIGHT",
+      "timeZone": "Asia/Seoul",
+      "browserName": "Chrome",
+      "browserVersion": "130.0.0.0",
+      "acceptHeader": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+      "deviceExperimentId": "ChxOelF6TlRFeU1ESTNPRFk1TVRJNE16a3hOQT09EIC1u7kGGIC1u7kG",
+      "screenWidthPoints": 1536,
+      "screenHeightPoints": 738,
+      "utcOffsetMinutes": 540,
+      "connectionType": "CONN_CELLULAR_4G",
+      "memoryTotalKbytes": "8000000",
+      "mainAppWebInfo": {
+        "graftUrl": "https://www.youtube.com/@YTNKOREAN/videos",
+        "pwaInstallabilityStatus": "PWA_INSTALLABILITY_STATUS_CAN_BE_INSTALLED",
+        "webDisplayMode": "WEB_DISPLAY_MODE_BROWSER",
+        "isWebNativeShareAvailable": true
+      }
+    },
+    "user": {
+      "lockedSafetyMode": false
+    },
+    "request": {
+      "useSsl": true,
+      "internalExperimentFlags": [],
+      "consistencyTokenJars": []
+    },
+    "clickTracking": {
+      "clickTrackingParams": "CAAQhGciEwjqr-OMrM6JAxWWSvUFHaClOlo="
+    },
+    "adSignalsInfo": {
+      "params": [
+        {
+          "key": "dt",
+          "value": "1731123841633"
+        },
+        {
+          "key": "flash",
+          "value": "0"
+        },
+        {
+          "key": "frm",
+          "value": "0"
+        },
+        {
+          "key": "u_tz",
+          "value": "540"
+        },
+        {
+          "key": "u_his",
+          "value": "6"
+        },
+        {
+          "key": "u_h",
+          "value": "864"
+        },
+        {
+          "key": "u_w",
+          "value": "1536"
+        },
+        {
+          "key": "u_ah",
+          "value": "824"
+        },
+        {
+          "key": "u_aw",
+          "value": "1536"
+        },
+        {
+          "key": "u_cd",
+          "value": "24"
+        },
+        {
+          "key": "bc",
+          "value": "31"
+        },
+        {
+          "key": "bih",
+          "value": "738"
+        },
+        {
+          "key": "biw",
+          "value": "1519"
+        },
+        {
+          "key": "brdim",
+          "value": "0,0,0,0,1536,0,1536,824,1536,738"
+        },
+        {
+          "key": "vis",
+          "value": "1"
+        },
+        {
+          "key": "wgl",
+          "value": "true"
+        },
+        {
+          "key": "ca_type",
+          "value": "image"
+        }
+      ],
+      "bid": "ANyPxKo7TC0Q82qZFB-QRJIyUKe1iif5dvKa3YmWnk_SF9v6JkINH0_brtGsfFShgvTKhDHPQL_lc-DS6YonSG2_pGiKz9v_YA"
+    }
+  },
+  "continuation": "4qmFsgKrCBIYVUNpekdNdFUwTHQtTzlYMHRMSnp5WjJRGo4IOGdhRUJocUJCbnItQlFyNUJRclFCVUZrY2tnelRFODVSR1YzY0hZNExUVkVlRkl0U21kWmMxZDZNR3M1Y1Rnd05EaDJlV3A2UVc1UlpGUlJVM1JzUTJKSE1rRlhRakpZVkVWWFFXWXdjbFJwV1V4eVJtaEVObWRXYjBWbGEwTlVkVFpVWmpkS2JtTjRWMVpqWHpab2VtazVlak5aTjBWc016Z3hUMlIwT0cxVGJqZDZaRkJ5ZW5WdFUyTmhhMHhOT1VadlJrRklNMVF5TWxZNU1IZG5ZbVJ2TTBwcGQycFNkWFpqTjB0U1VVMWlkbTVZVjFCc1kzYzVhMU5NZDFwb05ISjRVeTFQZGpkaE0yNTRMVTlyV1VaMFZFcFpSM00xT0VsdWRXTjBNamRCU0VreFJFTjFRalJuWmtaV2RVazBVRmxyZDNCcE1taEJhWGx4WkdWclZFMWhRWE5RUTFoNGNtSkRNVVphT1ZsblQybHFSblJyZEhWeE0yTnBla281Wm5kSE1WRTJVVlpDUnpKS1N6bFBRblZOY0hGUVJEQkZZM1pVVlVOR2VHWlJNSHBvUW5aUmNrTlpSV0Z0YkZOSWN6SjJOblJJY0ZKRGNWVkRiWE5CZUZkVFRETnJPV3c0YlRVM1EzQlBaV0pqYlcxbGN6QnJkakpuVWxCZk5FZFdUMXAyVlRsT1JXbzJTbVJETkhGck5HSm1WekJtUmw5QlVsaEdWMnczVVdaU09VeFBiMlIxYW5GUVZubHBOR3hHZUhNeE56STFlblI0UmpNdFoxRjBXbUozWDBSQlRXWlFOM2hIY0UxNFZIcHBhV3RGT1hodFZ6QkROV0p6VDAwMVQwMVpXVXRuUnkxa1EwczFiV3hDUkZOMVYyRmxjblJqUXpWZmFYUk5Uekp4UkdReGR6WlJSVUpNVFhsaWNtZFZZMjVtTWxKNGIzTllWVVpPVm5sMlNWTkZiVjlaZUVWSWVIbzVhVE5rYVRWaFkwdzNiV2xKVlVaM2RHSm5UR05STjBGT05VSmhRazlFYUY4Mk1YRmliVE5zUTBwemQxVkhUelk1VFcxSmVFaFVNakp1UTNnNVEzbFVRemxVVlZnelFsSnBWblJtY0dWMFdGaEtTbTR0UWtKTFltb3pOMUJLTFdSWk5sZFBiMDFFTFc1a1RqbFNVMTk0TUdKTmVXUTVNRmd3YURkWExUbDJjbkF6TUVOTVlVWnViVXAwZEVkZk5IcE1YMjltYjFaek16QkpkRlJMVm5sdFRVY3hSMlZwTFhSeE9FcFdVbGw0YTFaQ2JIbHpOUklrTmpkaE5UTTROelF0TURBd01DMHlaVEl3TFRsbU0ySXROVGd5TkRJNVkySm1NVGd3SUFRJTNE"
+}

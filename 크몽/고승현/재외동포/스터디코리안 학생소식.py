@@ -33,7 +33,7 @@ def parse_content(html, page_no, category):
         # 2번째 td에서 이미지 URL과 상세 URL 생성
         img_tag = columns[1].find("img")
         if img_tag and 'src' in img_tag.attrs:
-            content["콘텐츠 이미지 URL"] = "https://study.korean.net/" + img_tag["src"]
+            content["콘텐츠 이미지 URL"] = "https://study.korean.net" + img_tag["src"]
 
         onclick_attr = columns[1].find("a")["onclick"]
         if onclick_attr:

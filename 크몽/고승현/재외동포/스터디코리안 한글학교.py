@@ -33,7 +33,7 @@ def parse_content(html, page_no, category):
         # 2번째 td에서 이미지 URL과 상세 URL 생성
         img_tag = columns[1].find("img")
         if img_tag and 'src' in img_tag.attrs:
-            content["콘텐츠 이미지 URL"] = "https://study.korean.net/" + img_tag["src"]
+            content["콘텐츠 이미지 URL"] = "https://study.korean.net" + img_tag["src"]
 
         onclick_attr = columns[1].find("a")["onclick"]
         if onclick_attr:
@@ -46,8 +46,11 @@ def parse_content(html, page_no, category):
         # 3번째 td의 텍스트
         content["콘텐츠 명"] = columns[2].find(class_="now_school_L").find("dt").find("a").find("span").get_text(strip=True)
 
-        # 6번째 td의 공개 연도 텍스트
-        content["콘텐츠 공개 연도"] = columns[5].get_text(strip=True)
+        # 6번째 td의 공개 연도 텍스트 (예외 처리 추가)
+        try:
+            content["콘텐츠 공개 연도"] = columns[5].get_text(strip=True)
+        except (IndexError, AttributeError):
+            content["콘텐츠 공개 연도"] = ""  # 에러 발생 시 공백으로 설정
         print(f"index : {index}, content : {content}")
         data_list.append(content)
 
