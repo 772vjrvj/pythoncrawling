@@ -48,7 +48,7 @@ filepath = None
 # 셀렉트 초기값을 1로 설정
 selected_value = 1
 selected_cont_value = 20
-time_sleep_val = 1.1
+time_sleep_val = 0.7
 
 # ══════════════════════════════════════════════════════
 # endregion
@@ -600,7 +600,7 @@ def start_processing():
             new_print(e, level="WARN")
 
         # 진행률 업데이트
-        remaining_time_update(index, total_contents)
+        remaining_time_update(index * selected_cont_value, total_contents)
 
     if not stop_flag:
         completed_process(extracted_data_list)
