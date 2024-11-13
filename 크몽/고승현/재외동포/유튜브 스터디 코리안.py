@@ -46,8 +46,12 @@ def extract_content_hash_tag(content_url):
     # JSON 데이터 내의 superTitleLink -> runs -> text 값을 추출
     try:
         runs = json_data["contents"]["twoColumnWatchNextResults"]["results"]["results"]["contents"][0]["videoPrimaryInfoRenderer"]["superTitleLink"]["runs"]
-        hashtags = [run["text"].replace("#", "") for run in runs]
-        result = ', '.join(hashtags)
+        hashtags = [run["text"].replace("#", "") for run in runs if run["text"].strip() != ""]
+        # 배열이 1개인 경우에는 그대로 출력하고, 2개 이상인 경우에만 join
+        if len(hashtags) == 1:
+            result = hashtags[0]
+        else:
+            result = ', '.join(hashtags[:2])
         return result
     except KeyError:
         print("해당 경로에서 데이터를 찾을 수 없습니다.")
@@ -106,7 +110,7 @@ def create_content_list(soup, today):
             "콘텐츠 분류": '유튜브 영상',
             "공개일자": '',
             "노출매체": '스터디코리안 유튜브',
-            "퀄리티": '720p',
+            "퀄리티": '1080p',
             '콘텐츠 대상지역': '세계',
             '콘텐츠 내용': '',
             '콘텐츠 저작권 소유처': '스터디코리안',
