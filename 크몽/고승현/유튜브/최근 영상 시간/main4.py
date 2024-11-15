@@ -77,15 +77,6 @@ def process_author_info(url):
     return None
 
 
-def set_remaining_time(total_urls, index):
-    # 진행률 업데이트
-    progress["value"] = index
-    progress_label.config(text=f"진행률: {int((index) / total_urls * 100)}%")
-
-    remaining_time = (total_urls - (index)) * 2.5  # 남은 URL 개수 * 2초
-    eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
-
-
 def extract_published_time(url):
     soup = get_soup(url)
     if not soup:
@@ -114,28 +105,13 @@ def extract_published_time(url):
             if json_text:
                 try:
                     yt_data = json.loads(json_text.group(1))
-
-                    contents = yt_data.get("contents", {}).get("twoColumnWatchNextResults", {}).get("results", {}).get("results", {}).get("contents", [])
-                    if contents:
-                        for content in contents:
-                            # `relativeDateText`의 `simpleText` 값을 가져옴
-                            simple_text = content.get("videoPrimaryInfoRenderer", {}).get("relativeDateText", {}).get("simpleText", "")
-                            if simple_text:
-                                return simple_text
-
                     tabs = yt_data.get("contents", {}).get("twoColumnBrowseResultsRenderer", {}).get("tabs", [])
-                    if tabs:
-                        for tab in tabs:
-                            rich_grid_renderer = tab.get("tabRenderer", {}).get("content", {}).get("richGridRenderer", {})
-                            for item in rich_grid_renderer.get("contents", []):
-                                video_renderer = item.get("richItemRenderer", {}).get("content", {}).get("videoRenderer", {})
-                                if video_renderer.get("publishedTimeText"):
-                                    return video_renderer["publishedTimeText"]["simpleText"]
-
-                    published_time_text = yt_data.get("playerOverlays", {}).get("playerOverlayRenderer", {}).get("autoplay", {}).get("playerOverlayAutoplayRenderer", {}).get("publishedTimeText", {})
-                    if published_time_text.get("simpleText"):
-                        return published_time_text["simpleText"]
-
+                    for tab in tabs:
+                        rich_grid_renderer = tab.get("tabRenderer", {}).get("content", {}).get("richGridRenderer", {})
+                        for item in rich_grid_renderer.get("contents", []):
+                            video_renderer = item.get("richItemRenderer", {}).get("content", {}).get("videoRenderer", {})
+                            if video_renderer.get("publishedTimeText"):
+                                return video_renderer["publishedTimeText"]["simpleText"]
                 except json.JSONDecodeError as e:
                     print(f"JSON Decode Error: {e}")
                     return ""
@@ -157,15 +133,6 @@ def start_processing():
             break
         new_print(f"Processing URL {index}: {url}")
 
-
-        if url.startswith("www."):
-            url = "https://" + url
-
-        if not url.startswith("http"):
-            extracted_data_list.append("잘못된 URL 입니다.")
-            set_remaining_time(total_urls, index)
-            continue
-
         if "/watch?v" in url:
             video_url = url
         elif not any(substring in url for substring in ["/c/", "/channel/", "/@"]):
@@ -178,13 +145,18 @@ def start_processing():
         new_print(f"video_url : {video_url}")
 
         result = ""
-        if video_url:
+        if  video_url:
             result = extract_published_time(video_url)
 
         new_print(f"Result for URL {index}: {result or 'Not found'}")
         extracted_data_list.append(result)
 
-        set_remaining_time(total_urls, index)
+        # 진행률 업데이트
+        progress["value"] = index
+        progress_label.config(text=f"진행률: {int((index) / total_urls * 100)}%")
+
+        remaining_time = (total_urls - (index)) * 2.5  # 남은 URL 개수 * 2초
+        eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
 
         time.sleep(random.uniform(2, 5))
 
