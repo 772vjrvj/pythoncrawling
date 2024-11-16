@@ -12,6 +12,7 @@ from selenium.common.exceptions import NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 from openpyxl import load_workbook
+from PIL import Image
 
 
 # 요청 헤더 설정
@@ -80,6 +81,7 @@ def get_links(query, start_page=1):
         all_links.extend(links)
         page += 1
         time.sleep(random.uniform(2, 3))
+        break
 
     print("Crawling complete.")
     print(f'all_links : {all_links}')
@@ -88,7 +90,7 @@ def get_links(query, start_page=1):
 
 
 # 스크린샷 폴더 설정
-IMAGE_FOLDER = "screenshots"
+IMAGE_FOLDER = "image_list"
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 # 드라이버 세팅
@@ -99,6 +101,7 @@ def setup_driver():
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--incognito")
+        chrome_options.add_argument("--headless")
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         chrome_options.add_argument(f'user-agent={user_agent}')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -119,15 +122,65 @@ def setup_driver():
         print(f"Error setting up the WebDriver: {e}")
         return None
 
+
 # 전체 페이지 스크린샷 캡처
-def capture_full_page_screenshot(driver, save_path):
-    driver.execute_script("window.scrollTo(0, 0);")
-    time.sleep(1)
-    scroll_height = driver.execute_script("return document.body.scrollHeight;")
-    driver.set_window_size(1920, scroll_height)
-    time.sleep(2)
-    driver.save_screenshot(save_path)
-    return save_path
+def capture_full_page_screenshot(driver, file_path):
+    try:
+        # 페이지 전체 크기 가져오기
+        total_width = driver.execute_script("return document.body.scrollWidth")
+        total_height = driver.execute_script("return document.body.scrollHeight")
+        viewport_width = driver.execute_script("return window.innerWidth")
+        viewport_height = driver.execute_script("return window.innerHeight")
+
+        # 스크롤 단계와 캡처된 이미지를 저장할 리스트
+        scroll_steps = range(0, total_height, viewport_height)
+        screenshot_parts = []
+
+        for step in scroll_steps:
+            # 스크롤 위치 이동
+            driver.execute_script(f"window.scrollTo(0, {step});")
+            time.sleep(0.3)  # 스크롤 대기
+
+            # 현재 뷰포트 캡처
+            screenshot_part_path = f"{file_path}_part_{step}.png"
+            driver.save_screenshot(screenshot_part_path)
+            screenshot_parts.append(screenshot_part_path)
+
+        # 마지막 스크롤에서 남은 높이 처리
+        if total_height % viewport_height > 0:
+            driver.execute_script(f"window.scrollTo(0, {total_height - viewport_height});")
+            time.sleep(0.3)
+            screenshot_part_path = f"{file_path}_part_final.png"
+            driver.save_screenshot(screenshot_part_path)
+            screenshot_parts.append(screenshot_part_path)
+
+        # 이미지 결합
+        stitched_image = Image.new("RGB", (total_width, total_height))
+        current_height = 0
+
+        for idx, part_path in enumerate(screenshot_parts):
+            with Image.open(part_path) as part_image:
+                # 현재 캡처된 이미지 크기 가져오기
+                part_width, part_height = part_image.size
+
+                # 마지막 스크롤 조정
+                if idx == len(screenshot_parts) - 1 and total_height % viewport_height > 0:
+                    part_image = part_image.crop((0, part_height - (total_height % viewport_height), part_width, part_height))
+
+                stitched_image.paste(part_image, (0, current_height))
+                current_height += part_image.size[1]
+
+            os.remove(part_path)  # 임시 파일 삭제
+
+        # 최종 스크린샷 저장
+        final_path = f"{file_path}_full.png"
+        stitched_image.save(final_path)
+        print(f"Full page screenshot saved: {final_path}")
+        return final_path
+
+    except Exception as e:
+        print(f"Error capturing full page screenshot: {e}")
+        return None
 
 
 # 페이지 데이터 추출 함수
@@ -161,7 +214,7 @@ def extract_page_data(driver, url, keyword):
             user_info = driver.find_element(By.CLASS_NAME, "user_info_wrapper")
             page_data["아이디"] = user_info.find_element(By.CLASS_NAME, "nick").text
             page_data["작성일"] = user_info.find_element(By.CLASS_NAME, "regdate").text
-            page_data["IP"] = user_info.find_element(By.CLASS_NAME, "ip_show").text
+            # page_data["IP"] = user_info.find_element(By.CLASS_NAME, "ip_show").text
         except NoSuchElementException as e:
             print(f"Error extracting main data: {e}")
 
@@ -177,10 +230,10 @@ def extract_page_data(driver, url, keyword):
                 except NoSuchElementException:
                     comment_data["리플 아이디"] = ""
 
-                try:
-                    comment_data["IP"] = row.find_element(By.CLASS_NAME, "ip_show").text
-                except NoSuchElementException:
-                    comment_data["IP"] = ""
+                # try:
+                #     comment_data["IP"] = row.find_element(By.CLASS_NAME, "ip_show").text
+                # except NoSuchElementException:
+                #     comment_data["IP"] = ""
 
                 try:
                     comment_data["리플 내용"] = row.find_element(By.CLASS_NAME, "text").text
@@ -192,18 +245,22 @@ def extract_page_data(driver, url, keyword):
                 except NoSuchElementException:
                     comment_data["리플 날짜"] = ""
 
-                comments.append(comment_data)
+
+                obj = {**page_data, **comment_data}
+                print(f"obj : {obj}")
+                # 공통 데이터 병합
+                comments.append(obj)
         except NoSuchElementException as e:
             print(f"Error extracting comments: {e}")
 
-        return {"page_data": page_data, "comments": comments}
+        return comments
 
     except Exception as e:
         print(f"Error processing {url}: {e}")
         return {"page_data": {}, "comments": []}
 
 
-def save_or_append_to_excel(data, filename="fmkorea_results.xlsx"):
+def save_or_append_to_excel(data, filename="ruliweb_results.xlsx"):
     df = pd.DataFrame(data)
 
     try:
@@ -229,23 +286,23 @@ if __name__ == "__main__":
     driver = setup_driver()
     keywords = [
         "마공스시",
-        "읍읍스시",
-        "마공읍읍",
-        "ㅁㄱㅅㅅ",
-        "ㅁㄱ스시",
+        # "읍읍스시",
+        # "마공읍읍",
+        # "ㅁㄱㅅㅅ",
+        # "ㅁㄱ스시",
         # "신지수",
         # "ㅅㅈㅅ",
-        "보일러집 아들",
-        "대열보일러",
-        "project02",
-        "버블트리"
+        # "보일러집 아들",
+        # "대열보일러",
+        # "project02",
+        # "버블트리"
     ]
 
     for keyword in keywords:
         result_links = get_links(keyword)
 
         results = []
-        for index, link in result_links:
+        for index, link in enumerate(result_links):
             data = extract_page_data(driver, link, keyword)
             if data:
                 results.extend(data)
