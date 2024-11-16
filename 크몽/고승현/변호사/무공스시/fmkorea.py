@@ -176,13 +176,13 @@ def extract_page_data(driver, url, category, link):
         # 공통 데이터 추출
         base_data = {
             "글 번호": link,
-            "url": url,
-            "카테고리": category,
-            "스크린샷": full_screenshot_path,
             "제목": "",
             "내용": "",
             "날짜": "",
-            "아이디": ""
+            "아이디": "",
+            "키워드": category,
+            "url": url,
+            "스크린샷": full_screenshot_path,
         }
 
         # 제목 추출
