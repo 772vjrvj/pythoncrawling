@@ -90,7 +90,7 @@ def get_links(query, start_page=1):
 
 
 # 스크린샷 폴더 설정
-IMAGE_FOLDER = "image_list"
+IMAGE_FOLDER = "ruriweb_image_list"
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 # 드라이버 세팅
@@ -129,7 +129,6 @@ def capture_full_page_screenshot(driver, file_path):
         # 페이지 전체 크기 가져오기
         total_width = driver.execute_script("return document.body.scrollWidth")
         total_height = driver.execute_script("return document.body.scrollHeight")
-        viewport_width = driver.execute_script("return window.innerWidth")
         viewport_height = driver.execute_script("return window.innerHeight")
 
         # 스크롤 단계와 캡처된 이미지를 저장할 리스트
@@ -200,7 +199,6 @@ def extract_page_data(driver, url, keyword):
             "내용": "",
             "아이디": "",
             "작성일": "",
-            "IP": "",
             "키워드": keyword,
             "url": url,
             "스크린샷": full_screenshot_path,
@@ -214,7 +212,6 @@ def extract_page_data(driver, url, keyword):
             user_info = driver.find_element(By.CLASS_NAME, "user_info_wrapper")
             page_data["아이디"] = user_info.find_element(By.CLASS_NAME, "nick").text
             page_data["작성일"] = user_info.find_element(By.CLASS_NAME, "regdate").text
-            # page_data["IP"] = user_info.find_element(By.CLASS_NAME, "ip_show").text
         except NoSuchElementException as e:
             print(f"Error extracting main data: {e}")
 
@@ -222,34 +219,38 @@ def extract_page_data(driver, url, keyword):
         comments = []
         try:
             comment_rows = driver.find_elements(By.CSS_SELECTOR, ".comment_table tbody tr")
-            for idx, row in enumerate(comment_rows, start=1):
-                comment_data = {"리플 번호": idx}
+            if not comment_rows:  # 댓글이 없을 경우
+                # 리플 데이터가 없으면 빈 값으로 하나의 배열을 리턴
+                page_data.update({
+                    "리플 번호": "",
+                    "리플 아이디": "",
+                    "리플 내용": "",
+                    "리플 날짜": ""
+                })
+                comments.append(page_data)
+            else:
+                for idx, row in enumerate(comment_rows, start=1):
+                    comment_data = {"리플 번호": idx}
 
-                try:
-                    comment_data["리플 아이디"] = row.find_element(By.CLASS_NAME, "nick_link").text
-                except NoSuchElementException:
-                    comment_data["리플 아이디"] = ""
+                    try:
+                        comment_data["리플 아이디"] = row.find_element(By.CLASS_NAME, "nick_link").text
+                    except NoSuchElementException:
+                        comment_data["리플 아이디"] = ""
 
-                # try:
-                #     comment_data["IP"] = row.find_element(By.CLASS_NAME, "ip_show").text
-                # except NoSuchElementException:
-                #     comment_data["IP"] = ""
+                    try:
+                        comment_data["리플 내용"] = row.find_element(By.CLASS_NAME, "text").text
+                    except NoSuchElementException:
+                        comment_data["리플 내용"] = ""
 
-                try:
-                    comment_data["리플 내용"] = row.find_element(By.CLASS_NAME, "text").text
-                except NoSuchElementException:
-                    comment_data["리플 내용"] = ""
+                    try:
+                        comment_data["리플 날짜"] = row.find_element(By.CLASS_NAME, "time").text
+                    except NoSuchElementException:
+                        comment_data["리플 날짜"] = ""
 
-                try:
-                    comment_data["리플 날짜"] = row.find_element(By.CLASS_NAME, "time").text
-                except NoSuchElementException:
-                    comment_data["리플 날짜"] = ""
-
-
-                obj = {**page_data, **comment_data}
-                print(f"obj : {obj}")
-                # 공통 데이터 병합
-                comments.append(obj)
+                    obj = {**page_data, **comment_data}
+                    print(f"obj : {obj}")
+                    # 공통 데이터 병합
+                    comments.append(obj)
         except NoSuchElementException as e:
             print(f"Error extracting comments: {e}")
 
@@ -286,16 +287,16 @@ if __name__ == "__main__":
     driver = setup_driver()
     keywords = [
         "마공스시",
-        # "읍읍스시",
-        # "마공읍읍",
-        # "ㅁㄱㅅㅅ",
-        # "ㅁㄱ스시",
+        "읍읍스시",
+        "마공읍읍",
+        "ㅁㄱㅅㅅ",
+        "ㅁㄱ스시",
         # "신지수",
         # "ㅅㅈㅅ",
-        # "보일러집 아들",
-        # "대열보일러",
-        # "project02",
-        # "버블트리"
+        "보일러집 아들",
+        "대열보일러",
+        "project02",
+        "버블트리"
     ]
 
     for keyword in keywords:
