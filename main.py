@@ -81,7 +81,6 @@ def get_links(query, start_page=1):
         all_links.extend(links)
         page += 1
         time.sleep(random.uniform(2, 3))
-        break
 
     print("Crawling complete.")
     print(f'all_links : {all_links}')
@@ -200,7 +199,7 @@ def extract_page_data(driver, url, keyword):
             "내용": "",
             "아이디": "",
             "작성일": "",
-            "IP": "",
+            # "IP": "",
             "키워드": keyword,
             "url": url,
             "스크린샷": full_screenshot_path,
@@ -286,16 +285,16 @@ if __name__ == "__main__":
     driver = setup_driver()
     keywords = [
         "마공스시",
-        # "읍읍스시",
-        # "마공읍읍",
-        # "ㅁㄱㅅㅅ",
-        # "ㅁㄱ스시",
+        "읍읍스시",
+        "마공읍읍",
+        "ㅁㄱㅅㅅ",
+        "ㅁㄱ스시",
         # "신지수",
         # "ㅅㅈㅅ",
-        # "보일러집 아들",
-        # "대열보일러",
-        # "project02",
-        # "버블트리"
+        "보일러집 아들",
+        "대열보일러",
+        "project02",
+        "버블트리"
     ]
 
     for keyword in keywords:
@@ -306,7 +305,6 @@ if __name__ == "__main__":
             data = extract_page_data(driver, link, keyword)
             if data:
                 results.extend(data)
-            break
 
         # 엑셀 저장 또는 추가
         print(f'results len : {len(results)}')
