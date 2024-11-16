@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
+from openpyxl import load_workbook
 
 # 이미지 저장 폴더 설정
 IMAGE_FOLDER = "image_list"
@@ -273,19 +274,29 @@ def extract_page_data(driver, url, category, link):
         return []
 
 
-# 엑셀 저장 또는 추가 함수
-def save_or_append_to_excel(data):
-    filename = "fmkorea_results.xlsx"
+
+def save_or_append_to_excel(data, filename="fmkorea_results.xlsx"):
     df = pd.DataFrame(data)
 
-    if os.path.exists(filename):  # 기존 파일이 있는 경우
-        existing_df = pd.read_excel(filename, engine='openpyxl')  # 기존 데이터 로드
-        new_df = pd.concat([existing_df, df], ignore_index=True)  # 데이터 추가
-        new_df.to_excel(filename, index=False, engine='openpyxl')  # 기존 파일에 덮어쓰기
-        print(f"Data appended to {filename}")
-    else:  # 파일이 없는 경우 새로 생성
-        df.to_excel(filename, index=False, engine='openpyxl')  # 새 파일 생성
+    try:
+        # 기존 파일이 있을 경우 데이터를 추가
+        with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            workbook = load_workbook(filename)
+            sheet_name = workbook.sheetnames[0]  # 첫 번째 시트 이름 가져오기
+            # 기존 데이터의 마지막 행 번호 계산
+            if writer.sheets.get(sheet_name):
+                startrow = writer.sheets[sheet_name].max_row
+            else:
+                startrow = 0
+            # 데이터 추가
+            df.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=startrow)
+            print(f"Data successfully appended to {filename}")
+    except FileNotFoundError:
+        # 파일이 없을 경우 새 파일 생성
+        df.to_excel(filename, index=False)
         print(f"New file created: {filename}")
+
+
 
 # 함수: href 값 추출 (Selenium으로 변경)
 def extract_links_selenium(driver, keyword, page):
@@ -334,8 +345,8 @@ if __name__ == "__main__":
         "마공읍읍",
         "ㅁㄱㅅㅅ",
         "ㅁㄱ스시",
-        "신지수",
-        "ㅅㅈㅅ",
+        # "신지수",
+        # "ㅅㅈㅅ",
         "보일러집 아들",
         "대열보일러",
         "project02",
@@ -358,9 +369,11 @@ if __name__ == "__main__":
                 print(f"Processing URL: {url}")
                 data = extract_page_data(driver, url, keyword, link)
                 if data:
-                    results.append(data)
+                    results.extend(data)
 
             # 엑셀 저장 또는 추가
+            print(f'results len : {len(results)}')
+            print(f'results : {results}')
             if results:
                 save_or_append_to_excel(results)
 
