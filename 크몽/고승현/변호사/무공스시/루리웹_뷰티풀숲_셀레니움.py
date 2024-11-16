@@ -189,7 +189,7 @@ def extract_page_data(driver, url, keyword):
         time.sleep(3)
 
         # 스크린샷 저장
-        screenshot_path = os.path.join(IMAGE_FOLDER, f"screenshot_{url.split('/')[-1]}.png")
+        screenshot_path = os.path.join(IMAGE_FOLDER, f"ruliweb_{url.split('/')[-1]}.png")
         full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
 
         # 공통 데이터 추출
