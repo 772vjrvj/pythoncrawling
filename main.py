@@ -101,6 +101,7 @@ def setup_driver():
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--incognito")
+        chrome_options.add_argument("--headless")
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         chrome_options.add_argument(f'user-agent={user_agent}')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -213,7 +214,7 @@ def extract_page_data(driver, url, keyword):
             user_info = driver.find_element(By.CLASS_NAME, "user_info_wrapper")
             page_data["아이디"] = user_info.find_element(By.CLASS_NAME, "nick").text
             page_data["작성일"] = user_info.find_element(By.CLASS_NAME, "regdate").text
-            page_data["IP"] = user_info.find_element(By.CLASS_NAME, "ip_show").text
+            # page_data["IP"] = user_info.find_element(By.CLASS_NAME, "ip_show").text
         except NoSuchElementException as e:
             print(f"Error extracting main data: {e}")
 
@@ -229,10 +230,10 @@ def extract_page_data(driver, url, keyword):
                 except NoSuchElementException:
                     comment_data["리플 아이디"] = ""
 
-                try:
-                    comment_data["IP"] = row.find_element(By.CLASS_NAME, "ip_show").text
-                except NoSuchElementException:
-                    comment_data["IP"] = ""
+                # try:
+                #     comment_data["IP"] = row.find_element(By.CLASS_NAME, "ip_show").text
+                # except NoSuchElementException:
+                #     comment_data["IP"] = ""
 
                 try:
                     comment_data["리플 내용"] = row.find_element(By.CLASS_NAME, "text").text
