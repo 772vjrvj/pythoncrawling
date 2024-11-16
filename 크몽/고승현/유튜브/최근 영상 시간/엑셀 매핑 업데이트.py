@@ -1,8 +1,8 @@
 import pandas as pd
 
 # A와 B 엑셀 파일 경로
-a_excel_path = 'test - 복사본.xlsx'
-b_excel_path = '유튜브+링크+정리 - 복사본.xlsx'
+a_excel_path = '유튜브+링크+정리 필터.xlsx'
+b_excel_path = '유튜브+링크+정리 종합.xlsx'
 
 # 엑셀 파일 읽기
 df_a = pd.read_excel(a_excel_path)

@@ -40,7 +40,7 @@ def new_print(text, level="INFO"):
     log_text_widget.see(tk.END)
 
 
-def get_soup(url, timeout=10, retries=3):
+def get_soup(url, timeout=10, retries=2):
     while retries > 0:
         try:
             response = requests.get(url, timeout=timeout)
@@ -55,8 +55,7 @@ def get_soup(url, timeout=10, retries=3):
                 print(f"Request error: {e}. Status code: {response.status_code}. Skipping URL.")
                 break
             print(f"Request error: {e}. Retrying... ({retries} retries left)")
-            retries -= 1
-            time.sleep(2)  # 재시도 전 잠시 대기
+            return response.status_code
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}. Retrying... ({retries} retries left)")
             retries -= 1
@@ -68,7 +67,10 @@ def process_author_info(url):
     soup = get_soup(url)
     if not soup:  # soup이 None이면 다음으로 넘어감
         new_print(f"Skipping URL due to failed request or parsing: {url}", level="WARNING")
-        return None
+        return 404
+
+    if soup == 404 or soup == 400:
+        return soup
 
     author_span = soup.find("span", itemprop="author", itemscope=True, itemtype="http://schema.org/Person")
     if author_span:
@@ -89,8 +91,11 @@ def set_remaining_time(total_urls, index):
 def extract_published_time(url):
     soup = get_soup(url)
     if not soup:
-        print("Failed to retrieve the page or parse HTML.")
-        return ""
+        new_print("Failed to retrieve the page or parse HTML.")
+        return "이 페이지를 사용할 수 없습니다."
+
+    if soup == 404 or soup == 400:
+        return "이 페이지를 사용할 수 없습니다."
 
     scripts = soup.find_all("script")
     for script in scripts:
@@ -126,6 +131,15 @@ def extract_published_time(url):
                     tabs = yt_data.get("contents", {}).get("twoColumnBrowseResultsRenderer", {}).get("tabs", [])
                     if tabs:
                         for tab in tabs:
+
+                            section_list_renderer = tab.get("tabRenderer", {}).get("content", {}).get("sectionListRenderer", {})
+                            contents = section_list_renderer.get("contents", [])
+                            for content in contents:
+                                channel_state = content.get("channelOwnerEmptyStateRenderer", {})
+                                description = channel_state.get("description", {}).get("simpleText")
+                                if description:
+                                    return description  # "채널에 콘텐츠가 없습니다."
+
                             rich_grid_renderer = tab.get("tabRenderer", {}).get("content", {}).get("richGridRenderer", {})
                             for item in rich_grid_renderer.get("contents", []):
                                 video_renderer = item.get("richItemRenderer", {}).get("content", {}).get("videoRenderer", {})
@@ -135,6 +149,8 @@ def extract_published_time(url):
                     published_time_text = yt_data.get("playerOverlays", {}).get("playerOverlayRenderer", {}).get("autoplay", {}).get("playerOverlayAutoplayRenderer", {}).get("publishedTimeText", {})
                     if published_time_text.get("simpleText"):
                         return published_time_text["simpleText"]
+
+                    return ""
 
                 except json.JSONDecodeError as e:
                     print(f"JSON Decode Error: {e}")
@@ -166,15 +182,29 @@ def start_processing():
             set_remaining_time(total_urls, index)
             continue
 
-        if "/watch?v" in url:
+        if "/shorts" in url:
+            extracted_data_list.append("쇼츠 제외.")
+            set_remaining_time(total_urls, index)
+            continue
+
+        if url.endswith("/featured") or url.endswith("/about"):
+            video_url = re.sub(r"/(featured|about)$", "/videos", url)
+        elif "/videos" in url:
+            url = re.sub(r"/videos+", "/videos", url)  # '/videos' 뒤에 연속된 's'를 제거하여 '/videos'로 통일
+            video_url = url
+        elif "youtu.be" in url:
+            video_url = url
+        elif "/watch?v" in url:
             video_url = url
         elif not any(substring in url for substring in ["/c/", "/channel/", "/@"]):
             video_url = process_author_info(url)
-        elif "/videos" in url:
-            video_url = url
+
+            if video_url == 404 or video_url == 400:
+                extracted_data_list.append("이 페이지를 사용할 수 없습니다.")
+                set_remaining_time(total_urls, index)
+                continue
         else:
             video_url = url.rstrip('/') + "/videos"
-
         new_print(f"video_url : {video_url}")
 
         result = ""
