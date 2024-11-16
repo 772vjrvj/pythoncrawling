@@ -81,7 +81,6 @@ def get_links(query, start_page=1):
         all_links.extend(links)
         page += 1
         time.sleep(random.uniform(2, 3))
-        break
 
     print("Crawling complete.")
     print(f'all_links : {all_links}')
@@ -307,7 +306,6 @@ if __name__ == "__main__":
             data = extract_page_data(driver, link, keyword)
             if data:
                 results.extend(data)
-            break
 
         # 엑셀 저장 또는 추가
         print(f'results len : {len(results)}')
