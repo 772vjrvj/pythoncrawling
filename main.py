@@ -264,6 +264,8 @@ def extract_page_data(driver, url, keyword):
                     "리플 날짜": ""
                 })
                 comments.append(page_data)
+                print(f"obj : {page_data}")
+                return comments
             else:
                 for idx, item in enumerate(comment_items, start=1):
                     comment_data = {"리플 번호": idx}
@@ -300,6 +302,7 @@ def extract_page_data(driver, url, keyword):
                 "리플 내용": "",
                 "리플 날짜": ""
             })
+            print(f"obj : {page_data}")
             comments.append(page_data)
             return comments
 
