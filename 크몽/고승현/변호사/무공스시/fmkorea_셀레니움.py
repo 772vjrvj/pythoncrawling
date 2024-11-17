@@ -116,6 +116,7 @@ def extract_page_data(driver, url, category, link):
 
         # 공통 데이터 추출
         base_data = {
+            "사이트": '에펨코리아',
             "글 번호": link,
             "제목": "",
             "내용": "",
@@ -324,7 +325,6 @@ if __name__ == "__main__":
 
             # 엑셀 저장 또는 추가
             print(f'results len : {len(results)}')
-            print(f'results : {results}')
             if results:
                 save_or_append_to_excel(results)
 
