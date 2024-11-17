@@ -187,6 +187,9 @@ def extract_page_data(driver, url, keyword):
         driver.get(url)
         time.sleep(3)
 
+        # 댓글 데이터 추출
+        comments = []
+
         # 스크린샷 저장
         screenshot_path = os.path.join(IMAGE_FOLDER, f"ruliweb_{url.split('/')[-1]}.png")
         full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
@@ -214,9 +217,16 @@ def extract_page_data(driver, url, keyword):
             page_data["작성일"] = user_info.find_element(By.CLASS_NAME, "regdate").text
         except NoSuchElementException as e:
             print(f"Error extracting main data: {e}")
+            page_data.update({
+                "리플 번호": "",
+                "리플 아이디": "",
+                "리플 내용": "",
+                "리플 날짜": ""
+            })
+            print(f"obj : {page_data}")
+            comments.append(page_data)
+            return comments
 
-        # 댓글 데이터 추출
-        comments = []
         try:
             comment_rows = driver.find_elements(By.CSS_SELECTOR, ".comment_table tbody tr")
             if not comment_rows:  # 댓글이 없을 경우
@@ -228,6 +238,8 @@ def extract_page_data(driver, url, keyword):
                     "리플 날짜": ""
                 })
                 comments.append(page_data)
+                print(f"obj : {page_data}")
+                return comments
             else:
                 for idx, row in enumerate(comment_rows, start=1):
                     comment_data = {"리플 번호": idx}
@@ -251,10 +263,18 @@ def extract_page_data(driver, url, keyword):
                     print(f"obj : {obj}")
                     # 공통 데이터 병합
                     comments.append(obj)
+                return comments
         except NoSuchElementException as e:
-            print(f"Error extracting comments: {e}")
-
-        return comments
+            print(f"Error extracting main data: {e}")
+            page_data.update({
+                "리플 번호": "",
+                "리플 아이디": "",
+                "리플 내용": "",
+                "리플 날짜": ""
+            })
+            print(f"obj : {page_data}")
+            comments.append(page_data)
+            return comments
 
     except Exception as e:
         print(f"Error processing {url}: {e}")
@@ -284,7 +304,6 @@ def save_or_append_to_excel(data, filename="ruliweb_results.xlsx"):
 
 # 실행
 if __name__ == "__main__":
-    driver = setup_driver()
     keywords = [
         "마공스시",
         "읍읍스시",
@@ -299,19 +318,27 @@ if __name__ == "__main__":
         "버블트리"
     ]
 
-    for keyword in keywords:
-        result_links = get_links(keyword)
+    driver = setup_driver()
 
-        results = []
-        for index, link in enumerate(result_links):
-            data = extract_page_data(driver, link, keyword)
-            if data:
-                results.extend(data)
+    if not driver:
+        print("Driver setup failed!")
+        exit()
+    try:
+        for keyword in keywords:
+            print(f"Processing keyword: {keyword}")
+            result_links = get_links(keyword)
+            if not result_links:
+                continue
+            results = []
+            for index, link in enumerate(result_links):
+                data = extract_page_data(driver, link, keyword)
+                if data:
+                    results.extend(data)
 
-        # 엑셀 저장 또는 추가
-        print(f'results len : {len(results)}')
-        if results:
-            save_or_append_to_excel(results)
+            # 엑셀 저장 또는 추가
+            print(f'results len : {len(results)}')
+            if results:
+                save_or_append_to_excel(results)
 
-    driver.quit()
-
+    finally:
+        driver.quit()

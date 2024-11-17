@@ -192,6 +192,8 @@ def extract_page_data(driver, url, keyword):
     try:
         driver.get(url)
         time.sleep(3)
+        # 댓글 데이터 추출
+        comments = []
 
         # 스크린샷 저장
         screenshot_path = os.path.join(IMAGE_FOLDER, f"inven_{url.split('/')[-1]}.png")
@@ -219,10 +221,17 @@ def extract_page_data(driver, url, keyword):
             page_data["작성일"] = articleInfo.find_element(By.CLASS_NAME, "articleDate").text
         except NoSuchElementException as e:
             print(f"Error extracting main data: {e}")
-            return []
 
-        # 댓글 데이터 추출
-        comments = []
+            page_data.update({
+                "리플 번호": "",
+                "리플 아이디": "",
+                "리플 내용": "",
+                "리플 날짜": ""
+            })
+            print(f"obj : {page_data}")
+            comments.append(page_data)
+            return comments
+
 
         try:
             # 두 번째 class="commentList1"을 찾기
@@ -237,6 +246,7 @@ def extract_page_data(driver, url, keyword):
                     "리플 내용": "",
                     "리플 날짜": ""
                 })
+                print(f"obj : {page_data}")
                 comments.append(page_data)
 
                 return comments
@@ -292,7 +302,7 @@ def extract_page_data(driver, url, keyword):
                     obj = {**page_data, **comment_data}
                     print(f"obj : {obj}")
                     comments.append(obj)
-                    return comments
+                return comments
 
         except NoSuchElementException as e:
             print(f"Error extracting comments: {e}")
@@ -335,7 +345,6 @@ def save_or_append_to_excel(data, filename="inven_results.xlsx"):
 
 # 실행
 if __name__ == "__main__":
-    driver = setup_driver()
     keywords = [
         # "마공스시",
         # "읍읍스시",
@@ -349,21 +358,26 @@ if __name__ == "__main__":
         "project02",
         "버블트리"
     ]
+    driver = setup_driver()
+    if not driver:
+        print("Driver setup failed!")
+        exit()
+    try:
+        for keyword in keywords:
+            print(f"Processing keyword: {keyword}")
+            result_links = get_links(keyword)
+            if not result_links:
+                continue
+            results = []
+            for index, link in enumerate(result_links):
+                data = extract_page_data(driver, link, keyword)
+                if data:
+                    results.extend(data)
 
-    for keyword in keywords:
-        result_links = get_links(keyword)
-        if not result_links:
-            continue
+            # 엑셀 저장 또는 추가
+            print(f'results len : {len(results)}')
+            if results:
+                save_or_append_to_excel(results)
 
-        results = []
-        for index, link in enumerate(result_links):
-            data = extract_page_data(driver, link, keyword)
-            if data:
-                results.extend(data)
-
-        # 엑셀 저장 또는 추가
-        print(f'results len : {len(results)}')
-        if results:
-            save_or_append_to_excel(results)
-
-    driver.quit()
+    finally:
+        driver.quit()

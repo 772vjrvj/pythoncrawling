@@ -66,3 +66,6 @@ https://bbs.ruliweb.com/search?q=%EB%A7%88%EA%B3%B5%EC%8A%A4%EC%8B%9C&page=1#boa
 https://www.inven.co.kr/search/webzine/top/%EB%A7%88%EA%B3%B5%EC%8A%A4%EC%8B%9C
 
 
+엑셀 체크 --
+URL 넘아가는 경우
+엑셀 글자 최대수 넘어가는 경우

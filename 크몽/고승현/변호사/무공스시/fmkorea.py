@@ -105,8 +105,9 @@ def capture_full_page_screenshot(driver, file_path):
 
 
 # 페이지에서 데이터 추출
-def extract_page_data(driver, url, category, link):
+def extract_page_data(driver, link, category):
     try:
+        url = f"https://www.fmkorea.com/{link}"
         driver.get(url)
         time.sleep(3)  # 페이지 로딩 대기
 
@@ -167,6 +168,7 @@ def extract_page_data(driver, url, category, link):
                 "리플 날짜": "",
                 "리플 내용": ""
             })
+            print(f"obj : {base_data}")
             comment_list.append(base_data)
         else:
             # 리플이 있다면 기존 로직대로 처리
@@ -222,7 +224,7 @@ def extract_page_data(driver, url, category, link):
         return comment_list
 
     except Exception as e:
-        print(f"Error processing {url}: {e}")
+        print(f"Error processing {link}: {e}")
         return []
 
 
@@ -273,7 +275,7 @@ def extract_links_selenium(driver, keyword, page):
 
 
 # 메인 함수 (Selenium 기반으로 변경)
-def main_selenium(driver, keyword, start_page=1):
+def get_links(driver, keyword, start_page=1):
     all_links = []
     page = start_page
     while True:
@@ -313,13 +315,12 @@ if __name__ == "__main__":
     try:
         for keyword in keywords:
             print(f"Processing keyword: {keyword}")
-            result_links = main_selenium(driver, keyword)
-
+            result_links = get_links(driver, keyword)
+            if not result_links:
+                continue
             results = []
-            for link in result_links:
-                url = f"https://www.fmkorea.com/{link}"
-                print(f"Processing URL: {url}")
-                data = extract_page_data(driver, url, keyword, link)
+            for index, link in enumerate(result_links):
+                data = extract_page_data(driver, link, keyword)
                 if data:
                     results.extend(data)
 
