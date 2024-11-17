@@ -333,10 +333,10 @@ def save_or_append_to_excel(data, filename="inven_results.xlsx"):
 if __name__ == "__main__":
     driver = setup_driver()
     keywords = [
-        "마공스시",
-        "읍읍스시",
-        "마공읍읍",
-        "ㅁㄱㅅㅅ",
+        # "마공스시",
+        # "읍읍스시",
+        # "마공읍읍",
+        # "ㅁㄱㅅㅅ",
         "ㅁㄱ스시",
         # "신지수",
         # "ㅅㅈㅅ",
