@@ -243,7 +243,17 @@ def extract_page_data(driver, url, keyword):
 
             # 두 번째 commentList1에서 ul -> li를 찾아서 댓글 추출
             second_comment_list = comment_lists[1]
-            comment_items = second_comment_list.find_elements(By.TAG_NAME, "ul")[0].find_elements(By.TAG_NAME, "li")
+
+            comment_items = []
+
+            # ul 태그가 존재하는지 확인
+            ul_elements = second_comment_list.find_elements(By.TAG_NAME, "ul")
+            if len(ul_elements) > 0:
+                # ul이 존재하면 그 안에서 li 태그 찾기
+                li_elements = ul_elements[0].find_elements(By.TAG_NAME, "li")
+                if len(li_elements) > 0:
+                    comment_items = li_elements
+
 
             if not comment_items:  # 댓글이 없을 경우
                 # 리플 데이터가 없으면 빈 값으로 하나의 배열을 리턴
@@ -280,6 +290,7 @@ def extract_page_data(driver, url, keyword):
                     obj = {**page_data, **comment_data}
                     print(f"obj : {obj}")
                     comments.append(obj)
+                    return comments
 
         except NoSuchElementException as e:
             print(f"Error extracting comments: {e}")
@@ -323,10 +334,10 @@ def save_or_append_to_excel(data, filename="inven_results.xlsx"):
 if __name__ == "__main__":
     driver = setup_driver()
     keywords = [
-        "마공스시",
-        "읍읍스시",
-        "마공읍읍",
-        "ㅁㄱㅅㅅ",
+        # "마공스시",
+        # "읍읍스시",
+        # "마공읍읍",
+        # "ㅁㄱㅅㅅ",
         "ㅁㄱ스시",
         # "신지수",
         # "ㅅㅈㅅ",
