@@ -3,7 +3,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import re
 import json
-
+import time
 
 def read_excel(file_path):
     """엑셀 파일을 읽어 콘텐츠 주소 컬럼을 반환"""
@@ -59,6 +59,7 @@ def extract_dates_from_urls(df):
     """엑셀에서 URL을 순회하면서 각 URL에 대해 날짜를 추출"""
     date_list = []
     for index, url in enumerate(df['콘텐츠 주소']):
+        time.sleep(500)
         date = get_video_date_from_url(url)
 
         # date가 없다면 공백을 출력하고 공백값을 추가
@@ -70,7 +71,7 @@ def extract_dates_from_urls(df):
             date_list.append('')  # 공백값을 append
 
         # 500개마다 엑셀 파일 업데이트
-        if (index + 1) % 500 == 0:
+        if (index + 1) % 4 == 0:
             save_dates_to_excel(date_list, '유튜브_결과_날짜.xlsx')
             date_list = []  # 날짜 리스트 초기화
 
