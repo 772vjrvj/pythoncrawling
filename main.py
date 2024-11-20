@@ -1,13 +1,22 @@
 import sys
 import time
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidgetItem,
-                             QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox)
+                             QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
 from urllib.parse import urlparse
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
 
 
 # 전역 변수
@@ -22,11 +31,33 @@ class ApiWorker(QThread):
         super().__init__(parent)
         self.url = url  # URL을 클래스 속성으로 저장
 
+        chrome_options = Options()
+        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1080,750")
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                  get: () => undefined
+                })
+            '''
+        })
+        self.driver = driver
+
+
     def run(self):
         print("Worker started.")  # 디버깅용
         try:
             # 외부 API 호출 (여기서 실제 API URL 사용)
-            data = self.fetch_product_info(self.url)
+            data = self.fetch_product_info_sele(self.url)
             print("Worker emit signal.")  # 디버깅용
             self.api_data_received.emit(data)  # 데이터를 시그널로 전달
         except Exception as e:
@@ -34,10 +65,65 @@ class ApiWorker(QThread):
             self.api_data_received.emit({"status": "error", "message": str(e)})
 
 
+    def fetch_product_info_sele(self, url):
+        try:
+            # URL 로드
+            self.driver.get(url)
+
+            # 상품명 추출
+            product_name = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "prod-buy-header__title"))
+            ).text
+
+            # 배송비 추출
+            try:
+                delivery_fee = self.driver.find_element(By.CLASS_NAME, "delivery-fee-info").text
+            except:
+                delivery_fee = ""
+
+            # 판매가 추출
+            try:
+                total_price = self.driver.find_element(By.CLASS_NAME, "total-price").text
+            except:
+                total_price = ""
+
+            # 배송비와 판매가에서 숫자만 추출하고 더하기
+            delivery_fee_number = self.extract_number(delivery_fee)
+            total_price_number = self.extract_number(total_price)
+            total = delivery_fee_number + total_price_number
+            total_formatted = f"{total:,}원" if total > 0 else ""
+
+            # 최근 실행 시간
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # 결과 객체
+            obj = {
+                "status": "success",
+                "message": "성공",
+                "data": {
+                    "URL": url,
+                    "상품명": product_name,
+                    "배송비": delivery_fee,
+                    "판매가": total_price,
+                    "합계": total_formatted,
+                    "최근실행시간": current_time,
+                },
+            }
+
+            print(f"obj : {obj}")
+            return obj
+
+        except Exception as e:
+            return {"status": "error", "message": f"에러: {str(e)}", "data": ""}
+
+        finally:
+            self.driver.quit()  # 브라우저 종료
+
+
     def extract_number(self, text):
         return int(re.sub(r'\D', '', text)) if text else 0
 
-    def fetch_product_info(self, url):
+    def fetch_product_info_beatiful(self, url):
         headers = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -101,6 +187,7 @@ class ApiWorker(QThread):
 
         except Exception as e:
             return {"status": "error", "message": f"알 수 없는 오류: {str(e)}", "data": ""}
+
 
 
 # 팝업창 클래스 (URL 입력)
@@ -255,8 +342,9 @@ class MainWindow(QWidget):
         """)
         self.excel_button.setFixedWidth(150)  # 고정된 너비
         self.excel_button.setFixedHeight(40)  # 고정된 높이
-
+        self.excel_button.clicked.connect(self.excel_down_load)
         right_button_layout.addWidget(self.excel_button)
+
 
         # 헤더에 "쿠팡(추적상품)" 텍스트 추가
         header_label = QLabel("쿠팡(추적상품)")
@@ -297,6 +385,29 @@ class MainWindow(QWidget):
 
         self.center_window()
 
+    def excel_down_load(self):
+        # 데이터 추출
+        row_count = self.table.rowCount()
+        column_count = self.table.columnCount()
+        data = []
+
+        for row in range(row_count):
+            row_data = []
+            for col in range(column_count):
+                item = self.table.item(row, col)
+                row_data.append(item.text() if item else "")
+            data.append(row_data)
+
+        # 데이터프레임 생성
+        df = pd.DataFrame(data, columns=[self.table.horizontalHeaderItem(i).text() for i in range(column_count)])
+
+        # 엑셀 파일 저장
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getSaveFileName(self, "엑셀 파일 저장", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
+        if file_path:
+            df.to_excel(file_path, index=False, sheet_name="Table Data")
+            print(f"엑셀 파일 저장 완료: {file_path}")
+
     def setup_ui(self):
         # UI 구성 (생략 - 버튼 추가 등)
         self.daily_timer = QTimer(self)
@@ -307,7 +418,7 @@ class MainWindow(QWidget):
         """24시에 실행되도록 타이머 설정"""
         now = QTime.currentTime()
         target_time = QTime(0, 0)  # 자정 (24시)
-        # target_time = QTime(1, 7)  # 테스트용 타겟 시간: 0시 32분
+        # target_time = QTime(1, 44)  # 테스트용 타겟 시간: 0시 32분
 
         interval = now.msecsTo(target_time)
 
@@ -320,7 +431,7 @@ class MainWindow(QWidget):
         # 이후 매일 반복 실행: 24시간 간격으로 타이머 시작
         self.daily_timer.start(24 * 60 * 60 * 1000)
 
-        # self.daily_timer.start(10 * 1000)  # 5분 간격으로 실행 # 테스트용
+        # self.daily_timer.start(60 * 1000)  # 5분 간격으로 실행 # 테스트용
 
     def start_daily_worker(self):
         print('test')
