@@ -223,6 +223,21 @@ def extract_page_data(driver, url, keyword):
             page_data["제목"] = driver.find_element(By.CLASS_NAME, "subject_inner_text").text
             page_data["내용"] = driver.find_element(By.TAG_NAME, "article").text
 
+            # 키워드가 "신지수"인 경우 금지된 키워드 필터링
+            forbidden_keywords = ["병신지수", "혁신지수", "여신지수"]
+            if keyword == "신지수":
+                found_keywords = [forbidden for forbidden in forbidden_keywords
+                                  if forbidden in page_data["제목"] or forbidden in page_data["내용"]]
+                if found_keywords:
+                    print(f"found_keywords : {found_keywords}")
+                    return []  # 금지된 키워드가 포함되어 있으면 빈 리스트 반환
+
+            # 내용 자르기 (Excel 셀 최대 크기 제한 처리)
+            max_cell_length = 32767  # Excel 셀의 최대 문자 크기
+            if len(page_data["내용"]) > max_cell_length:
+                print(f"Content too long, trimming to {max_cell_length} characters.")
+                page_data["내용"] = page_data["내용"][:max_cell_length]  # 내용 자르기
+
             user_info = driver.find_element(By.CLASS_NAME, "user_info_wrapper")
             page_data["아이디"] = user_info.find_element(By.CLASS_NAME, "nick").text
             page_data["작성일"] = user_info.find_element(By.CLASS_NAME, "regdate").text
