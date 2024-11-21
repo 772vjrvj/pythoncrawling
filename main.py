@@ -208,7 +208,7 @@ def extract_page_data(driver, url, keyword):
         # 공통 데이터 추출
         page_data = {
             "사이트": "루리웹",
-            "글 번호": extract_and_format(url),
+            "글번호": extract_and_format(url),
             "제목": "",
             "내용": "",
             "아이디": "",
@@ -254,7 +254,9 @@ def extract_page_data(driver, url, keyword):
             return comments
 
         # 스크린샷 저장
-        screenshot_path = os.path.join(IMAGE_FOLDER, f'{page_data["작성일"]}({page_data["글번호"]}).png')
+
+        formatted_timestamp = page_data["작성일"].replace(":", "시", 1).replace(":", "분", 1) + "초"
+        screenshot_path = os.path.join(IMAGE_FOLDER, f'{formatted_timestamp}({page_data["글번호"]}).png')
         full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
         page_data["스크린샷"] = full_screenshot_path
 
