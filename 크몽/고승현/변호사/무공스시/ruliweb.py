@@ -254,7 +254,7 @@ def extract_page_data(driver, url, keyword):
             return comments
 
         # 스크린샷 저장
-        screenshot_path = os.path.join(IMAGE_FOLDER, f"{page_data["작성일"]}({page_data["글번호"]}).png")
+        screenshot_path = os.path.join(IMAGE_FOLDER, f'{page_data["작성일"]}({page_data["글번호"]}).png')
         full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
         page_data["스크린샷"] = full_screenshot_path
 
