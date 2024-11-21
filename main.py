@@ -654,7 +654,7 @@ class LoginWindow(QWidget):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Warning)
         msg_box.setWindowTitle("기간 종료")
-        msg_box.setText("테스트 기간이 끝났습니다.")
+        msg_box.setText("테스트 기간이 끝났습니다 .")
         msg_box.exec_()
 
     def change_password(self):
