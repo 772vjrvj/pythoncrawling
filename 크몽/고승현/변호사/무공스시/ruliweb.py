@@ -13,6 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 from openpyxl import load_workbook
 from PIL import Image
+import re
 
 
 # 요청 헤더 설정
@@ -67,20 +68,24 @@ def extract_links_from_page(query, page):
 
 # 메인 크롤링 함수
 def get_links(query, start_page=1):
-    all_links = []
+    all_links = set()  # 중복 제거를 위해 set 사용
     page = start_page
 
     while True:
-        print(f"Processing page {page}...")
+        print(f"page : {page}...")
         links = extract_links_from_page(query, page)
-        print(f'links : {links}')
         print(f'links len : {len(links)}')
         if not links:  # 더 이상 결과가 없으면 중단
             print(f"No more results on page {page}. Stopping.")
             break
-        all_links.extend(links)
+
+        # 새로 가져온 링크를 set에 추가
+        all_links.update(links)
         page += 1
         time.sleep(random.uniform(2, 3))
+
+    # 최종 결과를 list로 변환
+    all_links = list(all_links)
 
     print("Crawling complete.")
     print(f'all_links : {all_links}')
@@ -180,6 +185,16 @@ def capture_full_page_screenshot(driver, file_path):
         print(f"Error capturing full page screenshot: {e}")
         return None
 
+def extract_and_format(url):
+    # 정규 표현식을 사용해 숫자 부분 추출
+    match = re.search(r'board/(\d+)/read/(\d+)', url)
+    if match:
+        board_id = match.group(1)
+        read_id = match.group(2)
+        return f"{board_id}_{read_id}"
+    else:
+        return None
+
 
 # 페이지 데이터 추출 함수
 def extract_page_data(driver, url, keyword):
@@ -190,21 +205,17 @@ def extract_page_data(driver, url, keyword):
         # 댓글 데이터 추출
         comments = []
 
-        # 스크린샷 저장
-        screenshot_path = os.path.join(IMAGE_FOLDER, f"ruliweb_{url.split('/')[-1]}.png")
-        full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
-
         # 공통 데이터 추출
         page_data = {
             "사이트": "루리웹",
-            "글 번호": url.split("/")[-1],
+            "글 번호": extract_and_format(url),
             "제목": "",
             "내용": "",
             "아이디": "",
             "작성일": "",
             "키워드": keyword,
             "url": url,
-            "스크린샷": full_screenshot_path,
+            "스크린샷": "",
         }
 
         # 제목, 내용, 사용자 정보 추출
@@ -226,6 +237,11 @@ def extract_page_data(driver, url, keyword):
             print(f"obj : {page_data}")
             comments.append(page_data)
             return comments
+
+        # 스크린샷 저장
+        screenshot_path = os.path.join(IMAGE_FOLDER, f"{page_data["작성일"]}({page_data["글번호"]}).png")
+        full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
+        page_data["스크린샷"] = full_screenshot_path
 
         try:
             comment_rows = driver.find_elements(By.CSS_SELECTOR, ".comment_table tbody tr")
@@ -310,7 +326,7 @@ if __name__ == "__main__":
         "마공읍읍",
         "ㅁㄱㅅㅅ",
         "ㅁㄱ스시",
-        # "신지수",
+        "신지수",
         # "ㅅㅈㅅ",
         "보일러집 아들",
         "대열보일러",
@@ -318,19 +334,33 @@ if __name__ == "__main__":
         "버블트리"
     ]
 
+    # 병신지수 혁신지수 여신지수
+
     driver = setup_driver()
+
+    all_result_links = set()  # 중복 제거를 위해 set 사용
 
     if not driver:
         print("Driver setup failed!")
         exit()
+
     try:
-        for keyword in keywords:
-            print(f"Processing keyword: {keyword}")
+        for index, keyword in enumerate(keywords, start=1):
+            print(f"index: {index}/{len(keywords)}, keyword: {keyword}")
             result_links = get_links(keyword)
+
             if not result_links:
                 continue
+
+            # result_links에서 all_result_links와 중복된 것 제거
+            unique_links = [link for link in result_links if link not in all_result_links]
+            print(f"unique_links len : {len(unique_links)}")
+            # all_result_links에 고유 링크 추가
+            all_result_links.update(unique_links)
+
             results = []
-            for index, link in enumerate(result_links):
+            for idx, link in enumerate(unique_links, start=1):  # 중복 제거된 unique_links 사용
+                print(f'keyword: {keyword} ({index}/{len(keywords)}), links: ({idx}/{len(unique_links)})')
                 data = extract_page_data(driver, link, keyword)
                 if data:
                     results.extend(data)
