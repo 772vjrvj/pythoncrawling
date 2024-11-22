@@ -2,13 +2,12 @@ import sys
 import time
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidgetItem,
                              QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog)
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime, QDate
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
 from urllib.parse import urlparse
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -52,18 +51,13 @@ class ApiWorker(QThread):
         })
         self.driver = driver
 
-
     def run(self):
-        print("Worker started.")  # 디버깅용
         try:
             # 외부 API 호출 (여기서 실제 API URL 사용)
             data = self.fetch_product_info_sele(self.url)
-            print("Worker emit signal.")  # 디버깅용
             self.api_data_received.emit(data)  # 데이터를 시그널로 전달
         except Exception as e:
-            print(f"Worker exception: {e}")  # 디버깅용
             self.api_data_received.emit({"status": "error", "message": str(e)})
-
 
     def fetch_product_info_sele(self, url):
         try:
@@ -109,8 +103,6 @@ class ApiWorker(QThread):
                     "최근실행시간": current_time,
                 },
             }
-
-            print(f"obj : {obj}")
             return obj
 
         except Exception as e:
@@ -118,7 +110,6 @@ class ApiWorker(QThread):
 
         finally:
             self.driver.quit()  # 브라우저 종료
-
 
     def extract_number(self, text):
         return int(re.sub(r'\D', '', text)) if text else 0
@@ -175,9 +166,6 @@ class ApiWorker(QThread):
                     "최근실행시간": current_time
                 }
             }
-
-            print(f'obj : {obj}')
-
             return obj
 
         except requests.exceptions.RequestException as e:
@@ -187,7 +175,6 @@ class ApiWorker(QThread):
 
         except Exception as e:
             return {"status": "error", "message": f"알 수 없는 오류: {str(e)}", "data": ""}
-
 
 
 # 팝업창 클래스 (URL 입력)
@@ -210,7 +197,6 @@ class RegisterPopup(QDialog):
         title_layout.setAlignment(Qt.AlignCenter)
         popup_layout.addLayout(title_layout)
 
-
         # URL 입력
         url_label = QLabel("이름 : URL")
         url_label.setStyleSheet("font-size: 14px; margin-top: 10px;")
@@ -224,8 +210,6 @@ class RegisterPopup(QDialog):
             color: #333333;
         """)
         self.url_input.setFixedHeight(40)
-
-
 
         # 버튼
         button_layout = QHBoxLayout()
@@ -258,7 +242,6 @@ class RegisterPopup(QDialog):
         # URL 값을 전역 변수에 저장
         global url
         url = self.url_input.text()
-        print(f"입력한 URL: {url}")  # 콘솔에 출력 (디버그용)
         self.accept()  # 팝업 닫기
 
 
@@ -322,10 +305,12 @@ class MainWindow(QWidget):
         """)
         self.delete_button.setFixedWidth(150)  # 고정된 너비
         self.delete_button.setFixedHeight(40)  # 고정된 높이
+        self.delete_button.clicked.connect(self.delete_table_row)
 
         left_button_layout.addWidget(self.register_button)
         left_button_layout.addWidget(self.collect_button)
         left_button_layout.addWidget(self.delete_button)
+
 
         # 오른쪽 엑셀 다운로드 버튼 레이아웃
         right_button_layout = QHBoxLayout()
@@ -370,12 +355,18 @@ class MainWindow(QWidget):
         self.url_label.setAlignment(Qt.AlignCenter)
         self.url_label.setStyleSheet("font-size: 16px; color: black; padding: 10px;")
 
+        # 남은 시간 라벨
+        self.time_label = QLabel("추적시간 매일 0시 0분 0초")
+        self.time_label.setAlignment(Qt.AlignCenter)
+        self.time_label.setStyleSheet("font-size: 15px; background-color: white; color: black; padding: 10px;")
+
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
         header_layout.addLayout(right_button_layout)  # 오른쪽 엑셀 다운로드 버튼 추가
 
         main_layout.addLayout(header_layout)
         main_layout.addWidget(header_label)
+        main_layout.addWidget(self.time_label)
         main_layout.addWidget(self.url_label)  # URL을 표시할 레이블 추가
 
         main_layout.addWidget(self.table)
@@ -406,7 +397,6 @@ class MainWindow(QWidget):
         file_path, _ = QFileDialog.getSaveFileName(self, "엑셀 파일 저장", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
         if file_path:
             df.to_excel(file_path, index=False, sheet_name="Table Data")
-            print(f"엑셀 파일 저장 완료: {file_path}")
 
     def setup_ui(self):
         # UI 구성 (생략 - 버튼 추가 등)
@@ -434,11 +424,8 @@ class MainWindow(QWidget):
         # self.daily_timer.start(60 * 1000)  # 5분 간격으로 실행 # 테스트용
 
     def start_daily_worker(self):
-        print('test')
         """24시에 실행되는 ApiWorker 시작"""
         if self.daily_worker is not None and self.daily_worker.isRunning():
-            print("Stopping existing daily_worker...")
-
             self.daily_worker.terminate()
             self.daily_worker.wait()
         if url:
@@ -472,13 +459,11 @@ class MainWindow(QWidget):
         global url
         if url:  # URL이 존재하면
             self.url_label.setText(f"URL : {url}")
-            print(f'{url}')
         else:
             self.url_label.setText("URL : ")
 
     def get_api(self, type):
         global url
-        print(f'api 호출 : {url}')
 
         if url:  # URL이 존재하면
 
@@ -487,20 +472,16 @@ class MainWindow(QWidget):
             new_url = parsed_url._replace(query='').geturl()  # 쿼리 파라미터 제거
 
             if type == 'a':
-                print(f'type a')
                 self.daily_worker = ApiWorker(new_url)
                 self.daily_worker.api_data_received.connect(self.set_result)
                 self.daily_worker.start()
             else:
-                print(f'type b')
                 self.on_demand_worker = ApiWorker(url)
                 self.on_demand_worker.api_data_received.connect(self.set_result)
                 self.on_demand_worker.start()
 
     def set_result(self, result):
-        print(f'result : {result}')
         if result["status"] == "success":
-            print(f'success')
             result_data = result["data"]
             row_position = self.table.rowCount()  # 현재 테이블의 마지막 행 위치를 얻음
             self.table.insertRow(row_position)  # 새로운 행을 추가
@@ -518,7 +499,6 @@ class MainWindow(QWidget):
             self.table.setItem(row_position, 5, QTableWidgetItem(result_data["합계"]))
             self.table.setItem(row_position, 6, QTableWidgetItem(result_data["최근실행시간"]))
         else:
-            print(f'fail')
             self.show_warning(result["message"])
 
     def show_warning(self, message):
@@ -529,6 +509,21 @@ class MainWindow(QWidget):
         msg.setText(message)  # 메시지 내용 설정
         msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
         msg.exec_()  # 메시지 박스 표시
+
+    def delete_table_row(self):
+        """체크된 체크박스를 가진 행을 삭제"""
+        rows_to_delete = []
+
+        # 모든 행을 확인하여 체크박스가 체크된 행을 찾음
+        for row in range(self.table.rowCount()):
+            check_box = self.table.cellWidget(row, 0)  # 첫 번째 열에서 체크박스를 찾음
+
+            if check_box and check_box.isChecked():  # 체크박스가 체크된 경우
+                rows_to_delete.append(row)
+
+        # 삭제하려는 행을 역순으로 삭제 (역순으로 삭제해야 인덱스 문제가 발생하지 않음)
+        for row in reversed(rows_to_delete):
+            self.table.removeRow(row)
 
 
 # 로그인 API 요청을 처리하는 스레드 클래스
@@ -543,7 +538,6 @@ class LoginThread(QThread):
 
     def run(self):
         # 여기서 로그인 API 호출 시뮬레이션
-        print(f"로그인 시도: {self.username}, {self.password}")
         time.sleep(3)  # 실제 API 요청 시에는 time.sleep()을 API 호출로 대체
 
         # 로그인 성공 후 메인 화면 전환 시그널 발생
@@ -555,7 +549,7 @@ class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("로그인 화면")
+        self.setWindowTitle("로그인 화면(만료일 : 2024년 11월 30일)")
         self.setGeometry(100, 100, 500, 300)  # 화면 크기 설정
         self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
 
@@ -637,6 +631,15 @@ class LoginWindow(QWidget):
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
     def login(self):
+        # 오늘 날짜를 가져옴
+        today = QDate.currentDate()
+        end_date = QDate(2024, 11, 30)  # 2024년 11월 30일
+
+        # 오늘 날짜가 2024년 11월 30일보다 크면 종료
+        if today > end_date:
+            self.show_expired_message()
+            return  # 날짜가 지나면 함수 종료
+
         # ID와 비밀번호를 가져옴
         username = self.id_input.text()
         password = self.password_input.text()
@@ -646,9 +649,17 @@ class LoginWindow(QWidget):
         self.login_thread.login_success.connect(self.main_window)  # 로그인 성공 시 메인 화면으로 전환
         self.login_thread.start()  # 스레드 실행
 
+    def show_expired_message(self):
+        """테스트 기간이 끝났다는 메시지를 표시"""
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setWindowTitle("기간 종료")
+        msg_box.setText("테스트 기간이 끝났습니다.")
+        msg_box.exec_()
+
     def change_password(self):
         # 비밀번호 변경 함수 (비워두기)
-        print("비밀번호 변경 시도")
+        a = 1
 
     def main_window(self):
         # 로그인 성공 시 메인 화면을 새롭게 생성
