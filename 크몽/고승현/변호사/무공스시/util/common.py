@@ -99,4 +99,7 @@ def extract_and_format(site, url):
     elif site == 'inven':
         return url.split("/")[-1]
     elif site == 'arcalive':
+        match = re.search(r"/(\d+)", url)
+        if match:
+            return match.group(1)
         return url.split("/")[-1]
