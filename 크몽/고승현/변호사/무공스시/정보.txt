@@ -3,7 +3,7 @@
 python -m venv mypiplist
 
 
-
+1
 cd mypiplist
 
 가상환경 나가기

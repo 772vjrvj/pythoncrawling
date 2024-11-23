@@ -33,10 +33,7 @@ def extract_links_ruriweb(driver, keyword, page):
         }
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-
         soup = BeautifulSoup(response.text, "html.parser")
-
-        # id="board_search" 안의 ul.search_result_list 찾기
         search_result_list = soup.find("div", {"id": "board_search"}).find("ul", {"class": "search_result_list"})
         if not search_result_list:
             print(f"No search results found on page {page}")
@@ -83,8 +80,7 @@ def extract_contents_ruriweb(driver, site, keyword, link, forbidden_keywords):
 
         # 제목 추출
         try:
-            title = driver.find_element(By.CLASS_NAME, "subject_inner_text").text
-            page_data["제목"] = title
+            page_data["제목"] = driver.find_element(By.CLASS_NAME, "subject_inner_text").text
         except NoSuchElementException:
             page_data["제목"] = ""
 
@@ -103,14 +99,21 @@ def extract_contents_ruriweb(driver, site, keyword, link, forbidden_keywords):
                 print(f"found_keywords : {found_keywords}")
                 return []  # 금지된 키워드가 포함되어 있으면 빈 리스트 반환
 
+        user_info = ""
         try:
             user_info = driver.find_element(By.CLASS_NAME, "user_info_wrapper")
-            date = user_info.find_element(By.CLASS_NAME, "regdate").text
-            page_data["작성일"] = date
-            user_id = user_info.find_element(By.CLASS_NAME, "nick").text
-            page_data["아이디"] = user_id
         except NoSuchElementException:
             page_data["작성일"] = ""
+            page_data["아이디"] = ""
+
+        try:
+            page_data["작성일"] = user_info.find_element(By.CLASS_NAME, "regdate").text
+        except NoSuchElementException:
+            page_data["작성일"] = ""
+
+        try:
+            page_data["아이디"] = user_info.find_element(By.CLASS_NAME, "nick").text
+        except NoSuchElementException:
             page_data["아이디"] = ""
 
         # 스크린샷 저장

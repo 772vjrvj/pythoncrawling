@@ -3,6 +3,7 @@ import time
 import re
 from PIL import Image
 import os
+from urllib.parse import urlparse
 
 def capture_full_page_screenshot(driver, file_path):
     try:
@@ -74,7 +75,6 @@ def make_dir(site):
         print(f"{folder_path} 폴더존재")
     
 
-
 def excel_max_cut(content):
     # 내용 자르기 (Excel 셀 최대 크기 제한 처리)
     max_cell_length = 32767  # Excel 셀의 최대 문자 크기
@@ -87,12 +87,7 @@ def excel_max_cut(content):
 
 def extract_and_format(site, url):
     if site == 'fmkorea':
-        match = re.search(r'/(\d+)$', url)
-        if match:
-            post_id = match.group(1)  # 숫자 부분
-            return post_id
-        else:
-            return ''
+        return url.split("/")[-1]
     elif site == 'ruliweb':
         match = re.search(r'board/(\d+)/read/(\d+)', url)
         if match:
@@ -102,8 +97,6 @@ def extract_and_format(site, url):
         else:
             return ''
     elif site == 'inven':
-        return url
+        return url.split("/")[-1]
     elif site == 'arcalive':
-        return url
-
-
+        return url.split("/")[-1]
