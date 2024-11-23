@@ -53,7 +53,7 @@ def get_links(driver, site, keyword, start_page=1):
             links = extract_links_ruriweb(driver, keyword, page)
         elif site == "inven":
             links = extract_links_inven(driver, keyword, page)
-            if links[-1] in all_links:
+            if links and links[-1] in all_links:
                 break
         elif site == "arcalive":
             links = extract_links_arcalive(driver, keyword, page)
@@ -81,11 +81,11 @@ def extract_contents(driver, site, keyword, link, forbidden_keywords):
         new_link = f"https://www.fmkorea.com/{link}"
         return extract_contents_fmkorea(driver, site, keyword, new_link, forbidden_keywords)
     elif site == "inven":
-        return extract_contents_inven(driver, keyword, site, keyword, link, forbidden_keywords)
+        return extract_contents_inven(driver, site, keyword, link, forbidden_keywords)
     elif site == "ruliweb":
-        return extract_contents_ruriweb(driver, keyword, site, keyword, link, forbidden_keywords)
+        return extract_contents_ruriweb(driver, site, keyword, link, forbidden_keywords)
     elif site == "arcalive":
-        return extract_contents_arcalive(driver, keyword, site, keyword, link, forbidden_keywords)
+        return extract_contents_arcalive(driver, site, keyword, link, forbidden_keywords)
     else:
         raise ValueError(f"Unknown site: {site}")
 
@@ -116,9 +116,9 @@ def save_or_append_to_excel(data, site, keyword):
 # main
 if __name__ == "__main__":
     sites = [
-        "fmkorea",
+        # "fmkorea",
         # "ruliweb",
-        # "inven",
+        "inven",
         # "arcalive"
     ]
     keywords = [

@@ -28,7 +28,7 @@ def extract_links_fmkorea(driver, keyword, page):
 
 
 # 페이지에서 데이터 추출
-def extract_contents_fmkorea(driver, site, keyword, link, forbidden_keywords):
+def extract_contents_fmkorea(driver, keyword, site, link, forbidden_keywords):
     try:
         # 폴더 경로 생성
         make_dir(site)
