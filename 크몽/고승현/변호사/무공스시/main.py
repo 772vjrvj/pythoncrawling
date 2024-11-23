@@ -81,7 +81,11 @@ def extract_contents(driver, site, keyword, link, forbidden_keywords):
         new_link = f"https://www.fmkorea.com/{link}"
         return extract_contents_fmkorea(driver, site, keyword, new_link, forbidden_keywords)
     elif site == "inven":
-        return extract_contents_inven(driver, site, keyword, link, forbidden_keywords)
+        # 쿼리 문자열 제거
+        url_without_query = link.split("?")[0]
+        # 마지막 부분 추출
+        new_link = url_without_query.rstrip("/").split("/")[-1]
+        return extract_contents_inven(driver, site, keyword, new_link, forbidden_keywords)
     elif site == "ruliweb":
         return extract_contents_ruriweb(driver, site, keyword, link, forbidden_keywords)
     elif site == "arcalive":

@@ -84,8 +84,9 @@ def extract_contents_fmkorea(driver, keyword, site, link, forbidden_keywords):
         except NoSuchElementException:
             page_data["아이디"] = ""
 
-        # 스크린샷 저장
-        formatted_timestamp = page_data["작성일"].replace(":", "시", 1).replace(":", "분", 1) + "초"
+        date, tm = page_data["작성일"].split()  # 날짜와 시간을 분리
+        hour, minute = tm.split(":")  # 시간을 ":"로 분리
+        formatted_timestamp = f"{date} {hour}시{minute}분"
         screenshot_path = os.path.join(f'{site}_image_list', f'{formatted_timestamp}({page_data["글번호"]})')
         full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
         page_data["스크린샷"] = full_screenshot_path
