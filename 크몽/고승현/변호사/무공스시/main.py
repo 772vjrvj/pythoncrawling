@@ -53,6 +53,8 @@ def get_links(driver, site, keyword, start_page=1):
             links = extract_links_ruriweb(driver, keyword, page)
         elif site == "inven":
             links = extract_links_inven(driver, keyword, page)
+            if links[-1] in all_links:
+                break
         elif site == "arcalive":
             links = extract_links_arcalive(driver, keyword, page)
         else:
