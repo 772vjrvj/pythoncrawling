@@ -1,41 +1,32 @@
-import sys
+import os
 import time
-from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidgetItem,
-                             QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog)
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime, QDate
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
-import re
-from urllib.parse import urlparse
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import NoSuchElementException
+from PIL import Image
+from openpyxl import load_workbook
 
 
-# 전역 변수
-url = ""
 
 
-# API
-class ApiWorker(QThread):
-    api_data_received = pyqtSignal(object)  # API 호출 결과를 전달하는 시그널
+# 이미지 저장 폴더 설정
+IMAGE_FOLDER = "fmkorea_image_list"
+TYPE = 'S'
+os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
-    def __init__(self, url, parent=None):
-        super().__init__(parent)
-        self.url = url  # URL을 클래스 속성으로 저장
 
+# 드라이버 세팅
+def setup_driver():
+    try:
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--window-size=1080,750")
+        chrome_options.add_argument("--incognito")
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         chrome_options.add_argument(f'user-agent={user_agent}')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -49,628 +40,329 @@ class ApiWorker(QThread):
                 })
             '''
         })
-        self.driver = driver
+        driver.maximize_window()
 
-    def run(self):
-        try:
-            # 외부 API 호출 (여기서 실제 API URL 사용)
-            data = self.fetch_product_info_sele(self.url)
-            self.api_data_received.emit(data)  # 데이터를 시그널로 전달
-        except Exception as e:
-            self.api_data_received.emit({"status": "error", "message": str(e)})
+        return driver
+    except Exception as e:
+        print(f"Error setting up the WebDriver: {e}")
+        return None
 
-    def fetch_product_info_sele(self, url):
-        try:
-            # URL 로드
-            self.driver.get(url)
 
-            # 상품명 추출
-            product_name = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "prod-buy-header__title"))
-            ).text
+# 메인 함수 (Selenium 기반으로 변경)
+def get_links(driver, site, keyword, start_page=1):
+    all_links = []
+    page = start_page
+    while True:
+        print(f"site : {site}, keyword : {keyword}, link_page : {page}")
+        links = []
 
-            # 배송비 추출
-            try:
-                delivery_fee = self.driver.find_element(By.CLASS_NAME, "delivery-fee-info").text
-            except:
-                delivery_fee = ""
+        if site == "fmkorea":
+            links = extract_links_fmkorea(driver, keyword, page)
+        elif site == "inven":
 
-            # 판매가 추출
-            try:
-                total_price = self.driver.find_element(By.CLASS_NAME, "total-price").text
-            except:
-                total_price = ""
+        elif site == "ruliweb":
 
-            # 배송비와 판매가에서 숫자만 추출하고 더하기
-            delivery_fee_number = self.extract_number(delivery_fee)
-            total_price_number = self.extract_number(total_price)
-            total = delivery_fee_number + total_price_number
-            total_formatted = f"{total:,}원" if total > 0 else ""
+        elif site == "arcalive":
 
-            # 최근 실행 시간
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-            # 결과 객체
-            obj = {
-                "status": "success",
-                "message": "성공",
-                "data": {
-                    "URL": url,
-                    "상품명": product_name,
-                    "배송비": delivery_fee,
-                    "판매가": total_price,
-                    "합계": total_formatted,
-                    "최근실행시간": current_time,
-                },
-            }
-            return obj
+        if not links:  # 검색 결과가 없는 경우 종료
+            print("No more results for keyword:", keyword)
+            break
+        all_links.extend(links)
+        page += 1
+        time.sleep(1)  # 페이지 요청 간 간격
+    print(f"Extraction complete for keyword: {keyword}")
+    return all_links
 
-        except Exception as e:
-            return {"status": "error", "message": f"에러: {str(e)}", "data": ""}
 
-        finally:
-            self.driver.quit()  # 브라우저 종료
+# 페이지 전체 스크린샷 함수
+def capture_full_page_screenshot(driver, file_path):
+    try:
+        # 페이지 전체 크기 가져오기
+        total_width = driver.execute_script("return document.body.scrollWidth")
+        total_height = driver.execute_script("return document.body.scrollHeight")
+        viewport_height = driver.execute_script("return window.innerHeight")
 
-    def extract_number(self, text):
-        return int(re.sub(r'\D', '', text)) if text else 0
+        # 스크롤 단계와 캡처된 이미지를 저장할 리스트
+        scroll_steps = range(0, total_height, viewport_height)
+        screenshot_parts = []
 
-    def fetch_product_info_beatiful(self, url):
-        headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        for step in scroll_steps:
+            # 스크롤 위치 이동
+            driver.execute_script(f"window.scrollTo(0, {step});")
+            time.sleep(0.3)  # 스크롤 대기
+
+            # 현재 뷰포트 캡처
+            screenshot_part_path = f"{file_path}_part_{step}.png"
+            driver.save_screenshot(screenshot_part_path)
+            screenshot_parts.append(screenshot_part_path)
+
+        # 마지막 스크롤에서 남은 높이 처리
+        if total_height % viewport_height > 0:
+            driver.execute_script(f"window.scrollTo(0, {total_height - viewport_height});")
+            time.sleep(0.3)
+            screenshot_part_path = f"{file_path}_part_final.png"
+            driver.save_screenshot(screenshot_part_path)
+            screenshot_parts.append(screenshot_part_path)
+
+        # 이미지 결합
+        stitched_image = Image.new("RGB", (total_width, total_height))
+        current_height = 0
+
+        for idx, part_path in enumerate(screenshot_parts):
+            with Image.open(part_path) as part_image:
+                # 현재 캡처된 이미지 크기 가져오기
+                part_width, part_height = part_image.size
+
+                # 마지막 스크롤 조정
+                if idx == len(screenshot_parts) - 1 and total_height % viewport_height > 0:
+                    part_image = part_image.crop((0, part_height - (total_height % viewport_height), part_width, part_height))
+
+                stitched_image.paste(part_image, (0, current_height))
+                current_height += part_image.size[1]
+
+            os.remove(part_path)  # 임시 파일 삭제
+
+        # 최종 스크린샷 저장
+        final_path = f"{file_path}_full.png"
+        stitched_image.save(final_path)
+        print(f"Full page screenshot saved: {final_path}")
+        return final_path
+
+    except Exception as e:
+        print(f"Error capturing full page screenshot: {e}")
+        return None
+
+
+# 페이지에서 데이터 추출
+def extract_page_data(driver, link, category):
+    try:
+        url = f"https://www.fmkorea.com/{link}"
+        driver.get(url)
+        time.sleep(3)  # 페이지 로딩 대기
+
+        # 스크린샷 저장
+        screenshot_path = os.path.join(IMAGE_FOLDER, f"fmkorea_{url.split('/')[-1]}")
+        full_screenshot_path = capture_full_page_screenshot(driver, screenshot_path)
+
+        # 공통 데이터 추출
+        base_data = {
+            "사이트": '에펨코리아',
+            "글 번호": link,
+            "제목": "",
+            "내용": "",
+            "날짜": "",
+            "아이디": "",
+            "키워드": category,
+            "url": url,
+            "스크린샷": full_screenshot_path,
         }
 
+        # 제목 추출
         try:
-            # GET 요청을 보냅니다.
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()  # HTTP 에러 상태 코드가 있는 경우 예외 발생
-
-            # HTML 파싱
-            soup = BeautifulSoup(response.content, "html.parser")
-
-            # 상품명 추출
-            product_name = soup.find(class_="prod-buy-header__title")
-            product_name_text = product_name.get_text(strip=True) if product_name else ""
-
-            # 배송비 추출 (배송비가 없을 수 있음)
-            delivery_fee = soup.find(class_="delivery-fee-info")
-            delivery_fee_text = delivery_fee.get_text(strip=True) if delivery_fee else ""
-
-            # 판매가 추출
-            total_price = soup.find(class_="total-price")
-            total_price_text = total_price.get_text(strip=True) if total_price else ""
-
-            # 배송비와 판매가에서 숫자만 추출하고 더하기
-            delivery_fee_number = self.extract_number(delivery_fee_text)
-            total_price_number = self.extract_number(total_price_text)
-
-            # 합계 계산
-            total = delivery_fee_number + total_price_number
-            total_formatted = f"{total:,}원" if total > 0 else ""  # 합계가 0이면 빈 문자열
-
-            # 최근 실행 시간
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            # 결과 객체
-
-            obj = {
-                "status": "success",
-                "message": "성공",
-                "data": {
-                    "URL": url,
-                    "상품명": product_name_text,
-                    "배송비": delivery_fee_text,
-                    "판매가": total_price_text,
-                    "합계": total_formatted,
-                    "최근실행시간": current_time
-                }
-            }
-            return obj
-
-        except requests.exceptions.RequestException as e:
-            # 요청 예외 처리 (예: 네트워크 문제, HTTP 오류 등)
-            return {"status": "error", "message": f"요청 오류: {str(e)}", "data": ""}
-
-
-        except Exception as e:
-            return {"status": "error", "message": f"알 수 없는 오류: {str(e)}", "data": ""}
-
-
-# 팝업창 클래스 (URL 입력)
-class RegisterPopup(QDialog):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("쿠팡가격추적 등록하기")
-        self.setGeometry(200, 200, 400, 200)  # 팝업 창 크기 설정
-        self.setStyleSheet("background-color: white;")
-
-        # 팝업 레이아웃
-        popup_layout = QVBoxLayout(self)
-
-        # 제목과 밑줄
-        title_layout = QHBoxLayout()
-        title_label = QLabel("쿠팡가격추적 등록하기")
-        title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
-        title_layout.addWidget(title_label)
-        title_layout.setAlignment(Qt.AlignCenter)
-        popup_layout.addLayout(title_layout)
-
-        # URL 입력
-        url_label = QLabel("이름 : URL")
-        url_label.setStyleSheet("font-size: 14px; margin-top: 10px;")
-        self.url_input = QLineEdit(self)
-        self.url_input.setPlaceholderText("URL을 입력하세요")
-        self.url_input.setStyleSheet("""
-            border-radius: 10%;
-            border: 2px solid #888888;
-            padding: 10px;
-            font-size: 14px;
-            color: #333333;
-        """)
-        self.url_input.setFixedHeight(40)
-
-        # 버튼
-        button_layout = QHBoxLayout()
-        self.confirm_button = QPushButton("확인", self)
-        self.confirm_button.setStyleSheet("""
-            background-color: black;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.confirm_button.setFixedHeight(40)
-        self.confirm_button.setFixedWidth(140)  # 버튼 너비 설정
-        self.confirm_button.clicked.connect(self.on_confirm)
-
-        button_layout.addWidget(self.confirm_button)
-        button_layout.setAlignment(Qt.AlignCenter)
-        popup_layout.addWidget(self.url_input)
-        popup_layout.addLayout(button_layout)
-
-        self.center_window()
-
-    def center_window(self):
-        """화면 중앙에 창을 배치"""
-        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
-        size = self.geometry()  # 현재 창 크기
-        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
-
-    def on_confirm(self):
-        # URL 값을 전역 변수에 저장
-        global url
-        url = self.url_input.text()
-        self.accept()  # 팝업 닫기
-
-
-# 메인 화면 클래스
-class MainWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.set_layout()
-        self.daily_worker = None  # 24시 실행 스레드
-        self.on_demand_worker = None  # 요청 시 실행 스레드
-        self.setup_ui()
-
-    def set_layout(self):
-        self.setWindowTitle("메인 화면")
-        self.setGeometry(100, 100, 1000, 600)  # 메인 화면 크기 설정
-        self.setStyleSheet("background-color: white;")  # 배경색 흰색
-
-        # 메인 레이아웃
-        main_layout = QVBoxLayout()
-
-        # 상단 버튼들 레이아웃
-        header_layout = QHBoxLayout()
-
-        # 왼쪽 버튼들 레이아웃
-        left_button_layout = QHBoxLayout()
-        left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
-
-        # 버튼 설정
-        self.register_button = QPushButton("등록하기")
-        self.register_button.setStyleSheet("""
-            background-color: black;
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.register_button.setFixedWidth(150)  # 고정된 너비
-        self.register_button.setFixedHeight(40)  # 고정된 높이
-        self.register_button.clicked.connect(self.open_register_popup)
-
-        self.collect_button = QPushButton("수집하기")
-        self.collect_button.setStyleSheet("""
-            background-color: #8A2BE2;
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.collect_button.setFixedWidth(150)  # 고정된 너비
-        self.collect_button.setFixedHeight(40)  # 고정된 높이
-        self.collect_button.clicked.connect(self.start_on_demand_worker)
-
-
-        self.delete_button = QPushButton("삭제하기")
-        self.delete_button.setStyleSheet("""
-            background-color: red;
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.delete_button.setFixedWidth(150)  # 고정된 너비
-        self.delete_button.setFixedHeight(40)  # 고정된 높이
-        self.delete_button.clicked.connect(self.delete_table_row)
-
-        left_button_layout.addWidget(self.register_button)
-        left_button_layout.addWidget(self.collect_button)
-        left_button_layout.addWidget(self.delete_button)
-
-
-        # 오른쪽 엑셀 다운로드 버튼 레이아웃
-        right_button_layout = QHBoxLayout()
-        right_button_layout.setAlignment(Qt.AlignRight)  # 오른쪽 정렬
-
-        # 엑셀 다운로드 버튼
-        self.excel_button = QPushButton("엑셀 다운로드")
-        self.excel_button.setStyleSheet("""
-            background-color: #8A2BE2;
-            color: white;
-            border-radius: 15%;;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.excel_button.setFixedWidth(150)  # 고정된 너비
-        self.excel_button.setFixedHeight(40)  # 고정된 높이
-        self.excel_button.clicked.connect(self.excel_down_load)
-        right_button_layout.addWidget(self.excel_button)
-
-
-        # 헤더에 "쿠팡(추적상품)" 텍스트 추가
-        header_label = QLabel("쿠팡(추적상품)")
-        header_label.setAlignment(Qt.AlignCenter)
-        header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
-
-        # 테이블 만들기
-        self.table = QTableWidget()
-        self.table.setColumnCount(7)
-        self.table.setHorizontalHeaderLabels(["선택", "URL", "상품명", "판매가", "배송비", "합계", "최근실행시간"])
-
-
-        # 테이블을 부모 위젯 크기에 맞게 늘어나게 설정
-        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        # 열 크기 균등하게 설정
-        header = self.table.horizontalHeader()
-        for i in range(self.table.columnCount()):
-            header.setSectionResizeMode(i, QHeaderView.Stretch)  # 모든 열을 균등하게 늘리기
-
-        # URL 표시 레이블
-        self.url_label = QLabel("URL : ")
-        self.url_label.setAlignment(Qt.AlignCenter)
-        self.url_label.setStyleSheet("font-size: 16px; color: black; padding: 10px;")
-
-        # 남은 시간 라벨
-        self.time_label = QLabel("추적시간 매일 0시 0분 0초")
-        self.time_label.setAlignment(Qt.AlignCenter)
-        self.time_label.setStyleSheet("font-size: 15px; background-color: white; color: black; padding: 10px;")
-
-        # 레이아웃에 요소 추가
-        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
-        header_layout.addLayout(right_button_layout)  # 오른쪽 엑셀 다운로드 버튼 추가
-
-        main_layout.addLayout(header_layout)
-        main_layout.addWidget(header_label)
-        main_layout.addWidget(self.time_label)
-        main_layout.addWidget(self.url_label)  # URL을 표시할 레이블 추가
-
-        main_layout.addWidget(self.table)
-
-        # 레이아웃 설정
-        self.setLayout(main_layout)
-
-        self.center_window()
-
-    def excel_down_load(self):
-        # 데이터 추출
-        row_count = self.table.rowCount()
-        column_count = self.table.columnCount()
-        data = []
-
-        for row in range(row_count):
-            row_data = []
-            for col in range(column_count):
-                item = self.table.item(row, col)
-                row_data.append(item.text() if item else "")
-            data.append(row_data)
-
-        # 데이터프레임 생성
-        df = pd.DataFrame(data, columns=[self.table.horizontalHeaderItem(i).text() for i in range(column_count)])
-
-        # 엑셀 파일 저장
-        options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getSaveFileName(self, "엑셀 파일 저장", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
-        if file_path:
-            df.to_excel(file_path, index=False, sheet_name="Table Data")
-
-    def setup_ui(self):
-        # UI 구성 (생략 - 버튼 추가 등)
-        self.daily_timer = QTimer(self)
-        self.daily_timer.timeout.connect(self.start_daily_worker)
-        self.start_daily_timer()
-
-    def start_daily_timer(self):
-        """24시에 실행되도록 타이머 설정"""
-        now = QTime.currentTime()
-        target_time = QTime(0, 0)  # 자정 (24시)
-        # target_time = QTime(1, 44)  # 테스트용 타겟 시간: 0시 32분
-
-        interval = now.msecsTo(target_time)
-
-        if interval <= 0:
-            interval += 24 * 60 * 60 * 1000  # 이미 자정을 지났으면 다음 날 자정으로 설정
-
-        # 첫 실행: 정확히 자정에 작업 실행
-        QTimer.singleShot(interval, self.start_daily_worker)
-
-        # 이후 매일 반복 실행: 24시간 간격으로 타이머 시작
-        self.daily_timer.start(24 * 60 * 60 * 1000)
-
-        # self.daily_timer.start(60 * 1000)  # 5분 간격으로 실행 # 테스트용
-
-    def start_daily_worker(self):
-        """24시에 실행되는 ApiWorker 시작"""
-        if self.daily_worker is not None and self.daily_worker.isRunning():
-            self.daily_worker.terminate()
-            self.daily_worker.wait()
-        if url:
-            self.get_api('a')
-
-    def start_on_demand_worker(self):
-        global url
-        """사용자 요청 시 실행되는 ApiWorker 시작"""
-        if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
-            self.on_demand_worker.terminate()
-            self.on_demand_worker.wait()
-        if url:
-            self.get_api('b')
-
-    def center_window(self):
-        """화면 중앙에 창을 배치"""
-        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
-        size = self.geometry()  # 현재 창 크기
-        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
-
-    def open_register_popup(self):
-        # 등록 팝업창 열기
-        popup = RegisterPopup()
-        popup.exec_()
-
-        # 팝업창에서 URL을 입력 후 확인 버튼을 누르면 URL을 메인 화면에 표시
-        self.update_url_label()
-
-    def update_url_label(self):
-        # URL을 레이블에 표시
-        global url
-        if url:  # URL이 존재하면
-            self.url_label.setText(f"URL : {url}")
+            title = driver.find_element(By.CSS_SELECTOR, "span.np_18px_span").text
+            base_data["제목"] = title
+        except NoSuchElementException:
+            base_data["제목"] = ""
+
+        # 내용 추출
+        try:
+            content = driver.find_element(By.TAG_NAME, "article").text
+            base_data["내용"] = content
+        except NoSuchElementException:
+            base_data["내용"] = ""
+
+        # 날짜 추출
+        try:
+            date = driver.find_element(By.CSS_SELECTOR, "span.date.m_no").text
+            base_data["날짜"] = date
+        except NoSuchElementException:
+            base_data["날짜"] = ""
+
+        # 아이디 추출
+        try:
+            user_id = driver.find_element(By.CSS_SELECTOR, "a[href='#popup_menu_area']").text
+            base_data["아이디"] = user_id
+        except NoSuchElementException:
+            base_data["아이디"] = ""
+
+        # 리플 데이터 추출
+        comments_section = driver.find_elements(By.CSS_SELECTOR, "ul.fdb_lst_ul > li")
+        comment_list = []
+
+        if not comments_section:  # 리플이 없다면
+            # 리플 데이터가 없으면 빈 데이터로 하나의 배열을 리턴
+            base_data.update({
+                "리플 번호": "",
+                "리플 아이디": "",
+                "리플 날짜": "",
+                "리플 내용": ""
+            })
+            print(f"obj : {base_data}")
+            comment_list.append(base_data)
         else:
-            self.url_label.setText("URL : ")
+            # 리플이 있다면 기존 로직대로 처리
+            for idx, comment in enumerate(comments_section, start=1):
+                try:
+                    # 리플 번호
+                    reply_data = {"리플 번호": idx}
 
-    def get_api(self, type):
-        global url
+                    # 리플 아이디
+                    try:
+                        reply_user_id = comment.find_element(By.CSS_SELECTOR, "div.meta a").text
+                        reply_data["리플 아이디"] = reply_user_id
+                    except NoSuchElementException:
+                        reply_data["리플 아이디"] = ""
 
-        if url:  # URL이 존재하면
+                    # 리플 날짜
+                    try:
+                        reply_date = comment.find_element(By.CSS_SELECTOR, "div.meta .date").text
+                        reply_data["리플 날짜"] = reply_date
+                    except NoSuchElementException:
+                        reply_data["리플 날짜"] = ""
 
-            # URL에서 쿼리 파라미터를 제거하여 새로운 URL 생성
-            parsed_url = urlparse(url)
-            new_url = parsed_url._replace(query='').geturl()  # 쿼리 파라미터 제거
+                    # 리플 내용
+                    try:
+                        # 댓글 내용 전체 추출
+                        comment_content = comment.find_element(By.CSS_SELECTOR, "div.comment-content .xe_content")
 
-            if type == 'a':
-                self.daily_worker = ApiWorker(new_url)
-                self.daily_worker.api_data_received.connect(self.set_result)
-                self.daily_worker.start()
+                        # findParent 안의 내용 추출
+                        try:
+                            find_parent_text = comment_content.find_element(By.CSS_SELECTOR, "a.findParent").text
+                            reply_content = f"@{find_parent_text}<-"
+
+                            # 댓글 본문에서 findParent 텍스트 제거
+                            full_comment_text = comment_content.text
+                            full_comment_text = full_comment_text.replace(find_parent_text, "", 1).strip()
+                        except NoSuchElementException:
+                            reply_content = ""
+                            full_comment_text = comment_content.text.strip()
+
+                        # 댓글 내용 추가
+                        reply_content += full_comment_text
+                        reply_data["리플 내용"] = reply_content
+                    except NoSuchElementException:
+                        reply_data["리플 내용"] = ""
+
+                    obj = {**base_data, **reply_data}
+                    print(f"obj : {obj}")
+                    # 공통 데이터 병합
+                    comment_list.append(obj)
+                except Exception as e:
+                    print(f"Error processing comment {idx}: {e}")
+
+        return comment_list
+
+    except Exception as e:
+        print(f"Error processing {link}: {e}")
+        return []
+
+
+#엑셀
+def save_or_append_to_excel(data, filename="fmkorea_results.xlsx"):
+    df = pd.DataFrame(data)
+
+    try:
+        # 기존 파일이 있을 경우 데이터를 추가
+        with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            workbook = load_workbook(filename)
+            sheet_name = workbook.sheetnames[0]  # 첫 번째 시트 이름 가져오기
+            # 기존 데이터의 마지막 행 번호 계산
+            if writer.sheets.get(sheet_name):
+                startrow = writer.sheets[sheet_name].max_row
             else:
-                self.on_demand_worker = ApiWorker(url)
-                self.on_demand_worker.api_data_received.connect(self.set_result)
-                self.on_demand_worker.start()
-
-    def set_result(self, result):
-        if result["status"] == "success":
-            result_data = result["data"]
-            row_position = self.table.rowCount()  # 현재 테이블의 마지막 행 위치를 얻음
-            self.table.insertRow(row_position)  # 새로운 행을 추가
-
-            # 체크박스 추가 (삭제 시 사용)
-            check_box = QCheckBox()
-            check_box.setStyleSheet("QCheckBox { margin-left: auto; margin-right: auto; }")  # 가운데 정렬
-            self.table.setCellWidget(row_position, 0, check_box)
-
+                startrow = 0
             # 데이터 추가
-            self.table.setItem(row_position, 1, QTableWidgetItem(result_data["URL"]))  # 첫 번째 열은 체크박스라 1부터 시작
-            self.table.setItem(row_position, 2, QTableWidgetItem(result_data["상품명"]))
-            self.table.setItem(row_position, 3, QTableWidgetItem(result_data["판매가"]))
-            self.table.setItem(row_position, 4, QTableWidgetItem(result_data["배송비"]))
-            self.table.setItem(row_position, 5, QTableWidgetItem(result_data["합계"]))
-            self.table.setItem(row_position, 6, QTableWidgetItem(result_data["최근실행시간"]))
-        else:
-            self.show_warning(result["message"])
-
-    def show_warning(self, message):
-        # QMessageBox 생성
-        msg = QMessageBox(self)
-        msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
-        msg.setWindowTitle("경고")  # 창 제목 설정
-        msg.setText(message)  # 메시지 내용 설정
-        msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
-        msg.exec_()  # 메시지 박스 표시
-
-    def delete_table_row(self):
-        """체크된 체크박스를 가진 행을 삭제"""
-        rows_to_delete = []
-
-        # 모든 행을 확인하여 체크박스가 체크된 행을 찾음
-        for row in range(self.table.rowCount()):
-            check_box = self.table.cellWidget(row, 0)  # 첫 번째 열에서 체크박스를 찾음
-
-            if check_box and check_box.isChecked():  # 체크박스가 체크된 경우
-                rows_to_delete.append(row)
-
-        # 삭제하려는 행을 역순으로 삭제 (역순으로 삭제해야 인덱스 문제가 발생하지 않음)
-        for row in reversed(rows_to_delete):
-            self.table.removeRow(row)
+            df.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=startrow)
+            print(f"Data successfully appended to {filename}")
+    except FileNotFoundError:
+        # 파일이 없을 경우 새 파일 생성
+        df.to_excel(filename, index=False)
+        print(f"New file created: {filename}")
 
 
-# 로그인 API 요청을 처리하는 스레드 클래스
-class LoginThread(QThread):
-    # 로그인 성공 시 메인 화면을 띄우기 위한 시그널
-    login_success = pyqtSignal()
+# 함수: href 값 추출 (Selenium으로 변경)
+def extract_links_selenium(driver, keyword, page):
+    try:
+        base_url = "https://www.fmkorea.com/search.php"
+        params = f"?act=IS&is_keyword={keyword}&mid=home&where=document&page={page}"
+        url = base_url + params
+        driver.get(url)
+        time.sleep(3)  # 페이지 로딩 대기
 
-    def __init__(self, username, password):
-        super().__init__()
-        self.username = username
-        self.password = password
+        # 검색 결과 링크 추출
+        search_results = driver.find_elements(By.CSS_SELECTOR, "ul.searchResult > li > dl > dt > a")
+        if not search_results:
+            return []
 
-    def run(self):
-        # 여기서 로그인 API 호출 시뮬레이션
-        time.sleep(3)  # 실제 API 요청 시에는 time.sleep()을 API 호출로 대체
+        # 링크 추출
+        links = [link.get_attribute("href").split("/")[-1] for link in search_results]
+        return links
 
-        # 로그인 성공 후 메인 화면 전환 시그널 발생
-        self.login_success.emit()
-
-
-# 로그인 화면 클래스
-class LoginWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("로그인 화면(만료일 : 2024년 11월 30일)")
-        self.setGeometry(100, 100, 500, 300)  # 화면 크기 설정
-        self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
-
-        # 메인 레이아웃
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignCenter)
-        layout.setContentsMargins(20, 20, 20, 20)  # 레이아웃의 외부 마진을 설정
-        layout.setSpacing(20)  # 위젯 간 간격 설정
-
-        # ID 입력
-        self.id_input = QLineEdit(self)
-        self.id_input.setPlaceholderText("ID를 입력하세요")
-        self.id_input.setStyleSheet("""
-            border-radius: 20px; 
-            border: 2px solid #888888;
-            padding: 10px;
-            font-size: 14px;
-            color: #333333;
-        """)
-        self.id_input.setFixedHeight(40)
-        self.id_input.setFixedWidth(300)  # 너비를 화면의 절반 정도로 설정
-
-        # 비밀번호 입력
-        self.password_input = QLineEdit(self)
-        self.password_input.setPlaceholderText("비밀번호를 입력하세요")
-        self.password_input.setEchoMode(QLineEdit.Password)
-        self.password_input.setStyleSheet("""
-            border-radius: 20px; 
-            border: 2px solid #888888;
-            padding: 10px;
-            font-size: 14px;
-            color: #333333;
-        """)
-        self.password_input.setFixedHeight(40)
-        self.password_input.setFixedWidth(300)  # 너비를 화면의 절반 정도로 설정
-
-        # 로그인 버튼
-        button_layout = QHBoxLayout()
-
-        self.login_button = QPushButton("로그인", self)
-        self.login_button.setStyleSheet("""
-            background-color: #8A2BE2;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.login_button.setFixedHeight(40)
-        self.login_button.setFixedWidth(140)  # 버튼 너비 설정
-        self.login_button.clicked.connect(self.login)
-
-        # 비밀번호 변경 버튼
-        self.change_password_button = QPushButton("비밀번호 변경", self)
-        self.change_password_button.setStyleSheet("""
-            background-color: #8A2BE2;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.change_password_button.setFixedHeight(40)
-        self.change_password_button.setFixedWidth(140)  # 버튼 너비 설정
-        self.change_password_button.clicked.connect(self.change_password)
-
-        button_layout.addWidget(self.login_button)
-        button_layout.addWidget(self.change_password_button)
-        button_layout.setSpacing(20)  # 버튼 간의 간격을 설정
-
-        # 레이아웃에 요소 추가
-        layout.addWidget(self.id_input)
-        layout.addWidget(self.password_input)
-        layout.addLayout(button_layout)
-        self.center_window()
-
-    def center_window(self):
-        """화면 중앙에 창을 배치"""
-        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
-        size = self.geometry()  # 현재 창 크기
-        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
-
-    def login(self):
-        # 오늘 날짜를 가져옴
-        today = QDate.currentDate()
-        end_date = QDate(2024, 11, 30)  # 2024년 11월 30일
-
-        # 오늘 날짜가 2024년 11월 30일보다 크면 종료
-        if today > end_date:
-            self.show_expired_message()
-            return  # 날짜가 지나면 함수 종료
-
-        # ID와 비밀번호를 가져옴
-        username = self.id_input.text()
-        password = self.password_input.text()
-
-        # 로그인 요청을 비동기적으로 처리하는 스레드 생성
-        self.login_thread = LoginThread(username, password)
-        self.login_thread.login_success.connect(self.main_window)  # 로그인 성공 시 메인 화면으로 전환
-        self.login_thread.start()  # 스레드 실행
-
-    def show_expired_message(self):
-        """테스트 기간이 끝났다는 메시지를 표시"""
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setWindowTitle("기간 종료")
-        msg_box.setText("테스트 기간이 끝났습니다 .")
-        msg_box.exec_()
-
-    def change_password(self):
-        # 비밀번호 변경 함수 (비워두기)
-        a = 1
-
-    def main_window(self):
-        # 로그인 성공 시 메인 화면을 새롭게 생성
-        self.close()  # 로그인 화면 종료
-        self.main_screen = MainWindow()
-        self.main_screen.show()
+    except Exception as e:
+        print(f"Error extracting links: {e}")
+        return []
 
 
-# 프로그램 실행
+
+
+
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = LoginWindow()
-    window.show()
-    sys.exit(app.exec_())
+
+    sites = [
+        "fmkorea",
+        "ruliweb",
+        "inven",
+        "arcalive"
+    ]
+
+    keywords = [
+        "마공스시",
+        "읍읍스시",
+        "마공읍읍",
+        "ㅁㄱㅅㅅ",
+        "ㅁㄱ스시",
+        "신지수",
+        # "ㅅㅈㅅ",
+        "보일러집 아들",
+        "대열보일러",
+        "project02",
+        "버블트리"
+    ]
+    driver = setup_driver()
+
+    # 중복 제거를 위해 set 사용
+    all_result_links = set()
+    if not driver:
+        print("Driver setup failed!")
+        exit()
+    try:
+
+        for index, site in enumerate(sites, start=1):
+            print(f"site : {site} ({index}/{len(sites)})")
+            for idx, keyword in enumerate(keywords, start=1):
+                print(f"site : {site} ({index}/{len(sites)}) , keyword : {keyword} ({idx}/{len(keywords)})")
+                result_links = get_links(driver, site, keyword)
+                if not result_links:
+                    continue
+
+                # result_links에서 all_result_links와 중복된 것 제거
+                unique_links = [link for link in result_links if link not in all_result_links]
+                print(f"unique_links len : {len(unique_links)}")
+
+                # all_result_links에 고유 링크 추가
+                all_result_links.update(unique_links)
+                results = []
+                for ix, link in enumerate(unique_links, start=1):  # 중복 제거된 unique_links 사용
+                    print(f'keyword : {keyword}, ({index}/{len(keywords)}), links({idx}/{len(unique_links)})')
+                    data = extract_page_data(driver, link, keyword)
+                    if data:
+                        results.extend(data)
+
+                # 엑셀 저장 또는 추가
+                print(f'results : {len(results)}')
+                if results:
+                    save_or_append_to_excel(results)
+
+    finally:
+        driver.quit()

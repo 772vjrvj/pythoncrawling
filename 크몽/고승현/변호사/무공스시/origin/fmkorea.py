@@ -144,15 +144,13 @@ def extract_page_data(driver, link, category):
 
         # 날짜 추출
         try:
-            date = driver.find_element(By.CSS_SELECTOR, "span.date.m_no").text
-            base_data["날짜"] = date
+            base_data["날짜"] = driver.find_element(By.CSS_SELECTOR, "span.date.m_no").text
         except NoSuchElementException:
             base_data["날짜"] = ""
 
         # 아이디 추출
         try:
-            user_id = driver.find_element(By.CSS_SELECTOR, "a[href='#popup_menu_area']").text
-            base_data["아이디"] = user_id
+            base_data["아이디"] = driver.find_element(By.CSS_SELECTOR, "a[href='#popup_menu_area']").text
         except NoSuchElementException:
             base_data["아이디"] = ""
 

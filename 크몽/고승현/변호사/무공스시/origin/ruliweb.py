@@ -16,6 +16,66 @@ from PIL import Image
 import re
 
 
+# 이미지 저장 폴더 설정
+IMAGE_FOLDER = "ruriweb_image_list"
+os.makedirs(IMAGE_FOLDER, exist_ok=True)
+
+
+# 드라이버 세팅
+def setup_driver():
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--incognito")
+        chrome_options.add_argument("--headless")
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                  get: () => undefined
+                })
+            '''
+        })
+        driver.maximize_window()
+
+        return driver
+    except Exception as e:
+        print(f"Error setting up the WebDriver: {e}")
+        return None
+
+
+# 메인 크롤링 함수
+def get_links(keyword, start_page=1):
+    all_links = set()  # 중복 제거를 위해 set 사용
+    page = start_page
+    while True:
+        links = extract_links_from_page(keyword, page)
+        if not links:  # 더 이상 결과가 없으면 중단
+            print(f"No more results on page {page}. Stopping.")
+            break
+        print(f'keyword link page({page}) len: {len(links)}')
+
+        # 새로 가져온 링크를 set에 추가
+        all_links.update(links)
+        page += 1
+        time.sleep(random.uniform(2, 3))
+
+    # 최종 결과를 list로 변환
+    all_links = list(all_links)
+
+    print("Crawling complete.")
+    print(f'all_links : {all_links}')
+    print(f'all_links len : {len(all_links)}')
+    return all_links
+
+
 # 요청 헤더 설정
 
 # 페이지에서 링크 추출
@@ -65,66 +125,6 @@ def extract_links_from_page(query, page):
     except Exception as e:
         print(f"Error processing page {page}: {e}")
         return []
-
-# 메인 크롤링 함수
-def get_links(query, start_page=1):
-    all_links = set()  # 중복 제거를 위해 set 사용
-    page = start_page
-
-    while True:
-        print(f"page : {page}...")
-        links = extract_links_from_page(query, page)
-        print(f'links len : {len(links)}')
-        if not links:  # 더 이상 결과가 없으면 중단
-            print(f"No more results on page {page}. Stopping.")
-            break
-
-        # 새로 가져온 링크를 set에 추가
-        all_links.update(links)
-        page += 1
-        time.sleep(random.uniform(2, 3))
-
-    # 최종 결과를 list로 변환
-    all_links = list(all_links)
-
-    print("Crawling complete.")
-    print(f'all_links : {all_links}')
-    print(f'all_links len : {len(all_links)}')
-    return all_links
-
-
-# 스크린샷 폴더 설정
-IMAGE_FOLDER = "ruriweb_image_list"
-os.makedirs(IMAGE_FOLDER, exist_ok=True)
-
-# 드라이버 세팅
-def setup_driver():
-    try:
-        chrome_options = Options()
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--incognito")
-        chrome_options.add_argument("--headless")
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        chrome_options.add_argument(f'user-agent={user_agent}')
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': '''
-                Object.defineProperty(navigator, 'webdriver', {
-                  get: () => undefined
-                })
-            '''
-        })
-        driver.maximize_window()
-
-        return driver
-    except Exception as e:
-        print(f"Error setting up the WebDriver: {e}")
-        return None
 
 
 # 전체 페이지 스크린샷 캡처
@@ -335,7 +335,6 @@ def save_or_append_to_excel(data, filename="ruliweb_results.xlsx"):
         df.to_excel(filename, index=False)
         print(f"New file created: {filename}")
 
-# 실행
 if __name__ == "__main__":
     keywords = [
         "마공스시",
@@ -350,34 +349,28 @@ if __name__ == "__main__":
         "project02",
         "버블트리"
     ]
-
-    # 병신지수 혁신지수 여신지수
-
     driver = setup_driver()
 
-    all_result_links = set()  # 중복 제거를 위해 set 사용
-
+    # 중복 제거를 위해 set 사용
+    all_result_links = set()
     if not driver:
         print("Driver setup failed!")
         exit()
-
     try:
         for index, keyword in enumerate(keywords, start=1):
-            print(f"index: {index}/{len(keywords)}, keyword: {keyword}")
+            print(f"keyword : {keyword}, index: {index}/{len(keywords)}")
             result_links = get_links(keyword)
-
             if not result_links:
                 continue
 
             # result_links에서 all_result_links와 중복된 것 제거
             unique_links = [link for link in result_links if link not in all_result_links]
-            print(f"unique_links len : {len(unique_links)}")
+
             # all_result_links에 고유 링크 추가
             all_result_links.update(unique_links)
-
             results = []
             for idx, link in enumerate(unique_links, start=1):  # 중복 제거된 unique_links 사용
-                print(f'keyword: {keyword} ({index}/{len(keywords)}), links: ({idx}/{len(unique_links)})')
+                print(f'keyword : {keyword}, ({index}/{len(keywords)}), links({idx}/{len(unique_links)})')
                 data = extract_page_data(driver, link, keyword)
                 if data:
                     results.extend(data)
