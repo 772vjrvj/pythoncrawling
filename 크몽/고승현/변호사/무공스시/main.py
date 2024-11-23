@@ -62,6 +62,7 @@ def get_links(driver, site, keyword, start_page=1):
         if not links:
             print("No more results for keyword:", keyword)
             break
+        all_links.update(links)
         page += 1
 
         # 페이지 요청 간 간격
