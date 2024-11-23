@@ -122,21 +122,21 @@ if __name__ == "__main__":
     sites = [
         # "fmkorea",
         # "ruliweb",
-        "inven",
-        # "arcalive"
+        # "inven",
+        "arcalive"
     ]
     keywords = [
-        "마공스시",
-        "읍읍스시",
+        # "마공스시",
+        # "읍읍스시",
         "마공읍읍",
-        "ㅁㄱㅅㅅ",
-        "ㅁㄱ스시",
-        "신지수",
+        # "ㅁㄱㅅㅅ",
+        # "ㅁㄱ스시",
+        # "신지수",
         # "ㅅㅈㅅ",
-        "보일러집 아들",
-        "대열보일러",
-        "project02",
-        "버블트리"
+        # "보일러집 아들",
+        # "대열보일러",
+        # "project02",
+        # "버블트리"
     ]
     forbidden_keywords = ["병신지수", "혁신지수", "여신지수"]
     driver = setup_driver()
