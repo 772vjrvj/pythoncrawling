@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 all_result_links.update(unique_links)
                 results = []
                 for ix, link in enumerate(unique_links, start=1):  # 중복 제거된 unique_links 사용
-                    print(f'site : {site} ({index}/{len(sites)}), keyword : {keyword} ({idx}/{len(keywords)}), links ({idx}/{len(unique_links)})')
+                    print(f'site : {site} ({index}/{len(sites)}), keyword : {keyword} ({idx}/{len(keywords)}), links ({ix}/{len(unique_links)})')
                     data = extract_contents(driver, site, keyword, link, forbidden_keywords)
                     if data:
                         results.extend(data)

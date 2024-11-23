@@ -69,6 +69,10 @@ def make_dir(site):
     # 폴더가 없으면 생성
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+        print(f"{folder_path} 폴더생성")
+    else:
+        print(f"{folder_path} 폴더존재")
+    
 
 
 def excel_max_cut(content):
