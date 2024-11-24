@@ -154,14 +154,20 @@ if __name__ == "__main__":
                 result_links = get_links(driver, site, keyword)
                 if not result_links:
                     continue
-                # result_links에서 all_result_links와 중복된 것 제거
-                unique_links = [link for link in result_links if link not in all_result_links]
+
+                # set으로 변환하여 중복 제거
+                result_links_set = set(result_links)
+                unique_links_set = result_links_set - all_result_links  # 기존 링크와의 차집합
+
+                # unique_links 리스트로 변환
+                unique_links = list(unique_links_set)
                 print(f"unique_links len : {len(unique_links)}")
 
                 # all_result_links에 고유 링크 추가
-                all_result_links.update(unique_links)
+                all_result_links.update(unique_links_set)
+
                 results = []
-                for ix, link in enumerate(unique_links, start=1):  # 중복 제거된 unique_links 사용
+                for ix, link in enumerate(unique_links, start=1):
                     print(f'site : {site} ({index}/{len(sites)}), keyword : {keyword} ({idx}/{len(keywords)}), links ({ix}/{len(unique_links)})')
                     data = extract_contents(driver, site, keyword, link, forbidden_keywords)
                     if data:
