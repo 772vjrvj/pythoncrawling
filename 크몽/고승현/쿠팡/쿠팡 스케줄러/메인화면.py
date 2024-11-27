@@ -1,9 +1,13 @@
 import sys
 import time
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidgetItem,
-                             QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog)
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime, QDate
+                             QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog, QStyle, QStyleOptionButton
+, QScrollArea)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime, QDate, QRect
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 import requests
+from PyQt5.QtGui import QMouseEvent
+
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
@@ -20,6 +24,7 @@ import pandas as pd
 
 # 전역 변수
 url = ""
+url_list = []
 
 
 # API
@@ -179,11 +184,11 @@ class ApiWorker(QThread):
 
 # 팝업창 클래스 (URL 입력)
 class RegisterPopup(QDialog):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("쿠팡가격추적 등록하기")
-        self.setGeometry(200, 200, 400, 200)  # 팝업 창 크기 설정
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent  # 부모 객체 저장
+        self.setWindowTitle("개별등록")
+        self.setGeometry(200, 200, 400, 200)  # 팝업 창 크기 설정 (X좌표, Y좌표, 너비, 높이
         self.setStyleSheet("background-color: white;")
 
         # 팝업 레이아웃
@@ -191,7 +196,7 @@ class RegisterPopup(QDialog):
 
         # 제목과 밑줄
         title_layout = QHBoxLayout()
-        title_label = QLabel("쿠팡가격추적 등록하기")
+        title_label = QLabel("쿠팡가격추적 개별등록하기")
         title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
         title_layout.addWidget(title_label)
         title_layout.setAlignment(Qt.AlignCenter)
@@ -238,11 +243,228 @@ class RegisterPopup(QDialog):
         size = self.geometry()  # 현재 창 크기
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
+    def update_url_label(self):
+        # URL을 레이블에 표시
+        global url, url_list
+        url_list.append(url)
+        row_position = self.parent.table.rowCount()  # 현재 테이블의 마지막 행 위치를 얻음
+        self.parent.table.insertRow(row_position)  # 새로운 행을 추가
+
+        check_box = QCheckBox()
+
+        # 체크박스를 감싸는 레이아웃
+        layout = QHBoxLayout()
+        layout.addWidget(check_box)
+        layout.setAlignment(Qt.AlignCenter)
+
+        # 레이아웃과 컨테이너 위젯의 크기 정책 설정
+        container_widget = QWidget()
+        container_widget.setLayout(layout)
+        container_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # 크기 정책 설정
+        layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
+
+        # 테이블 셀에 추가
+        self.parent.table.setCellWidget(row_position, 0, container_widget)
+
+        # URL 열 (1번 열) 업데이트
+        self.parent.table.setItem(row_position, 1, QTableWidgetItem(url))
+
     def on_confirm(self):
         # URL 값을 전역 변수에 저장
         global url
         url = self.url_input.text()
+        if url:
+            self.update_url_label()
         self.accept()  # 팝업 닫기
+
+
+# 엑셀 드래그
+class ExcelDragDropLabel(QLabel):
+    def __init__(self):
+        super().__init__()
+        self.setAcceptDrops(True)  # 드래그 앤 드롭 허용
+        self.setText("엑셀 파일을 여기에 드래그하세요.")
+        self.setAlignment(Qt.AlignCenter)  # 텍스트 가운데 정렬
+        self.setStyleSheet("border: 2px dashed #aaaaaa; padding: 10px; font-size: 14px;")
+        self.setFixedHeight(100)  # 라벨의 높이를 100px로 설정 (기본 높이의 약 2배)
+        self.center_window()
+
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():  # 파일 드래그 확인
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event: QDropEvent):
+        if event.mimeData().hasUrls():
+            files = [url.toLocalFile() for url in event.mimeData().urls()]
+            for file in files:
+                if file.endswith(('.xlsx', '.xlsm')):  # 엑셀 파일만 처리
+                    self.parent().load_excel(file)
+                else:
+                    self.setText("지원하지 않는 파일 형식입니다. 엑셀 파일을 드래그하세요.")
+            event.acceptProposedAction()
+
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+
+# 전체등록
+class AllRegisterPopup(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent  # 부모 객체 저장
+        self.setWindowTitle("엑셀 파일 드래그 앤 드롭")
+        self.setGeometry(200, 200, 800, 600)  # 팝업 창 크기 설정
+        self.setStyleSheet("background-color: white;")
+
+        # 팝업 레이아웃
+        self.layout = QVBoxLayout(self)
+
+        # 드래그 앤 드롭 라벨 추가
+        self.drag_drop_label = ExcelDragDropLabel()
+        self.layout.addWidget(self.drag_drop_label)
+
+        # 테이블 뷰 추가 (스크롤 가능)
+        self.table_widget = QTableWidget()
+        self.table_widget.setRowCount(0)
+        self.table_widget.setColumnCount(1)  # 컬럼 수를 1개로 설정
+        self.table_widget.setHorizontalHeaderLabels(["URL"])  # 컬럼 헤더 이름 설정
+
+        # 헤더의 크기를 창 너비에 맞게 조정
+        self.table_widget.horizontalHeader().setStretchLastSection(True)
+        self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+
+        # 스크롤 영역 설정
+        scroll_area = QScrollArea()
+        scroll_area.setWidget(self.table_widget)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.layout.addWidget(scroll_area)
+
+        # 확인 버튼
+        button_layout = QHBoxLayout()
+        self.confirm_button = QPushButton("확인", self)
+        self.confirm_button.setStyleSheet("""
+            background-color: black;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        self.confirm_button.setFixedHeight(40)
+        self.confirm_button.setFixedWidth(140)
+        self.confirm_button.clicked.connect(self.on_confirm)
+
+        button_layout.addWidget(self.confirm_button)
+        button_layout.setAlignment(Qt.AlignCenter)
+        self.layout.addLayout(button_layout)
+
+        # 연결
+        self.drag_drop_label.setParent(self)
+
+    def load_excel(self, file_path):
+        global url_list
+        try:
+            # pandas로 엑셀 파일 읽기
+            df = pd.read_excel(file_path)
+
+            # 특정 열만 추출 (URL 열)
+            if "URL" in df.columns:
+                url_list = df["URL"].dropna().astype(str).tolist()  # 'URL' 열만 추출
+            else:
+                # 전체 데이터를 문자열 배열로 변환
+                url_list = df.apply(lambda row: ", ".join(row.dropna().astype(str)), axis=1).tolist()
+
+            print("전역 변수에 데이터 저장 완료:", url_list)  # 디버깅 출력
+
+            # 테이블 위젯 초기화
+            self.table_widget.setRowCount(len(url_list))
+            self.table_widget.setColumnCount(1)  # URL만 표시
+            self.table_widget.setHorizontalHeaderLabels(["URL"])  # 열 헤더 설정
+
+            # 데이터 로드
+            for row_idx, url in enumerate(url_list):
+                self.table_widget.setItem(row_idx, 0, QTableWidgetItem(url))
+
+            # 상태 업데이트
+            self.drag_drop_label.setText(f"파일이 성공적으로 로드되었습니다: {file_path}")
+            self.drag_drop_label.setStyleSheet("background-color: lightgreen;")
+
+        except Exception as e:
+            self.drag_drop_label.setText(f"파일 로드 중 오류 발생: {file_path}\n{str(e)}")
+
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+    def on_confirm(self):
+        global url_list
+        if self.parent and hasattr(self.parent, "table") and url_list:
+            # 테이블 행 개수 설정
+            self.parent.table.setRowCount(len(url_list))
+
+            # URL 데이터를 테이블에 채우기
+            for row_idx, url in enumerate(url_list):
+                # 체크박스 추가 (삭제 시 사용)
+                check_box = QCheckBox()
+
+                # 체크박스를 감싸는 레이아웃
+                layout = QHBoxLayout()
+                layout.addWidget(check_box)
+                layout.setAlignment(Qt.AlignCenter)
+
+                # 레이아웃과 컨테이너 위젯의 크기 정책 설정
+                container_widget = QWidget()
+                container_widget.setLayout(layout)
+                container_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # 크기 정책 설정
+                layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
+
+                # 테이블 셀에 추가
+                self.parent.table.setCellWidget(row_idx, 0, container_widget)
+
+                # URL 열 (1번 열) 업데이트
+                self.parent.table.setItem(row_idx, 1, QTableWidgetItem(url))
+
+        self.accept()  # 팝업 닫기
+
+
+class HeaderWithCheckbox(QHeaderView):
+    def __init__(self, orientation, parent=None, main_window=None):
+        super().__init__(orientation, parent)
+        self.main_window = main_window
+        self.setSectionsClickable(True)  # 헤더 클릭 가능 설정
+        self._is_checked = False
+
+    def paintSection(self, painter, rect, logicalIndex):
+        """헤더에 체크박스를 그림"""
+        super().paintSection(painter, rect, logicalIndex)
+
+        if logicalIndex == 0:  # 첫 번째 열에만 체크박스 표시
+            option = QStyleOptionButton()
+            checkbox_size = 20
+            center_x = rect.x() + (rect.width() - checkbox_size) // 2
+            center_y = rect.y() + (rect.height() - checkbox_size) // 2
+            option.rect = QRect(center_x, center_y, checkbox_size, checkbox_size)
+            option.state = QStyle.State_Enabled | (QStyle.State_On if self._is_checked else QStyle.State_Off)
+            self.style().drawControl(QStyle.CE_CheckBox, option, painter)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        """헤더 체크박스 클릭 동작"""
+        if self.logicalIndexAt(event.pos()) == 0:  # 첫 번째 열 클릭
+            self._is_checked = not self._is_checked
+            self.updateSection(0)  # 헤더 다시 그림
+            if self.main_window:
+                self.main_window.toggle_all_checkboxes(self._is_checked)  # 테이블 전체 체크박스 상태 변경
+        else:
+            super().mousePressEvent(event)
 
 
 # 메인 화면 클래스
@@ -270,7 +492,7 @@ class MainWindow(QWidget):
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
         # 버튼 설정
-        self.register_button = QPushButton("등록하기")
+        self.register_button = QPushButton("개별등록")
         self.register_button.setStyleSheet("""
             background-color: black;
             color: white;
@@ -278,9 +500,34 @@ class MainWindow(QWidget):
             font-size: 16px;
             padding: 10px;
         """)
-        self.register_button.setFixedWidth(150)  # 고정된 너비
+        self.register_button.setFixedWidth(100)  # 고정된 너비
         self.register_button.setFixedHeight(40)  # 고정된 높이
         self.register_button.clicked.connect(self.open_register_popup)
+
+        self.all_register_button = QPushButton("전체등록")
+        self.all_register_button.setStyleSheet("""
+                    background-color: black;
+                    color: white;
+                    border-radius: 15%;
+                    font-size: 16px;
+                    padding: 10px;
+                """)
+        self.all_register_button.setFixedWidth(100)  # 고정된 너비
+        self.all_register_button.setFixedHeight(40)  # 고정된 높이
+        self.all_register_button.clicked.connect(self.open_all_register_popup)
+
+        self.reset_button = QPushButton("초기화")
+        self.reset_button.setStyleSheet("""
+                    background-color: black;
+                    color: white;
+                    border-radius: 15%;
+                    font-size: 16px;
+                    padding: 10px;
+                """)
+        self.reset_button.setFixedWidth(100)  # 고정된 너비
+        self.reset_button.setFixedHeight(40)  # 고정된 높이
+        self.reset_button.clicked.connect(self.reset_url)
+
 
         self.collect_button = QPushButton("수집하기")
         self.collect_button.setStyleSheet("""
@@ -290,10 +537,9 @@ class MainWindow(QWidget):
             font-size: 16px;
             padding: 10px;
         """)
-        self.collect_button.setFixedWidth(150)  # 고정된 너비
+        self.collect_button.setFixedWidth(100)  # 고정된 너비
         self.collect_button.setFixedHeight(40)  # 고정된 높이
         self.collect_button.clicked.connect(self.start_on_demand_worker)
-
 
         self.delete_button = QPushButton("삭제하기")
         self.delete_button.setStyleSheet("""
@@ -303,14 +549,15 @@ class MainWindow(QWidget):
             font-size: 16px;
             padding: 10px;
         """)
-        self.delete_button.setFixedWidth(150)  # 고정된 너비
+        self.delete_button.setFixedWidth(100)  # 고정된 너비
         self.delete_button.setFixedHeight(40)  # 고정된 높이
         self.delete_button.clicked.connect(self.delete_table_row)
 
         left_button_layout.addWidget(self.register_button)
+        left_button_layout.addWidget(self.all_register_button)
+        left_button_layout.addWidget(self.reset_button)
         left_button_layout.addWidget(self.collect_button)
         left_button_layout.addWidget(self.delete_button)
-
 
         # 오른쪽 엑셀 다운로드 버튼 레이아웃
         right_button_layout = QHBoxLayout()
@@ -339,21 +586,29 @@ class MainWindow(QWidget):
         # 테이블 만들기
         self.table = QTableWidget()
         self.table.setColumnCount(7)
-        self.table.setHorizontalHeaderLabels(["선택", "URL", "상품명", "판매가", "배송비", "합계", "최근실행시간"])
+        self.table.setHorizontalHeaderLabels(["", "URL", "상품명", "판매가", "배송비", "합계", "최근실행시간"])
 
+        # 커스텀 헤더 설정
+        header = HeaderWithCheckbox(Qt.Horizontal, self.table, main_window=self)
+        self.table.setHorizontalHeader(header)
 
         # 테이블을 부모 위젯 크기에 맞게 늘어나게 설정
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # 열 너비 조정 가능 설정
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+
+        # 마지막 열 크기 고정 해제
+        self.table.horizontalHeader().setStretchLastSection(False)
+
+        # 테이블 크기를 부모 위젯 크기에 맞게 설정
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
 
         # 열 크기 균등하게 설정
         header = self.table.horizontalHeader()
         for i in range(self.table.columnCount()):
             header.setSectionResizeMode(i, QHeaderView.Stretch)  # 모든 열을 균등하게 늘리기
-
-        # URL 표시 레이블
-        self.url_label = QLabel("URL : ")
-        self.url_label.setAlignment(Qt.AlignCenter)
-        self.url_label.setStyleSheet("font-size: 16px; color: black; padding: 10px;")
 
         # 남은 시간 라벨
         self.time_label = QLabel("추적시간 매일 0시 0분 0초")
@@ -367,7 +622,6 @@ class MainWindow(QWidget):
         main_layout.addLayout(header_layout)
         main_layout.addWidget(header_label)
         main_layout.addWidget(self.time_label)
-        main_layout.addWidget(self.url_label)  # URL을 표시할 레이블 추가
 
         main_layout.addWidget(self.table)
 
@@ -375,6 +629,17 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
         self.center_window()
+
+    def toggle_all_checkboxes(self, checked):
+        """헤더 체크박스 상태에 따라 모든 행의 체크박스 상태를 변경"""
+        for row in range(self.table.rowCount()):
+            container_widget = self.table.cellWidget(row, 0)
+            if container_widget:
+                layout = container_widget.layout()
+                if layout and layout.count() > 0:
+                    check_box = layout.itemAt(0).widget()
+                    if isinstance(check_box, QCheckBox):
+                        check_box.setChecked(checked)
 
     def excel_down_load(self):
         # 데이터 추출
@@ -448,19 +713,13 @@ class MainWindow(QWidget):
 
     def open_register_popup(self):
         # 등록 팝업창 열기
-        popup = RegisterPopup()
+        popup = RegisterPopup(parent=self)
         popup.exec_()
 
-        # 팝업창에서 URL을 입력 후 확인 버튼을 누르면 URL을 메인 화면에 표시
-        self.update_url_label()
-
-    def update_url_label(self):
-        # URL을 레이블에 표시
-        global url
-        if url:  # URL이 존재하면
-            self.url_label.setText(f"URL : {url}")
-        else:
-            self.url_label.setText("URL : ")
+    def open_all_register_popup(self):
+        # 등록 팝업창 열기
+        popup = AllRegisterPopup(parent=self)  # 부모 객체 전달
+        popup.exec_()
 
     def get_api(self, type):
         global url
@@ -512,18 +771,30 @@ class MainWindow(QWidget):
 
     def delete_table_row(self):
         """체크된 체크박스를 가진 행을 삭제"""
+        global url_list
         rows_to_delete = []
 
         # 모든 행을 확인하여 체크박스가 체크된 행을 찾음
         for row in range(self.table.rowCount()):
-            check_box = self.table.cellWidget(row, 0)  # 첫 번째 열에서 체크박스를 찾음
-
-            if check_box and check_box.isChecked():  # 체크박스가 체크된 경우
-                rows_to_delete.append(row)
+            container_widget = self.table.cellWidget(row, 0)  # 첫 번째 열의 컨테이너 위젯 가져오기
+            if container_widget:  # 위젯이 존재할 경우
+                layout = container_widget.layout()  # 레이아웃 가져오기
+                if layout and layout.count() > 0:  # 레이아웃이 있고, 위젯이 포함된 경우
+                    check_box = layout.itemAt(0).widget()  # 첫 번째 위젯(QCheckBox) 가져오기
+                    if isinstance(check_box, QCheckBox) and check_box.isChecked():  # 체크박스 확인
+                        rows_to_delete.append(row)
 
         # 삭제하려는 행을 역순으로 삭제 (역순으로 삭제해야 인덱스 문제가 발생하지 않음)
         for row in reversed(rows_to_delete):
-            self.table.removeRow(row)
+            self.table.removeRow(row)  # 테이블에서 행 삭제
+            del url_list[row]  # url_list에서도 해당 인덱스 삭제
+
+
+    def reset_url(self):
+        global url_list
+        url_list = []
+        self.table.clearContents()  # 테이블 내용 삭제
+        self.table.setRowCount(0)   # 행 개수를 0으로 설정
 
 
 # 로그인 API 요청을 처리하는 스레드 클래스

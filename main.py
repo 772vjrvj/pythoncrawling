@@ -2,7 +2,7 @@ import sys
 import time
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidgetItem,
                              QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog, QStyle, QStyleOptionButton
-                            , QScrollArea)
+, QScrollArea)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime, QDate, QRect
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 import requests
@@ -267,7 +267,7 @@ class RegisterPopup(QDialog):
         self.parent.table.setCellWidget(row_position, 0, container_widget)
 
         # URL 열 (1번 열) 업데이트
-        self.parent.table.setItem(row_position, 1, QTableWidgetItem(url))
+        self.parent.table.setItem(row_position, 6, QTableWidgetItem(url))
 
     def on_confirm(self):
         # URL 값을 전역 변수에 저장
@@ -431,7 +431,7 @@ class AllRegisterPopup(QDialog):
                 self.parent.table.setCellWidget(row_idx, 0, container_widget)
 
                 # URL 열 (1번 열) 업데이트
-                self.parent.table.setItem(row_idx, 1, QTableWidgetItem(url))
+                self.parent.table.setItem(row_idx, 6, QTableWidgetItem(url))
 
         self.accept()  # 팝업 닫기
 
@@ -439,17 +439,16 @@ class AllRegisterPopup(QDialog):
 class HeaderWithCheckbox(QHeaderView):
     def __init__(self, orientation, parent=None, main_window=None):
         super().__init__(orientation, parent)
-        self.main_window = main_window  # MainWindow 참조 저장
+        self.main_window = main_window
         self.setSectionsClickable(True)  # 헤더 클릭 가능 설정
-        self._is_checked = False  # 체크박스 상태 저장
+        self._is_checked = False
 
     def paintSection(self, painter, rect, logicalIndex):
         """헤더에 체크박스를 그림"""
         super().paintSection(painter, rect, logicalIndex)
 
-        if logicalIndex == 0:  # "선택" 열에만 체크박스 추가
+        if logicalIndex == 0:  # 첫 번째 열에만 체크박스 표시
             option = QStyleOptionButton()
-            # 체크박스를 헤더 중앙에 배치
             checkbox_size = 20
             center_x = rect.x() + (rect.width() - checkbox_size) // 2
             center_y = rect.y() + (rect.height() - checkbox_size) // 2
@@ -458,14 +457,15 @@ class HeaderWithCheckbox(QHeaderView):
             self.style().drawControl(QStyle.CE_CheckBox, option, painter)
 
     def mousePressEvent(self, event: QMouseEvent):
-        """체크박스를 클릭했을 때의 동작"""
-        if self.logicalIndexAt(event.pos()) == 0:  # "선택" 열 클릭
+        """헤더 체크박스 클릭 동작"""
+        if self.logicalIndexAt(event.pos()) == 0:  # 첫 번째 열 클릭
             self._is_checked = not self._is_checked
             self.updateSection(0)  # 헤더 다시 그림
-            if self.main_window:  # MainWindow 참조 확인
+            if self.main_window:
                 self.main_window.toggle_all_checkboxes(self._is_checked)  # 테이블 전체 체크박스 상태 변경
         else:
             super().mousePressEvent(event)
+
 
 # 메인 화면 클래스
 class MainWindow(QWidget):
@@ -586,25 +586,28 @@ class MainWindow(QWidget):
         # 테이블 만들기
         self.table = QTableWidget()
         self.table.setColumnCount(7)
-        self.table.setHorizontalHeaderLabels(["", "URL", "상품명", "판매가", "배송비", "합계", "최근실행시간"])
+        self.table.setHorizontalHeaderLabels(["", "최근실행시간", "상품명", "판매가", "배송비", "합계", "URL"])
 
         # 커스텀 헤더 설정
         header = HeaderWithCheckbox(Qt.Horizontal, self.table, main_window=self)
         self.table.setHorizontalHeader(header)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
 
         # 테이블을 부모 위젯 크기에 맞게 늘어나게 설정
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # 헤더 열 너비 조정 가능 설정
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        # 마지막 열 크기 고정
+        self.table.horizontalHeader().setStretchLastSection(True)
 
-        # 테이블의 열 크기 초기화
-        self.table.horizontalHeader().setStretchLastSection(False)
+        # 테이블 크기를 부모 위젯 크기에 맞게 설정
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        self.set_column_widths([10, 30, 20, 10, 10, 10, 10])
 
         # 열 크기 균등하게 설정
-        header = self.table.horizontalHeader()
-        for i in range(self.table.columnCount()):
-            header.setSectionResizeMode(i, QHeaderView.Stretch)  # 모든 열을 균등하게 늘리기
+        # header = self.table.horizontalHeader()
+        # for i in range(self.table.columnCount()):
+        #     header.setSectionResizeMode(i, QHeaderView.Stretch)  # 모든 열을 균등하게 늘리기
 
         # 남은 시간 라벨
         self.time_label = QLabel("추적시간 매일 0시 0분 0초")
@@ -625,6 +628,12 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
         self.center_window()
+    def set_column_widths(self, percentages):
+        """열 너비를 비율로 설정"""
+        total_width = self.table.viewport().width()  # 테이블의 전체 너비
+        for col_index, percentage in enumerate(percentages):
+            width = total_width * (percentage / 100)
+            self.table.setColumnWidth(col_index, int(width))
 
     def toggle_all_checkboxes(self, checked):
         """헤더 체크박스 상태에 따라 모든 행의 체크박스 상태를 변경"""
