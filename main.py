@@ -11,6 +11,8 @@ import urllib.request
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 import time
+from bs4 import BeautifulSoup
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 
@@ -54,6 +56,7 @@ def navigate_to_page(driver, page_url):
 
 
 def extract_caption(driver, feed_unit):
+    """Extract caption text with emojis in correct order using BeautifulSoup."""
     try:
         # story_message_element 찾기
         story_message_element = feed_unit.find_element(By.CSS_SELECTOR, '[data-ad-rendering-role="story_message"]')
@@ -61,37 +64,84 @@ def extract_caption(driver, feed_unit):
         # '더 보기' 버튼 찾기 및 클릭
         try:
             # '더 보기' 버튼 대기 및 찾기
-            more_button = WebDriverWait(feed_unit, 5).until(
-                EC.presence_of_element_located((
-                    By.XPATH,
-                    './/div[contains(@class, "x1i10hfl") and contains(@class, "xjbqb8w") and @role="button" and text()="더 보기"]'
-                ))
+            more_button = WebDriverWait(feed_unit, 10).until(
+                EC.presence_of_element_located((By.XPATH,
+                                                './/div[contains(@class, "x1i10hfl") and contains(@class, "xjbqb8w") and @role="button" and text()="더 보기"]'
+                                                ))
             )
 
             # '더 보기' 버튼 스크롤로 가시성 확보
-            driver.execute_script("arguments[0].scrollIntoView(true);", more_button)
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", more_button)
 
-            # 버튼 클릭
-            driver.execute_script("arguments[0].click();", more_button)
+            # 강제 클릭 시도
+            try:
+                ActionChains(driver).move_to_element(more_button).click().perform()
+                print("'더 보기' 버튼 클릭 성공!")
+            except Exception as e:
+                print("'더 보기' 기본 클릭 실패, JavaScript로 클릭 시도:", e)
+                driver.execute_script("arguments[0].click();", more_button)
 
         except Exception as e:
-            print("'더 보기' 버튼이 없거나 클릭할 수 없습니다:", e)
+            print("'더 보기' 버튼 처리 중 오류:", e)
 
-        # story_message_element의 텍스트 추출
-        return story_message_element.text
+        # story_message_element의 innerHTML 추출
+        caption_html = story_message_element.get_attribute("innerHTML")
+
+        # HTML이 비었는지 확인
+        if not caption_html:
+            print("캡션 HTML이 비어 있습니다.")
+            return None
+
+        # BeautifulSoup으로 HTML 파싱
+        soup = BeautifulSoup(caption_html, 'html.parser')
+
+        # 순차적으로 요소를 순회하며 텍스트와 이모지를 조합
+        final_text = ""
+        for element in soup.descendants:
+            if element.name == 'img':  # 이모지 <img> 태그 처리
+                emoji_alt = element.get('alt', '')  # <img alt="💕">
+                final_text += emoji_alt
+            elif element.name in ['br', 'div']:  # 줄바꿈 태그 처리
+                final_text += '\n'
+            elif element.string:  # 일반 텍스트 처리
+                final_text += element.string.strip()
+
+        # 결과 텍스트 반환
+        return final_text.strip()
 
     except Exception as e:
         print("캡션 추출 중 오류 발생:", e)
         return None
 
 
-def click_first_image(feed_unit):
+def click_first_image(driver, feed_unit):
     """Click the first image within a specific feed unit."""
     try:
-        image_container = feed_unit.find_element(By.CSS_SELECTOR, 'div.x1n2onr6[style*="padding-top: calc(83.3333%);"]')
-        first_image_link = image_container.find_element(By.TAG_NAME, 'a')
-        first_image_link.click()
+        # Explicit Wait로 이미지 컨테이너 대기
+        image_container = WebDriverWait(feed_unit, 10).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, 'div.x1n2onr6[style*="padding-top: calc(83.3333%);"]')
+            )
+        )
+
+        # 첫 번째 이미지 링크 찾기
+        first_image_link = WebDriverWait(image_container, 10).until(
+            EC.element_to_be_clickable((By.TAG_NAME, 'a'))
+        )
+
+        # 스크롤로 가시성 확보
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_image_link)
+
+        # 기본 클릭
+        try:
+            first_image_link.click()
+        except Exception as e:
+            print("기본 클릭 실패, JavaScript로 클릭 시도:", e)
+            driver.execute_script("arguments[0].click();", first_image_link)
+
+        # 클릭 후 대기
         time.sleep(2)
+
     except Exception as e:
         print("첫 번째 이미지를 클릭하는 중 오류 발생:", e)
 
@@ -202,7 +252,7 @@ def process_feed_unit(driver, feed_unit):
 
         date = extract_date(feed_unit)
         caption = extract_caption(driver, feed_unit)
-        click_first_image(feed_unit)
+        click_first_image(driver, feed_unit)
         img_list = extract_image_sources(driver)
 
         obj = {
