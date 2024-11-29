@@ -117,21 +117,29 @@ def extract_caption(driver, feed_unit):
 def click_first_image(driver, feed_unit):
     """Click the first image within a specific feed unit."""
     try:
+
+        if not feed_unit:
+            print('feed_unit이 None입니다.')
+            return
+
+        print('1111111111111111111=====')
         # Explicit Wait로 이미지 컨테이너 대기
         image_container = WebDriverWait(feed_unit, 10).until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, 'div.x1n2onr6[style*="padding-top: calc(83.3333%);"]')
             )
         )
+        print('2222222222222222222=====')
 
         # 첫 번째 이미지 링크 찾기
         first_image_link = WebDriverWait(image_container, 10).until(
             EC.element_to_be_clickable((By.TAG_NAME, 'a'))
         )
+        print('33333333333333333333=====')
 
         # 스크롤로 가시성 확보
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_image_link)
-
+        time.sleep(1)
         # 기본 클릭
         try:
             first_image_link.click()
