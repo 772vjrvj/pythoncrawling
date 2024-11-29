@@ -310,14 +310,14 @@ def main():
             try:
                 # 스크롤하여 새로운 콘텐츠 로드 시도
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(1.5)
+                time.sleep(3)
 
                 # 현재 뷰에 표시된 모든 피드 가져오기
                 feed_units = driver.find_elements(By.CSS_SELECTOR, '[data-pagelet^="TimelineFeedUnit_"]')
                 current_feed_count = len(feed_units)
 
                 # 피드 개수가 이전과 같으면 중지
-                if current_feed_count == previous_feed_count:
+                if current_feed_count == previous_feed_count and previous_feed_count >= 400:
                     print("더 이상 새로운 피드가 없습니다.")
                     break
 
