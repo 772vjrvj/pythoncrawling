@@ -310,7 +310,7 @@ def main():
             try:
                 # 스크롤하여 새로운 콘텐츠 로드 시도
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(3)
+                time.sleep(2.5)
 
                 # 현재 뷰에 표시된 모든 피드 가져오기
                 feed_units = driver.find_elements(By.CSS_SELECTOR, '[data-pagelet^="TimelineFeedUnit_"]')
