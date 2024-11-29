@@ -114,13 +114,8 @@ def extract_caption(driver, feed_unit):
         return None
 
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
-
 def click_first_image(driver, feed_unit):
-    """Click the first image within a specific feed unit."""
+    """Click the first <a> tag with aria-label="사진 설명이 없습니다." inside a div with class x1n2onr6."""
     try:
         if not feed_unit:
             print('feed_unit이 None입니다.')
@@ -128,26 +123,26 @@ def click_first_image(driver, feed_unit):
 
         print('1111111111111111111=====')
 
-        # Explicit Wait로 이미지 컨테이너 대기
+        # Explicit Wait로 div.x1n2onr6 요소 대기
         try:
             image_container = WebDriverWait(feed_unit, 10).until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, 'div.x1n2onr6[style*="padding-top: calc(83.3333%);"]')
-                )
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div.x1n2onr6'))
             )
         except Exception as e:
-            print("이미지 컨테이너를 찾는 중 오류 발생:", e)
+            print("div.x1n2onr6 요소를 찾는 중 오류 발생:", e)
             return
 
         print('2222222222222222222=====')
 
-        # 첫 번째 이미지 링크 찾기
+        # 해당 div 안에서 aria-label="사진 설명이 없습니다."를 가진 첫 번째 a 태그 찾기
         try:
             first_image_link = WebDriverWait(image_container, 10).until(
-                EC.element_to_be_clickable((By.TAG_NAME, 'a'))
+                EC.presence_of_element_located(
+                    (By.XPATH, './/a[@aria-label="사진 설명이 없습니다."]')
+                )
             )
         except Exception as e:
-            print("첫 번째 이미지 링크를 찾는 중 오류 발생:", e)
+            print("aria-label='사진 설명이 없습니다.'를 가진 a 태그를 찾는 중 오류 발생:", e)
             return
 
         print('33333333333333333333=====')
@@ -179,7 +174,6 @@ def click_first_image(driver, feed_unit):
 
     except Exception as e:
         print("첫 번째 이미지를 클릭하는 중 알 수 없는 오류 발생:", e)
-
 
 
 def extract_image_sources(driver):
