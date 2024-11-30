@@ -115,35 +115,65 @@ def extract_caption(driver, feed_unit):
 
 
 def click_first_image(driver, feed_unit):
-    """Click the first image within a specific feed unit."""
+    """Click the first <a> tag with aria-label="사진 설명이 없습니다." inside a div with class x1n2onr6."""
     try:
-        # Explicit Wait로 이미지 컨테이너 대기
-        image_container = WebDriverWait(feed_unit, 10).until(
-            EC.presence_of_element_located(
-                (By.CSS_SELECTOR, 'div.x1n2onr6[style*="padding-top: calc(83.3333%);"]')
-            )
-        )
+        if not feed_unit:
+            print('feed_unit이 None입니다.')
+            return
 
-        # 첫 번째 이미지 링크 찾기
-        first_image_link = WebDriverWait(image_container, 10).until(
-            EC.element_to_be_clickable((By.TAG_NAME, 'a'))
-        )
+        print('1111111111111111111=====')
+
+        # Explicit Wait로 div.x1n2onr6 요소 대기
+        try:
+            image_container = WebDriverWait(feed_unit, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div.x1n2onr6'))
+            )
+        except Exception as e:
+            print("div.x1n2onr6 요소를 찾는 중 오류 발생:", e)
+            return
+
+        print('2222222222222222222=====')
+
+        # 해당 div 안에서 aria-label="사진 설명이 없습니다."를 가진 첫 번째 a 태그 찾기
+        try:
+            first_image_link = WebDriverWait(image_container, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, './/a[@aria-label="사진 설명이 없습니다."]')
+                )
+            )
+        except Exception as e:
+            print("aria-label='사진 설명이 없습니다.'를 가진 a 태그를 찾는 중 오류 발생:", e)
+            return
+
+        print('33333333333333333333=====')
 
         # 스크롤로 가시성 확보
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_image_link)
+        try:
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_image_link)
+            time.sleep(1)
+        except Exception as e:
+            print("스크롤로 가시성을 확보하는 중 오류 발생:", e)
+            return
 
         # 기본 클릭
         try:
             first_image_link.click()
         except Exception as e:
             print("기본 클릭 실패, JavaScript로 클릭 시도:", e)
-            driver.execute_script("arguments[0].click();", first_image_link)
+            try:
+                driver.execute_script("arguments[0].click();", first_image_link)
+            except Exception as js_click_error:
+                print("JavaScript로 클릭하는 중 오류 발생:", js_click_error)
+                return
 
         # 클릭 후 대기
-        time.sleep(2)
+        try:
+            time.sleep(2)
+        except Exception as e:
+            print("클릭 후 대기 중 오류 발생:", e)
 
     except Exception as e:
-        print("첫 번째 이미지를 클릭하는 중 오류 발생:", e)
+        print("첫 번째 이미지를 클릭하는 중 알 수 없는 오류 발생:", e)
 
 
 def extract_image_sources(driver):
@@ -280,14 +310,14 @@ def main():
             try:
                 # 스크롤하여 새로운 콘텐츠 로드 시도
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(1.5)
+                time.sleep(2.5)
 
                 # 현재 뷰에 표시된 모든 피드 가져오기
                 feed_units = driver.find_elements(By.CSS_SELECTOR, '[data-pagelet^="TimelineFeedUnit_"]')
                 current_feed_count = len(feed_units)
 
                 # 피드 개수가 이전과 같으면 중지
-                if current_feed_count == previous_feed_count:
+                if current_feed_count == previous_feed_count and previous_feed_count >= 400:
                     print("더 이상 새로운 피드가 없습니다.")
                     break
 

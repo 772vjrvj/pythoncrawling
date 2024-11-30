@@ -367,6 +367,7 @@ class AllRegisterPopup(QDialog):
 
         # 연결
         self.drag_drop_label.setParent(self)
+        self.center_window()
 
     def load_excel(self, file_path):
         global url_list
@@ -541,6 +542,19 @@ class MainWindow(QWidget):
         self.collect_button.setFixedHeight(40)  # 고정된 높이
         self.collect_button.clicked.connect(self.start_on_demand_worker)
 
+        self.start_button = QPushButton("스케줄러 시작")
+        self.start_button.setStyleSheet("""
+            background-color: #8A2BE2;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.start_button.setFixedWidth(100)  # 고정된 너비
+        self.start_button.setFixedHeight(40)  # 고정된 높이
+        self.start_button.clicked.connect(self.start_on_demand_worker)
+
+
         self.delete_button = QPushButton("삭제하기")
         self.delete_button.setStyleSheet("""
             background-color: red;
@@ -553,10 +567,12 @@ class MainWindow(QWidget):
         self.delete_button.setFixedHeight(40)  # 고정된 높이
         self.delete_button.clicked.connect(self.delete_table_row)
 
+
         left_button_layout.addWidget(self.register_button)
         left_button_layout.addWidget(self.all_register_button)
         left_button_layout.addWidget(self.reset_button)
         left_button_layout.addWidget(self.collect_button)
+        left_button_layout.addWidget(self.start_button)
         left_button_layout.addWidget(self.delete_button)
 
         # 오른쪽 엑셀 다운로드 버튼 레이아웃
