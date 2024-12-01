@@ -1,5884 +1,934 @@
-import datetime
-import json
-import random
-import re
-import threading
+import sys
 import time
-import tkinter as tk
-from tkinter import messagebox
-import os
-import pandas as pd
+from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidgetItem,
+                             QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QMessageBox, QFileDialog, QStyle, QStyleOptionButton
+, QScrollArea)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QTime, QDate, QRect
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 import requests
+from PyQt5.QtGui import QMouseEvent
+
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-
+from datetime import datetime
+import re
+from urllib.parse import urlparse
 from selenium import webdriver
-
-# 전역 변수 추가
-stop_event = threading.Event()
-search_thread = None
-global_naver_cookies = {}  # 네이버 로그인 쿠키를 저장
-global_server_cookies = {}  # 다른 서버 로그인 쿠키를 저장
-URL = "http://vjrvj.cafe24.com"
-login_server_check = ''
-
-# 플레이스 id 목록
-def fetch_search_results(query, page):
-    try:
-        url = f"https://map.naver.com/p/api/search/allSearch?query={query}&type=all&searchCoord=&boundary=&page={page}"
-        headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-            'Cache-Control': 'max-age=0',
-            'Priority': 'u=0, i',
-            'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-            'Sec-Ch-Ua-Mobile': '?0',
-            'Sec-Ch-Ua-Platform': '"Windows"',
-            'Sec-Fetch-Dest': 'document',
-            'referer': '',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Upgrade-Insecure-Requests': '1',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers, cookies=global_naver_cookies)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        a = 1
-    return None
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import pandas as pd
 
 
-# 플레이스 정보
-def fetch_place_info(place_id):
-    try:
-        url = f"https://m.place.naver.com/place/{place_id}"
-        headers = {
-            'authority': 'm.place.naver.com',
-            'method': 'GET',
-            'scheme': 'https',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'accept-encoding': 'gzip, deflate, br, zstd',
-            'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-            'priority': 'u=0, i',
-            'sec-ch-ua': '"Not/A)Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"',
-            # 'cookie': 'NAC=OsXJBQA7C4Wj; NNB=FOXBS434SDKGM; ASID=da9384ec00000191d00facf700000072; NFS=2; NACT=1; nid_inf=391290400; NID_AUT=BKWCh2nwSx87OqhQiU7fA53ABVeIM0NVMvSL50BLM9CsrtH2hS3M5nj4JkmZmLa5; NID_SES=AAABrK7oOJ3oxSpt990kiHxmKrg4harLTIhsTFL4RNy721y0kPWFyndoU2cAObU+KJUscFZV7gaVh8lMUyj/pIpfJPAb2Kt9Acnx2/0GP0qd95hsxnijuZU4yCTu+37rUwjcJoQI217JYznF8kRHVg9+yuCQJ4hDtP3/TSENNHeX4zw9RudCmqQoLp9HEUZjzmzRNII8lXg2c+XmDMg13hTxaFnF+6wDkb6dtzRGKK7VrV5bTPiL0/taU0rS3zytdz984pGZieeS74tG7KdSx+IO9WAQ8bNU99Vgk7QiQ4lA17VHmCtxHa1BXXsj3/hJG3J1S6/9WQjuxWqmGPnW2g0tHtcFMqqN0AaF9/fdEoFrY9YKJ3S8M06MyDSBqMuigP3mul7VFGM37qKxpnz/lvnDZ4SDNY32EKYnStMUssjPxr7pnuF+cGubpwM5DNK8/X4FewZRiOT6J1hUjGpPFOuq8hvCqOj1rqjHNcqlxziFSC42w4N/FoNEVn9SaAXvBh1L75nTcm3wXGMKzMxygVCZPc99dsO+XUhpbusDOlN62HGLNJwPteOhKo7ZyQb4k5YWXA==; NID_JKL=CNZkLlqEX2rtTV3YMO64OWCpmUjIqDGQwtQED8C+LlE=; BUC=50ImD0ovxSThrenHO4dcb-MPmonlTPAc0WgfuSDYqZk=',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'referer': '',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers, cookies=global_naver_cookies)
-        response.encoding = 'utf-8'
-
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
-
-            if script_tag:
-                json_text = re.search(r'window\.__APOLLO_STATE__\s*=\s*(\{.*\});', script_tag.string)
-                if json_text:
-                    data = json.loads(json_text.group(1))
-                    name = data.get(f"PlaceDetailBase:{place_id}", {}).get("name", "")
-                    road = data.get(f"PlaceDetailBase:{place_id}", {}).get("road", "")
-                    address = data.get(f"PlaceDetailBase:{place_id}", {}).get("address", "")
-                    roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
-                    category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
-                    conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", [])
-                    virtualPhone = data.get(f"PlaceDetailBase:{place_id}", {}).get("virtualPhone", [])
-                    visitorReviewsScore = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsScore", "")
-                    visitorReviewsTotal = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsTotal", "")
-
-                    root_query = data.get("ROOT_QUERY", {})
-                    place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
-
-                    # 기본 place_detail_key 값이 없으면 checkRedirect 포함된 key로 재시도
-                    if place_detail_key not in root_query:
-                        place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
-
-                    fsasReviewsTotal = root_query.get(place_detail_key, {}).get('fsasReviews', {}).get("total", "")
-                    if not fsasReviewsTotal:
-                        fsasReviewsTotal = root_query.get(place_detail_key, {}).get("fsasReviews({\"fsasReviewsType\":\"restaurant\"})", {}).get("total", "")
-
-                    # business_hours 초기 시도
-                    business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
-
-                    # business_hours 값이 없으면 다른 source를 시도
-                    if not business_hours:
-                        business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
-
-                    new_business_hours_json = root_query.get(place_detail_key, {}).get('newBusinessHours', [])
-
-                    if not new_business_hours_json:
-                        new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
-
-                    # 별점, 방문자 리뷰 수, 블로그 리뷰 수가 0이거나 없으면 공백 처리
-                    visitorReviewsScore = visitorReviewsScore if visitorReviewsScore and visitorReviewsScore != "0" else ""
-                    visitorReviewsTotal = visitorReviewsTotal if visitorReviewsTotal and visitorReviewsTotal != "0" else ""
-                    fsasReviewsTotal = fsasReviewsTotal if fsasReviewsTotal and fsasReviewsTotal != "0" else ""
-
-                    # category를 대분류와 소분류로 나누기
-                    category_list = category.split(',') if category else ["", ""]
-                    main_category = category_list[0] if len(category_list) > 0 else ""
-                    sub_category = category_list[1] if len(category_list) > 1 else ""
-
-                    url = f"https://m.place.naver.com/place/{place_id}/home"
-                    map_url = f"https://map.naver.com/p/entry/place/{place_id}"
-
-                    urls = []
-                    homepages = root_query.get(place_detail_key, {}).get('shopWindow', {}).get("homepages", "")
-                    if homepages:
-                        # etc 배열에서 url 가져오기
-                        for item in homepages.get("etc", []):
-                            urls.append(item.get("url", ""))
-
-                        # repr의 url 가져오기
-                        repr_data = homepages.get("repr")
-                        repr_url = repr_data.get("url", "") if repr_data else ""
-                        if repr_url:
-                            urls.append(repr_url)
-
-                    result = {
-                        "아이디": place_id,
-                        "이름": name,
-                        "주소(지번)": address,
-                        "주소(도로명)": roadAddress,
-                        "대분류": main_category,
-                        "소분류": sub_category,
-                        "별점": visitorReviewsScore,
-                        "방문자리뷰수": visitorReviewsTotal,
-                        "블로그리뷰수": fsasReviewsTotal,
-                        "이용시간1": format_business_hours(business_hours),
-                        "이용시간2": format_new_business_hours(new_business_hours_json),
-                        "카테고리": category,
-                        "URL": url,
-                        "지도": map_url,
-                        "편의시설": ', '.join(conveniences) if conveniences else '',
-                        "전화번호": virtualPhone,
-                        "사이트": urls,
-                        "주소지정보": road,
-                    }
-
-                    return result
-
-    except requests.exceptions.RequestException as e:
-        new_print(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
-    except Exception as e:
-        new_print(f"Error processing data for Place ID: {place_id}: {e}")
-    return None
+# 전역 변수
+url = ""
+url_list = []
 
 
-# 영업시간 함수1
-def format_business_hours(business_hours):
-    formatted_hours = []
-    try:
-        if business_hours:
-            for hour in business_hours:
-                day = hour.get('day', '') or ''
-                start_time = hour.get('startTime', '') or ''
-                end_time = hour.get('endTime', '') or ''
-                if day and start_time and end_time:
-                    formatted_hours.append(f"{day} {start_time} - {end_time}")
-    except Exception as e:
-        new_print(f"Unexpected error: {e}")
-        return ""
-    return '\n'.join(formatted_hours).strip() if formatted_hours else ""
+# API
+class ApiWorker(QThread):
+    api_data_received = pyqtSignal(object)  # API 호출 결과를 전달하는 시그널
+
+    def __init__(self, url_list, parent=None):
+        super().__init__(parent)
+        self.url_list = url_list  # URL을 클래스 속성으로 저장
+
+        chrome_options = Options()
+        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1080,750")
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                  get: () => undefined
+                })
+            '''
+        })
+        self.driver = driver
+
+    def run(self):
+        try:
+            data_list = []
+
+            for url in self.url_list:
+                # 외부 API 호출
+                data = self.fetch_product_info_sele(url)
+                data_list.append(data)  # 결과를 리스트에 추가
+
+            # 데이터를 시그널로 전달
+            self.api_data_received.emit(data_list)
+
+        except Exception as e:
+            # 에러 발생 시 에러 메시지를 시그널로 전달
+            self.api_data_received.emit([{"status": "error", "message": str(e)}])
+
+        finally:
+            self.driver.quit()
+
+    def fetch_product_info_sele(self, url):
+        try:
+            # URL 로드
+            self.driver.get(url)
+
+            # 상품명 추출
+            product_name = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "prod-buy-header__title"))
+            ).text
+
+            # 배송비 추출
+            try:
+                delivery_fee = self.driver.find_element(By.CLASS_NAME, "delivery-fee-info").text
+            except:
+                delivery_fee = ""
+
+            # 판매가 추출
+            try:
+                total_price = self.driver.find_element(By.CLASS_NAME, "total-price").text
+            except:
+                total_price = ""
+
+            # 배송비와 판매가에서 숫자만 추출하고 더하기
+            delivery_fee_number = self.extract_number(delivery_fee)
+            total_price_number = self.extract_number(total_price)
+            total = delivery_fee_number + total_price_number
+            total_formatted = f"{total:,}원" if total > 0 else ""
+
+            # 최근 실행 시간
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # 결과 객체
+            obj = {
+                "status": "success",
+                "message": "성공",
+                "data": {
+                    "URL": url,
+                    "상품명": product_name,
+                    "배송비": delivery_fee,
+                    "판매가": total_price,
+                    "합계": total_formatted,
+                    "최근실행시간": current_time,
+                },
+            }
+            return obj
+
+        except TimeoutException as e:
+            return {"status": "error", "message": f"요소 로딩 실패: {str(e)}", "data": ""}
+        except NoSuchElementException as e:
+            return {"status": "error", "message": f"요소 탐색 실패: {str(e)}", "data": ""}
+        except Exception as e:
+            return {"status": "error", "message": f"알 수 없는 에러: {str(e)}", "data": ""}
+
+    def extract_number(self, text):
+        return int(re.sub(r'\D', '', text)) if text else 0
 
 
-# 영업시간 함수2
-def format_new_business_hours(new_business_hours):
-    formatted_hours = []
-    try:
-        if new_business_hours:
-            for item in new_business_hours:
-                status_description = item.get('businessStatusDescription', {}) or {}
-                status = status_description.get('status', '') or ''
-                description = status_description.get('description', '') or ''
+# 팝업창 클래스 (URL 입력)
+class RegisterPopup(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent  # 부모 객체 저장
+        self.setWindowTitle("개별등록")
+        self.setGeometry(200, 200, 400, 200)  # 팝업 창 크기 설정 (X좌표, Y좌표, 너비, 높이
+        self.setStyleSheet("background-color: white;")
 
-                if status:
-                    formatted_hours.append(status)
-                if description:
-                    formatted_hours.append(description)
+        # 팝업 레이아웃
+        popup_layout = QVBoxLayout(self)
 
-                for info in item.get('businessHours', []) or []:
-                    day = info.get('day', '') or ''
-                    business_hours = info.get('businessHours', {}) or {}
-                    start_time = business_hours.get('start', '') or ''
-                    end_time = business_hours.get('end', '') or ''
+        # 제목과 밑줄
+        title_layout = QHBoxLayout()
+        title_label = QLabel("쿠팡가격추적 개별등록하기")
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
+        title_layout.addWidget(title_label)
+        title_layout.setAlignment(Qt.AlignCenter)
+        popup_layout.addLayout(title_layout)
 
-                    break_hours = info.get('breakHours', []) or []
-                    break_times = [f"{bh.get('start', '') or ''} - {bh.get('end', '') or ''}" for bh in break_hours]
-                    break_times_str = ', '.join(break_times) + ' 브레이크타임' if break_times else ''
+        # URL 입력
+        url_label = QLabel("이름 : URL")
+        url_label.setStyleSheet("font-size: 14px; margin-top: 10px;")
+        self.url_input = QLineEdit(self)
+        self.url_input.setPlaceholderText("URL을 입력하세요")
+        self.url_input.setStyleSheet("""
+            border-radius: 10%;
+            border: 2px solid #888888;
+            padding: 10px;
+            font-size: 14px;
+            color: #333333;
+        """)
+        self.url_input.setFixedHeight(40)
 
-                    last_order_times = info.get('lastOrderTimes', []) or []
-                    last_order_times_str = ', '.join([f"{lo.get('type', '')}: {lo.get('time', '')}" for lo in last_order_times]) + ' 라스트오더' if last_order_times else ''
+        # 버튼
+        button_layout = QHBoxLayout()
+        self.confirm_button = QPushButton("확인", self)
+        self.confirm_button.setStyleSheet("""
+            background-color: black;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        self.confirm_button.setFixedHeight(40)
+        self.confirm_button.setFixedWidth(140)  # 버튼 너비 설정
+        self.confirm_button.clicked.connect(self.on_confirm)
 
-                    if day:
-                        formatted_hours.append(day)
-                    if start_time and end_time:
-                        formatted_hours.append(f"{start_time} - {end_time}")
-                    if break_times_str:
-                        formatted_hours.append(break_times_str)
-                    if last_order_times_str:
-                        formatted_hours.append(last_order_times_str)
-    except Exception as e:
-        return ""
-    return '\n'.join(formatted_hours).strip() if formatted_hours else ""
+        button_layout.addWidget(self.confirm_button)
+        button_layout.setAlignment(Qt.AlignCenter)
+        popup_layout.addWidget(self.url_input)
+        popup_layout.addLayout(button_layout)
 
+        self.center_window()
 
-# 화면로그
-def new_print(text, level="INFO"):
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    formatted_text = f"[{timestamp}] [{level}] {text}"
-    log_text_widget.insert(tk.END, f"{formatted_text}\n")
-    log_text_widget.see(tk.END)
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
+    def update_url_label(self):
+        # URL을 레이블에 표시
+        global url, url_list
+        url_list.append(url)
+        row_position = self.parent.table.rowCount()  # 현재 테이블의 마지막 행 위치를 얻음
+        self.parent.table.insertRow(row_position)  # 새로운 행을 추가
 
-# 메인
-def main(query, total_queries, current_query_index, total_locs, locs_index, file_name):
-    global login_server_check
-    try:
-        page = 1
-        results = []
-        all_ids = set()
-        all_ids_list = []
-        total_count = 0
+        check_box = QCheckBox()
 
-        # 키워드에 매핑되는 아이디 수집
-        while True:
-            time.sleep(random.uniform(1, 2))
+        # 체크박스를 감싸는 레이아웃
+        layout = QHBoxLayout()
+        layout.addWidget(check_box)
+        layout.setAlignment(Qt.AlignCenter)
 
-            if stop_event.is_set():
-                return
+        # 레이아웃과 컨테이너 위젯의 크기 정책 설정
+        container_widget = QWidget()
+        container_widget.setLayout(layout)
+        container_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # 크기 정책 설정
+        layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
 
-            if login_server_check == 'fail':
-                stop_event.set()
-                messagebox.showerror("로그인 세션이 끊겼습니다.")
-                return
+        # 테이블 셀에 추가
+        self.parent.table.setCellWidget(row_position, 0, container_widget)
 
-            result = fetch_search_results(query, page)
-            if not result:
-                break
+        # URL 열 (1번 열) 업데이트
+        self.parent.table.setItem(row_position, 6, QTableWidgetItem(url))
 
-            place_list = result.get("result", {}).get("place", {}).get("list", [])
-            ids_this_page = [place.get("id") for place in place_list if place.get("id")]
-
-            new_print(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 페이지: {page}")
-            new_print(f"페이지: {page}, 목록: {ids_this_page}")
-
-            if not ids_this_page:
-                break
-
-            all_ids.update(ids_this_page)
-            page += 1
-
-
-        if not stop_event.is_set():
-            all_ids_list = list(all_ids)
-            total_count = len(all_ids_list)
-            new_print(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 전체: 0 / {total_count}")
-
-        for idx, place_id in enumerate(all_ids_list, start=1):
-            time.sleep(random.uniform(1, 2))
-            if stop_event.is_set():
-                return
-
-            if login_server_check == 'fail':
-                stop_event.set()
-                messagebox.showerror("로그인 세션이 중지.")
-                return
-
-            place_info = fetch_place_info(place_id)
-            new_print(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 전체: {idx} / {total_count}, 아이디: {place_id}, 이름: {place_info['이름']}")
-            results.append(place_info)
+    def on_confirm(self):
+        # URL 값을 전역 변수에 저장
+        global url
+        url = self.url_input.text()
+        if url:
+            self.update_url_label()
+        self.accept()  # 팝업 닫기
 
 
-        if not stop_event.is_set():
-            save_to_excel(results, file_name)
+# 엑셀 드래그
+class ExcelDragDropLabel(QLabel):
+    def __init__(self):
+        super().__init__()
+        self.setAcceptDrops(True)  # 드래그 앤 드롭 허용
+        self.setText("엑셀 파일을 여기에 드래그하세요.")
+        self.setAlignment(Qt.AlignCenter)  # 텍스트 가운데 정렬
+        self.setStyleSheet("border: 2px dashed #aaaaaa; padding: 10px; font-size: 14px;")
+        self.setFixedHeight(100)  # 라벨의 높이를 100px로 설정 (기본 높이의 약 2배)
+        self.center_window()
 
-    except Exception as e:
-        a = 1
-
-
-#엑셀 저장
-def save_to_excel(results, file_name):
-    new_print("엑셀 저장 시작")
-
-    try:
-        # 파일이 존재하면 기존 데이터에 추가
-        if os.path.exists(file_name):
-            existing_df = pd.read_excel(file_name)
-            new_df = pd.DataFrame(results)
-            df = pd.concat([existing_df, new_df], ignore_index=True)
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():  # 파일 드래그 확인
+            event.acceptProposedAction()
         else:
-            # 파일이 없으면 새로 생성
-            df = pd.DataFrame(results)
+            event.ignore()
+
+    def dropEvent(self, event: QDropEvent):
+        if event.mimeData().hasUrls():
+            files = [url.toLocalFile() for url in event.mimeData().urls()]
+            for file in files:
+                if file.endswith(('.xlsx', '.xlsm')):  # 엑셀 파일만 처리
+                    self.parent().load_excel(file)
+                else:
+                    self.setText("지원하지 않는 파일 형식입니다. 엑셀 파일을 드래그하세요.")
+            event.acceptProposedAction()
+
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+
+# 전체등록
+class AllRegisterPopup(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent  # 부모 객체 저장
+        self.setWindowTitle("엑셀 파일 드래그 앤 드롭")
+        self.setGeometry(200, 200, 800, 600)  # 팝업 창 크기 설정
+        self.setStyleSheet("background-color: white;")
+
+        # 팝업 레이아웃
+        self.layout = QVBoxLayout(self)
+
+        # 드래그 앤 드롭 라벨 추가
+        self.drag_drop_label = ExcelDragDropLabel()
+        self.layout.addWidget(self.drag_drop_label)
+
+        # 테이블 뷰 추가 (스크롤 가능)
+        self.table_widget = QTableWidget()
+        self.table_widget.setRowCount(0)
+        self.table_widget.setColumnCount(1)  # 컬럼 수를 1개로 설정
+        self.table_widget.setHorizontalHeaderLabels(["URL"])  # 컬럼 헤더 이름 설정
+
+        # 헤더의 크기를 창 너비에 맞게 조정
+        self.table_widget.horizontalHeader().setStretchLastSection(True)
+        self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+
+        # 스크롤 영역 설정
+        scroll_area = QScrollArea()
+        scroll_area.setWidget(self.table_widget)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.layout.addWidget(scroll_area)
+
+        # 확인 버튼
+        button_layout = QHBoxLayout()
+        self.confirm_button = QPushButton("확인", self)
+        self.confirm_button.setStyleSheet("""
+            background-color: black;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        self.confirm_button.setFixedHeight(40)
+        self.confirm_button.setFixedWidth(140)
+        self.confirm_button.clicked.connect(self.on_confirm)
+
+        button_layout.addWidget(self.confirm_button)
+        button_layout.setAlignment(Qt.AlignCenter)
+        self.layout.addLayout(button_layout)
+
+        # 연결
+        self.drag_drop_label.setParent(self)
+        self.center_window()
+
+    def load_excel(self, file_path):
+        global url_list
+        try:
+            # pandas로 엑셀 파일 읽기
+            df = pd.read_excel(file_path)
+
+            # 특정 열만 추출 (URL 열)
+            if "URL" in df.columns:
+                url_list = df["URL"].dropna().astype(str).tolist()  # 'URL' 열만 추출
+            else:
+                # 전체 데이터를 문자열 배열로 변환
+                url_list = df.apply(lambda row: ", ".join(row.dropna().astype(str)), axis=1).tolist()
+
+            print("전역 변수에 데이터 저장 완료:", url_list)  # 디버깅 출력
+
+            # 테이블 위젯 초기화
+            self.table_widget.setRowCount(len(url_list))
+            self.table_widget.setColumnCount(1)  # URL만 표시
+            self.table_widget.setHorizontalHeaderLabels(["URL"])  # 열 헤더 설정
+
+            # 데이터 로드
+            for row_idx, url in enumerate(url_list):
+                self.table_widget.setItem(row_idx, 0, QTableWidgetItem(url))
+
+            # 상태 업데이트
+            self.drag_drop_label.setText(f"파일이 성공적으로 로드되었습니다: {file_path}")
+            self.drag_drop_label.setStyleSheet("background-color: lightgreen;")
+
+        except Exception as e:
+            self.drag_drop_label.setText(f"파일 로드 중 오류 발생: {file_path}\n{str(e)}")
+
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+    def on_confirm(self):
+        global url_list
+        if self.parent and hasattr(self.parent, "table") and url_list:
+            # 테이블 행 개수 설정
+            self.parent.table.setRowCount(len(url_list))
+
+            # URL 데이터를 테이블에 채우기
+            for row_idx, url in enumerate(url_list):
+                # 체크박스 추가 (삭제 시 사용)
+                check_box = QCheckBox()
+
+                # 체크박스를 감싸는 레이아웃
+                layout = QHBoxLayout()
+                layout.addWidget(check_box)
+                layout.setAlignment(Qt.AlignCenter)
+
+                # 레이아웃과 컨테이너 위젯의 크기 정책 설정
+                container_widget = QWidget()
+                container_widget.setLayout(layout)
+                container_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # 크기 정책 설정
+                layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
+
+                # 테이블 셀에 추가
+                self.parent.table.setCellWidget(row_idx, 0, container_widget)
+
+                # URL 열 (1번 열) 업데이트
+                self.parent.table.setItem(row_idx, 6, QTableWidgetItem(url))
+
+        self.accept()  # 팝업 닫기
+
+
+# 체크박스 헤더 세팅
+class HeaderWithCheckbox(QHeaderView):
+    def __init__(self, orientation, parent=None, main_window=None):
+        super().__init__(orientation, parent)
+        self.main_window = main_window
+        self.setSectionsClickable(True)  # 헤더 클릭 가능 설정
+        self._is_checked = False
+
+    def paintSection(self, painter, rect, logicalIndex):
+        """헤더에 체크박스를 그림"""
+        super().paintSection(painter, rect, logicalIndex)
+
+        if logicalIndex == 0:  # 첫 번째 열에만 체크박스 표시
+            option = QStyleOptionButton()
+            checkbox_size = 20
+            center_x = rect.x() + (rect.width() - checkbox_size) // 2
+            center_y = rect.y() + (rect.height() - checkbox_size) // 2
+            option.rect = QRect(center_x, center_y, checkbox_size, checkbox_size)
+            option.state = QStyle.State_Enabled | (QStyle.State_On if self._is_checked else QStyle.State_Off)
+            self.style().drawControl(QStyle.CE_CheckBox, option, painter)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        """헤더 체크박스 클릭 동작"""
+        if self.logicalIndexAt(event.pos()) == 0:  # 첫 번째 열 클릭
+            self._is_checked = not self._is_checked
+            self.updateSection(0)  # 헤더 다시 그림
+            if self.main_window:
+                self.main_window.toggle_all_checkboxes(self._is_checked)  # 테이블 전체 체크박스 상태 변경
+        else:
+            super().mousePressEvent(event)
+
+
+# 메인 화면 클래스
+class MainWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.set_layout()
+        self.daily_worker = None  # 24시 실행 스레드
+        self.on_demand_worker = None  # 요청 시 실행 스레드
+        self.setup_ui()
+
+    def set_layout(self):
+        self.setWindowTitle("메인 화면")
+        self.setGeometry(100, 100, 1000, 600)  # 메인 화면 크기 설정
+        self.setStyleSheet("background-color: white;")  # 배경색 흰색
+
+        # 메인 레이아웃
+        main_layout = QVBoxLayout()
+
+        # 상단 버튼들 레이아웃
+        header_layout = QHBoxLayout()
+
+        # 왼쪽 버튼들 레이아웃
+        left_button_layout = QHBoxLayout()
+        left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
+
+        # 버튼 설정
+        self.register_button = QPushButton("개별등록")
+        self.register_button.setStyleSheet("""
+            background-color: black;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.register_button.setFixedWidth(100)  # 고정된 너비
+        self.register_button.setFixedHeight(40)  # 고정된 높이
+        self.register_button.clicked.connect(self.open_register_popup)
+
+        self.all_register_button = QPushButton("전체등록")
+        self.all_register_button.setStyleSheet("""
+                    background-color: black;
+                    color: white;
+                    border-radius: 15%;
+                    font-size: 16px;
+                    padding: 10px;
+                """)
+        self.all_register_button.setFixedWidth(100)  # 고정된 너비
+        self.all_register_button.setFixedHeight(40)  # 고정된 높이
+        self.all_register_button.clicked.connect(self.open_all_register_popup)
+
+        self.reset_button = QPushButton("초기화")
+        self.reset_button.setStyleSheet("""
+                    background-color: black;
+                    color: white;
+                    border-radius: 15%;
+                    font-size: 16px;
+                    padding: 10px;
+                """)
+        self.reset_button.setFixedWidth(100)  # 고정된 너비
+        self.reset_button.setFixedHeight(40)  # 고정된 높이
+        self.reset_button.clicked.connect(self.reset_url)
+
+
+        self.collect_button = QPushButton("선택수집")
+        self.collect_button.setStyleSheet("""
+            background-color: #8A2BE2;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.collect_button.setFixedWidth(100)  # 고정된 너비
+        self.collect_button.setFixedHeight(40)  # 고정된 높이
+        self.collect_button.clicked.connect(self.start_on_demand_worker)
+
+        self.start_button = QPushButton("전체수집")
+        self.start_button.setStyleSheet("""
+            background-color: #8A2BE2;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.start_button.setFixedWidth(100)  # 고정된 너비
+        self.start_button.setFixedHeight(40)  # 고정된 높이
+        self.start_button.clicked.connect(self.start_on_demand_worker)
+
+
+        self.delete_button = QPushButton("삭제하기")
+        self.delete_button.setStyleSheet("""
+            background-color: red;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.delete_button.setFixedWidth(100)  # 고정된 너비
+        self.delete_button.setFixedHeight(40)  # 고정된 높이
+        self.delete_button.clicked.connect(self.delete_table_row)
+
+
+        left_button_layout.addWidget(self.register_button)
+        left_button_layout.addWidget(self.all_register_button)
+        left_button_layout.addWidget(self.reset_button)
+        left_button_layout.addWidget(self.collect_button)
+        left_button_layout.addWidget(self.start_button)
+        left_button_layout.addWidget(self.delete_button)
+
+        # 오른쪽 엑셀 다운로드 버튼 레이아웃
+        right_button_layout = QHBoxLayout()
+        right_button_layout.setAlignment(Qt.AlignRight)  # 오른쪽 정렬
+
+        # 엑셀 다운로드 버튼
+        self.excel_button = QPushButton("엑셀 다운로드")
+        self.excel_button.setStyleSheet("""
+            background-color: #8A2BE2;
+            color: white;
+            border-radius: 15%;;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.excel_button.setFixedWidth(150)  # 고정된 너비
+        self.excel_button.setFixedHeight(40)  # 고정된 높이
+        self.excel_button.clicked.connect(self.excel_down_load)
+        right_button_layout.addWidget(self.excel_button)
+
+
+        # 헤더에 "쿠팡(추적상품)" 텍스트 추가
+        header_label = QLabel("쿠팡(추적상품)")
+        header_label.setAlignment(Qt.AlignCenter)
+        header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
+
+        # 테이블 만들기
+        self.table = QTableWidget()
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels(["", "최근실행시간", "상품명", "판매가", "배송비", "합계", "URL"])
+
+        # 커스텀 헤더 설정
+        header = HeaderWithCheckbox(Qt.Horizontal, self.table, main_window=self)
+        self.table.setHorizontalHeader(header)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+
+        # 테이블을 부모 위젯 크기에 맞게 늘어나게 설정
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # 마지막 열 크기 고정
+        self.table.horizontalHeader().setStretchLastSection(True)
+
+        # 테이블 크기를 부모 위젯 크기에 맞게 설정
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        self.set_column_widths([10, 30, 20, 10, 10, 10, 10])
+
+        # 열 크기 균등하게 설정
+        # header = self.table.horizontalHeader()
+        # for i in range(self.table.columnCount()):
+        #     header.setSectionResizeMode(i, QHeaderView.Stretch)  # 모든 열을 균등하게 늘리기
+
+        # 남은 시간 라벨
+        self.time_label = QLabel("추적시간 매일 0시 0분 0초")
+        self.time_label.setAlignment(Qt.AlignCenter)
+        self.time_label.setStyleSheet("font-size: 15px; background-color: white; color: black; padding: 10px;")
+
+        # 레이아웃에 요소 추가
+        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+        header_layout.addLayout(right_button_layout)  # 오른쪽 엑셀 다운로드 버튼 추가
+
+        main_layout.addLayout(header_layout)
+        main_layout.addWidget(header_label)
+        main_layout.addWidget(self.time_label)
+
+        main_layout.addWidget(self.table)
+
+        # 레이아웃 설정
+        self.setLayout(main_layout)
+
+        self.center_window()
+
+    def set_column_widths(self, percentages):
+        """열 너비를 비율로 설정"""
+        total_width = self.table.viewport().width()  # 테이블의 전체 너비
+        for col_index, percentage in enumerate(percentages):
+            width = total_width * (percentage / 100)
+            self.table.setColumnWidth(col_index, int(width))
+
+    def toggle_all_checkboxes(self, checked):
+        """헤더 체크박스 상태에 따라 모든 행의 체크박스 상태를 변경"""
+        for row in range(self.table.rowCount()):
+            container_widget = self.table.cellWidget(row, 0)
+            if container_widget:
+                layout = container_widget.layout()
+                if layout and layout.count() > 0:
+                    check_box = layout.itemAt(0).widget()
+                    if isinstance(check_box, QCheckBox):
+                        check_box.setChecked(checked)
+
+    def excel_down_load(self):
+        # 데이터 추출
+        row_count = self.table.rowCount()
+        column_count = self.table.columnCount()
+        data = []
+
+        for row in range(row_count):
+            row_data = []
+            for col in range(column_count):
+                item = self.table.item(row, col)
+                row_data.append(item.text() if item else "")
+            data.append(row_data)
+
+        # 데이터프레임 생성
+        df = pd.DataFrame(data, columns=[self.table.horizontalHeaderItem(i).text() for i in range(column_count)])
 
         # 엑셀 파일 저장
-        df.to_excel(file_name, index=False)
-        new_print(f"엑셀 저장 완료: {file_name}")
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getSaveFileName(self, "엑셀 파일 저장", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
+        if file_path:
+            df.to_excel(file_path, index=False, sheet_name="Table Data")
 
-    except Exception as e:
-        # 예기치 않은 오류 처리
-        new_print(f"엑셀 저장 실패: {e}")
+    def setup_ui(self):
+        # UI 구성 (생략 - 버튼 추가 등)
+        self.daily_timer = QTimer(self)
+        self.daily_timer.timeout.connect(self.start_daily_worker)
+        self.start_daily_timer()
 
+    # 매일 12시
+    # def start_daily_timer(self):
+    #     """24시에 실행되도록 타이머 설정"""
+    #     now = QTime.currentTime()
+    #     target_time = QTime(0, 0)  # 자정 (24시)
+    #
+    #     interval = now.msecsTo(target_time)
+    #
+    #     if interval <= 0:
+    #         interval += 24 * 60 * 60 * 1000  # 이미 자정을 지났으면 다음 날 자정으로 설정
+    #
+    #     # 첫 실행: 정확히 자정에 작업 실행
+    #     QTimer.singleShot(interval, self.start_daily_worker)
+    #
+    #     # 이후 매일 반복 실행: 24시간 간격으로 타이머 시작
+    #     self.daily_timer.start(24 * 60 * 60 * 1000)
 
-# 메인 실행 함수
-def run_main(querys):
-    global checkbox_var
+    # 테스트용
+    def start_daily_timer(self):
+        """5분마다 실행되도록 타이머 설정"""
+        # 5분(300,000ms) 간격으로 반복 실행
+        interval = 5 * 60 * 1000
 
-    locs = [
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '청운동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '신교동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '궁정동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '효자동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '창성동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '통의동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '적선동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '통인동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '누상동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '누하동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '옥인동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '체부동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '필운동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '내자동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '사직동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '도렴동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '당주동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '내수동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '세종로' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '신문로1가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '신문로2가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '청진동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '서린동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '수송동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '중학동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '종로1가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '공평동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '관훈동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '견지동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '와룡동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '권농동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '운니동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '익선동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '경운동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '관철동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '인사동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '낙원동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '종로2가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '팔판동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '삼청동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '안국동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '소격동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '화동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '사간동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '송현동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '가회동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '재동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '계동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '원서동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '훈정동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '묘동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '봉익동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '돈의동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '장사동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '관수동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '종로3가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '인의동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '예지동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '원남동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '연지동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '종로4가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '효제동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '종로5가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '종로6가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '이화동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '연건동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '충신동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '동숭동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '혜화동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '명륜1가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '명륜2가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '명륜4가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '명륜3가' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '창신동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '숭인동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '교남동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '평동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '송월동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '홍파동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '교북동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '행촌동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '구기동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '평창동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '부암동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '홍지동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '신영동' },
-        { '시도' : '서울' , '시군구' : '종로구' , '읍면동' : '무악동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '무교동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '다동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '태평로1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남대문로1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '삼각동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '수하동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '장교동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '수표동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '소공동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남창동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '북창동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '태평로2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남대문로2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남대문로3가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남대문로4가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남대문로5가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '봉래동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '봉래동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '회현동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '회현동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '회현동3가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '충무로1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '충무로2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '명동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '명동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남산동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남산동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남산동3가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '저동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '충무로4가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '충무로5가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '인현동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '예관동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '묵정동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '필동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '필동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '필동3가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '남학동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '주자동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '예장동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '장충동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '장충동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '광희동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '광희동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '쌍림동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로6가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로7가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로4가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로5가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '주교동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '방산동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '오장동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '을지로3가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '입정동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '산림동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '충무로3가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '초동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '인현동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '저동2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '신당동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '흥인동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '무학동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '황학동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '서소문동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '정동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '순화동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '의주로1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '충정로1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '중림동' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '의주로2가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '만리동1가' },
-        { '시도' : '서울' , '시군구' : '중구' , '읍면동' : '만리동2가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '후암동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용산동2가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용산동4가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '갈월동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '남영동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용산동1가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '동자동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '서계동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '청파동1가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '청파동2가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '청파동3가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '원효로1가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '원효로2가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '신창동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '산천동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '청암동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '원효로3가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '원효로4가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '효창동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '도원동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용문동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '문배동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '신계동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '한강로1가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '한강로2가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용산동3가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용산동5가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '한강로3가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '이촌동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '이태원동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '한남동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '동빙고동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '서빙고동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '주성동' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '용산동6가' },
-        { '시도' : '서울' , '시군구' : '용산구' , '읍면동' : '보광동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '상왕십리동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '하왕십리동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '홍익동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '도선동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '마장동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '사근동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '행당동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '응봉동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '금호동1가' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '금호동2가' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '금호동3가' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '금호동4가' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '옥수동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '성수동1가' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '성수동2가' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '송정동' },
-        { '시도' : '서울' , '시군구' : '성동구' , '읍면동' : '용답동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '중곡동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '능동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '구의동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '광장동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '자양동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '화양동' },
-        { '시도' : '서울' , '시군구' : '광진구' , '읍면동' : '군자동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '신설동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '용두동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '제기동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '전농동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '답십리동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '장안동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '청량리동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '회기동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '휘경동' },
-        { '시도' : '서울' , '시군구' : '동대문구' , '읍면동' : '이문동' },
-        { '시도' : '서울' , '시군구' : '중랑구' , '읍면동' : '면목동' },
-        { '시도' : '서울' , '시군구' : '중랑구' , '읍면동' : '상봉동' },
-        { '시도' : '서울' , '시군구' : '중랑구' , '읍면동' : '중화동' },
-        { '시도' : '서울' , '시군구' : '중랑구' , '읍면동' : '묵동' },
-        { '시도' : '서울' , '시군구' : '중랑구' , '읍면동' : '망우동' },
-        { '시도' : '서울' , '시군구' : '중랑구' , '읍면동' : '신내동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '성북동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '성북동1가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '돈암동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동1가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동2가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동3가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동4가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동5가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동6가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동소문동7가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '삼선동1가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '삼선동2가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '삼선동3가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '삼선동4가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '삼선동5가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동선동1가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동선동2가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동선동3가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동선동4가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '동선동5가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '안암동1가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '안암동2가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '안암동3가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '안암동4가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '안암동5가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동4가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동5가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동6가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동7가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동1가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동2가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '보문동3가' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '정릉동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '길음동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '종암동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '하월곡동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '상월곡동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '장위동' },
-        { '시도' : '서울' , '시군구' : '성북구' , '읍면동' : '석관동' },
-        { '시도' : '서울' , '시군구' : '강북구' , '읍면동' : '미아동' },
-        { '시도' : '서울' , '시군구' : '강북구' , '읍면동' : '번동' },
-        { '시도' : '서울' , '시군구' : '강북구' , '읍면동' : '수유동' },
-        { '시도' : '서울' , '시군구' : '강북구' , '읍면동' : '우이동' },
-        { '시도' : '서울' , '시군구' : '도봉구' , '읍면동' : '쌍문동' },
-        { '시도' : '서울' , '시군구' : '도봉구' , '읍면동' : '방학동' },
-        { '시도' : '서울' , '시군구' : '도봉구' , '읍면동' : '창동' },
-        { '시도' : '서울' , '시군구' : '도봉구' , '읍면동' : '도봉동' },
-        { '시도' : '서울' , '시군구' : '노원구' , '읍면동' : '월계동' },
-        { '시도' : '서울' , '시군구' : '노원구' , '읍면동' : '공릉동' },
-        { '시도' : '서울' , '시군구' : '노원구' , '읍면동' : '하계동' },
-        { '시도' : '서울' , '시군구' : '노원구' , '읍면동' : '상계동' },
-        { '시도' : '서울' , '시군구' : '노원구' , '읍면동' : '중계동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '수색동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '녹번동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '불광동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '갈현동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '구산동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '대조동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '응암동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '역촌동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '신사동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '증산동' },
-        { '시도' : '서울' , '시군구' : '은평구' , '읍면동' : '진관동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '충정로2가' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '충정로3가' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '합동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '미근동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '냉천동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '천연동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '옥천동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '영천동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '현저동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '북아현동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '홍제동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '대현동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '대신동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '신촌동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '봉원동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '창천동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '연희동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '홍은동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '북가좌동' },
-        { '시도' : '서울' , '시군구' : '서대문구' , '읍면동' : '남가좌동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '아현동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '공덕동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '신공덕동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '도화동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '용강동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '토정동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '마포동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '대흥동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '염리동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '노고산동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '신수동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '현석동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '구수동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '창전동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '상수동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '하중동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '신정동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '당인동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '서교동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '동교동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '합정동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '망원동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '연남동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '성산동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '중동' },
-        { '시도' : '서울' , '시군구' : '마포구' , '읍면동' : '상암동' },
-        { '시도' : '서울' , '시군구' : '양천구' , '읍면동' : '신정동' },
-        { '시도' : '서울' , '시군구' : '양천구' , '읍면동' : '목동' },
-        { '시도' : '서울' , '시군구' : '양천구' , '읍면동' : '신월동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '염창동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '등촌동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '화곡동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '가양동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '마곡동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '내발산동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '외발산동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '공항동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '방화동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '개화동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '과해동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '오곡동' },
-        { '시도' : '서울' , '시군구' : '강서구' , '읍면동' : '오쇠동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '신도림동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '구로동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '가리봉동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '고척동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '개봉동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '오류동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '궁동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '온수동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '천왕동' },
-        { '시도' : '서울' , '시군구' : '구로구' , '읍면동' : '항동' },
-        { '시도' : '서울' , '시군구' : '금천구' , '읍면동' : '가산동' },
-        { '시도' : '서울' , '시군구' : '금천구' , '읍면동' : '독산동' },
-        { '시도' : '서울' , '시군구' : '금천구' , '읍면동' : '시흥동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동1가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동2가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동3가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동4가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동5가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동6가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동7가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '영등포동8가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '여의도동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동1가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동2가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동3가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동4가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동5가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동6가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '당산동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '도림동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '문래동1가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '문래동2가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '문래동3가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '문래동4가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '문래동5가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '문래동6가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동1가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동2가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동3가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동4가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동5가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동6가' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양화동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '신길동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '대림동' },
-        { '시도' : '서울' , '시군구' : '영등포구' , '읍면동' : '양평동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '노량진동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '상도동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '상도1동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '본동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '흑석동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '동작동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '사당동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '대방동' },
-        { '시도' : '서울' , '시군구' : '동작구' , '읍면동' : '신대방동' },
-        { '시도' : '서울' , '시군구' : '관악구' , '읍면동' : '봉천동' },
-        { '시도' : '서울' , '시군구' : '관악구' , '읍면동' : '신림동' },
-        { '시도' : '서울' , '시군구' : '관악구' , '읍면동' : '남현동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '방배동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '양재동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '우면동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '원지동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '잠원동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '반포동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '서초동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '내곡동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '염곡동' },
-        { '시도' : '서울' , '시군구' : '서초구' , '읍면동' : '신원동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '역삼동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '개포동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '청담동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '삼성동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '대치동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '신사동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '논현동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '압구정동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '세곡동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '자곡동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '율현동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '일원동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '수서동' },
-        { '시도' : '서울' , '시군구' : '강남구' , '읍면동' : '도곡동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '잠실동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '신천동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '풍납동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '송파동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '석촌동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '삼전동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '가락동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '문정동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '장지동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '방이동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '오금동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '거여동' },
-        { '시도' : '서울' , '시군구' : '송파구' , '읍면동' : '마천동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '명일동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '고덕동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '상일동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '길동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '둔촌동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '암사동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '성내동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '천호동' },
-        { '시도' : '서울' , '시군구' : '강동구' , '읍면동' : '강일동' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '영주동' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '대창동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '대창동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동4가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동5가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동6가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '중앙동7가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '동광동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '동광동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '동광동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '동광동4가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '동광동5가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '대청동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '대청동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '대청동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '대청동4가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '보수동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '보수동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '보수동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '부평동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '부평동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '부평동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '부평동4가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '신창동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '신창동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '신창동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '신창동4가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '창선동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '창선동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '광복동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '광복동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '광복동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '남포동1가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '남포동2가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '남포동3가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '남포동4가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '남포동5가' },
-        { '시도' : '부산' , '시군구' : '중구' , '읍면동' : '남포동6가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '동대신동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '동대신동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '동대신동3가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '서대신동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '서대신동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '서대신동3가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '부용동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '부용동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '부민동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '부민동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '부민동3가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '토성동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '토성동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '토성동3가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '아미동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '아미동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '토성동4가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '토성동5가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '초장동' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '충무동1가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '충무동2가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '충무동3가' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '남부민동' },
-        { '시도' : '부산' , '시군구' : '서구' , '읍면동' : '암남동' },
-        { '시도' : '부산' , '시군구' : '동구' , '읍면동' : '초량동' },
-        { '시도' : '부산' , '시군구' : '동구' , '읍면동' : '수정동' },
-        { '시도' : '부산' , '시군구' : '동구' , '읍면동' : '좌천동' },
-        { '시도' : '부산' , '시군구' : '동구' , '읍면동' : '범일동' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '대교동1가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '대교동2가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '대평동1가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '대평동2가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '남항동1가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '남항동2가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '남항동3가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '영선동1가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '영선동2가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '영선동3가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '영선동4가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '신선동1가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '신선동2가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '신선동3가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '봉래동1가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '봉래동2가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '봉래동3가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '봉래동4가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '봉래동5가' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '청학동' },
-        { '시도' : '부산' , '시군구' : '영도구' , '읍면동' : '동삼동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '양정동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '전포동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '부전동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '범천동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '범전동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '연지동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '초읍동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '부암동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '당감동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '가야동' },
-        { '시도' : '부산' , '시군구' : '부산진구' , '읍면동' : '개금동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '명장동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '안락동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '칠산동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '낙민동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '복천동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '수안동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '명륜동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '온천동' },
-        { '시도' : '부산' , '시군구' : '동래구' , '읍면동' : '사직동' },
-        { '시도' : '부산' , '시군구' : '남구' , '읍면동' : '대연동' },
-        { '시도' : '부산' , '시군구' : '남구' , '읍면동' : '용호동' },
-        { '시도' : '부산' , '시군구' : '남구' , '읍면동' : '용당동' },
-        { '시도' : '부산' , '시군구' : '남구' , '읍면동' : '문현동' },
-        { '시도' : '부산' , '시군구' : '남구' , '읍면동' : '우암동' },
-        { '시도' : '부산' , '시군구' : '남구' , '읍면동' : '감만동' },
-        { '시도' : '부산' , '시군구' : '북구' , '읍면동' : '금곡동' },
-        { '시도' : '부산' , '시군구' : '북구' , '읍면동' : '화명동' },
-        { '시도' : '부산' , '시군구' : '북구' , '읍면동' : '만덕동' },
-        { '시도' : '부산' , '시군구' : '북구' , '읍면동' : '덕천동' },
-        { '시도' : '부산' , '시군구' : '북구' , '읍면동' : '구포동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '반송동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '석대동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '반여동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '재송동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '우동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '중동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '좌동' },
-        { '시도' : '부산' , '시군구' : '해운대구' , '읍면동' : '송정동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '괴정동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '당리동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '하단동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '신평동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '장림동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '다대동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '구평동' },
-        { '시도' : '부산' , '시군구' : '사하구' , '읍면동' : '감천동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '두구동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '노포동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '청룡동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '남산동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '선동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '오륜동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '구서동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '장전동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '부곡동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '서동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '금사동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '회동동' },
-        { '시도' : '부산' , '시군구' : '금정구' , '읍면동' : '금성동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '대저1동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '대저2동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '강동동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '명지동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '죽림동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '식만동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '죽동동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '봉림동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '송정동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '화전동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '녹산동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '생곡동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '구랑동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '지사동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '미음동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '범방동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '신호동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '동선동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '성북동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '눌차동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '천성동' },
-        { '시도' : '부산' , '시군구' : '강서구' , '읍면동' : '대항동' },
-        { '시도' : '부산' , '시군구' : '연제구' , '읍면동' : '거제동' },
-        { '시도' : '부산' , '시군구' : '연제구' , '읍면동' : '연산동' },
-        { '시도' : '부산' , '시군구' : '수영구' , '읍면동' : '망미동' },
-        { '시도' : '부산' , '시군구' : '수영구' , '읍면동' : '수영동' },
-        { '시도' : '부산' , '시군구' : '수영구' , '읍면동' : '민락동' },
-        { '시도' : '부산' , '시군구' : '수영구' , '읍면동' : '광안동' },
-        { '시도' : '부산' , '시군구' : '수영구' , '읍면동' : '남천동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '삼락동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '모라동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '덕포동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '괘법동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '감전동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '주례동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '학장동' },
-        { '시도' : '부산' , '시군구' : '사상구' , '읍면동' : '엄궁동' },
-        { '시도' : '부산' , '시군구' : '기장군' , '읍면동' : '기장읍' },
-        { '시도' : '부산' , '시군구' : '기장군' , '읍면동' : '장안읍' },
-        { '시도' : '부산' , '시군구' : '기장군' , '읍면동' : '정관읍' },
-        { '시도' : '부산' , '시군구' : '기장군' , '읍면동' : '일광읍' },
-        { '시도' : '부산' , '시군구' : '기장군' , '읍면동' : '철마면' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동인동1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동인동2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동인동3가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동인동4가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '삼덕동1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '삼덕동2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '삼덕동3가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '봉산동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '장관동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '상서동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '수동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '덕산동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '종로1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '종로2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '사일동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동일동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '남일동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '전동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동성로3가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동문동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '문화동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '공평동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동성로2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '태평로1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '교동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '용덕동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '상덕동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '완전동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '도원동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '수창동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '태평로3가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '인교동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '서야동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '서성로1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '시장북로' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '하서동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '남성로' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '계산동1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '계산동2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동산동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '서문로2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '서성로2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '포정동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '서문로1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '서내동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '북성로2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '대안동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '동성로1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '태평로2가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '북성로1가' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '화전동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '향촌동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '북내동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '대신동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '달성동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '남산동' },
-        { '시도' : '대구' , '시군구' : '중구' , '읍면동' : '대봉동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신암동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신천동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '효목동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '평광동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '봉무동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '불로동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '도동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '지저동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '입석동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '검사동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '방촌동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '둔산동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '부동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신평동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '서호동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '동호동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신기동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '율하동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '용계동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '율암동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '상매동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '매여동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '각산동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신서동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '동내동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '괴전동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '금강동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '대림동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '사복동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '숙천동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '내곡동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '능성동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '진인동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '도학동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '백안동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '미곡동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '용수동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신무동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '미대동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '내동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '신용동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '중대동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '송정동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '덕곡동' },
-        { '시도' : '대구' , '시군구' : '동구' , '읍면동' : '지묘동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '내당동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '비산동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '평리동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '상리동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '중리동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '이현동' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '원대동1가' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '원대동2가' },
-        { '시도' : '대구' , '시군구' : '서구' , '읍면동' : '원대동3가' },
-        { '시도' : '대구' , '시군구' : '남구' , '읍면동' : '이천동' },
-        { '시도' : '대구' , '시군구' : '남구' , '읍면동' : '봉덕동' },
-        { '시도' : '대구' , '시군구' : '남구' , '읍면동' : '대명동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '칠성동1가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '칠성동2가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '고성동1가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '고성동2가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '고성동3가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '침산동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '노원동1가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '노원동2가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '노원동3가' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '대현동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '산격동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '복현동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '검단동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '동변동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '서변동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '조야동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '노곡동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '읍내동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '동호동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '학정동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '도남동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '국우동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '구암동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '동천동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '관음동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '태전동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '매천동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '팔달동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '금호동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '사수동' },
-        { '시도' : '대구' , '시군구' : '북구' , '읍면동' : '연경동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '범어동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '만촌동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '수성동1가' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '수성동2가' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '수성동3가' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '수성동4가' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '황금동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '중동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '상동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '파동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '두산동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '지산동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '범물동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '시지동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '매호동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '성동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '사월동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '신매동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '욱수동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '노변동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '삼덕동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '연호동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '이천동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '고모동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '가천동' },
-        { '시도' : '대구' , '시군구' : '수성구' , '읍면동' : '대흥동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '성당동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '두류동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '파호동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '호림동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '갈산동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '신당동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '이곡동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '장동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '장기동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '용산동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '죽전동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '감삼동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '본리동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '상인동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '도원동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '진천동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '유천동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '대천동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '월성동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '월암동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '송현동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '대곡동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '본동' },
-        { '시도' : '대구' , '시군구' : '달서구' , '읍면동' : '호산동' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '화원읍' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '논공읍' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '다사읍' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '유가읍' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '옥포읍' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '현풍읍' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '가창면' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '하빈면' },
-        { '시도' : '대구' , '시군구' : '달성군' , '읍면동' : '구지면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '군위읍' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '소보면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '효령면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '부계면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '우보면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '의흥면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '산성면' },
-        { '시도' : '대구' , '시군구' : '군위군' , '읍면동' : '삼국유사면' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '중앙동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '중앙동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '중앙동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '중앙동4가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '해안동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '해안동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '해안동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '해안동4가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '관동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '관동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '관동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동4가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동5가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동6가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '항동7가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '송학동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '송학동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '송학동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '사동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '신생동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '신포동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '답동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '신흥동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '신흥동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '신흥동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '선화동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '유동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '율목동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '도원동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '내동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '경동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '용동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '인현동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '전동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '북성동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '북성동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '북성동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '선린동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '송월동1가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '송월동2가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '송월동3가' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '중산동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '운남동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '운서동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '운북동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '을왕동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '남북동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '덕교동' },
-        { '시도' : '인천' , '시군구' : '중구' , '읍면동' : '무의동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '만석동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '화수동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '송현동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '화평동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '창영동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '금곡동' },
-        { '시도' : '인천' , '시군구' : '동구' , '읍면동' : '송림동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '숭의동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '용현동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '학익동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '도화동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '주안동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '관교동' },
-        { '시도' : '인천' , '시군구' : '미추홀구' , '읍면동' : '문학동' },
-        { '시도' : '인천' , '시군구' : '연수구' , '읍면동' : '옥련동' },
-        { '시도' : '인천' , '시군구' : '연수구' , '읍면동' : '선학동' },
-        { '시도' : '인천' , '시군구' : '연수구' , '읍면동' : '연수동' },
-        { '시도' : '인천' , '시군구' : '연수구' , '읍면동' : '청학동' },
-        { '시도' : '인천' , '시군구' : '연수구' , '읍면동' : '동춘동' },
-        { '시도' : '인천' , '시군구' : '연수구' , '읍면동' : '송도동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '구월동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '간석동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '만수동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '장수동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '서창동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '운연동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '남촌동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '수산동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '도림동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '논현동' },
-        { '시도' : '인천' , '시군구' : '남동구' , '읍면동' : '고잔동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '부평동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '십정동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '산곡동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '청천동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '삼산동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '갈산동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '부개동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '일신동' },
-        { '시도' : '인천' , '시군구' : '부평구' , '읍면동' : '구산동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '효성동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '계산동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '작전동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '서운동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '임학동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '용종동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '병방동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '방축동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '박촌동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '동양동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '귤현동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '상야동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '하야동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '평동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '노오지동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '선주지동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '이화동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '오류동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '갈현동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '둑실동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '목상동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '다남동' },
-        { '시도' : '인천' , '시군구' : '계양구' , '읍면동' : '장기동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '백석동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '시천동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '검암동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '경서동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '공촌동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '연희동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '심곡동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '가정동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '신현동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '석남동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '원창동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '가좌동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '마전동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '당하동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '원당동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '대곡동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '금곡동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '오류동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '왕길동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '불로동' },
-        { '시도' : '인천' , '시군구' : '서구' , '읍면동' : '청라동' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '강화읍' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '선원면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '불은면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '길상면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '화도면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '양도면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '내가면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '하점면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '양사면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '송해면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '교동면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '삼산면' },
-        { '시도' : '인천' , '시군구' : '강화군' , '읍면동' : '서도면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '북도면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '백령면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '대청면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '덕적면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '영흥면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '자월면' },
-        { '시도' : '인천' , '시군구' : '옹진군' , '읍면동' : '연평면' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '대인동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '금남로5가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '충장로5가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '수기동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '대의동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '궁동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '장동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '동명동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '계림동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '산수동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '지산동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '남동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '광산동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '금동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '호남동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '불로동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '황금동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '서석동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '소태동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '용연동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '운림동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '학동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '월남동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '선교동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '내남동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '용산동' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '충장로1가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '충장로2가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '충장로3가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '충장로4가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '금남로1가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '금남로2가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '금남로3가' },
-        { '시도' : '광주' , '시군구' : '동구' , '읍면동' : '금남로4가' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '양동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '농성동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '광천동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '유촌동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '덕흥동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '쌍촌동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '화정동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '치평동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '내방동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '서창동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '세하동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '용두동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '풍암동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '벽진동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '금호동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '마륵동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '매월동' },
-        { '시도' : '광주' , '시군구' : '서구' , '읍면동' : '동천동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '사동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '구동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '서동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '월산동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '백운동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '주월동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '노대동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '진월동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '덕남동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '행암동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '임암동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '송하동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '양림동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '방림동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '봉선동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '구소동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '양촌동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '도금동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '승촌동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '지석동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '압촌동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '화장동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '칠석동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '석정동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '신장동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '양과동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '이장동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '대지동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '원산동' },
-        { '시도' : '광주' , '시군구' : '남구' , '읍면동' : '월성동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '중흥동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '유동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '누문동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '북동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '임동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '신안동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '용봉동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '동림동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '운암동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '우산동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '풍향동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '문흥동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '각화동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '두암동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '오치동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '삼각동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '매곡동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '충효동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '덕의동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '금곡동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '망월동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '청풍동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '화암동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '장등동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '운정동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '본촌동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '일곡동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '양산동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '연제동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '신용동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '용두동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '지야동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '태령동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '수곡동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '효령동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '용전동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '용강동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '생용동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '월출동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '대촌동' },
-        { '시도' : '광주' , '시군구' : '북구' , '읍면동' : '오룡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '송정동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '도산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '도호동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '신촌동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '서봉동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '운수동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '선암동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '소촌동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '우산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '황룡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '박호동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '비아동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '도천동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '수완동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '월계동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '쌍암동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '산월동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '신창동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '신가동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '운남동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '안청동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '진곡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '장덕동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '흑석동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '하남동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '장수동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '산정동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '월곡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '등임동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '산막동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '고룡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '신룡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '두정동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '임곡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '광산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '오산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '사호동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '하산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '유계동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '본덕동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '용봉동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '요기동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '복룡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '송대동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '옥동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '월전동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '장록동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '송촌동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '지죽동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '용동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '용곡동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '지정동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '명화동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '동산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '연산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '도덕동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '송산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '지평동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '오운동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '삼거동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '양동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '내산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '대산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '송학동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '신동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '삼도동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '남산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '송치동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '산수동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '선동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '지산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '왕동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '북산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '명도동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '동호동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '덕림동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '양산동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '동림동' },
-        { '시도' : '광주' , '시군구' : '광산구' , '읍면동' : '오선동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '원동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '인동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '효동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '천동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '가오동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '신흥동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '판암동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '삼정동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '용운동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '대동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '자양동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '신안동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '소제동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '가양동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '용전동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '성남동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '홍도동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '삼성동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '정동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '중동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '추동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '비룡동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '주산동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '용계동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '마산동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '효평동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '직동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '세천동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '신상동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '신하동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '신촌동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '사성동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '내탑동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '오동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '주촌동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '낭월동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '대별동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '이사동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '대성동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '장척동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '소호동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '구도동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '삼괴동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '상소동' },
-        { '시도' : '대전' , '시군구' : '동구' , '읍면동' : '하소동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '은행동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '선화동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '목동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '중촌동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '대흥동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '문창동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '석교동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '호동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '옥계동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '대사동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '부사동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '용두동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '오류동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '태평동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '유천동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '문화동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '산성동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '사정동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '안영동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '무수동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '구완동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '침산동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '목달동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '정생동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '어남동' },
-        { '시도' : '대전' , '시군구' : '중구' , '읍면동' : '금동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '복수동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '변동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '도마동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '정림동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '용문동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '탄방동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '괴정동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '가장동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '내동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '갈마동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '둔산동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '월평동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '가수원동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '도안동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '관저동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '흑석동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '매노동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '산직동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '장안동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '평촌동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '오동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '우명동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '원정동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '용촌동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '봉곡동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '괴곡동' },
-        { '시도' : '대전' , '시군구' : '서구' , '읍면동' : '만년동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '원내동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '교촌동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '대정동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '용계동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '학하동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '계산동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '성북동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '세동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '송정동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '방동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '봉명동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '구암동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '덕명동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '원신흥동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '상대동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '복용동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '장대동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '갑동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '노은동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '지족동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '죽동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '궁동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '어은동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '구성동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '신성동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '가정동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '도룡동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '장동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '방현동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '화암동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '덕진동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '하기동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '추목동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '자운동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '신봉동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '수남동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '안산동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '외삼동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '반석동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '문지동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '전민동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '원촌동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '탑립동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '용산동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '봉산동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '관평동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '송강동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '금고동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '대동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '금탄동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '신동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '둔곡동' },
-        { '시도' : '대전' , '시군구' : '유성구' , '읍면동' : '구룡동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '오정동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '대화동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '읍내동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '연축동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '신대동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '와동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '송촌동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '법동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '중리동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '비래동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '석봉동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '목상동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '문평동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '신일동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '덕암동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '상서동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '평촌동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '장동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '용호동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '이현동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '갈전동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '부수동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '황호동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '삼정동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '미호동' },
-        { '시도' : '대전' , '시군구' : '대덕구' , '읍면동' : '신탄진동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '학성동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '학산동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '복산동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '북정동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '옥교동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '성남동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '교동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '우정동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '성안동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '유곡동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '태화동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '다운동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '동동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '서동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '남외동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '장현동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '약사동' },
-        { '시도' : '울산' , '시군구' : '중구' , '읍면동' : '반구동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '무거동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '옥동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '두왕동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '신정동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '달동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '삼산동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '여천동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '야음동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '선암동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '상개동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '부곡동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '고사동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '성암동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '황성동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '용연동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '남화동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '용잠동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '장생포동' },
-        { '시도' : '울산' , '시군구' : '남구' , '읍면동' : '매암동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '방어동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '화정동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '일산동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '전하동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '미포동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '주전동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '동부동' },
-        { '시도' : '울산' , '시군구' : '동구' , '읍면동' : '서부동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '창평동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '호계동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '매곡동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '가대동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '신천동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '중산동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '상안동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '천곡동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '달천동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '시례동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '무룡동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '구유동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '정자동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '신명동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '대안동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '당사동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '신현동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '산하동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '어물동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '명촌동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '진장동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '연암동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '효문동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '양정동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '화봉동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '송정동' },
-        { '시도' : '울산' , '시군구' : '북구' , '읍면동' : '염포동' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '온산읍' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '언양읍' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '온양읍' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '범서읍' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '청량읍' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '삼남읍' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '서생면' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '웅촌면' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '두동면' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '두서면' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '상북면' },
-        { '시도' : '울산' , '시군구' : '울주군' , '읍면동' : '삼동면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '반곡동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '소담동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '보람동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '대평동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '가람동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '한솔동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '나성동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '새롬동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '다정동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '어진동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '종촌동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '고운동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '아름동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '도담동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '산울동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '해밀동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '합강동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '집현동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '세종동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '누리동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '한별동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '다솜동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '용호동' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '조치원읍' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '연기면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '연동면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '부강면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '금남면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '장군면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '연서면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '전의면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '전동면' },
-        { '시도' : '세종' , '시군구' : '세종' , '읍면동' : '소정면' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '파장동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '정자동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '이목동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '율전동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '천천동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '영화동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '송죽동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '조원동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '연무동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '상광교동' },
-        { '시도' : '경기' , '시군구' : '수원시 장안구' , '읍면동' : '하광교동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '세류동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '평동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '고색동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '오목천동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '평리동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '서둔동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '구운동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '탑동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '금곡동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '호매실동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '곡반정동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '권선동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '장지동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '대황교동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '입북동' },
-        { '시도' : '경기' , '시군구' : '수원시 권선구' , '읍면동' : '당수동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '팔달로1가' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '팔달로2가' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '팔달로3가' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '남창동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '영동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '중동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '구천동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '남수동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '매향동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '북수동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '신풍동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '장안동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '교동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '매교동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '매산로1가' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '매산로2가' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '매산로3가' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '고등동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '화서동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '지동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '우만동' },
-        { '시도' : '경기' , '시군구' : '수원시 팔달구' , '읍면동' : '인계동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '매탄동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '원천동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '이의동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '하동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '영통동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '신동' },
-        { '시도' : '경기' , '시군구' : '수원시 영통구' , '읍면동' : '망포동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '신흥동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '태평동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '수진동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '단대동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '산성동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '양지동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '복정동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '창곡동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '신촌동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '오야동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '심곡동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '고등동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '상적동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '둔전동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '시흥동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '금토동' },
-        { '시도' : '경기' , '시군구' : '성남시 수정구' , '읍면동' : '사송동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '성남동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '금광동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '은행동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '상대원동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '여수동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '도촌동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '갈현동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '하대원동' },
-        { '시도' : '경기' , '시군구' : '성남시 중원구' , '읍면동' : '중앙동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '분당동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '수내동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '정자동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '율동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '서현동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '이매동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '야탑동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '판교동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '삼평동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '백현동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '금곡동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '궁내동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '동원동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '구미동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '운중동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '대장동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '석운동' },
-        { '시도' : '경기' , '시군구' : '성남시 분당구' , '읍면동' : '하산운동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '의정부동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '호원동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '장암동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '신곡동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '용현동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '민락동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '낙양동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '자일동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '금오동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '가능동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '녹양동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '고산동' },
-        { '시도' : '경기' , '시군구' : '의정부시' , '읍면동' : '산곡동' },
-        { '시도' : '경기' , '시군구' : '안양시 만안구' , '읍면동' : '안양동' },
-        { '시도' : '경기' , '시군구' : '안양시 만안구' , '읍면동' : '석수동' },
-        { '시도' : '경기' , '시군구' : '안양시 만안구' , '읍면동' : '박달동' },
-        { '시도' : '경기' , '시군구' : '안양시 동안구' , '읍면동' : '비산동' },
-        { '시도' : '경기' , '시군구' : '안양시 동안구' , '읍면동' : '관양동' },
-        { '시도' : '경기' , '시군구' : '안양시 동안구' , '읍면동' : '평촌동' },
-        { '시도' : '경기' , '시군구' : '안양시 동안구' , '읍면동' : '호계동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '원미동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '심곡동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '춘의동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '도당동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '약대동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '소사동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '역곡동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '중동' },
-        { '시도' : '경기' , '시군구' : '부천시 원미구' , '읍면동' : '상동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '소사본동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '심곡본동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '범박동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '괴안동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '송내동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '옥길동' },
-        { '시도' : '경기' , '시군구' : '부천시 소사구' , '읍면동' : '계수동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '오정동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '여월동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '작동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '원종동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '고강동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '대장동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '삼정동' },
-        { '시도' : '경기' , '시군구' : '부천시 오정구' , '읍면동' : '내동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '광명동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '철산동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '하안동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '소하동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '노온사동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '일직동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '가학동' },
-        { '시도' : '경기' , '시군구' : '광명시' , '읍면동' : '옥길동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '서정동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '장당동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '모곡동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '칠괴동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '칠원동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '도일동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '가재동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '장안동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '이충동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '지산동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '독곡동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '신장동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '평택동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '통복동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '군문동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '유천동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '합정동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '비전동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '동삭동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '세교동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '지제동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '신대동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '소사동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '용이동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '월곡동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '청룡동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '죽백동' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '팽성읍' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '안중읍' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '포승읍' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '청북읍' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '진위면' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '서탄면' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '고덕면' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '오성면' },
-        { '시도' : '경기' , '시군구' : '평택시' , '읍면동' : '현덕면' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '송내동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '지행동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '생연동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '광암동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '걸산동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '보산동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '동두천동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '안흥동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '상봉암동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '하봉암동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '탑동동' },
-        { '시도' : '경기' , '시군구' : '동두천시' , '읍면동' : '상패동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '일동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '이동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '사동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '본오동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '팔곡이동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '양상동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '부곡동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '성포동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '월피동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '팔곡일동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '건건동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '사사동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '수암동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '장상동' },
-        { '시도' : '경기' , '시군구' : '안산시 상록구' , '읍면동' : '장하동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '고잔동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '와동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '신길동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '성곡동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '원시동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '목내동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '초지동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '원곡동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '선부동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '대부동동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '대부북동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '대부남동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '선감동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '풍도동' },
-        { '시도' : '경기' , '시군구' : '안산시 단원구' , '읍면동' : '화정동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '주교동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '원당동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '신원동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '원흥동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '도내동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '성사동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '북한동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '효자동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '지축동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '오금동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '삼송동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '동산동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '용두동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '벽제동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '선유동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '고양동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '대자동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '관산동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '내유동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '토당동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '내곡동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '대장동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '화정동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '강매동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '행주내동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '행주외동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '신평동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '행신동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '화전동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '현천동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '덕은동' },
-        { '시도' : '경기' , '시군구' : '고양시 덕양구' , '읍면동' : '향동동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '식사동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '중산동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '정발산동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '장항동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '마두동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '백석동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '풍동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '산황동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '사리현동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '지영동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '설문동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '문봉동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산동구' , '읍면동' : '성석동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '일산동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '주엽동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '탄현동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '대화동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '덕이동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '가좌동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '구산동' },
-        { '시도' : '경기' , '시군구' : '고양시 일산서구' , '읍면동' : '법곳동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '관문동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '문원동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '갈현동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '막계동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '과천동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '주암동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '중앙동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '원문동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '별양동' },
-        { '시도' : '경기' , '시군구' : '과천시' , '읍면동' : '부림동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '갈매동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '사노동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '인창동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '교문동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '수택동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '아천동' },
-        { '시도' : '경기' , '시군구' : '구리시' , '읍면동' : '토평동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '호평동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '평내동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '금곡동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '일패동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '이패동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '삼패동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '수석동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '지금동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '도농동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '별내동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '다산동' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '와부읍' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '진접읍' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '화도읍' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '진건읍' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '오남읍' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '퇴계원읍' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '별내면' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '수동면' },
-        { '시도' : '경기' , '시군구' : '남양주시' , '읍면동' : '조안면' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '오산동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '부산동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '원동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '궐동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '청학동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '가장동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '금암동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '수청동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '은계동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '내삼미동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '외삼미동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '양산동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '세교동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '지곶동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '서랑동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '서동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '벌음동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '두곡동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '탑동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '누읍동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '가수동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '고현동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '청호동' },
-        { '시도' : '경기' , '시군구' : '오산시' , '읍면동' : '갈곶동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '대야동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '신천동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '방산동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '포동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '미산동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '은행동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '안현동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '매화동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '도창동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '금이동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '과림동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '계수동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '화정동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '능곡동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '하중동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '하상동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '광석동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '물왕동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '산현동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '조남동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '논곡동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '목감동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '거모동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '군자동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '장현동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '장곡동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '월곶동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '정왕동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '죽율동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '무지내동' },
-        { '시도' : '경기' , '시군구' : '시흥시' , '읍면동' : '배곧동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '당동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '당정동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '부곡동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '산본동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '금정동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '둔대동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '속달동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '대야미동' },
-        { '시도' : '경기' , '시군구' : '군포시' , '읍면동' : '도마교동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '고천동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '이동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '삼동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '왕곡동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '오전동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '학의동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '내손동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '청계동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '포일동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '월암동' },
-        { '시도' : '경기' , '시군구' : '의왕시' , '읍면동' : '초평동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '천현동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '하산곡동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '창우동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '배알미동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '상산곡동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '신장동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '당정동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '덕풍동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '망월동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '풍산동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '미사동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '선동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '감북동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '감일동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '감이동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '학암동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '교산동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '춘궁동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '하사창동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '상사창동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '항동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '초일동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '초이동' },
-        { '시도' : '경기' , '시군구' : '하남시' , '읍면동' : '광암동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '김량장동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '역북동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '삼가동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '남동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '유방동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '고림동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '마평동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '운학동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '호동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '해곡동' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '포곡읍' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '모현읍' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '이동읍' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '남사읍' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '원삼면' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '백암면' },
-        { '시도' : '경기' , '시군구' : '용인시 처인구' , '읍면동' : '양지면' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '신갈동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '구갈동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '상갈동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '하갈동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '보라동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '지곡동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '공세동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '고매동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '농서동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '서천동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '영덕동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '언남동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '마북동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '청덕동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '동백동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '중동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '상하동' },
-        { '시도' : '경기' , '시군구' : '용인시 기흥구' , '읍면동' : '보정동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '풍덕천동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '죽전동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '동천동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '고기동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '신봉동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '성복동' },
-        { '시도' : '경기' , '시군구' : '용인시 수지구' , '읍면동' : '상현동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '금촌동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '아동동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '야동동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '검산동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '맥금동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '교하동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '야당동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '다율동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '오도동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '상지석동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '산남동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '동패동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '당하동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '문발동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '송촌동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '목동동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '하지석동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '서패동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '신촌동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '연다산동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '와동동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '금릉동' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '문산읍' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '파주읍' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '법원읍' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '교하읍' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '조리읍' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '월롱면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '탄현면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '광탄면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '파평면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '적성면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '군내면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '장단면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '진동면' },
-        { '시도' : '경기' , '시군구' : '파주시' , '읍면동' : '진서면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '창전동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '관고동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '중리동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '증일동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '율현동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '진리동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '안흥동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '갈산동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '증포동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '송정동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '사음동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '단월동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '대포동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '고담동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '장록동' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '장호원읍' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '부발읍' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '신둔면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '백사면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '호법면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '마장면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '대월면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '모가면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '설성면' },
-        { '시도' : '경기' , '시군구' : '이천시' , '읍면동' : '율면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '봉산동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '숭인동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '영동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '봉남동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '구포동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '동본동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '명륜동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '옥천동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '낙원동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '창전동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '성남동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '신흥동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '인지동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '금산동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '연지동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '대천동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '서인동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '석정동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '아양동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '금석동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '계동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '옥산동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '사곡동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '도기동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '당왕동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '가사동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '가현동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '신건지동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '신소현동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '신모산동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '현수동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '발화동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '중리동' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '공도읍' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '보개면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '금광면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '서운면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '미양면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '대덕면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '양성면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '원곡면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '일죽면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '죽산면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '삼죽면' },
-        { '시도' : '경기' , '시군구' : '안성시' , '읍면동' : '고삼면' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '북변동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '걸포동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '운양동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '장기동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '감정동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '사우동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '풍무동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '마산동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '구래동' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '통진읍' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '고촌읍' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '양촌읍' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '대곶면' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '월곶면' },
-        { '시도' : '경기' , '시군구' : '김포시' , '읍면동' : '하성면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '진안동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '병점동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '능동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '기산동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '반월동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '반정동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '황계동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '배양동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '기안동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '송산동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '안녕동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '반송동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '석우동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '오산동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '청계동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '영천동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '중동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '신동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '목동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '산척동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '장지동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '송동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '방교동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '금곡동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '새솔동' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '봉담읍' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '우정읍' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '향남읍' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '남양읍' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '매송면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '비봉면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '마도면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '송산면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '서신면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '팔탄면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '장안면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '양감면' },
-        { '시도' : '경기' , '시군구' : '화성시' , '읍면동' : '정남면' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '경안동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '쌍령동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '송정동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '회덕동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '탄벌동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '목현동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '삼동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '중대동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '직동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '태전동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '장지동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '역동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '목동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '고산동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '신현동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '능평동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '문형동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '추자동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '매산동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '양벌동' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '초월읍' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '곤지암읍' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '도척면' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '퇴촌면' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '남종면' },
-        { '시도' : '경기' , '시군구' : '광주시' , '읍면동' : '남한산성면' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '유양동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '어둔동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '남방동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '마전동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '산북동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '광사동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '만송동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '삼숭동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '고읍동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '덕정동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '봉양동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '회암동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '율정동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '옥정동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '고암동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '덕계동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '회정동' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '백석읍' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '은현면' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '남면' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '광적면' },
-        { '시도' : '경기' , '시군구' : '양주시' , '읍면동' : '장흥면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '신읍동' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '어룡동' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '자작동' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '선단동' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '설운동' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '동교동' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '소흘읍' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '군내면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '내촌면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '가산면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '신북면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '창수면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '영중면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '일동면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '이동면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '영북면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '관인면' },
-        { '시도' : '경기' , '시군구' : '포천시' , '읍면동' : '화현면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '상동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '홍문동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '창동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '우만동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '단현동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '신진동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '하동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '교동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '월송동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '가업동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '연라동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '상거동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '하거동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '삼교동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '점봉동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '능현동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '멱곡동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '연양동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '매룡동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '천송동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '오학동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '현암동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '오금동' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '가남읍' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '점동면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '흥천면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '금사면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '세종대왕면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '대신면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '북내면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '강천면' },
-        { '시도' : '경기' , '시군구' : '여주시' , '읍면동' : '산북면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '연천읍' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '전곡읍' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '군남면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '청산면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '백학면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '미산면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '왕징면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '신서면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '중면' },
-        { '시도' : '경기' , '시군구' : '연천군' , '읍면동' : '장남면' },
-        { '시도' : '경기' , '시군구' : '가평군' , '읍면동' : '가평읍' },
-        { '시도' : '경기' , '시군구' : '가평군' , '읍면동' : '설악면' },
-        { '시도' : '경기' , '시군구' : '가평군' , '읍면동' : '청평면' },
-        { '시도' : '경기' , '시군구' : '가평군' , '읍면동' : '상면' },
-        { '시도' : '경기' , '시군구' : '가평군' , '읍면동' : '조종면' },
-        { '시도' : '경기' , '시군구' : '가평군' , '읍면동' : '북면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '양평읍' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '강상면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '강하면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '양서면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '옥천면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '서종면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '단월면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '청운면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '양동면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '지평면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '용문면' },
-        { '시도' : '경기' , '시군구' : '양평군' , '읍면동' : '개군면' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '영동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '북문로1가' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '북문로2가' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '북문로3가' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '남문로1가' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '남문로2가' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '문화동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '서운동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '서문동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '남주동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '석교동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '수동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '탑동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '대성동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '영운동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '금천동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '용담동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '명암동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '산성동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '용암동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '용정동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '방서동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '평촌동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '지북동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '운동동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '월오동' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '낭성면' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '미원면' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '가덕면' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '남일면' },
-        { '시도' : '충북' , '시군구' : '청주시 상당구' , '읍면동' : '문의면' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '사직동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '사창동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '모충동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '산남동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '미평동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '분평동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '수곡동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '성화동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '개신동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '죽림동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '장성동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '장암동' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '남이면' },
-        { '시도' : '충북' , '시군구' : '청주시 서원구' , '읍면동' : '현도면' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '운천동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '신봉동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '가경동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '복대동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '봉명동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '송정동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '강서동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '석곡동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '휴암동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '신전동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '현암동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '동막동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '수의동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '지동동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '서촌동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '신성동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '평동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '신대동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '남촌동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '내곡동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '상신동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '원평동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '문암동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '송절동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '화계동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '외북동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '향정동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '비하동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '석소동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '정봉동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '신촌동' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '오송읍' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '강내면' },
-        { '시도' : '충북' , '시군구' : '청주시 흥덕구' , '읍면동' : '옥산면' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '우암동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '내덕동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '율량동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '사천동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '주성동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '주중동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '정상동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '정하동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '정북동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '오동동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '외남동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '외평동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '외하동' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '내수읍' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '오창읍' },
-        { '시도' : '충북' , '시군구' : '청주시 청원구' , '읍면동' : '북이면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '성내동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '성남동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '성서동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '충인동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '교현동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '용산동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '호암동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '직동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '단월동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '풍동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '가주동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '용관동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '용두동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '달천동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '봉방동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '칠금동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '연수동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '목행동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '용탄동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '종민동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '안림동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '목벌동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '충의동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '지현동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '문화동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '금릉동' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '주덕읍' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '살미면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '수안보면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '대소원면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '신니면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '노은면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '앙성면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '중앙탑면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '금가면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '동량면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '산척면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '엄정면' },
-        { '시도' : '충북' , '시군구' : '충주시' , '읍면동' : '소태면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '의림동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '서부동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '동현동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '남천동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '교동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '중앙로1가' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '중앙로2가' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '명동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '화산동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '영천동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '하소동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '신월동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '청전동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '모산동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '고암동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '장락동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '흑석동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '두학동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '고명동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '신백동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '강제동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '명지동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '산곡동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '왕암동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '천남동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '신동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '자작동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '대랑동' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '봉양읍' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '금성면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '청풍면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '수산면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '덕산면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '한수면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '백운면' },
-        { '시도' : '충북' , '시군구' : '제천시' , '읍면동' : '송학면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '보은읍' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '속리산면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '장안면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '마로면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '탄부면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '삼승면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '수한면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '회남면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '회인면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '내북면' },
-        { '시도' : '충북' , '시군구' : '보은군' , '읍면동' : '산외면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '옥천읍' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '동이면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '안남면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '안내면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '청성면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '청산면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '이원면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '군서면' },
-        { '시도' : '충북' , '시군구' : '옥천군' , '읍면동' : '군북면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '영동읍' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '용산면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '황간면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '추풍령면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '매곡면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '상촌면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '양강면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '용화면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '학산면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '양산면' },
-        { '시도' : '충북' , '시군구' : '영동군' , '읍면동' : '심천면' },
-        { '시도' : '충북' , '시군구' : '증평군' , '읍면동' : '증평읍' },
-        { '시도' : '충북' , '시군구' : '증평군' , '읍면동' : '도안면' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '진천읍' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '덕산읍' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '초평면' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '문백면' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '백곡면' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '이월면' },
-        { '시도' : '충북' , '시군구' : '진천군' , '읍면동' : '광혜원면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '괴산읍' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '감물면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '장연면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '연풍면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '칠성면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '문광면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '청천면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '청안면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '사리면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '소수면' },
-        { '시도' : '충북' , '시군구' : '괴산군' , '읍면동' : '불정면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '음성읍' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '금왕읍' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '소이면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '원남면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '맹동면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '대소면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '삼성면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '생극면' },
-        { '시도' : '충북' , '시군구' : '음성군' , '읍면동' : '감곡면' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '단양읍' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '매포읍' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '대강면' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '가곡면' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '영춘면' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '어상천면' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '적성면' },
-        { '시도' : '충북' , '시군구' : '단양군' , '읍면동' : '단성면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '대흥동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '성황동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '문화동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '사직동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '영성동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '오룡동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '원성동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '구성동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '청수동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '삼룡동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '청당동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '유량동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '봉명동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '다가동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '용곡동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '신방동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '쌍용동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '신부동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '안서동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '구룡동' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '목천읍' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '풍세면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '광덕면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '북면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '성남면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '수신면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '병천면' },
-        { '시도' : '충남' , '시군구' : '천안시 동남구' , '읍면동' : '동면' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '와촌동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '성정동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '백석동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '두정동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '성성동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '차암동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '쌍용동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '불당동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '업성동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '신당동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '부대동' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '성환읍' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '성거읍' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '직산읍' },
-        { '시도' : '충남' , '시군구' : '천안시 서북구' , '읍면동' : '입장면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '반죽동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '봉황동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '중학동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '중동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '산성동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '교동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '웅진동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '금성동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '옥룡동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '금학동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '봉정동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '주미동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '태봉동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '오곡동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '신기동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '소학동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '상왕동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '무릉동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '월송동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '신관동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '금흥동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '쌍신동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '월미동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '검상동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '석장리동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '송선동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '동현동' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '유구읍' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '이인면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '탄천면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '계룡면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '반포면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '의당면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '정안면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '우성면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '사곡면' },
-        { '시도' : '충남' , '시군구' : '공주시' , '읍면동' : '신풍면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '대천동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '죽정동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '화산동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '동대동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '명천동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '궁촌동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '내항동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '남곡동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '요암동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '신흑동' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '웅천읍' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '주포면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '오천면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '천북면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '청소면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '청라면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '남포면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '주산면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '미산면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '성주면' },
-        { '시도' : '충남' , '시군구' : '보령시' , '읍면동' : '주교면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '온천동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '실옥동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '방축동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '기산동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '초사동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '신인동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '법곡동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '장존동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '좌부동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '읍내동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '풍기동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '용화동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '모종동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '권곡동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '배미동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '득산동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '점양동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '신동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '남동' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '염치읍' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '배방읍' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '송악면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '탕정면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '음봉면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '둔포면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '영인면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '인주면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '선장면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '도고면' },
-        { '시도' : '충남' , '시군구' : '아산시' , '읍면동' : '신창면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '읍내동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '동문동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '갈산동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '온석동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '잠홍동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '수석동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '석림동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '석남동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '예천동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '죽성동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '양대동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '오남동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '장동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '덕지천동' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '대산읍' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '인지면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '부석면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '팔봉면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '지곡면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '성연면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '음암면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '운산면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '해미면' },
-        { '시도' : '충남' , '시군구' : '서산시' , '읍면동' : '고북면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '화지동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '반월동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '대교동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '부창동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '취암동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '등화동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '지산동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '덕지동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '내동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '강산동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '관촉동' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '강경읍' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '연무읍' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '성동면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '광석면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '노성면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '상월면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '부적면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '연산면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '벌곡면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '양촌면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '가야곡면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '은진면' },
-        { '시도' : '충남' , '시군구' : '논산시' , '읍면동' : '채운면' },
-        { '시도' : '충남' , '시군구' : '계룡시' , '읍면동' : '금암동' },
-        { '시도' : '충남' , '시군구' : '계룡시' , '읍면동' : '두마면' },
-        { '시도' : '충남' , '시군구' : '계룡시' , '읍면동' : '엄사면' },
-        { '시도' : '충남' , '시군구' : '계룡시' , '읍면동' : '신도안면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '읍내동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '채운동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '우두동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '원당동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '시곡동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '수청동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '대덕동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '행정동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '용연동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '사기소동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '구룡동' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '합덕읍' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '송악읍' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '고대면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '석문면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '대호지면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '정미면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '면천면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '순성면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '우강면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '신평면' },
-        { '시도' : '충남' , '시군구' : '당진시' , '읍면동' : '송산면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '금산읍' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '금성면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '제원면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '부리면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '군북면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '남일면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '남이면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '진산면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '복수면' },
-        { '시도' : '충남' , '시군구' : '금산군' , '읍면동' : '추부면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '부여읍' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '규암면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '은산면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '외산면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '내산면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '구룡면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '홍산면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '옥산면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '남면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '충화면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '양화면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '임천면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '장암면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '세도면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '석성면' },
-        { '시도' : '충남' , '시군구' : '부여군' , '읍면동' : '초촌면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '장항읍' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '서천읍' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '마서면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '화양면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '기산면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '한산면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '마산면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '시초면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '문산면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '판교면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '종천면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '비인면' },
-        { '시도' : '충남' , '시군구' : '서천군' , '읍면동' : '서면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '청양읍' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '운곡면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '대치면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '정산면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '목면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '청남면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '장평면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '남양면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '화성면' },
-        { '시도' : '충남' , '시군구' : '청양군' , '읍면동' : '비봉면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '홍성읍' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '광천읍' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '홍북읍' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '금마면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '홍동면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '장곡면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '은하면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '결성면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '서부면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '갈산면' },
-        { '시도' : '충남' , '시군구' : '홍성군' , '읍면동' : '구항면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '예산읍' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '삽교읍' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '대술면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '신양면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '광시면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '대흥면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '응봉면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '덕산면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '봉산면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '고덕면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '신암면' },
-        { '시도' : '충남' , '시군구' : '예산군' , '읍면동' : '오가면' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '태안읍' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '안면읍' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '고남면' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '남면' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '근흥면' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '소원면' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '원북면' },
-        { '시도' : '충남' , '시군구' : '태안군' , '읍면동' : '이원면' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '용당동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '산정동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '연산동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '대성동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '양동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '북교동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '남교동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '호남동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '대안동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '창평동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '명륜동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '죽동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '무안동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '측후동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '상락동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '상락동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '복만동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '동명동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '광동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '광동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '광동3가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '영해동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '영해동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '행복동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '행복동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '축복동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '축복동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '축복동3가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '보광동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '보광동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '보광동3가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '유달동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '대의동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '대의동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '대의동3가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '중앙동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '중앙동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '중앙동3가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '만호동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '수강동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '수강동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '해안동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '해안동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '해안동3가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '해안동4가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '항동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '중동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '중동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '유동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '금동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '금동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '경동1가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '경동2가' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '서산동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '금화동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '온금동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '죽교동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '상동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '용해동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '석현동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '달동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '율도동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '대양동' },
-        { '시도' : '전남' , '시군구' : '목포시' , '읍면동' : '옥암동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '종화동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '수정동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '공화동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '관문동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '고소동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '동산동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '중앙동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '교동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '군자동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '충무동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '연등동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '광무동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '서교동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '봉강동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '봉산동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '남산동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '국동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '신월동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '여서동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '문수동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '오림동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '미평동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '둔덕동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '오천동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '만흥동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '덕충동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '경호동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '학동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '학용동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '안산동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '소호동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '시전동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '신기동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '웅천동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '선원동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '여천동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '화장동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '주삼동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '봉계동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '해산동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '화치동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '월하동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '평여동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '중흥동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '적량동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '월내동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '묘도동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '낙포동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '신덕동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '상암동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '호명동' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '돌산읍' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '소라면' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '율촌면' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '화양면' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '남면' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '화정면' },
-        { '시도' : '전남' , '시군구' : '여수시' , '읍면동' : '삼산면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '삼거동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '와룡동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '영동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '옥천동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '행동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '금곡동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '매곡동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '석현동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '가곡동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '용당동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '조곡동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '생목동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '덕암동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '연향동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '풍덕동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '남정동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '인제동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '저전동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '장천동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '남내동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '중앙동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '동외동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '교량동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '대룡동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '홍내동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '오천동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '덕월동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '야흥동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '인월동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '안풍동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '대대동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '왕지동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '조례동' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '승주읍' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '해룡면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '서면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '황전면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '월등면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '주암면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '송광면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '외서면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '낙안면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '별량면' },
-        { '시도' : '전남' , '시군구' : '순천시' , '읍면동' : '상사면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '토계동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '송월동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '안창동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '삼영동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '교동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '서내동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '산정동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '경현동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '보산동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '금계동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '금성동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '남내동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '과원동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '성북동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '중앙동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '대호동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '송촌동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '석현동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '청동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '남외동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '죽림동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '삼도동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '영산동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '용산동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '관정동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '평산동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '부덕동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '이창동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '대기동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '운곡동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '동수동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '오량동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '진포동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '빛가람동' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '남평읍' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '세지면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '왕곡면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '반남면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '공산면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '동강면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '다시면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '문평면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '노안면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '금천면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '산포면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '다도면' },
-        { '시도' : '전남' , '시군구' : '나주시' , '읍면동' : '봉황면' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '황금동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '황길동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '도이동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '성황동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '중군동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '중동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '마동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '광영동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '태인동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '금호동' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '광양읍' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '봉강면' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '옥룡면' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '옥곡면' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '진상면' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '진월면' },
-        { '시도' : '전남' , '시군구' : '광양시' , '읍면동' : '다압면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '담양읍' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '봉산면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '고서면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '가사문학면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '창평면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '대덕면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '무정면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '금성면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '용면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '월산면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '수북면' },
-        { '시도' : '전남' , '시군구' : '담양군' , '읍면동' : '대전면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '곡성읍' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '오곡면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '삼기면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '석곡면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '목사동면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '죽곡면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '고달면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '옥과면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '입면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '겸면' },
-        { '시도' : '전남' , '시군구' : '곡성군' , '읍면동' : '오산면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '구례읍' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '문척면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '간전면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '토지면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '마산면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '광의면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '용방면' },
-        { '시도' : '전남' , '시군구' : '구례군' , '읍면동' : '산동면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '고흥읍' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '도양읍' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '풍양면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '도덕면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '금산면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '도화면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '포두면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '봉래면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '점암면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '과역면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '남양면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '동강면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '대서면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '두원면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '영남면' },
-        { '시도' : '전남' , '시군구' : '고흥군' , '읍면동' : '동일면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '보성읍' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '벌교읍' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '노동면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '미력면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '겸백면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '율어면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '복내면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '문덕면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '조성면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '득량면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '회천면' },
-        { '시도' : '전남' , '시군구' : '보성군' , '읍면동' : '웅치면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '화순읍' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '한천면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '춘양면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '청풍면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '이양면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '능주면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '도곡면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '도암면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '이서면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '백아면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '동복면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '사평면' },
-        { '시도' : '전남' , '시군구' : '화순군' , '읍면동' : '동면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '장흥읍' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '관산읍' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '대덕읍' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '용산면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '안양면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '장동면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '장평면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '유치면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '부산면' },
-        { '시도' : '전남' , '시군구' : '장흥군' , '읍면동' : '회진면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '강진읍' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '군동면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '칠량면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '대구면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '도암면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '신전면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '성전면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '작천면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '병영면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '옴천면' },
-        { '시도' : '전남' , '시군구' : '강진군' , '읍면동' : '마량면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '해남읍' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '삼산면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '화산면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '현산면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '송지면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '북평면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '북일면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '옥천면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '계곡면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '마산면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '황산면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '산이면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '문내면' },
-        { '시도' : '전남' , '시군구' : '해남군' , '읍면동' : '화원면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '영암읍' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '삼호읍' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '덕진면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '금정면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '신북면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '시종면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '도포면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '군서면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '서호면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '학산면' },
-        { '시도' : '전남' , '시군구' : '영암군' , '읍면동' : '미암면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '무안읍' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '일로읍' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '삼향읍' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '삼향면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '몽탄면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '청계면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '현경면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '망운면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '해제면' },
-        { '시도' : '전남' , '시군구' : '무안군' , '읍면동' : '운남면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '함평읍' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '손불면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '신광면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '학교면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '엄다면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '대동면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '나산면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '해보면' },
-        { '시도' : '전남' , '시군구' : '함평군' , '읍면동' : '월야면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '영광읍' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '백수읍' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '홍농읍' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '대마면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '묘량면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '불갑면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '군서면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '군남면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '염산면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '법성면' },
-        { '시도' : '전남' , '시군구' : '영광군' , '읍면동' : '낙월면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '장성읍' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '진원면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '남면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '동화면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '삼서면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '삼계면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '황룡면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '서삼면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '북일면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '북이면' },
-        { '시도' : '전남' , '시군구' : '장성군' , '읍면동' : '북하면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '완도읍' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '금일읍' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '노화읍' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '군외면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '신지면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '고금면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '약산면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '청산면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '소안면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '금당면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '보길면' },
-        { '시도' : '전남' , '시군구' : '완도군' , '읍면동' : '생일면' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '진도읍' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '군내면' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '고군면' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '의신면' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '임회면' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '지산면' },
-        { '시도' : '전남' , '시군구' : '진도군' , '읍면동' : '조도면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '지도읍' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '압해읍' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '증도면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '임자면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '자은면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '비금면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '도초면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '흑산면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '하의면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '신의면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '장산면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '안좌면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '팔금면' },
-        { '시도' : '전남' , '시군구' : '신안군' , '읍면동' : '암태면' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '상도동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '대도동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '해도동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '송도동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '청림동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '일월동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '송정동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '송내동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '괴동동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '동촌동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '장흥동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '인덕동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '호동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '효자동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '지곡동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '대잠동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '이동' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '구룡포읍' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '연일읍' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '오천읍' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '대송면' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '동해면' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '장기면' },
-        { '시도' : '경북' , '시군구' : '포항시 남구' , '읍면동' : '호미곶면' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '대흥동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '신흥동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '남빈동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '상원동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '여천동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '중앙동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '덕산동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '덕수동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '대신동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '동빈1가' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '동빈2가' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '학산동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '항구동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '득량동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '학잠동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '죽도동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '용흥동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '우현동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '창포동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '두호동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '장성동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '양덕동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '환호동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '여남동' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '흥해읍' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '신광면' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '청하면' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '송라면' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '기계면' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '죽장면' },
-        { '시도' : '경북' , '시군구' : '포항시 북구' , '읍면동' : '기북면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '동부동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '서부동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '북부동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '성동동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '황오동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '노동동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '노서동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '성건동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '사정동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '황남동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '교동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '인왕동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '탑동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '충효동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '서악동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '효현동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '광명동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '동방동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '도지동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '남산동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '배반동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '구황동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '보문동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '황성동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '용강동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '동천동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '평동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '조양동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '시동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '시래동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '구정동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '마동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '하동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '진현동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '천군동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '신평동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '덕동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '암곡동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '황용동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '북군동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '손곡동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '율동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '배동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '석장동' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '감포읍' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '안강읍' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '건천읍' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '외동읍' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '문무대왕면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '양남면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '내남면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '산내면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '서면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '현곡면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '강동면' },
-        { '시도' : '경북' , '시군구' : '경주시' , '읍면동' : '천북면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '감호동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '용두동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '모암동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '성내동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '평화동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '남산동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '황금동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '신음동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '교동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '삼락동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '문당동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '다수동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '백옥동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '부곡동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '지좌동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '덕곡동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '대광동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '응명동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '양천동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '율곡동' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '아포읍' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '농소면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '남면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '개령면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '감문면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '어모면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '봉산면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '대항면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '감천면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '조마면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '구성면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '지례면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '부항면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '대덕면' },
-        { '시도' : '경북' , '시군구' : '김천시' , '읍면동' : '증산면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '삼산동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '서부동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '북문동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '명륜동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '신안동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '율세동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '옥정동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '신세동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '법흥동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '용상동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '동문동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '동부동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '운흥동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '천리동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '남부동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '남문동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '안흥동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '대석동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '옥야동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '광석동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '당북동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '태화동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '화성동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '목성동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '법상동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '금곡동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '평화동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '안기동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '운안동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '성곡동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '상아동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '안막동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '옥동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '이천동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '노하동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '송현동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '송천동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '석동동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '정상동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '정하동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '수상동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '수하동' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '풍산읍' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '와룡면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '북후면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '서후면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '풍천면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '일직면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '남후면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '남선면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '임하면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '길안면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '임동면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '예안면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '도산면' },
-        { '시도' : '경북' , '시군구' : '안동시' , '읍면동' : '녹전면' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '원평동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '지산동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '도량동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '봉곡동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '부곡동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '선기동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '수점동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '남통동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '형곡동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '송정동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '신평동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '비산동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '공단동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '광평동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '사곡동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '상모동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '임은동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '오태동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '신동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '구평동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '황상동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '인의동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '진평동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '시미동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '임수동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '양호동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '거의동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '옥계동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '구포동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '금전동' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '선산읍' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '고아읍' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '산동읍' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '무을면' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '옥성면' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '도개면' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '해평면' },
-        { '시도' : '경북' , '시군구' : '구미시' , '읍면동' : '장천면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '영주동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '상망동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '하망동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '휴천동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '가흥동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '문정동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '고현동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '창진동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '상줄동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '조와동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '조암동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '적서동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '아지동' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '풍기읍' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '이산면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '평은면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '문수면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '장수면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '안정면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '봉현면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '순흥면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '단산면' },
-        { '시도' : '경북' , '시군구' : '영주시' , '읍면동' : '부석면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '조교동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '망정동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '야사동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '문내동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '문외동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '창구동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '교촌동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '과전동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '성내동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '화룡동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '도동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '금노동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '완산동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '범어동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '작산동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '봉동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '본촌동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '채신동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '괴연동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '대전동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '녹전동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '도림동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '오미동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '오수동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '쌍계동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '도남동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '매산동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '언하동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '신기동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '서산동' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '금호읍' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '청통면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '신녕면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '화산면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '화북면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '화남면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '자양면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '임고면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '고경면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '북안면' },
-        { '시도' : '경북' , '시군구' : '영천시' , '읍면동' : '대창면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '성하동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '성동동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '인봉동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '복룡동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '냉림동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '서성동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '남성동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '서문동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '무양동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '낙양동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '개운동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '신봉동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '가장동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '양촌동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '지천동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '오대동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '흥각동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '거동동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '인평동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '서곡동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '화개동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '외답동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '헌신동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '병성동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '도남동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '낙상동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '중덕동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '초산동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '화산동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '계산동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '부원동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '죽전동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '만산동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '연원동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '남장동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '남적동' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '함창읍' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '중동면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '사벌국면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '낙동면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '청리면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '공성면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '외남면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '내서면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '모동면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '모서면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '화동면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '화서면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '화북면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '외서면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '은척면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '공검면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '이안면' },
-        { '시도' : '경북' , '시군구' : '상주시' , '읍면동' : '화남면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '점촌동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '영신동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '흥덕동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '우지동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '창동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '신기동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '불정동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '유곡동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '공평동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '모전동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '윤직동' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '문경읍' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '가은읍' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '영순면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '산양면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '호계면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '산북면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '동로면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '마성면' },
-        { '시도' : '경북' , '시군구' : '문경시' , '읍면동' : '농암면' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '삼남동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '삼북동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '서상동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '신교동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '상방동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '백천동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '옥곡동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '사정동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '옥산동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '중산동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '정평동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '대평동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '대정동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '임당동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '대동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '계양동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '중방동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '조영동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '남방동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '내동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '여천동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '유곡동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '신천동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '점촌동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '평산동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '사동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '삼풍동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '갑제동' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '하양읍' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '진량읍' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '압량읍' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '와촌면' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '자인면' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '용성면' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '남산면' },
-        { '시도' : '경북' , '시군구' : '경산시' , '읍면동' : '남천면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '의성읍' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '단촌면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '점곡면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '옥산면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '사곡면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '춘산면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '가음면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '금성면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '봉양면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '비안면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '구천면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '단밀면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '단북면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '안계면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '다인면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '신평면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '안평면' },
-        { '시도' : '경북' , '시군구' : '의성군' , '읍면동' : '안사면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '청송읍' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '주왕산면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '부남면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '현동면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '현서면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '안덕면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '파천면' },
-        { '시도' : '경북' , '시군구' : '청송군' , '읍면동' : '진보면' },
-        { '시도' : '경북' , '시군구' : '영양군' , '읍면동' : '영양읍' },
-        { '시도' : '경북' , '시군구' : '영양군' , '읍면동' : '입암면' },
-        { '시도' : '경북' , '시군구' : '영양군' , '읍면동' : '청기면' },
-        { '시도' : '경북' , '시군구' : '영양군' , '읍면동' : '일월면' },
-        { '시도' : '경북' , '시군구' : '영양군' , '읍면동' : '수비면' },
-        { '시도' : '경북' , '시군구' : '영양군' , '읍면동' : '석보면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '영덕읍' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '강구면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '남정면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '달산면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '지품면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '축산면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '영해면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '병곡면' },
-        { '시도' : '경북' , '시군구' : '영덕군' , '읍면동' : '창수면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '화양읍' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '청도읍' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '각남면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '풍각면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '각북면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '이서면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '운문면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '금천면' },
-        { '시도' : '경북' , '시군구' : '청도군' , '읍면동' : '매전면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '대가야읍' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '덕곡면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '운수면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '성산면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '다산면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '개진면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '우곡면' },
-        { '시도' : '경북' , '시군구' : '고령군' , '읍면동' : '쌍림면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '성주읍' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '선남면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '용암면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '수륜면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '가천면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '금수면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '대가면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '벽진면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '초전면' },
-        { '시도' : '경북' , '시군구' : '성주군' , '읍면동' : '월항면' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '왜관읍' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '북삼읍' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '석적읍' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '지천면' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '동명면' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '가산면' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '약목면' },
-        { '시도' : '경북' , '시군구' : '칠곡군' , '읍면동' : '기산면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '예천읍' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '호명읍' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '용문면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '감천면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '보문면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '유천면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '용궁면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '개포면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '지보면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '풍양면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '효자면' },
-        { '시도' : '경북' , '시군구' : '예천군' , '읍면동' : '은풍면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '봉화읍' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '물야면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '봉성면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '법전면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '춘양면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '소천면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '재산면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '명호면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '상운면' },
-        { '시도' : '경북' , '시군구' : '봉화군' , '읍면동' : '석포면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '울진읍' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '평해읍' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '북면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '근남면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '기성면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '온정면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '죽변면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '후포면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '금강송면' },
-        { '시도' : '경북' , '시군구' : '울진군' , '읍면동' : '매화면' },
-        { '시도' : '경북' , '시군구' : '울릉군' , '읍면동' : '울릉읍' },
-        { '시도' : '경북' , '시군구' : '울릉군' , '읍면동' : '서면' },
-        { '시도' : '경북' , '시군구' : '울릉군' , '읍면동' : '북면' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '북동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '중동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '서상동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '소답동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '도계동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '동정동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '소계동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '용동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '덕정동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '지귀동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '서곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '봉림동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '퇴촌동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '명곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '반계동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '사화동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '차용동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '내리동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '명서동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '사림동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '봉곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '팔용동' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '동읍' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '북면' },
-        { '시도' : '경남' , '시군구' : '창원시 의창구' , '읍면동' : '대산면' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '토월동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '사파정동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '가음정동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '외동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '대방동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '남산동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '삼정자동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '천선동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '불모산동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '안민동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '내동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '남지동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '상복동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '완암동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '창곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '월림동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '적현동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '양곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '반송동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '귀산동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '귀곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '귀현동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '신촌동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '반지동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '중앙동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '반림동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '상남동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '성주동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '웅남동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '사파동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '가음동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '성산동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '남양동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '용지동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '용호동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '신월동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '대원동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '두대동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '삼동동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '덕정동' },
-        { '시도' : '경남' , '시군구' : '창원시 성산구' , '읍면동' : '퇴촌동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '가포동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '교방동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '교원동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '남성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '대내동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '대성동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '대성동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '대외동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '대창동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '덕동동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '동성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '두월동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '두월동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '두월동3가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '문화동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '반월동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '부림동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '산호동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '상남동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '서성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '성호동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '수성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '신월동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '신창동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '신포동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '신포동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '신흥동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '완월동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월남동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월남동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월남동3가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월남동4가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월남동5가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월영동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '월포동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '예곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '오동동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '우산동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '유록동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '자산동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '장군동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '장군동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '장군동3가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '장군동4가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '장군동5가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '중성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '중앙동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '중앙동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '중앙동3가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '창동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '창포동1가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '창포동2가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '창포동3가' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '청계동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '추산동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '평화동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '화영동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '해운동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '현동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '홍문동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '구산면' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '진동면' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '진북면' },
-        { '시도' : '경남' , '시군구' : '창원시 마산합포구' , '읍면동' : '진전면' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '구암동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '두척동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '봉암동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '석전동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '양덕동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '합성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '회성동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '회원동' },
-        { '시도' : '경남' , '시군구' : '창원시 마산회원구' , '읍면동' : '내서읍' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '동상동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '도천동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '도만동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '신흥동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '현동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '비봉동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '태평동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '충의동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '무송동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '인의동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '숭인동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '대영동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '남빈동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '앵곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '제황산동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '속천동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '대죽동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '안곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '수송동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '회현동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '익선동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '창선동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '대천동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '광화동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '통신동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '중앙동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '부흥동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '중평동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '근화동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '송죽동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '화천동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '송학동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '대흥동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '평안동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '충무동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '인사동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '여좌동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '태백동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '경화동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '석동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '이동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '자은동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '덕산동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '풍호동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '장천동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '행암동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '북부동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '성내동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '서중동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '남문동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '제덕동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '수도동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '연도동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '명동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '죽곡동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '원포동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '남양동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '마천동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '소사동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '대장동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '두동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '청안동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '안골동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '용원동' },
-        { '시도' : '경남' , '시군구' : '창원시 진해구' , '읍면동' : '가주동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '망경동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '주약동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '강남동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '칠암동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '본성동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '동성동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '남성동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '인사동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '대안동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '평안동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '중안동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '계동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '봉곡동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '상봉동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '봉래동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '수정동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '장대동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '옥봉동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '상대동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '하대동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '상평동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '초전동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '장재동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '하촌동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '신안동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '평거동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '이현동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '유곡동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '판문동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '귀곡동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '가좌동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '호탄동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '충무공동' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '문산읍' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '내동면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '정촌면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '금곡면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '진성면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '일반성면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '이반성면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '사봉면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '지수면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '대곡면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '금산면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '집현면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '미천면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '명석면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '대평면' },
-        { '시도' : '경남' , '시군구' : '진주시' , '읍면동' : '수곡면' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '도천동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '서호동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '명정동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '항남동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '중앙동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '문화동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '태평동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '동호동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '정량동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '북신동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '무전동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '평림동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '인평동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '당동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '미수동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '봉평동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '도남동' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '산양읍' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '용남면' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '도산면' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '광도면' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '욕지면' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '한산면' },
-        { '시도' : '경남' , '시군구' : '통영시' , '읍면동' : '사량면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '동동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '서동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '선구동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '동금동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '서금동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '동림동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '좌룡동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '벌리동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '용강동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '와룡동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '봉남동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '이금동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '이홀동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '궁지동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '사등동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '향촌동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '대방동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '실안동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '마도동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '늑도동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '신수동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '백천동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '신벽동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '노룡동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '대포동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '송포동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '죽림동' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '사천읍' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '정동면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '사남면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '용현면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '축동면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '곤양면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '곤명면' },
-        { '시도' : '경남' , '시군구' : '사천시' , '읍면동' : '서포면' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '동상동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '서상동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '부원동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '봉황동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '대성동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '구산동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '삼계동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '내동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '외동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '흥동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '풍유동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '명법동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '이동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '화목동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '전하동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '강동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '삼정동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '어방동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '삼방동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '안동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '지내동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '불암동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '유하동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '내덕동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '부곡동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '무계동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '신문동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '삼문동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '대청동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '관동동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '율하동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '장유동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '응달동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '수가동' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '진영읍' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '주촌면' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '진례면' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '한림면' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '생림면' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '상동면' },
-        { '시도' : '경남' , '시군구' : '김해시' , '읍면동' : '대동면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '내일동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '내이동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '교동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '삼문동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '남포동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '용평동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '활성동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '가곡동' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '삼랑진읍' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '하남읍' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '부북면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '상동면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '산외면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '산내면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '단장면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '상남면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '초동면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '무안면' },
-        { '시도' : '경남' , '시군구' : '밀양시' , '읍면동' : '청도면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '능포동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '장승포동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '두모동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '아양동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '아주동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '옥포동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '덕포동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '장평동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '고현동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '상동동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '문동동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '삼거동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '양정동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '수월동' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '일운면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '동부면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '남부면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '거제면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '둔덕면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '사등면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '연초면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '하청면' },
-        { '시도' : '경남' , '시군구' : '거제시' , '읍면동' : '장목면' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '다방동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '남부동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '중부동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '북부동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '명곡동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '신기동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '북정동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '산막동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '호계동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '교동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '유산동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '어곡동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '용당동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '삼호동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '명동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '주남동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '소주동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '주진동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '평산동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '덕계동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '매곡동' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '물금읍' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '동면' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '원동면' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '상북면' },
-        { '시도' : '경남' , '시군구' : '양산시' , '읍면동' : '하북면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '의령읍' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '가례면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '칠곡면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '대의면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '화정면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '용덕면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '정곡면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '지정면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '낙서면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '부림면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '봉수면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '궁류면' },
-        { '시도' : '경남' , '시군구' : '의령군' , '읍면동' : '유곡면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '가야읍' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '칠원읍' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '함안면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '군북면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '법수면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '대산면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '칠서면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '칠북면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '칠원면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '산인면' },
-        { '시도' : '경남' , '시군구' : '함안군' , '읍면동' : '여항면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '창녕읍' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '남지읍' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '고암면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '성산면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '대합면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '이방면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '유어면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '대지면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '계성면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '영산면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '장마면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '도천면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '길곡면' },
-        { '시도' : '경남' , '시군구' : '창녕군' , '읍면동' : '부곡면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '고성읍' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '삼산면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '하일면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '하이면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '상리면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '대가면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '영현면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '영오면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '개천면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '구만면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '회화면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '마암면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '동해면' },
-        { '시도' : '경남' , '시군구' : '고성군' , '읍면동' : '거류면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '남해읍' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '이동면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '상주면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '삼동면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '미조면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '남면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '서면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '고현면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '설천면' },
-        { '시도' : '경남' , '시군구' : '남해군' , '읍면동' : '창선면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '하동읍' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '화개면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '악양면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '적량면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '횡천면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '고전면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '금남면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '진교면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '양보면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '북천면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '청암면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '옥종면' },
-        { '시도' : '경남' , '시군구' : '하동군' , '읍면동' : '금성면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '산청읍' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '차황면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '오부면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '생초면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '금서면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '삼장면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '시천면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '단성면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '신안면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '생비량면' },
-        { '시도' : '경남' , '시군구' : '산청군' , '읍면동' : '신등면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '함양읍' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '마천면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '휴천면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '유림면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '수동면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '지곡면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '안의면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '서하면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '서상면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '백전면' },
-        { '시도' : '경남' , '시군구' : '함양군' , '읍면동' : '병곡면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '거창읍' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '주상면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '웅양면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '고제면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '북상면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '위천면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '마리면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '남상면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '남하면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '신원면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '가조면' },
-        { '시도' : '경남' , '시군구' : '거창군' , '읍면동' : '가북면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '합천읍' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '봉산면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '묘산면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '가야면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '야로면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '율곡면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '초계면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '쌍책면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '덕곡면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '청덕면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '적중면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '대양면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '쌍백면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '삼가면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '가회면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '대병면' },
-        { '시도' : '경남' , '시군구' : '합천군' , '읍면동' : '용주면' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '일도일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '일도이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '이도일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '이도이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '삼도일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '삼도이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '건입동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '용담일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '용담이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '용담삼동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '화북일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '화북이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '삼양일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '삼양이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '삼양삼동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '봉개동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '아라일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '아라이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '오라일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '오라이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '오라삼동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '노형동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '외도일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '외도이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '이호일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '이호이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '도두일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '도두이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '도남동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '도련일동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '도련이동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '용강동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '회천동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '오등동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '월평동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '영평동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '연동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '도평동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '해안동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '내도동' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '한림읍' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '애월읍' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '구좌읍' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '조천읍' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '한경면' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '추자면' },
-        { '시도' : '제주' , '시군구' : '제주시' , '읍면동' : '우도면' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '서귀동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '법환동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '서호동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '호근동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '동홍동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '서홍동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '상효동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '하효동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '신효동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '보목동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '토평동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '중문동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '회수동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '대포동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '월평동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '강정동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '도순동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '하원동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '색달동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '상예동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '하예동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '영남동' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '대정읍' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '남원읍' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '성산읍' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '안덕면' },
-        { '시도' : '제주' , '시군구' : '서귀포시' , '읍면동' : '표선면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '봉의동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '요선동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '낙원동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '중앙로1가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '중앙로2가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '중앙로3가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '옥천동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '조양동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '죽림동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '운교동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '약사동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '효자동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '소양로1가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '소양로2가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '소양로3가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '소양로4가' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '근화동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '우두동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '사농동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '후평동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '온의동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '교동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '퇴계동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '석사동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '삼천동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '칠전동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '송암동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '신동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '중도동' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '신북읍' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '동면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '동산면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '신동면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '남면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '서면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '사북면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '북산면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '동내면' },
-        { '시도' : '강원' , '시군구' : '춘천시' , '읍면동' : '남산면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '중앙동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '평원동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '원동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '인동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '개운동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '명륜동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '단구동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '일산동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '학성동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '단계동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '우산동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '태장동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '봉산동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '행구동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '무실동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '관설동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '반곡동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '가현동' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '문막읍' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '소초면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '호저면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '지정면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '부론면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '귀래면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '흥업면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '판부면' },
-        { '시도' : '강원' , '시군구' : '원주시' , '읍면동' : '신림면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '홍제동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '남문동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '명주동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '성내동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '임당동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '금학동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '용강동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '성남동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '옥천동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '교동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '포남동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '초당동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '강문동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '송정동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '견소동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '내곡동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '회산동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '장현동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '박월동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '담산동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '노암동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '유산동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '월호평동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '신석동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '입암동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '청량동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '두산동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '학동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '병산동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '남항진동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '유천동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '지변동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '죽헌동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '대전동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '운정동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '난곡동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '저동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '안현동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '운산동' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '주문진읍' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '성산면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '왕산면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '구정면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '강동면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '옥계면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '사천면' },
-        { '시도' : '강원' , '시군구' : '강릉시' , '읍면동' : '연곡면' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '천곡동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '평릉동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '송정동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '용정동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '지흥동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '효가동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '동회동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '나안동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '쇄운동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '부곡동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '발한동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '북평동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '구미동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '추암동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '구호동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '단봉동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '지가동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '이도동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '귀운동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '대구동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '호현동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '내동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '묵호진동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '삼화동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '이기동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '이로동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '어달동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '대진동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '망상동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '심곡동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '초구동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '괴란동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '만우동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '신흥동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '비천동' },
-        { '시도' : '강원' , '시군구' : '동해시' , '읍면동' : '달방동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '황지동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '장성동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '금천동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '철암동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '문곡동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '동점동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '소도동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '혈동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '화전동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '적각동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '창죽동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '통동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '백산동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '원동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '상사미동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '하사미동' },
-        { '시도' : '강원' , '시군구' : '태백시' , '읍면동' : '조탄동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '영랑동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '동명동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '중앙동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '금호동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '청학동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '교동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '노학동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '조양동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '청호동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '대포동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '도문동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '설악동' },
-        { '시도' : '강원' , '시군구' : '속초시' , '읍면동' : '장사동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '성내동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '성북동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '읍상동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '읍중동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '당저동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '교동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '갈천동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '증산동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '우지동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '마달동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '자원동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '평전동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '등봉동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '도경동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '마평동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '오사동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '건지동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '원당동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '성남동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '남양동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '사직동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '오분동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '적노동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '조비동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '정상동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '정하동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '근산동' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '도계읍' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '원덕읍' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '근덕면' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '하장면' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '노곡면' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '미로면' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '가곡면' },
-        { '시도' : '강원' , '시군구' : '삼척시' , '읍면동' : '신기면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '홍천읍' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '화촌면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '두촌면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '내촌면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '서석면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '영귀미면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '남면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '서면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '북방면' },
-        { '시도' : '강원' , '시군구' : '홍천군' , '읍면동' : '내면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '횡성읍' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '우천면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '안흥면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '둔내면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '갑천면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '청일면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '공근면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '서원면' },
-        { '시도' : '강원' , '시군구' : '횡성군' , '읍면동' : '강림면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '영월읍' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '상동읍' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '산솔면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '김삿갓면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '북면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '남면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '한반도면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '주천면' },
-        { '시도' : '강원' , '시군구' : '영월군' , '읍면동' : '무릉도원면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '평창읍' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '미탄면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '방림면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '대화면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '봉평면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '용평면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '진부면' },
-        { '시도' : '강원' , '시군구' : '평창군' , '읍면동' : '대관령면' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '정선읍' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '고한읍' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '사북읍' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '신동읍' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '남면' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '북평면' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '임계면' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '화암면' },
-        { '시도' : '강원' , '시군구' : '정선군' , '읍면동' : '여량면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '철원읍' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '김화읍' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '갈말읍' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '동송읍' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '서면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '근남면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '근북면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '근동면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '원동면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '원남면' },
-        { '시도' : '강원' , '시군구' : '철원군' , '읍면동' : '임남면' },
-        { '시도' : '강원' , '시군구' : '화천군' , '읍면동' : '화천읍' },
-        { '시도' : '강원' , '시군구' : '화천군' , '읍면동' : '간동면' },
-        { '시도' : '강원' , '시군구' : '화천군' , '읍면동' : '하남면' },
-        { '시도' : '강원' , '시군구' : '화천군' , '읍면동' : '상서면' },
-        { '시도' : '강원' , '시군구' : '화천군' , '읍면동' : '사내면' },
-        { '시도' : '강원' , '시군구' : '양구군' , '읍면동' : '양구읍' },
-        { '시도' : '강원' , '시군구' : '양구군' , '읍면동' : '국토정중앙면' },
-        { '시도' : '강원' , '시군구' : '양구군' , '읍면동' : '동면' },
-        { '시도' : '강원' , '시군구' : '양구군' , '읍면동' : '방산면' },
-        { '시도' : '강원' , '시군구' : '양구군' , '읍면동' : '해안면' },
-        { '시도' : '강원' , '시군구' : '인제군' , '읍면동' : '인제읍' },
-        { '시도' : '강원' , '시군구' : '인제군' , '읍면동' : '남면' },
-        { '시도' : '강원' , '시군구' : '인제군' , '읍면동' : '북면' },
-        { '시도' : '강원' , '시군구' : '인제군' , '읍면동' : '기린면' },
-        { '시도' : '강원' , '시군구' : '인제군' , '읍면동' : '서화면' },
-        { '시도' : '강원' , '시군구' : '인제군' , '읍면동' : '상남면' },
-        { '시도' : '강원' , '시군구' : '고성군' , '읍면동' : '간성읍' },
-        { '시도' : '강원' , '시군구' : '고성군' , '읍면동' : '거진읍' },
-        { '시도' : '강원' , '시군구' : '고성군' , '읍면동' : '현내면' },
-        { '시도' : '강원' , '시군구' : '고성군' , '읍면동' : '죽왕면' },
-        { '시도' : '강원' , '시군구' : '고성군' , '읍면동' : '토성면' },
-        { '시도' : '강원' , '시군구' : '고성군' , '읍면동' : '수동면' },
-        { '시도' : '강원' , '시군구' : '양양군' , '읍면동' : '양양읍' },
-        { '시도' : '강원' , '시군구' : '양양군' , '읍면동' : '서면' },
-        { '시도' : '강원' , '시군구' : '양양군' , '읍면동' : '손양면' },
-        { '시도' : '강원' , '시군구' : '양양군' , '읍면동' : '현북면' },
-        { '시도' : '강원' , '시군구' : '양양군' , '읍면동' : '현남면' },
-        { '시도' : '강원' , '시군구' : '양양군' , '읍면동' : '강현면' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중앙동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중앙동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중앙동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중앙동4가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '경원동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '경원동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '경원동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '풍남동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '풍남동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '풍남동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '전동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '전동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '다가동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '다가동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '다가동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '다가동4가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '고사동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '교동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '태평동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중노송동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '남노송동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '동완산동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '서완산동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '서완산동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '동서학동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '서서학동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중화산동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중화산동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '서신동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '석구동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '원당동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '평화동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '평화동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '평화동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '중인동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '용복동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '삼천동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '삼천동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '삼천동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '효자동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '효자동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '효자동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '대성동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '색장동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '상림동' },
-        { '시도' : '전북' , '시군구' : '전주시 완산구' , '읍면동' : '서노송동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '진북동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '인후동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '인후동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '덕진동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '덕진동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '금암동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '팔복동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '팔복동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '팔복동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '산정동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '금상동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '우아동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '우아동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '우아동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '호성동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '호성동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '호성동3가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '전미동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '전미동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '송천동1가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '송천동2가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '반월동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '화전동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '용정동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '성덕동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '원동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '고랑동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '여의동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '만성동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '장동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '팔복동4가' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '도도동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '강흥동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '도덕동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '남정동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '중동' },
-        { '시도' : '전북' , '시군구' : '전주시 덕진구' , '읍면동' : '여의동2가' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '해망동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '신흥동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '금동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '월명동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '신창동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '오룡동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '금광동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '신풍동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '송풍동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '문화동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '삼학동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '선양동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '둔율동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '창성동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '명산동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '송창동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '개복동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '중앙로1가' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '영화동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '장미동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '중앙로2가' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '영동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '신영동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '죽성동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '평화동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '중앙로3가' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '대명동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '장재동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '미원동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '중동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '금암동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '동흥남동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '서흥남동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '조촌동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '경장동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '경암동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '구암동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '내흥동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '개정동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '사정동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '수송동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '미장동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '지곡동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '나운동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '미룡동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '소룡동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '오식도동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '비응도동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '신관동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '개사동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '산북동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '내초동' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '옥구읍' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '옥산면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '회현면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '임피면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '서수면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '대야면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '개정면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '성산면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '나포면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '옥도면' },
-        { '시도' : '전북' , '시군구' : '군산시' , '읍면동' : '옥서면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '창인동1가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '창인동2가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '중앙동1가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '중앙동2가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '중앙동3가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '평화동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '갈산동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '주현동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '인화동1가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '인화동2가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '동산동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '마동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '남중동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '모현동1가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '모현동2가' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '송학동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '목천동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '만석동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '현영동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '신용동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '신동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '영등동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '어양동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '신흥동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '금강동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '석탄동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '팔봉동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '덕기동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '석왕동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '은기동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '정족동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '임상동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '월성동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '부송동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '용제동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '석암동' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '함열읍' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '오산면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '황등면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '함라면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '웅포면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '성당면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '용안면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '낭산면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '망성면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '여산면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '금마면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '왕궁면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '춘포면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '삼기면' },
-        { '시도' : '전북' , '시군구' : '익산시' , '읍면동' : '용동면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '수성동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '장명동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '상동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '시기동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '연지동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '농소동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '하모동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '상평동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '과교동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '삼산동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '진산동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '금붕동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '송산동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '신월동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '용산동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '교암동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '부전동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '쌍암동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '내장동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '영파동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '하북동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '구룡동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '흑암동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '용계동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '공평동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '망제동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '신정동' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '신태인읍' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '북면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '입암면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '소성면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '고부면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '영원면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '덕천면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '이평면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '정우면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '태인면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '감곡면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '옹동면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '칠보면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '산내면' },
-        { '시도' : '전북' , '시군구' : '정읍시' , '읍면동' : '산외면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '동충동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '하정동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '죽항동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '쌍교동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '천거동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '금동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '조산동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '왕정동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '신정동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '화정동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '향교동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '용정동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '광치동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '내척동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '산곡동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '도통동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '월락동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '고죽동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '식정동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '갈치동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '노암동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '어현동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '신촌동' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '운봉읍' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '주천면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '수지면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '송동면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '주생면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '금지면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '대강면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '대산면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '사매면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '덕과면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '보절면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '산동면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '이백면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '아영면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '산내면' },
-        { '시도' : '전북' , '시군구' : '남원시' , '읍면동' : '인월면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '요촌동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '신풍동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '용동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '검산동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '순동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '백학동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '서암동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '신곡동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '교동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '옥산동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '갈공동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '하동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '흥사동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '상동동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '월성동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '황산동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '난봉동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '오정동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '복죽동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '입석동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '장화동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '신덕동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '월봉동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '신월동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '연정동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '명덕동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '제월동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '도장동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '서정동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '양전동' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '만경읍' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '죽산면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '백산면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '용지면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '백구면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '부량면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '공덕면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '청하면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '성덕면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '진봉면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '금구면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '봉남면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '황산면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '금산면' },
-        { '시도' : '전북' , '시군구' : '김제시' , '읍면동' : '광활면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '삼례읍' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '봉동읍' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '용진읍' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '상관면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '이서면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '소양면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '구이면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '고산면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '비봉면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '운주면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '화산면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '동상면' },
-        { '시도' : '전북' , '시군구' : '완주군' , '읍면동' : '경천면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '진안읍' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '용담면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '안천면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '동향면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '상전면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '백운면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '성수면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '마령면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '부귀면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '정천면' },
-        { '시도' : '전북' , '시군구' : '진안군' , '읍면동' : '주천면' },
-        { '시도' : '전북' , '시군구' : '무주군' , '읍면동' : '무주읍' },
-        { '시도' : '전북' , '시군구' : '무주군' , '읍면동' : '무풍면' },
-        { '시도' : '전북' , '시군구' : '무주군' , '읍면동' : '설천면' },
-        { '시도' : '전북' , '시군구' : '무주군' , '읍면동' : '적상면' },
-        { '시도' : '전북' , '시군구' : '무주군' , '읍면동' : '안성면' },
-        { '시도' : '전북' , '시군구' : '무주군' , '읍면동' : '부남면' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '장수읍' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '산서면' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '번암면' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '장계면' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '천천면' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '계남면' },
-        { '시도' : '전북' , '시군구' : '장수군' , '읍면동' : '계북면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '임실읍' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '청웅면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '운암면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '신평면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '성수면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '오수면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '신덕면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '삼계면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '관촌면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '강진면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '덕치면' },
-        { '시도' : '전북' , '시군구' : '임실군' , '읍면동' : '지사면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '순창읍' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '인계면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '동계면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '풍산면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '금과면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '팔덕면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '쌍치면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '복흥면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '적성면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '유등면' },
-        { '시도' : '전북' , '시군구' : '순창군' , '읍면동' : '구림면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '고창읍' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '고수면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '아산면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '무장면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '공음면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '상하면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '해리면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '성송면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '대산면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '심원면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '흥덕면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '성내면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '신림면' },
-        { '시도' : '전북' , '시군구' : '고창군' , '읍면동' : '부안면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '부안읍' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '주산면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '동진면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '행안면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '계화면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '보안면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '변산면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '진서면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '백산면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '상서면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '하서면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '줄포면' },
-        { '시도' : '전북' , '시군구' : '부안군' , '읍면동' : '위도면'	}
-    ]
+        # 타이머 시작: 5분 간격으로 작업 실행
+        self.daily_timer.start(interval)
 
-    try:
-        new_print(f"크롤링 시작")
-        now = datetime.datetime.now()
-        timestamp = now.strftime("%Y%m%d%H%M")
-        file_name = f'네이버_플레이스_{timestamp}.xlsx'
+        # 첫 실행: 바로 작업 실행
+        self.start_daily_worker()
 
-        query_list = [q.strip() for q in querys.split(",")]
-        total_queries = len(query_list)
-        total_locs = len(locs)
+    def start_daily_worker(self):
+        """24시에 실행되는 ApiWorker 시작"""
+        if self.daily_worker is not None and self.daily_worker.isRunning():
+            self.daily_worker.terminate()
+            self.daily_worker.wait()
+        self.get_api('all')
 
-        if checkbox_var.get():
-            for index, loc in enumerate(locs, start=1):
-                if stop_event.is_set():
-                    break
+    def start_on_demand_worker(self):
+        global url
+        """사용자 요청 시 실행되는 ApiWorker 시작"""
+        if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
+            self.on_demand_worker.terminate()
+            self.on_demand_worker.wait()
+        if url:
+            self.get_api('select')
 
-                if login_server_check == 'fail':
-                    stop_event.set()
-                    messagebox.showerror("로그인 세션이 끊겼습니다.")
-                    break
+    def get_checked_urls(self):
+        """테이블에서 체크박스가 체크된 URL 목록 추출"""
+        url_list = []
+        for row in range(self.table.rowCount()):
+            # 첫 번째 열(체크박스 열)의 상태 확인
+            item = self.table.item(row, 0)
+            if item and item.checkState() == Qt.Checked:
+                # 체크된 행의 URL 추출 (마지막 열이 URL이라고 가정)
+                url_item = self.table.item(row, 6)
+                if url_item:  # URL 항목이 존재하면 추가
+                    url_list.append(url_item.text())
+        return url_list
 
-                name = f'{loc["시도"]} {loc["시군구"]} {loc["읍면동"]} '
-                for idx, query in enumerate(query_list, start=1):
-                    if stop_event.is_set():
+    def get_all_urls(self):
+        """테이블에서 모든 URL 추출"""
+        url_list = []
+        for row in range(self.table.rowCount()):
+            # URL 열(여기서는 마지막 열)을 가져옴
+            url_item = self.table.item(row, 6)
+            if url_item:  # URL 항목이 존재하면 추가
+                url_list.append(url_item.text())
+        return url_list
+
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+    def open_register_popup(self):
+        # 등록 팝업창 열기
+        popup = RegisterPopup(parent=self)
+        popup.exec_()
+
+    def open_all_register_popup(self):
+        # 등록 팝업창 열기
+        popup = AllRegisterPopup(parent=self)  # 부모 객체 전달
+        popup.exec_()
+
+    def get_api(self, type):
+
+        # 체크된 URL 목록 가져오기
+        url_list = []
+        if type == 'all':
+            url_list = self.get_all_urls()
+        else:
+            url_list = self.get_checked_urls()
+
+        if url_list:
+            self.daily_worker = ApiWorker(url_list)
+            self.daily_worker.api_data_received.connect(self.set_result)
+            self.daily_worker.start()
+        else:
+            self.show_warning('선택된 url이 없습니다.')
+
+    def set_result(self, result_list):
+        for result in result_list:
+            if result["status"] == "success":
+                result_data = result["data"]
+                url_to_update = result_data["URL"]
+
+                # 테이블에서 URL 열(6번째 열)을 기준으로 해당 URL이 있는지 확인
+                row_to_update = -1  # 업데이트할 행을 저장 (-1은 없음을 의미)
+                for row in range(self.table.rowCount()):
+                    url_item = self.table.item(row, 6)
+                    if url_item and url_item.text() == url_to_update:
+                        row_to_update = row
                         break
 
-                    if login_server_check == 'fail':
-                        stop_event.set()
-                        messagebox.showerror("로그인 세션이 끊겼습니다.")
-                        break
-
-                    full_name = name + query
-                    new_print(f"전국: {index} / {total_locs}, 키워드: {idx} / {total_queries}, 검색어: {full_name}")
-                    main(full_name, total_queries, idx, total_locs, index, file_name)
-        else:
-            for ix, qr in enumerate(query_list, start=1):
-                if stop_event.is_set():
-                    break
-
-                if login_server_check == 'fail':
-                    stop_event.set()
-                    messagebox.showerror("로그인 세션이 끊겼습니다.")
-                    break
-
-                new_print(f"전국: 0 / 0, 키워드: {ix} / {total_queries}, 검색어: {qr}")
-                main(qr, total_queries, ix, 0, 0, file_name)
-
-        if not stop_event.is_set():
-            messagebox.showwarning("경고", "크롤링이 완료되었습니다.")
-            search_button.config(bg="lightgreen", fg="black", text="검색")
-
-    except Exception as e:
-        new_print(f"Unexpected error in thread: {e}", "ERROR")
-
-
-# 검색 버튼
-def on_search():
-    global search_thread, stop_event
-    query = search_entry.get().strip()
-    if query:
-        if search_thread and search_thread.is_alive():
-            # 중지 버튼이 클릭되면 작업 중지
-            new_print("크롤링 중지")
-            stop_event.set()  # 이벤트 설정
-            search_button.config(bg="lightgreen", fg="black", text="검색")
-            messagebox.showwarning("경고", "크롤링이 중지되었습니다.")
-        else:
-            # 시작 버튼 클릭 시 모든 진행률 초기화
-            stop_event.clear()  # 이벤트 초기화
-            log_text_widget.delete('1.0', tk.END)  # 로그 초기화
-            search_button.config(bg="red", fg="white", text="중지")
-            search_thread = threading.Thread(target=run_main, args=(query,))
-            search_thread.start()
-    else:
-        messagebox.showwarning("경고", "검색어를 입력하세요.")
-
-
-# 여기에 main 함수와 기타 필요한 함수들을 포함시키세요.
-def start_app():
-    global root, search_entry, search_button, log_text_widget, checkbox_var
-
-    root = tk.Tk()
-    root.title("네이버 플레이스 프로그램")
-    root.geometry("700x600")  # 크기 조정
-
-    # 창 크기 설정
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-    window_width = 700
-    window_height = 600
-
-    # 창을 화면의 가운데로 배치
-    position_top = int(screen_height / 2 - window_height / 2)
-    position_left = int(screen_width / 2 - window_width / 2)
-    root.geometry(f'{window_width}x{window_height}+{position_left}+{position_top}')
-
-    # 체크박스를 사용하려면 root가 먼저 생성되어야 합니다.
-    checkbox_var = tk.BooleanVar()  # 체크박스의 상태를 저장할 변수
-
-    font_large = ('Helvetica', 10)  # 폰트 크기
-
-    # 옵션 프레임
-    option_frame = tk.Frame(root)
-    option_frame.pack(fill=tk.X, padx=10, pady=10)
-
-    # 검색어 입력 프레임
-    search_frame = tk.Frame(root)
-    search_frame.pack(pady=20)
-
-    # 검색어 레이블
-    search_label = tk.Label(search_frame, text="검색어:", font=font_large)
-    search_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
-
-    # 검색어 입력 필드
-    search_entry = tk.Entry(search_frame, font=font_large, width=25)
-    search_entry.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
-
-    # 검색 버튼
-    search_button = tk.Button(search_frame, text="검색", font=font_large, bg="lightgreen", command=on_search)
-    search_button.grid(row=0, column=2, padx=5, pady=5)
-
-    # 안내 문구
-    guide_label = tk.Label(search_frame, text="* 콤마(,)로 구분하여 검색어를 작성해주세요 *", font=font_large, fg="red")
-    guide_label.grid(row=1, column=0, columnspan=3, padx=5, pady=5)
-
-    # 체크박스 생성
-    checkbox = tk.Checkbutton(search_frame, text="전국 선택", font=font_large, variable=checkbox_var)
-    checkbox.grid(row=2, column=0, columnspan=3, padx=5, pady=5)
-
-    # 검색 프레임의 열 비율 설정
-    search_frame.columnconfigure(1, weight=1)
-
-    # 로그 화면
-    log_label = tk.Label(root, text="로그 화면", font=font_large)
-    log_label.pack(fill=tk.X, padx=10)
-
-    log_frame = tk.Frame(root)
-    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-
-    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
-    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-
-    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
-    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
-    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-    x_scrollbar.config(command=log_text_widget.xview)
-    y_scrollbar.config(command=log_text_widget.yview)
-
-    root.mainloop()
-
-
-# 셀레니움 세팅
-def setup_driver():
-    chrome_options = Options()
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=500,650")
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    chrome_options.add_argument(f'user-agent={user_agent}')
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-        'source': '''
-            Object.defineProperty(navigator, 'webdriver', {
-              get: () => undefined
-            })
-        '''
-    })
-
-    # 창 크기 설정 (예: 너비 1080, 높이 750)
-    driver.set_window_size(500, 650)
-
-    # 창 위치 설정 (왼쪽 끝으로 이동)
-    driver.set_window_position(0, 0)
-
-
-    return driver
-
-
-# 네이버 로그인 창 함수
-def naver_login_window():
-    def on_naver_login():
-        global global_naver_cookies  # 네이버 쿠키를 저장하기 위해 전역 변수 사용
-
-        driver = setup_driver()
-        driver.get("https://nid.naver.com/nidlogin.login")  # 네이버 로그인 페이지로 이동
-
-        # 로그인 여부를 주기적으로 체크
-        logged_in = False
-        max_wait_time = 300  # 최대 대기 시간 (초)
-        start_time = time.time()
-
-        while not logged_in:
-            # 1초 간격으로 쿠키 확인
-            time.sleep(1)
-            elapsed_time = time.time() - start_time
-
-            # 최대 대기 시간 초과 시 while 루프 종료
-            if elapsed_time > max_wait_time:
-                messagebox.showwarning("경고", "로그인 실패: 300초 내에 로그인하지 않았습니다.")
-                break
-
-            cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
-
-            # 쿠키 중 NID_AUT 또는 NID_SES 쿠키가 있는지 확인 (네이버 로그인 성공 시 생성되는 쿠키)
-            if 'NID_AUT' in cookies and 'NID_SES' in cookies:
-                logged_in = True
-                global_naver_cookies = cookies  # 네이버 로그인 성공 시 쿠키 저장
-                messagebox.showinfo("로그인 성공", "정상 로그인 되었습니다.")
-
-        driver.quit()  # 작업이 끝난 후 드라이버 종료
-        naver_login_root.destroy()
-        start_app()
-
-    # 네이버 로그인 창 생성
-    naver_login_root = tk.Tk()
-    naver_login_root.title("네이버 로그인")
-
-    # 창 크기 설정
-    naver_login_root.geometry("300x120")  # 창 크기
-    screen_width = naver_login_root.winfo_screenwidth()  # 화면 너비
-    screen_height = naver_login_root.winfo_screenheight()  # 화면 높이
-    window_width = 300  # 창 너비
-    window_height = 120  # 창 높이
-
-    # 창을 화면의 가운데로 배치
-    position_top = int(screen_height / 2 - window_height / 2)
-    position_left = int(screen_width / 2 - window_width / 2)
-    naver_login_root.geometry(f'{window_width}x{window_height}+{position_left}+{position_top}')
-
-    # 네이버 로그인 버튼
-    naver_login_button = tk.Button(naver_login_root, text="네이버 로그인", command=on_naver_login)
-    naver_login_button.pack(pady=30)
-
-    naver_login_root.mainloop()
-
-
-# 서버 로그인 함수 (네이버와 다른 서버 구분)
-def login_to_server(username, password, session):
-    global global_server_cookies
-    url = f"{URL}/auth/login"
-    payload = {
-        "username": username,
-        "password": password
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-
-    try:
-        # JSON 형식으로 서버에 POST 요청으로 로그인 시도
-        response = session.post(url, json=payload, headers=headers)  # 헤더 추가
-
-        # 요청이 성공했는지 확인
-        if response.status_code == 200:
-            # 세션 관리로 쿠키는 자동 처리
-            global_server_cookies = session.cookies.get_dict()
-            return True
-        else:
-            return False
-    except Exception as e:
-        return False
-
-
-# 세션체크
-def check_session(session, server_type="server"):
-    global login_server_check
-    cookies = global_server_cookies if server_type == "server" else global_naver_cookies
-    url = f"{URL}/session/check-me"
-    headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-
-    # /check-me 엔드포인트를 호출하여 세션 상태 확인
-    response = session.get(url, headers=headers, cookies=cookies)
-
-    if response.status_code == 200:
-        login_server_check = response.text
-
-
-# 세션 실시간 요청
-def check_session_periodically(session, server_type="server"):
-    while True:
-        if global_naver_cookies:
-            check_session(session, server_type)  # 세션 상태를 체크
-        time.sleep(60)  # 2분 대기
-
-
-# 비밀변경
-def change_password(session, username, current_password, new_password):
-    url = f"{URL}/auth/change-password"
-    headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-    payload = {
-        "id": username,
-        "currentPassword": current_password,
-        "newPassword": new_password
-    }
-
-    try:
-        # PUT 요청을 사용하여 비밀번호 변경
-        response = session.put(url, params=payload, headers=headers)
-
-        if response.status_code == 200:
-            return True
-        else:
-            return False
-    except Exception as e:
-        return False
-
-
-# 취소 버튼 클릭 이벤트
-def return_to_login():
-    change_pw_root.destroy()
-    login_window()
-
-
-# 비밀번호 변경 버튼 클릭 이벤트
-def on_change_password():
-    user_id = id_entry_cp.get()
-    current_pw = current_pw_entry.get()
-    new_pw = new_pw_entry.get()
-
-    # 여기에 비밀번호 변경 API 호출 로직 추가
-    session = requests.Session()
-    result = change_password(session, user_id, current_pw, new_pw)
-
-    if result:
-        messagebox.showinfo("비밀번호 변경", "비밀번호가 변경되었습니다.")
-        change_pw_root.destroy()
-        login_window()
-    else:
-        messagebox.showerror("비밀번호 변경", "비밀번호 변경에 실패하였습니다.")
-
-
-# 비밀번호 변경 창 열기
-def open_change_password_window():
-    login_root.destroy()  # 로그인 창 닫기
-    change_password_window()  # 비밀번호 변경 창 열기
-
-
-# 비밀번호 변경 창
-def change_password_window():
-    global change_pw_root, id_entry_cp, current_pw_entry, new_pw_entry
-
-    change_pw_root = tk.Tk()
-    change_pw_root.title("비밀번호 변경")
-
-    # 창 크기 설정
-    change_pw_root.geometry("300x250")
-    screen_width = change_pw_root.winfo_screenwidth()
-    screen_height = change_pw_root.winfo_screenheight()
-    window_width = 300
-    window_height = 270
-
-    # 창을 화면의 가운데로 배치
-    position_top = int(screen_height / 2 - window_height / 2)
-    position_left = int(screen_width / 2 - window_width / 2)
-    change_pw_root.geometry(f'{window_width}x{window_height}+{position_left}+{position_top}')
-
-    # 창 닫기 이벤트 처리
-    change_pw_root.protocol("WM_DELETE_WINDOW", return_to_login)
-
-    # ID 입력
-    id_label_cp = tk.Label(change_pw_root, text="ID:")
-    id_label_cp.pack(pady=10)
-    id_entry_cp = tk.Entry(change_pw_root, width=20)
-    id_entry_cp.pack(pady=5)
-
-    # 현재 비밀번호 입력
-    current_pw_label = tk.Label(change_pw_root, text="현재 비밀번호:")
-    current_pw_label.pack(pady=10)
-    current_pw_entry = tk.Entry(change_pw_root, show="*", width=20)
-    current_pw_entry.pack(pady=5)
-
-    # 변경할 비밀번호 입력
-    new_pw_label = tk.Label(change_pw_root, text="변경 비밀번호:")
-    new_pw_label.pack(pady=10)
-    new_pw_entry = tk.Entry(change_pw_root, show="*", width=20)
-    new_pw_entry.pack(pady=5)
-
-    # 버튼 프레임
-    button_frame = tk.Frame(change_pw_root)
-    button_frame.pack(pady=10)
-
-    # 비밀번호 변경 버튼
-    change_pw_button = tk.Button(button_frame, text="비밀번호 변경", command=on_change_password)
-    change_pw_button.grid(row=0, column=0, padx=5)
-
-    # 취소 버튼
-    cancel_button = tk.Button(button_frame, text="취소", command=return_to_login)
-    cancel_button.grid(row=0, column=1, padx=5)
-
-    change_pw_root.mainloop()
-
-
-# 로그인
-def on_login():
-    user_id = id_entry.get()
-    user_pw = pw_entry.get()
-
-    # 서버 세션 관리
-    session = requests.Session()
-    if login_to_server(user_id, user_pw, session):
-        messagebox.showinfo("로그인 성공", "로그인 성공!")
-        login_root.destroy()
-        # 로그인 성공 후, 세션 상태를 주기적으로 체크하는 쓰레드 시작
-        session_thread = threading.Thread(target=check_session_periodically, args=(session, "server"), daemon=True)
-        session_thread.start()
-
-        # 로그인 후 네이버 로그인 창을 띄운다
-        naver_login_window()
-    else:
-        messagebox.showerror("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다.")
-
-
-# 로그인 창
-def login_window():
-    global login_root, id_entry, pw_entry
-
-    login_root = tk.Tk()
-    login_root.title("로그인")
-
-    # 창 크기 설정
-    login_root.geometry("300x200")
-    screen_width = login_root.winfo_screenwidth()
-    screen_height = login_root.winfo_screenheight()
-    window_width = 300
-    window_height = 200
-
-    # 창을 화면의 가운데로 배치
-    position_top = int(screen_height / 2 - window_height / 2)
-    position_left = int(screen_width / 2 - window_width / 2)
-    login_root.geometry(f'{window_width}x{window_height}+{position_left}+{position_top}')
-
-    # ID 입력
-    id_label = tk.Label(login_root, text="ID:")
-    id_label.pack(pady=10)
-    id_entry = tk.Entry(login_root, width=20)
-    id_entry.pack(pady=5)
-
-    # PW 입력
-    pw_label = tk.Label(login_root, text="PW:")
-    pw_label.pack(pady=10)
-    pw_entry = tk.Entry(login_root, show="*", width=20)
-    pw_entry.pack(pady=5)
-
-    # 버튼 프레임
-    button_frame = tk.Frame(login_root)
-    button_frame.pack(pady=10)
-
-    # 로그인 버튼
-    login_button = tk.Button(button_frame, text="로그인", command=on_login)
-    login_button.grid(row=0, column=0, padx=5)
-
-    # 비밀번호 변경 버튼
-    change_pw_button = tk.Button(button_frame, text="비밀번호 변경", command=open_change_password_window)
-    change_pw_button.grid(row=0, column=1, padx=5)
-
-    login_root.mainloop()
-
-
-# 메인
+                if row_to_update != -1:
+                    # URL이 이미 테이블에 있는 경우: 데이터를 업데이트
+                    self.table.setItem(row_to_update, 2, QTableWidgetItem(result_data["상품명"]))
+                    self.table.setItem(row_to_update, 3, QTableWidgetItem(result_data["판매가"]))
+                    self.table.setItem(row_to_update, 4, QTableWidgetItem(result_data["배송비"]))
+                    self.table.setItem(row_to_update, 5, QTableWidgetItem(result_data["합계"]))
+                    self.table.setItem(row_to_update, 6, QTableWidgetItem(result_data["최근실행시간"]))
+
+    def show_warning(self, message):
+        # QMessageBox 생성
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
+        msg.setWindowTitle("경고")  # 창 제목 설정
+        msg.setText(message)  # 메시지 내용 설정
+        msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
+        msg.exec_()  # 메시지 박스 표시
+
+    def delete_table_row(self):
+        """체크된 체크박스를 가진 행을 삭제"""
+        global url_list
+        rows_to_delete = []
+
+        # 모든 행을 확인하여 체크박스가 체크된 행을 찾음
+        for row in range(self.table.rowCount()):
+            container_widget = self.table.cellWidget(row, 0)  # 첫 번째 열의 컨테이너 위젯 가져오기
+            if container_widget:  # 위젯이 존재할 경우
+                layout = container_widget.layout()  # 레이아웃 가져오기
+                if layout and layout.count() > 0:  # 레이아웃이 있고, 위젯이 포함된 경우
+                    check_box = layout.itemAt(0).widget()  # 첫 번째 위젯(QCheckBox) 가져오기
+                    if isinstance(check_box, QCheckBox) and check_box.isChecked():  # 체크박스 확인
+                        rows_to_delete.append(row)
+
+        # 삭제하려는 행을 역순으로 삭제 (역순으로 삭제해야 인덱스 문제가 발생하지 않음)
+        for row in reversed(rows_to_delete):
+            self.table.removeRow(row)  # 테이블에서 행 삭제
+            del url_list[row]  # url_list에서도 해당 인덱스 삭제
+
+    def reset_url(self):
+        global url_list
+        url_list = []
+        self.table.clearContents()  # 테이블 내용 삭제
+        self.table.setRowCount(0)   # 행 개수를 0으로 설정
+
+
+# 로그인 API 요청을 처리하는 스레드 클래스
+class LoginThread(QThread):
+    # 로그인 성공 시 메인 화면을 띄우기 위한 시그널
+    login_success = pyqtSignal()
+
+    def __init__(self, username, password):
+        super().__init__()
+        self.username = username
+        self.password = password
+
+    def run(self):
+        # 여기서 로그인 API 호출 시뮬레이션
+        time.sleep(3)  # 실제 API 요청 시에는 time.sleep()을 API 호출로 대체
+
+        # 로그인 성공 후 메인 화면 전환 시그널 발생
+        self.login_success.emit()
+
+
+# 로그인 화면 클래스
+class LoginWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("로그인 화면")
+        self.setGeometry(100, 100, 500, 300)  # 화면 크기 설정
+        self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
+
+        # 메인 레이아웃
+        layout = QVBoxLayout(self)
+        layout.setAlignment(Qt.AlignCenter)
+        layout.setContentsMargins(20, 20, 20, 20)  # 레이아웃의 외부 마진을 설정
+        layout.setSpacing(20)  # 위젯 간 간격 설정
+
+        # ID 입력
+        self.id_input = QLineEdit(self)
+        self.id_input.setPlaceholderText("ID를 입력하세요")
+        self.id_input.setStyleSheet("""
+            border-radius: 20px; 
+            border: 2px solid #888888;
+            padding: 10px;
+            font-size: 14px;
+            color: #333333;
+        """)
+        self.id_input.setFixedHeight(40)
+        self.id_input.setFixedWidth(300)  # 너비를 화면의 절반 정도로 설정
+
+        # 비밀번호 입력
+        self.password_input = QLineEdit(self)
+        self.password_input.setPlaceholderText("비밀번호를 입력하세요")
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setStyleSheet("""
+            border-radius: 20px; 
+            border: 2px solid #888888;
+            padding: 10px;
+            font-size: 14px;
+            color: #333333;
+        """)
+        self.password_input.setFixedHeight(40)
+        self.password_input.setFixedWidth(300)  # 너비를 화면의 절반 정도로 설정
+
+        # 로그인 버튼
+        button_layout = QHBoxLayout()
+
+        self.login_button = QPushButton("로그인", self)
+        self.login_button.setStyleSheet("""
+            background-color: #8A2BE2;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        self.login_button.setFixedHeight(40)
+        self.login_button.setFixedWidth(140)  # 버튼 너비 설정
+        self.login_button.clicked.connect(self.login)
+
+        # 비밀번호 변경 버튼
+        self.change_password_button = QPushButton("비밀번호 변경", self)
+        self.change_password_button.setStyleSheet("""
+            background-color: #8A2BE2;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        self.change_password_button.setFixedHeight(40)
+        self.change_password_button.setFixedWidth(140)  # 버튼 너비 설정
+        self.change_password_button.clicked.connect(self.change_password)
+
+        button_layout.addWidget(self.login_button)
+        button_layout.addWidget(self.change_password_button)
+        button_layout.setSpacing(20)  # 버튼 간의 간격을 설정
+
+        # 레이아웃에 요소 추가
+        layout.addWidget(self.id_input)
+        layout.addWidget(self.password_input)
+        layout.addLayout(button_layout)
+        self.center_window()
+
+    def center_window(self):
+        """화면 중앙에 창을 배치"""
+        screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
+        size = self.geometry()  # 현재 창 크기
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+    def login(self):
+        # ID와 비밀번호를 가져옴
+        username = self.id_input.text()
+        password = self.password_input.text()
+
+        # 로그인 요청을 비동기적으로 처리하는 스레드 생성
+        self.login_thread = LoginThread(username, password)
+        self.login_thread.login_success.connect(self.main_window)  # 로그인 성공 시 메인 화면으로 전환
+        self.login_thread.start()  # 스레드 실행
+
+    def change_password(self):
+        # 비밀번호 변경 함수 (비워두기)
+        a = 1
+
+    def main_window(self):
+        # 로그인 성공 시 메인 화면을 새롭게 생성
+        self.close()  # 로그인 화면 종료
+        self.main_screen = MainWindow()
+        self.main_screen.show()
+
+
+# 프로그램 실행
 if __name__ == "__main__":
-    login_window()  # 로그인 창 호출
-    # start_app()
+    app = QApplication(sys.argv)
+    window = LoginWindow()
+    window.show()
+    sys.exit(app.exec_())
