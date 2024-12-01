@@ -1,7 +1,0 @@
-온라인전문마케팅
-
-2024.11.30
-
-25만원
-
-pyinstaller --onefile --noconsole main.py
