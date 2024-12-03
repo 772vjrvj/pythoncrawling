@@ -1,0 +1,319 @@
+{
+  "pageInfo": [
+    {
+      "total": 31
+    }
+  ],
+  "list": [
+    {
+      "USE_YN": "Y",
+      "AMT": 90000,
+      "MINUTE": 50,
+      "CUD_TYPE": "R",
+      "USER_NAME": "관리자",
+      "USER_SEQ": "USR000000001",
+      "SEQ": "CRM00001",
+      "NAME": "50분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 100000,
+      "MINUTE": 70,
+      "CUD_TYPE": "R",
+      "USER_NAME": "관리자",
+      "USER_SEQ": "USR000000001",
+      "SEQ": "CRM00002",
+      "NAME": "70분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 130000,
+      "MINUTE": 100,
+      "CUD_TYPE": "R",
+      "USER_NAME": "관리자",
+      "USER_SEQ": "USR000000001",
+      "SEQ": "CRM00003",
+      "NAME": "100분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 90000,
+      "MINUTE": 70,
+      "CUD_TYPE": "R",
+      "USER_NAME": "관리자",
+      "USER_SEQ": "USR000000001",
+      "SEQ": "CRM00004",
+      "NAME": "할인70분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 110000,
+      "MINUTE": 100,
+      "CUD_TYPE": "R",
+      "USER_NAME": "관리자",
+      "USER_SEQ": "USR000000001",
+      "SEQ": "CRM00005",
+      "NAME": "할인100분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 90000,
+      "MINUTE": 40,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210401113218041000",
+      "NAME": "40분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 110000,
+      "MINUTE": 60,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210401113237399000",
+      "NAME": "60분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 150000,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210401140703382000",
+      "NAME": "90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 110000,
+      "MINUTE": 60,
+      "CUD_TYPE": "R",
+      "USER_NAME": "샵",
+      "USER_SEQ": "USR20210311110844522000",
+      "SEQ": "CRM20210425072437582000",
+      "NAME": "60분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 121000,
+      "MINUTE": 60,
+      "CUD_TYPE": "R",
+      "USER_NAME": "샵",
+      "USER_SEQ": "USR20210311110844522000",
+      "SEQ": "CRM20210503070653130000",
+      "NAME": "카드60분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 99000,
+      "MINUTE": 40,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210503101820044000",
+      "NAME": "카드 40분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 132000,
+      "MINUTE": 60,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210503101835847000",
+      "NAME": "카드 60분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 165000,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210503105215831000",
+      "NAME": "카드 90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 50000,
+      "MINUTE": 30,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20210525182713276000",
+      "NAME": "30분연장"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 90000,
+      "MINUTE": 50,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211201034131548000",
+      "NAME": "50분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 110000,
+      "MINUTE": 70,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211201034131551000",
+      "NAME": "70분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 150000,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211201034131553000",
+      "NAME": "90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 99000,
+      "MINUTE": 50,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211216111512353000",
+      "NAME": "카드 50분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 121000,
+      "MINUTE": 70,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211216111512357000",
+      "NAME": "카드 70분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 165000,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211216111512360000",
+      "NAME": "카드 90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 50000,
+      "MINUTE": 30,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211221174216937000",
+      "NAME": "연장30분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 55000,
+      "MINUTE": 30,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20211225201502807000",
+      "NAME": "연장카드30분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 140100,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20220106165618929000",
+      "NAME": "사이트카드90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 102740,
+      "MINUTE": 70,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20220106180625557000",
+      "NAME": "사이트카드70분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 84060,
+      "MINUTE": 50,
+      "CUD_TYPE": "R",
+      "USER_NAME": "맥심",
+      "USER_SEQ": "USR20211201033649442000",
+      "SEQ": "CRM20220107140147854000",
+      "NAME": "사이트카드50분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 150000,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "샵",
+      "USER_SEQ": "USR20210311110844522000",
+      "SEQ": "CRM20220202111253690000",
+      "NAME": "90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 165000,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "샵",
+      "USER_SEQ": "USR20210311110844522000",
+      "SEQ": "CRM20220202111454967000",
+      "NAME": "카드90분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 84060,
+      "MINUTE": 40,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20220215174013095000",
+      "NAME": "사이트40분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 112080,
+      "MINUTE": 60,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20220217164424560000",
+      "NAME": "사이트60분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 55000,
+      "MINUTE": 60,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20220314154822793000",
+      "NAME": "연장카드60분"
+    },
+    {
+      "USE_YN": "Y",
+      "AMT": 140100,
+      "MINUTE": 90,
+      "CUD_TYPE": "R",
+      "USER_NAME": "퀸",
+      "USER_SEQ": "USR20210311110756569000",
+      "SEQ": "CRM20220410090416910000",
+      "NAME": "사이트90분"
+    }
+  ]
+}

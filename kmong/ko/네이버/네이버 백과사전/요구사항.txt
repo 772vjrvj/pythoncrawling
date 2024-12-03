@@ -1,0 +1,17 @@
+다름AI연구소
+백과사전 검색 키워드 크롤링
+2024-10-24
+15만
+
+
+
+https://terms.naver.com/list.naver?cid=48156&categoryId=48156
+
+1. 여기 제목 수집
+
+https://terms.naver.com/search.naver?query=%ED%9A%A8%EB%8A%A5&searchType=&dicType=&subject=
+
+2 여기제목수집
+
+
+pyinstaller --onefile --noconsole main.py

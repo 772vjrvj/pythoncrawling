@@ -1,0 +1,12 @@
+■ 요구사항
+
+    안녕하세요
+    https://www.kmcca.or.kr/ks/memberStatus/memberStatusList.do
+    여기 사이트에서 업체 팩스 번호만 따로 추출하고 싶습니다
+    답변 기다리겠습니다!
+
+
+
+■ 특이사항
+    아이피 차단 안됨
+    셀리니움 뷰티풀숩 사용가능

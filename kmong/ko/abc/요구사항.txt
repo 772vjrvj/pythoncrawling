@@ -1,0 +1,90 @@
+
+
+안녕하세요.
+abc마트 사이트 크롤링 의뢰 드립니다.
+각 상품의 품절, 가격 변동 여부가 포인트 입니다.
+가능여부 문의 드립니다.
+가능하다면 어떤 옵션으로 결제해야 할까요?
+
+
+필요한 데이터는 아래 와 같습니다.
+상품명
+상품 상태 -가격변동, 품절, 변화없음
+브랜드
+상품상세URL
+구매 가능한 옵션
+품절된 옵션
+최초 수집일
+마지막 수집일
+
+https://abcmart.a-rt.com/
+
+
+그 사이트 맞습니다.
+
+예를 들어 나이키를 검색하면
+abc마트 사이트는 특이하게
+abc마트와 그랜드스테이지 두가지 두가지 분류로 나뉩니다.
+두곳 모두에 나이키가 있습니다. (abc마트-일반제품, 그랜드스테이지-프리리엄제품)
+두 곳의 나이키 상품을 크롤링 하려고 합니다.
+엑셀파일로 결과 출력하면 됩니다.
+
+
+그 사이트 맞습니다.
+
+예를 들어 나이키를 검색하면
+abc마트 사이트는 특이하게
+abc마트와 그랜드스테이지 두가지 두가지 분류로 나뉩니다.
+두곳 모두에 나이키가 있습니다. (abc마트-일반제품, 그랜드스테이지-프리리엄제품)
+두 곳의 나이키 상품을 크롤링 하려고 합니다.
+엑셀파일로 결과 출력하면 됩니다.
+
+말씀하신 부분은 확인했습니다.
+
+상품명
+상품 상태 -가격변동, 품절, 변화없음
+브랜드
+상품상세URL
+구매 가능한 옵션
+품절된 옵션
+최초 수집일
+마지막 수집일
+
+이 부분만 사이트에 어디에 있는지만 표시해주시면 될것 같습니다
+
+
+
+
+프로그램 작동 방식에 대해서 문의 드려봅니다.
+제가 원하는 상품만도 가능할까요?
+예를 들어 아래 세가지 상품을 크롤링할때
+목록 넣는 폼이 있고
+그 폼에 상품 상세페이지 링크를 넣으며
+목록에 넣어져 있는 상품만 크롤링 되도록 도 가능할까요?
+
+https://grandstage.a-rt.com/product/new?prdtNo=1020104649
+https://grandstage.a-rt.com/product/new?prdtNo=1020089209&page=1
+https://grandstage.a-rt.com/product/new?prdtNo=1020105427
+https://grandstage.a-rt.com/product/new?prdtNo=1020101338&page=1
+
+품절
+
+
+
+■ 2024-08-31
+    순수한토끼6077
+    수정 가격 사이트와 가격 불일치
+    json_data.get("productPrice", {}).get("sellAmt") -> json_data.get("displayProductPrice") 로 수정
+
+
+■ 2024-10-26
+추가 의뢰
+https://www.onthespot.co.kr/display/category?ctgrNo=1000000333&track=W0006
+https://www.onthespot.co.kr/product?prdtNo=2010108470
+
+
+
+pyinstaller --onefile --noconsole --add-data "C:\Users\772vj\AppData\Local\Programs\Python\Python312\tcl\tkdnd2.8;tkdnd2.8" main.py
+
+https://sourceforge.net/projects/tkdnd/files/Windows%20Binaries/TkDND%202.8/
+tkdnd2.8-win32-x86_64.tar.gz 다운로드

@@ -1,0 +1,81 @@
+1,2번 페이지 (카드할인 가격으로 반영 X)
+
+셀렉스 면역 프로바이오틱스 250mg x 30캡슐
+
+네이버: https://search.shopping.naver.com/catalog/40636536619
+
+다나와: https://prod.danawa.com/info/?pcode=16274582
+
+에누리: https://www.enuri.com/detail.jsp?modelno=101867720
+
+------------------------------------------------------------------------
+
+3페이지 (1개짜리 수집 on/off 작동 X)
+
+멘소래담 롤온 핫파스 50ml + 쿨파스50ml
+
+네이버: https://search.shopping.naver.com/catalog/33866977618
+
+다나와: https://prod.danawa.com/info/?pcode=30471692
+
+에누리: https://www.enuri.com/detail.jsp?modelno=106019362
+
+------------------------------------------------------------------------
+
+3페이지 (기준가격 상이함)
+
+나우푸드 비타민D3 3000IU 100mg x 90캡슐
+
+네이버: https://search.shopping.naver.com/catalog/24767906527
+
+------------------------------------------------------------------------
+
+4페이지 (네이버 배송비 포함 안끔)
+
+네이버 기준가격 잡을때만 배송비 포함으로 수집해야 하는대 
+복수 구성에서도 배송비 포함해서 가격을 수집함
+
+------------------------------------------------------------------------
+
+4페이지 (URL 있는데 실행이 안됨)
+
+그레인온 골드 카무트 효소 3g x 30포
+
+네이버: https://search.shopping.naver.com/catalog/38675944618
+https://search.shopping.naver.com/catalog/46401591622
+
+다나와: https://prod.danawa.com/info/?pcode=44830199
+
+에누리: https://www.enuri.com/detail.jsp?modelno=121879463
+
+------------------------------------------------------------------------
+
+4페이지 (다나와, 에누리 중복 상품 있는대 건너뛰기 적용 안됨)
+
+바디마인 양배추 발효효소 3.5g x 30포
+
+네이버: https://search.shopping.naver.com/catalog/40501103620
+
+다나와: https://prod.danawa.com/info/?pcode=20075072
+
+에누리: https://www.enuri.com/detail.jsp?modelno=112259587
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+안녕하세요. 네이버 블로그에서 "서울 웨이팅 맛집"으로 검색한 결과를 블로그 글 제목만 크롤링 하려고 합니다. 기간은 2019-01-01~2023-12-31  이고 6만 9천개정도로 조회되는데 가능할까요?
+
+
+https://section.blog.naver.com/Search/Post.naver?pageNo=1&rangeType=PERIOD&orderBy=sim&startDate=2019-01-01&endDate=2023-12-31&keyword=%EC%84%9C%EC%9A%B8%20%EC%9B%A8%EC%9D%B4%ED%8C%85%20%EB%A7%9B%EC%A7%91
+아 19년~23년으로 조회하니 97만건이 맞습니다. 데이터 양이 너무 많아서 2022년 데이터 (259,727건)  으로 하게되면 견적 문의드립니다.
+
+
+
+
+서울 웨이팅 맛집
+https://section.blog.naver.com/Search/Post.naver?pageNo=1&rangeType=PERIOD&orderBy=sim&startDate=2022-01-01&endDate=2022-01-01&keyword=%EC%84%9C%EC%9A%B8%20%EC%9B%A8%EC%9D%B4%ED%8C%85%20%EB%A7%9B%EC%A7%91

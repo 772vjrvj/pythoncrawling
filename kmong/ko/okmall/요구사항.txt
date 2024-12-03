@@ -1,0 +1,21 @@
+아이디 : 순수한토끼
+가격 : 150,000
+구매일 : 2024-11-13
+종료일 : 2024-11-18
+
+
+상품명에 모델명 있으니까
+1. 상품 링크
+2. 브랜드
+3. 상품명
+4. 가격
+5. 택 사이즈
+으로 하면 될꺼같아요
+
+엑셀 드래그 URL 방식
+
+https://www.okmall.com/products/view?no=211670&item_type=&cate=20009188&uni=M
+
+ABC 방식으로
+
+pyinstaller --onefile --noconsole --add-data "C:\Users\772vj\AppData\Local\Programs\Python\Python312\tcl\tkdnd2.8;tkdnd2.8" main.py

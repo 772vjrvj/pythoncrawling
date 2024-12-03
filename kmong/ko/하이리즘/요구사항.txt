@@ -1,0 +1,55 @@
+www.hi-rism.com
+
+안녕하세요, 퍼스트몰(가비아)에서 만든 HTML PHP 기반의 웹 쇼핑몰입니다. 다른게 아니라 PG사쪽과 문제가 발생해서 상품을 일시적으로 내려야 하는데 상황인데 이런작업도 가능하실까요? 하루정도만 내렸다가 다시 올리면 되는 상황입니다. 바로 작업이 가능하시다면 답변 부탁드리겠습니다 (__)
+
+
+지금은 저희 기존의 개발자님이 하단의 방식으로 작업해주셨는데 오늘 외국으로 출장가셔서 대행할수 있는 분이 안계셔서요 ㅠㅠ
+
+메인페이지
+/data/skin/highend/main/index.html 파일을
+/data/skin/highend/main/index copy.html의 코드로 덮어쓰기
+
+헤더
+/data/skin/highend/layout_header/standart.html 파일을
+/data/skin/highend/layout_header/standart copy.html의 코드로 덮어쓰기
+
+푸터
+/data/skin/highend/layout_footer/standart.html 파일을
+/data/skin/highend/layout_footer/standart copy.html의 코드로 덮어쓰기
+
+
+가비아는 당연히 계속 사용해야 합니다.
+
+단순히 서버이전중이라는 팝업만 띄우고 쇼핑몰과 연결을 끊으려고 했는데 PG사에서 판매중인 상품이 없는걸로 보이도록 하라고 시정조치가 나와서 어떻게 처리해야할지 고민중입니다.
+
+데이터베이스접근
+{
+"ssh_host": "121.78.197.46",
+"ssh_port": 22,
+"ssh_user": "7hlnrgshighend1",
+"ssh_password": "s4hc0y3b",
+
+"db_host": "121.78.197.127",
+"db_user": "highend1",
+"db_password": "1709706771highend1",
+"db_port": 3306,
+"db_name": "highend1"
+}
+
+
+
+쇼핑몰 어드민 계정정보
+
+https://high-end.firstmall.kr/admin/login/index
+
+woofer88
+woofer88^^;;;;
+
+
+소스코드는 저도 어떤건지 잘 모르겠어요
+
+
+FTP 서버
+high-end.firstmall.kr
+7hlnrgshighend1
+s4hc0y3b

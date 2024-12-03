@@ -1,0 +1,2082 @@
+<html><head><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/mt_captcha/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/turnstile/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/turnstile/hunter.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/amazon_waf/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/yandex/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/lemin/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/arkoselabs/hunter.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/arkoselabs/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/recaptcha/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/recaptcha/hunter.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/keycaptcha/hunter.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/hcaptcha/hunter.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/hcaptcha/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/geetest_v4/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/captcha/geetest/interceptor.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/communication_helpers.js"></script><script src="chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/content/core_helpers.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<link rel="shortcut icon" href="../../upload/favicon/a2_1728461078_6C676F676F.png">
+<title>블링블랑 관리자</title>
+<style>
+
+
+body {margin:0 0 0 0;
+   scrollbar-face-color: #EDEDED; 
+   scrollbar-shadow-color: #9D9D9D; 
+   scrollbar-highlight-color: #9D9D9D; 
+   scrollbar-3dlight-color: #ffffff; 
+   scrollbar-darkshadow-color: #ffffff; 
+   scrollbar-track-color: #EBEBEB; 
+   scrollbar-arrow-color: #9D9D9D;
+   }
+TD, TH ,body {font-family:'돋움', Dotum; font-size:11px; line-height: 120%; letter-spacing:100%; color:#6F6F6F;}
+IMG {BORDER-RIGHT: 0px; BORDER-TOP: 0px; BORDER-LEFT: 0px; BORDER-BOTTOM: 0px;}
+FORM {FONT-SIZE: 11px; COLOR: #666666; font-family:'돋움', Dotum;}
+TEXTAREA {FONT-SIZE: 11px; COLOR: #666666; font-family:'돋움', Dotum; LINE-HEIGHT:120%; BORDER-RIGHT: #dddddd 1px solid; BORDER-TOP: #dddddd 1px solid; FONT-SIZE: 11px; BORDER-LEFT: #dddddd 1px solid; BORDER-BOTTOM: #dddddd 1px solid;}
+OPTION {FONT-SIZE: 8pt; COLOR: #666666; font-family:'돋움', Dotum;}
+BLOCKQUOTE {FONT-SIZE: 8pt; COLOR: #666666; font-family:'돋움', Dotum;}
+SELECT {FONT-SIZE: 11px; COLOR: #666666; font-family:'돋움', Dotum; }
+
+A:link {COLOR: #666666; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+A:visited {COLOR: #666666; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+A:active {COLOR: #666666; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+A:hover {COLOR: #666666; TEXT-DECORATION: underline; font-family:'돋움', Dotum; font-size:11px;}
+
+
+.input {font-family:'돋움', Dotum; FONT-SIZE: 11px; color:#666666; BACKGROUND-COLOR: #ffffff; BORDER: #dddddd 1px solid; height:25px;}
+
+.input_checkbox {font-family:'돋움', Dotum; FONT-SIZE: 14px; color:#666666; BACKGROUND-COLOR: #ffffff; BORDER: #ffffff 1px solid; height:15px; font-weight:bold}
+
+.bottom {font-family:'돋움', Dotum; font-size: 11px; color:#7C7825}
+
+
+.box {font-size: 12px; border:1px solid #afafaf; height:25px; padding-left:5px;} 
+.box1 {font-size: 11px; border:1px solid #d4d0c8;background-color:#F7F7F7;  } 
+.box2 {font-size: 11px; border:1px solid #464646;background-color:white;  } 
+.graybox {font-size: 11px; border:1px solid #000000;background-color:#d4d0c8;  } 
+.nonbox {font-size: 11px; border:0px solid #000000;background-color:white;  } 
+.radio {font-size: 11px; border:0px solid #000000;background-color:white;  } 
+.text {font-size: 11px; border:1px solid #dbdbdb;}
+.text2 {font-size: 11px; border:1px solid #000000;}
+.text_l {font-size: 11px; border:1px solid #ACACAC;}
+.mem {font-size:8pt; font-family:'돋움', Dotum; letter-spacing:-1;color:#464646;}
+.stext{font-size:8pt; font-family:'돋움', Dotum;}
+.sm {font-size:8pt; font-family:'돋움', Dotum; letter-spacing:-1;color:#ff4800;}
+.text1 { FONT-SIZE: 11px; COLOR: #7C682D; BACKGROUND-COLOR: #F6F4EE; Border:1px SOLID #E1DCCD;}
+.text2 { FONT-SIZE: 11px; COLOR: #7C682D; BACKGROUND-COLOR: #F6F4EE; Border:1px SOLID #E1DCCD;}
+.outset {font-size:11px;border:1px outset #ffffff;}
+.box_s{font-family:'돋움', Dotum; BORDER-RIGHT: #ffffff 1px solid; BORDER-TOP: #999999 1px solid; PADDING-LEFT: 3px; FONT-SIZE: 11px; BORDER-LEFT: #999999 1px solid; COLOR: #666666; BORDER-BOTTOM: #ffffff 1px solid; BACKGROUND-COLOR:#f1f1f1}
+
+.blue {font-size: 11px; color: #215987; line-height: 19px} 
+.blue A:link{color:#214A87;text-decoration:none} 
+.blue A:visited {color:#214A87;text-decoration:none} 
+.blue A:active {color:#214A87;text-decoration:none} 
+.blue A:hover{color:#214A87;text-decoration:none} 
+
+
+.white {COLOR: #ffffff; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+a.white:link {COLOR: #ffffff; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+a.white:visited {COLOR: #ffffff; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+a.white:active {COLOR: #ffffff; TEXT-DECORATION: none; font-family:'돋움', Dotum; font-size:11px;}
+a.white:hover {COLOR: #ffffff; TEXT-DECORATION: underline; font-family:'돋움', Dotum; font-size:11px;}
+
+
+.table {border-style: solid; 
+border-width: 1px; 
+border-color: #D9D7D7;
+border-collapse:collapse;
+}
+
+
+.table2 {border-style: solid; 
+border-top-width: 1px; 
+border-right-width: 1px; 
+border-bottom-width: 1px; 
+border-left-width: 1px; 
+
+border-color: #000000;}
+
+.table_coll
+{
+border-color : #D4D0C8;
+border-collapse : collapse;
+border-style: solid; 
+border-width: 1px 1px 1px 1px;
+}
+.table_coll_nonepx
+{
+border-color : #000000;
+border-collapse : collapse;
+
+border-style: solid; 
+border-top-width: 0px; 
+border-right-width: 0px; 
+border-bottom-width: 0px; 
+border-left-width: 0px; 
+}
+
+.help {font-size:11px;color:#73A47A;font-family:'돋움', Dotum;}
+
+.button
+{
+ font-style: normal;
+    font-size: 12px;
+    color: black;
+    height: 18px;
+    background-color: #CDDEE7;
+    border-width: 1px;
+    border-color: #999999;
+    border-style: solid;
+    padding-top: 1px;
+}
+.button_pink
+{
+background-color:#FF00FF;
+color:white;
+font-weight:bold;
+text-align:center;
+}
+form { display : inline; }
+
+
+
+
+
+body{font-family:'돋움', Dotum;}
+</style>
+
+
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+
+<script language="javascript" src="../../script/admin.js"></script>
+
+
+<link href="../../m/css/font-awesome.css" rel="stylesheet" type="text/css">
+<link href="../../m/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<script src="chrome-extension://ecmeogcbcoalojmkfkmancobmiahaigg/content_script/content_script.js"></script><captcha-widgets></captcha-widgets></head>
+<body bgcolor="#FFFFFF" text="#5A595A" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" style="">
+<script>
+$(document).ready(function(){
+
+
+	$( '.bodtops' ).click( function() {
+	  $( 'html, body' ).animate( { scrollTop : 0 }, 400 );
+	  return false;
+	});
+});
+
+
+
+function openPop(url)
+
+{
+
+   window.open(url, "", "toolbars=yes, scrollbars=yes, width=748, height=602");
+
+}
+
+function openPop2()
+
+{
+
+   window.open("../../manual/pop-pay.php", "", "toolbars=yes, scrollbars=yes, width=952, height=778");
+
+}
+function openPop3(url)
+
+{
+
+   window.open(url, "", "toolbars=yes, scrollbars=yes, width=952, height=678");
+
+}
+
+</script>
+<a href="#top" class="bodtops" style="position:fixed; bottom:50px; right:50px; color:#000; background-color:#fff; border:1px solid #adadad; border-radius:50px; padding:10px 10px 10px 10px; outline:none; z-index:99999;"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
+
+
+
+	
+<style>
+div, ul, li{list-style:none; margin:0; padding:0;}
+.adm_wrap{width:100%; height:auto; float:left; min-width:1450px;}
+
+.top_spa_logo{width:230px; height:109px; float:left;}
+.top_spa_logo li{float:left; width:160px; height:50px; padding:25px 0 0 20px;}
+.top_spa_right{width:100%; height:61px; float:left;}
+.top_spa_right ul{width:100%; float:right; height:30px; margin:0 100px 0 0;}
+.top_spa_right ul li{float:right; font-size:12px;}
+
+.fonts_stylesd a{color:#fff; text-decoration:none; font-size:13px;}
+.fonts_stylesd2{color:#a7dfff; font-size:13px;}
+
+.a_sub_title{color:#000; font-size:12px;}
+
+input:focus::-webkit-input-placeholder {color: transparent;}  /* chrome */
+input:focus::-moz-placeholder {color: transparent;}		   /* firefox */
+input::placeholder, textarea::placeholder { color: #a894ff; font-style: italic; font-size:12px; }
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { color: #a894ff; font-style: italic; font-size:12px;}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { color: #a894ff; font-style: italic; font-size:12px;}
+input::-moz-placeholder, textarea::-moz-placeholder { color: #a894ff; font-style: italic; font-size:12px;}
+input:disabled { background:#f1f1f1}
+
+
+</style>
+
+<script type="text/javascript" src="/js/jquery.vticker-min.js"></script>
+<script type="text/javascript" src="/js/jquery.marquee.min.js"></script>
+
+<div class="adm_wrap" style="background-color:#696969;">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" height="109">
+		<tbody><tr>
+			<td width="100%" height="109">
+
+				<table border="0" cellpadding="0" cellspacing="0" width="100%" height="109">
+					<tbody><tr>
+						<td width="360" height="109" style="background:url('/wb_admin/images/atb5.png') right bottom no-repeat;">
+							<div class="top_spa_logo">
+								<ul>
+									<li>
+																		
+									<a href="/wb_admin/main.php"><img src="/upload/design/a1_1728118845_6C6F676F.png" width="100%" style="cursor:pointer; max-width:150px; margin-top:-13px; "></a>
+									</li>
+								</ul>
+							</div>
+						</td>	
+
+
+						
+
+
+						<td valign="top" style="background:url('/wb_admin/images/atb6.png') right bottom repeat-x; position:relative;">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" height="61">
+								<tbody><tr>
+									<td width="500" style="padding-left:200px;">
+
+										<script>
+										$(document).ready(function(){
+
+
+											$('.sinchi2_left_list2').css("display","block");
+											$('#news-container1').vTicker({
+												speed: 300,
+												pause: 3000,
+												animation: 'fade',
+												mousePause: false,
+												showItems: 1
+											});
+
+												$('.sinchi2_left_list2').marquee({
+													//speed in milliseconds of the marquee
+													duration: 10000,
+													//gap in pixels between the tickers
+													gap: 50,
+													//time in milliseconds before the marquee will start animating
+													delayBeforeStart: 0,
+													//'left' or 'right'
+													direction: 'left',
+													scrollamount:5000,
+													//true or false - should the marquee be duplicated to show an effect of continues flow
+													duplicated: false
+												});
+										
+											
+										});
+
+
+
+
+										function web_notipop(num)
+										{
+											
+											
+											cw=screen.availWidth;     //화면 넓이
+											ch=screen.availHeight;    //화면 높이
+
+											sw=628;    //띄울 창의 넓이
+											sh=887;    //띄울 창의 높이
+
+											ml=(cw-sw)/2;        //가운데 띄우기위한 창의 x위치
+											mt=(ch-sh)/2;         //가운데 띄우기위한 창의 y위치
+
+
+
+											 window.open("/wb_admin/webbridge_notice.php?bdnum="+num,"","scrollbars=yes,left="+ml+",top="+mt+",width="+sw+",height="+sh);
+											
+										}
+
+
+										</script>
+										<style>
+										.sinchi2_left_list{width:100%;  float:left;}
+										.sinchi2_left_list ul{width:100%; height:auto; float:left;}
+										.sinchi2_left_list ul li{float:left; width:100%; height:30px; line-height:30px; font-size:12px; color:#000;}
+										.sinchi2_left_list2{width: 300px; overflow: hidden; height:30px; line-height:30px; font-size:12px;}
+
+										</style>
+
+
+										
+
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tbody><tr>
+												<td width="110" height="30" style="font-size:12px; "><img src="/wb_admin/images/web_noti_icon_s.png" width="15" style="vertical-align:middle; line-height:30px;">&nbsp;솔루션공지</td>
+												<td>
+
+													
+													
+<a href="https://webbridge.co.kr/wb_board/list.php?&amp;bbs_code=shop_pc" onclick="window.open(this.href,'공지사항','width=1000, height=800, scrollbars=yes'); return false;">
+
+													<div class="sinchi2_left_list2" style="display: block;"><div style="width: 100000px; margin-left: 300px; animation: 23.4667s linear 0s infinite normal none running marqueeAnimation-5477947;" class="js-marquee-wrapper"><div class="js-marquee" style="margin-right: 0px; float: left;">
+														<span style="padding-right:400px;"><span style="color:#fff;">.</span> </span>
+													</div><style>@-webkit-keyframes marqueeAnimation-5477947  { 100%  {margin-left:-404px}}</style></div></div>
+</a>
+																									
+												
+												
+												</td>
+											</tr>
+										</tbody></table>
+
+									
+									</td>
+
+
+
+			<script>
+			function mobileopen(){
+	cw=screen.availWidth;     //화면 넓이
+	ch=screen.availHeight;    //화면 높이
+
+	sw=400;    //띄울 창의 넓이
+	sh=700;    //띄울 창의 높이
+
+	ml=(cw-sw)/2;        //가운데 띄우기위한 창의 x위치
+	mt=(ch-sh)/2;         //가운데 띄우기위한 창의 y위치
+		 
+		 
+
+
+	window.open("/m","","scrollbars=no,left="+ml+",top="+mt+",width="+sw+",height="+sh);
+}
+
+</script>
+
+
+
+
+
+									<td width="450" align="right" height="61">
+
+
+										<table cellpadding="0" cellspacing="0" border="0" width="450" align="right">
+											
+											<tbody><tr>
+												<td align="left" width="250" valign="top" rowspan="2" style="padding-top:7px;">
+													<img src="../../wb_admin/images/jums_adm.gif" style="vertical-align:middle;">&nbsp;<b>관리자</b>님 안녕하세요.
+													&nbsp;&nbsp;&nbsp;
+													<a href="/wb_admin/login_ok.php?del=1" style="font-size:12px;">로그아웃</a> 
+												</td>
+												
+
+												
+												<td width="100" height="23" align="left">
+													<a href="/" target="_blank" style="font-size:12px; color:#000;"><img src="../../wb_admin/images/jums_adm.gif" style="vertical-align:middle;">&nbsp;PC</a>	|
+													<a href="javascript:mobileopen();" style="font-size:12px; color:#000;">M</a>
+												</td>
+												<td width="100" height="23" align="left">
+													<a href="https://ksta.ksnet.co.kr" target="_blank" style="font-size:12px; color:blue;"><img src="../../wb_admin/images/jums_adm.gif" style="vertical-align:middle;">&nbsp;ksnet 가맹점</a>	
+													
+												</td>
+												
+											</tr>
+
+											<tr>
+												
+												
+												<td width="100" height="22" align="left">
+													<a href="/wb_admin/partner.php" style="font-size:12px; color:#000;"><img src="../../wb_admin/images/jums_adm.gif" style="vertical-align:middle;">&nbsp;제휴</a>
+													
+												</td>
+												<td width="100" height="22" align="left">
+													<a href="https://webbridge.co.kr/wb_board/list.php?&amp;bbs_code=maintenance" target="_blank" style="font-size:12px; color:#000;"><img src="../../wb_admin/images/jums_adm.gif" style="vertical-align:middle;">&nbsp;유지보수신청</a>								
+												</td>
+											</tr>
+											<tr>												
+												<td colspan="2" height="3"></td>											
+											</tr>
+										</tbody></table>
+
+
+										
+
+									</td>
+								</tr>
+							
+								
+							</tbody></table>
+							<!--div class="top_spa_right">
+								<ul>									
+									<li><a href="/wb_admin/login_ok.php?del=1" style="font-size:12px;">로그아웃</a></li>															
+									<li><a href="https://pgims.ksnet.co.kr/pg_inc/login/login.jsp" target="_blank" style="font-size:12px; color:blue;">ksnet 가맹점로그인</a></li>
+									<li><a href="/" target="_blank" style="font-size:12px;">쇼핑몰가기</a></li>								
+									<li style="padding-right:200px;"><B>관리자</B>님 안녕하세요.</li>									
+								</ul>
+
+								<ul>
+									<li><a href="https://webbridge.co.kr/wb_board/list.php?&bbs_code=maintenance" target="_blank" style="font-size:11px;">웹브릿지문의</a></li>
+									<li><a href="/wb_admin/portal.php" style="font-size:11px; ">마케팅/제휴</a></li>								
+								</ul>
+
+								
+							</div-->
+
+
+							
+
+
+
+
+																<table border="0" cellpadding="0" cellspacing="0" style="position:absolute; left:-120px; bottom:8px;min-width:1280px;">
+									<tbody><tr height="40">
+										<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/main.php"><b>대쉬보드</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/adm.php"><b>환경설정</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd" style="position:relative;">
+											<a href="/wb_admin/trade_order.php?status=11&amp;fis=1"><b>주문관리</b></a>
+																					
+										</td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/category/category_list.php"><b style="color:#fcff00;">카테고리</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/total_goods_list.php"><b>상품관리</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd" style="position:relative;"><a href="/wb_admin/member_list.php"><b>회원관리</b></a>
+										
+																					</td>
+
+
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+
+
+
+										<td class="fonts_stylesd" style="position:relative;"><a href="/wb_admin/bbs_list.php?code=1508735304"><b>상품문의<span style="font-size:11px;">외</span></b></a>
+										
+																					</td>
+
+
+										<!--<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+
+
+
+										<td class="fonts_stylesd" style="position:relative;"><a href="/wb_admin/bbs_list2.php?code=1507963722"><b >시안확인</b></a>
+										
+																					</td>
+
+
+
+
+
+
+
+										<td class="fonts_stylesd2">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd" style="position:relative;">
+											<a href="/wb_admin/estimate_list2.php"><b >견적서</b></a>
+																						<img src="/wb_admin/images/mhl_new_icons2.png" style="position:absolute; top:5px; right:-15px;">
+																					</td-->
+									<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd" style="position:relative;">
+											<a href="/wb_admin/bbs_admin_list.php" style="font-size:11px;"><b>게시판관리</b></a>
+																					</td>
+
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<!--<td class="fonts_stylesd"><a href="/wb_admin/guide_bbs_list3.php?code=1565683018" style="font-size:11px;"><b >인쇄가이드</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>-->
+
+
+										
+										<td class="fonts_stylesd"><a href="/wb_admin/ay_popup_list.php" style="font-size:11px;"><b>팝업관리</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+
+
+										<!--td class="fonts_stylesd"><a href="/wb_admin/guide_admin_list2.php" style="font-size:11px;"><b >템플릿</b></a></td>
+										<td class="fonts_stylesd2">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</td-->
+
+
+										<td class="fonts_stylesd"><a href="/wb_admin/new_design1.php" style="font-size:11px;"><b>디자인관리</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+
+										<td class="fonts_stylesd"><a href="/wb_admin/sale_status.php" style="font-size:11px;"><b>매출통계</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/wb_counter.php?type=hour" style="font-size:11px;"><b>접속통계</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/coupon_list.php" style="font-size:11px;"><b>쿠폰관리</b></a></td>
+										<td>&nbsp;&nbsp;&nbsp;<img src="/wb_admin/images/atb7.png" style="padding-top:3px;">&nbsp;&nbsp;&nbsp;</td>
+										<td class="fonts_stylesd"><a href="/wb_admin/portal2.php" style="font-size:11px;"><b>마케팅</b></a></td>
+										
+									</tr>
+								</tbody></table>
+
+														
+						
+						</td>
+					</tr>
+				</tbody></table>
+				
+
+
+
+			</td>		
+		</tr>
+	</tbody></table>
+	
+
+</div>
+	<table width="98%" border="0" cellspacing="0" cellpadding="0" style="width:1200px; min-width:90%;">
+		<tbody><tr>
+			<script>
+function iconoverchge(thid){
+	document.getElementById( thid ).setAttribute( 'src', '/wb_admin/image/left_icon_over_s.gif' );
+
+}
+
+function iconoutchge(thid){
+	document.getElementById( thid ).setAttribute( 'src', '/wb_admin/image/left_icon_s.gif' );
+
+}
+</script>
+<td width="240" valign="top">
+	<table border="0" cellspacing="0" cellpadding="0" width="240">
+		<tbody><tr>
+            
+						<td width="240" valign="top">
+				<table width="240" border="0" cellspacing="0" cellpadding="0" style="background:#696969 url('/wb_admin/images/atb1.png') left top no-repeat;">
+					<tbody><tr>
+						<td width="240" height="53">
+							<b style="font-size:16px; color:#fff; float:left; padding-left:40px;">
+							카테고리
+							</b>						
+						</td>
+					</tr>
+				</tbody></table>
+
+		
+				<table width="240" border="0" cellspacing="0" cellpadding="0">
+					<tbody><tr>
+						<td align="center">
+
+							<table width="180" border="0" cellspacing="0" cellpadding="0">                         
+
+																
+								<tbody><tr>
+									<td height="10"></td>
+								</tr>
+
+								<tr>
+									<td height="25">&nbsp;&nbsp;<img src="/wb_admin/image/left_icon_over_s.gif"> <a href="/wb_admin/category/category_list.php" style="font-size:12px;">메뉴 카테고리 등록/수정</a></td>
+								</tr>
+								<tr>
+									<td height="1" bgcolor="#ebebeb"></td>
+								</tr>
+								<tr>
+									<td height="25">&nbsp;&nbsp;<img src="/wb_admin/image/left_icon_s.gif" id="category2"> <a href="/wb_admin/category/category_ranking.php" style="font-size:12px;" onmouseover="iconoverchge('category2');" onmouseout="iconoutchge('category2');">메뉴 카테고리순위</a></td>
+								</tr>
+								<tr>
+									<td height="1" bgcolor="#ebebeb"></td>
+								</tr>
+							</tbody></table>
+
+						</td>
+					</tr>
+				</tbody></table>
+
+			</td>	
+			
+			</tr>
+	</tbody></table>
+</td>			<td width="1450" valign="top">
+
+				<script language="JavaScript">
+				<!--
+				// 카테고리 등록
+				function partReg2( data ) {	 location.href='category_add2.php?idx='+data; }
+				function partReg3( data ) { location.href='category_add3.php?idx='+data; }
+
+				// 카테고리 수정
+				function partEdit(index,data) {
+											location.href='category_check.php?idx='+data+'&part_index='+index;
+									}
+
+				// 카테고리 삭제
+				function partDel( index, data ) {
+											var choose = confirm( index+'차 카테고리를 삭제 하시겠습니까?');
+						if(choose) {	location.href='category_del_ok.php?idx='+data; }
+						else { return; }
+										
+				}
+				//-->
+				</script>
+
+
+<script>
+function accountSendit()
+{
+	var form=document.adm_accountForm;
+
+	form.submit();
+}
+
+</script>
+
+
+
+				<div style="width:100%; height:auto; float:left; margin:40px 0 30px 0;">
+					<b style="font-size:18px; color:#2591d4;">카테고리 등록/수정</b>
+				</div>
+
+
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					
+					<tbody><tr> 
+						<td style="text-align:right;">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0" style="float:right; ">
+								<tbody><tr> 
+								
+                                    
+								<td height="30" align="left" style="color:red; line-height:150%;">
+									<i class="fa fa-check" aria-hidden="true" style="color:blue;float:left;"></i>
+									<span style="color:blue;float:left;">&nbsp;웹단 리스트노출, 상세화면 노출 설정은 1차 카테고리 &gt; 수정 에서만 설정가능 합니다.  (모바일  동일적용)</span>  <span style="float:left; color:blue; margin-left:20px; line-height:180%; margin-top:-4px;">
+											* 리스트화면  
+											   <input type="button" value="?" onclick="openPop3('/manual/list.php')" style="width:18px; height:18px; background-color:#f1efef; font-size:12px; color:#000000; cursor:pointer; line-height:18px; border:0; border-radius:50px; font-family:Dotum; outline:none;
+											   margin-right:10px;">
+											   
+											   * 상세화면 
+											   <input type="button" value="?" onclick="openPop3('/manual/detail.php')" style="width:18px; height:18px; background-color:#f1efef; font-size:12px; color:#000000; cursor:pointer; line-height:18px; border:0; border-radius:50px; font-family:Dotum; outline:none;
+											   margin-right:0px;margin-top:-4px;">
+											   
+											   </span><br style="clear:both;">&nbsp;&nbsp;&nbsp;(1차하위 2.3차도 동일 적용)  <br>
+
+									<i class="fa fa-check" aria-hidden="true" style="color:blue;"></i>
+									<span style="color:blue;">카테고리 상세화면 설정시 웹화면서 각 카테고리에 상품 1개만 노출   </span>
+<br>
+									<i class="fa fa-check" aria-hidden="true" style="color:blue;"></i>
+									<span style="color:blue;">카테고리 아이콘(New,Hit~)은  2차,3차 카테고리 등록/수정화면에서 노출 가능합니다.</span>&nbsp;<input type="button" value="?" onclick="openPop3('/manual/icon.php')" style="width:18px; height:18px; background-color:#f1efef; font-size:12px; color:#000000; cursor:pointer; line-height:18px; border:0; border-radius:50px; font-family:Dotum; outline:none;
+											   margin-right:0px;">
+									<!--<span style="float:right; color:blue; margin-top:10px; line-height:180%;">
+											* 2차 카테고리생성시 웹노출 화면  
+											   <input type="button" value="?" onclick="openPop('/manual/category1.html')"style="width:18px; height:18px; background-color:#f1efef; font-size:12px; color:#000000; cursor:pointer; line-height:18px; border:0; border-radius:50px; font-family:Dotum; outline:none;
+											   margin-right:10px;">
+											   
+											   * 3차 카테고리생성시 웹노출 화면  
+											   <input type="button" value="?" onclick="openPop('/manual/category2.html')"style="width:18px; height:18px; background-color:#f1efef; font-size:12px; color:#000000; cursor:pointer; line-height:18px; border:0; border-radius:50px; font-family:Dotum; outline:none;
+											   margin-right:10px;">
+											   
+											   </span>-->
+
+
+									
+									
+									</td>
+								</tr>
+
+
+								<tr> 
+									<td height="30" align="right">
+									
+									
+			<form name="adm_accountForm" method="post" action="category_stat.php?part=1" enctype="multipart/form-data">
+			
+									※  전체상품  카테고리  웹노출설정     
+					<label style="cursor:pointer;"><input type="radio" value="1" name="category_stat" checked="" onclick="accountSendit();">사용</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label style="cursor:pointer;"><input type="radio" value="2" name="category_stat" onclick="accountSendit();">미사용</label>
+					
+</form>
+									</td>
+
+
+									<td height="30" align="right"><a href="category_add1.php?part_index=1"><img src="../images/bt_category_add.gif" alt="1차카테고리등록" border="0" align="absmiddle"></a></td>
+
+
+
+									
+								</tr>
+							</tbody></table>
+
+							<table width="100%" border="0" cellspacing="0" cellpadding="0" class="menu">
+								<tbody><tr>
+									<td>
+										<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse">
+											<tbody><tr align="center" bgcolor="#D7F0FA"> 
+												<td height="30" style="border:1px solid #BDBEBD;">카테고리</td>
+												<!--td width="180" height="25">카테고리 이미지</td-->
+												<td width="100" height="30" style="border:1px solid #BDBEBD;">상품노출</td>
+												<td width="100" height="30" style="border:1px solid #BDBEBD;">사용 유무</td>
+												<td width="220" height="30" style="border:1px solid #BDBEBD;">관리</td>
+												<td width="220" height="30" style="border:1px solid #BDBEBD;">카테고리등록</td>
+											</tr>
+										</tbody></table>
+									</td>
+								</tr>
+								
+
+								<tr>
+									<td colspan="4">
+
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">TODAY REVIEW (40)</font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '393' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'393' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('393');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">이번주신상 (20)</font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">메인섹션2</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '391' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'391' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:alert('상품 노출이 메인섹션으로 지정된 카테고리는 2차 카테고리를 등록하실 수 없습니다.');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">GIFT BOX (1)</font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '410' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'410' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('410');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">미러급SA (18)</font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '389' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'389' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('389');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">바로배송 </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '442' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'442' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('442');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">BAG </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '32' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'32' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('32');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">CHA (9)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '120' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '120' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('120');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">LV (14)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '163' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '163' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('163');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">DIO (12)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '336' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '336' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('336');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">GU </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '396' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '396' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('396');"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">PRA (2)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '397' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '397' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('397');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">YSL </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '398' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '398' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('398');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">CN (4)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '399' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '399' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('399');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">HER (4)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '400' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '400' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('400');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BB (3)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '401' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '401' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('401');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">FEN (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '402' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '402' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('402');"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BALEN (4)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '403' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '403' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('403');"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BV </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '404' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '404' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('404');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">VT </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '405' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '405' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('405');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">CHL </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '406' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '406' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('406');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">GOY </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '407' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '407' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('407');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">LOE (2)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '408' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '408' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('408');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">ETC (14)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '409' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '409' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><a href="javascript:partReg3('409');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">SHOE </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '328' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'328' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('328');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">CHA (8)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '331' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '331' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('331');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">LV (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '329' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '329' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('329');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">DIO (7)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '330' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '330' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('330');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">GU </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '411' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '411' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('411');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">PRA (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '412' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '412' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('412');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">YSL </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '413' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '413' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('413');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">CN (3)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '414' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '414' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('414');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">HER (6)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '415' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '415' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('415');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BB </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '416' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '416' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('416');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">FEN (3)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '417' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '417' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('417');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BALEN (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '418' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '418' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('418');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BV </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '419' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '419' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('419');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">MQ </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '420' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '420' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('420');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">VT (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '421' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '421' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('421');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">CHL </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '422' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '422' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('422');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">RV </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '423' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '423' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('423');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">JC </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '424' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '424' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('424');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">LORO </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '425' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '425' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('425');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">ETC (2)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '426' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '426' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><a href="javascript:partReg3('426');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">WALLET (19)</font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '34' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'34' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('34');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">SPORT </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '235' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'235' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('235');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">FORMAN </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '33' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'33' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('33');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">LV (2)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '151' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '151' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('151');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">GU </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '152' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '152' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('152');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">DIO (5)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '168' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '168' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('168');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">PRA </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '427' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '427' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('427');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">HER (4)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '428' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '428' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('428');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BALEN (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '429' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '429' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('429');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">ETC (4)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '430' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '430' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><a href="javascript:partReg3('430');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">CLOTH </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '204' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'204' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('204');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">OUTER (18)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '206' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '206' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('206');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">T-SHIRT (4)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '333' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '333' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('333');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">BOTTOM </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '334' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '334' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('334');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">SKIRT </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '335' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '335' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('335');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">DRESS (2)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '431' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '431' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('431');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">Unisex 남녀공용 (8)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '432' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '432' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('432');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">FOR MAN (1)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '433' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '433' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><a href="javascript:partReg3('433');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">ACC </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '382' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'382' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('382');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">모자/벨트/헤어밴드 (8)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '383' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '383' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('383');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">귀걸이/목걸이/반지/시계 (3)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '384' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '384' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('384');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">트윌리/스카프/머플러 (3)</font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '434' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '434' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><a href="javascript:partReg3('434');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">홈인테리어 </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '385' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'385' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('385');"><img src="../images/bt_category_add2.gif" border="0" alt="2차카테고리등록" align="absmiddle"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">NO BRAND </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;"><img src="../images/part_nouse_s.gif" alt="미사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '386' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'386' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD;  border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('386');"></a></td>
+																	</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">OUTER </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD;  border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '387' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '387' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; "><a href="javascript:partReg3('387');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+									
+
+
+
+																
+								<tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part2.gif" alt="2차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#1B7AC9">T-SHIRT </font></b></td>
+									<!--td width="180" height="25" align="center"></td-->
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">리스트화면</td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><img src="../images/part_use.gif" border="0" alt="사용" align="absmiddle"></td>
+									<td height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 2, '388' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>&nbsp;<a href="javascript:partDel( 2, '388' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a></td>
+									<td height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000;"><a href="javascript:partReg3('388');"><img src="../images/bt_category_add3.gif" border="0" alt="3차카테고리등록" align="absmiddle"></a><a></a></td>
+								</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">개인결제 </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"></td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_nouse_s.gif" alt="미사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '203' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partReg2('203');"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+										
+
+
+								
+								
+
+								<table border="1" cellpadding="0" cellspacing="0" width="100%" bordercolor="#BDBEBD" style="border-collapse: collapse; border-top:0; ">
+
+
+
+								
+
+								<tbody><tr onmouseover="this.style.backgroundColor='#e4fff4'" onmouseout="this.style.backgroundColor=''" style=""> 
+
+
+									
+									<td height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/part1.gif" alt="1차 카테고리" align="absmiddle">&nbsp;&nbsp;<b><font color="#FF3636">메인섹션2 </font></b></td>
+
+									<!--td width="180" height="25" align="center"> </td-->
+
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">메인섹션2</td>
+									<td width="100" height="30" align="center" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;"><img src="../images/part_nouse_s.gif" alt="미사용" align="absmiddle"></td>
+									<td width="220" height="30" align="left" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:partEdit( 1, '437' );"><img src="../images/bt_edit.gif" border="0" alt="수정" align="absmiddle"></a>
+																		&nbsp;<a href="javascript:partDel( 1,'437' );"><img src="../images/bt_del.gif" border="0" alt="삭제" align="absmiddle"></a>
+																		</td>
+																		<td width="220" height="30" style="border:1px solid #BDBEBD; border-bottom:1px solid #000; border-top:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:alert('상품 노출이 메인섹션으로 지정된 카테고리는 2차 카테고리를 등록하실 수 없습니다.');"></a></td>
+																	</tr>
+
+								
+								</tbody></table>
+								
+
+								
+																</td>
+								</tr>
+							</tbody></table>
+
+							<br>
+						</td>
+					</tr>
+
+					<tr valign="middle">
+						<td valign="top">
+
+							<div style="width:100%; height:auto; float:left; margin-top:40px; padding-top:20px; line-height:20px;">
+								<b style="width:100%; height:auto; float:left; color:#0091cb; font-size:14px; border-bottom:1px solid #000; padding-bottom:10px; margin-bottom:20px;">※ 참고사항</b><br>
+
+								
+
+								<p>
+									
+
+
+									<table cellpadding="0" border="0" cellspacing="0" width="1100">
+										<tbody><tr>
+											<td width="700" style="font-size:12px; color:blue;">
+																	* 웹 상단메뉴에는 10개 메뉴명만 노출되며 10개 이상시 펼침메뉴에 노출됩니다. 
+									
+											
+											</td>
+
+										</tr>
+<tr>
+											<td width="700" style="font-size:12px; color:blue; padding:10px 0 0 0;">
+																<span style="float:left">	* 개인결재 카테고리는 전화 주문고객에게 약식으로 카드결재를 받게끔 설계 - 사용/미사용으로 이용가능 </span>  
+									 <input type="button" value="?" onclick="openPop2()" style="width:18px; height:18px; background-color:#f1efef; font-size:12px; color:#000000; cursor:pointer; line-height:8px; border:0; border-radius:50px; font-family:Dotum; outline:none; float:left
+; margin-left:10px;											  ">
+<br>
+
+											<br><br>
+											<img src="../images/jebon.jpg" style="width:950px;">
+											
+											</td>
+
+										</tr>
+
+
+										
+									</tbody></table>
+								</p>
+
+								
+
+							</div>
+
+						</td>
+					</tr>
+				</tbody></table>
+			</td>
+		</tr>
+	</tbody></table>
+
+
+
+<div style="width:70px; height:auto; float:left; position:fixed; right:30px; bottom:100px;">
+
+	<input type="button" value="1차등록" style="background-color:#fff; border:2px solid blue; border-radius:5px; color:#000; width:70px; height:30px; font-size:14px; cursor:pointer;" onclick="location.href='category_add1.php?part_index=1';">
+
+</div>
+
+
+
+
+<div style="width:100%; min-width:1450px; height:auto; float:left; text-align:center; background-color:#dbdbdb; font-size:12px; margin-top:50px; padding:10px 0 10px 0;">
+	<font color="#000000">Copyrights (c) webbridge.co.kr All Rights Reserved. </font>
+
+	<span style="font-size:11px;  float:left; padding-bottom:10px; color:#333; width:100%; 
+	">* 솔루션은 크롬브라우저에 최적화되어 있어 크롬브라우저 이용을 권장합니다. 
+
+</span>
+
+		<div style="float:right;width:100%;">
+	<!--<span style="font-size:11px;  float:left; padding-bottom:10px; color:#333; width:99%; text-align:right;
+	margin-top:-13px;">* 솔루션은 크롬브라우저에 최적화되어 있어 크롬브라우저 이용을 권장합니다. 
+
+</span>--></div>
+</div>
+</body></html>
