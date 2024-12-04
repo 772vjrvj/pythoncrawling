@@ -383,7 +383,7 @@ def main():
     try:
         open_facebook(driver)
         navigate_to_page(driver, "https://www.facebook.com/teps4u/")
-        previous_feed_count = 0  # 이전 피드 개수를 추적
+        previous_feed_count = 425  # 이전 피드 개수를 추적
 
         ex_date = []
 
@@ -404,10 +404,14 @@ def main():
                 current_feed_count = len(feed_units)
 
                 # 피드 개수가 이전과 같으면 중지
-                if current_feed_count == previous_feed_count and previous_feed_count >= 400:
-                    print("더 이상 새로운 피드가 없습니다.")
-                    export_to_excel(obj_list, 'facebook_data.xlsx')
-                    break
+                # if current_feed_count == previous_feed_count:
+                #     print("더 이상 새로운 피드가 없습니다.")
+                #     export_to_excel(obj_list, 'facebook_data.xlsx')
+                #     break
+
+                if current_feed_count <= previous_feed_count:
+                    continue
+
 
                 # 새로운 피드 처리
                 for feed_unit in feed_units[previous_feed_count:]:
@@ -449,7 +453,7 @@ def main():
                         obj = {
                             '날짜': date,
                             'caption': caption,
-                            '이미지 리스트': img_list, 
+                            '이미지 리스트': img_list,
                             '유튜브 링크': youtube_link,
                             '이미지 링크': image_link
                         }
