@@ -55,6 +55,23 @@ referer header값이 없어서 생긴 문제
 
 -------------------------------------------------
 
+2024-12-02
+근데 저도 요새 방범이 생겨서 저시 공유 링크만 몇천개 막 뽑고 싶거든여
+
+avatar
+혹시
+24.12.02
+20:03
+
+avatar
+https://m.blog.naver.com/PostView.naver?blogId=new1-1&logNo=223679114668&navType=by
+이런 알리익스프레스 글 잇자나요
+24.12.02
+20:04
+
+avatar
+이걸 대량으로 등록할수잇을까요
+
 
 
 pyinstaller --onefile --noconsole main.py
