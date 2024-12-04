@@ -219,13 +219,21 @@ def stop_flash_window(root):
 def save_to_excel(data):
     df = pd.DataFrame(data)
 
+    # 명시적으로 열 순서를 설정
+    column_order = [
+        "상품명", "상품 상태", "브랜드", "상품상세url",
+        "판매가", "구매 가능한 옵션", "품절된 옵션",
+        "스타일코드", "색상코드", "판매처"
+    ]
+    # 열 순서를 지정
+    df = df[column_order]
+
     # 현재 시간 가져오기
     current_time = time.strftime("%Y%m%d_%H%M%S")
     filename = f"ABC마트 데이터_{current_time}.xlsx"
 
     df.to_excel(filename, index=False)
-    new_print(f"Data saved to {filename}", level="INFO")
-
+    print(f"Data saved to {filename}")
 
 
 def on_drop(event):
@@ -265,7 +273,6 @@ def check_list_and_toggle_button():
         start_button.config(state=tk.NORMAL)
     else:
         start_button.config(state=tk.DISABLED)
-
 
 def main():
     global log_text_widget, start_button, progress, progress_label, eta_label, root
@@ -327,8 +334,6 @@ def main():
     progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
 
     root.mainloop()
-
-
 
 if __name__ == "__main__":
     main()
