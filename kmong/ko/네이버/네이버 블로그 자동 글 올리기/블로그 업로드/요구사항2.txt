@@ -72,6 +72,6 @@ https://m.blog.naver.com/PostView.naver?blogId=new1-1&logNo=223679114668&navType
 avatar
 이걸 대량으로 등록할수잇을까요
 
-
+https://m.blog.naver.com/PostView.naver?blogId=trend-tales&logNo=223684259398&navType=by
 
 pyinstaller --onefile --noconsole main.py

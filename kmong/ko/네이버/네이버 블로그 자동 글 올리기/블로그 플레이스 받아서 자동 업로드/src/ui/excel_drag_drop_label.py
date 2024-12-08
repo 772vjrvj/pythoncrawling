@@ -1,7 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
-from PyQt5.QtWidgets import (QLabel,
-                             QDesktopWidget)
+from PyQt5.QtWidgets import (QLabel)
 
 
 # 엑셀 드래그
