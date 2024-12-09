@@ -6,38 +6,392 @@ import re
 import os
 import time
 import random
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from tkinter import messagebox
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+import pyautogui
+import pyperclip
+
+blog_ing = 0
 
 # API
 class ApiNaverSetLoadWorker(QThread):
     api_data_received = pyqtSignal(object)  # API 호출 결과를 전달하는 시그널
 
-    def __init__(self, url_list, cookie, query='', parent=None):
+    def __init__(self, url_list, query='', content='', blog_host_url = '', parent=None):
         super().__init__(parent)
         self.parent = parent  # 부모 객체 저장
         self.url_list = url_list  # URL을 클래스 속성으로 저장
-        self.cookie = cookie
+        self.cookie = None
         self.query = query
+        self.content = content
+        self.blog_host_url = blog_host_url
+        self.driver = None
+        self.setup_driver()
 
     def run(self):
+        self.on_naver_login()
         for idx, place_id in enumerate(self.url_list, start=1):
             place_info = self.fetch_place_info(place_id)
             if place_info:
+                # 이미지 폴더 삭제
                 reviews_info = self.fetch_reviews(place_id)
                 place_info["리뷰"] = reviews_info.get("reviews", [])
                 place_info["리뷰 분석"] = reviews_info.get("stats", [])
                 place_info["공유 URL"] = self.fetch_link_url(place_id)
                 place_info["블로그 제목"] = f"{self.query} / {place_info['이름']} / 운영시간 가격 주차리뷰"
                 image_urls = self.fetch_photos(place_id)
+                time.sleep(2)
                 os.makedirs('place_images', exist_ok=True)
                 for i, image_url in enumerate(image_urls, start=1):
                     self.download_image(image_url, f'place_images/{i}.jpg')
+                time.sleep(3)
                 place_info['이미지 URLs'] = image_urls
-                place_info["블로그 게시글"] = self.print_place_info(place_info)
+                place_info["블로그 게시글"] = "\n\n\n\n".join([self.print_place_info(place_info), self.content])
+                self.parent.add_log(f"번호 : {idx}, 이름 : {place_info}")
 
-                self.parent.add_log(f"번호 : {idx}, 이름 : {place_info['이름']}")
+                self.naver_upload(place_info)
+
+                pro_value = (idx / len(self.url_list)) * 1000000
+                self.parent.set_progress(pro_value)
+                self.delete_images_in_directory('place_images')
+
+    # 이미지 삭제 함수
+    def delete_images_in_directory(self, directory_path):
+        # 디렉터리 내 모든 파일을 삭제
+        for filename in os.listdir(directory_path):
+            file_path = os.path.join(directory_path, filename)
+            if os.path.isfile(file_path):  # 파일만 삭제
+                os.remove(file_path)
 
 
-                time.sleep(random.uniform(1, 2))
+    def naver_upload(self, place_info):
+        driver = self.driver
+        driver.get(self.blog_host_url + "?Redirect=Write&")
+
+        try:
+            time.sleep(3)  # 페이지 로드 시간 추가
+
+            # iframe으로 전환
+            iframe = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, 'mainFrame'))  # iframe의 ID로 전환
+            )
+            driver.switch_to.frame(iframe)
+
+            try:
+                # 작성중인글 확인
+                time.sleep(1)
+                # 이제 iframe 내에서 요소를 찾음
+                popup_button = WebDriverWait(driver, 3).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-cancel'))
+                )
+                popup_button.click()
+
+            except TimeoutException:
+                # close_button이 없을 경우에 실행될 코드 (필요에 따라 생략 가능)
+                self.parent.add_log("작성중인글이 존재하지 않습니다.")
+
+            # if index == start_num:
+            #
+            #     time.sleep(2)
+            #     # 이제 iframe 내에서 요소를 찾음
+            #     close_button = WebDriverWait(driver, 10).until(
+            #         EC.presence_of_element_located((By.CLASS_NAME, 'se-help-panel-close-button'))
+            #     )
+            #     close_button.click()
+
+            # 3초 후 텍스트 입력 (클래스 이름 'se-ff-nanumgothic se-fs32 __se-node' 내부에 텍스트 '1234' 입력)
+            time.sleep(1)
+
+            # 요소 찾기
+
+            # 더 세밀하게 특정 요소를 클릭하고 텍스트 입력
+            bb = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//span[contains(text(),"제목")]'))
+            )
+            # 클릭 후 텍스트 삽입
+            bb.click()
+            actions = ActionChains(driver)
+            actions.send_keys(place_info["블로그 제목"]).perform()
+
+            # 이제 iframe 내에서 요소를 찾음
+            image_upload_button = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'se-image-toolbar-button'))
+            )
+            image_upload_button.click()
+            time.sleep(1)  # 파일 선택 창이 열릴 때까지 대기
+            # 현재 프로그램이 실행되는 경로
+            current_dir = os.getcwd()
+
+            # 'images' 폴더의 경로
+            images_dir = os.path.join(current_dir, 'place_images')
+
+            # Windows 파일 선택 창에서 경로를 입력하고 '열기' 버튼을 누름
+
+            # 경로가 정확한지 확인
+            if not os.path.exists(images_dir):
+                messagebox.showerror("경로 오류", f"경로가 존재하지 않습니다: {images_dir}")
+                return
+
+            # 상단 경로 입력창에 포커스 맞추기 (탐색기 창에서 경로 입력)
+            pyautogui.hotkey('alt', 'd')  # 상단 경로창 선택
+            time.sleep(1)
+
+            # 클립보드를 사용해 경로 입력
+            pyperclip.copy(images_dir)  # 경로를 클립보드에 복사
+            pyautogui.hotkey('ctrl', 'v')  # 클립보드에서 붙여넣기 (Ctrl + V)
+            pyautogui.press('enter')  # 엔터키로 폴더 열기
+
+            time.sleep(1)  # 폴더 열리는 시간 대기
+
+            # 파일 목록에 포커스 맞추기 (탐색기 창에서 파일 선택으로 이동)
+            pyautogui.press('tab')  # 경로창에서 파일 목록으로 이동하기 위해 탭 누르기
+            pyautogui.press('tab')  # 두 번째 탭을 누르면 파일 목록에 포커스가 맞춰짐
+            pyautogui.press('tab')  # 세 번째 탭을 누르면 포커스가 맞춰짐
+            pyautogui.press('tab')  # 네 번째 탭을 누르면 포커스가 맞춰짐
+            pyautogui.press('down')  # 파일 목록의 첫 번째 파일로 이동
+
+            # 전체 파일 선택 (Ctrl + A)
+            pyautogui.hotkey('ctrl', 'a')  # 모든 파일 선택
+
+            # 파일 열기(확인) 버튼 클릭 (Windows 기준)
+            pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
+
+            time.sleep(2)
+
+            # 스크롤을 맨 위로 올리기
+            driver.execute_script("window.scrollTo(0, 0);")
+            time.sleep(1)
+
+            # 이제 iframe 내에서 요소를 찾음 (이미지 업로드 후 추가 작업)
+            image_upload_button = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
+            )
+
+            driver.execute_script("arguments[0].click();", image_upload_button)
+
+            time.sleep(3.5)
+            # 활성화된 요소 가져오기
+            active_element = driver.switch_to.active_element
+
+            # ActionChains로 클릭 후 텍스트 입력 시도
+            actions = ActionChains(driver)
+            actions.move_to_element(active_element).click().send_keys(place_info["블로그 게시글"]).perform()
+
+            image_map_button = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'se-map-toolbar-button'))
+            )
+            image_map_button.click()
+
+            time.sleep(1)
+            # input 필드 찾기
+            input_field = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "react-autosuggest__input"))
+            )
+
+            # input 필드에 'a' 입력
+            input_field.send_keys(place_info['이름'])
+
+            # 검색 버튼 찾기
+            search_button = WebDriverWait(driver, 3).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
+            )
+
+            # 검색 버튼 클릭
+            search_button.click()
+
+            time.sleep(2)
+
+            try:
+                # class가 'se-place-map-search-result-list'인 첫 번째 li 내의 'se-place-add-button' 찾기
+                search_result_list = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'se-place-map-search-result-list'))
+                )
+
+                # 'se-place-map-search-result-list' 안에서 첫 번째 'li' 요소를 기다리며 찾음
+                first_li = WebDriverWait(search_result_list, 5).until(
+                    EC.presence_of_element_located((By.TAG_NAME, 'li'))
+                )
+
+                # 마우스를 'first_li' 위로 오버
+                actions = ActionChains(driver)
+                actions.move_to_element(first_li).perform()  # 마우스를 해당 요소 위로 이동
+
+                # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                add_button = WebDriverWait(first_li, 5).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
+                )
+                add_button.click()
+
+                # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                confirm_map_button = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                )
+
+                confirm_map_button.click()
+
+            except (NoSuchElementException, TimeoutException):
+
+                a = self.process_address(place_info['주소'])
+
+                input_field.clear()
+
+                # input 필드에 'a' 입력
+                input_field.send_keys(a)
+
+                # 검색 버튼 찾기
+                search_button = WebDriverWait(driver, 3).until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
+                )
+
+                # 검색 버튼 클릭
+                search_button.click()
+
+                time.sleep(2)
+
+                try:
+                    # class가 'se-place-map-search-result-list'인 첫 번째 li 내의 'se-place-add-button' 찾기
+                    search_result_list = WebDriverWait(driver, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-place-map-search-result-list'))
+                    )
+
+                    # 'se-place-map-search-result-list' 안에서 첫 번째 'li' 요소를 기다리며 찾음
+                    first_li = WebDriverWait(search_result_list, 5).until(
+                        EC.presence_of_element_located((By.TAG_NAME, 'li'))
+                    )
+
+                    # 마우스를 'first_li' 위로 오버
+                    actions = ActionChains(driver)
+                    actions.move_to_element(first_li).perform()  # 마우스를 해당 요소 위로 이동
+
+                    # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                    add_button = WebDriverWait(first_li, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
+                    )
+                    add_button.click()
+
+                    # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
+                    confirm_map_button = WebDriverWait(driver, 5).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
+                    )
+
+                    confirm_map_button.click()
+
+                except (NoSuchElementException, TimeoutException):
+
+                    # 'se-place-add-button'이 없으면 'se-popup-close-button'을 찾아 클릭
+                    try:
+                        close_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.CLASS_NAME, 'se-popup-close-button'))
+                        )
+                        close_button.click()
+                    except (NoSuchElementException, TimeoutException):
+                        self.parent.add_log("close_button을 찾을 수 없습니다.")
+
+
+            # 3초 후 'publish_btn__m9KHH' 클래스 버튼 클릭
+            # 발행
+            publish_button = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'publish_btn__m9KHH'))
+            )
+            driver.execute_script("arguments[0].click();", publish_button)
+
+            # 3초 후 'confirm_btn__WEaBq' 클래스 버튼 클릭
+            confirm_button = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'confirm_btn__WEaBq'))
+            )
+            driver.execute_script("arguments[0].click();", confirm_button)
+
+        except Exception as e:
+            self.parent.add_log(f"에러 발생: {e}")
+
+
+    def process_address(self, address):
+        # 공백을 제거한 주소로 시작
+        address = address.strip()
+
+        # 공백으로 쪼갠다
+        parts = address.split()
+
+        # 마지막 단어가 '층' 또는 '호'를 포함하는지 확인
+        if parts[-1].endswith('층') or parts[-1].endswith('호'):
+            # 마지막 전까지의 값을 공백으로 이어서 만듦
+            temp_text = ' '.join(parts[:-1])
+
+            # temp_text의 좌우 공백을 제거하고 마지막에 콤마가 있으면 제거
+            temp_text = temp_text.strip().rstrip(',')
+
+            # 다시 공백으로 쪼개서 처리
+            temp_parts = temp_text.split()
+            if temp_parts[-1].endswith('층') or temp_parts[-1].endswith('호'):
+                # 마지막 전까지의 값을 공백으로 이어서 만듦
+                a = ' '.join(temp_parts[:-1])
+            else:
+                a = temp_text
+        else:
+            # 마지막 단어가 '층' 또는 '호'를 포함하지 않으면 전체 텍스트 사용
+            a = address
+
+        return a
+
+
+
+    def on_naver_login(self):
+
+        self.driver.get("https://nid.naver.com/nidlogin.login")  # 네이버 로그인 페이지로 이동
+
+        # 로그인 여부를 주기적으로 체크
+        logged_in = False
+        max_wait_time = 300  # 최대 대기 시간 (초)
+        start_time = time.time()
+
+        while not logged_in:
+            # 1초 간격으로 쿠키 확인
+            time.sleep(1)
+            elapsed_time = time.time() - start_time
+
+            # 최대 대기 시간 초과 시 while 루프 종료
+            if elapsed_time > max_wait_time:
+                self.parent.add_log("경고 로그인 실패: 300초 내에 로그인하지 않았습니다.")
+                self.driver.quit()
+                break
+
+            cookies = {cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}
+
+            # 쿠키 중 NID_AUT 또는 NID_SES 쿠키가 있는지 확인 (네이버 로그인 성공 시 생성되는 쿠키)
+            if 'NID_AUT' in cookies and 'NID_SES' in cookies:
+                logged_in = True
+                self.parent.add_log("로그인 성공 정상 로그인 되었습니다.")
+                self.cookie = cookies
+
+
+    def setup_driver(self):
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1080,750")
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                    Object.defineProperty(navigator, 'webdriver', {
+                      get: () => undefined
+                    })
+                '''
+        })
+        self.driver = driver
 
 
     def fetch_place_info(self, place_id):
@@ -120,9 +474,9 @@ class ApiNaverSetLoadWorker(QThread):
                         return result
 
         except requests.exceptions.RequestException as e:
-            print(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
+            self.parent.add_log(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
         except Exception as e:
-            print(f"Error processing data for Place ID: {place_id}: {e}")
+            self.parent.add_log(f"Error processing data for Place ID: {place_id}: {e}")
         return None
 
 
@@ -231,14 +585,14 @@ class ApiNaverSetLoadWorker(QThread):
                     "stats": voted_keyword_details
                 }
             else:
-                print(f"No review data available for Place ID: {place_id}")
+                self.parent.add_log(f"No review data available for Place ID: {place_id}")
                 return {"reviews": [], "stats": []}
 
         except requests.exceptions.RequestException as e:
-            print(f"Failed to fetch reviews for Place ID: {place_id}. Error: {e}")
+            self.parent.add_log(f"Failed to fetch reviews for Place ID: {place_id}. Error: {e}")
             return {"reviews": [], "stats": []}
         except Exception as e:
-            print(f"Error while processing data for Place ID: {place_id}: {e}")
+            self.parent.add_log(f"Error while processing data for Place ID: {place_id}: {e}")
             return {"reviews": [], "stats": []}
 
 
@@ -381,7 +735,7 @@ class ApiNaverSetLoadWorker(QThread):
             return image_urls[:5]
 
         except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
+            self.parent.add_log(f"Request failed: {e}")
             return image_urls
 
 
@@ -420,12 +774,11 @@ class ApiNaverSetLoadWorker(QThread):
             data = json.loads(json_data)
 
             # 필요한 'url' 값 출력
-            print(data['result']['url'])
             link_url = data['result']['url']
             return link_url
 
         except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
+            self.parent.add_log(f"Request failed: {e}")
             return link_url
 
 
@@ -435,7 +788,7 @@ class ApiNaverSetLoadWorker(QThread):
             with open(save_path, 'wb') as handler:
                 handler.write(img_data)
         except Exception as e:
-            print(f"Failed to download {image_url}: {e}")
+            self.parent.add_log(f"Failed to download {image_url}: {e}")
 
 
     def print_place_info(self, place_info):
@@ -468,11 +821,12 @@ class ApiNaverSetLoadWorker(QThread):
             content = "\n\n\n\n".join(section for section in sections if section)
 
             return content.strip()  # 앞뒤 공백 제거
-        except Exception:
+        except Exception as e:
+            self.parent.add_log(f'e : {e}')
             return ""
 
 
-    def format_review_analysis(review_analysis):
+    def format_review_analysis(self, review_analysis):
         formatted_items = []
         try:
             top_items = review_analysis[:7]

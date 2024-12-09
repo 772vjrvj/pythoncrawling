@@ -12,10 +12,10 @@ class ProgressThread(QThread):
     def run(self):
         # 20초 동안 진행
         diff_value = self.end_value - self.start_value  # 진행할 단계 수
-        div_value = diff_value / 400  # 각 단계에 걸리는 시간 (초)
-
-        inter_time = 20
+        inter_time = 40
         parts = 20
+
+        div_value = diff_value / (parts * inter_time)  # 각 단계에 걸리는 시간 (초)
         millsecond = int(1000 / parts)  # 100
 
         for i in range(1, (parts * inter_time) + 1):

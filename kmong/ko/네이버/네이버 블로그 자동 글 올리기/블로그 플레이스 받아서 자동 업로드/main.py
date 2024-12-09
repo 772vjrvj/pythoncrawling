@@ -5,7 +5,7 @@ import sys
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # window = LoginWindow()
-    window = MainWindow()
+    window = LoginWindow()
+    # window = MainWindow()
     window.show()
     sys.exit(app.exec_())

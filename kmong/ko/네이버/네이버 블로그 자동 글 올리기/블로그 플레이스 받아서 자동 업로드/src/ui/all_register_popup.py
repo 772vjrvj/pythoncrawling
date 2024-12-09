@@ -29,7 +29,7 @@ class AllRegisterPopup(QDialog):
         self.table_widget = QTableWidget()
         self.table_widget.setRowCount(0)
         self.table_widget.setColumnCount(1)  # 컬럼 수를 1개로 설정
-        self.table_widget.setHorizontalHeaderLabels(["URL"])  # 컬럼 헤더 이름 설정
+        self.table_widget.setHorizontalHeaderLabels(["ID"])  # 컬럼 헤더 이름 설정
 
         # 헤더의 크기를 창 너비에 맞게 조정
         self.table_widget.horizontalHeader().setStretchLastSection(True)
@@ -74,9 +74,9 @@ class AllRegisterPopup(QDialog):
             df = pd.read_excel(file_path)
 
             # 특정 열만 추출 (URL 열)
-            if "URL" in df.columns:
+            if "ID" in df.columns:
                 url_list.clear()  # 기존 데이터 초기화
-                url_list.extend(df["URL"].dropna().astype(str).tolist())  # 전역 변수 업데이트
+                url_list.extend(df["ID"].dropna().astype(str).tolist())  # 전역 변수 업데이트
             else:
                 url_list.clear()
                 url_list.extend(df.apply(lambda row: ", ".join(row.dropna().astype(str)), axis=1).tolist())
@@ -84,7 +84,7 @@ class AllRegisterPopup(QDialog):
             # 테이블 위젯 초기화
             self.table_widget.setRowCount(len(url_list))
             self.table_widget.setColumnCount(1)  # URL만 표시
-            self.table_widget.setHorizontalHeaderLabels(["URL"])
+            self.table_widget.setHorizontalHeaderLabels(["플레이스 ID"])
 
             # 데이터 로드
             for row_idx, url in enumerate(url_list):

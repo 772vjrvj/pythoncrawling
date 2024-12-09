@@ -4,7 +4,7 @@ import pandas as pd
 from PyQt5.QtCore import Qt,  QTimer, QTime, QThread
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTableWidgetItem,
                              QCheckBox, QDesktopWidget, QTableWidget, QSizePolicy, QHeaderView, QMessageBox,
-                             QFileDialog, QTextEdit, QApplication, QProgressBar)
+                             QFileDialog, QTextEdit, QApplication, QProgressBar, QLineEdit)
 
 from PyQt5.QtGui import QTextOption
 
@@ -21,16 +21,18 @@ main_url_list = []
 class MainWindow(QWidget):
     
     # 초기화
-    def __init__(self, cookies={}):
+    def __init__(self, cookies=None):
         super().__init__()
         self.set_layout()
         self.daily_worker = None  # 24시 실행 스레드
+        self.progress_thread = None
         self.on_demand_worker = None  # 요청 시 실행 스레드
+        self.cookies = cookies
 
         # 세션 관리용 API Worker 초기화
-        # self.api_worker = CheckWorker(cookies, server_url)
-        # self.api_worker.api_failure.connect(self.handle_api_failure)
-        # self.api_worker.start()  # 스레드 시작
+        self.api_worker = CheckWorker(cookies, server_url)
+        self.api_worker.api_failure.connect(self.handle_api_failure)
+        self.api_worker.start()  # 스레드 시작
 
     def handle_api_failure(self, error_message):
         """API 요청 실패 처리"""
@@ -57,7 +59,7 @@ class MainWindow(QWidget):
 
         # 버튼 설정
         # 전체등록
-        self.all_register_button = QPushButton("URL등록")
+        self.all_register_button = QPushButton("플레이스ID 등록")
         self.all_register_button.setStyleSheet("""
                     background-color: black;
                     color: white;
@@ -65,7 +67,7 @@ class MainWindow(QWidget):
                     font-size: 16px;
                     padding: 10px;
                 """)
-        self.all_register_button.setFixedWidth(100)  # 고정된 너비
+        self.all_register_button.setFixedWidth(150)  # 고정된 너비
         self.all_register_button.setFixedHeight(40)  # 고정된 높이
         self.all_register_button.setCursor(Qt.PointingHandCursor)
         self.all_register_button.clicked.connect(self.open_all_register_popup)
@@ -88,18 +90,54 @@ class MainWindow(QWidget):
         left_button_layout.addWidget(self.all_register_button)
         left_button_layout.addWidget(self.collect_button)
 
-        # 헤더에 "쿠팡(추적상품)" 텍스트 추가
+        # 레이아웃에 요소 추가
+        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+
+
+        # 블로그주소 입력창
+        self.blog_host_url = QLineEdit(self)
+        self.blog_host_url.setPlaceholderText(" 블로그 주소 https://blog.naver.com/blog_id...")  # 플레이스홀더 텍스트
+        self.blog_host_url.setStyleSheet("""
+            border: 2px solid #ccc;  # 테두리 설정
+            border-radius: 151px;
+            font-size: 16px;
+            padding: 10px;
+            background-color: white;  # 배경색 설정
+        """)
+        self.blog_host_url.setFixedWidth(1000)  # 시작 버튼 너비의 2배
+        self.blog_host_url.setFixedHeight(40)  # 시작 버튼 너비의 2배
+
+        # 키워드 입력창
+        self.keyword_input = QLineEdit(self)
+        self.keyword_input.setPlaceholderText(" 키워드 입력")  # 플레이스홀더 텍스트
+        self.keyword_input.setStyleSheet("""
+            border: 2px solid #ccc;  # 테두리 설정
+            border-radius: 151px;
+            font-size: 16px;
+            padding: 10px;
+            background-color: white;  # 배경색 설정
+        """)
+        self.keyword_input.setFixedWidth(1000)  # 시작 버튼 너비의 2배
+        self.keyword_input.setFixedHeight(40)  # 시작 버튼 너비의 2배
+
+
+        # 내용 입력창
+        self.content_input = QTextEdit(self)
+        self.content_input.setPlaceholderText(" 내용 입력")  # 플레이스홀더 텍스트
+        self.content_input.setStyleSheet("""
+            border: 2px solid #ccc;  # 테두리 설정
+            border-radius: 15px;
+            font-size: 16px;
+            padding: 10px;
+            background-color: white;  # 배경색 설정
+        """)
+        self.content_input.setFixedWidth(1000)  # 전체 너비 채우기
+        self.content_input.setFixedHeight(80)  # 높이는 2줄 정도
+
+        # 헤더에 텍스트 추가
         header_label = QLabel("네이버 자동 업로드")
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
-
-        # 로그 창 추가
-        self.log_window = QTextEdit(self)
-        self.log_window.setReadOnly(True)  # 읽기 전용 설정
-        self.log_window.setStyleSheet("background-color: #f9f9f9; border: 1px solid #ccc; padding: 5px;")
-        # 줄 바꿈을 비활성화하고, 수평 스크롤바를 항상 표시
-        self.log_window.setLineWrapMode(QTextEdit.NoWrap)  # 줄 바꿈 비활성화
-        self.log_window.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 수평 스크롤바 항상 표시
 
         # 진행 상태 게이지바 추가
         self.progress_bar = QProgressBar(self)
@@ -119,16 +157,22 @@ class MainWindow(QWidget):
             }
         """)
 
-        # 레이아웃에 요소 추가
-        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+        # 로그 창 추가
+        self.log_window = QTextEdit(self)
+        self.log_window.setReadOnly(True)  # 읽기 전용 설정
+        self.log_window.setStyleSheet("background-color: #f9f9f9; border: 1px solid #ccc; padding: 5px;")
+        # 줄 바꿈을 비활성화하고, 수평 스크롤바를 항상 표시
+        self.log_window.setLineWrapMode(QTextEdit.NoWrap)  # 줄 바꿈 비활성화
+        self.log_window.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 수평 스크롤바 항상 표시
 
-        main_layout.addLayout(header_layout)
+
+        main_layout.addLayout(header_layout)        # 버튼 레이아웃
+
+        main_layout.addWidget(self.blog_host_url)  # 키워드 입력창 추가
+        main_layout.addWidget(self.keyword_input)  # 키워드 입력창 추가
+        main_layout.addWidget(self.content_input)  # 내용 입력창 추가
         main_layout.addWidget(header_label)
         main_layout.addWidget(self.progress_bar)  # 진행 상태 게이지바 추가
-
-
-        # 레이아웃에 요소 추가
-        main_layout.addLayout(header_layout)
         main_layout.addWidget(self.log_window, stretch=2)  # 로그 창 추가
 
         # 레이아웃 설정
@@ -136,20 +180,27 @@ class MainWindow(QWidget):
 
         self.center_window()
 
+
+    # 게이티 세팅
     def set_progress(self, end_value):
-        start_value = self.progress_bar.value()  # 현재 진행 상태 값을 시작값으로 설정
 
-        # ProgressThread를 사용하여 별도의 스레드에서 실행
-        self.progress_thread = ProgressThread(start_value, end_value)
+        if self.progress_thread is None or not self.progress_thread.isRunning():
 
-        # 진행 상태가 변경될 때마다 progress_signal을 받으면 progress_bar를 업데이트
-        self.progress_thread.progress_signal.connect(self.update_progress)
+            start_value = self.progress_bar.value()  # 현재 진행 상태 값을 시작값으로 설정
 
-        # 별도의 스레드에서 실행 시작
-        self.progress_thread.start()
+            # ProgressThread를 사용하여 별도의 스레드에서 실행
+            self.progress_thread = ProgressThread(start_value, end_value)
+
+            # 진행 상태가 변경될 때마다 progress_signal을 받으면 progress_bar를 업데이트
+            self.progress_thread.progress_signal.connect(self.update_progress)
+
+            # 별도의 스레드에서 실행 시작
+            self.progress_thread.start()
+
 
     def update_progress(self, value):
         self.progress_bar.setValue(value)
+
 
     # 로그
     def add_log(self, message):
@@ -160,15 +211,18 @@ class MainWindow(QWidget):
         self.log_window.append(f"[{timestamp}] {message}")
 
 
+
     def start_on_demand_worker(self):
+        global main_url_list
+
+        if main_url_list is None or len(main_url_list) <= 0:
+            self.show_warning("등록된 URL이 없습니다.")
+            return
 
         # 버튼의 텍스트와 스타일 변경
         if self.collect_button.text() == "시작":
-            self.set_progress(500000)
-            self.add_log('test0')
+
             self.collect_button.setText("중지")
-            time.sleep(5)
-            self.add_log('test1')
             self.collect_button.setStyleSheet("""
                 background-color: #FFA500;
                 color: white;
@@ -177,17 +231,11 @@ class MainWindow(QWidget):
                 padding: 10px;
             """)
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
-            """사용자 요청 시 실행되는 ApiWorker 시작"""
-            self.add_log('test2')
-            time.sleep(5)
-            self.add_log('test3')
-            time.sleep(5)
-            self.add_log('시작')
-            # if self.on_demand_worker is None:  # worker가 없다면 새로 생성
-            #     self.on_demand_worker = ApiNaverSetLoadWorker()
-            #     self.on_demand_worker.start()
-            # elif not self.on_demand_worker.isRunning():  # 이미 종료된 worker라면 다시 시작
-            #     self.on_demand_worker.start()
+            if self.on_demand_worker is None:  # worker가 없다면 새로 생성
+                self.on_demand_worker = ApiNaverSetLoadWorker(main_url_list, self.keyword_input.text(), self.content_input.toPlainText(), self.blog_host_url.text(), self)
+                self.on_demand_worker.start()
+            elif not self.on_demand_worker.isRunning():  # 이미 종료된 worker라면 다시 시작
+                self.on_demand_worker.start()
 
         else:
             self.collect_button.setText("시작")
