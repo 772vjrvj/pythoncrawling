@@ -177,7 +177,7 @@ class ApiNaverSetLoadWorker(QThread):
 
             driver.execute_script("arguments[0].click();", image_upload_button)
 
-            time.sleep(3.5)
+            time.sleep(5)
             # 활성화된 요소 가져오기
             active_element = driver.switch_to.active_element
 
@@ -198,7 +198,7 @@ class ApiNaverSetLoadWorker(QThread):
 
             # input 필드에 'a' 입력
             input_field.send_keys(place_info['이름'])
-
+            time.sleep(2)
             # 검색 버튼 찾기
             search_button = WebDriverWait(driver, 3).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "se-place-search-button"))
@@ -229,7 +229,6 @@ class ApiNaverSetLoadWorker(QThread):
                     EC.presence_of_element_located((By.CLASS_NAME, 'se-place-add-button'))
                 )
                 add_button.click()
-
                 # li 내부의 'se-place-add-button'이 로드될 때까지 기다림
                 confirm_map_button = WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.CLASS_NAME, 'se-popup-button-confirm'))
@@ -241,7 +240,7 @@ class ApiNaverSetLoadWorker(QThread):
 
                 a = self.process_address(place_info['주소'])
 
-                input_field.clear()
+                driver.execute_script("arguments[0].value = '';", input_field)
 
                 # input 필드에 'a' 입력
                 input_field.send_keys(a)
@@ -314,32 +313,21 @@ class ApiNaverSetLoadWorker(QThread):
 
 
     def process_address(self, address):
-        # 공백을 제거한 주소로 시작
-        address = address.strip()
+        # 공백과 콤마, 점을 제거한 주소로 시작
+        address = address.strip().rstrip(',').rstrip('.')
 
         # 공백으로 쪼갠다
         parts = address.split()
 
-        # 마지막 단어가 '층' 또는 '호'를 포함하는지 확인
-        if parts[-1].endswith('층') or parts[-1].endswith('호'):
-            # 마지막 전까지의 값을 공백으로 이어서 만듦
-            temp_text = ' '.join(parts[:-1])
+        # '층' 또는 '호'로 끝나는 단어가 있는지 확인
+        for i in range(len(parts)-1, -1, -1):
+            if parts[i].endswith('층') or parts[i].endswith('호'):
+                # '층' 또는 '호'가 있으면 그 뒤의 모든 단어 삭제
+                parts = parts[:i]
+                break
 
-            # temp_text의 좌우 공백을 제거하고 마지막에 콤마가 있으면 제거
-            temp_text = temp_text.strip().rstrip(',')
-
-            # 다시 공백으로 쪼개서 처리
-            temp_parts = temp_text.split()
-            if temp_parts[-1].endswith('층') or temp_parts[-1].endswith('호'):
-                # 마지막 전까지의 값을 공백으로 이어서 만듦
-                a = ' '.join(temp_parts[:-1])
-            else:
-                a = temp_text
-        else:
-            # 마지막 단어가 '층' 또는 '호'를 포함하지 않으면 전체 텍스트 사용
-            a = address
-
-        return a
+        # 결과를 띄어쓰기로 이어서 반환
+        return ' '.join(parts)
 
 
 

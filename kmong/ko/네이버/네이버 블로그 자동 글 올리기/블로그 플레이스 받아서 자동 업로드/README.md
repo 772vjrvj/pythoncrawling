@@ -27,6 +27,7 @@
 
 
 pyinstaller --onefile --noconsole main.py
+pyinstaller --onefile --windowed main.py
 
 pip install numpy
 
