@@ -39,6 +39,7 @@ class ApiNaverSetLoadWorker(QThread):
     def run(self):
         self.on_naver_login()
         for idx, place_id in enumerate(self.url_list, start=1):
+            self.delete_images_in_directory('place_images')
             place_info = self.fetch_place_info(place_id)
             if place_info:
                 # 이미지 폴더 삭제
@@ -61,7 +62,7 @@ class ApiNaverSetLoadWorker(QThread):
 
                 pro_value = (idx / len(self.url_list)) * 1000000
                 self.parent.set_progress(pro_value)
-                self.delete_images_in_directory('place_images')
+
 
     # 이미지 삭제 함수
     def delete_images_in_directory(self, directory_path):
@@ -98,14 +99,6 @@ class ApiNaverSetLoadWorker(QThread):
                 # close_button이 없을 경우에 실행될 코드 (필요에 따라 생략 가능)
                 self.parent.add_log("작성중인글이 존재하지 않습니다.")
 
-            # if index == start_num:
-            #
-            #     time.sleep(2)
-            #     # 이제 iframe 내에서 요소를 찾음
-            #     close_button = WebDriverWait(driver, 10).until(
-            #         EC.presence_of_element_located((By.CLASS_NAME, 'se-help-panel-close-button'))
-            #     )
-            #     close_button.click()
 
             # 3초 후 텍스트 입력 (클래스 이름 'se-ff-nanumgothic se-fs32 __se-node' 내부에 텍스트 '1234' 입력)
             time.sleep(1)
@@ -121,69 +114,87 @@ class ApiNaverSetLoadWorker(QThread):
             actions = ActionChains(driver)
             actions.send_keys(place_info["블로그 제목"]).perform()
 
-            # 이제 iframe 내에서 요소를 찾음
-            image_upload_button = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'se-image-toolbar-button'))
-            )
-            image_upload_button.click()
-            time.sleep(1)  # 파일 선택 창이 열릴 때까지 대기
-            # 현재 프로그램이 실행되는 경로
-            current_dir = os.getcwd()
 
-            # 'images' 폴더의 경로
-            images_dir = os.path.join(current_dir, 'place_images')
 
-            # Windows 파일 선택 창에서 경로를 입력하고 '열기' 버튼을 누름
 
-            # 경로가 정확한지 확인
-            if not os.path.exists(images_dir):
-                messagebox.showerror("경로 오류", f"경로가 존재하지 않습니다: {images_dir}")
-                return
+            if len(place_info['이미지 URLs']) > 0:
 
-            # 상단 경로 입력창에 포커스 맞추기 (탐색기 창에서 경로 입력)
-            pyautogui.hotkey('alt', 'd')  # 상단 경로창 선택
-            time.sleep(1)
+                # 이제 iframe 내에서 요소를 찾음
+                image_upload_button = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'se-image-toolbar-button'))
+                )
+                image_upload_button.click()
+                time.sleep(1)  # 파일 선택 창이 열릴 때까지 대기
+                # 현재 프로그램이 실행되는 경로
+                current_dir = os.getcwd()
 
-            # 클립보드를 사용해 경로 입력
-            pyperclip.copy(images_dir)  # 경로를 클립보드에 복사
-            pyautogui.hotkey('ctrl', 'v')  # 클립보드에서 붙여넣기 (Ctrl + V)
-            pyautogui.press('enter')  # 엔터키로 폴더 열기
+                # 'images' 폴더의 경로
+                images_dir = os.path.join(current_dir, 'place_images')
 
-            time.sleep(1)  # 폴더 열리는 시간 대기
+                # Windows 파일 선택 창에서 경로를 입력하고 '열기' 버튼을 누름
 
-            # 파일 목록에 포커스 맞추기 (탐색기 창에서 파일 선택으로 이동)
-            pyautogui.press('tab')  # 경로창에서 파일 목록으로 이동하기 위해 탭 누르기
-            pyautogui.press('tab')  # 두 번째 탭을 누르면 파일 목록에 포커스가 맞춰짐
-            pyautogui.press('tab')  # 세 번째 탭을 누르면 포커스가 맞춰짐
-            pyautogui.press('tab')  # 네 번째 탭을 누르면 포커스가 맞춰짐
-            pyautogui.press('down')  # 파일 목록의 첫 번째 파일로 이동
+                # 경로가 정확한지 확인
+                if not os.path.exists(images_dir):
+                    messagebox.showerror("경로 오류", f"경로가 존재하지 않습니다: {images_dir}")
+                    return
 
-            # 전체 파일 선택 (Ctrl + A)
-            pyautogui.hotkey('ctrl', 'a')  # 모든 파일 선택
 
-            # 파일 열기(확인) 버튼 클릭 (Windows 기준)
-            pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
+                try:
+                    # 상단 경로 입력창에 포커스 맞추기 (탐색기 창에서 경로 입력)
+                    pyautogui.hotkey('alt', 'd')  # 상단 경로창 선택
+                    time.sleep(1)
 
-            time.sleep(2)
+                    # 클립보드를 사용해 경로 입력
+                    pyperclip.copy(images_dir)  # 경로를 클립보드에 복사
+                    pyautogui.hotkey('ctrl', 'v')  # 클립보드에서 붙여넣기 (Ctrl + V)
+                    pyautogui.press('enter')  # 엔터키로 폴더 열기
+
+                    time.sleep(1)  # 폴더 열리는 시간 대기
+
+                    # 파일 목록에 포커스 맞추기 (탐색기 창에서 파일 선택으로 이동)
+                    pyautogui.press('tab')  # 경로창에서 파일 목록으로 이동하기 위해 탭 누르기
+                    pyautogui.press('tab')  # 두 번째 탭을 누르면 파일 목록에 포커스가 맞춰짐
+                    pyautogui.press('tab')  # 세 번째 탭을 누르면 포커스가 맞춰짐
+                    pyautogui.press('tab')  # 네 번째 탭을 누르면 포커스가 맞춰짐
+                    pyautogui.press('down')  # 파일 목록의 첫 번째 파일로 이동
+
+                    # 전체 파일 선택 (Ctrl + A)
+                    pyautogui.hotkey('ctrl', 'a')  # 모든 파일 선택
+
+                    # 파일 열기(확인) 버튼 클릭 (Windows 기준)
+                    pyautogui.press('enter')  # 열기 버튼을 눌러 파일 업로드
+
+                    time.sleep(3)
+
+                    if len(place_info['이미지 URLs']) != 1:
+                        # 이제 iframe 내에서 요소를 찾음 (이미지 업로드 후 추가 작업)
+                        image_upload_button2 = WebDriverWait(driver, 3).until(
+                            EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
+                        )
+
+                        driver.execute_script("arguments[0].click();", image_upload_button2)
+                        time.sleep(3)
+                except Exception as e:
+                    self.parent.add_log(f"이미지 업로드 에러")
+
 
             # 스크롤을 맨 위로 올리기
             driver.execute_script("window.scrollTo(0, 0);")
             time.sleep(1)
 
-            # 이제 iframe 내에서 요소를 찾음 (이미지 업로드 후 추가 작업)
-            image_upload_button = WebDriverWait(driver, 3).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'se-image-type-label'))
-            )
-
-            driver.execute_script("arguments[0].click();", image_upload_button)
-
-            time.sleep(5)
             # 활성화된 요소 가져오기
             active_element = driver.switch_to.active_element
-
             # ActionChains로 클릭 후 텍스트 입력 시도
             actions = ActionChains(driver)
-            actions.move_to_element(active_element).click().send_keys(place_info["블로그 게시글"]).perform()
+
+            if place_info["블로그 게시글"]:
+                actions.move_to_element(active_element).click().send_keys(place_info["블로그 게시글"]).perform()
+            else:
+                actions.move_to_element(active_element).click().send_keys(place_info["블로그 제목"]).perform()
+
+
+
+            # 지도 넣기
 
             image_map_button = WebDriverWait(driver, 3).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'se-map-toolbar-button'))
@@ -293,6 +304,7 @@ class ApiNaverSetLoadWorker(QThread):
                         close_button.click()
                     except (NoSuchElementException, TimeoutException):
                         self.parent.add_log("close_button을 찾을 수 없습니다.")
+
 
 
             # 3초 후 'publish_btn__m9KHH' 클래스 버튼 클릭
