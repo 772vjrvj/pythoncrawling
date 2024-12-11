@@ -1,0 +1,25 @@
+24.12.10
+특별한꿀벌6962
+
+https://drive.google.com/file/d/1w5F9E7KYLJJ7TIkZ_XADRSZsqr9ZO9uy/view?pli=1
+https://drive.usercontent.google.com/download?id=1w5F9E7KYLJJ7TIkZ_XADRSZsqr9ZO9uy&export=download&authuser=0
+다운로드
+
+
+
+
+첨부파일에 설명드렸지만 아티스트 페이지에 노출되지 않아 크롤링이 불가하니 특정 url 을 최소 1~ 최대 입력후 해당 작가를 크롤링 을 순서데로 진행하는 방식이면 됩니다.
+
+18:49
+
+
+예시
+크롤링 URL입력 방식 예시:
+하단과 같이 6개의 URL을 한번에 입력하면 각 URL 페이지가 반복해서 크롤링 되어야 합니다.
+
+https://artvee.com/artist/michelangelo/
+https://artvee.com/artist/william-bouguereau/
+https://artvee.com/artist/john-william-godward/
+https://artvee.com/artist/jean-leon-gerome/
+https://artvee.com/artist/evelyn-de-morgan/
+https://artvee.com/artist/anthony-van-dyck/

@@ -9,7 +9,7 @@ from googletrans import Translator
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 import pandas as pd
-import traceback
+import traceback 
 import requests
 import random
 import json
@@ -90,7 +90,7 @@ class ARTVEE:
             country = abdate[0].strip()
             artistDescription = soup.find("div",class_="term-description").text.strip()
             infoList = soup.find_all("div",class_="pbm")
-
+            
             total = soup.find("p",class_="woocommerce-result-count").text.replace("items","").strip()
             for infoData in infoList:
                 field = infoData.find("div",class_="woodmart-product-cats").text.strip()
@@ -148,7 +148,7 @@ class ARTVEE:
                 }])
                 df = pd.concat([df,df_info])
                 totalCount+=1
-
+           
         df_data_info =pd.DataFrame.from_dict([{
             "페이지":page,
             "작가명":artistName,
@@ -158,7 +158,7 @@ class ARTVEE:
         }])
         df_data = pd.concat([df_data,df_data_info])
         return [df,df_data,totalImageInfoList]
-
+    
 def main()->None:
     currentPath = os.getcwd().replace("\\","/")
     excelCheck = input("전체 엑셀 추출 하시겠습니까? 1.예 2. 아니오 : ").strip()
@@ -200,7 +200,7 @@ def main()->None:
             # imgName = number[-4:]+" "+imgName
             # imageInfo = requests.get(imgUrl)
             # f = open(f"./result/image/{imgName}.jpg",'wb')
-            # f.write(imageInfo.content)
+            # f.write(imageInfo.content) 
             # f.close()
             # beforePage+=1
             ####################################################
@@ -249,7 +249,7 @@ def main()->None:
             imageIs = df_excel.at[idx,"이미지 저장여부"]
             if downloadCheck =="2" and imageIs != "X":
                 continue
-
+            
             if selectArtistName != "" and selectArtistName != nameInfo:
                 continue
             if startPage != "" and startPage != pageInfo:
@@ -268,7 +268,7 @@ def main()->None:
                     os.makedirs(namePath)
                 try:
                     f = open(f"{namePath}/{filename}.jpg",'wb')
-                    f.write(imageInfo.content)
+                    f.write(imageInfo.content) 
                     f.close()
                     df_excel.at[idx,"이미지 저장여부"] = ""
                 except:
@@ -302,7 +302,7 @@ def translatorFromExcel()->None:
             df_excel = pd.read_excel(f"{excelPath}/{fileInfo}",sheet_name="1")
             df_excel_data = pd.read_excel(f"{excelPath}/{fileInfo}",sheet_name="2")
         except:
-            traceback.print_exc()
+            traceback.print_exc() 
             print(f"{fileInfo} 엑셀 읽기 실패")
             continue
         for idx, data in enumerate(tqdm(df_excel["페이지"])):
@@ -329,7 +329,7 @@ def translatorFromExcel()->None:
                 df_excel.at[idx,"번역-1(괄호포함)"] = pieceFullInfoTrans.text
                 df_excel.at[idx,"번역-2(괄호 미포함)"] = pieceInfoTrans.text
             except:
-                traceback.print_exc()
+                traceback.print_exc() 
                 print("페이지 번역 또는 저장 실패")
                 df_excel.at[idx,"번역-1(괄호포함)"] = "번역실패"
                 df_excel.at[idx,"번역-2(괄호 미포함)"] = "번역실패"
@@ -344,11 +344,11 @@ if __name__ == "__main__":
             main()
         except Exception as e:
             print(f"{str(e)} 오류로 인한 종료")
-            traceback.print_exc()
+            traceback.print_exc() 
     elif mode == "2":
         try:
             translatorFromExcel()
         except Exception as e:
             print(f"{str(e)} 오류로 인한 종료")
-            traceback.print_exc()
+            traceback.print_exc() 
     input("완료")
