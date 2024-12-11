@@ -90,7 +90,6 @@ def kistep_gpsTrendList_data(html):
     return data_list
 
 # kistep_gpsTrendList DB
-# DB 10개 조회후 거기에 없는 것들만 insert
 def kistep_gpsTrendList(date):
     html = kistep_gpsTrendList_request()
     if html:
@@ -209,7 +208,7 @@ def kistep_board(date):
 
 
 
-# kistep_board_request 요청
+# krei_list_request 요청
 def krei_list_request():
     url = "https://www.krei.re.kr/krei/selectBbsNttList.do"
 
@@ -236,7 +235,7 @@ def krei_list_request():
         return None
 
 
-# kistep_board_data 데이터 가공
+# krei_list_data 데이터 가공
 def krei_list_data(html):
     data_list = []
 
@@ -297,7 +296,7 @@ def krei_list_data(html):
     return data_list
 
 
-# kistep_board DB
+# krei_list DB
 def krei_list(date):
     html = krei_list_request()
     if html:
@@ -308,7 +307,7 @@ def krei_list(date):
 
 
 
-# kistep_board_request 요청
+# krei_research_request 요청
 def krei_research_request():
     url = "https://www.krei.re.kr/krei/research.do"
 
@@ -338,7 +337,7 @@ def krei_research_request():
         return None
 
 
-# kistep_board_data 데이터 가공
+# krei_research_data 데이터 가공
 def krei_research_data(html):
     data_list = []
 
@@ -399,7 +398,7 @@ def krei_research_data(html):
     return data_list
 
 
-# kistep_board DB
+# krei_research DB
 def krei_research(date):
     html = krei_research_request()
     if html:
@@ -411,13 +410,332 @@ def krei_research(date):
 
 
 
+# kati_export_request 요청
+def kati_export_request():
+    url = "https://www.kati.net/board/exportNewsList.do"
+
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'connection': 'keep-alive',
+        'host': 'www.kati.net',
+        'origin': 'https://www.kati.net',
+        'referer': 'https://www.kati.net/board/exportNewsList.do'
+    }
+
+    # 페이로드 데이터 설정
+    payload = {
+        'page': '1',
+        'menu_dept3': '',
+        'srchGubun': '',
+        'dateSearch': 'year',
+        'srchFr': '',
+        'srchTo': '',
+        'srchTp': '2',
+        'srchWord': ''
+    }
+
+    # POST 요청
+    response = requests.post(url, headers=headers, data=payload)
+    if response.status_code == 200:
+        return response.text
+    else:
+        print("Failed to retrieve data")
+        return None
+
+
+# kati_export_data 데이터 가공
+def kati_export_data(html):
+    data_list = []
+
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+
+        board_list = soup.find('div', class_='board-list-area mt10')
+        if not board_list:
+            logging.error("Board list not found")
+            return []
+
+        ul = board_list.find('ul')
+        if not ul:
+            logging.error("ul not found")
+            return []
+
+        for index, li in enumerate(ul.find_all('li', recursive=False)):
+            a_tag = li.find('a', recursive=False)
+
+            if a_tag:
+                before_url = "https://www.kati.net/board" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
+                url = before_url.replace('\r\n\t\t\t\t\t\t', '')
+                dmnfr_trend_no = ''
+                ttl = ''
+                reg_ymd_text = ''
+
+                match = re.search(r'board_seq=(\d+)', a_tag['href']) if 'href' in a_tag.attrs else ''
+                if match:
+                    dmnfr_trend_no = match.group(1)
+
+                ttl_tag = a_tag.find('span', class_='fs-15 ff-ngb')
+                if ttl_tag:
+                    ttl = ttl_tag.get_text(strip=True)
+
+                date_tag = a_tag.find('span', class_='option-area')
+                if date_tag:
+                    span_tags = date_tag.find_all('span')
+                    if span_tags and len(span_tags) > 0:
+                        reg_ymd_text = span_tags[0].get_text(strip=True).replace("등록일", "").strip()
+
+                data_obj = {
+                    "DMNFR_TREND_NO": dmnfr_trend_no,
+                    "STTS_CHG_CD": "success",
+                    "TTL": ttl,
+                    "SRC": "농식품수출정보-해외시장동향",
+                    "REG_YMD": reg_ymd_text,
+                    "URL": url
+                }
+                data_list.append(data_obj)
+
+    except Exception as e:
+        logging.error(f"Error : {e}")
+
+    return data_list
+
+
+# kati_export DB
+def kati_export(date):
+    html = kati_export_request()
+    if html:
+        data_list = kati_export_data(html)
+
+        for data in data_list:
+            print(data)
+
+
+
+# kati_report_request 요청
+def kati_report_request():
+    url = "https://www.kati.net/board/reportORpubilcationList.do"
+
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'connection': 'keep-alive',
+        'host': 'www.kati.net',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'none',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1'
+    }
+
+    # GET 요청
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.text
+    else:
+        print("Failed to retrieve data")
+        return None
+
+
+# kati_report_data 데이터 가공
+def kati_report_data(html):
+    data_list = []
+
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+
+        board_list = soup.find('div', class_='report-list-area mt10')
+        if not board_list:
+            logging.error("Board list not found")
+            return []
+
+        report_items = board_list.find_all('div', class_='report-item')
+        if not report_items:
+            logging.error("report_items not found")
+            return []
+
+        for index, report_item in enumerate(report_items):
+
+            url = ''
+            dmnfr_trend_no = ''
+            ttl = ''
+            reg_ymd_text = ''
+
+            em_tag = report_item.find('em', class_='report-tit')
+            span_tag = report_item.find('span', class_='report-date')
+
+            if em_tag:
+                a_tag = em_tag.find('a')
+                if a_tag:
+                    before_url = "https://www.kati.net/board" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
+                    url = before_url.replace('\r\n\t\t\t\t\t\t\t\t\t\t', '')
+                    ttl = a_tag.get_text(strip=True)
+
+                    match = re.search(r'board_seq=(\d+)', a_tag['href']) if 'href' in a_tag.attrs else ''
+                    if match:
+
+                        dmnfr_trend_no = match.group(1)
+
+            if span_tag:
+                reg_ymd_text = span_tag.get_text(strip=True).replace("등록일", "").strip()
+
+            data_obj = {
+                "DMNFR_TREND_NO": dmnfr_trend_no,
+                "STTS_CHG_CD": "success",
+                "TTL": ttl,
+                "SRC": "농식품수출정보-보고서",
+                "REG_YMD": reg_ymd_text,
+                "URL": url
+            }
+            data_list.append(data_obj)
+
+    except Exception as e:
+        logging.error(f"Error : {e}")
+
+    return data_list
+
+
+# kati_report DB
+def kati_report(date):
+    html = kati_report_request()
+    if html:
+        data_list = kati_report_data(html)
+
+        for data in data_list:
+            print(data)
+
+
+
+# stepi_report_request 요청
+def stepi_report_request():
+    url = "https://www.stepi.re.kr/site/stepiko/ex/bbs/reportList.do?cbIdx=1292"
+
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'connection': 'keep-alive',
+        'host': 'www.stepi.re.kr',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'none',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1'
+    }
+
+    # GET 요청
+    response = requests.get(url, headers=headers, verify=False)
+    if response.status_code == 200:
+        return response.text
+    else:
+        print("Failed to retrieve data")
+        return None
+
+
+# stepi_report_data 데이터 가공
+def stepi_report_data(html):
+    data_list = []
+
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+
+        board_list = soup.find('ul', class_='boardList')
+        if not board_list:
+            logging.error("Board list not found")
+            return []
+
+        cbIdx = 1292  # cbIdx 값 예시
+        pageIndex = 1  # pageIndex 기본 값
+        tgtTypeCd = 'ALL'  # tgtTypeCd 기본 값
+
+        for index, li in enumerate(board_list.find_all('li', recursive=False)):
+
+            url = ''
+            dmnfr_trend_no = ''
+            ttl = ''
+            reg_ymd_text = ''
+
+            title_tag = li.find('div', class_='title')
+            info_tag = li.find('div', class_='info')
+            if title_tag:
+                tit_tag = title_tag.find('a', class_='tit')
+                if tit_tag:
+                    report_view = tit_tag['href'] if 'href' in tit_tag.attrs else ''
+
+                    if report_view:
+
+                        if "reportView2" in report_view:
+                            # 정규 표현식을 사용하여 reIdx와 cateCont 추출
+                            match = re.search(r"reportView2\('([^']+)',\s*'([^']+)'\)", report_view)
+                            if match:
+                                reIdx = match.group(1)
+                                dmnfr_trend_no = reIdx
+                                cateCont = match.group(2)
+                                url = f"https://www.stepi.re.kr/site/stepiko/report/View.do?pageIndex={pageIndex}&cateTypeCd=&tgtTypeCd={tgtTypeCd}&searchType=&reIdx={reIdx}&cateCont={cateCont}&cbIdx={cbIdx}&searchKey="
+                        else:
+                            # 정규 표현식을 사용하여 reIdx와 cateCont 추출
+                            match = re.search(r"reportView\((\d+),\s*'([^']+)'\)", report_view)
+
+                            if match:
+                                reIdx = match.group(1)
+                                dmnfr_trend_no = reIdx
+                                cateCont = match.group(2)
+                                url = f"https://www.stepi.re.kr/site/stepiko/report/View.do?pageIndex={pageIndex}&cateTypeCd=&tgtTypeCd={tgtTypeCd}&searchType=&reIdx={reIdx}&cateCont={cateCont}&cbIdx={cbIdx}&searchKey="
+                    ttl = tit_tag.get_text(strip=True)
+
+            if info_tag:
+                span_tags = info_tag.find_all('span')
+                if span_tags and len(span_tags) > 0:
+                    reg_ymd_text = span_tags[1].get_text(strip=True)
+
+            data_obj = {
+                "DMNFR_TREND_NO": dmnfr_trend_no,
+                "STTS_CHG_CD": "success",
+                "TTL": ttl,
+                "SRC": "농식품수출정보-보고서",
+                "REG_YMD": reg_ymd_text,
+                "URL": url
+            }
+            data_list.append(data_obj)
+
+    except Exception as e:
+        logging.error(f"Error : {e}")
+
+    return data_list
+
+
+# stepi_report DB
+def stepi_report(date):
+    html = stepi_report_request()
+    if html:
+        data_list = stepi_report_data(html)
+
+        for data in data_list:
+            print(data)
+
+
+
+
+
+
 def main():
     date = datetime.now().strftime('%Y-%m-%d')
 
     # kistep_gpsTrendList(date)
+    # kistep_board(date)
     # krei_list(date)
-    krei_research(date)
-
+    # krei_research(date)
+    # kati_export(date)
+    # kati_report(date)
+    stepi_report(date)
 
 if __name__ == '__main__':
     main()

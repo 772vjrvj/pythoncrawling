@@ -2,10 +2,10 @@
 국내		KISTEP브리프	KISTEP 브리프	https://www.kistep.re.kr/board.es?mid=a10306010000&bid=0031	07시
 국내	한국농촌경제연구원	주간브리프	KREI 주간브리프	https://www.krei.re.kr/krei/selectBbsNttList.do?bbsNo=76&key=271
 국내		이슈+	KREI 이슈+	https://www.krei.re.kr/krei/research.do?key=71&pageType=010302
-
 국내	한국농수산식품유통공사	농식품수출정보-해외시장동향	aT Kati 해외시장동향	https://www.kati.net/board/exportNewsList.do	02시
 국내		농식품수출정보-보고서	aT Kati 보고서	https://www.kati.net/board/reportORpubilcationList.do	02시
 국내	과학기술정책연구원	발간물	STEPI 최신발간물	https://www.stepi.re.kr/site/stepiko/ex/bbs/reportList.do?cbIdx=1292
+
 국외	미국 USDA	보도자료	USDA 보도자료	https://www.usda.gov/media/press-releases
 국외	일본 농림수산성	보도자료	일본 농림수산성 보도자료	https://www.maff.go.jp/j/press/index.html
 국외	중국 농업농촌부	소식	중국 농업농촌부 소식	http://www.moa.gov.cn/xw/zwdt/
