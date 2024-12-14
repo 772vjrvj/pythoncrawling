@@ -105,7 +105,7 @@ def extract_and_format(site, url):
         return url.split("/")[-1]
     elif site == 'dcinside':
         # 정규식을 사용하여 숫자 추출
-        match = re.search(r'no=(\\d+)', url)
+        match = re.search(r'no=(\d+)', url)  # 패턴에서 역슬래시 하나만 사용
         if match:
             return match.group(1)
         else:
