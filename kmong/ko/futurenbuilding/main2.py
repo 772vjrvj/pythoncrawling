@@ -1,14 +1,8 @@
-import time
-
 import requests
 from bs4 import BeautifulSoup
 from requests.exceptions import Timeout, RequestException
 import pandas as pd
 from tqdm import tqdm
-import random
-import os  # os 모듈 추가
-from openpyxl import load_workbook
-from zipfile import BadZipFile
 
 
 def setup_headers():
@@ -250,40 +244,23 @@ def merge_obj_with_process_list(obj, process_list):
 def load_urls_from_excel(excel_file):
     """엑셀 파일에서 URL 리스트를 읽어오는 함수"""
     df = pd.read_excel(excel_file)
-    return df['URLs'].tolist()  # 엑셀 파일에 'URL'이라는 컬럼이 있어야 합니다.
+    return df['URL'].tolist()  # 엑셀 파일에 'URL'이라는 컬럼이 있어야 합니다.
 
-
-def append_to_excel(data, filename="results.xlsx"):
-    df = pd.DataFrame(data)
-
-    try:
-        # 기존 파일이 있을 경우 파일을 열고 데이터를 추가
-        if os.path.exists(filename):
-            with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-                workbook = load_workbook(filename)
-                sheet_name = workbook.sheetnames[0]  # 첫 번째 시트 이름 가져오기
-
-                # 행 수 계산 (generator로부터 직접 행을 셈)
-                startrow = sum(1 for _ in workbook[sheet_name].rows)
-
-                df.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=startrow)
-        else:
-            # 파일이 없을 경우 새로 생성
-            df.to_excel(filename, index=False)
-    except BadZipFile:
-        print(f"Error: The file {filename} is not a valid Excel file or is corrupted.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
+def save_results_to_excel(results, output_file):
+    """결과를 엑셀 파일로 저장하는 함수"""
+    df = pd.DataFrame(results)
+    df.to_excel(output_file, index=False)
 
 def main():
-    results = []
-    urls = load_urls_from_excel('urls.xlsx')
 
-    # 결과를 100개마다 저장하도록 수정
-    batch_size = 200
-    index = 0
-    for url in tqdm(urls):
+    results = []
+
+    # 엑셀 파일에서 URL 읽어오기
+    # urls = load_urls_from_excel('url.xlsx')
+    urls = ['http://mrnbd.co.kr/D01/bd_info_view.asp?SEQ=35103']
+
+
+    for index, url in tqdm(urls):
         print(f'index : {index}')
         headers = setup_headers()  # 헤더 설정
 
@@ -309,17 +286,8 @@ def main():
 
                 results.extend(merge_obj_list)
 
-        index += 1
-        time.sleep(random.uniform(0.3, 0.5))  # 페이지 로딩 대기 시간
-
-        # 100개마다 엑셀에 저장
-        if len(results) >= batch_size:
-            append_to_excel(results, 'results.xlsx')
-            results = []  # 저장 후 리스트 초기화
-
-    # 남은 결과 저장
-    if results:
-        append_to_excel(results, 'results.xlsx')
+    # 결과를 엑셀 파일로 저장
+    save_results_to_excel(results, 'results.xlsx')
 
 if __name__ == "__main__":
     main()
