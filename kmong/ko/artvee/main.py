@@ -500,7 +500,7 @@ def sub_main()->None:
 
 
 if __name__ == "__main__":
-    mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운")
+    mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : ")
     if mode == "1":
         try:
             main()
