@@ -103,3 +103,10 @@ def extract_and_format(site, url):
         if match:
             return match.group(1)
         return url.split("/")[-1]
+    elif site == 'dcinside':
+        # 정규식을 사용하여 숫자 추출
+        match = re.search(r'no=(\\d+)', url)
+        if match:
+            return match.group(1)
+        else:
+            return ''

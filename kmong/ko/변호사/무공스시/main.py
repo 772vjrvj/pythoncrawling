@@ -10,7 +10,7 @@ from sites.ruliweb import extract_links_ruriweb, extract_contents_ruriweb
 from sites.arcalive import extract_links_arcalive, extract_contents_arcalive
 from sites.inven import extract_links_inven, extract_contents_inven
 from sites.fmkorea import extract_links_fmkorea, extract_contents_fmkorea
-
+from sites.dcinside import extract_links_dcinside, extract_contents_dcinside
 
 # 드라이버 세팅
 def setup_driver():
@@ -57,6 +57,10 @@ def get_links(driver, site, keyword, start_page=1):
                 break
         elif site == "arcalive":
             links = extract_links_arcalive(driver, keyword, page)
+        elif site == "dcinside":
+            links = extract_links_dcinside(driver, keyword, page)
+            if links and links[-1] in all_links:
+                break
         else:
             raise ValueError(f"Unknown site: {site}")
 
@@ -90,6 +94,8 @@ def extract_contents(driver, site, keyword, link, forbidden_keywords):
         return extract_contents_ruriweb(driver, site, keyword, link, forbidden_keywords)
     elif site == "arcalive":
         return extract_contents_arcalive(driver, site, keyword, link, forbidden_keywords)
+    elif site == "dcinside":
+        return extract_contents_dcinside(driver, site, keyword, link, forbidden_keywords)
     else:
         raise ValueError(f"Unknown site: {site}")
 
@@ -123,20 +129,21 @@ if __name__ == "__main__":
         # "fmkorea",
         # "ruliweb",
         # "inven",
-        "arcalive"
+        # "arcalive",
+        "dcinside"
     ]
     keywords = [
         "마공스시",
-        "읍읍스시",
-        "마공읍읍",
+        # "읍읍스시",
+        # "마공읍읍",
         "ㅁㄱㅅㅅ",
         "ㅁㄱ스시",
-        "신지수",
+        # "신지수",
         # "ㅅㅈㅅ",
-        "보일러집 아들",
-        "대열보일러",
-        "project02",
-        "버블트리"
+        # "보일러집 아들",
+        # "대열보일러",
+        # "project02",
+        # "버블트리"
     ]
     forbidden_keywords = ["병신지수", "혁신지수", "여신지수"]
     driver = setup_driver()
@@ -152,8 +159,6 @@ if __name__ == "__main__":
             for idx, keyword in enumerate(keywords, start=1):
                 print(f"site : {site} ({index}/{len(sites)}), keyword : {keyword} ({idx}/{len(keywords)})")
                 result_links = get_links(driver, site, keyword)
-                if not result_links:
-                    continue
 
                 # set으로 변환하여 중복 제거
                 result_links_set = set(result_links)
