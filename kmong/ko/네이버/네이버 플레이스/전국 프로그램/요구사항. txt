@@ -5,3 +5,7 @@
 25만원
 
 pyinstaller --onefile --noconsole main.py
+
+2024.12.11
+추가 요구사항
+중복제거
