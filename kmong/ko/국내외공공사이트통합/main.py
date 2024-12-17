@@ -3,6 +3,70 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import logging
 import re
+import cx_Oracle
+
+# DB 연결을 위한 변수 (전역 변수로 선언)
+connection = None
+
+# DB 연결 함수 (최초 한 번만 연결)
+def connect_to_db():
+    global connection
+    if connection is None:
+        # Oracle 연결 정보
+        host = 'nas.codegurus.co.kr'
+        port = 1521
+        dbname = 'ORCL'
+        username = 'PLATNW'
+        password = 'PLATNW'
+
+        # 연결 문자열 생성
+        dsn_tns = cx_Oracle.makedsn(host, port, service_name=dbname)
+
+        try:
+            # DB 연결
+            connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+            logging.info("DB 연결 성공")
+        except cx_Oracle.DatabaseError as e:
+            logging.error(f"DB 연결 실패: {e}")
+            connection = None
+    return connection
+
+
+# DB 연결 종료 함수 (옵션)
+def close_db_connection():
+    global connection
+    if connection:
+        connection.close()
+        connection = None
+        logging.info("DB 연결 종료")
+
+
+# DB에 데이터 삽입하는 함수
+def insert_data_to_db(data):
+    conn = connect_to_db()
+    if conn:
+        cursor = conn.cursor()
+
+        # 데이터 삽입 쿼리
+        insert_query = f"""
+        INSERT INTO DMNFR_TREND (DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL)
+        VALUES (:DMNFR_TREND_NO, :STTS_CHG_CD, :TTL, :SRC, :REG_YMD, :URL)
+        """
+
+        try:
+            # 쿼리 실행
+            cursor.execute(insert_query, data)
+
+            # 커밋
+            conn.commit()
+
+        except cx_Oracle.DatabaseError as e:
+            logging.error(f"데이터 삽입 실패: {e}")
+        finally:
+            # 커서 종료
+            cursor.close()
+    else:
+        logging.error("DB 연결 실패")
 
 
 # kistep_gpsTrendList 요청
@@ -652,9 +716,9 @@ def stepi_report_data(html):
             logging.error("Board list not found")
             return []
 
-        cbIdx = 1292  # cbIdx 값 예시
-        pageIndex = 1  # pageIndex 기본 값
-        tgtTypeCd = 'ALL'  # tgtTypeCd 기본 값
+        cbIdx = 1292
+        pageIndex = 1
+        tgtTypeCd = 'ALL'
 
         for index, li in enumerate(board_list.find_all('li', recursive=False)):
 
@@ -718,8 +782,13 @@ def stepi_report(date):
     if html:
         data_list = stepi_report_data(html)
 
+
+
         for data in data_list:
             print(data)
+
+            # 데이터 삽입 함수 호출
+            insert_data_to_db(data)
 
 
 
