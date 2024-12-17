@@ -1,19 +1,14 @@
-import time
-
-import pandas as pd
-from PyQt5.QtCore import Qt,  QTimer, QTime, QThread
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTableWidgetItem,
-                             QCheckBox, QDesktopWidget, QTableWidget, QSizePolicy, QHeaderView, QMessageBox,
-                             QFileDialog, QTextEdit, QApplication, QProgressBar, QLineEdit)
-
-from PyQt5.QtGui import QTextOption
-
-from src.workers.api_naver_set_worker import ApiNaverSetLoadWorker
-from src.workers.progress_thread import ProgressThread
-from src.workers.check_worker import CheckWorker
-from src.ui.all_register_popup import AllRegisterPopup
 from datetime import datetime
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
+                             QTextEdit, QApplication, QProgressBar)
+
+from src.ui.all_register_popup import AllRegisterPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
+from src.workers.api_netflix_set_worker import ApiNetflixSetLoadWorker
+from src.workers.check_worker import CheckWorker
+from src.workers.progress_thread import ProgressThread
 
 main_url_list = []
 
@@ -33,6 +28,7 @@ class MainWindow(QWidget):
         self.api_worker = CheckWorker(cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
         self.api_worker.start()  # 스레드 시작
+
 
     def handle_api_failure(self, error_message):
         """API 요청 실패 처리"""
@@ -59,7 +55,7 @@ class MainWindow(QWidget):
 
         # 버튼 설정
         # 전체등록
-        self.all_register_button = QPushButton("플레이스ID 등록")
+        self.all_register_button = QPushButton("넷플릭스URL 등록")
         self.all_register_button.setStyleSheet("""
                     background-color: black;
                     color: white;
@@ -67,7 +63,7 @@ class MainWindow(QWidget):
                     font-size: 16px;
                     padding: 10px;
                 """)
-        self.all_register_button.setFixedWidth(150)  # 고정된 너비
+        self.all_register_button.setFixedWidth(180)  # 고정된 너비
         self.all_register_button.setFixedHeight(40)  # 고정된 높이
         self.all_register_button.setCursor(Qt.PointingHandCursor)
         self.all_register_button.clicked.connect(self.open_all_register_popup)
@@ -93,49 +89,8 @@ class MainWindow(QWidget):
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
 
-
-        # 블로그주소 입력창
-        self.blog_host_url = QLineEdit(self)
-        self.blog_host_url.setPlaceholderText(" 블로그 주소 https://blog.naver.com/blog_id...")  # 플레이스홀더 텍스트
-        self.blog_host_url.setStyleSheet("""
-            border: 2px solid #ccc;  # 테두리 설정
-            border-radius: 151px;
-            font-size: 16px;
-            padding: 10px;
-            background-color: white;  # 배경색 설정
-        """)
-        self.blog_host_url.setFixedWidth(1000)  # 시작 버튼 너비의 2배
-        self.blog_host_url.setFixedHeight(40)  # 시작 버튼 너비의 2배
-
-        # 키워드 입력창
-        self.keyword_input = QLineEdit(self)
-        self.keyword_input.setPlaceholderText(" 키워드 입력")  # 플레이스홀더 텍스트
-        self.keyword_input.setStyleSheet("""
-            border: 2px solid #ccc;  # 테두리 설정
-            border-radius: 151px;
-            font-size: 16px;
-            padding: 10px;
-            background-color: white;  # 배경색 설정
-        """)
-        self.keyword_input.setFixedWidth(1000)  # 시작 버튼 너비의 2배
-        self.keyword_input.setFixedHeight(40)  # 시작 버튼 너비의 2배
-
-
-        # 내용 입력창
-        self.content_input = QTextEdit(self)
-        self.content_input.setPlaceholderText(" 내용 입력")  # 플레이스홀더 텍스트
-        self.content_input.setStyleSheet("""
-            border: 2px solid #ccc;  # 테두리 설정
-            border-radius: 15px;
-            font-size: 16px;
-            padding: 10px;
-            background-color: white;  # 배경색 설정
-        """)
-        self.content_input.setFixedWidth(1000)  # 전체 너비 채우기
-        self.content_input.setFixedHeight(80)  # 높이는 2줄 정도
-
         # 헤더에 텍스트 추가
-        header_label = QLabel("네이버 자동 업로드")
+        header_label = QLabel("넷플릭스 데이터 추출")
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
 
@@ -165,12 +120,8 @@ class MainWindow(QWidget):
         self.log_window.setLineWrapMode(QTextEdit.NoWrap)  # 줄 바꿈 비활성화
         self.log_window.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 수평 스크롤바 항상 표시
 
-
         main_layout.addLayout(header_layout)        # 버튼 레이아웃
 
-        main_layout.addWidget(self.blog_host_url)  # 키워드 입력창 추가
-        main_layout.addWidget(self.keyword_input)  # 키워드 입력창 추가
-        main_layout.addWidget(self.content_input)  # 내용 입력창 추가
         main_layout.addWidget(header_label)
         main_layout.addWidget(self.progress_bar)  # 진행 상태 게이지바 추가
         main_layout.addWidget(self.log_window, stretch=2)  # 로그 창 추가
@@ -211,7 +162,6 @@ class MainWindow(QWidget):
         self.log_window.append(f"[{timestamp}] {message}")
 
 
-
     def start_on_demand_worker(self):
         global main_url_list
 
@@ -232,7 +182,7 @@ class MainWindow(QWidget):
             """)
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
-                self.on_demand_worker = ApiNaverSetLoadWorker(main_url_list, self.keyword_input.text(), self.content_input.toPlainText(), self.blog_host_url.text(), self)
+                self.on_demand_worker = ApiNetflixSetLoadWorker(main_url_list, self)
                 self.on_demand_worker.start()
             elif not self.on_demand_worker.isRunning():  # 이미 종료된 worker라면 다시 시작
                 self.on_demand_worker.start()
