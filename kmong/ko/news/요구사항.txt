@@ -17,7 +17,15 @@ https://www.nytimes.com/
 검색어는 ‘South Korea’s President’, ‘Yoon Suk Yeol’, ‘Martial Law’, ‘Impeachment’
 
 
-China Daily
-
-
 The Japan Times
+https://www.japantimes.co.jp
+검색어는 ‘South Korea’s President’, ‘Yoon Suk Yeol’, ‘Martial Law’, ‘Impeachment’
+
+
+
+China Daily
+https://www.chinadaily.com.cn/
+검색어는 ‘South Korea’s President’, ‘Yoon Suk Yeol’, ‘Martial Law’, ‘Impeachment’
+
+
+
