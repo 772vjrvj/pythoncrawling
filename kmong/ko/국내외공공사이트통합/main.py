@@ -548,11 +548,13 @@ def kati_export_data(html):
                 if date_tag:
                     span_tags = date_tag.find_all('span')
                     if span_tags and len(span_tags) > 0:
-                        reg_ymd_text = span_tags[0].get_text(strip=True).replace("등록일", "").strip()
+                        date_str = span_tags[0].get_text(strip=True).replace("등록일", "").strip()
+                        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+                        reg_ymd_text = date_obj.strftime("%Y%m%d")
 
                 data_obj = {
                     "DMNFR_TREND_NO": dmnfr_trend_no,
-                    "STTS_CHG_CD": "success",
+                    "STTS_CHG_CD": "succ",
                     "TTL": ttl,
                     "SRC": "농식품수출정보-해외시장동향",
                     "REG_YMD": reg_ymd_text,
@@ -574,6 +576,8 @@ def kati_export(date):
 
         for data in data_list:
             print(data)
+            # 데이터 삽입 함수 호출
+            insert_data_to_db(data)
 
 
 
@@ -646,11 +650,14 @@ def kati_report_data(html):
                         dmnfr_trend_no = match.group(1)
 
             if span_tag:
-                reg_ymd_text = span_tag.get_text(strip=True).replace("등록일", "").strip()
+                date_str = span_tag.get_text(strip=True).replace("등록일", "").strip()
+                date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+                reg_ymd_text = date_obj.strftime("%Y%m%d")
+
 
             data_obj = {
                 "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "success",
+                "STTS_CHG_CD": "succ",
                 "TTL": ttl,
                 "SRC": "농식품수출정보-보고서",
                 "REG_YMD": reg_ymd_text,
@@ -672,6 +679,8 @@ def kati_report(date):
 
         for data in data_list:
             print(data)
+            # 데이터 삽입 함수 호출
+            insert_data_to_db(data)
 
 
 
@@ -803,8 +812,8 @@ def main():
     # krei_list(date)
     # krei_research(date)
     # kati_export(date)
-    # kati_report(date)
-    stepi_report(date)
+    kati_report(date)
+    # stepi_report(date)
 
 if __name__ == '__main__':
     main()
