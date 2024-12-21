@@ -22,9 +22,7 @@ class ApiWorker(QThread):
         super().__init__(parent)
         self.parent = parent  # 부모 객체 저장
         self.url_list = url_list  # URL을 클래스 속성으로 저장
-
         self.driver = self.setup_chrome_options()
-
 
     def setup_chrome_options(self):
         """크롬 드라이버 옵션 설정"""

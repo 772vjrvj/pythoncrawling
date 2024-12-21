@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLa
 
 from src.ui.all_register_popup import AllRegisterPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
-from src.workers.api_netflix_set_worker import ApiNetflixSetLoadWorker
+from src.workers.api_selenium_netflix_set_worker import ApiNetflixSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -159,14 +159,16 @@ class MainWindow(QWidget):
         로그 메시지를 추가합니다.
         """
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.log_window.append(f"[{timestamp}] {message}")
+        log_message = f"[{timestamp}] {message}"
+
+        self.log_window.append(log_message)  # 직접 호출
 
 
     def start_on_demand_worker(self):
         global main_url_list
 
         if main_url_list is None or len(main_url_list) <= 0:
-            self.show_warning("등록된 URL이 없습니다.")
+            self.show_message("등록된 URL이 없습니다.", 'warn')
             return
 
         # 버튼의 텍스트와 스타일 변경
@@ -183,6 +185,8 @@ class MainWindow(QWidget):
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
                 self.on_demand_worker = ApiNetflixSetLoadWorker(main_url_list, self)
+                self.on_demand_worker.log_signal.connect(self.add_log)
+                self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.start()
             elif not self.on_demand_worker.isRunning():  # 이미 종료된 worker라면 다시 시작
                 self.on_demand_worker.start()
@@ -228,13 +232,16 @@ class MainWindow(QWidget):
 
 
     # 경고 alert창
-    def show_warning(self, message):
+    def show_message(self, message, type):
         # QMessageBox 생성
         msg = QMessageBox(self)
-        msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
-        msg.setWindowTitle("경고")  # 창 제목 설정
+        if type == 'warn':
+            msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
+            msg.setWindowTitle("경고")  # 창 제목 설정
+        elif type == 'info':
+            msg.setIcon(QMessageBox.Information)  # 경고 아이콘 설정
+            msg.setWindowTitle("확인")  # 창 제목 설정
         msg.setText(message)  # 메시지 내용 설정
         msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
         msg.exec_()  # 메시지 박스 표시
-
 
