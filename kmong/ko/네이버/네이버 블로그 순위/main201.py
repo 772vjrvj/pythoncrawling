@@ -170,7 +170,7 @@ def read_excel_file(filepath):
 def save_excel_file(new_data):
     global filepath
     # 기존 엑셀 파일 읽기
-    df = pd.read_excel(filepath, sheet_name=0)
+    df = pd.read_excel(filepath, sheet_name='Sheet1')
 
     # new_data 복사본 생성
     new_data_copy = new_data.copy()
