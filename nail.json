@@ -1,0 +1,5209 @@
+{
+  "BeautySummary:1389195604": {
+    "__typename": "BeautySummary",
+    "id": "1389195604",
+    "apolloCacheId": "",
+    "name": "공간네일 노원점",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "38",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "공간네일 포인트 적립 이벤트 중!!\n1. 네이버 포토리뷰 (2,000점) \u002F 동영상 리뷰 (3,000점) 작성시 포인트 적립 혜택 !!(공간네일 사용가능 포인트적립)\n2. 카카오 채널 친구 추가시 2,000포인트 적립 혜택 !! (공간네일 사용가능 포인트 적립)\n\n-5000점 이상부터 사용가능\n\n안녕하세요. 드릴케어 오프 전문 공간네일 노원점입니다.\n\n*노쇼방지 예약금 받고있어요.\n(당일취소,변경,10분이상(10분 포함) 지각 시 예약금 환불 힘드신 점 양해부탁드려요)\n\n*회원고객님은 네이버예약시 예약금 환불 처리 후 적립금에서 차감 도와드려요\n\n*급한문의사항,당일예약은 전화부탁드려요\n네이버예약이 안될시 매장으로 전화주시면 예약도와드릴게요!\n\n*네이버예약시간과 실제예약 상황이 다를 수 있어 시간조정 전화드릴수있는점 양해 부탁드릴게요\n\n*네이버톡톡 ,카톡은 시술중 답변확인이 어려울수있습니다\n(톡톡,카톡은 예약금 계좌이체해주셔야해요)\n\n*네이버 예약시 예약금제외 나머지 차액금액 매장에서 결제도와드려요\n\n고객님들을 위해 '공'들인 시'간' 공간네일 입니다.\n고객님들께 최고의 만족을 드리기위해\n공간네일 모두가 고객님들의 입장에서 생각하며,시술을 도와드려요.\n본사 디자인팀이 매달 최신유행하는 아트부터 고객님들이 원하는 아트를 만들어 매달 발매하고 있습니다.\n\n공간네일을 방문해 주시는 고객님들께 촉촉한 큐티클 오일펜 증정해드려요!\n\n항상 새로운 이벤트들이 준비되어있습니다\n\n첫방문 고객님 젤네일 29,000 원\n부담없이 받아보세요\n컬러추가 무료 !\n케어+산성없는 베이스+컬러\n(기본 젤네일 적용 )\n\n-공간네일 아트 이벤트-\n-이달의 아트 65,000 아트 \u002F 75,000아트\n-시그니처 아트 가격변동\n\n-65\u002F75 아트는 누구나 쉽고 합리적인 가격으로 이달의 아트를 받아보시도록 준비했습니다.\n트렌디하고 감각적인 아트와 개성있는 아트들을 공간네일이 디자인하여 만들었습니다.\n퀄리티와 화려함은 높이고 가격은 낮췄습니다!\n\n-시그니처 아트는 공간네일이 가장 화려하고 돋보일 수 있는 아트를 한달간 연구하여 엄선한 디자인입니다.\n\n10손전체 연장 + 풀컬러 79,000원\n(기존 가격 : 140,000원)\n\n*시술 시 충분한 테스트를 통해 마무리 하기때문에 시술 후 단순 변심(ex. 컬러 마음에 안 듦, 디자인 마음에 안 듦)으로 인한 보수는 유상 보수 처리됩니다.\n\n*드로잉 아트는 시술 시간 상 오래 걸리므로 미리 연락 부탁드립니다.\n\n감사합니다",
+    "roadAddress": "서울 노원구 동일로 1413 6층",
+    "address": "상계동 712",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230516_42%2F16842069680681pSfE_JPEG%2FKakaoTalk_20230516_113104446.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw41g66?frm=pnmb",
+    "distance": "",
+    "x": "127.0600404",
+    "y": "37.6547775",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 29000
+    },
+    "promotionTitle": "첫방문 젤네일 29,000원 컬러추가 무료 !\n10손전체연장+젤컬러 79,000원\n네이버 포토리뷰 2,000점 \u002F 동영상 리뷰 3,000점 포인트적립!\n짧은손톱 물어뜯는손톱 교정",
+    "stylesCount": 70,
+    "visitorReviewCount": "958",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": {
+      "__typename": "Coupon",
+      "total": 1,
+      "promotions": [
+        {
+          "__typename": "CouponPromotions",
+          "promotionSeq": 589794,
+          "couponSeq": 591707,
+          "conditionType": "PLACE_BENEFIT_NOTIFICATION_SUBSCRIBED",
+          "image": {
+            "__typename": "Image",
+            "url": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241107_57\u002F1730973971770xC4fE_PNG\u002FKakaoTalk_Photo_2024-11-07-15-18-11_001.png"
+          },
+          "title": "공간네일 큐티클오일펜 증정 쿠폰",
+          "description": "알림받기한 고객님들께 드려요",
+          "type": "gift",
+          "couponUseType": "BOOKING"
+        }
+      ]
+    },
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 51554522,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230516_42\u002F16842069680681pSfE_JPEG\u002FKakaoTalk_20230516_113104446.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,네일스톤,누드톤,레드",
+        "shortDesc": null,
+        "styleNum": 51554523,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241124_41\u002F17323895008248tOI5_PNG\u002F2.png"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 101
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,네일스톤,누드톤,레드",
+        "shortDesc": null,
+        "styleNum": 51554524,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241124_294\u002F1732389606473ecXU7_JPEG\u002FIMG_2911_2.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 101
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦29,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1062343727": {
+    "__typename": "BeautySummary",
+    "id": "1062343727",
+    "apolloCacheId": "",
+    "name": "네일바도 노원역점",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "99",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "노원역 4번출구, 5번출구 도보로 5분거리에 위치한 노원 네일샵 '네일바도' 입니다!\n\nSNS 노원에서 유명한 인기 네일맛집!!\n1000여개 이상의 노원 최다 컬러보유 네일샵\n100% 예약제 (고민하지말고 서두르세요!)\n1:1 맞춤형 네일샵으로\n고객님의 니즈에 맞춰 꼼꼼하게 시술해드립니다.\n피부톤에 맞는 컬러, 네일바도가 찾아드릴게요!\n\n[네일바도의 혜택]\n1. 이달의아트 전문\n2. 열손연장 전문\n3. 트렌디한 예쁜 쉐입 전문\n4. 아쉽게 놓쳤던 이달의아트 시술 가능, 컬러변경도 가능!\n5. VIP회원권혜택 + 추가적립금 + 젤제거무료\n6. 네이버 or 인스타 포토리뷰 작성 시 3000원 할인\n\n※ 이벤트는 모두 현금가 \u002F 카드결제시 부가세 10% 별도\n※ 이달의아트 재료 소진 시, 다른 재료로 대체\n\n저희 네일바도는 '정품 스와로브스키'를 사용하여\n오랜 경력과 노하우를 가진 시술로 광택이 오래가고 프리미엄 젤을 사용하여 높은 퀄리티와 유지력을 높이고있습니다!\n\n시그니처 아트네일은 네일바도가 고객님이 세상에서 가장 돋보일 수 있게 아트를 연구하여 엄선한 디자인입니다.\n\n[빠른예약]\n인스타 : nailbado \u002F nailbado.o\n카카오 : 네일바도(nailbado) 검색 후 친구추가\n예약문의전화 0507-1416-3158\n\n[찾아오는 길]\n\u003C노원역 4번출구 롯데백화점 문화의거리 입구 건너편\u003E\n\u003C파리바게트, 공차 건물 6층\u003E\n\n[운영시간]\n월 ~ 토 : 오전11시 ~ 오후9시\n일요일 휴무",
+    "roadAddress": "서울 노원구 노해로 494 6층 604호 네일바도",
+    "address": "상계동 724-3",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241202_120%2F1733146036441uox1S_JPEG%2FIMG_3740.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw44wct?frm=pnmb",
+    "distance": "",
+    "x": "127.0630902",
+    "y": "37.6544942",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 39,
+    "visitorReviewCount": "425",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 52380992,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241202_120\u002F1733146036441uox1S_JPEG\u002FIMG_3740.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,누드톤,화이트",
+        "shortDesc": null,
+        "styleNum": 52380993,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220511_297\u002F1652197615332XchC7_JPEG\u002F24067AA8-ECC6-4B40-BB73-E41F81CF2DA7.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,네일스톤",
+        "shortDesc": null,
+        "styleNum": 52380994,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230609_226\u002F16862429106079899q_JPEG\u002F23A16800-740F-4042-B91C-AD3E664A9EE0.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1640092083": {
+    "__typename": "BeautySummary",
+    "id": "1640092083",
+    "apolloCacheId": "",
+    "name": "지앤네일 노원점",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "258",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "노원에서 가장 가성비 좋은 합리적인 가격의네일샵 입니다. 원컬러 25000원, 이달의아트 35000원부터, 팁전체연장 5만원, 젤전체연장 7만원 입니다:) 매달 이달의아트 24종과 선생님 지정아트까지 40종 이상의 아트가 준비되어있습니다. 타샵 아트도 재료가 있는 선에서 가능하고 문의 주시면 가격문의 갯수 상관없이 해드립니다. 예약금이 있는 샵이며 취소는 48시간 전까지 변경은 24시간 전까지 연락 주시면 도와드립니다. 4인 동시 예약도 가능하고 8인 동시 예약이 가능한 날까지 열심히 달려가는 중입니다:)",
+    "roadAddress": "서울 노원구 노해로 492 2층 201호",
+    "address": "상계동 724-2",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241117_60%2F1731835413959at3yW_PNG%2FIMG_2630.png",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0626968",
+    "y": "37.6544635",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 25000
+    },
+    "promotionTitle": null,
+    "stylesCount": 6,
+    "visitorReviewCount": "638",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,그라데이션,화이트,핑크",
+        "shortDesc": null,
+        "styleNum": 51114701,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241117_60\u002F1731835413959at3yW_PNG\u002FIMG_2630.png"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,글리터,화이트,믹스",
+        "shortDesc": null,
+        "styleNum": 51114702,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241117_242\u002F1731835458270FDNuQ_PNG\u002FIMG_2629.png"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,글리터,화이트,블랙",
+        "shortDesc": null,
+        "styleNum": 51114703,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241117_229\u002F17318354872956BLTE_JPEG\u002FIMG_2631.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦25,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1004550342": {
+    "__typename": "BeautySummary",
+    "id": "1004550342",
+    "apolloCacheId": "",
+    "name": "더셀럽뷰티 노원점",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "54",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "최고급 재료 사용과 숙련된 테크닉으로 고객만족을 최우선으로 여기는 토탈뷰티샵 더셀럽뷰티(노원점)입니다.\n\n더셀럽뷰티는 고객님이 저희 살롱에 투자한 소중한 시간과 비용을 가치있는 프리미엄 서비스를 제공하는 것으로 보답해 드립니다.\n\n분야별로 원장님들이 계셔서 철저하게 인증받은 재료들만 사용하며 전문적이고 퀄리티 높은 시술을 받으실 수 있습니다.\n\n셀카존과 다름없는 웨이팅룸도 준비되어 있어요.",
+    "roadAddress": "서울 노원구 동일로 1353 401호, 402호",
+    "address": "상계동 746-9",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241202_258%2F17331193429881NV5i_JPEG%2FKakaoTalk_20241202_145813709_03.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4h79m?frm=pnmb",
+    "distance": "",
+    "x": "127.0615724",
+    "y": "37.6494240",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 9,
+    "visitorReviewCount": "211",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 52316834,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241202_258\u002F17331193429881NV5i_JPEG\u002FKakaoTalk_20241202_145813709_03.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "",
+        "shortDesc": null,
+        "styleNum": 52316835,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240611_191\u002F1718086377835ewVDG_JPEG\u002FKakaoTalk_20240611_151213354.jpg"
+          }
+        ],
+        "styleOptions": []
+      },
+      {
+        "__typename": "Style",
+        "desc": "네일스톤,그라데이션",
+        "shortDesc": null,
+        "styleNum": 52316836,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240611_286\u002F1718086962919ue6pH_JPEG\u002FKakaoTalk_20240611_151919169.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1976151941": {
+    "__typename": "BeautySummary",
+    "id": "1976151941",
+    "apolloCacheId": "",
+    "name": "주네일",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "45",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "--주네일에서는 노쇼방지를 위해 예약금을 받고 있습니다.\n\n--시술이 끝난 후 예약금을 뺀 차액을 결제해주시면 됩니다.\n\n--10분 이상 늦으실 경우 시술이 간소화되거나 예약 상황에 따라 시술이 불가 할 수 있습니다.\n이에 따른 차액은 어떠한 사정이 있더라도 환불이 불가합니다.\n\n--시술중에는 통화가 어려울 수 있습니다. 광고전화가 많아 예약문의 고객의 경우 문의사항을 꼭 문자로 남겨주셔야 콜백드립니다.\n\n--100% 예약우선제로 운영됩니다.\n\n\u003E\u003E\u003E\u003E\u003E대략적으로 어떤 스타일을 하실지 정해오셔야 조금이라도 빠른 시술이 가능합니다.\u003C\u003C\u003C\u003C\u003C\n\n[타샵아트 가격문의는 3개까지만 가능하며, 신규고객님의 경우\n예약양식: 성함\u002F연락처\u002F원하시는요일 혹은 시간대\u002F원하시는시술\n(손젤or발젤) 미기재시 답변드리지 않습니다.]\n\n찾아오는길 영상을 제작하여 네이버소식과\n인스타그램 @hjjoo_nail 스토리 '오시는길'에\n업로드 해두었으니 참고하여 방문해주시면 감사드리겠습니다.",
+    "roadAddress": "서울 노원구 동일로207길 50 서울시북부여성창업보육센터 2층 주네일",
+    "address": "중계동 501-9",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240913_33%2F1726201665023p133q_JPEG%2F1000052444.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4fyus?frm=pnmb",
+    "distance": "",
+    "x": "127.0613100",
+    "y": "37.6429576",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 20000
+    },
+    "promotionTitle": "손젤 30,000 발젤40,000\n컬러추가3개까지 무료",
+    "stylesCount": 15,
+    "visitorReviewCount": "113",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": {
+      "__typename": "Coupon",
+      "total": 1,
+      "promotions": [
+        {
+          "__typename": "CouponPromotions",
+          "promotionSeq": 588952,
+          "couponSeq": 590864,
+          "conditionType": "PLACE_HOME",
+          "image": {
+            "__typename": "Image",
+            "url": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241107_258\u002F1730947079286xfzNY_GIF\u002F1000001369.gif"
+          },
+          "title": "[만원할인] 손젤발젤동시예약 쿠폰",
+          "description": "",
+          "type": "gift",
+          "couponUseType": "ALL"
+        }
+      ]
+    },
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 46822340,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240913_33\u002F1726201665023p133q_JPEG\u002F1000052444.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,그라데이션",
+        "shortDesc": null,
+        "styleNum": 46822341,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240105_218\u002F1704440347810jcLKl_JPEG\u002FKakaoTalk_20240102_163836324.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "풀컬러,블랙",
+        "shortDesc": null,
+        "styleNum": 46822342,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240913_51\u002F1726201611515KylzK_JPEG\u002F1000052764.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦20,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1225447795": {
+    "__typename": "BeautySummary",
+    "id": "1225447795",
+    "apolloCacheId": "",
+    "name": "엣지네일 노원점",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "56",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "'노원 엣지네일'\n\n노원 네일에서 핫한 네일 샵!!\n1000개 이상의 많은 컬러와 아트재료가 구비되어 있어서\n퀄리티 높은 아트 시술이 가능합니다.\n꼼꼼한 시술, 전문적인 관리로 체계적인 시술을 합니다.\n저희는 2명의 선생님들이 계셔서 동시 시술이 가능합니다.\n10년 이상의 선생님들이 꼼꼼하게 시술 해 드려서 유지력이 좋습니다.\n속눈썹 펌과 연장도 가능합니다.\n손,발, 속눈썹 동시 시술 가능, 1:1 맞춤 관리 케어, 친절한 서비스까지~\n손젤관리시 손상 없는 네일샵을 찾으신다면 엣지네일로 손관리 발관리 속눈썹관리 받으러오세요~^^",
+    "roadAddress": "서울 노원구 노해로 482 3층",
+    "address": "상계동 727",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230607_175%2F1686107051049Lu3BF_JPEG%2F1686106638021.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4qibn?frm=pnmb",
+    "distance": "",
+    "x": "127.0617327",
+    "y": "37.6542666",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 30000
+    },
+    "promotionTitle": null,
+    "stylesCount": 12,
+    "visitorReviewCount": "388",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "",
+        "shortDesc": null,
+        "styleNum": 43321982,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230607_175\u002F1686107051049Lu3BF_JPEG\u002F1686106638021.jpg"
+          }
+        ],
+        "styleOptions": []
+      },
+      {
+        "__typename": "Style",
+        "desc": "네일스톤",
+        "shortDesc": null,
+        "styleNum": 43321983,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240721_122\u002F1721568735646HKq5x_JPEG\u002F1672793359650.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 43321984,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240721_60\u002F1721568412839oVbRE_JPEG\u002F1693964287899.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦30,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1046783229": {
+    "__typename": "BeautySummary",
+    "id": "1046783229",
+    "apolloCacheId": "",
+    "name": "뷰티 주비아",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "126",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "가을이벤트 손젤30.발젤35.이달의아트40.(현금가)\n당일 예약 가능!",
+    "roadAddress": "서울 도봉구 노해로70길 46 1층 143호 뷰티주비아",
+    "address": "창동 27-3",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241218_113%2F1734486632653i1Jw0_JPEG%2F1000049144.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw43a3i?frm=pnmb",
+    "distance": "",
+    "x": "127.0514110",
+    "y": "37.6502835",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 30000
+    },
+    "promotionTitle": "원장님꼼꼼시술\u002F 첫방문손젤 3만원\u002F 당일 예약 가능!",
+    "stylesCount": 43,
+    "visitorReviewCount": "297",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,아트,화이트,레드",
+        "shortDesc": null,
+        "styleNum": 53640583,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241218_113\u002F1734486632653i1Jw0_JPEG\u002F1000049144.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 101
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,아트,버건디,레드",
+        "shortDesc": null,
+        "styleNum": 53640584,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_213\u002F173327411646871d81_JPEG\u002F1000048440.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 108
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 101
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,네일스톤,화이트,블랙",
+        "shortDesc": null,
+        "styleNum": 53640585,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_235\u002F1733323082705AAvG3_JPEG\u002F1000048587.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦30,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1084972256": {
+    "__typename": "BeautySummary",
+    "id": "1084972256",
+    "apolloCacheId": "",
+    "name": "네일르조이",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "5",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "당일 예약 가능 \u002F 공휴일,일요일 예약 가능\n이달의 아트 \u002F 웨딩 네일 \u002F 스톤 네일\n\n-오버레이 서비스\n-젤 시술시 자샵 제거 서비스\n-다양한 금액대의 이달의 아트\n\n안녕하세요:)\n하계역 부근에 위치한 네일샵 네일 르 조이(nail le zoe) 입니다!\n\n네일 르 조이는 1:1 맞춤 시술로 진행되며, 시술중엔 시술 받고 계신 고객님께 집중하기 위해 전화는 받지 않습니다.\n부재시 카카오톡 채널 또는 문자를 남겨주시면 순차적으로 빠른 답변 드리도록 하겠습니다.\n\n네일 르 조이를 찾아주시는 고객님들의 니즈를 파악하여 만족 드릴수 있게 노력하겠습니다!\n\n예약은\n네이버:네일 르 조이\n카카오톡 채널: 네일 르 조이\n문자:010-8273-5854 로 부탁드려요:)",
+    "roadAddress": "서울 노원구 섬밭로 258 1층 19호 네일르조이",
+    "address": "중계동 506-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241124_220%2F1732425571735giiQW_PNG%2F%25C8%25E6%25B9%25E9_%25BD%25C9%25C7%25C3%25C7%25D1_%25B8%25AE%25BA%25E4_%25C0%25CC%25BA%25A5%25C6%25AE_%25C8%25AB%25BA%25B8_%25C0%25CE%25BD%25BA%25C5%25B8%25B1%25D7%25B7%25A5_%25C7%25C7%25B5%25E5.png",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fwygkkd1?frm=pnmb",
+    "distance": "",
+    "x": "127.0648461",
+    "y": "37.6388763",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 45000
+    },
+    "promotionTitle": null,
+    "stylesCount": 9,
+    "visitorReviewCount": "40",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": true,
+    "coupon": {
+      "__typename": "Coupon",
+      "total": 1,
+      "promotions": [
+        {
+          "__typename": "CouponPromotions",
+          "promotionSeq": 624825,
+          "couponSeq": 626795,
+          "conditionType": "PLACE_BENEFIT_NOTIFICATION_SUBSCRIBED",
+          "image": {
+            "__typename": "Image",
+            "url": null
+          },
+          "title": "5,000원 할인 쿠폰",
+          "description": "알림받기한 고객님들께 드려요",
+          "type": "discount",
+          "couponUseType": "BOOKING"
+        }
+      ]
+    },
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,풀컬러,믹스",
+        "shortDesc": null,
+        "styleNum": 52490346,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241124_220\u002F1732425571735giiQW_PNG\u002F%C8%E6%B9%E9_%BD%C9%C7%C3%C7%D1_%B8%AE%BA%E4_%C0%CC%BA%A5%C6%AE_%C8%AB%BA%B8_%C0%CE%BD%BA%C5%B8%B1%D7%B7%A5_%C7%C7%B5%E5.png"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 52490347,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241203_181\u002F17332289131069sUcd_JPEG\u002FIMG_8022.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,화이트,믹스",
+        "shortDesc": null,
+        "styleNum": 52490348,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241203_84\u002F1733228578853QLmo2_JPEG\u002FIMG_7799.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦45,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:558312183": {
+    "__typename": "BeautySummary",
+    "id": "558312183",
+    "apolloCacheId": "",
+    "name": "쏘네일",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "265",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "노원역네일\u002F프리미엄네일샵\u002F\n다양한디자인보유\u002F공휴일영업",
+    "roadAddress": "서울 노원구 동일로218길 29",
+    "address": "상계동 725-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240420_201%2F1713602333432sChTX_JPEG%2FIMG_1621.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fwc46hx?frm=pnmb",
+    "distance": "",
+    "x": "127.0625031",
+    "y": "37.6539853",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 33,
+    "visitorReviewCount": "342",
+    "visitorReviewScore": "4.93",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,화이트,누드톤",
+        "shortDesc": null,
+        "styleNum": 37511969,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240420_201\u002F1713602333432sChTX_JPEG\u002FIMG_1621.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,아쿠아,믹스",
+        "shortDesc": null,
+        "styleNum": 37511970,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240201_224\u002F1706736582245R8D5D_JPEG\u002FIMG_1336.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 90
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,글리터,누드톤,화이트",
+        "shortDesc": null,
+        "styleNum": 37511971,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240131_209\u002F1706704226647AbY66_JPEG\u002FIMG_9838.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:37288527": {
+    "__typename": "BeautySummary",
+    "id": "37288527",
+    "apolloCacheId": "",
+    "name": "유후네일 노원점",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "140",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "여러명의 경력자 선생님들께 합리적인 가격으로 시술 받으실 수 있습니다.\t\t\n부담스러웠던 가격의 다양한 아트를 유후에서 균일가로 만나보세요~\t\t\n(예약필수입니다~ 당일 및 저녁시간, 주말 예약은 조기마감되오니 미리예약주세요~)",
+    "roadAddress": "서울 노원구 노해로 501 2층",
+    "address": "상계동 717-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220324_264%2F1648117556690bGe80_JPEG%2F4077E7A0-BA68-440D-B7D1-3C859CD2CA53.jpeg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0636622",
+    "y": "37.6552499",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 3,
+    "visitorReviewCount": "341",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,글리터,파스텔",
+        "shortDesc": null,
+        "styleNum": 305126,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220324_264\u002F1648117556690bGe80_JPEG\u002F4077E7A0-BA68-440D-B7D1-3C859CD2CA53.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 106
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,글리터,블루",
+        "shortDesc": null,
+        "styleNum": 305127,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220324_207\u002F1648117602758M8rXC_JPEG\u002FAB9FD0C5-EEB9-46B0-913E-28A1FA0E6C02.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 104
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "프렌치,네일스톤,누드톤,골드",
+        "shortDesc": null,
+        "styleNum": 305128,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220324_115\u002F1648117640302ml1fJ_JPEG\u002F6A7B7F3B-9FF6-4696-A432-3E6C687351E6.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 98
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1678627567": {
+    "__typename": "BeautySummary",
+    "id": "1678627567",
+    "apolloCacheId": "",
+    "name": "써니 네일",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "15",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세요. 드릴케어 오프 전문 써니네일입니다.\n\n* 노쇼 방지를 위해 예약금은 받고 있습니다.\n(당일취소, 변경, 10분이상(연락없이) 지각 시 예약금 환불 어려우세요)\n\n* 손,발톱 상태에 따라 베이스 오버레이 서비스, 컬러 2개까지 서비스\n (이달의 아트는 컬러 후 오버레이도 서비스 들어갑니다)\n\n* 써니네일은 꼼꼼한 시술을 위해 손님 한 분당 시술시간을 오래 잡고 하고 있습니다.\n시간의 여유를 가지고 방문해 주세요.\n\n* 네이버예약시 예약금제외 나머지 차액은 매장에서 결제 도와드려요\n(네이버페이,카드 결제시 정상가로 결제)\n\n* 노원구 상계동 730-3번지 2층 (다모아빌딩)\n* 노원역 6번출구(도보 3~5분)\n\n* 첫 방문 젤 시술 29000원\n(베이스오버레이+컬러추가서비스)\n\n* 회원이신 고객님은 할인가 상시 적용\n\n* DM답변은 늦을 수 있습니다\n* 1인샵이라 동시시술 불가입니다\n  두분예약시 이어서만 가능합니다\n* 시술중엔 전화를 못 받습니다 양해부탁드려요\n* 아래양식으로 문자나 카톡남겨주시면\n  순차대로 답장드립니다\n * PM12:00 ~ PM9:30 (마지막예약 PM8:00)\n* 일요일 휴무\n\nSUNNYNAIL 예약양식\n* 성함 \u002F 연락처 \u002F 가능하신모든날짜 \u002F 시간\n* 손 or 발 \u002F 젤제거유무 \u002F 아트\n* 원하시는 디자인 사진첨부 해주세요\n  ! 아트가격은 2개까지 가능\n  ! 예약시 예약금 발생 2만원(우선순위 선입금)\n  ! 예약시간 기준 10분이 지나시면 자동취소\n  ! 당일 취소, 변경 불가 합니다\n  ! 스케줄 변경 시 미리 연락 부탁드려요\n  ! 휴일은 되도록이면 전화 X 문자,카톡\n\n인스타 @sun_nynail\n카카오채널 써니네일",
+    "roadAddress": "서울 노원구 동일로 1379 다모아빌딩 2층 203호",
+    "address": "상계동 730-3",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241128_192%2F1732782706336K0Yvh_JPEG%2FED9C3459-9444-4F56-81A0-3EA330A4D187-14551-00000B9345812A77.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4yj1z?frm=pnmb",
+    "distance": "",
+    "x": "127.0609192",
+    "y": "37.6518073",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 29000
+    },
+    "promotionTitle": "첫 방문 젤 시술 29000원\n(베이스오버레이+컬러추가서비스)",
+    "stylesCount": 169,
+    "visitorReviewCount": "412",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 53661960,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241128_192\u002F1732782706336K0Yvh_JPEG\u002FED9C3459-9444-4F56-81A0-3EA330A4D187-14551-00000B9345812A77.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,블랙,퍼플",
+        "shortDesc": null,
+        "styleNum": 53661961,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241218_151\u002F1734505124573l43v3_JPEG\u002FIMG_5717.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 109
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,글리터,믹스",
+        "shortDesc": null,
+        "styleNum": 53661962,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241214_30\u002F17341456572848tSiS_JPEG\u002FIMG_5808.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦29,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1274711364": {
+    "__typename": "BeautySummary",
+    "id": "1274711364",
+    "apolloCacheId": "",
+    "name": "제니스네일 1호",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "48",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "\u003C제니스네일에서 특별한 케어를 받아보세요!\u003E\n\n네일교수님이 직접 운영하는 네일 & 속눈썹 전문샵, 제니스네일!\n노원 중계역 6번출구 바로 앞에서 편리하게 찾아오실 수 있어요.\n\n저희 제니스네일은 고객 한 분 한 분께 1:1 맞춤 수강과 시술을 진행하여 최고의 만족도를 선사합니다. 전문적인 기술과 세심한 케어로 당신의 아름다움을 한층 더 빛나게 해드릴게요!\n\n- 젤네일 전문: 다양한 디자인과 색상으로 개성 넘치는 네일을 연출해드려요.\n- 속눈썹 펌 & 연장 : 자연스러운 볼륨과 길이로 눈매를 더 매력적으로!\n- 발톱 교정 & 문제성 발톱 관리: 건강하고 아름다운 발톱을 위해 꼼꼼하게 케어 해드립니다.\n- 패디플래닝 : 깔끔한 각질관리로 매끄러운 발로 케어해드립니다.\n- 스킨플래닝: 부드럽고 매끈한 피부로 거듭나세요.\n- 페이스 왁싱 : 깔끔하고 깨끗한 얼굴 피부를 위해 정성스럽게 시술합니다.\n\n 예약 및 문의 : 010-2666-2641\n 주소: 노원 중계역 6번출구 바로 앞\n 영업시간: 09시~20시",
+    "roadAddress": "서울 노원구 동일로 1323 2층 210호",
+    "address": "상계동 764-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241111_235%2F173128430891288OcX_JPEG%2FKakaoTalk_20240804_232932392_-_%25BA%25B9%25BB%25E7%25BA%25BB.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0626323",
+    "y": "37.6468137",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 5000
+    },
+    "promotionTitle": "예약자 혜택 이달의 아트 3.5만~",
+    "stylesCount": 6,
+    "visitorReviewCount": "146",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": {
+      "__typename": "Coupon",
+      "total": 1,
+      "promotions": [
+        {
+          "__typename": "CouponPromotions",
+          "promotionSeq": 501775,
+          "couponSeq": 503563,
+          "conditionType": "PLACE_BENEFIT_NOTIFICATION_SUBSCRIBED",
+          "image": {
+            "__typename": "Image",
+            "url": null
+          },
+          "title": "5,000원 할인 쿠폰",
+          "description": "알림받기한 고객님들께 드려요",
+          "type": "discount",
+          "couponUseType": "BOOKING"
+        }
+      ]
+    },
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,그라데이션,화이트,실버",
+        "shortDesc": null,
+        "styleNum": 50640353,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241111_235\u002F173128430891288OcX_JPEG\u002FKakaoTalk_20240804_232932392_-_%BA%B9%BB%E7%BA%BB.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 99
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아쿠아,스템핑,화이트,베이지",
+        "shortDesc": null,
+        "styleNum": 50640354,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240807_240\u002F1722999073963yj7zN_JPEG\u002FKakaoTalk_20240807_105200604_02.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 90
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 89
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 94
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,그라데이션,누드톤,화이트",
+        "shortDesc": null,
+        "styleNum": 50640355,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241111_33\u002F17312843851610qAhW_JPEG\u002FKakaoTalk_20240804_233117071.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦5,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1683573340": {
+    "__typename": "BeautySummary",
+    "id": "1683573340",
+    "apolloCacheId": "",
+    "name": "네일그리다",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "17",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "중계동에 위치한 1인샵 네일그리다 입니다 :)\n\n:: 고객님 한분한분의 네일컨디션에 따라 알맞은 케어로 관리 해 드립니다.\n\n:: 다양한 디자인의 아트가 준비되어있고 피부톤에 어울리는 컬러추천으로 고객님의 만족도를 더욱 높여드립니다.\n\n:: 빨리빨리 여러명 관리하는 샵이 아닙니다. 관리시간은 여유있게 생각 해 주시고 방문해주세요.\n\n:: 원광초 옆 중계5단지상가에 위치 해 있습니다. 상가 앞 주차 가능합니다.\n\n더욱 더 만족을 드릴 수 있도록 최선을 다하겠습니다.",
+    "roadAddress": "서울 노원구 중계로 230 중계5단지종합상가1 1층",
+    "address": "중계동 359-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241215_257%2F1734262522907afuf6_JPEG%2F1000000715.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4rrkn?frm=pnmb",
+    "distance": "",
+    "x": "127.0765786",
+    "y": "37.6543364",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 20000
+    },
+    "promotionTitle": "일요일예약가능 \u002F 당일예약은 전화주세요:)",
+    "stylesCount": 234,
+    "visitorReviewCount": "266",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 53811987,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241215_257\u002F1734262522907afuf6_JPEG\u002F1000000715.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 53811988,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241215_145\u002F1734262497857BcGDt_JPEG\u002F1000000713.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 53811989,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241215_113\u002F1734262425620MuEr5_JPEG\u002F1000000720.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦20,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1382831764": {
+    "__typename": "BeautySummary",
+    "id": "1382831764",
+    "apolloCacheId": "",
+    "name": "네일나모",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "13",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "창동역 1번출구 이달의아트 전문샵\n-1인샵 예약제(당일예약가능) 11:00AM~9:00PM\n-일요일 휴무",
+    "roadAddress": "서울 도봉구 노해로69길 26 2층 네일나모",
+    "address": "창동 14",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230813_289%2F1691915661210BWKfS_JPEG%2FKakaoTalk_20230813_171439435_01.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw41x8c?frm=pnmb",
+    "distance": "",
+    "x": "127.0509513",
+    "y": "37.6536874",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 18,
+    "visitorReviewCount": "168",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,프렌치",
+        "shortDesc": null,
+        "styleNum": 22579686,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230813_289\u002F1691915661210BWKfS_JPEG\u002FKakaoTalk_20230813_171439435_01.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "네일스톤",
+        "shortDesc": null,
+        "styleNum": 22579687,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230813_198\u002F1691915471344YIGtQ_JPEG\u002FKakaoTalk_20230813_171004677_02.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,네일스톤",
+        "shortDesc": null,
+        "styleNum": 22579688,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230416_161\u002F1681655553900CwqbJ_JPEG\u002FB612_20220616_171750_854.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1846460545": {
+    "__typename": "BeautySummary",
+    "id": "1846460545",
+    "apolloCacheId": "",
+    "name": "엔오에프 노원하계점",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "25",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세요. 프리미엄 네일 브랜드 NOF(nail on fashion) 입니다.\n\n저희 NOF는 고객님들의 스타일과 취향에 맞는 시술을 제공합니다.\n\n방문해주시는 모든 고객님들께서 만족하실 수 있는 NOF가 되겠습니다.\n\n최대 동시 4인까지 시술 가능합니다.\n\n인스타그램 @nof__official @nof_mia에서 최근 시술 사진과\n이달의 아트를 확인하실 수 있습니다.\n\n시술 중에는 네이버 예약 확인 및 카톡 채널 답변이 어려울 수 있으니 매장 전화 문의 권유드립니다.",
+    "roadAddress": "서울 노원구 노원로 246 102호 엔오에프 노원 하계점",
+    "address": "하계동 256-12",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241204_84%2F1733323990390X9cKe_JPEG%2F07B0D63D-064C-417B-9741-F547B5952EA0.jpeg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0740620",
+    "y": "37.6395905",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 20000
+    },
+    "promotionTitle": null,
+    "stylesCount": 3,
+    "visitorReviewCount": "737",
+    "visitorReviewScore": "4.69",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,버건디,화이트",
+        "shortDesc": null,
+        "styleNum": 52613285,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_84\u002F1733323990390X9cKe_JPEG\u002F07B0D63D-064C-417B-9741-F547B5952EA0.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 108
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,블랙,브라운",
+        "shortDesc": null,
+        "styleNum": 52613286,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_176\u002F1733324017190cPaUx_JPEG\u002FFF8AFB8E-ED2B-469D-87E0-EE77812C4C86.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 110
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 52613287,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230505_262\u002F1683285272199a9REm_PNG\u002FIMG_6518.png"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦20,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1731841332": {
+    "__typename": "BeautySummary",
+    "id": "1731841332",
+    "apolloCacheId": "",
+    "name": "다옴네일&브로우",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "105",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "9년차경력원장\u002F1:1단독시술\u002F자격증다수보유\n\n**시술중일때가 많아 문의에 답변이 늦을수있는점 미리 양해부탁드려요",
+    "roadAddress": "서울 노원구 한글비석로 245 두타빌 B동 220호",
+    "address": "중계동 360-9",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241016_245%2F17290506141440GnVp_JPEG%2FIMG_1992.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4s9a4?frm=pnmb",
+    "distance": "",
+    "x": "127.0764071",
+    "y": "37.6500494",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 20,
+    "visitorReviewCount": "208",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "",
+        "shortDesc": null,
+        "styleNum": 52612109,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241016_245\u002F17290506141440GnVp_JPEG\u002FIMG_1992.jpeg"
+          }
+        ],
+        "styleOptions": []
+      },
+      {
+        "__typename": "Style",
+        "desc": "네일스톤,아트",
+        "shortDesc": null,
+        "styleNum": 52612110,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241125_240\u002F1732542899078f4gJ2_PNG\u002FChristmas_Art.png"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 52612111,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_232\u002F1733322799191pjRzM_JPEG\u002Fbeauty_1733103987594.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1292492309": {
+    "__typename": "BeautySummary",
+    "id": "1292492309",
+    "apolloCacheId": "",
+    "name": "네일보자",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "5",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "*첫방문 젤시술시 젤제거 무료* 자샵 젤 제거 무료*\n\n-노원에서 합리적인 가격에 최고의 퀄리티를 지향하는 네일보자 입니다!\n-경력 10년 이상된 원장님이 1:1 시술해드립니다!\n-일요일도 정상영업 합니다!\n-전문 경력자로 자격증 보유\n-아트는 매달 업뎃 되고 가격변동 없습니다! (상시아트) *인스타 가격참고",
+    "roadAddress": "서울 노원구 노해로 494 4층 네일보자",
+    "address": "상계동 724-3",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240116_195%2F1705390376859tvP6W_JPEG%2FKakaoTalk_Photo_2024-01-16-15-49-15_004.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw5wyva?frm=pnmb",
+    "distance": "",
+    "x": "127.0630491",
+    "y": "37.6545423",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 47,
+    "visitorReviewCount": "154",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "",
+        "shortDesc": null,
+        "styleNum": 53595992,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240116_195\u002F1705390376859tvP6W_JPEG\u002FKakaoTalk_Photo_2024-01-16-15-49-15_004.jpeg"
+          }
+        ],
+        "styleOptions": []
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션",
+        "shortDesc": null,
+        "styleNum": 53595993,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241217_7\u002F1734422224310Byq81_JPEG\u002FIMG_4334.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 53595994,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241201_234\u002F1733021757439Xf08j_JPEG\u002FIMG_3530.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1045235933": {
+    "__typename": "BeautySummary",
+    "id": "1045235933",
+    "apolloCacheId": "",
+    "name": "러블네일",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "8",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세요 러블네일입니다:)\n1인샵 예약제\n첫방문 이벤트 진행중입니다 !\n\n 손원컬러 28000\n 발원컬러 38000",
+    "roadAddress": "서울 노원구 동일로204가길 34 1층 159호",
+    "address": "중계동 509-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241212_189%2F173397380185170XD0_JPEG%2FIMG_2360.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw5v16f?frm=pnmb",
+    "distance": "",
+    "x": "127.0681600",
+    "y": "37.6407272",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 28000
+    },
+    "promotionTitle": null,
+    "stylesCount": 8,
+    "visitorReviewCount": "118",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "풀컬러",
+        "shortDesc": null,
+        "styleNum": 53235887,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241212_189\u002F173397380185170XD0_JPEG\u002FIMG_2360.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 53235888,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_280\u002F1733293081287vNo7v_JPEG\u002FIMG_2075.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 53235889,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241204_105\u002F1733292954694nXuk1_JPEG\u002FIMG_1555.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦28,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:37648322": {
+    "__typename": "BeautySummary",
+    "id": "37648322",
+    "apolloCacheId": "",
+    "name": "보니타네일 노원역점",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "85",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "젤네일아트 & 웨딩네일전문샵 '보니타네일' 입니다.\n연중무휴로 100% 1:1 예약제로 운영되고 있습니다.\n다수의 컬러들을 보유하고 있으며 15년 이상 경력자 원장님이 시술해드립니다.\n네일, 패디, 내성발톱교정 가능한 뷰티토탈샵입니다.\n\n------------------------------\n\n회원권 혜택\n1. 이달의아트 추가 10% 할인\n2. 정액권 등록 금액에 보너스 적립금 추가 (금액별 차등)\n3. 영양케어 서비스\n4. 미러, 오로라, 도깨비젤 10% 할인\n\n-예약문의-\n성함,연락처\n원하시는 날짜,시간\n젤제거 유무\n손 or 발\n기본컬러링\u002F 디자인\n시술 디자인 사진 보내주세요 01033484141\n------------------------------\n**당일예약, 2인이상 예약의 경우 샵으로 문의바랍니다**\n010-3348-4141\n*평일 AM 11:00 ~ PM 09:00\n*주말.공휴일 AM 10:00 ~ PM 6:00",
+    "roadAddress": "서울 노원구 노해로 490 605호",
+    "address": "상계동 724-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20210216_149%2F16134552872353Vzb4_JPEG%2FTkpKMceJpZ_Prf6np-l91TEj.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4jtnv?frm=pnmb",
+    "distance": "",
+    "x": "127.0624064",
+    "y": "37.6544168",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 14,
+    "visitorReviewCount": "181",
+    "visitorReviewScore": "4.78",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,네일스톤,핑크",
+        "shortDesc": null,
+        "styleNum": 1194025,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210216_149\u002F16134552872353Vzb4_JPEG\u002FTkpKMceJpZ_Prf6np-l91TEj.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 1544048,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210802_39\u002F1627887442194ibM0t_JPEG\u002FyFQaUG0Npj7IxFFEFMyQxbxY.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,핑크",
+        "shortDesc": null,
+        "styleNum": 752686,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20200618_3\u002F1592467739289UXgsk_JPEG\u002FT-QsnDuodcSovbC4NkHxroxX.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1539160319": {
+    "__typename": "BeautySummary",
+    "id": "1539160319",
+    "apolloCacheId": "",
+    "name": "헤일리네일",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "첫방문 젤네일30,000원 \u002F 젤패디40,000원 컬러추가 무제한! 이달의아트 55,000원~",
+    "roadAddress": "서울 노원구 동일로218길 17 306-1호",
+    "address": "상계동 726-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241018_184%2F1729224421986zK6ut_JPEG%2F38545E42-E62F-4334-8E30-36DBE0954C0F.jpeg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw5zvuy?frm=pnmb",
+    "distance": "",
+    "x": "127.0617916",
+    "y": "37.6538828",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 10000
+    },
+    "promotionTitle": null,
+    "stylesCount": 1,
+    "visitorReviewCount": "59",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,아트",
+        "shortDesc": null,
+        "styleNum": 48971711,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241018_184\u002F1729224421986zK6ut_JPEG\u002F38545E42-E62F-4334-8E30-36DBE0954C0F.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦10,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1871328218": {
+    "__typename": "BeautySummary",
+    "id": "1871328218",
+    "apolloCacheId": "",
+    "name": "네일살롱",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "54",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "1인샵 100% 예약제로 꼼꼼하게 관리 해드립니다.~!!\n\n- 당일 예약 취소 및 변경은 예약금환불이 안됩니다. 신중히 생각하시고 예약 해주세요.^^\n- 한타임에 한가지 시술만 가능합니다. 두가지 선택시 두타임되는 시간으로 예약 해주세요~^^\n (ex) 손젤 -\u003E 한타임 \u002F 손젤 + 발젤 -\u003E 두타임",
+    "roadAddress": "서울 도봉구 노해로70길 81 센터프라자 2층 202호",
+    "address": "창동 33-3",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220331_172%2F1648653648465Sk5jT_JPEG%2F1616589398525.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0524699",
+    "y": "37.6489272",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 9,
+    "visitorReviewCount": "239",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스,핑크",
+        "shortDesc": null,
+        "styleNum": 2275331,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220331_172\u002F1648653648465Sk5jT_JPEG\u002F1616589398525.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 2275332,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220331_288\u002F1648653577441FEvlb_JPEG\u002F1616589407572.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "프렌치,아트,베이지,옐로우",
+        "shortDesc": null,
+        "styleNum": 956710,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20201022_268\u002F1603298802107jd1yf_JPEG\u002FXe5Io-BfnLKMxFNcfexYzFX5.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 94
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 95
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1570795124": {
+    "__typename": "BeautySummary",
+    "id": "1570795124",
+    "apolloCacheId": "",
+    "name": "연네일 노원점",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "195",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "*노원구 상계동 757번지 한양아파트 상가 2층\n(한양아파트 입구쪽 단지내 상가,1층에 이화마트가 있습니다)\n(주차가능),(찾기 어려우시면 편하게 연락주세요!)\n\n*젤전문\u002F1:1원장꼼꼼시술\u002F예약제\u002F아프지않은시술\u002F일요일휴무\n\n*손님 한분한분 꼼꼼한 시술을 하고 있습니다.\n\n*날짜\u002F시간\u002F손or발\u002F제거유무\n 기본or아트\u002F디자인 첨부 가능\n\n위 양식대로 문의 해주시면 빠른 예약 도와드려요:)\n시술 중 통화가 어려울 수 있습니다 문의 주시면 순차적으로 답변드리겠습니다!",
+    "roadAddress": "서울 노원구 동일로216길 92 한양아파트 상가동 204호",
+    "address": "상계동 757",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241129_231%2F1732887797640Nw63W_JPEG%2F1000029641.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4grz9?frm=pnmb",
+    "distance": "",
+    "x": "127.0669008",
+    "y": "37.6516742",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 72,
+    "visitorReviewCount": "24",
+    "visitorReviewScore": "5",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 52036440,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241129_231\u002F1732887797640Nw63W_JPEG\u002F1000029641.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 52036441,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241031_217\u002F1730380259911Xpk6O_JPEG\u002F1000028390.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 52036442,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240928_297\u002F1727527723520ONgPM_JPEG\u002F1000027480.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:923501592": {
+    "__typename": "BeautySummary",
+    "id": "923501592",
+    "apolloCacheId": "",
+    "name": "잇츠네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "15",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "중계 홈플러스, 2001 아울렛 사이\n하계역 1번출구 도보 5분\n중계역 3번출구 도보 8분\n\n네일아트\u002F패디큐어\n내성발톱교정\n\n주차 3시간 무료\n예약문의 010-4549-9605 (원장1:1시술)",
+    "roadAddress": "서울 노원구 동일로204가길 34 씨앤미빌딩 2층",
+    "address": "중계동 509-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20210315_128%2F16157996209783zcIx_JPEG%2F_OuyGnxKCku7hFYUSbZi-2JV.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4mhme?frm=pnmb",
+    "distance": "",
+    "x": "127.0682393",
+    "y": "37.6407587",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 8,
+    "visitorReviewCount": "36",
+    "visitorReviewScore": "4.86",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "풀컬러,네일스톤,핑크,골드",
+        "shortDesc": null,
+        "styleNum": 1250640,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210315_128\u002F16157996209783zcIx_JPEG\u002F_OuyGnxKCku7hFYUSbZi-2JV.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 98
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "프렌치,네일스톤,화이트,옐로우",
+        "shortDesc": null,
+        "styleNum": 1250250,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210315_166\u002F1615790802441joG24_JPEG\u002FyqrCOuAabUBY39OGUvsNxaz9.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 95
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,풀컬러,누드톤,핑크",
+        "shortDesc": null,
+        "styleNum": 1250648,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210315_26\u002F1615799812357qKhNS_JPEG\u002Fn_jm5tUJdkdbF5tYcChzlSnT.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1032909990": {
+    "__typename": "BeautySummary",
+    "id": "1032909990",
+    "apolloCacheId": "",
+    "name": "라라뷰티",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "40",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "***재 오픈 기념 파격 할인 이벤트\n    (24년 11월7일~12월 15일까지)\n1.수분 클리닉 펌 35,000원-\u003E 25,000원\n2.내성발톱 와이어 교정관리 100,000원-\u003E50,000원(개당)\n3.무좀발톱 스케일링 관리 15,000원부터\n4.발각질. 굳은살 관리 30% 할인\n5.입술 (2회) 15만원 (11월30일까지)\n6.눈썹 \u002F 아이라인 10만원(11월 30일까지)\n***100% 예약제로 운영하고 있습니다. 관리 시 확인이 어려우니, 예약 시 전화 주세요~\n  010-3439-9991(상담 환영)",
+    "roadAddress": "서울 노원구 중계로 225 청구상가 1층 135호",
+    "address": "중계동 360-2",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230704_1%2F1688481455648j8X0A_JPEG%2F%25C0%25CC%25B4%25DE%25C0%25C7_%25BE%25C6%25C6%25AE3.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0749986",
+    "y": "37.6503861",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 5000
+    },
+    "promotionTitle": null,
+    "stylesCount": 1,
+    "visitorReviewCount": "26",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,글리터",
+        "shortDesc": null,
+        "styleNum": 34447414,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230704_1\u002F1688481455648j8X0A_JPEG\u002F%C0%CC%B4%DE%C0%C7_%BE%C6%C6%AE3.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦5,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1104649345": {
+    "__typename": "BeautySummary",
+    "id": "1104649345",
+    "apolloCacheId": "",
+    "name": "두비네일살롱",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "네이버 예약 막혀있음 네이버톡톡문의 주세요!\n[저녁 7시20분이후 토,일 예약문의] 카카오톡 플러스, 네이버톡톡문의\n\n[카카오플러스친구검색]\n두비네일살롱",
+    "roadAddress": "서울 노원구 섬밭로 263 롯데상가 1층 14호",
+    "address": "중계동 505",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241206_28%2F1733491184798n3kn3_JPEG%2F1000014888.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fwm35syu?frm=pnmb",
+    "distance": "",
+    "x": "127.0638313",
+    "y": "37.6391420",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 1,
+    "visitorReviewCount": "6",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": true,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 52802080,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241206_28\u002F1733491184798n3kn3_JPEG\u002F1000014888.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:38287201": {
+    "__typename": "BeautySummary",
+    "id": "38287201",
+    "apolloCacheId": "",
+    "name": "네일숲",
+    "hasBooking": false,
+    "hasNPay": true,
+    "blogCafeReviewCount": "9",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "**역시 손부터 발까지 뷰티는 네일숲! 오래가는 젤네일 세심한손길!  블링블링 디자인**\n젤네일전문, 패디큐어, 네일아트, 네일아트디자인, 웨딩네일아트 ,오로라, 속눈썹펌,내향성발톱교정,(오랜 경력 꼼꼼한 시술)2~3일전 예약필수",
+    "roadAddress": "서울 노원구 공릉로 321 2층",
+    "address": "하계동 170-41",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241119_187%2F1732021013699UIHGe_JPEG%2F1000020015.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fwc2ldz?frm=pnmb",
+    "distance": "",
+    "x": "127.0709088",
+    "y": "37.6355509",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 10000
+    },
+    "promotionTitle": null,
+    "stylesCount": 67,
+    "visitorReviewCount": "71",
+    "visitorReviewScore": "4.75",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": {
+      "__typename": "Coupon",
+      "total": 1,
+      "promotions": [
+        {
+          "__typename": "CouponPromotions",
+          "promotionSeq": 530610,
+          "couponSeq": 532437,
+          "conditionType": "PLACE_HOME",
+          "image": {
+            "__typename": "Image",
+            "url": null
+          },
+          "title": "5,000원 할인 쿠폰",
+          "description": "",
+          "type": "discount",
+          "couponUseType": "ALL"
+        }
+      ]
+    },
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,글리터,누드톤,그레이",
+        "shortDesc": null,
+        "styleNum": 51253419,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241119_187\u002F1732021013699UIHGe_JPEG\u002F1000020015.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 111
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "풀컬러,아트,버건디,누드톤",
+        "shortDesc": null,
+        "styleNum": 51253420,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241119_20\u002F1732020948542cm0uT_JPEG\u002F1000019297.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 108
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "스티커+타투,그라데이션,옐로우,브라운",
+        "shortDesc": null,
+        "styleNum": 51253421,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241119_50\u002F1732020788594oAgaG_JPEG\u002F1000019274.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 86
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 95
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 110
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦10,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1549263465": {
+    "__typename": "BeautySummary",
+    "id": "1549263465",
+    "apolloCacheId": "",
+    "name": "다뷰네일",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "8",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "중계동 갓성비 네일샵 다뷰네일입니다\n꼼꼼한 시술은 이미 아실분들은 다 아시죠?^^\n손톱 이쁘게 관리해 드립니다",
+    "roadAddress": "서울 노원구 동일로 1279 B상가 107호 다뷰네일",
+    "address": "중계동 503",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20200606_46\u002F1591452017412pu5vJ_JPEG\u002FAL8nioxrldDRPcXEjxT6DEYF.jpeg.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4uaxc?frm=pnmb",
+    "distance": "",
+    "x": "127.0642594",
+    "y": "37.6431776",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": "네이버 예약 후 리뷰작성자분께\n다음 방문후 시술시 자샵 젤제거 무료!!\n(제거만은 적용 불가)",
+    "stylesCount": 0,
+    "visitorReviewCount": "1,322",
+    "visitorReviewScore": "5",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1902388944": {
+    "__typename": "BeautySummary",
+    "id": "1902388944",
+    "apolloCacheId": "",
+    "name": "오늘 네일",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "2",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "1:1전문 100%예약제 손톱 손상도가 적은 친환경젤시술샵입니다💅\n손젤, 발젤, 젤아트, 속눈썹펌, 발각질케어 네이버예약주세요💛",
+    "roadAddress": "서울 노원구 중계로 225 청구아파트상가동 1층 112호",
+    "address": "중계동 360-2",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20231214_67%2F1702483710981O3F2h_JPEG%2Fbeauty_1639978973921.jpeg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0749958",
+    "y": "37.6503794",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 275,
+    "visitorReviewCount": "131",
+    "visitorReviewScore": "4.96",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,레드",
+        "shortDesc": null,
+        "styleNum": 29546586,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231214_67\u002F1702483710981O3F2h_JPEG\u002Fbeauty_1639978973921.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 101
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,누드톤,핑크",
+        "shortDesc": null,
+        "styleNum": 29546587,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231214_172\u002F1702483645917uuUJ5_JPEG\u002Fbeauty_1658307911525.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,파스텔,누드톤",
+        "shortDesc": null,
+        "styleNum": 29546588,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231214_202\u002F1702483573601hAvI7_JPEG\u002Fbeauty_1658394499580.jpeg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 106
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1871375245": {
+    "__typename": "BeautySummary",
+    "id": "1871375245",
+    "apolloCacheId": "",
+    "name": "비비네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "27",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "예쁘고 건강한 시술을 위한 비비네일입니다:)\n원장 1:1 시술을 원칙으로 하며, 예약제로 운영됩니다.\n고객님들의 아름답고 건강한 손발을 위해\n항상 노력하고 발전하는 비비네일이 되겠습니다!\n\n시술중에는 통화가 어려우므로 카톡, 문자로 문의주셔도 괜찮습니다!",
+    "roadAddress": "서울 노원구 한글비석로 269 마들프라자 지하1층",
+    "address": "중계동 359-9",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241111_300%2F1731311243277Gqqy1_JPEG%2FKakaoTalk_20241108_185139473_07.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0768544",
+    "y": "37.6518575",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 15000
+    },
+    "promotionTitle": null,
+    "stylesCount": 8,
+    "visitorReviewCount": "15",
+    "visitorReviewScore": "5",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 50683467,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241111_300\u002F1731311243277Gqqy1_JPEG\u002FKakaoTalk_20241108_185139473_07.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 50683468,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241108_164\u002F17310604921680iu6h_JPEG\u002FKakaoTalk_20241108_185139473_03.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 50683469,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241108_151\u002F1731059980180SJoSc_JPEG\u002FKakaoTalk_20241108_184053632_04.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦15,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:36955847": {
+    "__typename": "BeautySummary",
+    "id": "36955847",
+    "apolloCacheId": "",
+    "name": "네일홀릭",
+    "hasBooking": true,
+    "hasNPay": true,
+    "blogCafeReviewCount": "22",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "-1:1 맞춤으로 꼼꼼한 시술\n-노원에서 7년 된 매장입니다\n-만족도 높은 디자인 제공!\n-속눈썹 공간이 분리되어 있어 아늑하게 시술받으실 수 있습니다!\n(2인 동시 시술 가능한 날 있으니 매장으로 전화 주시면 예약 도와드리겠습니다 ^^)\nNAIL HOLIC 02-930-3473\n\n*건물 1층 지상에 주차공간 마련되어 있습니다\n(요금은 30분에 1000원이며, 1시간 무료주차권 드립니다.)",
+    "roadAddress": "서울 노원구 동일로218길 35 원흥상가 3층 301-1호",
+    "address": "상계동 725-2",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20220429_151%2F1651208250556kMi9e_JPEG%2FKakaoTalk_20220429_101601294_02.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0628202",
+    "y": "37.6540966",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 45000
+    },
+    "promotionTitle": null,
+    "stylesCount": 19,
+    "visitorReviewCount": "70",
+    "visitorReviewScore": "4.96",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "네일스톤,아트,베이지",
+        "shortDesc": null,
+        "styleNum": 2389797,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220429_151\u002F1651208250556kMi9e_JPEG\u002FKakaoTalk_20220429_101601294_02.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 94
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트",
+        "shortDesc": null,
+        "styleNum": 2389798,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220429_127\u002F1651208153972OOWeB_JPEG\u002FKakaoTalk_20220429_101601294_01.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,네일스톤",
+        "shortDesc": null,
+        "styleNum": 2389799,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220429_271\u002F1651208075883f70Wf_JPEG\u002FKakaoTalk_20220429_101601294.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦45,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:31046586": {
+    "__typename": "BeautySummary",
+    "id": "31046586",
+    "apolloCacheId": "",
+    "name": "한스네일",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "21",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "노원역 중심 문화의 거리에 위치한 한스네일\n지하철 7호선 4호선 5분거리에 위치!!!!!\n,노원역 발 젤네일,. 노원 네일\n와우쇼핑몰에서만 19년 운영 노하우~~\n꼼꼼한 관리에 유지력 최고!!!!!!!\n오픈 때 부터 습식 관리로 큐티클 제거 완벽하게 해드립니당~~^^\n첫 방문 젤네일 30% 할인~~~^^\n노원 한스네일 무료주차 3시간!!!!!!\n천연 베이스 젤 사용으로 손 발톱 영양 및 유지력 좋와용~~!!!!",
+    "roadAddress": "서울 노원구 노해로 507 와우쇼핑몰 1층 1042호 한스네일",
+    "address": "상계동 292-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20231226_195%2F1703573897503qnpzb_JPEG%2Ftemp_1692255262651.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0639370",
+    "y": "37.6554251",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 12000
+    },
+    "promotionTitle": "첫 방문고객 젤네일 30% 할인~~!!!!",
+    "stylesCount": 7,
+    "visitorReviewCount": "66",
+    "visitorReviewScore": "4.88",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,프렌치,화이트,베이지",
+        "shortDesc": null,
+        "styleNum": 30224591,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231226_195\u002F1703573897503qnpzb_JPEG\u002Ftemp_1692255262651.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 92
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 94
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "풀컬러,네일스톤,민트,옐로우",
+        "shortDesc": null,
+        "styleNum": 30224592,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231107_297\u002F1699349015629VBDIK_JPEG\u002Ftemp_1619074022447.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 103
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 95
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "프렌치,아트,형광,블랙",
+        "shortDesc": null,
+        "styleNum": 30224593,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231107_43\u002F1699348852753IlXa3_JPEG\u002Ftemp_1656838161919.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 102
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦12,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:36906178": {
+    "__typename": "BeautySummary",
+    "id": "36906178",
+    "apolloCacheId": "",
+    "name": "뽀블리 네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "140",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세요~ 뽀블리 네일 입니다!!\n매월 이달의아트 행사 균일가\n6만원 칼라변경가능^^\n손젤 기본 40.000 (칼라추가 서비스)\n발젤 기본 50,000 (칼라추가 서비스)",
+    "roadAddress": "서울 노원구 동일로203가길 29 브라운스톤 2층 뽀블리 네일",
+    "address": "중계동 506",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20210409_43%2F1617950535686ay6Wf_JPEG%2FG3UEX72z0xbXPuabBho1Ru4Y.jpeg.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0642820",
+    "y": "37.6399466",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 2,
+    "visitorReviewCount": "23",
+    "visitorReviewScore": "4.7",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,네일스톤,누드톤,핑크",
+        "shortDesc": null,
+        "styleNum": 1303235,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210409_43\u002F1617950535686ay6Wf_JPEG\u002FG3UEX72z0xbXPuabBho1Ru4Y.jpeg.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 93
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,핑크",
+        "shortDesc": null,
+        "styleNum": 1303234,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210409_115\u002F1617949617397CMmmz_JPEG\u002FFk3JyA1QjRSfu3WKz7MI2qFs.jpeg.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1260207107": {
+    "__typename": "BeautySummary",
+    "id": "1260207107",
+    "apolloCacheId": "",
+    "name": "여우달빛",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "3",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "21년경력!! 원장님이 직접관리 해드립니다! 네일이 손상되지 않게 정말 잘하고\n무좀관리와 내성발톱 전문입니다!\n속눈썹연장과 펌도 잘합니다!\n믿고 와주세요!",
+    "roadAddress": "서울 노원구 덕릉로 459-37 가 상가동 1층 114호",
+    "address": "상계동 767-5",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231221_8\u002F1703137278793kjctu_JPEG\u002FSNOW_20231219_194542_917.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0597149",
+    "y": "37.6469102",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 30000
+    },
+    "promotionTitle": "첫 방문 고객분들께 쿠폰도장 1개를 찍어드립니다! 소정의 선물도 드립니다!",
+    "stylesCount": 0,
+    "visitorReviewCount": "159",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦30,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:20325350": {
+    "__typename": "BeautySummary",
+    "id": "20325350",
+    "apolloCacheId": "",
+    "name": "윤호네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "490",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "1호점 노원구 하계동 미성상가 02-975-0660 ,2호점 중계동 씨앤미상가2층 070-8637-0660 \u002F***영업시간 (평일) 11:00~21:00 (토요일)11:00~16:00 \u002F 2011년에 오픈한 윤호네일은 오랜경험과 노하우로   30분완성 속눈썹과 빠르고 오래 유지되는 젤네일 & 젤패디 시술을 하고있습니다.**",
+    "roadAddress": "서울 노원구 한글비석로 56 미성아파트",
+    "address": "하계동 280 미성상가 지하",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20200425_274\u002F1587812680113I6FDW_JPEG\u002FRWIixHpk-LGb5u8BRnj5DlCa.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0686497",
+    "y": "37.6358361",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "73",
+    "visitorReviewScore": "4.93",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1415808316": {
+    "__typename": "BeautySummary",
+    "id": "1415808316",
+    "apolloCacheId": "",
+    "name": "수네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 노원로22길 71 상가동 1층 111호",
+    "address": "중계동 360-15",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20241203_209%2F1733200890676Is68e_JPEG%2F1000021112.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0745227",
+    "y": "37.6479459",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 33000
+    },
+    "promotionTitle": null,
+    "stylesCount": 169,
+    "visitorReviewCount": "10",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "아트,버건디,골드",
+        "shortDesc": null,
+        "styleNum": 52439985,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241203_209\u002F1733200890676Is68e_JPEG\u002F1000021112.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 108
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 98
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 52439986,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241203_225\u002F1733200787020gerXK_JPEG\u002F1000021177.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,핑크",
+        "shortDesc": null,
+        "styleNum": 52439987,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20240203_245\u002F17069312698976efvG_JPEG\u002FB612_20240118_215833_041.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦33,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1007760178": {
+    "__typename": "BeautySummary",
+    "id": "1007760178",
+    "apolloCacheId": "",
+    "name": "네일DO",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "38",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "상계주공6단지 상가 네일도입니다\n 다양한 컬러와 수준높은 디자인으로 고객님 손톱발톱 보호시술로 꼼꼼한 맞춤시술과 오랜 유지력 자신합니다~~",
+    "roadAddress": "서울 노원구 노원로 421 2층202호",
+    "address": "상계동 720-7",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20210616_236%2F1623854045890P0HD4_JPEG%2Fp6lpZPXd2UY9DDFilsU_l-O2.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0670008",
+    "y": "37.6542413",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 25000
+    },
+    "promotionTitle": null,
+    "stylesCount": 55,
+    "visitorReviewCount": "30",
+    "visitorReviewScore": "5",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "프렌치,블루",
+        "shortDesc": null,
+        "styleNum": 1446916,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210616_236\u002F1623854045890P0HD4_JPEG\u002Fp6lpZPXd2UY9DDFilsU_l-O2.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 104
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "풀컬러,프렌치,믹스,블랙",
+        "shortDesc": null,
+        "styleNum": 1446917,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210616_175\u002F1623853972977TtcaJ_JPEG\u002FdzzFRjLP0RjvsQLtjKJAWz1N.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 82
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 112
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "아트,믹스",
+        "shortDesc": null,
+        "styleNum": 1446918,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20210616_15\u002F1623853920932mj2it_JPEG\u002FfRSPL3dMZkmakVD6nxejCRJ4.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 83
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦25,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1507873755": {
+    "__typename": "BeautySummary",
+    "id": "1507873755",
+    "apolloCacheId": "",
+    "name": "조현정토탈뷰티",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "15",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 동일로 1389 상계주공아파트 302동 상가1층",
+    "address": "상계동 730-2",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20201118_238\u002F1605676258772XsFWP_JPEG\u002FrOt2yRJ3qZ6QvASvBHCt85T0.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0604544",
+    "y": "37.6525756",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "27",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:38779938": {
+    "__typename": "BeautySummary",
+    "id": "38779938",
+    "apolloCacheId": "",
+    "name": "윤호네일 중계점",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "184",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "[윤호네일] 중계점 문의 및 예약\nhttps:\u002F\u002Fopen.kakao.com\u002Fo\u002FsprIm2tf\n\n카카오톡 오픈채팅방에서 상담 및 예약 도와드려요\n\n링크를 선택하면 카카오톡이 실행됩니다.\n\n윤호네일 중계점\n\n네일아트\n패디큐어\n속눈썹연장\n반영구문신\n타투 를 하는 토탈샵입니다.",
+    "roadAddress": "서울 노원구 동일로204가길 34 씨앤미 2층 223호",
+    "address": "중계동 509-1",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230707_217\u002F1688717930681FUKt0_JPEG\u002FIMG_2785.jpeg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0681439",
+    "y": "37.6406805",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": null,
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1719959263": {
+    "__typename": "BeautySummary",
+    "id": "1719959263",
+    "apolloCacheId": "",
+    "name": "마운틴네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "12년 베테랑 네일리스트입니다\n깔끔한케어받으러오세요~~^^",
+    "roadAddress": "서울 노원구 섬밭로 258 1층 19호",
+    "address": "중계동 506-1",
+    "imageUrl": "https:\u002F\u002Fsearch.pstatic.net\u002Fcommon\u002F?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20211106_79%2F1636185286609nE6Wu_JPEG%2FmWpD6AfefSPCmrhhzKanrPOL.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0648461",
+    "y": "37.6388763",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 26,
+    "visitorReviewCount": "4",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": [
+      {
+        "__typename": "Style",
+        "desc": "네일스톤,풀컬러,골드,옐로우",
+        "shortDesc": null,
+        "styleNum": 1733862,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20211106_79\u002F1636185286609nE6Wu_JPEG\u002FmWpD6AfefSPCmrhhzKanrPOL.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 88
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 98
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 95
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "풀컬러,글리터,블루,골드",
+        "shortDesc": null,
+        "styleNum": 1733859,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20211106_226\u002F1636185209427QXVJ1_JPEG\u002F_eBv1hjb2ZfQH-xAEeKJb5RI.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 84
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 104
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 98
+          }
+        ]
+      },
+      {
+        "__typename": "Style",
+        "desc": "그라데이션,글리터,믹스,핑크",
+        "shortDesc": null,
+        "styleNum": 1733856,
+        "isPopular": null,
+        "images": [
+          {
+            "__typename": "StyleImage",
+            "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20211106_68\u002F1636185154122CO2c8_JPEG\u002F1VKGelfdfuCE8bgEeCZ88eLR.jpg"
+          }
+        ],
+        "styleOptions": [
+          {
+            "__typename": "StyleOption",
+            "num": 81
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 85
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 113
+          },
+          {
+            "__typename": "StyleOption",
+            "num": 107
+          }
+        ]
+      }
+    ],
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:21274123": {
+    "__typename": "BeautySummary",
+    "id": "21274123",
+    "apolloCacheId": "",
+    "name": "네일에끌라 중계은행점",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 한글비석로 231 위성프라자",
+    "address": "중계동 360-13 제1층 제102호",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20150901_102\u002F1441083010311xDmDQ_JPEG\u002FSUBMIT_1332485636540_21274123.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0763907",
+    "y": "37.6482917",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "14",
+    "visitorReviewScore": "4",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1930203096": {
+    "__typename": "BeautySummary",
+    "id": "1930203096",
+    "apolloCacheId": "",
+    "name": "꽁네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "2",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세요 꽁네일입니다\n정성껏 관리해드리겠습니다\n1인샵 예약제입니다 ^^",
+    "roadAddress": "서울 노원구 한글비석로5길 75 롯데우성상가 지하1층 꽁네일",
+    "address": "중계동 361-1",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220914_117\u002F1663132520901m2KkB_JPEG\u002F20220914_141306.jpg",
+    "talktalkUrl": "http:\u002F\u002Ftalk.naver.com\u002Fw4hb3q?frm=pnmb",
+    "distance": "",
+    "x": "127.0740086",
+    "y": "37.6467778",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": null,
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:20115454": {
+    "__typename": "BeautySummary",
+    "id": "20115454",
+    "apolloCacheId": "",
+    "name": "해피네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "상계주공302동아파트 상가2층에 위치하고있고용~~",
+    "roadAddress": "서울 노원구 동일로 1389 상계주공아파트",
+    "address": "상계동 730-2",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20221212_36\u002F1670824651051FNTmx_JPEG\u002F1670824638215.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0606410",
+    "y": "37.6525656",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "21",
+    "visitorReviewScore": "4",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1356031900": {
+    "__typename": "BeautySummary",
+    "id": "1356031900",
+    "apolloCacheId": "",
+    "name": "블링유",
+    "hasBooking": true,
+    "hasNPay": false,
+    "blogCafeReviewCount": "44",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "고객 맞춤 1:1 시술 트렌디한 네일.페디관리",
+    "roadAddress": "서울 노원구 중계로 225 청구상가 120호",
+    "address": "중계동 360-2",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20220314_24\u002F1647262263906TpRBF_JPEG\u002F20220301_134922.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0749986",
+    "y": "37.6503861",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "10",
+    "visitorReviewScore": "5",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1260016619": {
+    "__typename": "BeautySummary",
+    "id": "1260016619",
+    "apolloCacheId": "",
+    "name": "금빛네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 도봉구 노해로 384 동아상가 1층",
+    "address": "창동 26",
+    "imageUrl": null,
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0508988",
+    "y": "37.6520624",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "14",
+    "visitorReviewScore": "4.45",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1306599970": {
+    "__typename": "BeautySummary",
+    "id": "1306599970",
+    "apolloCacheId": "",
+    "name": "네일제인",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "모닝젤 할인 이벤트중입니다",
+    "roadAddress": "서울 노원구 한글비석로 245 두타빌 A동 405호",
+    "address": "중계동 360-9",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20200416_105\u002F1587011222321xf9aU_JPEG\u002F2e817WtTmbKjxpajgUh9RmbX.jpeg.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0763798",
+    "y": "37.6495368",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 25000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "5",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦25,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:34259144": {
+    "__typename": "BeautySummary",
+    "id": "34259144",
+    "apolloCacheId": "",
+    "name": "마리네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "2",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 도봉구 노해로70길 46 . 120호(창동, 주공아파트 상가 1층)",
+    "address": "창동 27-3",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230104_122\u002F1672838033891kXz41_JPEG\u002F20230102_195009.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0514110",
+    "y": "37.6502835",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "65",
+    "visitorReviewScore": "4.89",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:36241291": {
+    "__typename": "BeautySummary",
+    "id": "36241291",
+    "apolloCacheId": "",
+    "name": "에스네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "손관리, 발관리, 왁싱, 속눈썹 연장, 파고드는 발톱교정, 젤아트 ,젤전문샵,중계동 네일샵, 젤아트 잘하는곳",
+    "roadAddress": "서울 노원구 중계로 225 청구상가 1층",
+    "address": "중계동 360-2",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20150901_229\u002F1441052952603CUKP5_JPEG\u002FSUBMIT_1421457064869_36241291.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0751157",
+    "y": "37.6503757",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "7",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1606801801": {
+    "__typename": "BeautySummary",
+    "id": "1606801801",
+    "apolloCacheId": "",
+    "name": "네일모먼트",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "1",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "예약제 \u002F 손발 젤 전문샵 \u002F 내성 발톱교정\n\n드릴사용X",
+    "roadAddress": "서울 노원구 덕릉로73길 28 양지대림2차 상가 107호",
+    "address": "중계동 588",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241124_254\u002F1732443203286UoU1G_JPEG\u002FIMG_3139.jpeg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0728468",
+    "y": "37.6537166",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "19",
+    "visitorReviewScore": "5",
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1641963194": {
+    "__typename": "BeautySummary",
+    "id": "1641963194",
+    "apolloCacheId": "",
+    "name": "빨강손톱",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "빨강손톱 첫방문 젤시술시 50%할인 or 아트서비스\n웨딩네일 시술시 부모님 기본케어 무료\n네일아트 패디큐어 속눈썹연장 내향성발톱교정\n녹천역 3분거리\n창동역 10분거리\n예약은 필수 입니다",
+    "roadAddress": "서울 도봉구 덕릉로 398 주공17단지복합상가 2층",
+    "address": "창동 38-1",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20231020_37\u002F1697777919703rYpYU_JPEG\u002Ftemp_file.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0531489",
+    "y": "37.6457770",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 40000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "14",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦40,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1292888523": {
+    "__typename": "BeautySummary",
+    "id": "1292888523",
+    "apolloCacheId": "",
+    "name": "큐네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 중계로 225 청구3차아파트상가동 141호",
+    "address": "중계동 360-2",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20230520_144\u002F1684569753690WFn8j_JPEG\u002F1684557156014.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0749986",
+    "y": "37.6503861",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "7",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1723310090": {
+    "__typename": "BeautySummary",
+    "id": "1723310090",
+    "apolloCacheId": "",
+    "name": "네일미",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세요:)\n디톤헤어샵(노원점) 내부에 입점 되어있는 NAIL ME(네일 미) 입니다.\n\n손,발 젤 속눈썹연장 1:1관리로\n한 분 한 분 정성을 다하여 관리 해드리고 있습니다.\n\n네일관련 예약 및 문의사항은\n아래 번호로 전화연결 부탁드립니다.\n\nNAIL ME(네일 미)\n이 송이 원장\n010-9137-4104\n\n감사합니다:)\n\nhttps:\u002F\u002Fwww.instagram.com\u002Fnailme_2song2",
+    "roadAddress": "서울 노원구 동일로 1363 2층 201호",
+    "address": "상계동 746-4",
+    "imageUrl": "https:\u002F\u002Fnaverbooking-phinf.pstatic.net\u002F20240319_112\u002F17108247180811CoV8_JPEG\u002Fimage.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0613108",
+    "y": "37.6504217",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "5",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1233291954": {
+    "__typename": "BeautySummary",
+    "id": "1233291954",
+    "apolloCacheId": "",
+    "name": "네일스타",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 동일로204가길 34 씨앤미 1층 185호",
+    "address": "중계동 509-1",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20190615_137\u002F1560590690376wA2eH_JPEG\u002Fg9S_XlCFGoT1BO27UgiEEpHq.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0681600",
+    "y": "37.6407272",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "1",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1282354916": {
+    "__typename": "BeautySummary",
+    "id": "1282354916",
+    "apolloCacheId": "",
+    "name": "네일아이렌",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "다이소옆 노원문고 본점 1층에 위치해 있어요",
+    "roadAddress": "서울 노원구 동일로 1390 상계주공6단지 602동상가 1층 104호",
+    "address": "상계동 728-3",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20241026_116\u002F1729916091792oIob4_JPEG\u002F1000051153.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0614127",
+    "y": "37.6526495",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "10",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:20857889": {
+    "__typename": "BeautySummary",
+    "id": "20857889",
+    "apolloCacheId": "",
+    "name": "뷰티네일하우스",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 한글비석로 250",
+    "address": "중계동 364-20",
+    "imageUrl": null,
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0769380",
+    "y": "37.6501810",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "4",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:32472933": {
+    "__typename": "BeautySummary",
+    "id": "32472933",
+    "apolloCacheId": "",
+    "name": "오드리네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "34",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "안녕하세욧 오드리입니당 :)\n오드리네일은 젤전문아트샵으로 다양하고 퀄리티있는 젤네일아트를 경험하실수 있어요\n\n기본케어부터 스페셜 손발케어 ,\n손젤, 발젤 , 인조손톱, 물어뜯는 손톱, 파고드는 발톱교정 , 맞춤형 속눈썹연장 , 네츄럴 속눈썹퍼머, 왁싱 등 다양하고 건강한 뷰티살롱입니다 ~\n\n당신의 모든것을 건강하고 아름답게 바꿔드립니다 :)",
+    "roadAddress": "서울 노원구 노해로 507 와우쇼핑몰 1층 90호",
+    "address": "상계동 292-1",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20150831_167\u002F144102718626857TxK_JPEG\u002F146459596528110_0.jpeg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0637754",
+    "y": "37.6553528",
+    "representativePrice": {
+      "__typename": "RepresentativePrice",
+      "isFiltered": false,
+      "priceName": "손 젤",
+      "price": 35000
+    },
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "6",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": {
+      "__typename": "MarkerLabel",
+      "text": "￦35,000~",
+      "style": "default"
+    }
+  },
+  "BeautySummary:1931373966": {
+    "__typename": "BeautySummary",
+    "id": "1931373966",
+    "apolloCacheId": "",
+    "name": "네일엔네일스",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 중계로 225",
+    "address": "중계동 360-2",
+    "imageUrl": null,
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0749986",
+    "y": "37.6503861",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "8",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:1051673902": {
+    "__typename": "BeautySummary",
+    "id": "1051673902",
+    "apolloCacheId": "",
+    "name": "마운틴",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 동일로203가길 29",
+    "address": "중계동 506",
+    "imageUrl": null,
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0642714",
+    "y": "37.6399301",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "5",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:38239209": {
+    "__typename": "BeautySummary",
+    "id": "38239209",
+    "apolloCacheId": "",
+    "name": "봄네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "29",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "저희는 친환경 젤을 사용하며 UV램프를 사용하지않고 LED램프를 사용하고 패디스파로 위생적으로 발관리를 해드리며\r\n속눈썹 또한 인증글루를 사용하여 일회용 아이패치로 시술하고 있습니다.",
+    "roadAddress": "서울 노원구 동일로 1389 상계주공3단지아파트",
+    "address": "상계동 730-2 1층",
+    "imageUrl": "https:\u002F\u002Fldb-phinf.pstatic.net\u002F20191221_122\u002F1576902668700I8VQO_JPEG\u002FLZH_DmNa9731yFZq5-aB_h2I.jpg",
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0605665",
+    "y": "37.6525200",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "3",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:307375721": {
+    "__typename": "BeautySummary",
+    "id": "307375721",
+    "apolloCacheId": "",
+    "name": "빨간손톱하얀피부",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 한글비석로 245 두타빌",
+    "address": "중계동 360-9",
+    "imageUrl": null,
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0763940",
+    "y": "37.6495889",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "2",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "BeautySummary:19833081": {
+    "__typename": "BeautySummary",
+    "id": "19833081",
+    "apolloCacheId": "",
+    "name": "프레리네일",
+    "hasBooking": false,
+    "hasNPay": false,
+    "blogCafeReviewCount": "0",
+    "bookingReviewCount": "0",
+    "bookingReviewScore": 0,
+    "description": "",
+    "roadAddress": "서울 노원구 노해로 507 와우쇼핑몰",
+    "address": "상계동 292-1 1층 61,62,67호",
+    "imageUrl": null,
+    "talktalkUrl": null,
+    "distance": "",
+    "x": "127.0639369",
+    "y": "37.6554250",
+    "representativePrice": null,
+    "promotionTitle": null,
+    "stylesCount": 0,
+    "visitorReviewCount": "3",
+    "visitorReviewScore": null,
+    "styleBookingCounts": null,
+    "newOpening": null,
+    "coupon": null,
+    "styles": null,
+    "streetPanorama": null,
+    "imageMarker": {
+      "__typename": "ImageMarker",
+      "marker": "nres:\u002F\u002Fmarker\u002F00009-00071",
+      "markerSelected": "nres:\u002F\u002Fmarker\u002F00009-00185"
+    },
+    "markerId": "226680",
+    "markerLabel": null
+  },
+  "ROOT_QUERY": {
+    "__typename": "Query",
+    "nailshops({\"input\":{\"deviceType\":\"pcmap\",\"display\":70,\"filterBooking\":false,\"filterCoupon\":false,\"naverBenefit\":false,\"query\":\"중계역네일\",\"sortingOrder\":\"precision\",\"start\":1,\"x\":\"127.060818\",\"y\":\"37.237756\"}})": {
+      "__typename": "BeautyListResult",
+      "total": 60,
+      "userGender": null,
+      "items": [
+        {
+          "__ref": "BeautySummary:1389195604"
+        },
+        {
+          "__ref": "BeautySummary:1062343727"
+        },
+        {
+          "__ref": "BeautySummary:1640092083"
+        },
+        {
+          "__ref": "BeautySummary:1004550342"
+        },
+        {
+          "__ref": "BeautySummary:1976151941"
+        },
+        {
+          "__ref": "BeautySummary:1225447795"
+        },
+        {
+          "__ref": "BeautySummary:1046783229"
+        },
+        {
+          "__ref": "BeautySummary:1084972256"
+        },
+        {
+          "__ref": "BeautySummary:558312183"
+        },
+        {
+          "__ref": "BeautySummary:37288527"
+        },
+        {
+          "__ref": "BeautySummary:1678627567"
+        },
+        {
+          "__ref": "BeautySummary:1274711364"
+        },
+        {
+          "__ref": "BeautySummary:1683573340"
+        },
+        {
+          "__ref": "BeautySummary:1382831764"
+        },
+        {
+          "__ref": "BeautySummary:1846460545"
+        },
+        {
+          "__ref": "BeautySummary:1731841332"
+        },
+        {
+          "__ref": "BeautySummary:1292492309"
+        },
+        {
+          "__ref": "BeautySummary:1045235933"
+        },
+        {
+          "__ref": "BeautySummary:37648322"
+        },
+        {
+          "__ref": "BeautySummary:1539160319"
+        },
+        {
+          "__ref": "BeautySummary:1871328218"
+        },
+        {
+          "__ref": "BeautySummary:1570795124"
+        },
+        {
+          "__ref": "BeautySummary:923501592"
+        },
+        {
+          "__ref": "BeautySummary:1032909990"
+        },
+        {
+          "__ref": "BeautySummary:1104649345"
+        },
+        {
+          "__ref": "BeautySummary:38287201"
+        },
+        {
+          "__ref": "BeautySummary:1549263465"
+        },
+        {
+          "__ref": "BeautySummary:1902388944"
+        },
+        {
+          "__ref": "BeautySummary:1871375245"
+        },
+        {
+          "__ref": "BeautySummary:36955847"
+        },
+        {
+          "__ref": "BeautySummary:31046586"
+        },
+        {
+          "__ref": "BeautySummary:36906178"
+        },
+        {
+          "__ref": "BeautySummary:1260207107"
+        },
+        {
+          "__ref": "BeautySummary:20325350"
+        },
+        {
+          "__ref": "BeautySummary:1415808316"
+        },
+        {
+          "__ref": "BeautySummary:1007760178"
+        },
+        {
+          "__ref": "BeautySummary:1507873755"
+        },
+        {
+          "__ref": "BeautySummary:38779938"
+        },
+        {
+          "__ref": "BeautySummary:1719959263"
+        },
+        {
+          "__ref": "BeautySummary:21274123"
+        },
+        {
+          "__ref": "BeautySummary:1930203096"
+        },
+        {
+          "__ref": "BeautySummary:20115454"
+        },
+        {
+          "__ref": "BeautySummary:1356031900"
+        },
+        {
+          "__ref": "BeautySummary:1260016619"
+        },
+        {
+          "__ref": "BeautySummary:1306599970"
+        },
+        {
+          "__ref": "BeautySummary:34259144"
+        },
+        {
+          "__ref": "BeautySummary:36241291"
+        },
+        {
+          "__ref": "BeautySummary:1606801801"
+        },
+        {
+          "__ref": "BeautySummary:1641963194"
+        },
+        {
+          "__ref": "BeautySummary:1292888523"
+        },
+        {
+          "__ref": "BeautySummary:1723310090"
+        },
+        {
+          "__ref": "BeautySummary:1233291954"
+        },
+        {
+          "__ref": "BeautySummary:1282354916"
+        },
+        {
+          "__ref": "BeautySummary:20857889"
+        },
+        {
+          "__ref": "BeautySummary:32472933"
+        },
+        {
+          "__ref": "BeautySummary:1931373966"
+        },
+        {
+          "__ref": "BeautySummary:1051673902"
+        },
+        {
+          "__ref": "BeautySummary:38239209"
+        },
+        {
+          "__ref": "BeautySummary:307375721"
+        },
+        {
+          "__ref": "BeautySummary:19833081"
+        }
+      ]
+    }
+  }
+}
+
