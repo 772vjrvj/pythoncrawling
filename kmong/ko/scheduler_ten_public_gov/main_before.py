@@ -1,47 +1,82 @@
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import re
 import cx_Oracle
+import warnings
+from urllib3.exceptions import InsecureRequestWarning
+import time
+import random
+import os
 
-# DB 연결을 위한 변수 (전역 변수로 선언)
-connection = None
 
-# DB 연결 함수 (최초 한 번만 연결)
+# 경고 숨기기
+warnings.simplefilter('ignore', InsecureRequestWarning)
+
+
+def common_request(url, headers, payload, timeout=30):
+    try:
+        # GET 요청
+        if payload:
+            response = requests.get(url, headers=headers, verify=False, params=payload, timeout=timeout)
+        else:
+            response = requests.get(url, headers=headers, verify=False, timeout=timeout)
+
+        # 응답 인코딩을 UTF-8로 강제 설정
+        response.encoding = 'utf-8'
+
+        response.raise_for_status()
+
+        # 상태 코드 200이 아닌 경우 처리
+        if response.status_code == 200:
+            return response.text
+        else:
+            # HTTP 오류가 있을 경우 예외 발생
+            logging.error(f"Unexpected status code: {response.status_code}")
+            return None
+
+    except requests.exceptions.Timeout:
+        logging.error("Request timed out")
+        return None
+    except requests.exceptions.TooManyRedirects:
+        logging.error("Too many redirects")
+        return None
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        return None
+
+
+# DB 연결 함수 (매번 호출 시마다 연결을 설정)
 def connect_to_db():
-    global connection
-    if connection is None:
-        # Oracle 연결 정보
-        host = 'nas.codegurus.co.kr'
-        port = 1521
-        dbname = 'ORCL'
-        username = 'PLATNW'
-        password = 'PLATNW'
+    # 환경 변수로 DB 연결 정보 읽기
+    host = os.getenv('DB_HOST')
+    port = os.getenv('DB_PORT')
+    dbname = os.getenv('DB_NAME')
+    username = os.getenv('DB_USER')
+    password = os.getenv('DB_PASSWORD')
 
-        # 연결 문자열 생성
-        dsn_tns = cx_Oracle.makedsn(host, port, service_name=dbname)
+    # 연결 문자열 생성
+    dsn_tns = cx_Oracle.makedsn(host, port, service_name=dbname)
 
-        try:
-            # DB 연결
-            connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
-            logging.info("DB 연결 성공")
-        except cx_Oracle.DatabaseError as e:
-            logging.error(f"DB 연결 실패: {e}")
-            connection = None
-    return connection
+    try:
+        # DB 연결
+        conn = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+        logging.info("DB 연결 성공")
+        return conn
+    except cx_Oracle.DatabaseError as e:
+        logging.error(f"DB 연결 실패: {e}")
+        return None
 
 
-# DB 연결 종료 함수 (옵션)
-def close_db_connection():
-    global connection
-    if connection:
-        connection.close()
-        connection = None
+# DB 연결 종료 함수
+def close_db_connection(conn):
+    if conn:
+        conn.close()
         logging.info("DB 연결 종료")
 
 
-# DB에 데이터 삽입하는 함수
+# DB에 데이터 삽입하는 함수 1row
 def insert_data_to_db(data):
     conn = connect_to_db()
     if conn:
@@ -69,9 +104,81 @@ def insert_data_to_db(data):
         logging.error("DB 연결 실패")
 
 
+# 데이터 삽입 함수 (INSERT ALL 사용)
+def insert_all_data_to_db(conn, cursor, data_list):
+    # INSERT ALL 쿼리 준비
+    insert_query = "INSERT ALL "
+
+    # 데이터와 그에 대응하는 파라미터 이름 설정
+    bind_params = {}
+    for idx, data in enumerate(data_list):
+        insert_query += f"""
+        INTO DMNFR_TREND (DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL)
+        VALUES (:DMNFR_TREND_NO_{idx}, :STTS_CHG_CD_{idx}, :TTL_{idx}, :SRC_{idx}, :REG_YMD_{idx}, :URL_{idx})
+        """
+
+        # 데이터 파라미터 매핑
+        bind_params[f"DMNFR_TREND_NO_{idx}"] = data['DMNFR_TREND_NO']
+        bind_params[f"STTS_CHG_CD_{idx}"] = data['STTS_CHG_CD']
+        bind_params[f"TTL_{idx}"] = data['TTL']
+        bind_params[f"SRC_{idx}"] = data['SRC']
+        bind_params[f"REG_YMD_{idx}"] = data['REG_YMD']
+        bind_params[f"URL_{idx}"] = data['URL']
+
+    # 구문 종료 역할
+    insert_query += "SELECT * FROM dual"
+
+    try:
+        # 쿼리 실행
+        cursor.execute(insert_query, bind_params)
+
+        # 커밋
+        conn.commit()
+        logging.info(f"{len(data_list)}개의 데이터 삽입 완료")
+
+    except cx_Oracle.DatabaseError as e:
+        logging.error(f"데이터 삽입 실패: {e}")
+
+
+# 날짜 계산 (오늘과 어제 날짜)
+def get_date_range():
+    # 오늘 날짜와 어제 날짜 계산
+    today = datetime.today()
+    yesterday = today - timedelta(days=1)
+
+    # 날짜를 yyyymmdd 형식으로 반환
+    today_str = today.strftime('%Y%m%d')
+    yesterday_str = yesterday.strftime('%Y%m%d')
+
+    return today_str, yesterday_str
+
+
+# 데이터 조회 함수 (SELECT) - 내부에서 날짜 계산
+def select_existing_data(cursor, src):
+    # 오늘 날짜와 어제 날짜 구하기
+    reg_ymd_today, reg_ymd_yesterday = get_date_range()
+
+    # DB 조회 쿼리 (src와 reg_ymd를 조건으로 추가)
+    select_query = """
+    SELECT DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL
+    FROM DMNFR_TREND
+    WHERE SRC = :src
+    AND REG_YMD IN (:reg_ymd_today, :reg_ymd_yesterday)
+    """
+
+    cursor.execute(select_query, {
+        'src': src,
+        'reg_ymd_today': reg_ymd_today,
+        'reg_ymd_yesterday': reg_ymd_yesterday
+    })
+
+    existing_data = cursor.fetchall()  # 기존 데이터 조회
+    return existing_data
+
+
 # kistep_gpsTrendList 요청
 def kistep_gpsTrendList_request():
-    url = "https://www.kistep.re.kr/gpsTrendList.es?mid=a30200000000"
+    url = "https://www.kistep.re.kr/gpsTrendList.es"
 
     headers = {
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -98,15 +205,8 @@ def kistep_gpsTrendList_request():
         'keyWord': ''
     }
 
-    # POST 요청
-    response = requests.post(url, headers=headers, data=payload)
+    return common_request(url, headers, payload)
 
-    # 응답이 정상적으로 왔을 때 처리
-    if response.status_code == 200:
-        return response.text
-    else:
-        print("Failed to retrieve data")
-        return None
 
 # kistep_gpsTrendList 데이터 가공
 def kistep_gpsTrendList_data(html):
@@ -153,11 +253,20 @@ def kistep_gpsTrendList_data(html):
 
     return data_list
 
+
 # kistep_gpsTrendList DB
-def kistep_gpsTrendList(date):
+def kistep_gpsTrendList():
     html = kistep_gpsTrendList_request()
     if html:
         data_list = kistep_gpsTrendList_data(html)
+        for data in data_list:
+            print(f'\n{data}')
+
+            # 데이터 삽입 함수 호출
+            # insert_data_to_db(data)
+
+
+
 
 
 
@@ -422,6 +531,11 @@ def krei_research_data(html):
     for index, tr in enumerate(tbody.find_all('tr', recursive=False)):
         tds = tr.find_all('td', recursive=False)
 
+        dmnfr_trend_no = ''
+        ttl = ''
+        reg_ymd_text = ''
+        url = ''
+
         # td 요소가 부족하면 skip
         if len(tds) < 3:
             logging.warning(f"Skipping row {index} due to insufficient td elements")
@@ -430,23 +544,28 @@ def krei_research_data(html):
         try:
             # 'NO' 제거하고 앞뒤 공백 제거
             dmnfr_trend_no = tds[0].get_text(strip=True).replace("번호", "").strip()
+
             a_tag = tds[1].find('a')
 
             if a_tag:
                 ttl = a_tag.get_text(strip=True)
                 url = "https://www.krei.re.kr/krei" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
-            else:
-                ttl = ''
-                url = ''
-                logging.warning(f"No anchor tag found in row {index}")
+
+                # 정규 표현식으로 biblioId 값 추출
+                match = re.search(r'biblioId=(\d+)', url)
+
+                # 값이 매칭되면 출력
+                if match:
+                    biblio_id = match.group(1)
+                    dmnfr_trend_no = biblio_id  # 출력: 542169
 
             # '등록일', 맨뒤.(점) 제거하고 앞뒤 공백 제거
-            reg_ymd_text = tds[2].get_text(strip=True).replace("등록일", "").rstrip('.')
+            reg_ymd_text = tds[2].get_text(strip=True).replace("등록일", "").replace(".", "")
 
             # 데이터 객체 구성
             data_obj = {
                 "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "success",
+                "STTS_CHG_CD": "succ",
                 "TTL": ttl,
                 "SRC": "KREI 이슈+",
                 "REG_YMD": reg_ymd_text,
@@ -469,8 +588,9 @@ def krei_research(date):
         data_list = krei_research_data(html)
 
         for data in data_list:
-            print(data)
-
+            print(f'\n{data}')
+            # 데이터 삽입 함수 호출
+            insert_data_to_db(data)
 
 
 
@@ -575,7 +695,7 @@ def kati_export(date):
         data_list = kati_export_data(html)
 
         for data in data_list:
-            print(data)
+            print(f'\n{data}')
             # 데이터 삽입 함수 호출
             insert_data_to_db(data)
 
@@ -678,7 +798,7 @@ def kati_report(date):
         data_list = kati_report_data(html)
 
         for data in data_list:
-            print(data)
+            print(f'\n{data}')
             # 데이터 삽입 함수 호출
             insert_data_to_db(data)
 
@@ -766,14 +886,22 @@ def stepi_report_data(html):
 
             if info_tag:
                 span_tags = info_tag.find_all('span')
-                if span_tags and len(span_tags) > 0:
+                if span_tags and len(span_tags) > 1:
                     reg_ymd_text = span_tags[1].get_text(strip=True)
+
+                    if reg_ymd_text:
+                        # 문자열을 datetime 객체로 변환
+                        date_obj = datetime.strptime(reg_ymd_text, '%Y-%m-%d')
+
+                        # 원하는 형식 (yyyymmdd)으로 변환
+                        reg_ymd_text = date_obj.strftime('%Y%m%d')
+
 
             data_obj = {
                 "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "success",
+                "STTS_CHG_CD": "succ",
                 "TTL": ttl,
-                "SRC": "농식품수출정보-보고서",
+                "SRC": "과학기술정책연구원	STEPI",
                 "REG_YMD": reg_ymd_text,
                 "URL": url
             }
@@ -791,10 +919,8 @@ def stepi_report(date):
     if html:
         data_list = stepi_report_data(html)
 
-
-
         for data in data_list:
-            print(data)
+            print(f'\n{data}')
 
             # 데이터 삽입 함수 호출
             insert_data_to_db(data)
@@ -803,17 +929,354 @@ def stepi_report(date):
 
 
 
+# 국외	미국 USDA	보도자료	USDA 보도자료	https://www.usda.gov/media/press-releases
+# usda_press_request 요청
+def usda_press_request(page):
+    url = f"https://www.usda.gov/about-usda/news/press-releases?page={page}"
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "referer": f"https://www.usda.gov/about-usda/news/press-releases?page={page}",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    }
+
+    return common_request(url, headers)
+
+
+# Release No를 위한 요청
+def usda_press_no_request(url):
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "referer": "https://www.usda.gov/about-usda/news/press-releases",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    }
+    return common_request(url, headers)
+
+
+# usda_press_data 데이터 가공
+def usda_press_data(html):
+    data_list = []
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        board_list = soup.find('div', class_='views-element-container') if soup else None
+
+        if not board_list:
+            logging.error("Board list not found")
+            return []
+
+        views = board_list.find_all('div', class_='views-row')
+
+        if views and len(views) > 0:
+
+            for index, view in enumerate(views):
+
+                url = ''
+                dmnfr_trend_no = ''
+                ttl = ''
+                reg_ymd_text = ''
+
+                h2_tag = view.find('h2')
+                a_tag = h2_tag.find('a') if h2_tag else None
+
+                if a_tag:
+                    ttl = a_tag.get_text(strip=True)
+
+                    href_text = a_tag['href'] if 'href' in a_tag.attrs else ''
+
+                    if href_text:
+                        url = f'https://www.usda.gov{href_text}'
+                        html = usda_press_no_request(url)
+                        if html:
+                            press_no_soup = BeautifulSoup(html, 'html.parser') if soup else None
+                            article_release_no_value = press_no_soup.find('div', class_='article-release-no-value') if press_no_soup else None
+                            field_item = article_release_no_value.find('div', class_='field__item') if article_release_no_value else None
+                            field_item_text = field_item.get_text(strip=True) if field_item else ''
+                            # 숫자에서 소수점(.)을 제거하고, 문자열을 정수로 변환
+                            dmnfr_trend_no = int(field_item_text.replace('.', '')) if field_item_text else 0
+
+
+                # 'time' 태그에서 datetime 속성 가져오기
+                time_tag = view.find('time')
+
+                # datetime 속성에서 날짜만 추출하고, YYYYMMDD 형식으로 변환
+                if time_tag:
+                    date_str = time_tag['datetime'][:10]  # '2024-12-23T16:55:00Z'에서 '2024-12-23'만 추출
+                    date_obj = datetime.strptime(date_str, '%Y-%m-%d')  # 문자열을 datetime 객체로 변환
+                    formatted_date = date_obj.strftime('%Y%m%d')  # YYYYMMDD 형식으로 변환
+                    reg_ymd_text = formatted_date
+
+                data_obj = {
+                    "DMNFR_TREND_NO": dmnfr_trend_no,
+                    "STTS_CHG_CD": "succ",
+                    "TTL": ttl,
+                    "SRC": "미국 USDA 보도자료",
+                    "REG_YMD": reg_ymd_text,
+                    "URL": url
+                }
+                data_list.append(data_obj)
+                time.sleep(random.uniform(2, 3))
+
+    except Exception as e:
+        logging.error(f"Error : {e}")
+
+    return data_list
+
+
+# usda_press DB
+def usda_press():
+    html = usda_press_request('0')
+    if html:
+        data_list = usda_press_data(html)
+
+        for data in data_list:
+            print(f'\n{data}')
+
+            # 데이터 삽입 함수 호출
+            insert_data_to_db(data)
+
+
+# 국외	일본 농림수산성	보도자료	일본 농림수산성 보도자료	https://www.maff.go.jp/j/press/index.html
+# https://www.maff.go.jp/j/press/index.html # 현재 월은 이렇게 구하고
+# https://www.maff.go.jp/j/press/arc/2410.html # 이전 월은 이렇게 구함
+
+
+# usda_press_request 요청
+def maff_press_request():
+    url = f"https://www.maff.go.jp/j/press/index.html"
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "referer": "https://www.maff.go.jp/j/press/index.html",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    }
+
+    return common_request(url, headers)
+
+
+# usda_press_data 데이터 가공
+def maff_press_data(html):
+    data_list = []
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+
+        board_list = soup.find('div', id='main_content')
+        if not board_list:
+            logging.error("Board list not found")
+            return []
+
+        # main_content의 직계 자식만 가져옴
+        # p 태그는 날짜를 dl은 내용을 가져온다.
+        children = board_list.find_all(recursive=False)
+
+        if children:
+
+            # h1과 h2 태그를 제외한 자식들만 필터링
+            filtered_children = [child for child in children if child.name not in ['h1', 'h2']]
+
+            if filtered_children:
+
+                # 날짜 세팅을 위함
+                # 현재 연도 가져오기
+                current_year = datetime.now().year
+                formatted_date = ''
+
+                # 고유 dmnfr_trend_no 세팅을 위함
+                # 오늘 날짜를 YYMMDDHHMM 형식으로 가져오기
+                now = datetime.now()
+                today_str = now.strftime('%y%m%d%H%M')  # 'YYMMDDHHMM' 형식으로
+
+                # 2일치만 가져오기 위함
+                p_cnt = 0
+                dl_cnt = 0
+
+                # 결과 출력 (필터링된 자식들)
+                for child in filtered_children:
+
+                    if p_cnt > 2:
+                        break
+
+                    if child.name == 'p' and 'list_item_date' in child.get('class', []):
+                        p_cnt += 1
+                        date_str = child.get_text(strip=True)  # '12月25日'와 같은 문자열
+                        if date_str:
+                            # 월과 일을 추출하고, 현재 연도를 붙여서 날짜 만들기
+                            month, day = date_str.split('月')  # '12月'에서 '12'를 분리
+                            day = day.replace('日', '')  # '25日'에서 '日'을 제거
+                            formatted_date = f"{current_year}{month.zfill(2)}{day.zfill(2)}"  # yyyyMMdd 형식으로 만들기
+                    else:
+                        dl_cnt += 1
+                        url = ''
+                        ttl = ''
+                        reg_ymd_text = formatted_date
+
+                        # index를 두 자릿수로 포맷 (1 -> '01', 2 -> '02', ... , 10 -> '10')
+                        index_str = f'{dl_cnt:02}'  # index를 두 자릿수로 변환
+                        dmnfr_trend_no = f'{today_str}{index_str}'  # 'YYMMDDHHMM' + 두 자릿수 index
+                        dt_tag = child.find('dt')
+                        dd_tag = child.find('dd')
+
+                        if dt_tag and dd_tag:
+                            a_tag = dd_tag.find('a') if dd_tag else None
+
+                            if a_tag:
+                                ttl = f'{dt_tag.get_text(strip=True)} {a_tag.get_text(strip=True)}'
+                                url = a_tag['href'] if 'href' in a_tag.attrs else ''
+
+                                # Step 2: URL이 "./"로 시작하는 경우 완전한 URL로 변환
+                                if url and url.startswith('./'):
+                                    url = "https://www.maff.go.jp/j/press" + url[1:]  # "./"를 제거하고 기본 URL을 붙임
+
+                        data_obj = {
+                            "DMNFR_TREND_NO": dmnfr_trend_no,
+                            "STTS_CHG_CD": "succ",
+                            "TTL": ttl,
+                            "SRC": "일본 농림수산성 보도자료",
+                            "REG_YMD": reg_ymd_text,
+                            "URL": url
+                        }
+                        data_list.append(data_obj)
+
+
+    except Exception as e:
+        logging.error(f"Error : {e}")
+
+    return data_list
+
+
+# usda_press DB
+def maff_press():
+    html = maff_press_request()
+    if html:
+        data_list = maff_press_data(html)
+
+        for data in data_list:
+            print(f'\n{data}')
+
+            # 데이터 삽입 함수 호출
+            insert_data_to_db(data)
+
+
+
+# 국외	중국 농업농촌부	소식	중국 농업농촌부 소식	http://www.moa.gov.cn/xw/zwdt/
+def moa_press_request():
+    url = f"http://www.moa.gov.cn/xw/zwdt/"
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-encoding": "gzip, deflate",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "cache-control": "max-age=0",
+        "connection": "keep-alive",
+        "host": "www.moa.gov.cn",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    }
+
+    return common_request(url, headers)
+
+
+# moa_press_data 데이터 가공
+def moa_press_data(html):
+    data_list = []
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        board_list = soup.find('div', class_='pub-media1-txt-list') if soup else None
+
+        if not board_list:
+            logging.error("Board list not found")
+            return []
+
+        list_items = board_list.find_all('li', class_='ztlb')
+
+        if list_items and len(list_items) > 0:
+            # list_items를 10개 이하로 자르기
+            list_items = list_items[:10]
+
+            for index, item in enumerate(list_items):
+
+                url = ''
+                ttl = ''
+                reg_ymd_text = ''
+                dmnfr_trend_no = ''
+
+                # 날짜
+                span_tag = item.find('span')
+                if span_tag:
+                    date_str = span_tag.get_text(strip=True) if span_tag else ''
+
+                    # 문자열을 datetime 객체로 변환
+                    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+
+                    # 원하는 형식 (yyyymmdd)으로 변환
+                    formatted_date = date_obj.strftime('%Y%m%d')
+                    reg_ymd_text = formatted_date
+
+                a_tag = item.find('a')
+                if a_tag:
+                    title_value = a_tag['title'] if 'title' in a_tag.attrs else ''
+                    ttl = title_value
+
+                    url = a_tag['href'] if 'href' in a_tag.attrs else ''
+
+                    if url:
+                        if url.startswith('./'):
+                            url = "http://www.moa.gov.cn/xw/zwdt" + url[1:]  # "./"를 제거하고 기본 URL을 붙임
+
+                        # 정규 표현식을 사용하여 URL에서 숫자 추출
+                        match = re.search(r'(\d+)(?=\.htm$)', url)
+                        if match:
+                            dmnfr_trend_no = match.group(1)  # 6468463 추출
+
+                data_obj = {
+                    "DMNFR_TREND_NO": dmnfr_trend_no,
+                    "STTS_CHG_CD": "succ",
+                    "TTL": ttl,
+                    "SRC": "중국 농업농촌부 소식",
+                    "REG_YMD": reg_ymd_text,
+                    "URL": url
+                }
+                data_list.append(data_obj)
+
+    except Exception as e:
+        logging.error(f"Error : {e}")
+
+    return data_list
+
+
+# usda_press DB
+def moa_press():
+    html = moa_press_request()
+    if html:
+        data_list = moa_press_data(html)
+
+        for data in data_list:
+            print(f'\n{data}')
+
+            # 데이터 삽입 함수 호출
+            # insert_data_to_db(data)
+
+
+
 
 def main():
-    date = datetime.now().strftime('%Y-%m-%d')
 
-    # kistep_gpsTrendList(date)
-    # kistep_board(date)
-    # krei_list(date)
-    # krei_research(date)
-    # kati_export(date)
-    kati_report(date)
-    # stepi_report(date)
+    kistep_gpsTrendList()
+    # kistep_board()
+    # krei_list()
+    # krei_research()
+    # kati_export()
+    # kati_report()
+    # stepi_report()
+    # usda_press()
+    # maff_press()
+    # moa_press()
 
 if __name__ == '__main__':
     main()

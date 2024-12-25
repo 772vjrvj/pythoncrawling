@@ -259,6 +259,12 @@ def kistep_gpsTrendList():
     html = kistep_gpsTrendList_request()
     if html:
         data_list = kistep_gpsTrendList_data(html)
+        for data in data_list:
+            print(f'\n{data}')
+
+            # 데이터 삽입 함수 호출
+            # insert_data_to_db(data)
+
 
 
 
@@ -1262,10 +1268,7 @@ def moa_press():
 def main():
 
     kistep_gpsTrendList()
-
-
-
-    kistep_board()
+    # kistep_board()
     # krei_list()
     # krei_research()
     # kati_export()
