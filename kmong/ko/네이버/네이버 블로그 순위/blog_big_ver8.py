@@ -204,7 +204,12 @@ def save_excel_file_sheet2(results):
 
         # 기존 데이터 처리
         if os.path.exists(filepath):
-            existing_df = pd.read_excel(filepath)
+            with pd.ExcelFile(filepath, engine='openpyxl') as xl:
+                # Sheet2가 이미 존재하는 경우 삭제
+                if 'Sheet2' in xl.sheet_names:
+                    xl.book.remove(xl.book['Sheet2'])
+
+            existing_df = pd.read_excel(filepath, sheet_name='Sheet1')
             new_df = pd.DataFrame(results, columns=columns_order)  # 순서 고정
             df = pd.concat([existing_df, new_df], ignore_index=True)
         else:
@@ -213,8 +218,9 @@ def save_excel_file_sheet2(results):
         # 열 순서 명시적으로 다시 설정
         df = df[columns_order]
 
-        # 엑셀 파일 저장 (Sheet1에 저장)
-        df.to_excel(filepath, index=False, engine="openpyxl", sheet_name='Sheet2')
+        # 엑셀 파일 저장 (Sheet2에 저장)
+        with pd.ExcelWriter(filepath, engine='openpyxl', mode='a') as writer:
+            df.to_excel(writer, index=False, sheet_name='Sheet2', header=True)
 
         # 색상 조건 적용 및 왼쪽 정렬
         apply_color_and_alignment_to_excel(filepath, df)
@@ -223,11 +229,20 @@ def save_excel_file_sheet2(results):
     except Exception as e:
         new_print(f"엑셀 저장 실패: {e}")
 
+
 # 엑셀저장
 def save_excel_file_sheet1(new_data):
     global filepath
+
+    # Excel 파일이 존재하는지 확인
+    if os.path.exists(filepath):
+        with pd.ExcelFile(filepath, engine='openpyxl') as xl:
+            # Sheet1이 존재하면 삭제
+            if 'Sheet1' in xl.sheet_names:
+                xl.book.remove(xl.book['Sheet1'])
+
     # 기존 엑셀 파일 읽기
-    df = pd.read_excel(filepath, sheet_name='Sheet1')
+    df = pd.read_excel(filepath, sheet_name='Sheet1') if os.path.exists(filepath) else pd.DataFrame()
 
     # new_data 복사본 생성
     new_data_copy = new_data.copy()
@@ -241,14 +256,21 @@ def save_excel_file_sheet1(new_data):
     # 새로운 데이터를 '퍼센트' 열에 추가
     df['퍼센트'] = new_data_copy  # '퍼센트'라는 이름으로 F 컬럼에 데이터 저장
 
-    # 업데이트된 데이터 저장
-    df.to_excel(filepath, index=False)
+    # ExcelWriter로 엑셀 파일을 열고, 'Sheet1' 시트에 데이터를 덮어쓰기
+    with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
 
 
 def apply_color_and_alignment_to_excel(file_name, df):
     # 엑셀 파일 로드
     workbook = load_workbook(file_name)
-    sheet = workbook.active
+
+    # 'Sheet2'를 명시적으로 선택
+    if 'Sheet2' in workbook.sheetnames:
+        sheet = workbook['Sheet2']
+    else:
+        # Sheet2가 없을 경우 새로운 Sheet2 추가
+        sheet = workbook.create_sheet('Sheet2')
 
     # 색상 정의
     white_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
@@ -526,7 +548,7 @@ def fetch_gs_tag_name(blog_id, logNo):
 
 # 검색 블로그 20개 번호 가져오기
 def fetch_naver_blog_search_logNos(query, page):
-    url = "https://s.search.naver.com/p/review/48/search.naver"
+    url = "https://s.search.naver.com/p/review/49/search.naver"
 
     # 페이로드를 딕셔너리 형태로 정의
     payload = {
@@ -544,7 +566,7 @@ def fetch_naver_blog_search_logNos(query, page):
     headers = {
         "authority": "s.search.naver.com",
         "method": "GET",
-        "path": "/p/review/48/search.naver",
+        "path": "/p/review/49/search.naver",
         "scheme": "https",
         "accept": "application/json, text/javascript, */*; q=0.01",
         "accept-encoding": "gzip, deflate, br, zstd",
@@ -559,10 +581,10 @@ def fetch_naver_blog_search_logNos(query, page):
     if response.status_code == 200:
         # JSON 응답 파싱
         json_data = response.json()
-        contents = json_data.get("contents", "")
+        html_content = json_data['collection'][0]['html']
 
         # HTML 파싱
-        soup = BeautifulSoup(contents, 'html.parser')
+        soup = BeautifulSoup(html_content, 'html.parser')
 
         # class="detail_box" 안에 있는 title_area의 a 태그 찾기
         detail_boxes = soup.find_all(class_="detail_box")
@@ -689,6 +711,7 @@ def search_keyword_cnt(keyword):
             new_print("응답이 JSON 형식이 아닙니다.")
     else:
         new_print(f"요청 실패: 상태 코드 {response.status_code}")
+    return None
 
 
 # ══════════════════════════════════════════════════════
@@ -815,7 +838,7 @@ def start_processing():
     log_text_widget.delete(1.0, tk.END)
 
     extracted_data_list = []
-    extracted_data_per_list = []
+    extracted_data_per_list = [0.0] * len(id_list)
     total_contents = len(id_list) * selected_cont_value
     progress["maximum"] = total_contents
     remaining_time_update(-1, total_contents)
@@ -872,7 +895,9 @@ def start_processing():
                     completed_process(extracted_data_list, extracted_data_per_list)
                     return
                 tags = fetch_gs_tag_name(blog_id, blog['logNo'])
-                filter_tags = list(filter(lambda tag: tag in blog['title'], tags))
+                # filter_tags = list(filter(lambda tag: tag in blog['title'], tags))
+                filter_tags = tags
+
                 new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 목록 : {tags}')
                 new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 제목 : {blog['title']}')
                 new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 추출 태그 목록 : {filter_tags}')
@@ -885,25 +910,20 @@ def start_processing():
                         completed_process(extracted_data_list, extracted_data_per_list)
                         return
                     kw = search_keyword_cnt(tag)
+
+                    monthly_pc_qc_cnt = kw.get('monthlyPcQcCnt') if kw is not None else 0
+                    monthly_mobile_qc_cnt = kw.get('monthlyMobileQcCnt') if kw is not None else 0
+
                     time_sleep()
-                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, PC 검색수 : {kw['monthlyPcQcCnt']}')
-                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, 모바일 검색수 : {kw['monthlyMobileQcCnt']}')
+                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, PC 검색수 : {monthly_pc_qc_cnt}')
+                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, 모바일 검색수 : {monthly_mobile_qc_cnt}')
 
                     obj[f'태그{ix+1} 이름'] = tag
-                    obj[f'태그{ix+1} PC 검색수'] = kw['monthlyPcQcCnt']
-                    obj[f'태그{ix+1} 모바일 검색수'] = kw['monthlyMobileQcCnt']
+                    obj[f'태그{ix+1} PC 검색수'] = monthly_pc_qc_cnt
+                    obj[f'태그{ix+1} 모바일 검색수'] = monthly_mobile_qc_cnt
 
                     # 검색 블로그 20개 번호 가져오기
-                    search_logNos1 = fetch_naver_blog_search_logNos(tag, 0)
-                    time_sleep()
-                    search_logNos2 = fetch_naver_blog_search_logNos(tag, 1)
-
-                    # 합집합을 순서 유지하며 생성
-                    union_logNos = []
-                    for item in search_logNos1 + search_logNos2:  # a와 b를 이어붙인 후 순회
-                        if item not in union_logNos:
-                            union_logNos.append(item)
-
+                    union_logNos = fetch_naver_blog_search_logNos(tag, 0)
                     union_logNos = union_logNos[:30]
 
                     new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, 검색글 수 : {len(union_logNos)}')
@@ -925,10 +945,9 @@ def start_processing():
                 remaining_time_update(now_cnt, total_contents)
 
             hash_tag_per = math.floor((hash_tag_cnt / selected_cont_value) * 100 * 100) / 100
-            extracted_data_per_list.append(hash_tag_per)
+            extracted_data_per_list[index] = hash_tag_per
             new_print(f'작업한 전체목록 수 : {len(extracted_data_list)}')
         except Exception as e:
-            extracted_data_list.append(0)
             new_print(e, level="WARN")
 
         # 진행률 업데이트

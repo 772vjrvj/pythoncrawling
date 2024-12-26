@@ -1,1279 +1,1315 @@
+from tkinterdnd2 import DND_FILES, TkinterDnD
+from tkinter import ttk, filedialog, font, messagebox
+import tkinter as tk
+import pandas as pd
+import threading
 import requests
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-import logging
-import re
-import cx_Oracle
-import warnings
-from urllib3.exceptions import InsecureRequestWarning
-import time
 import random
+import ctypes
+import time
+import json
+import math
+import re
+from bs4 import BeautifulSoup
+from urllib.parse import quote
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import os
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill, Alignment, Font
 
 
-# 경고 숨기기
-warnings.simplefilter('ignore', InsecureRequestWarning)
+# region
+# ══════════════════════════════════════════════════════
+# 전역 변수
+# ══════════════════════════════════════════════════════
+
+# 엑셀 업로드 후 url 리스트
+id_list = []
+
+# 추출값 페센트 리스트
+extracted_data_list = []  # 모든 데이터 저장용
+
+# 일시 중지
+stop_flag = False
+
+# 네이버 로그인 쿠키
+global_naver_cookies = None
+
+# 완료후 깜빡임 상태
+flashing = True
+
+# 엑셀 경로
+filepath = None
+
+# 셀렉트 초기값을 1로 설정
+selected_value = 5
+selected_cont_value = 30
+time_sleep_val = 1
+
+bearer_token = ""
+refresh_token = ""
+
+global_server_cookies = {}  # 다른 서버 로그인 쿠키를 저장
+URL = "http://vjrvj.cafe24.com"
+login_server_check = ''
+stop_thread = threading.Event()
+
+# ══════════════════════════════════════════════════════
+# endregion
 
 
-def common_request(url, headers, payload, timeout=30):
-    try:
-        # GET 요청
-        if payload:
-            response = requests.get(url, headers=headers, verify=False, params=payload, timeout=timeout)
-        else:
-            response = requests.get(url, headers=headers, verify=False, timeout=timeout)
 
-        # 응답 인코딩을 UTF-8로 강제 설정
-        response.encoding = 'utf-8'
+# region
+# ══════════════════════════════════════════════════════
+# 셀레니움
+# ══════════════════════════════════════════════════════
 
-        response.raise_for_status()
-
-        # 상태 코드 200이 아닌 경우 처리
-        if response.status_code == 200:
-            return response.text
-        else:
-            # HTTP 오류가 있을 경우 예외 발생
-            logging.error(f"Unexpected status code: {response.status_code}")
-            return None
-
-    except requests.exceptions.Timeout:
-        logging.error("Request timed out")
-        return None
-    except requests.exceptions.TooManyRedirects:
-        logging.error("Too many redirects")
-        return None
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Request failed: {e}")
-        return None
-
-
-# DB 연결 함수 (매번 호출 시마다 연결을 설정)
-def connect_to_db():
-    # 환경 변수로 DB 연결 정보 읽기
-    host = os.getenv('DB_HOST')
-    port = os.getenv('DB_PORT')
-    dbname = os.getenv('DB_NAME')
-    username = os.getenv('DB_USER')
-    password = os.getenv('DB_PASSWORD')
-
-    # 연결 문자열 생성
-    dsn_tns = cx_Oracle.makedsn(host, port, service_name=dbname)
-
-    try:
-        # DB 연결
-        conn = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
-        logging.info("DB 연결 성공")
-        return conn
-    except cx_Oracle.DatabaseError as e:
-        logging.error(f"DB 연결 실패: {e}")
-        return None
-
-
-# DB 연결 종료 함수
-def close_db_connection(conn):
-    if conn:
-        conn.close()
-        logging.info("DB 연결 종료")
-
-
-# DB에 데이터 삽입하는 함수 1row
-def insert_data_to_db(data):
-    conn = connect_to_db()
-    if conn:
-        cursor = conn.cursor()
-
-        # 데이터 삽입 쿼리
-        insert_query = f"""
-        INSERT INTO DMNFR_TREND (DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL)
-        VALUES (:DMNFR_TREND_NO, :STTS_CHG_CD, :TTL, :SRC, :REG_YMD, :URL)
-        """
-
-        try:
-            # 쿼리 실행
-            cursor.execute(insert_query, data)
-
-            # 커밋
-            conn.commit()
-
-        except cx_Oracle.DatabaseError as e:
-            logging.error(f"데이터 삽입 실패: {e}")
-        finally:
-            # 커서 종료
-            cursor.close()
-    else:
-        logging.error("DB 연결 실패")
-
-
-# 데이터 삽입 함수 (INSERT ALL 사용)
-def insert_all_data_to_db(conn, cursor, data_list):
-    # INSERT ALL 쿼리 준비
-    insert_query = "INSERT ALL "
-
-    # 데이터와 그에 대응하는 파라미터 이름 설정
-    bind_params = {}
-    for idx, data in enumerate(data_list):
-        insert_query += f"""
-        INTO DMNFR_TREND (DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL)
-        VALUES (:DMNFR_TREND_NO_{idx}, :STTS_CHG_CD_{idx}, :TTL_{idx}, :SRC_{idx}, :REG_YMD_{idx}, :URL_{idx})
-        """
-
-        # 데이터 파라미터 매핑
-        bind_params[f"DMNFR_TREND_NO_{idx}"] = data['DMNFR_TREND_NO']
-        bind_params[f"STTS_CHG_CD_{idx}"] = data['STTS_CHG_CD']
-        bind_params[f"TTL_{idx}"] = data['TTL']
-        bind_params[f"SRC_{idx}"] = data['SRC']
-        bind_params[f"REG_YMD_{idx}"] = data['REG_YMD']
-        bind_params[f"URL_{idx}"] = data['URL']
-
-    # 구문 종료 역할
-    insert_query += "SELECT * FROM dual"
-
-    try:
-        # 쿼리 실행
-        cursor.execute(insert_query, bind_params)
-
-        # 커밋
-        conn.commit()
-        logging.info(f"{len(data_list)}개의 데이터 삽입 완료")
-
-    except cx_Oracle.DatabaseError as e:
-        logging.error(f"데이터 삽입 실패: {e}")
-
-
-# 날짜 계산 (오늘과 어제 날짜)
-def get_date_range():
-    # 오늘 날짜와 어제 날짜 계산
-    today = datetime.today()
-    yesterday = today - timedelta(days=1)
-
-    # 날짜를 yyyymmdd 형식으로 반환
-    today_str = today.strftime('%Y%m%d')
-    yesterday_str = yesterday.strftime('%Y%m%d')
-
-    return today_str, yesterday_str
-
-
-# 데이터 조회 함수 (SELECT) - 내부에서 날짜 계산
-def select_existing_data(cursor, src):
-    # 오늘 날짜와 어제 날짜 구하기
-    reg_ymd_today, reg_ymd_yesterday = get_date_range()
-
-    # DB 조회 쿼리 (src와 reg_ymd를 조건으로 추가)
-    select_query = """
-    SELECT DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL
-    FROM DMNFR_TREND
-    WHERE SRC = :src
-    AND REG_YMD IN (:reg_ymd_today, :reg_ymd_yesterday)
+# 드라이버 세팅
+def setup_driver():
     """
+    Selenium 웹 드라이버를 설정하고 반환하는 함수입니다.
+    """
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
 
-    cursor.execute(select_query, {
-        'src': src,
-        'reg_ymd_today': reg_ymd_today,
-        'reg_ymd_yesterday': reg_ymd_yesterday
+    # 사용자 에이전트 설정
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    chrome_options.add_argument(f'user-agent={user_agent}')
+
+    # 자동화 탐지 방지 설정
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+
+    # 크롬 드라이버 실행 및 자동화 방지 우회
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+        'source': '''
+            Object.defineProperty(navigator, 'webdriver', {
+              get: () => undefined
+            })
+        '''
     })
 
-    existing_data = cursor.fetchall()  # 기존 데이터 조회
-    return existing_data
+    # 브라우저 위치와 크기 설정
+    driver.set_window_position(0, 0)  # 왼쪽 위 (0, 0) 위치로 이동
+    driver.set_window_size(500, 800)  # 크기를 500x800으로 설정
+
+    return driver
+# ══════════════════════════════════════════════════════
+# endregion
 
 
-# kistep_gpsTrendList 요청
-def kistep_gpsTrendList_request():
-    url = "https://www.kistep.re.kr/gpsTrendList.es"
 
+# region
+# ══════════════════════════════════════════════════════
+# 엑셀 관련
+# ══════════════════════════════════════════════════════
+
+# 드래그 엑셀 파일로 이름 업로드
+def on_drop(event):
+    global id_list, filepath
+    filepath = event.data.strip('{}')
+    id_list = read_excel_file(filepath)
+    update_log(id_list)
+    # 리스트 상태 확인 및 버튼 활성화
+    check_list_and_toggle_button(id_list)
+
+# 윈도우 엑셀 파일로 이름 업로드
+def browse_file():
+    global id_list, filepath
+    filepath = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
+    if filepath:
+        id_list = read_excel_file(filepath)
+        update_log(id_list)
+        # 리스트 상태 확인 및 버튼 활성화
+        check_list_and_toggle_button(id_list)
+
+# 엑셀에 url 리스트를 가져오는 함수
+def update_log(id_list):
+    log_text_widget.delete(1.0, tk.END)
+    for url in id_list:
+        log_text_widget.insert(tk.END, url + "\n")
+    log_text_widget.insert(tk.END, f"\n총 {len(id_list)}개의 URL이 있습니다.\n")
+    log_text_widget.see(tk.END)
+
+# url들이 정상인지를 확인하여 버튼을 활성 비활성화 한다.
+def check_list_and_toggle_button(id_list):
+    if id_list:
+        start_button.config(state=tk.NORMAL)
+    else:
+        start_button.config(state=tk.DISABLED)
+
+# url에서 id를 추출
+def extract_blog_id(url):
+    # 마지막 '://' 뒤의 내용만 남기기
+    url = url.rsplit('://', 1)[-1]
+
+    # "PostList.naver"에서 blogId 추출
+    postlist_pattern = r'[?&]blogId=([^&]+)'
+    postlist_match = re.search(postlist_pattern, url)
+
+    if postlist_match:
+        return postlist_match.group(1)  # blogId 값 추가
+
+    # 기본 URL에서 ID 추출 (www 포함)
+    base_pattern = r'^(?:www\.)?(?:blog|m\.blog)\.naver\.com/([^/?&]+)'
+    match = re.search(base_pattern, url)
+
+    if match:
+        return match.group(1)  # 첫 번째 그룹 (ID)
+
+    return ''  # ID가 없을 경우 빈 문자열 반환
+
+# 엑셀의 url리스트를 읽어오는 함수.
+def read_excel_file(filepath):
+    global id_list
+    df = pd.read_excel(filepath, sheet_name=0)
+    id_list = []
+    url_list = df.iloc[:, 1].tolist()
+    for url in url_list:
+        url_blog_id = extract_blog_id(url)
+        id_list.append(url_blog_id.strip())
+    return id_list
+
+
+def save_excel_file_sheet2(results):
+    global filepath
+    # file_name = "블로그 빅.xlsx"
+    new_print("엑셀 저장 시작")
+
+    try:
+        # 열 순서를 정의
+        columns_order = [
+            '아이디', '블로그 URL', '게시글 URL',
+            '태그1 이름', '태그1 PC 검색수', '태그1 모바일 검색수', '태그1 순위',
+            '태그2 이름', '태그2 PC 검색수', '태그2 모바일 검색수', '태그2 순위',
+            '태그3 이름', '태그3 PC 검색수', '태그3 모바일 검색수', '태그3 순위',
+            '태그4 이름', '태그4 PC 검색수', '태그4 모바일 검색수', '태그4 순위',
+            '태그5 이름', '태그5 PC 검색수', '태그5 모바일 검색수', '태그5 순위'
+        ]
+
+        # 누락된 열을 기본값으로 채우기
+        for result in results:
+            for column in columns_order:
+                if column not in result:
+                    result[column] = ''  # 기본값 설정
+
+        # 기존 데이터 처리
+        if os.path.exists(filepath):
+            with pd.ExcelFile(filepath, engine='openpyxl') as xl:
+                # Sheet2가 이미 존재하는 경우 삭제
+                if 'Sheet2' in xl.sheet_names:
+                    xl.book.remove(xl.book['Sheet2'])
+
+            existing_df = pd.read_excel(filepath, sheet_name='Sheet1')
+            new_df = pd.DataFrame(results, columns=columns_order)  # 순서 고정
+            df = pd.concat([existing_df, new_df], ignore_index=True)
+        else:
+            df = pd.DataFrame(results, columns=columns_order)  # 순서 고정
+
+        # 열 순서 명시적으로 다시 설정
+        df = df[columns_order]
+
+        # 엑셀 파일 저장 (Sheet2에 저장)
+        with pd.ExcelWriter(filepath, engine='openpyxl', mode='a') as writer:
+            df.to_excel(writer, index=False, sheet_name='Sheet2', header=True)
+
+        # 색상 조건 적용 및 왼쪽 정렬
+        apply_color_and_alignment_to_excel(filepath, df)
+
+        new_print(f"엑셀 저장 완료: {filepath}")
+    except Exception as e:
+        new_print(f"엑셀 저장 실패: {e}")
+
+
+# 엑셀저장
+def save_excel_file_sheet1(new_data):
+    global filepath
+
+    # Excel 파일이 존재하는지 확인
+    if os.path.exists(filepath):
+        with pd.ExcelFile(filepath, engine='openpyxl') as xl:
+            # Sheet1이 존재하면 삭제
+            if 'Sheet1' in xl.sheet_names:
+                xl.book.remove(xl.book['Sheet1'])
+
+    # 기존 엑셀 파일 읽기
+    df = pd.read_excel(filepath, sheet_name='Sheet1') if os.path.exists(filepath) else pd.DataFrame()
+
+    # new_data 복사본 생성
+    new_data_copy = new_data.copy()
+
+    # new_data_copy의 길이가 df의 길이보다 짧을 경우, 부족한 부분을 ''으로 채움
+    if len(new_data_copy) < len(df):
+        new_data_copy.extend([''] * (len(df) - len(new_data_copy)))
+    elif len(new_data_copy) > len(df):
+        new_data_copy = new_data_copy[:len(df)]  # new_data_copy가 더 길면 df 길이에 맞게 자름
+
+    # 새로운 데이터를 '퍼센트' 열에 추가
+    df['퍼센트'] = new_data_copy  # '퍼센트'라는 이름으로 F 컬럼에 데이터 저장
+
+    # ExcelWriter로 엑셀 파일을 열고, 'Sheet1' 시트에 데이터를 덮어쓰기
+    with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+
+def apply_color_and_alignment_to_excel(file_name, df):
+    # 엑셀 파일 로드
+    workbook = load_workbook(file_name)
+
+    # 'Sheet2'를 명시적으로 선택
+    if 'Sheet2' in workbook.sheetnames:
+        sheet = workbook['Sheet2']
+    else:
+        # Sheet2가 없을 경우 새로운 Sheet2 추가
+        sheet = workbook.create_sheet('Sheet2')
+
+    # 색상 정의
+    white_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+    yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+    green_fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")
+    blue_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    black_fill = PatternFill(start_color="000000", end_color="000000", fill_type="solid")
+
+    # 폰트 정의 (검은색 배경일 때 흰색 글씨)
+    white_font = Font(color="FFFFFF")
+    default_font = Font(color="000000")  # 기본 검은색 글씨
+
+    # 컬럼 이름 추출
+    tag_columns = [f"태그{i} PC 검색수" for i in range(1, 6)] + [f"태그{i} 모바일 검색수" for i in range(1, 6)]
+    tag_name_columns = [f"태그{i} 이름" for i in range(1, 6)]
+
+    for row in range(2, sheet.max_row + 1):  # 데이터 시작 행부터 끝까지
+        for i in range(5):  # 태그 1~5에 대해 처리
+            pc_col = tag_columns[i]  # PC 검색수 컬럼
+            mobile_col = tag_columns[i + 5]  # 모바일 검색수 컬럼
+            name_col = tag_name_columns[i]  # 이름 컬럼
+
+            pc_value = df.iloc[row - 2][pc_col] if pc_col in df.columns else 0
+            mobile_value = df.iloc[row - 2][mobile_col] if mobile_col in df.columns else 0
+
+            # 값이 숫자가 아니면 흰색으로 처리
+            try:
+                pc_value = int(pc_value)
+                mobile_value = int(mobile_value)
+            except ValueError:
+                max_value = 0  # 숫자가 아닌 경우 기본 흰색 처리
+            else:
+                max_value = max(pc_value, mobile_value)
+
+            # 검색수 조건 판단
+            if max_value >= 50000:
+                fill = black_fill
+                font = white_font  # 글씨를 흰색으로 설정
+            elif max_value >= 10000:
+                fill = blue_fill
+                font = default_font
+            elif max_value >= 5000:
+                fill = green_fill
+                font = default_font
+            elif max_value >= 3000:
+                fill = yellow_fill
+                font = default_font
+            else:
+                fill = white_fill
+                font = default_font
+
+            # 셀 색상 및 글꼴 적용
+            col_letter = chr(65 + df.columns.get_loc(name_col))  # 컬럼 이름을 엑셀 열 문자로 변환
+            cell = sheet[f"{col_letter}{row}"]
+            cell.fill = fill
+            cell.font = font
+
+    # 전체 왼쪽 정렬
+    apply_left_alignment_to_excel(sheet)
+
+    # 저장
+    workbook.save(file_name)
+    workbook.close()
+
+
+def apply_left_alignment_to_excel(sheet):
+    # 왼쪽 정렬 정의
+    left_alignment = Alignment(horizontal="left", vertical="center")
+
+    # 전체 셀 왼쪽 정렬 적용
+    for row in sheet.iter_rows():
+        for cell in row:
+            cell.alignment = left_alignment
+
+
+# 글수
+def on_select_cont(event):
+    global selected_cont_value
+    selected_cont_value = int(value_cont_select.get())
+
+
+# 태그
+def on_select(event):
+    global selected_value
+    selected_value = int(value_select.get())
+
+# ══════════════════════════════════════════════════════
+# endregion
+
+
+
+# region
+# ══════════════════════════════════════════════════════
+# 네이버 API
+# ══════════════════════════════════════════════════════
+
+def requests_get(url, headers, payload=None):
+    global global_naver_cookies
+    if payload:  # payload가 존재할 때만 params를 포함
+        rs = requests.get(url, headers=headers, cookies=global_naver_cookies, params=payload)
+        return rs
+    else:
+        rs = requests.get(url, headers=headers, cookies=global_naver_cookies)
+        return rs
+
+# 네이버 로그아웃
+def naver_logout():
+    global global_naver_cookies, login_button, login_board, id_list, extracted_data_list
+    global_naver_cookies = None
+    login_button.config(text="로그인", command=naver_login)
+    login_board.config(text="관리자님 로그인을 진행해주세요.", fg="red")
+    messagebox.showinfo("알림", "로그인 아웃: 정상 로그아웃 되었습니다.")
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+    id_list = []
+    extracted_data_list = []  # 모든 데이터 저장용
+    stop_thread.set()  # 종료 신호 설정
+
+
+def periodic_token_update():
+    """
+    5분마다 update_bearer_token 함수를 실행하는 스레드.
+    """
+    while True:
+        try:
+            update_bearer_token()  # Bearer Token 갱신
+        except Exception as e:
+            new_print(f"토큰 업데이트 중 오류 발생: {e}")
+        time.sleep(300)  # 5분 대기
+
+
+# 네이버 로그인
+def naver_login():
+    global global_naver_cookies, login_button, login_board, bearer_token, refresh_token
+    try:
+        driver = setup_driver()
+        driver.get("https://nid.naver.com/nidlogin.login")
+        time.sleep(2)
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "id")))
+
+        logged_in = False
+        max_wait_time = 300
+        start_time = time.time()
+
+        while not logged_in:
+            time.sleep(1)
+            elapsed_time = time.time() - start_time
+
+            if elapsed_time > max_wait_time:
+                messagebox.showwarning("경고", "로그인 실패: 300초 내에 로그인하지 않았습니다.")
+                break
+
+            cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
+            if 'NID_AUT' in cookies and 'NID_SES' in cookies:
+                global_naver_cookies = cookies
+                logged_in = True
+                break
+
+        # 로그인 후 관리 페이지로 이동
+        if logged_in:
+            driver.get("https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner")
+            time.sleep(3)
+
+            # 로컬 스토리지에서 tokens 값 가져오기
+            tokens_json = driver.execute_script(
+                "return window.localStorage.getItem('tokens');"
+            )
+
+            if tokens_json:
+                # JSON 파싱
+                tokens = json.loads(tokens_json)
+
+                if "3216661" in tokens:
+                    account_data = tokens["3216661"]
+                    bearer_token = f'Bearer {account_data.get("bearer")}'
+                    refresh_token = account_data.get("refreshToken")
+                    messagebox.showinfo("알림", "로그인 성공: 정상 로그인 되었습니다.")
+                    login_button.config(text="로그아웃", command=naver_logout)
+                    login_board.config(text="관리자님 로그인 되었습니다. 작업을 진행해주세요.", fg="blue")
+
+                    update_thread = threading.Thread(target=periodic_token_update, daemon=True)  # Daemon 스레드로 설정
+                    update_thread.start()
+
+                else:
+                    new_print("경고: 지정된 키가 없습니다.")
+            else:
+                new_print("경고: 값이 없습니다.")
+
+    except Exception as e:
+        messagebox.showwarning("경고", f"로그인 중 오류가 발생했습니다.{e}")
+    finally:
+        driver.quit()
+
+# 내 블로그 30개 번호 가져오기
+def fetch_naver_blog_my_logNos(blog_id, current_page):
+    """주어진 블로그 ID와 현재 페이지를 사용하여 게시글 제목을 가져옵니다."""
+    url = f"https://m.blog.naver.com/api/blogs/{blog_id}/post-list?categoryNo=0&itemCount=30&page={current_page}&userId="
     headers = {
+        "authority": "m.blog.naver.com",
+        "method": "GET",
+        "path": "/api/blogs/roketmissile/post-list?categoryNo=0&itemCount=10&page=1&userId=",
+        "scheme": "https",
+        "accept": "application/json, text/plain, */*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "priority": "u=1, i",
+        "referer": "https://m.blog.naver.com/roketmissile?tab=1",
+        "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+    }
+    try:
+        response = requests_get(url, headers)
+        if response.status_code == 200:
+            json_data = response.json()
+            if json_data.get("isSuccess"):
+                items = json_data['result']['items']
+                logNos = []
+                for item in items:
+                    obj = {
+                        'logNo': item.get("logNo"),
+                        'title': item.get("titleWithInspectMessage")
+                    }
+                    logNos.append(obj)
+                return logNos[:selected_cont_value]
+    except requests.RequestException as e:
+        messagebox.showwarning("경고", "게시글을 가져오는중 에러가 발생했습니다.")
+        return []
+    except json.JSONDecodeError as e:
+        messagebox.showwarning("경고", "게시글을 가져오는중 에러가 발생했습니다.")
+        return []
+    except Exception as e:
+        messagebox.showwarning("경고", e)
+        return []
+
+# 블로그 게시글에서 해시태그들을 가져오기
+def fetch_gs_tag_name(blog_id, logNo):
+
+    url = f'https://m.blog.naver.com/{blog_id}/{logNo}?referrerCode=1'
+
+    # HTTP GET 요청
+    headers = {
+        'authority': 'm.blog.naver.com',
+        'method': 'GET',
+        'path': f'/{blog_id}/{logNo}?referrerCode=1',
+        'scheme': 'https',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-encoding': 'gzip, deflate, br, zstd',
         'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
         'cache-control': 'max-age=0',
-        'connection': 'keep-alive',
-        'host': 'www.kistep.re.kr',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
     }
 
-    # 페이로드 데이터 설정
-    payload = {
-        'actionUrl': 'gpsTrendList.es',
-        'mid': 'a30200000000',
-        'list_no': '',
-        'nPage': 1,
-        'b_list': 10,
-        'data02': '',
-        'data01': '',
-        'dt01_sdate': '',
-        'dt01_edate': '',
-        'keyField': '',
-        'keyWord': ''
-    }
+    response = requests_get(url, headers)
 
-    return common_request(url, headers, payload)
-
-
-# kistep_gpsTrendList 데이터 가공
-def kistep_gpsTrendList_data(html):
-    soup = BeautifulSoup(html, 'html.parser')
-
-    # 'tstyle_list' 클래스의 테이블을 찾기
-    table = soup.find('table', class_='tstyle_list')
-
-    if not table:
-        print("Table not found")
-        return []
-
-    # tbody 내의 tr 요소들을 가져오기
-    tbody = table.find('tbody')
-    rows = tbody.find_all('tr')
-
-    data_list = []
-
-    for row in rows:
-        # 각 td 요소들을 추출
-        tds = row.find_all('td')
-
-        if len(tds) >= 5:
-            dmnfr_trend_no = tds[0].get_text(strip=True)  # DMNFR_TREND_NO
-            ttl = tds[2].find('a').get_text(strip=True)  # TTL
-            ttl = ttl.replace('새글', '').strip()  # "새글" 제거하고 앞뒤 공백도 제거
-            reg_ymd = tds[4].get_text(strip=True)  # REG_YMD
-            url = "https://www.kistep.re.kr/gpsTrendList.es?mid=a30200000000" + tds[2].find('a')['href']  # URL
-
-            # SRC와 STTS_CHG_CD는 고정값
-            src = "한국과학기술기획평가원 S&T GPS(글로벌 과학기술정책정보서비스)"
-            stts_chg_cd = "success"
-
-            # 데이터를 객체로 구성
-            data_obj = {
-                "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": stts_chg_cd,
-                "TTL": ttl,
-                "SRC": src,
-                "REG_YMD": reg_ymd,
-                "URL": url
-            }
-            data_list.append(data_obj)
-
-    return data_list
-
-
-# kistep_gpsTrendList DB
-def kistep_gpsTrendList():
-    html = kistep_gpsTrendList_request()
-    if html:
-        data_list = kistep_gpsTrendList_data(html)
-
-
-
-
-
-
-# kistep_board_request 요청
-def kistep_board_request():
-    url = "https://www.kistep.re.kr/board.es?mid=a10306010000&bid=0031"
-
-    headers = {
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-encoding': 'gzip, deflate, br, zstd',
-        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'content-type': 'application/x-www-form-urlencoded',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
-    }
-
-    # 페이로드 데이터 설정
-    payload = {
-        'mid': 'a10306010000',
-        'bid': '0031',
-        'nPage': 1,
-        'b_list': 10,
-        'orderby': '',
-        'dept_code': '',
-        'tag': '',
-        'list_no': '',
-        'act': 'list',
-        'cg_code': '',
-        'keyField': '',
-        'keyWord': ''
-    }
-
-    # POST 요청
-    response = requests.post(url, headers=headers, data=payload)
     if response.status_code == 200:
-        return response.text
-    else:
-        print("Failed to retrieve data")
-        return None
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-# kistep_board_data 데이터 가공
-def kistep_board_data(html):
-    soup = BeautifulSoup(html, 'html.parser')
+        # <script> 태그 찾기
+        for script in soup.find_all('script'):
+            if 'gsTagName' in script.text:
+                # gsTagName 변수 찾기
+                start = script.text.find('gsTagName = "') + len('gsTagName = "')
+                end = script.text.find('";', start)
+                gs_tag_value = script.text[start:end]
 
-    # 'board_pdf publication_list' 클래스의 li 요소들을 가져오기
-    board_list = soup.find('ul', class_='board_pdf publication_list')
-    if not board_list:
-        logging.error("Board list not found")
-        return []
+                # 콤마로 나누고 최대 5개 반환
+                tags = gs_tag_value.split(',')
+                return tags[:selected_value]  # 최대 5개 반환
 
-    data_list = []
-    # ul 바로 아래 자식 li만 순회 (내부에 다른 li가 포함된 경우 제외)
-    for li in board_list.find_all('li', recursive=False):
-        try:
-            # 'group'과 'item' 요소 찾기
-            group = li.find('div', class_='group')
-            item = group.find('div', class_='item') if group else None
+    return []  # 요청 실패 시 빈 리스트 반환
 
-            if not item:
-                logging.warning("Item not found in li")
-                continue  # item이 없으면 해당 li를 건너뛰기
+# 검색 블로그 20개 번호 가져오기
+def fetch_naver_blog_search_logNos(query, page):
+    url = "https://s.search.naver.com/p/review/49/search.naver"
 
-            # 제목 추출
-            title = item.find('strong', class_='title')
-            a_tag = title.find('a') if title else None
-
-            # DMNFR_TREND_NO 값 추출 (href에서 list_no 파라미터 추출)
-            dmnfr_trend_no = ''
-            if a_tag and 'href' in a_tag.attrs:
-                href = a_tag['href']
-                match = re.search(r'list_no=(\d+)', href)  # list_no 값 추출
-                if match:
-                    dmnfr_trend_no = match.group(1)
-
-            ttl = a_tag.get_text(strip=True) if a_tag else ''
-            url = "https://www.kistep.re.kr" + a_tag['href'] if a_tag and 'href' in a_tag.attrs else ''
-
-            # 기본 정보 추출
-            basic_info = item.find('ul', class_='basic_info')
-            lis = basic_info.find_all('li') if basic_info else []
-            reg_ymd = lis[1].find('span', class_='txt') if len(lis) > 1 else None
-
-            reg_ymd_text = reg_ymd.get_text(strip=True) if reg_ymd else ''
-
-            # 데이터 객체 구성
-            data_obj = {
-                "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "success",
-                "TTL": ttl,
-                "SRC": "KISTEP브리프",
-                "REG_YMD": reg_ymd_text,
-                "URL": url
-            }
-            data_list.append(data_obj)
-
-        except Exception as e:
-            logging.error(f"Error processing li: {e}")
-            continue  # 에러가 발생해도 다른 li는 계속 처리
-
-    # 최종적으로 data_list 반환
-    return data_list
-
-# kistep_board DB
-def kistep_board(date):
-    html = kistep_board_request()
-    if html:
-        data_list = kistep_board_data(html)
-
-        for data in data_list:
-            print(data)
-
-
-
-
-# krei_list_request 요청
-def krei_list_request():
-    url = "https://www.krei.re.kr/krei/selectBbsNttList.do"
-
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'connection': 'keep-alive',
-        'host': 'www.krei.re.kr'
-    }
-
-    # 페이로드 데이터 설정
+    # 페이로드를 딕셔너리 형태로 정의
     payload = {
-        'bbsNo': '76',
-        'key': '271'
+        "ssc": "tab.blog.all",
+        "api_type": 8,
+        "query": f"{query}",
+        "start": f"{page + 1}",
+        "sm": "tab_hty.top",
+        "prank": f'{page}',
+        "ngn_country": "KR"
+    }
+    query_encoding = quote(query)
+
+    # 헤더 설정
+    headers = {
+        "authority": "s.search.naver.com",
+        "method": "GET",
+        "path": "/p/review/49/search.naver",
+        "scheme": "https",
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "origin": "https://search.naver.com",
+        "referer": f"https://search.naver.com/search.naver?sm=tab_hty.top&ssc=tab.blog.all&query={query_encoding}&oquery={query_encoding}&tqi=iyLxLlqo1awssNDx7HsssssstkG-146063",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
     }
 
-    # POST 요청
-    response = requests.post(url, headers=headers, data=payload)
+    # GET 요청 보내기
+    response = requests_get(url, headers, payload)
     if response.status_code == 200:
-        return response.text
+        # JSON 응답 파싱
+        json_data = response.json()
+        html_content = json_data['collection'][0]['html']
+
+        # HTML 파싱
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # class="detail_box" 안에 있는 title_area의 a 태그 찾기
+        detail_boxes = soup.find_all(class_="detail_box")
+        logNos = []  # 제목과 LogNo를 담을 리스트
+
+        for box in detail_boxes:
+            title_area = box.find(class_="title_area")
+            if title_area:
+                a_tag = title_area.find('a')
+                if a_tag:
+                    # href 속성에서 LogNo 추출
+                    href = a_tag['href']
+                    log_no = href.split('/')[-1]  # URL의 마지막 부분이 LogNo
+                    logNos.append(log_no)
+
+        return logNos[:30]  # LogNo 리스트
     else:
-        print("Failed to retrieve data")
-        return None
-
-
-# krei_list_data 데이터 가공
-def krei_list_data(html):
-    data_list = []
-
-    soup = BeautifulSoup(html, 'html.parser')
-
-    # 'tbl default' 클래스의 table 요소 찾기
-    board_list = soup.find('table', class_='tbl default')
-    if not board_list:
-        logging.error("Board list not found")
+        new_print("조회된 해시태크 목록이 없습니다.")
         return []
 
-    tbody = board_list.find('tbody')
-    if not tbody:
-        logging.error("tbody not found")
-        return []
+# 네이버 검색광고 토큰 업데이트 5분에 한번씩 호출
+def update_bearer_token():
+    global bearer_token, refresh_token
 
-    # tr 요소 순회
-    for index, tr in enumerate(tbody.find_all('tr', recursive=False)):
-        tds = tr.find_all('td', recursive=False)
+    # URL 설정
+    url = f"https://atower.searchad.naver.com/auth/local/extend"
 
-        # td 요소가 부족하면 skip
-        if len(tds) < 3:
-            logging.warning(f"Skipping row {index} due to insufficient td elements")
-            continue
+    # 헤더 설정
+    headers = {
+        "authority": "atower.searchad.naver.com",
+        "method": "PUT",
+        "path": f"/auth/local/extend?refreshToken={refresh_token}",
+        "scheme": "https",
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "content-length": "0",
+        "origin": "https://manage.searchad.naver.com",
+        "priority": "u=1, i",
+        "referer": "https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner",
+        "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-site",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    }
 
+    params = {
+        "refreshToken": refresh_token
+    }
+
+    # PUT 요청 보내기
+    response = requests.put(url, headers=headers, params=params, cookies=global_naver_cookies)
+
+    # 응답 처리
+    if response.status_code == 200:
         try:
-            # 'NO' 제거하고 앞뒤 공백 제거
-            dmnfr_trend_no = tds[0].get_text(strip=True).replace("NO", "").strip()
-            a_tag = tds[1].find('a')
+            # JSON 응답 파싱
+            data = response.json()
+            token = data.get("token")
+            refresh_token = data.get("refreshToken")
 
-            if a_tag:
-                ttl = a_tag.get_text(strip=True)
-                url = "https://www.krei.re.kr/krei" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
+            if token:
+                bearer_token = f"Bearer {token}"  # Bearer Token 업데이트
+                new_print("Token 업데이트 완료:")
             else:
-                ttl = ''
-                url = ''
-                logging.warning(f"No anchor tag found in row {index}")
+                new_print("응답에 token이 없습니다.")
 
-            # '일자' 제거하고 앞뒤 공백 제거
-            reg_ymd_text = tds[2].get_text(strip=True).replace("일자", "").strip()
-
-            # 데이터 객체 구성
-            data_obj = {
-                "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "success",
-                "TTL": ttl,
-                "SRC": "KREI 주간브리프",
-                "REG_YMD": reg_ymd_text,
-                "URL": url
-            }
-            data_list.append(data_obj)
-
-        except Exception as e:
-            logging.error(f"Error processing row {index}: {e}")
-            continue  # 에러가 발생해도 다른 행은 계속 처리
-
-    # 최종적으로 data_list 반환
-    return data_list
-
-
-# krei_list DB
-def krei_list(date):
-    html = krei_list_request()
-    if html:
-        data_list = krei_list_data(html)
-
-        for data in data_list:
-            print(data)
-
-
-
-# krei_research_request 요청
-def krei_research_request():
-    url = "https://www.krei.re.kr/krei/research.do"
-
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'connection': 'keep-alive',
-        'host': 'www.krei.re.kr'
-    }
-
-    # 페이로드 데이터 설정
-    payload = {
-        'key': '71',
-        'pageType': '010302',
-        'searchCnd': 'all',
-        'searchKrwd': '',
-        'pageIndex': '1',
-    }
-
-    # POST 요청
-    response = requests.post(url, headers=headers, data=payload)
-    if response.status_code == 200:
-        return response.text
+        except ValueError:
+            new_print("응답이 JSON 형식이 아닙니다.")
     else:
-        print("Failed to retrieve data")
-        return None
+        new_print(f"요청 실패: 상태 코드 {response.status_code}, 응답 내용: {response.text}")
+
+# 검색수 가져오기
+def search_keyword_cnt(keyword):
+
+    # 기본 URL과 동적 키워드 설정
+    base_url = "https://manage.searchad.naver.com/keywordstool"
+    params = {
+        "format": "json",
+        "hintKeywords": keyword,
+        "siteId": "",
+        "month": "",
+        "biztpId": "",
+        "event": "",
+        "includeHintKeywords": "0",
+        "showDetail": "1",
+        "keyword": "",
+    }
+
+    # 헤더 설정
+    headers = {
+        "accept": "application/json, text/plain, */*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "authorization": bearer_token,
+        "priority": "u=1, i",
+        "referer": "https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner",
+        "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "x-accept-language": "ko",
+    }
+
+    # GET 요청 보내기
+    response = requests.get(base_url, headers=headers, params=params, cookies=global_naver_cookies)
 
 
-# krei_research_data 데이터 가공
-def krei_research_data(html):
-    data_list = []
-
-    soup = BeautifulSoup(html, 'html.parser')
-
-    # 'tbl default' 클래스의 table 요소 찾기
-    board_list = soup.find('table', class_='tbl default')
-    if not board_list:
-        logging.error("Board list not found")
-        return []
-
-    tbody = board_list.find('tbody')
-    if not tbody:
-        logging.error("tbody not found")
-        return []
-
-    # tr 요소 순회
-    for index, tr in enumerate(tbody.find_all('tr', recursive=False)):
-        tds = tr.find_all('td', recursive=False)
-
-        dmnfr_trend_no = ''
-        ttl = ''
-        reg_ymd_text = ''
-        url = ''
-
-        # td 요소가 부족하면 skip
-        if len(tds) < 3:
-            logging.warning(f"Skipping row {index} due to insufficient td elements")
-            continue
-
+    # 응답 처리
+    if response.status_code == 200:
         try:
-            # 'NO' 제거하고 앞뒤 공백 제거
-            dmnfr_trend_no = tds[0].get_text(strip=True).replace("번호", "").strip()
+            data = response.json()
+            keyword_list = data.get("keywordList", [])
+            for kw in keyword_list:
+                if kw['relKeyword'] == keyword:
+                    return kw
+        except ValueError:
+            new_print("응답이 JSON 형식이 아닙니다.")
+    else:
+        new_print(f"요청 실패: 상태 코드 {response.status_code}")
+    return None
 
-            a_tag = tds[1].find('a')
 
-            if a_tag:
-                ttl = a_tag.get_text(strip=True)
-                url = "https://www.krei.re.kr/krei" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
+# ══════════════════════════════════════════════════════
+# endregion
 
-                # 정규 표현식으로 biblioId 값 추출
-                match = re.search(r'biblioId=(\d+)', url)
 
-                # 값이 매칭되면 출력
-                if match:
-                    biblio_id = match.group(1)
-                    dmnfr_trend_no = biblio_id  # 출력: 542169
 
-            # '등록일', 맨뒤.(점) 제거하고 앞뒤 공백 제거
-            reg_ymd_text = tds[2].get_text(strip=True).replace("등록일", "").replace(".", "")
+# region
+# ══════════════════════════════════════════════════════
+# 윈도우 처리
+# ══════════════════════════════════════════════════════
 
-            # 데이터 객체 구성
-            data_obj = {
-                "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "succ",
-                "TTL": ttl,
-                "SRC": "KREI 이슈+",
-                "REG_YMD": reg_ymd_text,
-                "URL": url
-            }
-            data_list.append(data_obj)
+# 완료후 깜빡임 상태를 관리하는 함수
+def flash_window(root):
+    global flashing
 
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    FLASHW_ALL = 3  # 모든 플래시
+    hwnd = root.winfo_id()  # Tkinter 창의 윈도우 핸들 얻기
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, FLASHW_ALL, 0, 0)
+
+    def flash():
+        while flashing:
+            ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+            time.sleep(0.5)  # 0.5초 간격으로 깜빡임
+
+    threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
+
+# 중지후 깜빡임 상태를 나태나는 윈도우 함수
+def stop_flash_window(root):
+    global flashing
+    flashing = False
+
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
+
+    hwnd = root.winfo_id()
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
+    ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+
+# 시작 버튼 누르면 실행되는 함수
+def toggle_start_stop():
+    if global_naver_cookies:
+        global id_list
+        new_print("작업시작")
+        if not id_list:
+            messagebox.showwarning("경고", "엑셀 목록이 없습니다.")
+            return
+        if start_button.config('text')[-1] == '시작':
+            start_button.config(text="중지", bg="red", fg="white")
+            threading.Thread(target=start_processing).start()
+        else:
+            stop_processing()
+    else:
+        messagebox.showinfo("알림", "로그인을 진행해주세요.")
+
+# 정지 버튼 정지 처리
+def stop_processing():
+    global stop_flag
+    stop_flag = True
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+    new_print(f'작업중지')
+    messagebox.showinfo("알림", "중지되었습니다..")
+
+# 화면 로그
+def new_print(text, level="INFO"):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_text = f"[{timestamp}] [{level}] {text}"
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
+    log_text_widget.see(tk.END)
+
+# ══════════════════════════════════════════════════════
+# endregion
+
+
+
+# region
+# ══════════════════════════════════════════════════════
+# 실제 메인 실행 로직
+# ══════════════════════════════════════════════════════
+
+# 대기시간 처리
+def time_sleep():
+    global time_sleep_val
+    time.sleep(random.uniform(0.7, time_sleep_val))
+
+# 진행률 업데이트
+def remaining_time_update(now_cnt, total_contents):
+    global selected_value, time_sleep_val, id_list
+
+    progress["value"] = now_cnt + 1
+    progress_rate = math.floor((now_cnt + 1) / total_contents * 100 * 100) / 100  # 소수점 셋째 자리까지 버림
+    progress_label.config(text=f"진행률: {progress_rate:.2f}%")  # 소수점 둘째 자리까지 표시
+
+    # 태그조회5개 조회 (1) + 검색수 태그갯수만큼 (5) + 검색창 20개 (5)  + 1개당 30개 글을 가져오니깐  30개로 나눔
+    blog_tag_cnt_time = ((1 + (selected_value * 2)) * time_sleep_val) + (time_sleep_val/selected_cont_value)
+
+    remaining_time = int((total_contents - (now_cnt + 1)) * blog_tag_cnt_time)  # 소수점 제거
+    hours = remaining_time // 3600             # 초를 시간으로 변환
+    minutes = (remaining_time % 3600) // 60    # 남은 초를 분으로 변환
+    seconds = remaining_time % 60              # 남은 초
+
+    formatted_time = f"{hours:02}:{minutes:02}:{seconds:02}"
+    eta_label.config(text=f"남은 시간: {formatted_time}")
+
+# 실제 시작 처리 메인 로직
+def start_processing():
+    global stop_flag, extracted_data_list, id_list, extracted_data_per_list
+
+    stop_flag = False
+    # 기존 로그 화면 초기화
+    log_text_widget.delete(1.0, tk.END)
+
+    extracted_data_list = []
+    extracted_data_per_list = [0.0] * len(id_list)
+    total_contents = len(id_list) * selected_cont_value
+    progress["maximum"] = total_contents
+    remaining_time_update(-1, total_contents)
+
+    new_print(f'전체 ID 수 : {len(id_list)} ============================================================')
+    new_print(f'전체 게시글 수 : {total_contents} ============================================================')
+
+    # 전체 블로그 주소 id
+    for index, blog_id in enumerate(id_list):
+        if index != 0 and index % 5 == 0:
+            new_print(f'{index} 번까지 임시 저장 ============================================================')
+            save_excel_file_sheet1(extracted_data_per_list)
+            save_excel_file_sheet2(extracted_data_list)
+
+        new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 계산 시작 ============================================================')
+        hash_tag_cnt = 0
+        if stop_flag:
+            completed_process(extracted_data_list, extracted_data_per_list)
+            return
+        try:
+            # 내 블로그 30개 번호 가져오기
+            logNos = fetch_naver_blog_my_logNos(blog_id, 1)
+            new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 수 {len(logNos)} ============================================================')
+            time_sleep()
+
+            # 각 블로그안에 게시글 30개 리스트
+            for idx, blog in enumerate(logNos):
+                obj = {
+                    '아이디': f'{blog_id}',
+                    '블로그 URL': f'https://blog.naver.com/{blog_id}',
+                    '게시글 URL': f'https://blog.naver.com/{blog_id}/{blog['logNo']}',
+                    '태그1 이름': '',
+                    '태그1 PC 검색수': '',
+                    '태그1 모바일 검색수': '',
+                    '태그1 순위': '',
+                    '태그2 이름': '',
+                    '태그2 PC 검색수': '',
+                    '태그2 모바일 검색수': '',
+                    '태그2 순위': '',
+                    '태그3 이름': '',
+                    '태그3 PC 검색수': '',
+                    '태그3 모바일 검색수': '',
+                    '태그3 순위': '',
+                    '태그4 이름': '',
+                    '태그4 PC 검색수': '',
+                    '태그4 모바일 검색수': '',
+                    '태그4 순위': '',
+                    '태그5 이름': '',
+                    '태그5 PC 검색수': '',
+                    '태그5 모바일 검색수': '',
+                    '태그5 순위': ''
+                }
+                if stop_flag:
+                    completed_process(extracted_data_list, extracted_data_per_list)
+                    return
+                tags = fetch_gs_tag_name(blog_id, blog['logNo'])
+                # filter_tags = list(filter(lambda tag: tag in blog['title'], tags))
+                filter_tags = tags
+
+                new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 목록 : {tags}')
+                new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 제목 : {blog['title']}')
+                new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 추출 태그 목록 : {filter_tags}')
+
+                time_sleep()
+
+                exit_loops = False
+                for ix, tag in enumerate(filter_tags):
+                    if stop_flag:
+                        completed_process(extracted_data_list, extracted_data_per_list)
+                        return
+                    kw = search_keyword_cnt(tag)
+
+                    monthly_pc_qc_cnt = kw.get('monthlyPcQcCnt') if kw is not None else 0
+                    monthly_mobile_qc_cnt = kw.get('monthlyMobileQcCnt') if kw is not None else 0
+
+                    time_sleep()
+                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, PC 검색수 : {monthly_pc_qc_cnt}')
+                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, 모바일 검색수 : {monthly_mobile_qc_cnt}')
+
+                    obj[f'태그{ix+1} 이름'] = tag
+                    obj[f'태그{ix+1} PC 검색수'] = monthly_pc_qc_cnt
+                    obj[f'태그{ix+1} 모바일 검색수'] = monthly_mobile_qc_cnt
+
+                    # 검색 블로그 20개 번호 가져오기
+                    union_logNos = fetch_naver_blog_search_logNos(tag, 0)
+                    union_logNos = union_logNos[:30]
+
+                    new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 게시글 번호 : {blog['logNo']} - [{idx + 1}/{len(logNos)}], 태그 : [{ix + 1}/{len(filter_tags)}] - {tag}, 검색글 수 : {len(union_logNos)}')
+
+                    for i, search_logNo in enumerate(union_logNos):
+                        if stop_flag:
+                            completed_process(extracted_data_list, extracted_data_per_list)
+                            return
+                        if str(search_logNo) == str(blog['logNo']):
+                            new_print(f'■ 찾은 검색글 위치 : {i+1} 번째, URL : https://m.blog.naver.com/{blog_id}/{search_logNo}')
+                            obj[f'태그{ix+1} 순위'] = i+1
+                            if not exit_loops:
+                                hash_tag_cnt += 1
+                                exit_loops = True
+                            break
+
+                extracted_data_list.append(obj)
+                now_cnt = (index * selected_cont_value) + idx
+                remaining_time_update(now_cnt, total_contents)
+
+            hash_tag_per = math.floor((hash_tag_cnt / selected_cont_value) * 100 * 100) / 100
+            extracted_data_per_list[index] = hash_tag_per
+            new_print(f'작업한 전체목록 수 : {len(extracted_data_list)}')
         except Exception as e:
-            logging.error(f"Error processing row {index}: {e}")
-            continue  # 에러가 발생해도 다른 행은 계속 처리
+            new_print(e, level="WARN")
 
-    # 최종적으로 data_list 반환
-    return data_list
+        # 진행률 업데이트
+        remaining_time_update(((index+1) * selected_cont_value)-1, total_contents)
+
+    if not stop_flag:
+        completed_process(extracted_data_list, extracted_data_per_list)
+        return
+
+# 완료 처리
+def completed_process(extracted_data_list, extracted_data_per_list):
+    global root
+    save_excel_file_sheet1(extracted_data_per_list)
+    save_excel_file_sheet2(extracted_data_list)
+    new_print("작업 완료.", level="SUCCESS")
+    start_button.config(text="시작", bg="#d0f0c0", fg="black")
+    flash_window(root)
+    messagebox.showinfo("알림", "작업이 완료되었습니다.")
+    stop_flash_window(root)  # 메시지박스 확인 후 깜빡임 중지
+
+# ══════════════════════════════════════════════════════
+# endregion
 
 
-# krei_research DB
-def krei_research(date):
-    html = krei_research_request()
-    if html:
-        data_list = krei_research_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-            # 데이터 삽입 함수 호출
-            insert_data_to_db(data)
 
 
+# region
+# ══════════════════════════════════════════════════════
+# 로그인 페이지
+# ══════════════════════════════════════════════════════
+def login_window():
+    global login_root, id_entry, pw_entry
 
-# kati_export_request 요청
-def kati_export_request():
-    url = "https://www.kati.net/board/exportNewsList.do"
+    login_root = tk.Tk()
+    login_root.title("로그인")
 
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'connection': 'keep-alive',
-        'host': 'www.kati.net',
-        'origin': 'https://www.kati.net',
-        'referer': 'https://www.kati.net/board/exportNewsList.do'
-    }
+    # 창 크기 설정
+    login_root.geometry("300x200")
+    screen_width = login_root.winfo_screenwidth()
+    screen_height = login_root.winfo_screenheight()
+    window_width = 300
+    window_height = 200
 
-    # 페이로드 데이터 설정
+    # 창을 화면의 가운데로 배치
+    position_top = int(screen_height / 2 - window_height / 2)
+    position_left = int(screen_width / 2 - window_width / 2)
+    login_root.geometry(f'{window_width}x{window_height}+{position_left}+{position_top}')
+
+    # ID 입력
+    id_label = tk.Label(login_root, text="ID:")
+    id_label.pack(pady=10)
+    id_entry = tk.Entry(login_root, width=20)
+    id_entry.pack(pady=5)
+
+    # PW 입력
+    pw_label = tk.Label(login_root, text="PW:")
+    pw_label.pack(pady=10)
+    pw_entry = tk.Entry(login_root, show="*", width=20)
+    pw_entry.pack(pady=5)
+
+    # 버튼 프레임
+    button_frame = tk.Frame(login_root)
+    button_frame.pack(pady=10)
+
+    # 로그인 버튼
+    login_button = tk.Button(button_frame, text="로그인", command=on_login)
+    login_button.grid(row=0, column=0, padx=5)
+
+    # 비밀번호 변경 버튼
+    change_pw_button = tk.Button(button_frame, text="비밀번호 변경", command=open_change_password_window)
+    change_pw_button.grid(row=0, column=1, padx=5)
+
+    login_root.mainloop()
+
+# 로그인
+def on_login():
+    user_id = id_entry.get()
+    user_pw = pw_entry.get()
+
+    # 서버 세션 관리
+    session = requests.Session()
+    if login_to_server(user_id, user_pw, session):
+        messagebox.showinfo("로그인 성공", "로그인 성공!")
+        login_root.destroy()
+        # 로그인 성공 후, 세션 상태를 주기적으로 체크하는 쓰레드 시작
+        session_thread = threading.Thread(target=check_session_periodically, args=(session, "server"), daemon=True)
+        session_thread.start()
+
+        # 로그인 후 네이버 로그인 창을 띄운다
+        main()
+    else:
+        messagebox.showerror("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다.")
+
+# 비밀번호 변경 창 열기
+def open_change_password_window():
+    login_root.destroy()  # 로그인 창 닫기
+    change_password_window()  # 비밀번호 변경 창 열기
+
+# 서버 로그인 함수 (네이버와 다른 서버 구분)
+def login_to_server(username, password, session):
+    global global_server_cookies
+    url = f"{URL}/auth/login"
     payload = {
-        'page': '1',
-        'menu_dept3': '',
-        'srchGubun': '',
-        'dateSearch': 'year',
-        'srchFr': '',
-        'srchTo': '',
-        'srchTp': '2',
-        'srchWord': ''
+        "username": username,
+        "password": password
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
 
-    # POST 요청
-    response = requests.post(url, headers=headers, data=payload)
-    if response.status_code == 200:
-        return response.text
+    try:
+        # JSON 형식으로 서버에 POST 요청으로 로그인 시도
+        response = session.post(url, json=payload, headers=headers)  # 헤더 추가
+
+        # 요청이 성공했는지 확인
+        if response.status_code == 200:
+            # 세션 관리로 쿠키는 자동 처리
+            global_server_cookies = session.cookies.get_dict()
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
+
+# 세션 실시간 요청
+def check_session_periodically(session, server_type="server"):
+    while True:
+        if global_naver_cookies:
+            check_session(session, server_type)  # 세션 상태를 체크
+        time.sleep(60)  # 2분 대기
+
+# 비밀번호 변경 창 열기
+def open_change_password_window():
+    login_root.destroy()  # 로그인 창 닫기
+    change_password_window()  # 비밀번호 변경 창 열기
+
+
+# 비밀번호 변경 창
+def change_password_window():
+    global change_pw_root, id_entry_cp, current_pw_entry, new_pw_entry
+
+    change_pw_root = tk.Tk()
+    change_pw_root.title("비밀번호 변경")
+
+    # 창 크기 설정
+    change_pw_root.geometry("300x250")
+    screen_width = change_pw_root.winfo_screenwidth()
+    screen_height = change_pw_root.winfo_screenheight()
+    window_width = 300
+    window_height = 270
+
+    # 창을 화면의 가운데로 배치
+    position_top = int(screen_height / 2 - window_height / 2)
+    position_left = int(screen_width / 2 - window_width / 2)
+    change_pw_root.geometry(f'{window_width}x{window_height}+{position_left}+{position_top}')
+
+    # 창 닫기 이벤트 처리
+    change_pw_root.protocol("WM_DELETE_WINDOW", return_to_login)
+
+    # ID 입력
+    id_label_cp = tk.Label(change_pw_root, text="ID:")
+    id_label_cp.pack(pady=10)
+    id_entry_cp = tk.Entry(change_pw_root, width=20)
+    id_entry_cp.pack(pady=5)
+
+    # 현재 비밀번호 입력
+    current_pw_label = tk.Label(change_pw_root, text="현재 비밀번호:")
+    current_pw_label.pack(pady=10)
+    current_pw_entry = tk.Entry(change_pw_root, show="*", width=20)
+    current_pw_entry.pack(pady=5)
+
+    # 변경할 비밀번호 입력
+    new_pw_label = tk.Label(change_pw_root, text="변경 비밀번호:")
+    new_pw_label.pack(pady=10)
+    new_pw_entry = tk.Entry(change_pw_root, show="*", width=20)
+    new_pw_entry.pack(pady=5)
+
+    # 버튼 프레임
+    button_frame = tk.Frame(change_pw_root)
+    button_frame.pack(pady=10)
+
+    # 비밀번호 변경 버튼
+    change_pw_button = tk.Button(button_frame, text="비밀번호 변경", command=on_change_password)
+    change_pw_button.grid(row=0, column=0, padx=5)
+
+    # 취소 버튼
+    cancel_button = tk.Button(button_frame, text="취소", command=return_to_login)
+    cancel_button.grid(row=0, column=1, padx=5)
+
+    change_pw_root.mainloop()
+
+
+# 취소 버튼 클릭 이벤트
+def return_to_login():
+    change_pw_root.destroy()
+    login_window()
+
+# 비밀번호 변경 버튼 클릭 이벤트
+def on_change_password():
+    user_id = id_entry_cp.get()
+    current_pw = current_pw_entry.get()
+    new_pw = new_pw_entry.get()
+
+    # 여기에 비밀번호 변경 API 호출 로직 추가
+    session = requests.Session()
+    result = change_password(session, user_id, current_pw, new_pw)
+
+    if result:
+        messagebox.showinfo("비밀번호 변경", "비밀번호가 변경되었습니다.")
+        change_pw_root.destroy()
+        login_window()
     else:
-        print("Failed to retrieve data")
-        return None
+        messagebox.showerror("비밀번호 변경", "비밀번호 변경에 실패하였습니다.")
 
-
-# kati_export_data 데이터 가공
-def kati_export_data(html):
-    data_list = []
-
-    try:
-        soup = BeautifulSoup(html, 'html.parser')
-
-        board_list = soup.find('div', class_='board-list-area mt10')
-        if not board_list:
-            logging.error("Board list not found")
-            return []
-
-        ul = board_list.find('ul')
-        if not ul:
-            logging.error("ul not found")
-            return []
-
-        for index, li in enumerate(ul.find_all('li', recursive=False)):
-            a_tag = li.find('a', recursive=False)
-
-            if a_tag:
-                before_url = "https://www.kati.net/board" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
-                url = before_url.replace('\r\n\t\t\t\t\t\t', '')
-                dmnfr_trend_no = ''
-                ttl = ''
-                reg_ymd_text = ''
-
-                match = re.search(r'board_seq=(\d+)', a_tag['href']) if 'href' in a_tag.attrs else ''
-                if match:
-                    dmnfr_trend_no = match.group(1)
-
-                ttl_tag = a_tag.find('span', class_='fs-15 ff-ngb')
-                if ttl_tag:
-                    ttl = ttl_tag.get_text(strip=True)
-
-                date_tag = a_tag.find('span', class_='option-area')
-                if date_tag:
-                    span_tags = date_tag.find_all('span')
-                    if span_tags and len(span_tags) > 0:
-                        date_str = span_tags[0].get_text(strip=True).replace("등록일", "").strip()
-                        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-                        reg_ymd_text = date_obj.strftime("%Y%m%d")
-
-                data_obj = {
-                    "DMNFR_TREND_NO": dmnfr_trend_no,
-                    "STTS_CHG_CD": "succ",
-                    "TTL": ttl,
-                    "SRC": "농식품수출정보-해외시장동향",
-                    "REG_YMD": reg_ymd_text,
-                    "URL": url
-                }
-                data_list.append(data_obj)
-
-    except Exception as e:
-        logging.error(f"Error : {e}")
-
-    return data_list
-
-
-# kati_export DB
-def kati_export(date):
-    html = kati_export_request()
-    if html:
-        data_list = kati_export_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-            # 데이터 삽입 함수 호출
-            insert_data_to_db(data)
-
-
-
-# kati_report_request 요청
-def kati_report_request():
-    url = "https://www.kati.net/board/reportORpubilcationList.do"
-
+# 비밀변경
+def change_password(session, username, current_password, new_password):
+    url = f"{URL}/auth/change-password"
     headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'connection': 'keep-alive',
-        'host': 'www.kati.net',
-        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'document',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-site': 'none',
-        'sec-fetch-user': '?1',
-        'upgrade-insecure-requests': '1'
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    payload = {
+        "id": username,
+        "currentPassword": current_password,
+        "newPassword": new_password
     }
 
-    # GET 요청
-    response = requests.get(url, headers=headers)
+    try:
+        # PUT 요청을 사용하여 비밀번호 변경
+        response = session.put(url, params=payload, headers=headers)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
+
+# 세션체크
+def check_session(session, server_type="server"):
+    global login_server_check
+    cookies = global_server_cookies if server_type == "server" else global_naver_cookies
+    url = f"{URL}/session/check-me"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+    # /check-me 엔드포인트를 호출하여 세션 상태 확인
+    response = session.get(url, headers=headers, cookies=cookies)
+
     if response.status_code == 200:
-        return response.text
-    else:
-        print("Failed to retrieve data")
-        return None
+        login_server_check = response.text
 
+# ══════════════════════════════════════════════════════
+# endregion
 
-# kati_report_data 데이터 가공
-def kati_report_data(html):
-    data_list = []
 
-    try:
-        soup = BeautifulSoup(html, 'html.parser')
 
-        board_list = soup.find('div', class_='report-list-area mt10')
-        if not board_list:
-            logging.error("Board list not found")
-            return []
+# region
+# ══════════════════════════════════════════════════════
+# 메인 초기화
+# ══════════════════════════════════════════════════════
 
-        report_items = board_list.find_all('div', class_='report-item')
-        if not report_items:
-            logging.error("report_items not found")
-            return []
-
-        for index, report_item in enumerate(report_items):
-
-            url = ''
-            dmnfr_trend_no = ''
-            ttl = ''
-            reg_ymd_text = ''
-
-            em_tag = report_item.find('em', class_='report-tit')
-            span_tag = report_item.find('span', class_='report-date')
-
-            if em_tag:
-                a_tag = em_tag.find('a')
-                if a_tag:
-                    before_url = "https://www.kati.net/board" + a_tag['href'].lstrip('.') if 'href' in a_tag.attrs else ''
-                    url = before_url.replace('\r\n\t\t\t\t\t\t\t\t\t\t', '')
-                    ttl = a_tag.get_text(strip=True)
-
-                    match = re.search(r'board_seq=(\d+)', a_tag['href']) if 'href' in a_tag.attrs else ''
-                    if match:
-
-                        dmnfr_trend_no = match.group(1)
-
-            if span_tag:
-                date_str = span_tag.get_text(strip=True).replace("등록일", "").strip()
-                date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-                reg_ymd_text = date_obj.strftime("%Y%m%d")
-
-
-            data_obj = {
-                "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "succ",
-                "TTL": ttl,
-                "SRC": "농식품수출정보-보고서",
-                "REG_YMD": reg_ymd_text,
-                "URL": url
-            }
-            data_list.append(data_obj)
-
-    except Exception as e:
-        logging.error(f"Error : {e}")
-
-    return data_list
-
-
-# kati_report DB
-def kati_report(date):
-    html = kati_report_request()
-    if html:
-        data_list = kati_report_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-            # 데이터 삽입 함수 호출
-            insert_data_to_db(data)
-
-
-
-# stepi_report_request 요청
-def stepi_report_request():
-    url = "https://www.stepi.re.kr/site/stepiko/ex/bbs/reportList.do?cbIdx=1292"
-
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'connection': 'keep-alive',
-        'host': 'www.stepi.re.kr',
-        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'document',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-site': 'none',
-        'sec-fetch-user': '?1',
-        'upgrade-insecure-requests': '1'
-    }
-
-    # GET 요청
-    response = requests.get(url, headers=headers, verify=False)
-    if response.status_code == 200:
-        return response.text
-    else:
-        print("Failed to retrieve data")
-        return None
-
-
-# stepi_report_data 데이터 가공
-def stepi_report_data(html):
-    data_list = []
-
-    try:
-        soup = BeautifulSoup(html, 'html.parser')
-
-        board_list = soup.find('ul', class_='boardList')
-        if not board_list:
-            logging.error("Board list not found")
-            return []
-
-        cbIdx = 1292
-        pageIndex = 1
-        tgtTypeCd = 'ALL'
-
-        for index, li in enumerate(board_list.find_all('li', recursive=False)):
-
-            url = ''
-            dmnfr_trend_no = ''
-            ttl = ''
-            reg_ymd_text = ''
-
-            title_tag = li.find('div', class_='title')
-            info_tag = li.find('div', class_='info')
-            if title_tag:
-                tit_tag = title_tag.find('a', class_='tit')
-                if tit_tag:
-                    report_view = tit_tag['href'] if 'href' in tit_tag.attrs else ''
-
-                    if report_view:
-
-                        if "reportView2" in report_view:
-                            # 정규 표현식을 사용하여 reIdx와 cateCont 추출
-                            match = re.search(r"reportView2\('([^']+)',\s*'([^']+)'\)", report_view)
-                            if match:
-                                reIdx = match.group(1)
-                                dmnfr_trend_no = reIdx
-                                cateCont = match.group(2)
-                                url = f"https://www.stepi.re.kr/site/stepiko/report/View.do?pageIndex={pageIndex}&cateTypeCd=&tgtTypeCd={tgtTypeCd}&searchType=&reIdx={reIdx}&cateCont={cateCont}&cbIdx={cbIdx}&searchKey="
-                        else:
-                            # 정규 표현식을 사용하여 reIdx와 cateCont 추출
-                            match = re.search(r"reportView\((\d+),\s*'([^']+)'\)", report_view)
-
-                            if match:
-                                reIdx = match.group(1)
-                                dmnfr_trend_no = reIdx
-                                cateCont = match.group(2)
-                                url = f"https://www.stepi.re.kr/site/stepiko/report/View.do?pageIndex={pageIndex}&cateTypeCd=&tgtTypeCd={tgtTypeCd}&searchType=&reIdx={reIdx}&cateCont={cateCont}&cbIdx={cbIdx}&searchKey="
-                    ttl = tit_tag.get_text(strip=True)
-
-            if info_tag:
-                span_tags = info_tag.find_all('span')
-                if span_tags and len(span_tags) > 1:
-                    reg_ymd_text = span_tags[1].get_text(strip=True)
-
-                    if reg_ymd_text:
-                        # 문자열을 datetime 객체로 변환
-                        date_obj = datetime.strptime(reg_ymd_text, '%Y-%m-%d')
-
-                        # 원하는 형식 (yyyymmdd)으로 변환
-                        reg_ymd_text = date_obj.strftime('%Y%m%d')
-
-
-            data_obj = {
-                "DMNFR_TREND_NO": dmnfr_trend_no,
-                "STTS_CHG_CD": "succ",
-                "TTL": ttl,
-                "SRC": "과학기술정책연구원	STEPI",
-                "REG_YMD": reg_ymd_text,
-                "URL": url
-            }
-            data_list.append(data_obj)
-
-    except Exception as e:
-        logging.error(f"Error : {e}")
-
-    return data_list
-
-
-# stepi_report DB
-def stepi_report(date):
-    html = stepi_report_request()
-    if html:
-        data_list = stepi_report_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-
-            # 데이터 삽입 함수 호출
-            insert_data_to_db(data)
-
-
-
-
-
-# 국외	미국 USDA	보도자료	USDA 보도자료	https://www.usda.gov/media/press-releases
-# usda_press_request 요청
-def usda_press_request(page):
-    url = f"https://www.usda.gov/about-usda/news/press-releases?page={page}"
-
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "referer": f"https://www.usda.gov/about-usda/news/press-releases?page={page}",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    }
-
-    return common_request(url, headers)
-
-
-# Release No를 위한 요청
-def usda_press_no_request(url):
-
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "referer": "https://www.usda.gov/about-usda/news/press-releases",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    }
-    return common_request(url, headers)
-
-
-# usda_press_data 데이터 가공
-def usda_press_data(html):
-    data_list = []
-    try:
-        soup = BeautifulSoup(html, 'html.parser')
-        board_list = soup.find('div', class_='views-element-container') if soup else None
-
-        if not board_list:
-            logging.error("Board list not found")
-            return []
-
-        views = board_list.find_all('div', class_='views-row')
-
-        if views and len(views) > 0:
-
-            for index, view in enumerate(views):
-
-                url = ''
-                dmnfr_trend_no = ''
-                ttl = ''
-                reg_ymd_text = ''
-
-                h2_tag = view.find('h2')
-                a_tag = h2_tag.find('a') if h2_tag else None
-
-                if a_tag:
-                    ttl = a_tag.get_text(strip=True)
-
-                    href_text = a_tag['href'] if 'href' in a_tag.attrs else ''
-
-                    if href_text:
-                        url = f'https://www.usda.gov{href_text}'
-                        html = usda_press_no_request(url)
-                        if html:
-                            press_no_soup = BeautifulSoup(html, 'html.parser') if soup else None
-                            article_release_no_value = press_no_soup.find('div', class_='article-release-no-value') if press_no_soup else None
-                            field_item = article_release_no_value.find('div', class_='field__item') if article_release_no_value else None
-                            field_item_text = field_item.get_text(strip=True) if field_item else ''
-                            # 숫자에서 소수점(.)을 제거하고, 문자열을 정수로 변환
-                            dmnfr_trend_no = int(field_item_text.replace('.', '')) if field_item_text else 0
-
-
-                # 'time' 태그에서 datetime 속성 가져오기
-                time_tag = view.find('time')
-
-                # datetime 속성에서 날짜만 추출하고, YYYYMMDD 형식으로 변환
-                if time_tag:
-                    date_str = time_tag['datetime'][:10]  # '2024-12-23T16:55:00Z'에서 '2024-12-23'만 추출
-                    date_obj = datetime.strptime(date_str, '%Y-%m-%d')  # 문자열을 datetime 객체로 변환
-                    formatted_date = date_obj.strftime('%Y%m%d')  # YYYYMMDD 형식으로 변환
-                    reg_ymd_text = formatted_date
-
-                data_obj = {
-                    "DMNFR_TREND_NO": dmnfr_trend_no,
-                    "STTS_CHG_CD": "succ",
-                    "TTL": ttl,
-                    "SRC": "미국 USDA 보도자료",
-                    "REG_YMD": reg_ymd_text,
-                    "URL": url
-                }
-                data_list.append(data_obj)
-                time.sleep(random.uniform(2, 3))
-
-    except Exception as e:
-        logging.error(f"Error : {e}")
-
-    return data_list
-
-
-# usda_press DB
-def usda_press():
-    html = usda_press_request('0')
-    if html:
-        data_list = usda_press_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-
-            # 데이터 삽입 함수 호출
-            insert_data_to_db(data)
-
-
-# 국외	일본 농림수산성	보도자료	일본 농림수산성 보도자료	https://www.maff.go.jp/j/press/index.html
-# https://www.maff.go.jp/j/press/index.html # 현재 월은 이렇게 구하고
-# https://www.maff.go.jp/j/press/arc/2410.html # 이전 월은 이렇게 구함
-
-
-# usda_press_request 요청
-def maff_press_request():
-    url = f"https://www.maff.go.jp/j/press/index.html"
-
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "referer": "https://www.maff.go.jp/j/press/index.html",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    }
-
-    return common_request(url, headers)
-
-
-# usda_press_data 데이터 가공
-def maff_press_data(html):
-    data_list = []
-    try:
-        soup = BeautifulSoup(html, 'html.parser')
-
-        board_list = soup.find('div', id='main_content')
-        if not board_list:
-            logging.error("Board list not found")
-            return []
-
-        # main_content의 직계 자식만 가져옴
-        # p 태그는 날짜를 dl은 내용을 가져온다.
-        children = board_list.find_all(recursive=False)
-
-        if children:
-
-            # h1과 h2 태그를 제외한 자식들만 필터링
-            filtered_children = [child for child in children if child.name not in ['h1', 'h2']]
-
-            if filtered_children:
-
-                # 날짜 세팅을 위함
-                # 현재 연도 가져오기
-                current_year = datetime.now().year
-                formatted_date = ''
-
-                # 고유 dmnfr_trend_no 세팅을 위함
-                # 오늘 날짜를 YYMMDDHHMM 형식으로 가져오기
-                now = datetime.now()
-                today_str = now.strftime('%y%m%d%H%M')  # 'YYMMDDHHMM' 형식으로
-
-                # 2일치만 가져오기 위함
-                p_cnt = 0
-                dl_cnt = 0
-
-                # 결과 출력 (필터링된 자식들)
-                for child in filtered_children:
-
-                    if p_cnt > 2:
-                        break
-
-                    if child.name == 'p' and 'list_item_date' in child.get('class', []):
-                        p_cnt += 1
-                        date_str = child.get_text(strip=True)  # '12月25日'와 같은 문자열
-                        if date_str:
-                            # 월과 일을 추출하고, 현재 연도를 붙여서 날짜 만들기
-                            month, day = date_str.split('月')  # '12月'에서 '12'를 분리
-                            day = day.replace('日', '')  # '25日'에서 '日'을 제거
-                            formatted_date = f"{current_year}{month.zfill(2)}{day.zfill(2)}"  # yyyyMMdd 형식으로 만들기
-                    else:
-                        dl_cnt += 1
-                        url = ''
-                        ttl = ''
-                        reg_ymd_text = formatted_date
-
-                        # index를 두 자릿수로 포맷 (1 -> '01', 2 -> '02', ... , 10 -> '10')
-                        index_str = f'{dl_cnt:02}'  # index를 두 자릿수로 변환
-                        dmnfr_trend_no = f'{today_str}{index_str}'  # 'YYMMDDHHMM' + 두 자릿수 index
-                        dt_tag = child.find('dt')
-                        dd_tag = child.find('dd')
-
-                        if dt_tag and dd_tag:
-                            a_tag = dd_tag.find('a') if dd_tag else None
-
-                            if a_tag:
-                                ttl = f'{dt_tag.get_text(strip=True)} {a_tag.get_text(strip=True)}'
-                                url = a_tag['href'] if 'href' in a_tag.attrs else ''
-
-                                # Step 2: URL이 "./"로 시작하는 경우 완전한 URL로 변환
-                                if url and url.startswith('./'):
-                                    url = "https://www.maff.go.jp/j/press" + url[1:]  # "./"를 제거하고 기본 URL을 붙임
-
-                        data_obj = {
-                            "DMNFR_TREND_NO": dmnfr_trend_no,
-                            "STTS_CHG_CD": "succ",
-                            "TTL": ttl,
-                            "SRC": "일본 농림수산성 보도자료",
-                            "REG_YMD": reg_ymd_text,
-                            "URL": url
-                        }
-                        data_list.append(data_obj)
-
-
-    except Exception as e:
-        logging.error(f"Error : {e}")
-
-    return data_list
-
-
-# usda_press DB
-def maff_press():
-    html = maff_press_request()
-    if html:
-        data_list = maff_press_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-
-            # 데이터 삽입 함수 호출
-            insert_data_to_db(data)
-
-
-
-# 국외	중국 농업농촌부	소식	중국 농업농촌부 소식	http://www.moa.gov.cn/xw/zwdt/
-def moa_press_request():
-    url = f"http://www.moa.gov.cn/xw/zwdt/"
-
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "cache-control": "max-age=0",
-        "connection": "keep-alive",
-        "host": "www.moa.gov.cn",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    }
-
-    return common_request(url, headers)
-
-
-# moa_press_data 데이터 가공
-def moa_press_data(html):
-    data_list = []
-    try:
-        soup = BeautifulSoup(html, 'html.parser')
-        board_list = soup.find('div', class_='pub-media1-txt-list') if soup else None
-
-        if not board_list:
-            logging.error("Board list not found")
-            return []
-
-        list_items = board_list.find_all('li', class_='ztlb')
-
-        if list_items and len(list_items) > 0:
-            # list_items를 10개 이하로 자르기
-            list_items = list_items[:10]
-
-            for index, item in enumerate(list_items):
-
-                url = ''
-                ttl = ''
-                reg_ymd_text = ''
-                dmnfr_trend_no = ''
-
-                # 날짜
-                span_tag = item.find('span')
-                if span_tag:
-                    date_str = span_tag.get_text(strip=True) if span_tag else ''
-
-                    # 문자열을 datetime 객체로 변환
-                    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-
-                    # 원하는 형식 (yyyymmdd)으로 변환
-                    formatted_date = date_obj.strftime('%Y%m%d')
-                    reg_ymd_text = formatted_date
-
-                a_tag = item.find('a')
-                if a_tag:
-                    title_value = a_tag['title'] if 'title' in a_tag.attrs else ''
-                    ttl = title_value
-
-                    url = a_tag['href'] if 'href' in a_tag.attrs else ''
-
-                    if url:
-                        if url.startswith('./'):
-                            url = "http://www.moa.gov.cn/xw/zwdt" + url[1:]  # "./"를 제거하고 기본 URL을 붙임
-
-                        # 정규 표현식을 사용하여 URL에서 숫자 추출
-                        match = re.search(r'(\d+)(?=\.htm$)', url)
-                        if match:
-                            dmnfr_trend_no = match.group(1)  # 6468463 추출
-
-                data_obj = {
-                    "DMNFR_TREND_NO": dmnfr_trend_no,
-                    "STTS_CHG_CD": "succ",
-                    "TTL": ttl,
-                    "SRC": "중국 농업농촌부 소식",
-                    "REG_YMD": reg_ymd_text,
-                    "URL": url
-                }
-                data_list.append(data_obj)
-
-    except Exception as e:
-        logging.error(f"Error : {e}")
-
-    return data_list
-
-
-# usda_press DB
-def moa_press():
-    html = moa_press_request()
-    if html:
-        data_list = moa_press_data(html)
-
-        for data in data_list:
-            print(f'\n{data}')
-
-            # 데이터 삽입 함수 호출
-            # insert_data_to_db(data)
-
-
-
-
+# 초기화
 def main():
-
-    kistep_gpsTrendList()
-
+    global log_text_widget, start_button, progress, progress_label, eta_label, root, login_button, login_board, value_select, value_cont_select
 
 
-    kistep_board()
-    # krei_list()
-    # krei_research()
-    # kati_export()
-    # kati_report()
-    # stepi_report()
-    # usda_press()
-    # maff_press()
-    # moa_press()
+    root = TkinterDnD.Tk()
+    root.title("블로그 빅 프로그램")
+    root.geometry("600x780")
 
-if __name__ == '__main__':
-    main()
+    font_large = font.Font(size=10)
+
+    # 시작 버튼
+    login_button = tk.Button(root, text="로그인", command=naver_login, font=font_large, bg="#d0f0c0", fg="black", width=25)
+    login_button.pack(pady=10)
+
+    login_board = tk.Label(root, text="관리자님 로그인을 진행해주세요.\n(로그인 완료 되면 잠시 기다려주세요...)", width=40, height=5, font=font_large, bg="white", fg="red",
+                           borderwidth=1, relief="solid", highlightbackground="black", highlightthickness=1)
+    login_board.pack(pady=10)
+
+    btn_browse = tk.Button(root, text="엑셀 파일 선택", command=browse_file, font=font_large, width=20)
+    btn_browse.pack(pady=10)
+
+    lbl_or = tk.Label(root, text="또는", font=font_large)
+    lbl_or.pack(pady=5)
+
+    lbl_drop = tk.Label(root, text="여기에 파일을 드래그 앤 드롭하세요", relief="solid", width=40, height=5, font=font_large, bg="white")
+    lbl_drop.pack(pady=10)
+
+    lbl_drop.drop_target_register(DND_FILES)
+    lbl_drop.dnd_bind('<<Drop>>', on_drop)
+
+    # 시작 버튼
+    start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
+    start_button.pack(pady=10)
+
+
+    # 글수 레이블 추가
+    cont_count_label = tk.Label(root, text="# 글 수", font=font_large)
+    cont_count_label.pack(pady=5)
+
+    # 글수 셀렉트 박스 추가
+    value_cont_select = ttk.Combobox(root, values=list(range(1, 31)), font=font_large, state="readonly")
+    value_cont_select.set(selected_cont_value)  # 초기값 설정
+    value_cont_select.pack(pady=10)
+    value_cont_select.bind("<<ComboboxSelected>>", on_select_cont)  # 함수 연결
+
+
+    # 태그 레이블 추가
+    tag_count_label = tk.Label(root, text="# 태그 수", font=font_large)
+    tag_count_label.pack(pady=5)
+
+    # 태그  셀렉트 박스 추가
+    value_select = ttk.Combobox(root, values=[1, 2, 3, 4, 5], font=font_large, state="readonly")
+    value_select.set(selected_value)  # 초기값 설정
+    value_select.pack(pady=10)
+    value_select.bind("<<ComboboxSelected>>", on_select)  # 함수 연결
+
+
+    log_label = tk.Label(root, text="로그 화면", font=font_large)
+    log_label.pack(fill=tk.X, padx=10)
+
+    log_frame = tk.Frame(root)
+    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
+    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    x_scrollbar.config(command=log_text_widget.xview)
+    y_scrollbar.config(command=log_text_widget.yview)
+
+    # 진행률
+    progress_frame = tk.Frame(root)
+    progress_frame.pack(fill=tk.X, padx=10, pady=10)
+
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
+    eta_label = tk.Label(progress_frame, text="남은 시간: 00:00:00", font=font_large)
+
+    progress_label.pack(side=tk.TOP, padx=5)
+    eta_label.pack(side=tk.TOP, padx=5)
+
+    style = ttk.Style()
+    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+    progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+
+    root.mainloop()
+
+# 최초 시작 메인
+if __name__ == "__main__":
+    login_window()
+    # main()
+
+# ══════════════════════════════════════════════════════
+# endregion
