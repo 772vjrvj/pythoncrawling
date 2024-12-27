@@ -68,7 +68,7 @@ class KistepBoard:
                         dmnfr_trend_no = match.group(1)
 
                 ttl = a_tag.get_text(strip=True) if a_tag else ''
-                url = f'{self.url}{a_tag['href']}' if a_tag and 'href' in a_tag.attrs else ''
+                url = f'{self.url}{a_tag["href"]}' if a_tag and "href" in a_tag.attrs else ''
 
                 # 기본 정보 추출
                 basic_info = item.find('ul', class_='basic_info') if item else None
