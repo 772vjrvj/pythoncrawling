@@ -180,56 +180,6 @@ def read_excel_file(filepath):
     return id_list
 
 
-def save_excel_file_sheet2(results):
-    global filepath
-    # file_name = "블로그 빅.xlsx"
-    new_print("엑셀 저장 시작")
-
-    try:
-        # 열 순서를 정의
-        columns_order = [
-            '아이디', '블로그 URL', '게시글 URL',
-            '태그1 이름', '태그1 PC 검색수', '태그1 모바일 검색수', '태그1 순위',
-            '태그2 이름', '태그2 PC 검색수', '태그2 모바일 검색수', '태그2 순위',
-            '태그3 이름', '태그3 PC 검색수', '태그3 모바일 검색수', '태그3 순위',
-            '태그4 이름', '태그4 PC 검색수', '태그4 모바일 검색수', '태그4 순위',
-            '태그5 이름', '태그5 PC 검색수', '태그5 모바일 검색수', '태그5 순위'
-        ]
-
-        # 누락된 열을 기본값으로 채우기
-        for result in results:
-            for column in columns_order:
-                if column not in result:
-                    result[column] = ''  # 기본값 설정
-
-        # 기존 데이터 처리
-        if os.path.exists(filepath):
-            with pd.ExcelFile(filepath, engine='openpyxl') as xl:
-                # Sheet2가 이미 존재하는 경우 삭제
-                if 'Sheet2' in xl.sheet_names:
-                    xl.book.remove(xl.book['Sheet2'])
-
-            existing_df = pd.read_excel(filepath, sheet_name='Sheet1')
-            new_df = pd.DataFrame(results, columns=columns_order)  # 순서 고정
-            df = pd.concat([existing_df, new_df], ignore_index=True)
-        else:
-            df = pd.DataFrame(results, columns=columns_order)  # 순서 고정
-
-        # 열 순서 명시적으로 다시 설정
-        df = df[columns_order]
-
-        # 엑셀 파일 저장 (Sheet2에 저장)
-        with pd.ExcelWriter(filepath, engine='openpyxl', mode='a') as writer:
-            df.to_excel(writer, index=False, sheet_name='Sheet2', header=True)
-
-        # 색상 조건 적용 및 왼쪽 정렬
-        apply_color_and_alignment_to_excel(filepath, df)
-
-        new_print(f"엑셀 저장 완료: {filepath}")
-    except Exception as e:
-        new_print(f"엑셀 저장 실패: {e}")
-
-
 # 엑셀저장
 def save_excel_file_sheet1(new_data):
     global filepath
@@ -259,6 +209,65 @@ def save_excel_file_sheet1(new_data):
     # ExcelWriter로 엑셀 파일을 열고, 'Sheet1' 시트에 데이터를 덮어쓰기
     with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+
+def save_excel_file_sheet2(results):
+    global filepath
+    new_print("엑셀 저장 시작")
+
+    try:
+        # 열 순서를 정의
+        columns_order = [
+            '아이디', '블로그 URL', '게시글 URL',
+            '태그1 이름', '태그1 PC 검색수', '태그1 모바일 검색수', '태그1 순위',
+            '태그2 이름', '태그2 PC 검색수', '태그2 모바일 검색수', '태그2 순위',
+            '태그3 이름', '태그3 PC 검색수', '태그3 모바일 검색수', '태그3 순위',
+            '태그4 이름', '태그4 PC 검색수', '태그4 모바일 검색수', '태그4 순위',
+            '태그5 이름', '태그5 PC 검색수', '태그5 모바일 검색수', '태그5 순위'
+        ]
+
+        # 누락된 열을 기본값으로 채우기
+        for result in results:
+            for column in columns_order:
+                if column not in result:
+                    result[column] = ''  # 기본값 설정
+
+        # 새로운 DataFrame 생성
+        new_df = pd.DataFrame(results, columns=columns_order)
+
+        # 열 순서 명시적으로 다시 설정
+        new_df = new_df[columns_order]
+
+        # 기존 파일이 존재하면 데이터 추가
+        if os.path.exists(filepath):
+            with pd.ExcelFile(filepath, engine='openpyxl') as xl:
+                # Sheet2가 존재하는지 확인
+                if 'Sheet2' in xl.sheet_names:
+                    # Sheet2가 존재하면 기존 데이터와 결합
+                    existing_df = pd.read_excel(filepath, sheet_name='Sheet2')
+                    df = pd.concat([existing_df, new_df], ignore_index=True)  # 기존 데이터와 결합
+                else:
+                    # Sheet2가 존재하지 않으면 새로 생성
+                    df = new_df
+        else:
+            # 파일이 없으면 새로 생성
+            df = new_df
+
+        # 엑셀 파일 저장 (Sheet2에 저장)
+        with pd.ExcelWriter(filepath, engine='openpyxl', mode='a') as writer:
+            # 첫 번째 호출 시에는 header=True로 설정하여 제목을 추가하고,
+            # 이후에는 header=False로 설정하여 중복을 방지
+            if 'Sheet2' not in pd.ExcelFile(filepath, engine='openpyxl').sheet_names:
+                df.to_excel(writer, index=False, sheet_name='Sheet2', header=True)
+            else:
+                df.to_excel(writer, index=False, sheet_name='Sheet2', header=False)
+
+        # 색상 조건 적용 및 왼쪽 정렬
+        apply_color_and_alignment_to_excel(filepath, df)
+
+        new_print(f"엑셀 저장 완료: {filepath}")
+    except Exception as e:
+        new_print(f"엑셀 저장 실패: {e}")
 
 
 def apply_color_and_alignment_to_excel(file_name, df):
