@@ -166,9 +166,9 @@ class ApiNetflixSetLoadWorker(QThread):
                 for idx, url in enumerate(self.url_list, start=1):
 
                     # 100개의 항목마다 임시로 엑셀 저장
-                    if (idx - 1) % 5 == 0:
-                        self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
+                    if (idx - 1) % 100 == 0:
                         self.save_to_excel(result_list)  # 임시 엑셀 저장 호출
+                        self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
 
                     result = {
                         "url": url,
