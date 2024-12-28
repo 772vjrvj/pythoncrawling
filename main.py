@@ -136,7 +136,7 @@ def process_reviews():
                                 logging.info(f'image_files : {image_files}')
                                 review_data['첨부파일'] = ",".join(attach_names[:9])  # 최대 9개까지 결합
 
-                        logging.info(f'현재 순서 : {index}, index: {i}, page: {reviews.get('page', '')}, review_data : {review_data}')
+                        logging.info(f'현재 순서 : {index}, index: {i}, page: {reviews.get("page", "")}, review_data : {review_data}')
 
                         result_data.append(review_data)
 
