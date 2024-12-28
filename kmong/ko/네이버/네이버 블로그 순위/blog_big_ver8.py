@@ -451,8 +451,11 @@ def naver_login():
                 # JSON 파싱
                 tokens = json.loads(tokens_json)
 
-                if "3216661" in tokens:
-                    account_data = tokens["3216661"]
+                # 딕셔너리에서 모든 키 가져오기
+                keys = list(tokens.keys())  # keys()를 리스트로 변환
+
+                if keys:
+                    account_data = tokens[keys[0]]  # 첫 번째 키로 값에 접근
                     bearer_token = f'Bearer {account_data.get("bearer")}'
                     refresh_token = account_data.get("refreshToken")
                     messagebox.showinfo("알림", "로그인 성공: 정상 로그인 되었습니다.")
