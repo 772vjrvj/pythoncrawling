@@ -17,6 +17,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # API
 class ApiWorker(QThread):
     api_data_received = pyqtSignal(object)  # API 호출 결과를 전달하는 시그널
+    api_worker_log = pyqtSignal(object)  # API 호출 결과를 전달하는 시그널
 
     def __init__(self, url_list, parent=None):
         super().__init__(parent)
@@ -78,6 +79,11 @@ class ApiWorker(QThread):
 
 
     def set_login(self):
+
+        if not self.parent.user_id or not self.parent.user_pw:
+
+            return False
+
         try:
             # 로그인 페이지 열기
             self.driver.get(self.login_url)
@@ -104,16 +110,16 @@ class ApiWorker(QThread):
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "logout"))  # 'logout' 버튼이 나타날 때까지 대기
             )
+            self.api_worker_log.emit("쿠팡 로그인 시도 성공")
             return True
-            print("로그인 시도 성공")
         except NoSuchElementException as e:
-            print(f"로그인 요소를 찾을 수 없습니다: {str(e)}")
+            self.api_worker_log.emit(f"로그인 요소를 찾을 수 없습니다: {str(e)}")
             return False
         except TimeoutException as e:
-            print(f"로그인 페이지 로드 시간이 초과되었습니다: {str(e)}")
+            self.api_worker_log.emit(f"로그인 페이지 로드 시간이 초과되었습니다: {str(e)}")
             return False
         except Exception as e:
-            print(f"로그인 실패: {str(e)}")
+            self.api_worker_log.emit(f"로그인 실패: {str(e)}")
             return False
 
 

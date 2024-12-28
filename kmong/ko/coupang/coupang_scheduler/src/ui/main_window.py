@@ -36,7 +36,6 @@ class MainWindow(QWidget):
         self.user_popup = UserPopup(parent=self)
         self.user_popup.user_signal.connect(self.user_update)
 
-
         # 세션 관리용 API Worker 초기화
         self.api_worker = CheckWorker(cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
@@ -532,6 +531,8 @@ class MainWindow(QWidget):
         if table_url_list:
             self.daily_worker = ApiWorker(table_url_list, self)
             self.daily_worker.api_data_received.connect(self.set_result)
+            self.daily_worker.api_worker_log.connect(self.add_log)
+
             self.daily_worker.start()
 
 
