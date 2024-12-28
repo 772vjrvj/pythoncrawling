@@ -119,16 +119,20 @@ class ApiNetflixSetLoadWorker(QThread):
             netflix_url = "https://www.netflix.com"
 
             # 필요한 쿠키 키 목록
-            # required_cookies = [
-            #     "profilesNewSession",
-            #     "NetflixId",
-            #     "OptanonConsent",
-            #     "SecureNetflixId",
-            #     "flwssn",
-            #     "nfvdid"
-            # ]
+            required_cookies = [
+                "profilesNewSession",
+                "NetflixId",
+                "OptanonConsent",
+                "SecureNetflixId",
+                "flwssn",
+                "nfvdid"
+            ]
 
             cookies = self.get_cookies_from_browser(netflix_url)
+
+            if all(key in cookies for key in required_cookies):
+                self.cookies = cookies
+                self.log_signal.emit("★ 유료 결제 회원 확인.")
 
             if cookies is None:
                 self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
@@ -136,9 +140,13 @@ class ApiNetflixSetLoadWorker(QThread):
                 return False
             else:
                 self.cookies = cookies
+                self.log_signal.emit("★ 쿠키 확인 성공.")
+                self.log_signal.emit("※※※※ ★유료 결제 회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
+                self.driver.quit()
                 return True
 
         except Exception as e:
+            self.log_signal.emit(f"넷플릭스 로그인 중 에러 발생 : {e}")
             self.driver.quit()
             return False
 
