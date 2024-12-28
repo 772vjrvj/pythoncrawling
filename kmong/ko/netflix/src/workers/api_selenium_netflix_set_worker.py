@@ -22,7 +22,6 @@ import ssl
 import psutil
 
 
-blog_ing = 0
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -63,6 +62,7 @@ class ApiNetflixSetLoadWorker(QThread):
 
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
         return cookie_dict
+
 
     def setup_driver(self):
         try:
@@ -224,6 +224,7 @@ class ApiNetflixSetLoadWorker(QThread):
             return True
         return False
 
+
     def get_episode_json(self, meta_data):
         # 'video' 키에서 'seasons' 배열 가져오기
         seasons = meta_data.get("video", {}).get("seasons", [])
@@ -299,7 +300,6 @@ class ApiNetflixSetLoadWorker(QThread):
                     result['message'] = f"서버 호출 에러, 최대 재시도 횟수를 초과했습니다.: {e}"
                     return None
                 time.sleep(2)  # 2초 대기 후 재시도
-
 
 
     def save_to_excel(self, results):
