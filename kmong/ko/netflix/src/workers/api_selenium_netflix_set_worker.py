@@ -135,6 +135,7 @@ class ApiNetflixSetLoadWorker(QThread):
                 self.driver.quit()
                 return False
             else:
+                self.cookies = cookies
                 return True
 
         except Exception as e:
@@ -245,28 +246,18 @@ class ApiNetflixSetLoadWorker(QThread):
             result['error'] = 'Y'
             return None
 
-        main_url = f"https://www.netflix.com/nq/website/memberapi/release/metadata?movieid={last_number}&imageFormat=webp&withSize=true&materialize=true"
+        main_url = f"https://www.netflix.com/nq/website/memberapi/release/metadata?movieid={last_number}"
 
         headers = {
             "authority": "www.netflix.com",
             "method": "GET",
-            "path": f"/nq/website/memberapi/release/metadata?movieid={last_number}&imageFormat=webp&withSize=true&materialize=true",
+            "path": f"/nq/website/memberapi/release/metadata?movieid={last_number}",
             "scheme": "https",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept": "*/*",
             "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "ko,en;q=0.9,en-US;q=0.8",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
             "cache-control": "max-age=0",
             "priority": "u=0, i",
-            "sec-ch-ua": '"Microsoft Edge";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-model": '""',
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-ch-ua-platform-version": '"10.0.0"',
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "none",
-            "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1",
             "referer": f"https://www.netflix.com/watch/{last_number}",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
         }
