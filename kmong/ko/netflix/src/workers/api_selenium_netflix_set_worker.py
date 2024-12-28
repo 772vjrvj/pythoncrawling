@@ -119,16 +119,14 @@ class ApiNetflixSetLoadWorker(QThread):
             netflix_url = "https://www.netflix.com"
 
             # 필요한 쿠키 키 목록
-            required_cookies = [
-                "netflix-sans-normal-3-loaded",
-                "netflix-sans-bold-3-loaded",
-                "profilesNewSession",
-                "NetflixId",
-                "OptanonConsent",
-                "SecureNetflixId",
-                "flwssn",
-                "nfvdid"
-            ]
+            # required_cookies = [
+            #     "profilesNewSession",
+            #     "NetflixId",
+            #     "OptanonConsent",
+            #     "SecureNetflixId",
+            #     "flwssn",
+            #     "nfvdid"
+            # ]
 
             cookies = self.get_cookies_from_browser(netflix_url)
 
@@ -136,14 +134,8 @@ class ApiNetflixSetLoadWorker(QThread):
                 self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
                 self.driver.quit()
                 return False
-
-            # 쿠키에서 필요한 키 모두 확인
-            if all(key in cookies for key in required_cookies):
-                self.cookies = cookies
-                self.log_signal.emit("로그인 성공.")
-                self.driver.quit()
+            else:
                 return True
-            return False
 
         except Exception as e:
             self.driver.quit()
@@ -253,12 +245,12 @@ class ApiNetflixSetLoadWorker(QThread):
             result['error'] = 'Y'
             return None
 
-        main_url = f"https://www.netflix.com/nq/website/memberapi/release/metadata?movieid={last_number}"
+        main_url = f"https://www.netflix.com/nq/website/memberapi/release/metadata?movieid={last_number}&imageFormat=webp&withSize=true&materialize=true"
 
         headers = {
             "authority": "www.netflix.com",
             "method": "GET",
-            "path": f"/nq/website/memberapi/release/metadata?movieid={last_number}",
+            "path": f"/nq/website/memberapi/release/metadata?movieid={last_number}&imageFormat=webp&withSize=true&materialize=true",
             "scheme": "https",
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "accept-encoding": "gzip, deflate, br, zstd",
@@ -275,6 +267,7 @@ class ApiNetflixSetLoadWorker(QThread):
             "sec-fetch-site": "none",
             "sec-fetch-user": "?1",
             "upgrade-insecure-requests": "1",
+            "referer": f"https://www.netflix.com/watch/{last_number}",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
         }
 
