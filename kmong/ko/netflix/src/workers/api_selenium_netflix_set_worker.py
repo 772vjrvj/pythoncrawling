@@ -35,6 +35,12 @@ class ApiNetflixSetLoadWorker(QThread):
         self.parent = parent  # 부모 객체 저장
         self.url_list = url_list  # URL을 클래스 속성으로 저장
         self.cookies = None
+
+        # 현재 시간을 'yyyymmddhhmmss' 형식으로 가져오기
+        current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        self.file_name = f"넷플릭스_{current_time}.xlsx"
+
         if len(self.url_list) <= 0:
             self.log_signal.emit(f'등록된 url이 없습니다.')
         else:
@@ -158,6 +164,12 @@ class ApiNetflixSetLoadWorker(QThread):
                 self.log_signal.emit("크롤링 시작")
                 result_list = []
                 for idx, url in enumerate(self.url_list, start=1):
+
+                    # 100개의 항목마다 임시로 엑셀 저장
+                    if (idx - 1) % 5 == 0:
+                        self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
+                        self.save_to_excel(result_list)  # 임시 엑셀 저장 호출
+
                     result = {
                         "url": url,
                         "title": "",
@@ -297,19 +309,32 @@ class ApiNetflixSetLoadWorker(QThread):
     def save_to_excel(self, results):
         self.parent.add_log("엑셀 저장 시작")
 
-        # 현재 시간을 'yyyymmddhhmmss' 형식으로 가져오기
-        current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-
-        # 파일 이름 설정
-        file_name = f"넷플릭스_{current_time}.xlsx"
-
         try:
-            # 파일이 없으면 새로 생성
-            df = pd.DataFrame(results)
+            # 파일이 존재하는지 확인
+            if os.path.exists(self.file_name):
+                # 파일이 있으면 기존 데이터 읽어오기
+                df_existing = pd.read_excel(self.file_name)
 
-            # 엑셀 파일 저장
-            df.to_excel(file_name, index=False)
-            self.parent.add_log(f"엑셀 저장 완료: {file_name}")
+                # 새로운 데이터를 DataFrame으로 변환
+                df_new = pd.DataFrame(results)
+
+                # 기존 데이터의 마지막 행 인덱스를 기준으로 새로운 데이터의 추가 범위 계산
+                last_existing_index = df_existing.shape[0]  # 기존 데이터의 행 개수
+
+                # 새로운 데이터에서 추가할 부분만 선택 (기존 데이터 이후의 데이터)
+                df_to_add = df_new.iloc[last_existing_index:]
+
+                # 기존 데이터와 추가할 데이터 합치기
+                df_combined = pd.concat([df_existing, df_to_add], ignore_index=True)
+
+                # 엑셀 파일에 데이터 덧붙이기 (index는 제외)
+                df_combined.to_excel(self.file_name, index=False)
+            else:
+                # 파일이 없으면 새로 생성
+                df = pd.DataFrame(results)
+                df.to_excel(self.file_name, index=False)
+
+            self.parent.add_log(f"엑셀 저장 완료: {self.file_name}")
 
         except Exception as e:
             # 예기치 않은 오류 처리
