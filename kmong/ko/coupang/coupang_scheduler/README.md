@@ -25,6 +25,9 @@
 * 추적할 상품의 URL은 추가, 삭제 가능하도록 진행.
 
 
+2024-12-20
+
+
 
 pyinstaller --onefile --noconsole main.py
 

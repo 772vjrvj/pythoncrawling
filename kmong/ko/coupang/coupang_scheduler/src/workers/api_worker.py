@@ -21,6 +21,7 @@ class ApiWorker(QThread):
     def __init__(self, url_list, parent=None):
         super().__init__(parent)
         self.parent = parent  # 부모 객체 저장
+        self.login_url = 'https://login.coupang.com/login/login.pang'
         self.url_list = url_list  # URL을 클래스 속성으로 저장
 
         self.driver = self.setup_chrome_options()
@@ -50,19 +51,22 @@ class ApiWorker(QThread):
         })
         return driver
 
+
     def run(self):
         try:
             data_list = []
             self.parent.add_log(f'url_list : {self.url_list} ')
-            for url in self.url_list:
-                # 외부 API 호출
-                data = self.fetch_product_info_sele(url)
-                data_list.append(data)  # 결과를 리스트에 추가
-                self.parent.add_log(f'url 요청성공 : {url} ')
-                self.parent.add_log(f'url 요청 Data : {data} ')
-                time.sleep(random.uniform(1, 2))
+            result = self.set_login()
+            if result:
+                for url in self.url_list:
+                    # 외부 API 호출
+                    data = self.fetch_product_info_sele(url)
+                    data_list.append(data)  # 결과를 리스트에 추가
+                    self.parent.add_log(f'url 요청성공 : {url} ')
+                    self.parent.add_log(f'url 요청 Data : {data} ')
+                    time.sleep(random.uniform(1, 2))
 
-            # 데이터를 시그널로 전달
+                # 데이터를 시그널로 전달
             self.api_data_received.emit(data_list)
 
         except Exception as e:
@@ -71,6 +75,48 @@ class ApiWorker(QThread):
 
         finally:
             self.driver.quit()
+
+
+    def set_login(self):
+        try:
+            # 로그인 페이지 열기
+            self.driver.get(self.login_url)
+            time.sleep(3)
+
+            # 이메일 입력 필드 찾기
+            email_input = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "login-email-input"))
+            )
+            email_input.clear()  # 기존 텍스트를 지우고
+            email_input.send_keys(self.parent.user_id)  # 사용자 ID 입력
+
+            # 비밀번호 입력 필드 찾기
+            password_input = self.driver.find_element(By.ID, "login-password-input")
+            password_input.clear()  # 기존 텍스트를 지우고
+            password_input.send_keys(self.parent.user_pw)  # 사용자 비밀번호 입력
+
+            # 로그인 버튼 클릭
+            login_button = self.driver.find_element(By.CLASS_NAME, "login__button--submit")
+            login_button.click()
+
+            time.sleep(3)
+            # 로그인 후, 페이지가 로드될 때까지 대기 (예시: 로그인 후 나타나는 특정 요소)
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "logout"))  # 'logout' 버튼이 나타날 때까지 대기
+            )
+            return True
+            print("로그인 시도 성공")
+        except NoSuchElementException as e:
+            print(f"로그인 요소를 찾을 수 없습니다: {str(e)}")
+            return False
+        except TimeoutException as e:
+            print(f"로그인 페이지 로드 시간이 초과되었습니다: {str(e)}")
+            return False
+        except Exception as e:
+            print(f"로그인 실패: {str(e)}")
+            return False
+
+
 
     def fetch_product_info_sele(self, url):
         try:
@@ -85,13 +131,13 @@ class ApiWorker(QThread):
             # 배송비 추출
             try:
                 delivery_fee = self.driver.find_element(By.CLASS_NAME, "delivery-fee-info").text
-            except:
+            except NoSuchElementException as e:
                 delivery_fee = ""
 
             # 판매가 추출
             try:
                 total_price = self.driver.find_element(By.CLASS_NAME, "total-price").text
-            except:
+            except NoSuchElementException as e:
                 total_price = ""
 
             # 배송비와 판매가에서 숫자만 추출하고 더하기
@@ -124,6 +170,7 @@ class ApiWorker(QThread):
             return {"status": "error", "message": f"요소 탐색 실패: {str(e)}", "data": ""}
         except Exception as e:
             return {"status": "error", "message": f"알 수 없는 에러: {str(e)}", "data": ""}
+
 
     def extract_number(self, text):
         return int(re.sub(r'\D', '', text)) if text else 0

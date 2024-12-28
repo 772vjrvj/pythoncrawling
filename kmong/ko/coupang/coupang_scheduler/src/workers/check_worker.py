@@ -20,7 +20,6 @@ class CheckWorker(QThread):
         while self.running:
             try:
                 response = requests.get(url, headers=headers, cookies=self.cookies)
-                print(f'response.text : {response.text}')
 
                 if response.text == "fail":
                     self.api_failure.emit("세션 오류: 상태가 유효하지 않음")

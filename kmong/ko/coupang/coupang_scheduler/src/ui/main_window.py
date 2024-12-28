@@ -9,6 +9,7 @@ from src.workers.check_worker import CheckWorker
 from src.workers.countdown_thread import CountdownThread
 from src.ui.header_with_checkbox import HeaderWithCheckbox
 from src.ui.register_popup import RegisterPopup
+from src.ui.user_popup import UserPopup
 from src.ui.all_register_popup import AllRegisterPopup
 from datetime import datetime
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -23,13 +24,26 @@ class MainWindow(QWidget):
         self.daily_worker = None  # 24시 실행 스레드
         self.on_demand_worker = None  # 요청 시 실행 스레드
         self.setup_timer()
-        self.load_excel_to_table("DB.xlsx")  # 원하는 엑셀 파일 경로 지정
+        self.user_id = ""
+        self.user_pw = ""
+        self.file_path = "DB/ITEM.xlsx"
+        self.user_path = "DB/USER.xlsx"
+        self.load_excel_to_table()  # 원하는 엑셀 파일 경로 지정
+        self.load_excel_to_user()  # 원하는 엑셀 파일 경로 지정
+        self.popup = RegisterPopup(parent=self)
+        self.popup.log_signal.connect(self.add_log)
+
+        self.user_popup = UserPopup(parent=self)
+        self.user_popup.user_signal.connect(self.user_update)
+
 
         # 세션 관리용 API Worker 초기화
         self.api_worker = CheckWorker(cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
         self.api_worker.start()  # 스레드 시작
 
+
+    # API 요청 실패 처리
     def handle_api_failure(self, error_message):
         """API 요청 실패 처리"""
         QMessageBox.critical(self, "프로그램 종료", f"동일 접속자가 존재해서 프로그램을 종료합니다.\n오류: {error_message}")
@@ -37,12 +51,13 @@ class MainWindow(QWidget):
         QApplication.instance().quit()  # 프로그램 종료
 
 
-    def load_excel_to_table(self, file_path):
+    # 엑셀파일을 로드하여 테이블에 표시
+    def load_excel_to_table(self):
         """엑셀 파일을 로드하여 테이블에 표시"""
 
         try:
             # 엑셀 파일 읽기
-            df = pd.read_excel(file_path)
+            df = pd.read_excel(self.file_path)
 
             # 빈 값을 공백으로 채우기
             df = df.fillna("")
@@ -61,6 +76,7 @@ class MainWindow(QWidget):
                 layout.setAlignment(Qt.AlignCenter)
                 layout.setContentsMargins(0, 0, 0, 0)
                 check_box_widget.setLayout(layout)
+                
                 self.table.setCellWidget(row_idx, 0, check_box_widget)
 
                 # 데이터 매핑: "최근실행시간", "상품명", "판매가", "배송비", "합계", "URL"
@@ -71,9 +87,32 @@ class MainWindow(QWidget):
                 self.table.setItem(row_idx, 5, QTableWidgetItem(str(row_data.get("합계", ""))))
                 self.table.setItem(row_idx, 6, QTableWidgetItem(str(row_data.get("URL", ""))))
 
-            print(f"엑셀 파일 '{file_path}' 로드 성공")
+            self.add_log(f"엑셀 상품 파일 '{self.file_path}' 로드 성공")
         except Exception as e:
-            print(f"엑셀 파일 로드 실패: {str(e)}")
+            self.add_log(f"엑셀 상품 파일 로드 실패: {str(e)}")
+
+
+    # 엑셀에서 USER정보 가저오기
+    def load_excel_to_user(self):
+        """엑셀 파일을 로드하여 USER에 넣기"""
+        try:
+            # 엑셀 파일 읽기
+            df = pd.read_excel(self.user_path)
+
+            # 빈 값을 공백으로 채우기
+            df = df.fillna("")
+
+            # 데이터가 있는지 확인
+            if not df.empty:
+                # 첫 번째 행의 ID와 PW 값을 self.user_id와 self.user_password에 할당
+                self.user_id = str(df.iloc[0]['ID']) if 'ID' in df.columns else ""  # 'ID' 컬럼에서 첫 번째 행의 값을 가져옴
+                self.user_pw = str(df.iloc[0]['PW']) if 'PW' in df.columns else ""  # 'PW' 컬럼에서 첫 번째 행의 값을 가져옴
+                self.add_log(f"엑셀 계정 파일 '{self.user_path}' 로드 성공")
+            else:
+                self.add_log("엑셀 계정 파일에 데이터가 없습니다.")
+
+        except Exception as e:
+            self.add_log(f"엑셀 계정 파일 로드 실패: {str(e)}")
 
 
     # 레이아웃 설정
@@ -93,8 +132,23 @@ class MainWindow(QWidget):
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
         # 버튼 설정
-        # 개별등록
-        self.register_button = QPushButton("개별등록")
+
+        # 계정등록
+        self.user_button = QPushButton("계정등록")
+        self.user_button.setStyleSheet("""
+            background-color: black;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.user_button.setFixedWidth(100)  # 고정된 너비
+        self.user_button.setFixedHeight(40)  # 고정된 높이
+        self.user_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
+        self.user_button.clicked.connect(self.open_user_popup)
+
+        # 상품개별등록
+        self.register_button = QPushButton("상품개별등록")
         self.register_button.setStyleSheet("""
             background-color: black;
             color: white;
@@ -102,13 +156,13 @@ class MainWindow(QWidget):
             font-size: 16px;
             padding: 10px;
         """)
-        self.register_button.setFixedWidth(100)  # 고정된 너비
+        self.register_button.setFixedWidth(120)  # 고정된 너비
         self.register_button.setFixedHeight(40)  # 고정된 높이
         self.register_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
         self.register_button.clicked.connect(self.open_register_popup)
 
-        # 전체등록
-        self.all_register_button = QPushButton("전체등록")
+        # 상품전체등록
+        self.all_register_button = QPushButton("상품전체등록")
         self.all_register_button.setStyleSheet("""
                     background-color: black;
                     color: white;
@@ -116,7 +170,7 @@ class MainWindow(QWidget):
                     font-size: 16px;
                     padding: 10px;
                 """)
-        self.all_register_button.setFixedWidth(100)  # 고정된 너비
+        self.all_register_button.setFixedWidth(120)  # 고정된 너비
         self.all_register_button.setFixedHeight(40)  # 고정된 높이
         self.all_register_button.setCursor(Qt.PointingHandCursor)
         self.all_register_button.clicked.connect(self.open_all_register_popup)
@@ -178,6 +232,8 @@ class MainWindow(QWidget):
         self.delete_button.clicked.connect(self.delete_table_row)
 
         # 왼쪽 버튼 레이아웃
+
+        left_button_layout.addWidget(self.user_button)
         left_button_layout.addWidget(self.register_button)
         left_button_layout.addWidget(self.all_register_button)
         left_button_layout.addWidget(self.reset_button)
@@ -321,12 +377,14 @@ class MainWindow(QWidget):
         if file_path:
             df.to_excel(file_path, index=False, sheet_name="Table Data")
 
+
     # 타이머 설정
     def setup_timer(self):
         # UI 구성 (생략 - 버튼 추가 등)
         self.daily_timer = QTimer(self)
         self.daily_timer.timeout.connect(self.start_daily_worker)
         self.start_daily_timer()
+
 
     # 매일 12시
     def start_daily_timer(self):
@@ -346,6 +404,7 @@ class MainWindow(QWidget):
         self.daily_timer.start(24 * 60 * 60 * 1000)
 
 
+    #
     def start_daily_worker(self):
 
         # 기존 스레드 중지
@@ -366,11 +425,13 @@ class MainWindow(QWidget):
         self.get_api('all')
 
 
+    #
     def update_time_label(self, time_text):
         """타임 라벨 업데이트"""
         self.time_label.setText(f"추적시간 매일 0시 0분 0초 (남은시간 : {time_text})")
 
 
+    #
     def start_on_demand_worker(self):
         """사용자 요청 시 실행되는 ApiWorker 시작"""
         if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
@@ -380,7 +441,7 @@ class MainWindow(QWidget):
         self.get_api('select')
 
 
-
+    #
     def get_checked_urls(self):
         """테이블에서 체크박스가 체크된 URL 목록 추출"""
         table_url_list = []
@@ -406,6 +467,7 @@ class MainWindow(QWidget):
         return table_url_list
 
 
+    #
     def get_all_urls(self):
         """테이블에서 모든 URL 추출"""
         table_url_list = []
@@ -432,13 +494,19 @@ class MainWindow(QWidget):
         size = self.geometry()  # 현재 창 크기
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
+
+    # 개별 등록 팝업
+    def open_user_popup(self):
+        # 등록 팝업창 열기
+        self.user_popup.exec_()
+        self.save_user_to_excel()
+
     
     # 개별 등록 팝업
     def open_register_popup(self):
         # 등록 팝업창 열기
-        popup = RegisterPopup(parent=self)
-        popup.exec_()
-        self.save_table_to_excel("DB.xlsx")
+        self.popup.exec_()
+        self.save_table_to_excel()
 
 
     # 전체 등록 팝업
@@ -446,9 +514,10 @@ class MainWindow(QWidget):
         # 등록 팝업창 열기
         popup = AllRegisterPopup(parent=self)  # 부모 객체 전달
         popup.exec_()
-        self.save_table_to_excel("DB.xlsx")
+        self.save_table_to_excel()
 
 
+    #
     def get_api(self, type):
         table_url_list = []
         # 체크된 URL 목록 가져오기
@@ -466,6 +535,7 @@ class MainWindow(QWidget):
             self.daily_worker.start()
 
 
+    #
     def set_result(self, result_list):
         for result in result_list:
             if result["status"] == "success":
@@ -489,10 +559,11 @@ class MainWindow(QWidget):
                     self.table.setItem(row_to_update, 5, QTableWidgetItem(result_data["합계"]))
 
         # 수집이 끝나면 DB.xlsx 파일 업데이트
-        self.save_table_to_excel("DB.xlsx")
+        self.save_table_to_excel()
 
 
-    def save_table_to_excel(self, file_path):
+    # 상품 목록 업데이트
+    def save_table_to_excel(self):
         """테이블 데이터를 엑셀 파일로 저장"""
         import pandas as pd
 
@@ -515,9 +586,10 @@ class MainWindow(QWidget):
         df = pd.DataFrame(data, columns=[self.table.horizontalHeaderItem(i).text() for i in range(1, column_count)])
 
         # 엑셀 파일로 저장
+        # 중간에 셀을 수정했을 수도 있으니 전체 덮어쓴게 맞음
         try:
-            df.to_excel(file_path, index=False, sheet_name="Table Data")
-            self.add_log(f"DB 업데이트 성공: {file_path}")
+            df.to_excel(self.file_path, index=False, sheet_name="Table Data")
+            self.add_log(f"DB 업데이트 성공: {self.file_path}")
         except Exception as e:
             self.add_log(f"DB 업데이트 실패: {str(e)}")
 
@@ -554,7 +626,7 @@ class MainWindow(QWidget):
 
         # 삭제 결과 출력
         self.add_log(f"{len(rows_to_delete)}개의 행이 삭제되었습니다.")
-        self.save_table_to_excel("DB.xlsx")
+        self.save_table_to_excel()
 
 
     # 테이블 초기화
@@ -562,6 +634,32 @@ class MainWindow(QWidget):
 
         self.table.clearContents()  # 테이블 내용 삭제
         self.table.setRowCount(0)   # 행 개수를 0으로 설정
-
+        self.save_table_to_excel()
         self.add_log('테이블이 초기화 되었습니다.')
-        self.save_table_to_excel("DB.xlsx")
+
+
+    # 계정 업데이트
+    def user_update(self, user_id, user_pw):
+        self.user_id = user_id
+        self.user_pw = user_pw
+        self.save_user_to_excel()
+        self.add_log('계정이 수정되었습니다.')
+
+
+    # 계정 엑셀 업데이트
+    def save_user_to_excel(self):
+        """유저 데이터를 엑셀 파일로 저장"""
+        # 테이블 데이터를 추출
+
+        data = [[self.user_id, self.user_pw]]
+
+        # 데이터프레임 생성
+        df = pd.DataFrame(data, columns=['ID', 'PW'])
+
+        # 엑셀 파일로 저장
+        # 중간에 셀을 수정했을 수도 있으니 전체 덮어쓴게 맞음
+        try:
+            df.to_excel(self.user_path, index=False, sheet_name="Table Data")
+            self.add_log(f"DB USER 업데이트 성공: {self.user_path}")
+        except Exception as e:
+            self.add_log(f"DB USER 업데이트 실패: {str(e)}")
