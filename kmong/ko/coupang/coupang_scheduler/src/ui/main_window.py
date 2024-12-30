@@ -317,6 +317,16 @@ class MainWindow(QWidget):
         self.center_window()
 
 
+    # 버튼 비활성화 및 색상 변경
+    def disable_button(self, button):
+        button.setDisabled(True)
+
+
+
+    # 버튼 활성화 및 원래 색상 복원
+    def enable_button(self, button):
+        button.setDisabled(False)
+
     # 로그
     def add_log(self, message):
         """
@@ -419,6 +429,9 @@ class MainWindow(QWidget):
     # 전체수집 시작
     def start_daily_worker(self):
 
+        self.disable_button(self.collect_button)
+        self.disable_button(self.start_button)
+
         table_url_list = self.get_all_urls()
         table_url_list = [url for url in table_url_list if url.strip()]
 
@@ -447,6 +460,9 @@ class MainWindow(QWidget):
 
     # 선택 수집 실행 함수
     def start_on_demand_worker(self):
+
+        self.disable_button(self.collect_button)
+        self.disable_button(self.start_button)
 
         # 체크된 URL 목록 가져오기
         table_url_list = self.get_checked_urls()
@@ -571,6 +587,8 @@ class MainWindow(QWidget):
             # 수집이 끝나면 DB.xlsx 파일 업데이트
             self.save_table_to_excel()
 
+        self.enable_button(self.collect_button)
+        self.enable_button(self.start_button)
 
     # 상품 목록 업데이트
     def save_table_to_excel(self):

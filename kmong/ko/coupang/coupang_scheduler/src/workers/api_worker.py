@@ -176,4 +176,3 @@ class ApiWorker(QThread):
             return {"status": "error", "message": f"요소 탐색 실패: {str(e)}", "data": ""}
         except Exception as e:
             return {"status": "error", "message": f"알 수 없는 에러: {str(e)}", "data": ""}
-
