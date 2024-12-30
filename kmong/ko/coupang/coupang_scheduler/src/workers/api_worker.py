@@ -52,7 +52,7 @@ class ApiWorker(QThread):
             if result:
                 # 데이터를 시그널로 전달
                 self.api_data_received.emit(data_list)
-                self.driver.quit()
+            self.driver.quit()
 
 
     # 크롬 세팅
@@ -107,7 +107,7 @@ class ApiWorker(QThread):
 
             time.sleep(3)
             # 로그인 후, 페이지가 로드될 때까지 대기 (예시: 로그인 후 나타나는 특정 요소)
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "logout"))  # 'logout' 버튼이 나타날 때까지 대기
             )
             self.api_worker_log.emit("쿠팡 로그인 시도 성공")
