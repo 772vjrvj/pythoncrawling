@@ -1,0 +1,146 @@
+{
+  '__typename': 'BeautySummary',
+  'id': '1389195604',
+  'apolloCacheId': '',
+  'name': '공간네일 노원점',
+  'hasBooking': True,
+  'hasNPay': True,
+  'blogCafeReviewCount': '37',
+  'bookingReviewCount': '0',
+  'bookingReviewScore': 0,
+  'description': "공간네일 포인트 적립 이벤트 중!!\n1. 네이버 포토리뷰 (2,000점) / 동영상 리뷰 (3,000점) 작성시 포인트 적립 혜택 !!(공간네일 사용가능 포인트적립)\n2. 카카오 채널 친구 추가시 2,000포인트 적립 혜택 !! (공간네일 사용가능 포인트 적립)\n\n-5000점 이상부터 사용가능\n\n안녕하세요. 드릴케어 오프 전문 공간네일 노원점입니다.\n\n*노쇼방지 예약금 받고있어요.\n(당일취소,변경,10분이상(10분 포함) 지각 시 예약금 환불 힘드신 점 양해부탁드려요)\n\n*회원고객님은 네이버예약시 예약금 환불 처리 후 적립금에서 차감 도와드려요\n\n*급한문의사항,당일예약은 전화부탁드려요\n네이버예약이 안될시 매장으로 전화주시면 예약도와드릴게요!\n\n*네이버예약시간과 실제예약 상황이 다를 수 있어 시간조정 전화드릴수있는점 양해 부탁드릴게요\n\n*네이버톡톡 ,카톡은 시술중 답변확인이 어려울수있습니다\n(톡톡,카톡은 예약금 계좌이체해주셔야해요)\n\n*네이버 예약시 예약금제외 나머지 차액금액 매장에서 결제도와드려요\n\n고객님들을 위해 '공'들인 시'간' 공간네일 입니다.\n고객님들께 최고의 만족을 드리기위해\n공간네일 모두가 고객님들의 입장에서 생각하며,시술을 도와드려요.\n본사 디자인팀이 매달 최신유행하는 아트부터 고객님들이 원하는 아트를 만들어 매달 발매하고 있습니다.\n\n공간네일을 방문해 주시는 고객님들께 촉촉한 큐티클 오일펜 증정해드려요!\n\n항상 새로운 이벤트들이 준비되어있습니다\n\n첫방문 고객님 젤네일 29,000 원\n부담없이 받아보세요\n컬러추가 무료 !\n케어+산성없는 베이스+컬러\n(기본 젤네일 적용 )\n\n-공간네일 아트 이벤트-\n-이달의 아트 65,000 아트 / 75,000아트\n-시그니처 아트 가격변동\n\n-65/75 아트는 누구나 쉽고 합리적인 가격으로 이달의 아트를 받아보시도록 준비했습니다.\n트렌디하고 감각적인 아트와 개성있는 아트들을 공간네일이 디자인하여 만들었습니다.\n퀄리티와 화려함은 높이고 가격은 낮췄습니다!\n\n-시그니처 아트는 공간네일이 가장 화려하고 돋보일 수 있는 아트를 한달간 연구하여 엄선한 디자인입니다.\n\n10손전체 연장 + 풀컬러 79,000원\n(기존 가격 : 140,000원)\n\n*시술 시 충분한 테스트를 통해 마무리 하기때문에 시술 후 단순 변심(ex. 컬러 마음에 안 듦, 디자인 마음에 안 듦)으로 인한 보수는 유상 보수 처리됩니다.\n\n*드로잉 아트는 시술 시간 상 오래 걸리므로 미리 연락 부탁드립니다.\n\n감사합니다",
+  'roadAddress': '서울 노원구 동일로 1413 6층',
+  'address': '상계동 712',
+  'imageUrl': 'https://search.pstatic.net/common/?autoRotate=true&quality=95&type=f320_320&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230516_42%2F16842069680681pSfE_JPEG%2FKakaoTalk_20230516_113104446.jpg',
+  'talktalkUrl': 'http://talk.naver.com/w41g66?frm=pnmb',
+  'distance': '',
+  'x': '127.0600404',
+  'y': '37.6547775',
+  'representativePrice': {
+    '__typename': 'RepresentativePrice',
+    'isFiltered': False,
+    'priceName': '손 젤',
+    'price': 29000
+  },
+  'promotionTitle': '첫방문 젤네일 29,000원 컬러추가 무료 !\n10손전체연장+젤컬러 79,000원\n네이버 포토리뷰 2,000점 / 동영상 리뷰 3,000점 포인트적립!\n짧은손톱 물어뜯는손톱 교정',
+  'stylesCount': 74,
+  'visitorReviewCount': '976',
+  'visitorReviewScore': None,
+  'styleBookingCounts': None,
+  'newOpening': None,
+  'coupon': {
+    '__typename': 'Coupon',
+    'total': 1,
+    'promotions': [
+      {
+        '__typename': 'CouponPromotions',
+        'promotionSeq': 589794,
+        'couponSeq': 591707,
+        'conditionType': 'PLACE_BENEFIT_NOTIFICATION_SUBSCRIBED',
+        'image': {
+          '__typename': 'Image',
+          'url': 'https://ldb-phinf.pstatic.net/20241107_57/1730973971770xC4fE_PNG/KakaoTalk_Photo_2024-11-07-15-18-11_001.png'
+        },
+        'title': '공간네일 큐티클오일펜 증정 쿠폰',
+        'description': '알림받기한 고객님들께 드려요',
+        'type': 'gift',
+        'couponUseType': 'BOOKING'
+      }
+    ]
+  },
+  'styles': [
+    {
+      '__typename': 'Style',
+      'desc': '아트',
+      'shortDesc': None,
+      'styleNum': 54211084,
+      'isPopular': None,
+      'images': [
+        {
+          '__typename': 'StyleImage',
+          'imageUrl': 'https://ldb-phinf.pstatic.net/20230516_42/16842069680681pSfE_JPEG/KakaoTalk_20230516_113104446.jpg'
+        }
+      ],
+      'styleOptions': [
+        {
+          '__typename': 'StyleOption',
+          'num': 83
+        }
+      ]
+    },
+    {
+      '__typename': 'Style',
+      'desc': '아트,네일스톤,화이트,믹스',
+      'shortDesc': None,
+      'styleNum': 54211085,
+      'isPopular': None,
+      'images': [
+        {
+          '__typename': 'StyleImage',
+          'imageUrl': 'https://ldb-phinf.pstatic.net/20241227_67/1735295892730GbV3t_PNG/5.png'
+        }
+      ],
+      'styleOptions': [
+        {
+          '__typename': 'StyleOption',
+          'num': 83
+        },
+        {
+          '__typename': 'StyleOption',
+          'num': 88
+        },
+        {
+          '__typename': 'StyleOption',
+          'num': 92
+        },
+        {
+          '__typename': 'StyleOption',
+          'num': 113
+        }
+      ]
+    },
+    {
+      '__typename': 'Style',
+      'desc': '아트,네일스톤,화이트,믹스',
+      'shortDesc': None,
+      'styleNum': 54211086,
+      'isPopular': None,
+      'images': [
+        {
+          '__typename': 'StyleImage',
+          'imageUrl': 'https://ldb-phinf.pstatic.net/20241227_49/1735295930272faGTN_PNG/15.png'
+        }
+      ],
+      'styleOptions': [
+        {
+          '__typename': 'StyleOption',
+          'num': 83
+        },
+        {
+          '__typename': 'StyleOption',
+          'num': 88
+        },
+        {
+          '__typename': 'StyleOption',
+          'num': 92
+        },
+        {
+          '__typename': 'StyleOption',
+          'num': 113
+        }
+      ]
+    }
+  ],
+  'streetPanorama': None,
+  'imageMarker': {
+    '__typename': 'ImageMarker',
+    'marker': 'nres://marker/00009-00071',
+    'markerSelected': 'nres://marker/00009-00185'
+  },
+  'markerId': '226680',
+  'markerLabel': {
+    '__typename': 'MarkerLabel',
+    'text': '￦29,000~',
+    'style': 'default'
+  }
+}
