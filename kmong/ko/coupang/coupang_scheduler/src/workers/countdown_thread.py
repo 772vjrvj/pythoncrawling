@@ -26,4 +26,4 @@ class CountdownThread(QThread):
             self.time_updated.emit(formatted_time)
 
             # 1초 대기
-            self.sleep(1)
+            self.msleep(1000)  # QThread에 적합한 sleep(1000ms)

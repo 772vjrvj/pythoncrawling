@@ -231,7 +231,6 @@ class MainWindow(QWidget):
         self.delete_button.clicked.connect(self.delete_table_row)
 
         # 왼쪽 버튼 레이아웃
-
         left_button_layout.addWidget(self.user_button)
         left_button_layout.addWidget(self.register_button)
         left_button_layout.addWidget(self.all_register_button)
@@ -379,7 +378,19 @@ class MainWindow(QWidget):
 
     # 타이머 설정
     def setup_timer(self):
-        # UI 구성 (생략 - 버튼 추가 등)
+
+        # 카운트 다운 : 기존 스레드 중지
+        if hasattr(self, 'countdown_thread') and self.countdown_thread.isRunning():
+            self.countdown_thread.running = False
+            self.countdown_thread.quit()
+            self.countdown_thread.wait()
+
+        # 새로운 카운트다운 스레드 시작
+        self.countdown_thread = CountdownThread()
+        self.countdown_thread.time_updated.connect(self.update_time_label)
+        self.countdown_thread.start()
+
+        # 실젝 동작 타이머
         self.daily_timer = QTimer(self)
         self.daily_timer.timeout.connect(self.start_daily_worker)
         self.start_daily_timer()
@@ -396,6 +407,8 @@ class MainWindow(QWidget):
         if interval <= 0:
             interval += 24 * 60 * 60 * 1000  # 이미 자정을 지났으면 다음 날 자정으로 설정
 
+        # 같은 이벤트 루프에서 실행되므로 첫 실행이끝나면 순차적으로 다음 실행
+
         # 첫 실행: 정확히 자정에 작업 실행
         QTimer.singleShot(interval, self.start_daily_worker)
 
@@ -403,44 +416,60 @@ class MainWindow(QWidget):
         self.daily_timer.start(24 * 60 * 60 * 1000)
 
 
-    #
+    # 전체수집 시작
     def start_daily_worker(self):
 
-        # 기존 스레드 중지
-        if hasattr(self, 'countdown_thread') and self.countdown_thread.isRunning():
-            self.countdown_thread.running = False
-            self.countdown_thread.wait()
+        table_url_list = self.get_all_urls()
+        table_url_list = [url for url in table_url_list if url.strip()]
 
-        # 새로운 카운트다운 스레드 시작
-        self.countdown_thread = CountdownThread()
-        self.countdown_thread.time_updated.connect(self.update_time_label)
-        self.countdown_thread.start()
+        if not self.user_id or not self.user_pw or not table_url_list:
+            self.show_warning('계정 또는 목록을 확인하세요.')
+            self.add_log('계정 또는 목록을 확인하세요.')
+            return False
 
         self.add_log(f"스케줄러 수집 시작")
-        """24시에 실행되는 ApiWorker 시작"""
+
         if self.daily_worker is not None and self.daily_worker.isRunning():
-            self.daily_worker.terminate()
+            self.daily_worker.quit()
             self.daily_worker.wait()
-        self.get_api('all')
+
+        if table_url_list:
+            self.daily_worker = ApiWorker(table_url_list, self)
+            self.daily_worker.api_data_received.connect(self.set_result)
+            self.daily_worker.api_worker_log.connect(self.add_log)
+            self.daily_worker.start()
 
 
-    #
+    # 타임 라벨 업데이트
     def update_time_label(self, time_text):
-        """타임 라벨 업데이트"""
         self.time_label.setText(f"추적시간 매일 0시 0분 0초 (남은시간 : {time_text})")
 
 
-    #
+    # 선택 수집 실행 함수
     def start_on_demand_worker(self):
-        """사용자 요청 시 실행되는 ApiWorker 시작"""
+
+        # 체크된 URL 목록 가져오기
+        table_url_list = self.get_checked_urls()
+        table_url_list = [url for url in table_url_list if url.strip()]
+
+        if not self.user_id or not self.user_pw or not table_url_list:
+            self.show_warning('계정 또는 목록을 확인하세요.')
+            self.add_log('계정 또는 목록을 확인하세요.')
+            return False
+
+        # 선택 수집 실행중이면 중지
         if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
-            self.on_demand_worker.terminate()
+            self.on_demand_worker.quit()
             self.on_demand_worker.wait()
 
-        self.get_api('select')
+        if table_url_list:
+            self.on_demand_worker = ApiWorker(table_url_list, self)
+            self.on_demand_worker.api_data_received.connect(self.set_result)
+            self.on_demand_worker.api_worker_log.connect(self.add_log)
+            self.on_demand_worker.start()
 
 
-    #
+    # 체크된 url들 가져오기
     def get_checked_urls(self):
         """테이블에서 체크박스가 체크된 URL 목록 추출"""
         table_url_list = []
@@ -466,9 +495,8 @@ class MainWindow(QWidget):
         return table_url_list
 
 
-    #
+    # 테이블에서 모든 URL 추출
     def get_all_urls(self):
-        """테이블에서 모든 URL 추출"""
         table_url_list = []
 
         for row in range(self.table.rowCount()):
@@ -516,27 +544,7 @@ class MainWindow(QWidget):
         self.save_table_to_excel()
 
 
-    #
-    def get_api(self, type):
-        table_url_list = []
-        # 체크된 URL 목록 가져오기
-        if type == 'all':
-            table_url_list = self.get_all_urls()
-        else:
-            table_url_list = self.get_checked_urls()
-
-        # 유효성 검사 및 빈 값 제거
-        table_url_list = [url for url in table_url_list if url.strip()]
-
-        if table_url_list:
-            self.daily_worker = ApiWorker(table_url_list, self)
-            self.daily_worker.api_data_received.connect(self.set_result)
-            self.daily_worker.api_worker_log.connect(self.add_log)
-
-            self.daily_worker.start()
-
-
-    #
+    # 크롤링 결과 테이블 세팅
     def set_result(self, result_list):
         for result in result_list:
             if result["status"] == "success":
@@ -559,8 +567,9 @@ class MainWindow(QWidget):
                     self.table.setItem(row_to_update, 4, QTableWidgetItem(result_data["배송비"]))
                     self.table.setItem(row_to_update, 5, QTableWidgetItem(result_data["합계"]))
 
-        # 수집이 끝나면 DB.xlsx 파일 업데이트
-        self.save_table_to_excel()
+        if result_list:
+            # 수집이 끝나면 DB.xlsx 파일 업데이트
+            self.save_table_to_excel()
 
 
     # 상품 목록 업데이트

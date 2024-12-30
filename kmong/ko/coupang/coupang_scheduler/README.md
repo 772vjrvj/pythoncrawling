@@ -31,6 +31,8 @@
 
 pyinstaller --onefile --noconsole main.py
 
+pyinstaller --noconsole main.py
+
 pip install numpy
 
 pip install -r requirements-dev.txt

@@ -91,8 +91,6 @@ class UserPopup(QDialog):
         # URL 값을 전역 변수에 저장
         id = self.id_input.text()
         pw = self.pw_input.text()
-
-        if id and pw:
-            self.user_signal.emit(id, pw)
+        self.user_signal.emit(id, pw)
         self.accept()  # 팝업 닫기
 

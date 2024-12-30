@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPush
 from src.ui.main_window import MainWindow
 from src.workers.login_thread import LoginThread
 from src.ui.password_change_window import PasswordChangeWindow
-from src.utils.config import global_server_cookies
 
 # 로그인 창
 class LoginWindow(QWidget):

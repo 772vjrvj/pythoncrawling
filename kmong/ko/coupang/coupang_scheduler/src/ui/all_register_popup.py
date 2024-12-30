@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTa
                              QCheckBox, QDesktopWidget, QDialog, QTableWidget, QSizePolicy, QHeaderView, QScrollArea)
 
 from src.ui.excel_drag_drop_label import ExcelDragDropLabel
-from src.utils.config import url_list
 
 
 # 전체등록
