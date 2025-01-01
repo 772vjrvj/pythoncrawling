@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
-import urllib.parse
 
 # 요청 URL
 url = "https://pcmap.place.naver.com/place/list"
@@ -21,7 +20,7 @@ headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'cookie': 'NNB=2HHDT25LLBYWO; SRT30=1735481515; NAC=qpjLBcAU3Vpv; NACT=1; nid_inf=192615909; NID_AUT=6aZ2xXToKW+4coczi2XBP47AbmOvpRo1TYrhdD1eZdFgUFp9uIVMXsrWNyDANqza; NID_SES=AAABt7MMvdvWfUwXfVG52fWOs+NBhHADovpbfNY44kCEkNJKpOpWc8puWrLADDfTxewq1UeqOLgYXnoeTISkGn2nG8h+LKISprrkT/j22rBHHM53C04SGqZKtd2NfDUJKM36wnSEbQ0FZG34ellRJueYDQT5ZszX8+PnIpnJ5GBJnt+D2E25oQrrw7CwmLwMuoNXcI6spYcoPCHiB1kGxxJOD2CcZLEYZG2Dpr3dokBSqYJiwMjTcudZBElX+ECJFV2fZlmXZ/FlU7/rmyhtnYNg/u0l2joHz7Aa90ISi2/Q3YGd9VUcRuvJCOAMrU8J1WvglMRVyBylF60PUNQiU+i9Pd+ec28snwlcylgDcmwTz9Ia0KZZS7t+EWAqg9iCZNGZKEh1h+p0Fdn2d0UqzPAGGrusrqWQqJfNCA/Ex+qrIbVFc6LyqLt3HwQx3yIam90KYO46CLXI/KaciPmeO9P00gzU/mvbBiaofR7lJDXYk00d6GSlpKjbrd5jxGwZaNrIQ2XWeY/pFkNUcI2JE76jRBzMNjMGMDhex+B9mwnl6h5pYhBLnzRc/hpzpMRuif7+Qauh3gF9qmGUUnbEtsGyZsw=; NID_JKL=hRzYPOifPeJNbgLh090MsDWzFvCVdKscficTVEhs7D4=; SRT5=1735483799; BUC=NiI6vYpoP9KO_Wzms62Z8B46pdwzSUtKT4exGmV6hQs=',
+    'cookie': 'NNB=2HHDT25LLBYWO; NAC=qpjLBcAU3Vpv; NACT=1; nid_inf=190225495; NID_AUT=6CoPRSVhcz6OajU0mURj/aea82NyBXmRHaDxEX+lNnHjHwfVzA7waGw3ufKAWTCl; NID_JKL=6Ulm4aqG+Y0oe7KfukzXZ/F/CFu4FG1ZuuA2T2D41m8=; 066c80626d06ffa5b32035f35cabe88d=%AD3%23%88%FC%DB%3Ey%FFx%A0j%AA%14f%0CT%E4%B9C%E9i%E963%3F%B4%21%E3%BD%3C%0D%FCFc9n%2A%D6%9B0%3A.%DE%D9%1E1%CF%82%5E%A0%D2R%D8%13%03%D4%09%12tp%D7%F5%F9%23w%B8qq%91l%80%21%F6d%9F%2A%8D%3A%9Bd%02%BF%17%0B4%A1%2F%27%21%C4%8B%3B%D2KV%E8dL%CD%F42%A8%7B%8C%1A4%05XA%E1%E2%C8Yq%0AN-T%B7%C6%F3%90%18H%DD0%FBUin%EC%16%91%B6%0BY%B0%3D%E8%03%A2%8E%B8; 1a5b69166387515780349607c54875af=k%7Dh%BA%12%80%81%D2; NID_SES=AAABqyXIIhTcBfIGtqKDJG4Y2kymVo3FRCDaawzuccnpnwekwUG9m6y8q7MrzFySkp2zSM2diNdjPzuS7AtgfUb2iuDVKC6hNA3l1ghgVV6qY9AryovCEnVXmIavehotsW9CwV14ThRB9xcDYlQ2srdoNPHm8tTurL65YOCLbaTst5Fxg7cCbXxcGHI8eAxePzz2QWkCO6XUbL6CrQkFHUoQld/e02hJwGZH29IxK9INjFKy3xJWFJlxz4qimo3AlwWVnOU6g9UuYoz4gKlqMZYd3uhjq3suJH1m+mDBFpKl76z6lUQz5bLv7qJsZ84u3+ogZWpjuvOhY08zUDl9Nf1wBXR2rJc3gZ88+uMDH1IsrLZ41OM2ncBXcYSyUy77Aeb6EEFXunTg/gcO4qvHIUu68F2cCnXnLO27p8jXwCAj0KPffaGan5jBK2kxt9ml+AKqCk/0Am4LwVzS2JCg0Q3KACGz3LyhZVWrlc+E59zzoYX74BN2uT2e21qAIdOvVAJUJqBEKGBMZq8bf20fNkp75CVyCuO2XMjFCJuOOUVa/5HpcupnbSR4yWHv+u4yaN4mcA==; SRT30=1735663507; SRT5=1735663507; BUC=cP-IC5g6uFQELg2csds4X4LOM4miB1fPiQXgp6eRitk=',
     'referer': f'https://map.naver.com/p/search',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 }
@@ -54,7 +53,11 @@ try:
                     for key in apollo_state_obj.keys():
                         if 'Summary' in key and 'AdSummary' not in key:
                             # 한글이 깨지지 않도록 출력
-                            print(f"Key: {key}, Value: {apollo_state_obj[key]}")
+                            # print(f"Key: {key}, Value: {apollo_state_obj[key]}")
+
+                            print(f'id : {apollo_state_obj[key]['id']}')
+                            print(f'blogCafeReviewCount : {apollo_state_obj[key]['blogCafeReviewCount']}')
+                            print(f'visitorReviewCount : {apollo_state_obj[key]['visitorReviewCount']}')
                             a += 1
                     print(a)
 

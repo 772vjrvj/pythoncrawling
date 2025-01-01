@@ -1,50 +1,21 @@
-[
-  {
-    "operationName": "getBeautyList",
-    "variables": {
-      "useReverseGeocode": true,
-      "input": {
-        "query": "강남 네일",
-        "display": 70,
-        "start": 1,
-        "filterBooking": false,
-        "filterCoupon": false,
-        "naverBenefit": false,
-        "sortingOrder": "precision",
-        "x": "127.04750199999614",
-        "y": "37.517304999999965",
-        "bounds": "126.96227212633852;37.47590192824046;127.13444848742313;37.55732429009326",
-        "deviceType": "pcmap"
-      },
-      "businessType": "nailshop",
-      "isNmap": true,
-      "isBounds": true,
-      "reverseGeocodingInput": {
-        "x": "127.060818",
-        "y": "37.237756"
-      }
-    },
-    "query": "query getBeautyList($input: BeautyListInput, $businessType: String, $isNmap: Boolean!, $isBounds: Boolean!, $reverseGeocodingInput: ReverseGeocodingInput, $useReverseGeocode: Boolean = false) {\n  businesses: nailshops(input: $input) {\n    total\n    userGender\n    items {\n      ...BeautyBusinessItems\n      imageMarker @include(if: $isNmap) {\n        marker\n        markerSelected\n        __typename\n      }\n      markerId @include(if: $isNmap)\n      markerLabel @include(if: $isNmap) {\n        text\n        style\n        __typename\n      }\n      __typename\n    }\n    nlu {\n      ...NluFields\n      __typename\n    }\n    optionsForMap @include(if: $isBounds) {\n      ...OptionsForMap\n      __typename\n    }\n    __typename\n  }\n  brands: beautyBrands(input: $input, businessType: $businessType) {\n    name\n    cid\n    __typename\n  }\n  reverseGeocodingAddr(input: $reverseGeocodingInput) @include(if: $useReverseGeocode) {\n    ...ReverseGeocodingAddr\n    __typename\n  }\n}\n\nfragment NluFields on Nlu {\n  queryType\n  user {\n    gender\n    __typename\n  }\n  queryResult {\n    ptn0\n    ptn1\n    region\n    spot\n    tradeName\n    service\n    selectedRegion {\n      name\n      index\n      x\n      y\n      __typename\n    }\n    selectedRegionIndex\n    otherRegions {\n      name\n      index\n      __typename\n    }\n    property\n    keyword\n    queryType\n    nluQuery\n    businessType\n    cid\n    branch\n    forYou\n    franchise\n    titleKeyword\n    location {\n      x\n      y\n      default\n      longitude\n      latitude\n      dong\n      si\n      __typename\n    }\n    noRegionQuery\n    priority\n    showLocationBarFlag\n    themeId\n    filterBooking\n    repRegion\n    repSpot\n    dbQuery {\n      isDefault\n      name\n      type\n      getType\n      useFilter\n      hasComponents\n      __typename\n    }\n    type\n    category\n    menu\n    context\n    __typename\n  }\n  __typename\n}\n\nfragment ReverseGeocodingAddr on ReverseGeocodingResult {\n  rcode\n  region\n  __typename\n}\n\nfragment OptionsForMap on OptionsForMap {\n  maxZoom\n  minZoom\n  includeMyLocation\n  maxIncludePoiCount\n  center\n  spotId\n  keepMapBounds\n  __typename\n}\n\nfragment CouponItems on Coupon {\n  total\n  promotions {\n    promotionSeq\n    couponSeq\n    conditionType\n    image {\n      url\n      __typename\n    }\n    title\n    description\n    type\n    couponUseType\n    __typename\n  }\n  __typename\n}\n\nfragment BeautyBusinessItemBase on BeautySummary {\n  id\n  apolloCacheId\n  name\n  hasBooking\n  hasNPay\n  blogCafeReviewCount\n  bookingReviewCount\n  bookingReviewScore\n  description\n  roadAddress\n  address\n  imageUrl\n  talktalkUrl\n  distance\n  x\n  y\n  representativePrice {\n    isFiltered\n    priceName\n    price\n    __typename\n  }\n  promotionTitle\n  stylesCount\n  visitorReviewCount\n  visitorReviewScore\n  styleBookingCounts {\n    styleNum\n    name\n    count\n    isPopular\n    __typename\n  }\n  newOpening\n  coupon {\n    ...CouponItems\n    __typename\n  }\n  __typename\n}\n\nfragment BeautyBusinessItems on BeautySummary {\n  ...BeautyBusinessItemBase\n  styles {\n    desc\n    shortDesc\n    styleNum\n    isPopular\n    images {\n      imageUrl\n      __typename\n    }\n    styleOptions {\n      num\n      __typename\n    }\n    __typename\n  }\n  streetPanorama {\n    id\n    pan\n    tilt\n    lat\n    lon\n    __typename\n  }\n  __typename\n}"
-  },
-  {
-    "operationName": "getBeautyAdBusinessList",
-    "variables": {
-      "input": {
-        "query": "강남 네일",
-        "display": 70,
-        "start": 1,
-        "filterBooking": false,
-        "filterCoupon": false,
-        "naverBenefit": false,
-        "sortingOrder": "precision",
-        "x": "127.04750199999614",
-        "y": "37.517304999999965",
-        "bounds": "126.96227212633852;37.47590192824046;127.13444848742313;37.55732429009326",
-        "deviceType": "pcmap",
-        "businessType": "nailshop"
-      },
-      "isNmap": true
-    },
-    "query": "query getBeautyAdBusinessList($input: BeautyAdBusinessesInput, $isNmap: Boolean!) {\n  beautyAdBusinesses(input: $input) {\n    total\n    bucket\n    bucketTest\n    ... on BeautyAdsResult {\n      items {\n        ...BeautyAdItemFields\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment BeautyAdItemFields on BeautyAdSummary {\n  adId\n  adClickLog {\n    clickUrl\n    smartOrderClickUrl\n    trackingParameters {\n      n_ad_group_type\n      n_query\n      __typename\n    }\n    __typename\n  }\n  impressionEventUrl\n  effectiveImpressionEventUrl\n  adDescription\n  id\n  dbType\n  name\n  businessCategory\n  category\n  categoryCodeList\n  description\n  hasBooking\n  hasNPay\n  x\n  y\n  distance\n  imageUrl\n  imageCount\n  phone\n  virtualPhone\n  routeUrl\n  streetPanorama {\n    id\n    pan\n    tilt\n    lat\n    lon\n    __typename\n  }\n  roadAddress\n  address\n  commonAddress\n  blogCafeReviewCount\n  bookingReviewCount\n  totalReviewCount\n  bookingUrl\n  bookingBusinessId\n  talktalkUrl\n  detailCid {\n    c0\n    c1\n    c2\n    c3\n    __typename\n  }\n  options\n  promotionTitle\n  agencyId\n  businessHours\n  markerId @include(if: $isNmap)\n  markerLabel @include(if: $isNmap) {\n    text\n    style\n    __typename\n  }\n  imageMarker @include(if: $isNmap) {\n    marker\n    markerSelected\n    __typename\n  }\n  newBusinessHours {\n    status\n    description\n    dayOff\n    dayOffDescription\n    __typename\n  }\n  coupon {\n    total\n    promotions {\n      promotionSeq\n      couponSeq\n      conditionType\n      image {\n        url\n        __typename\n      }\n      title\n      description\n      type\n      couponUseType\n      __typename\n    }\n    __typename\n  }\n  hasMobilePhoneNumber\n  bookingReviewScore\n  visitorReviewCount\n  visitorReviewScore\n  representativePrice {\n    isFiltered\n    priceName\n    price\n    __typename\n  }\n  stylesCount\n  styles {\n    isPopular\n    desc\n    shortDesc\n    styleNum\n    images {\n      imageUrl\n      __typename\n    }\n    styleOptions {\n      num\n      __typename\n    }\n    beautyStyleExtentionClickUrl\n    __typename\n  }\n  styleBookingCounts {\n    styleNum\n    name\n    count\n    isPopular\n    __typename\n  }\n  newOpening\n  __typename\n}"
-  }
-]
+{
+  'NM_srt_chzzk': '',
+  'nsac_show_autologin_popup': '0',
+  'wcs_bt': '2413704dbffb64:1735713756',
+  'PM_CK_loc': '',
+  '066c80626d06ffa5b32035f35cabe88d': '%AD3%23%88%FC%DB%3Ey%FFx%A0j%AA%14f%0C%7E8%FEh%7D%A9%D4%E7%0FZ%8E%2AdW%A0%F9%19q%D8%BF%8F%3E%E0%1A%60%2A%CE%8B%B1r%DC%CE_P%D5%11%8E%B7%2C%BA%AB%CB6%A4%5C%0F%FC%FF%23w%B8qq%91l%80%21%F6d%9F%2A%8D%3A%9Bd%02%BF%17%0B4%A1%2F%27%21%C4%8B%3B%D2KV%BF%A6C%EC8O%E1Nu%28%BCa%B4%AF%90%3E%C8Yq%0AN-T%B7%C6%F3%90%18H%DD0%FB%0F%E0%D4%16W%06%AE%E2%D7%C8%EDq9%D2%1C%A3',
+  'nid_inf': '188889892',
+  'BUC': 'kG7IdbplTYTQvVEkXwpB9vhAb2jhqIpBnTZkjVEAMTI=',
+  '1b25d439ceac51f5d414df7689017f6c': '%AE%E2%BFK%3D%9B%07K%FD%15%0B%15%DC%97%95%C4%A3%B8%DD%E9%D6%3F%12a%3B%D6%CDj%DA%11%DCB%BB%2B%19%3B%C37%C1%CA%14%7D%7C%11%B9%15%25%83%13%EF%83%24%C1%CB%5C%3Ev%21%16V%BF%9Eq%8E%00%BBc%FBU%ECF%F2%1C-%E3%FFx%91%8F%CCz%0C%F2%7B%0A%03%BEP%DA%D5%C5p%60%96%F8%F0%02%97%C0%BC%D48%84%CE%FB%AB%F3%2B%C6Y6%DA%9D%831%D9%A6%AF%22%01%F7%94%CF_r%BBz%E0%04L%90%A8%FF3P%D7%CD%99A%1Ap%C7K%CD%14%D5%5C%110qp%FA%AD%E2%A5%2B%14%BE%AD%0FQO%0F%80%BB3%14a%2A%83%0F%C7%93%A6n%88%0B%22%AE%E4%F9%B76%A9x%40F%1D%06%02%E8%AC%A2x%A2Z%F3%8D%3A%F0%97r%D0o%F4tJ%19%E0%0E%13%F8%E5W%FEX%B2%25%23%06%F0W%05%FF%DE%EE%17%8E0O%EDlX%FD%9Cs%B8%10%9E-F%E40%87%EF-%AA%9D%BE%E4%83%26%179%EA%10%D1%DA%AF%B6h%FBCF%BF%7F%83b%03%F6sN%96%85%03%F3%27%FF%DF%CC%00%B9%E4%8350%18%C4%9A%D0%CF%02%0D-%80%04%2B%A0%E0%5DL%8A%1B%ED%EAZ%98%09w%2Aw4%B9%BDA%1F%99%FD%FELmt%1B%E2%D9%E0i%7F%9A%D0%CF%02%0D-%80%04u%EDs%AD%03%AF%EBl%3Ex%F9%7FH%89%AFP%BE%A9%EE%C8%E7%3B%12h%9D%C1%9A%FA%85%3E%FE%B7%1B%F6%92%7D%9E%AD%D2%7C%267%F3%E1%FC%A5%2B%24%3A%18%C8%E7%5C%C2%0F%7E%02%95%16%B5%14%13%E3.%8E%B9Q%C4k%BBz%90%88U%FE7%CD%90%CB%94w%15a%B9%0F%C0gBz%9A%D4%A0f%E3%3E%CC%D0%1Ff%02%25iv%D3%8DtxO%2C%26%00%855E%CD%A8%EC%A4%E0%5E%CEe%D6%9D%EA%95%ED%9A%CA%BA%D2D%86%E8E%83%9B%3B%E5%B8%FB%9A%1D%DF%A4%9E%27%83%D5-%F5%F4%B7%B3%5B%87%FD%A1w%09%24H%92%FCk%12%8A%E0%7F%F0%9Aj%05In%CC%B8%02%82%B9a%0Ay%2A%F5%00%3E%AD%11%FBz%9C%8E%11%D2%8B%179hX%D9%3F%A2%F1%F3U0V%D8%BA%85%0Ac%A0%EF%B4%CB8m.%FD%84u%0A%0B%02g%5D%60%0DR%A2%86%E6%E4v%60%3E%28%B0%95td%EB%D6qn%C0%E9T%86%B0C%7B%8F%2A',
+  'NID_AUT': 'zTCDRQQD85VffLAD3PUnhpnraUnoTLNn+jAtQmBPLq4QNN3Tj+Nc9NNl0rgrvoZ8',
+  '_fwb': '110fxyVFbupKjaVgSEKGzi.1735713754837',
+  'NID_JKL': '+6w07FKK53sCJWrJ+u0rEAeiyQo+Yf85pKV8mDA0QbM=',
+  'hxq1clp': 'shown',
+  '1a5b69166387515780349607c54875af': 'k%7Dh%BA%12%80%81%D2',
+  'SRT30': '1735713744',
+  'NNB': '27Q2NGGQ4N2GO',
+  'SRT5': '1735713744',
+  'NID_SES': 'AAABsRqdSAy+OPTEyO/LX6huoLXmrBN6GpHD72CFvfj4RZ3kG/+REdVUi7jfUGW7GJ+TbpdNFZZAyu0q+9amZXbyYY9OFM5z7bEcYf+4M44eWlmkjfoRHpkd0cFu3nL4Xh7Cp0oEVfWveCW5PAdPSBnjbHKnyRrLwooBNsLH5zQzR1OKVvw573M9hrOkhtTtgVDQPEfptUL+yM2rAIBDKyxMJAR9iMvBjaTWY3aptQ9NzaNbmI2DzowN4SurNKvletfypisE2QVNErqqoznWWm2AqSZeYnc+sRVtvwaiIJ7kPuubvN0UsObV2J3Bo7NSjlcFpwUuultgRsKHrEDFnam2uzy2qe86KorefD2+RBq8RCeZy5Zwx8xJK3h0Bzkh1tyGyaNh887ilMH+3nq0xxHQeuQcbe0XEb3JDKeccueAPGOdiPEWj/apy3jcEtCrIls8Bg5SlcxxrdWz82oXlfg+an2mPS2kuOf1N1cvlaMx0xuo/GQiJP503wWMh6eNOCvyRQfadBlN7b/qAdKhwbqSufGvmp9ZWQXx2eb0YIiqNf/w6ewa6DeLte5NyA2jjqBF1925TUxx3b0TkLyCCfD1CGs=',
+  'NACT': '1',
+  'NAC': '5XVbBcgXHFfYA'
+}

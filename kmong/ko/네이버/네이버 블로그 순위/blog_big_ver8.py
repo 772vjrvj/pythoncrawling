@@ -41,6 +41,9 @@ stop_flag = False
 # 네이버 로그인 쿠키
 global_naver_cookies = None
 
+# 네이버 키워드 쿠키
+global_naver_keyword_cookies = None
+
 # 완료후 깜빡임 상태
 flashing = True
 
@@ -412,7 +415,7 @@ def periodic_token_update():
 
 # 네이버 로그인
 def naver_login():
-    global global_naver_cookies, login_button, login_board, bearer_token, refresh_token
+    global global_naver_cookies, login_button, login_board, bearer_token, refresh_token, global_naver_keyword_cookies
     try:
         driver = setup_driver()
         driver.get("https://nid.naver.com/nidlogin.login")
@@ -439,13 +442,15 @@ def naver_login():
 
         # 로그인 후 관리 페이지로 이동
         if logged_in:
-            driver.get("https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner")
+            driver.get("https://manage.searchad.naver.com/customers")
             time.sleep(3)
 
             # 로컬 스토리지에서 tokens 값 가져오기
             tokens_json = driver.execute_script(
                 "return window.localStorage.getItem('tokens');"
             )
+
+            global_naver_keyword_cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
 
             if tokens_json:
                 # JSON 파싱
@@ -482,19 +487,11 @@ def fetch_naver_blog_my_logNos(blog_id, current_page):
     headers = {
         "authority": "m.blog.naver.com",
         "method": "GET",
-        "path": "/api/blogs/roketmissile/post-list?categoryNo=0&itemCount=10&page=1&userId=",
         "scheme": "https",
         "accept": "application/json, text/plain, */*",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "priority": "u=1, i",
-        "referer": "https://m.blog.naver.com/roketmissile?tab=1",
-        "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
+        "referer": "https://m.blog.naver.com",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
     }
     try:
@@ -530,7 +527,6 @@ def fetch_gs_tag_name(blog_id, logNo):
     headers = {
         'authority': 'm.blog.naver.com',
         'method': 'GET',
-        'path': f'/{blog_id}/{logNo}?referrerCode=1',
         'scheme': 'https',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-encoding': 'gzip, deflate, br, zstd',
@@ -578,12 +574,10 @@ def fetch_naver_blog_search_logNos(query, page):
     headers = {
         "authority": "s.search.naver.com",
         "method": "GET",
-        "path": "/p/review/49/search.naver",
         "scheme": "https",
         "accept": "application/json, text/javascript, */*; q=0.01",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "origin": "https://search.naver.com",
         "referer": f"https://search.naver.com/search.naver?sm=tab_hty.top&ssc=tab.blog.all&query={query_encoding}&oquery={query_encoding}&tqi=iyLxLlqo1awssNDx7HsssssstkG-146063",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
     }
@@ -619,7 +613,7 @@ def fetch_naver_blog_search_logNos(query, page):
 
 # 네이버 검색광고 토큰 업데이트 5분에 한번씩 호출
 def update_bearer_token():
-    global bearer_token, refresh_token
+    global bearer_token, refresh_token, global_naver_keyword_cookies
 
     # URL 설정
     url = f"https://atower.searchad.naver.com/auth/local/extend"
@@ -628,21 +622,12 @@ def update_bearer_token():
     headers = {
         "authority": "atower.searchad.naver.com",
         "method": "PUT",
-        "path": f"/auth/local/extend?refreshToken={refresh_token}",
         "scheme": "https",
         "accept": "*/*",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
         "content-length": "0",
-        "origin": "https://manage.searchad.naver.com",
-        "priority": "u=1, i",
-        "referer": "https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner",
-        "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-site",
+        "referer": "https://manage.searchad.naver.com",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     }
 
@@ -651,7 +636,7 @@ def update_bearer_token():
     }
 
     # PUT 요청 보내기
-    response = requests.put(url, headers=headers, params=params, cookies=global_naver_cookies)
+    response = requests.put(url, headers=headers, params=params, cookies=global_naver_keyword_cookies)
 
     # 응답 처리
     if response.status_code == 200:
@@ -674,7 +659,7 @@ def update_bearer_token():
 
 # 검색수 가져오기
 def search_keyword_cnt(keyword):
-
+    global global_naver_keyword_cookies
     # 기본 URL과 동적 키워드 설정
     base_url = "https://manage.searchad.naver.com/keywordstool"
     params = {
@@ -695,20 +680,13 @@ def search_keyword_cnt(keyword):
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
         "authorization": bearer_token,
-        "priority": "u=1, i",
-        "referer": "https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner",
-        "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
+        "referer": "https://manage.searchad.naver.com/customers",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         "x-accept-language": "ko",
     }
 
     # GET 요청 보내기
-    response = requests.get(base_url, headers=headers, params=params, cookies=global_naver_cookies)
+    response = requests.get(base_url, headers=headers, params=params, cookies=global_naver_keyword_cookies)
 
 
     # 응답 처리
