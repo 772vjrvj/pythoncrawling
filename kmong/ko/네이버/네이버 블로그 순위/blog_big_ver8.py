@@ -442,8 +442,7 @@ def naver_login():
 
         # 로그인 후 관리 페이지로 이동
         if logged_in:
-            # driver.get("https://manage.searchad.naver.com/customers")
-            driver.get("https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner")
+            driver.get("https://manage.searchad.naver.com/customers/1689588/tool/keyword-planner")
             time.sleep(3)
 
             # 로컬 스토리지에서 tokens 값 가져오기
