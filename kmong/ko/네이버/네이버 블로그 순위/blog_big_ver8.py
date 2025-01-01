@@ -442,7 +442,8 @@ def naver_login():
 
         # 로그인 후 관리 페이지로 이동
         if logged_in:
-            driver.get("https://manage.searchad.naver.com/customers")
+            # driver.get("https://manage.searchad.naver.com/customers")
+            driver.get("https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner")
             time.sleep(3)
 
             # 로컬 스토리지에서 tokens 값 가져오기
@@ -837,7 +838,7 @@ def remaining_time_update(now_cnt, total_contents):
 
 # 실제 시작 처리 메인 로직
 def start_processing():
-    global stop_flag, extracted_data_list, id_list, extracted_data_per_list
+    global stop_flag, extracted_data_list, id_list, extracted_data_per_list, global_naver_keyword_cookies, global_naver_cookies
 
     stop_flag = False
     # 기존 로그 화면 초기화
@@ -858,6 +859,8 @@ def start_processing():
             new_print(f'{index} 번까지 임시 저장 ============================================================')
             save_excel_file_sheet1(extracted_data_per_list)
             save_excel_file_sheet2(extracted_data_list)
+            new_print(f'global_naver_keyword_cookies : {global_naver_keyword_cookies}')
+            new_print(f'global_naver_cookies : {global_naver_cookies}')
 
         new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 계산 시작 ============================================================')
         hash_tag_cnt = 0
