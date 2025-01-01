@@ -442,7 +442,8 @@ def naver_login():
 
         # 로그인 후 관리 페이지로 이동
         if logged_in:
-            driver.get("https://manage.searchad.naver.com/customers")
+            # driver.get("https://manage.searchad.naver.com/customers")
+            driver.get("https://manage.searchad.naver.com/customers/3216661/tool/keyword-planner")
             time.sleep(3)
 
             # 로컬 스토리지에서 tokens 값 가져오기
@@ -487,12 +488,11 @@ def fetch_naver_blog_my_logNos(blog_id, current_page):
     headers = {
         "authority": "m.blog.naver.com",
         "method": "GET",
-        "path": "/api/blogs/roketmissile/post-list?categoryNo=0&itemCount=10&page=1&userId=",
         "scheme": "https",
         "accept": "application/json, text/plain, */*",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "referer": "https://m.blog.naver.com/roketmissile?tab=1",
+        "referer": "https://m.blog.naver.com",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
     }
     try:
@@ -528,7 +528,6 @@ def fetch_gs_tag_name(blog_id, logNo):
     headers = {
         'authority': 'm.blog.naver.com',
         'method': 'GET',
-        'path': f'/{blog_id}/{logNo}?referrerCode=1',
         'scheme': 'https',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-encoding': 'gzip, deflate, br, zstd',
@@ -576,12 +575,10 @@ def fetch_naver_blog_search_logNos(query, page):
     headers = {
         "authority": "s.search.naver.com",
         "method": "GET",
-        "path": "/p/review/49/search.naver",
         "scheme": "https",
         "accept": "application/json, text/javascript, */*; q=0.01",
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "origin": "https://search.naver.com",
         "referer": f"https://search.naver.com/search.naver?sm=tab_hty.top&ssc=tab.blog.all&query={query_encoding}&oquery={query_encoding}&tqi=iyLxLlqo1awssNDx7HsssssstkG-146063",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
     }
@@ -633,7 +630,14 @@ def update_bearer_token():
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
         "content-length": "0",
         "origin": "https://manage.searchad.naver.com",
+        "priority": "u=1, i",
         "referer": "https://manage.searchad.naver.com",
+        "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-site",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     }
 
@@ -686,7 +690,14 @@ def search_keyword_cnt(keyword):
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
         "authorization": bearer_token,
-        "referer": "https://manage.searchad.naver.com/customers",
+        "priority": "u=1, i",
+        "referer": "https://manage.searchad.naver.com",
+        "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         "x-accept-language": "ko",
     }
@@ -827,7 +838,7 @@ def remaining_time_update(now_cnt, total_contents):
 
 # 실제 시작 처리 메인 로직
 def start_processing():
-    global stop_flag, extracted_data_list, id_list, extracted_data_per_list
+    global stop_flag, extracted_data_list, id_list, extracted_data_per_list, global_naver_keyword_cookies, global_naver_cookies
 
     stop_flag = False
     # 기존 로그 화면 초기화
@@ -848,6 +859,8 @@ def start_processing():
             new_print(f'{index} 번까지 임시 저장 ============================================================')
             save_excel_file_sheet1(extracted_data_per_list)
             save_excel_file_sheet2(extracted_data_list)
+            new_print(f'global_naver_keyword_cookies : {global_naver_keyword_cookies}')
+            new_print(f'global_naver_cookies : {global_naver_cookies}')
 
         new_print(f'아이디 : {blog_id} - [{index + 1}/{len(id_list)}], 계산 시작 ============================================================')
         hash_tag_cnt = 0
