@@ -34,7 +34,7 @@ def save_to_excel_1(results, file_name, sheet_name='Sheet1'):
             df_combined = pd.concat([df_existing, df_to_add], ignore_index=True)
 
             # 엑셀 파일에 데이터 덧붙이기 (index는 제외)
-            with pd.ExcelWriter(file_name, engine='openpyxl', mode='a') as writer:
+            with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
                 # 기존 파일을 열고, 특정 시트에 데이터를 덧붙임
                 df_combined.to_excel(writer, sheet_name=sheet_name, index=False)
             return True  # 엑셀 파일에 성공적으로 덧붙였으면 True 리턴
@@ -50,6 +50,46 @@ def save_to_excel_1(results, file_name, sheet_name='Sheet1'):
         # 예기치 않은 오류 처리
         print(f'엑셀 에러 발생 발생: {e}')
         return False
+
+
+def save_to_excel_one_by_one(results, file_name, sheet_name='Sheet1'):
+    try:
+        # 결과 데이터가 비어있는지 확인
+        if not results:
+            print("결과 데이터가 비어 있습니다.")
+            return False
+
+        # 파일이 존재하는지 확인
+        if os.path.exists(file_name):
+            # 파일이 있으면 기존 데이터 읽어오기
+            df_existing = pd.read_excel(file_name, sheet_name=sheet_name, engine='openpyxl')
+
+            # 새로운 데이터를 DataFrame으로 변환
+            df_new = pd.DataFrame(results)
+
+            # 기존 데이터에 새로운 데이터 추가
+            for index, row in df_new.iterrows():
+                # 기존 DataFrame에 한 행씩 추가하는 부분
+                df_existing = pd.concat([df_existing, pd.DataFrame([row])], ignore_index=True)
+
+            # 엑셀 파일에 덧붙이기 (index는 제외)
+            with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+                df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
+
+            return True  # 엑셀 파일에 성공적으로 덧붙였으면 True 리턴
+
+        else:
+            # 파일이 없으면 새로 생성
+            df = pd.DataFrame(results)
+            with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+            return True  # 새로 생성한 파일에 데이터를 저장했으면 True 리턴
+
+    except Exception as e:
+        # 예기치 않은 오류 처리
+        print(f'엑셀 에러 발생: {e}')
+        return False
+
 
 
 def main():

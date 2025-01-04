@@ -11,8 +11,6 @@ import os
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 import pandas as pd
-from urllib.parse import urlparse
-from datetime import datetime
 
 image_main_directory = 'metastyle_images'
 company_name = 'metastyle'
@@ -30,7 +28,7 @@ def setup_driver():
     chrome_options.add_argument("--start-maximized")
 
     ##### 화면이 안보이게 함 #####
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("headless")
 
     ##### 자동 경고 제거 #####
     chrome_options.add_experimental_option('useAutomationExtension', False)
@@ -41,10 +39,8 @@ def setup_driver():
     ##### 자동화 탐지 방지 설정 #####
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    chrome_options.add_argument(f'user-agent={user_agent}')
-
     ##### 자동으로 최신 크롬 드라이버를 다운로드하여 설치하는 역할 #####
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     ##### CDP 명령으로 자동화 감지 방지 #####
     driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
@@ -260,7 +256,6 @@ def get_detail_data(html):
 
             if img:
                 img_url = img['src'] if 'src' in img.attrs else ''
-                img_url = modify_img_url(img_url)
                 images.add(img_url)
 
         images = list(images)
@@ -358,13 +353,7 @@ def download_image(image_url, site_name, category, product_name, obj):
     try:
         # 이미지 이름 변경: URL에서 'media/...' 부분을 'media_'로 변경
         # image_name = image_url.split("media/")[-1].replace("/", "_")  # 'media/...'를 'media_...'로 변경
-        # URL에서 쿼리 문자열 제거
-        parsed_url = urlparse(image_url)
-        image_url_without_query = parsed_url._replace(query="").geturl()
-
-        # 이미지 이름 추출
-        image_name = image_url_without_query.split("/")[-1]
-
+        image_name = image_url.split("/")[-1]
         obj['image_name'] = image_name
         # 현재 작업 디렉토리 경로 설정
         local_directory = os.getcwd()  # 현재 작업 디렉토리
@@ -439,22 +428,8 @@ def save_to_excel_one_by_one(results, file_name, sheet_name='Sheet1'):
         print(f'엑셀 에러 발생: {e}')
         return False
 
-def get_current_datetime_2():
-    # 현재 날짜와 시간 가져오기
-    now = datetime.now()
-
-    # 날짜와 시간을 'yyyymmddhhmmss' 형식으로 포맷팅
-    formatted_datetime = now.strftime("%Y%m%d%H%M%S")
-
-    return formatted_datetime
-
 
 def main():
-    global excel_filename
-
-    current_time = get_current_datetime_2()
-    excel_filename = f"{company_name}_{current_time}.xlsx"
-
     # 셀레니움 드라이버 초기화
     driver = setup_driver()
 
@@ -463,7 +438,7 @@ def main():
     site_name = "zalando"
     category = 'womens-clothing'
 
-    page = 1
+    page = 2
     main_url = f'{url}{sub_url}?p={page}'
 
     html = main_request(main_url, driver, 5)
