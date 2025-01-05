@@ -95,6 +95,8 @@ def set_login_selenium(username, password):
     return sess
 
 
+
+
 def set_login(username, password):
     login_url = "https://tyc.best/include/login_chk.asp"  # 로그인 처리 URL
     headers = {
@@ -115,12 +117,13 @@ def set_login(username, password):
 
         # 로그인 요청 결과 확인
         if response.ok:
-            print("로그인 요청 성공!")
+
             for cookie in sess.cookies:
-                # 수정된 부분: cookie.name과 cookie.value 사용
-                sess.cookies.set(cookie.name, cookie.value)
-                print(f"{cookie.name}: {cookie.value}")
-            return sess
+                sess.cookies.set(cookie['name'], cookie['value'])
+                return sess
+            else:
+                print("대시보드 접근 실패!")
+                return None
         else:
             print("로그인 요청 실패!")
             print(response.status_code, response.text)
@@ -128,6 +131,7 @@ def set_login(username, password):
     except Exception as e:
         print(f"오류 발생: {e}")
         return None
+
 
 
 

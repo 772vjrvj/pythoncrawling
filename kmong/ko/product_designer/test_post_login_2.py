@@ -1,98 +1,7 @@
-import time
-
 import requests
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium import webdriver
 
 from requests.exceptions import RequestException
-
-def setup_driver():
-    """
-    Selenium 웹 드라이버를 설정하고 반환하는 함수입니다.
-    """
-    chrome_options = Options()
-    ###### 자동 제어 감지 방지 #####
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-
-    ##### 화면 최대 #####
-    chrome_options.add_argument("--start-maximized")
-
-    ##### 화면이 안보이게 함 #####
-    chrome_options.add_argument("--headless")
-
-    ##### 자동 경고 제거 #####
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-
-    ##### 로깅 비활성화 #####
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
-    ##### 자동화 탐지 방지 설정 #####
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    chrome_options.add_argument(f'user-agent={user_agent}')
-
-    ##### 자동으로 최신 크롬 드라이버를 다운로드하여 설치하는 역할 #####
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    ##### CDP 명령으로 자동화 감지 방지 #####
-    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-        'source': '''
-            Object.defineProperty(navigator, 'webdriver', {
-              get: () => undefined
-            })
-        '''
-    })
-    return driver
-
-
-def set_login_selenium(username, password):
-
-    # 셀레니움 드라이버 초기화
-    driver = setup_driver()
-
-    url = "https://tyc.best/dashboard/login.asp"
-
-    # 웹페이지 요청
-    driver.get(url)
-
-    time.sleep(3)
-
-    # 아이디 입력
-    memb_id = driver.find_element(By.ID, "MEMB_ID")
-    memb_id.clear()  # 기존 값 지우기 (필요 시)
-    memb_id.send_keys(username)  # 원하는 아이디 입력
-
-    # 패스워드 입력
-    passwd = driver.find_element(By.ID, "passwd")
-    passwd.clear()  # 기존 값 지우기 (필요 시)
-    passwd.send_keys(password)  # 원하는 패스워드 입력
-
-    # 엔터 키 입력 (Enter_Check 함수 실행)
-    login_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary.btn-block.w-100")
-    login_button.click()
-
-    time.sleep(3)
-
-    sess = requests.Session()
-
-    cookies = driver.get_cookies()
-    for cookie in cookies:
-        sess.cookies.set(cookie['name'], cookie['value'])
-
-    version = driver.capabilities["browserVersion"]
-    driver.quit()
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "user-agent": f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{version}"
-    }
-    sess.headers = headers
-    return sess
 
 
 def set_login(username, password):
@@ -130,7 +39,6 @@ def set_login(username, password):
         return None
 
 
-
 def get_request(sess, url):
     try:
         # GET 요청 보내기
@@ -146,7 +54,6 @@ def get_request(sess, url):
     except RequestException as req_error:
         print(f"Request failed: {req_error}")
         return None
-
 
 
 def main_reward(sess):
@@ -192,7 +99,6 @@ def main_reward(sess):
     except Exception as e:
         print(f"An error occurred in main_reward: {e}")
         return []
-
 
 
 def mining_reward(sess):
@@ -268,8 +174,6 @@ def main(username, password):
     print(f'main_reward_list : {main_reward_list}')
     mining_reward_list = mining_reward(sess)
     print(f'mining_reward_list : {mining_reward_list}')
-    # mining_reward_test_list = mining_reward_test_html()
-    # print(f'mining_reward_test_list : {mining_reward_test_list}')
 
 if __name__ == '__main__':
 
