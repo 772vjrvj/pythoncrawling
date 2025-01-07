@@ -1,284 +1,399 @@
+import tkinter as tk
+from tkinterdnd2 import DND_FILES, TkinterDnD
+import pandas as pd
+from tkinter import filedialog, font, messagebox
 import time
-
+import random
+import threading
 import requests
+import os
+from tkinter import ttk  # 진행률 표시를 위한 모듈 추가
+import ctypes
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium import webdriver
-
-from requests.exceptions import RequestException
-
-def setup_driver():
-    """
-    Selenium 웹 드라이버를 설정하고 반환하는 함수입니다.
-    """
-    chrome_options = Options()
-    ###### 자동 제어 감지 방지 #####
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-
-    ##### 화면 최대 #####
-    chrome_options.add_argument("--start-maximized")
-
-    ##### 화면이 안보이게 함 #####
-    chrome_options.add_argument("--headless")
-
-    ##### 자동 경고 제거 #####
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-
-    ##### 로깅 비활성화 #####
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
-    ##### 자동화 탐지 방지 설정 #####
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    chrome_options.add_argument(f'user-agent={user_agent}')
-
-    ##### 자동으로 최신 크롬 드라이버를 다운로드하여 설치하는 역할 #####
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    ##### CDP 명령으로 자동화 감지 방지 #####
-    driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-        'source': '''
-            Object.defineProperty(navigator, 'webdriver', {
-              get: () => undefined
-            })
-        '''
-    })
-    return driver
+import re
+import json
 
 
-def set_login_selenium(username, password):
+url_list = []
+extracted_data_list = []  # 모든 데이터 저장용
+stop_flag = False  # 중지를 위한 플래그
 
-    # 셀레니움 드라이버 초기화
-    driver = setup_driver()
-
-    url = "https://tyc.best/dashboard/login.asp"
-
-    # 웹페이지 요청
-    driver.get(url)
-
-    time.sleep(3)
-
-    # 아이디 입력
-    memb_id = driver.find_element(By.ID, "MEMB_ID")
-    memb_id.clear()  # 기존 값 지우기 (필요 시)
-    memb_id.send_keys(username)  # 원하는 아이디 입력
-
-    # 패스워드 입력
-    passwd = driver.find_element(By.ID, "passwd")
-    passwd.clear()  # 기존 값 지우기 (필요 시)
-    passwd.send_keys(password)  # 원하는 패스워드 입력
-
-    # 엔터 키 입력 (Enter_Check 함수 실행)
-    login_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary.btn-block.w-100")
-    login_button.click()
-
-    time.sleep(3)
-
-    sess = requests.Session()
-
-    cookies = driver.get_cookies()
-    for cookie in cookies:
-        sess.cookies.set(cookie['name'], cookie['value'])
-
-    version = driver.capabilities["browserVersion"]
-    driver.quit()
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "user-agent": f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{version}"
-    }
-    sess.headers = headers
-    return sess
+def read_excel_file(filepath):
+    df = pd.read_excel(filepath, sheet_name=0)
+    url_list = df.iloc[:, 0].tolist()
+    return url_list
 
 
-def set_login(username, password):
-    login_url = "https://tyc.best/include/login_chk.asp"  # 로그인 처리 URL
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-
-    # 로그인 데이터
-    login_data = {
-        "MEMB_ID": username,  # 아이디
-        "PASS2": password    # 비밀번호
-    }
-
-    # 세션 생성
-    sess = requests.Session()
-    try:
-        # 로그인 요청
-        response = sess.post(login_url, data=login_data, headers=headers)
-
-        # 로그인 요청 결과 확인
-        if response.ok:
-            print("로그인 요청 성공!")
-            for cookie in sess.cookies:
-                # 수정된 부분: cookie.name과 cookie.value 사용
-                sess.cookies.set(cookie.name, cookie.value)
-                print(f"{cookie.name}: {cookie.value}")
-            return sess
-        else:
-            print("로그인 요청 실패!")
-            print(response.status_code, response.text)
-            return None
-    except Exception as e:
-        print(f"오류 발생: {e}")
-        return None
+def update_log(url_list):
+    log_text_widget.delete(1.0, tk.END)
+    for url in url_list:
+        log_text_widget.insert(tk.END, url + "\n")
+    log_text_widget.insert(tk.END, f"\n총 {len(url_list)}개의 URL이 있습니다.\n")
+    log_text_widget.see(tk.END)
 
 
+def new_print(text, level="INFO"):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_text = f"[{timestamp}] [{level}] {text}"
+    print(formatted_text)
+    log_text_widget.insert(tk.END, f"{formatted_text}\n")
+    log_text_widget.see(tk.END)
 
-def get_request(sess, url):
-    try:
-        # GET 요청 보내기
-        response = sess.get(url, timeout=10)  # 타임아웃 설정
 
-        # 상태 코드 확인
-        if response.status_code == 200:
+def get_soup(url, timeout=10, retries=2):
+    while retries > 0:
+        try:
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()  # 요청에 실패할 경우 예외를 발생시킴
             return BeautifulSoup(response.text, 'html.parser')
+        except requests.exceptions.InvalidURL as e:
+            print(f"Invalid URL: {url}. Skipping.")
+            break  # Invalid URL이면 바로 다음으로 넘어감
+        except requests.exceptions.HTTPError as e:
+            # 404나 400 범주의 에러는 재시도 없이 바로 종료
+            if response.status_code == 404 or response.status_code == 400:
+                print(f"Request error: {e}. Status code: {response.status_code}. Skipping URL.")
+                break
+            print(f"Request error: {e}. Retrying... ({retries} retries left)")
+            return response.status_code
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}. Retrying... ({retries} retries left)")
+            retries -= 1
+            time.sleep(2)  # 재시도 전 잠시 대기
+    return None
+
+
+def process_author_info(url):
+    soup = get_soup(url)
+    if not soup:  # soup이 None이면 다음으로 넘어감
+        new_print(f"Skipping URL due to failed request or parsing: {url}", level="WARNING")
+        return 404
+
+    if soup == 404 or soup == 400:
+        return soup
+
+    author_span = soup.find("span", itemprop="author", itemscope=True, itemtype="http://schema.org/Person")
+    if author_span:
+        author_url = author_span.find("link", itemprop="url")["href"]
+        return f"{author_url}/videos"
+    return None
+
+
+def set_remaining_time(total_urls, index):
+    # 진행률 업데이트
+    progress["value"] = index
+    progress_label.config(text=f"진행률: {int((index) / total_urls * 100)}%")
+
+    remaining_time = (total_urls - (index)) * 2.5  # 남은 URL 개수 * 2초
+    eta_label.config(text=f"남은 시간: {time.strftime('%H:%M:%S', time.gmtime(remaining_time))}")
+
+
+def extract_published_time(url):
+    soup = get_soup(url)
+    if not soup:
+        new_print("Failed to retrieve the page or parse HTML.")
+        return "이 페이지를 사용할 수 없습니다."
+
+    if soup == 404 or soup == 400:
+        return "이 페이지를 사용할 수 없습니다."
+
+    scripts = soup.find_all("script")
+    for script in scripts:
+
+        if script.string and "ytInitialPlayerResponse" in script.string:
+            json_text = re.search(r"var ytInitialPlayerResponse = ({.*?});", script.string, re.DOTALL)
+            if json_text:
+                try:
+                    yt_data = json.loads(json_text.group(1))
+                    playabilityStatus = yt_data.get("playabilityStatus", {})
+                    if playabilityStatus.get("status", {}):
+                        status = playabilityStatus["status"]
+                        if status != 'OK':
+                            return status
+                except json.JSONDecodeError as e:
+                    print(f"JSON Decode Error: {e}")
+                    return ""
+
+        if script.string and "ytInitialData" in script.string:
+            json_text = re.search(r"var ytInitialData = ({.*?});", script.string, re.DOTALL)
+            if json_text:
+                try:
+                    yt_data = json.loads(json_text.group(1))
+
+                    contents = yt_data.get("contents", {}).get("twoColumnWatchNextResults", {}).get("results", {}).get("results", {}).get("contents", [])
+                    if contents:
+                        for content in contents:
+                            # `relativeDateText`의 `simpleText` 값을 가져옴
+                            simple_text = content.get("videoPrimaryInfoRenderer", {}).get("relativeDateText", {}).get("simpleText", "")
+                            if simple_text:
+                                return simple_text
+
+                    tabs = yt_data.get("contents", {}).get("twoColumnBrowseResultsRenderer", {}).get("tabs", [])
+                    if tabs:
+                        for tab in tabs:
+
+                            section_list_renderer = tab.get("tabRenderer", {}).get("content", {}).get("sectionListRenderer", {})
+                            contents = section_list_renderer.get("contents", [])
+                            for content in contents:
+                                channel_state = content.get("channelOwnerEmptyStateRenderer", {})
+                                description = channel_state.get("description", {}).get("simpleText")
+                                if description:
+                                    return description  # "채널에 콘텐츠가 없습니다."
+
+                            rich_grid_renderer = tab.get("tabRenderer", {}).get("content", {}).get("richGridRenderer", {})
+                            for item in rich_grid_renderer.get("contents", []):
+                                video_renderer = item.get("richItemRenderer", {}).get("content", {}).get("videoRenderer", {})
+                                if video_renderer.get("publishedTimeText"):
+                                    return video_renderer["publishedTimeText"]["simpleText"]
+
+                    published_time_text = yt_data.get("playerOverlays", {}).get("playerOverlayRenderer", {}).get("autoplay", {}).get("playerOverlayAutoplayRenderer", {}).get("publishedTimeText", {})
+                    if published_time_text.get("simpleText"):
+                        return published_time_text["simpleText"]
+
+                    return ""
+
+                except json.JSONDecodeError as e:
+                    print(f"JSON Decode Error: {e}")
+                    return ""
+    print("Failed to find published time.")
+    return ""
+
+
+def start_processing():
+    global stop_flag, extracted_data_list, root
+    stop_flag = False
+    log_text_widget.delete(1.0, tk.END)  # 기존 로그 화면 초기화
+
+    extracted_data_list = []
+    total_urls = len(url_list)
+    progress["maximum"] = total_urls
+
+    for index, url in enumerate(url_list, start=1):
+        if stop_flag:
+            break
+        new_print(f"Processing URL {index}: {url}")
+
+
+        if url.startswith("www."):
+            url = "https://" + url
+
+        if not url.startswith("http"):
+            extracted_data_list.append("잘못된 URL 입니다.")
+            set_remaining_time(total_urls, index)
+            continue
+
+        if "/shorts" in url:
+            extracted_data_list.append("쇼츠 제외.")
+            set_remaining_time(total_urls, index)
+            continue
+
+        if url.endswith("/featured") or url.endswith("/about"):
+            video_url = re.sub(r"/(featured|about)$", "/videos", url)
+        elif "/videos" in url:
+            url = re.sub(r"/videos+", "/videos", url)  # '/videos' 뒤에 연속된 's'를 제거하여 '/videos'로 통일
+            video_url = url
+        elif "youtu.be" in url:
+            video_url = url
+        elif "/watch?v" in url:
+            video_url = url
+        elif not any(substring in url for substring in ["/c/", "/channel/", "/@"]):
+            video_url = process_author_info(url)
+
+            if video_url == 404 or video_url == 400:
+                extracted_data_list.append("이 페이지를 사용할 수 없습니다.")
+                set_remaining_time(total_urls, index)
+                continue
         else:
-            print(f"Unexpected status code: {response.status_code}")
-            return None
+            video_url = url.rstrip('/') + "/videos"
+        new_print(f"video_url : {video_url}")
 
-    except RequestException as req_error:
-        print(f"Request failed: {req_error}")
-        return None
+        result = ""
+        if video_url:
+            result = extract_published_time(video_url)
 
+        new_print(f"Result for URL {index}: {result or 'Not found'}")
+        extracted_data_list.append(result)
 
+        set_remaining_time(total_urls, index)
 
-def main_reward(sess):
+        time.sleep(random.uniform(2, 5))
 
-    url = "https://tyc.best/dashboard/index.asp"
-
-    try:
-        # HTML 가져오기
-        soup = get_request(sess, url)
-
-        # soup이 None인 경우 처리
-        if not soup:
-            print("Failed to fetch or parse the HTML content.")
-            return []
-
-        # 최종 데이터 저장할 배열
-        data_list = []
-
-        # 첫 번째 div 탐색
-        main_divs = soup.find_all("div", class_="col-xxl-auto col-xl-3 col-sm-6 box-col-6")
-        for main_div in main_divs:
-            try:
-                # 두 번째 div 탐색
-                widget_contents = main_div.find_all("div", class_="widget-content")
-                for widget_content in widget_contents:
-                    # 세 번째 div 탐색
-                    inner_divs = widget_content.find_all("div")
-                    if len(inner_divs) >= 2:
-                        h4_tag = inner_divs[2].find("h4")
-                        span_tag = inner_divs[2].find("span", class_="f-light")
-                        if h4_tag and span_tag:
-                            # 데이터 저장
-                            data = {
-                                "값": h4_tag.text.strip(),
-                                "이름": span_tag.text.strip()
-                            }
-                            data_list.append(data)
-            except Exception as e:
-                print(f"Error processing a widget content: {e}")
-
-        return data_list
-
-    except Exception as e:
-        print(f"An error occurred in main_reward: {e}")
-        return []
+    if not stop_flag:
+        save_to_excel(extracted_data_list)
+        new_print("작업 완료.", level="SUCCESS")
+        flash_window(root)
+        messagebox.showinfo("알림", "작업이 완료되었습니다.")
+        stop_flash_window(root)  # 메시지박스 확인 후 깜빡임 중지
 
 
-
-def mining_reward(sess):
-    try:
-        # GET 요청 보내기
-        url = "https://tyc.best/dashboard/depth/bonus/bonus_daylist.asp"
-        soup = get_request(sess, url)
-
-        data_list = []
-
-        # soup이 None인 경우 처리
-        if soup:
-            table = soup.find("table", class_="basic_table")
-            if table:
-                headers = [th.text.strip() for th in table.find("thead").find_all("th")]
-                tbody = table.find("tbody")
-                if tbody and headers:
-                    rows = tbody.find_all("tr")
-                    if not (rows and len(rows) == 1 and rows[0].find("td", colspan="7") and "No articles.." in rows[0].text):
-                        for row in rows:
-                            cells = [cell.text.strip() for cell in row.find_all("td")]
-                            if len(cells) == len(headers):  # 헤더와 열 개수 일치 확인
-                                data_list.append(dict(zip(headers, cells)))
-        # 결과 반환
-        return data_list
-
-    except Exception as e:
-        print(f"An unexpected error occurred in mining_reward: {e}")
-        return []
+flashing = True  # 깜빡임 상태를 관리하는 플래그
 
 
-def mining_reward_test_html():
-    try:
-        # 실행 경로의 index.html 파일 읽기
-        file_path = "index.html"
-        with open(file_path, "r", encoding="utf-8") as file:
-            html_content = file.read()
+def flash_window(root):
+    global flashing
 
-        # BeautifulSoup으로 HTML 파싱
-        soup = BeautifulSoup(html_content, "html.parser")
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
 
-        data_list = []
+    FLASHW_ALL = 3  # 모든 플래시
+    hwnd = root.winfo_id()  # Tkinter 창의 윈도우 핸들 얻기
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, FLASHW_ALL, 0, 0)
 
-        # soup이 None인 경우 처리
-        if soup:
-            table = soup.find("table", class_="basic_table")
-            if table:
-                headers = [th.text.strip() for th in table.find("thead").find_all("th")]
-                tbody = table.find("tbody")
-                if tbody and headers:
-                    rows = tbody.find_all("tr")
-                    if not (rows and len(rows) == 1 and rows[0].find("td", colspan="7") and "No articles.." in rows[0].text):
-                        for row in rows:
-                            cells = [cell.text.strip() for cell in row.find_all("td")]
-                            if len(cells) == len(headers):  # 헤더와 열 개수 일치 확인
-                                data_list.append(dict(zip(headers, cells)))
+    def flash():
+        while flashing:
+            ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
+            time.sleep(0.5)  # 0.5초 간격으로 깜빡임
 
-        # 결과 반환
-        return data_list
-
-    except FileNotFoundError:
-        print("Error: 'index.html' file not found.")
-        return []
-    except Exception as e:
-        print(f"An unexpected error occurred in mining_reward: {e}")
-        return []
+    threading.Thread(target=flash, daemon=True).start()  # 깜빡임을 별도의 쓰레드에서 실행
 
 
-def main(username, password):
+def stop_flash_window(root):
+    global flashing
+    flashing = False
 
-    sess = set_login(username, password)
-    main_reward_list = main_reward(sess)
-    print(f'main_reward_list : {main_reward_list}')
-    mining_reward_list = mining_reward(sess)
-    print(f'mining_reward_list : {mining_reward_list}')
-    # mining_reward_test_list = mining_reward_test_html()
-    # print(f'mining_reward_test_list : {mining_reward_test_list}')
+    # FLASHWINFO 구조체 정의
+    class FLASHWINFO(ctypes.Structure):
+        _fields_ = [('cbSize', ctypes.c_uint),
+                    ('hwnd', ctypes.c_void_p),
+                    ('dwFlags', ctypes.c_uint),
+                    ('uCount', ctypes.c_uint),
+                    ('dwTimeout', ctypes.c_uint)]
 
-if __name__ == '__main__':
+    hwnd = root.winfo_id()
+    flash_info = FLASHWINFO(ctypes.sizeof(FLASHWINFO), hwnd, 0, 0, 0)
+    ctypes.windll.user32.FlashWindowEx(ctypes.byref(flash_info))
 
-    username = "kkckkc"
-    password = "k@4358220"
 
-    if username and password:
-        main(username, password)
+file_path = None
+
+
+def save_to_excel(data):
+    global file_path
+    if file_path:
+        # 기존 엑셀 파일 불러오기
+        df = pd.read_excel(file_path, sheet_name=0)
+
+        # B열에 결과값 추가
+        df['최신 업데이트 일'] = data
+
+        # 동일한 파일에 덮어쓰기
+        df.to_excel(file_path, index=False)
+
+        new_print(f"Data saved to {file_path}", level="INFO")
     else:
-        print("아이디와 패스워드를 확인하세요.")
+        new_print("No file selected for saving.", level="WARNING")
 
 
+def on_drop(event):
+    global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
+    file_path = event.data.strip('{}')
+    url_list = read_excel_file(file_path)
+    update_log(url_list)
+    check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
+
+def browse_file():
+    global url_list, file_path  # url_list와 file_path 변수를 전역으로 선언
+    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
+    if file_path:
+        url_list = read_excel_file(file_path)
+        update_log(url_list)
+        check_list_and_toggle_button()  # 리스트 상태 확인 및 버튼 활성화
+
+
+def toggle_start_stop():
+    if not url_list:
+        messagebox.showwarning("경고", "목록을 찾을 수 없습니다.")
+        return
+
+    if start_button.config('text')[-1] == '시작':
+        start_button.config(text="중지", bg="red", fg="white")
+        threading.Thread(target=start_processing).start()
+    else:
+        stop_processing()
+
+
+def stop_processing():
+    global stop_flag, url_list
+    stop_flag = True
+    url_list = []  # 배열 초기화
+    start_button.config(text="시작", bg="#d0f0c0", fg="black", state=tk.DISABLED)
+
+
+def check_list_and_toggle_button():
+    if url_list:
+        start_button.config(state=tk.NORMAL)
+    else:
+        start_button.config(state=tk.DISABLED)
+
+
+def main():
+    global log_text_widget, start_button, progress, progress_label, eta_label, root
+
+
+    root = TkinterDnD.Tk()
+    root.title("유튜브 데이터 수집 프로그램")
+    root.geometry("600x600")
+
+    font_large = font.Font(size=10)
+
+    btn_browse = tk.Button(root, text="엑셀 파일 선택", command=browse_file, font=font_large, width=20)
+    btn_browse.pack(pady=10)
+
+    lbl_or = tk.Label(root, text="또는", font=font_large)
+    lbl_or.pack(pady=5)
+
+    lbl_drop = tk.Label(root, text="여기에 파일을 드래그 앤 드롭하세요", relief="solid", width=40, height=5, font=font_large, bg="white")
+    lbl_drop.pack(pady=10)
+
+    lbl_drop.drop_target_register(DND_FILES)
+    lbl_drop.dnd_bind('<<Drop>>', on_drop)
+
+    # 시작 버튼
+    start_button = tk.Button(root, text="시작", command=toggle_start_stop, font=font_large, bg="#d0f0c0", fg="black", width=25, state=tk.DISABLED)
+    start_button.pack(pady=10)
+
+    log_label = tk.Label(root, text="로그 화면", font=font_large)
+    log_label.pack(fill=tk.X, padx=10)
+
+    log_frame = tk.Frame(root)
+    log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+    x_scrollbar = tk.Scrollbar(log_frame, orient=tk.HORIZONTAL)
+    x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    y_scrollbar = tk.Scrollbar(log_frame, orient=tk.VERTICAL)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    log_text_widget = tk.Text(log_frame, wrap=tk.NONE, height=10, font=font_large, xscrollcommand=x_scrollbar.set, yscrollcommand=y_scrollbar.set)
+    log_text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    x_scrollbar.config(command=log_text_widget.xview)
+    y_scrollbar.config(command=log_text_widget.yview)
+
+    # 진행률
+    progress_frame = tk.Frame(root)
+    progress_frame.pack(fill=tk.X, padx=10, pady=10)
+
+    progress_label = tk.Label(progress_frame, text="진행률: 0%", font=font_large)
+    eta_label = tk.Label(progress_frame, text="남은 시간: 00:00:00", font=font_large)
+
+    progress_label.pack(side=tk.TOP, padx=5)
+    eta_label.pack(side=tk.TOP, padx=5)
+
+    style = ttk.Style()
+    style.configure("TProgressbar", thickness=30, troughcolor='white', background='green')
+    progress = ttk.Progressbar(progress_frame, orient="horizontal", mode="determinate", style="TProgressbar")
+    progress.pack(fill=tk.X, padx=10, pady=10, expand=True)
+
+    root.mainloop()
+
+
+
+if __name__ == "__main__":
+    main()
