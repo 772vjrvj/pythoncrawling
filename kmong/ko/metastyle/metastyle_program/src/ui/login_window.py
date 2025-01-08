@@ -12,7 +12,7 @@ class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("로그인 화면")
+        self.setWindowTitle("로그인")
         self.setGeometry(100, 100, 500, 300)  # 화면 크기 설정
         self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
 
@@ -54,7 +54,7 @@ class LoginWindow(QWidget):
 
         self.login_button = QPushButton("로그인", self)
         self.login_button.setStyleSheet("""
-            background-color: #8A2BE2;
+            background-color: #4682B4;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -68,7 +68,7 @@ class LoginWindow(QWidget):
         # 비밀번호 변경 버튼
         self.change_password_button = QPushButton("비밀번호 변경", self)
         self.change_password_button.setStyleSheet("""
-            background-color: #8A2BE2;
+            background-color: #4682B4;
             color: white;
             border-radius: 20px;
             font-size: 14px;

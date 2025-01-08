@@ -4,9 +4,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
                              QTextEdit, QApplication, QProgressBar, QLineEdit)
 
-from src.ui.all_register_popup import AllRegisterPopup
+from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
-from src.workers.api_selenium_youtube_set_worker import ApiYoutubeSetLoadWorker
+from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -23,11 +23,16 @@ class MainWindow(QWidget):
         self.progress_thread = None
         self.on_demand_worker = None  # 요청 시 실행 스레드
         self.cookies = cookies
+        self.check_list = []
 
         # 세션 관리용 API Worker 초기화
         self.api_worker = CheckWorker(cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
         self.api_worker.start()  # 스레드 시작
+
+        self.check_popup = CheckPopup(parent=self)
+        self.check_popup.check_list_signal.connect(self.check_list_update)
+
 
 
     def handle_api_failure(self, error_message):
@@ -54,25 +59,25 @@ class MainWindow(QWidget):
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
 
-        # 입력 창 생성
-        self.input_field = QLineEdit()
-        self.input_field.setStyleSheet("""
-            background-color: white;
-            color: black;
-            border: 1px solid black;
+        # 항목선택
+        self.check_list_button = QPushButton("항목선택")
+        self.check_list_button.setStyleSheet("""
+            background-color: black;
+            color: white;
             border-radius: 15%;
             font-size: 16px;
-            padding: 5px;
+            padding: 10px;
         """)
-        self.input_field.setFixedWidth(200)  # 고정된 너비
-        self.input_field.setFixedHeight(40)  # 고정된 높이
-        self.input_field.setPlaceholderText("검색어를 입력하세요.")  # 힌트 텍스트
+        self.check_list_button.setFixedWidth(100)  # 고정된 너비
+        self.check_list_button.setFixedHeight(40)  # 고정된 높이
+        self.check_list_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
+        self.check_list_button.clicked.connect(self.open_check_popup)
 
 
         # 선택수집
         self.collect_button = QPushButton("시작")
         self.collect_button.setStyleSheet("""
-            background-color: #8A2BE2;
+            background-color: #4682B4;
             color: white;
             border-radius: 15%;
             font-size: 16px;
@@ -85,14 +90,14 @@ class MainWindow(QWidget):
 
 
         # 왼쪽 버튼 레이아웃
-        left_button_layout.addWidget(self.input_field)
+        left_button_layout.addWidget(self.check_list_button)
         left_button_layout.addWidget(self.collect_button)
 
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
 
         # 헤더에 텍스트 추가
-        header_label = QLabel("유튜브 데이터 추출")
+        header_label = QLabel("METASTYLE 데이터 추출")
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
 
@@ -167,10 +172,9 @@ class MainWindow(QWidget):
 
 
     def start_on_demand_worker(self):
-        input_text = self.input_field.text()  # QLineEdit의 텍스트 가져오기
 
-        if input_text is None:
-            self.show_message("검색어를 입력하세요.", 'warn')
+        if self.check_list is None:
+            self.show_message("목록을 선택하세요.", 'warn')
             return
 
         # 버튼의 텍스트와 스타일 변경
@@ -186,7 +190,7 @@ class MainWindow(QWidget):
             """)
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
-                self.on_demand_worker = ApiYoutubeSetLoadWorker(input_text, self)
+                self.on_demand_worker = ApiMytheresaSetLoadWorker(self.check_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.start()
@@ -218,14 +222,6 @@ class MainWindow(QWidget):
         size = self.geometry()  # 현재 창 크기
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
-
-    # url 세팅
-    def set_url_list(self, url_list):
-        global main_url_list
-        main_url_list = url_list
-        self.add_log(f'URL 세팅완료: {main_url_list}')
-
-
     # 경고 alert창
     def show_message(self, message, type):
         # QMessageBox 생성
@@ -240,3 +236,20 @@ class MainWindow(QWidget):
         msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
         msg.exec_()  # 메시지 박스 표시
 
+    # url 세팅
+    def set_url_list(self, url_list):
+        global main_url_list
+        main_url_list = url_list
+        self.add_log(f'URL 세팅완료: {main_url_list}')
+
+    # 개별 등록 팝업
+    def open_check_popup(self):
+        # 등록 팝업창 열기
+        self.check_popup.exec_()
+
+
+    # 항목 업데이트
+    def check_list_update(self, check_list):
+        self.check_list = check_list
+        self.add_log(f'목록 {check_list}')
+        self.add_log('크롤링 목록이 선택되었습니다.')
