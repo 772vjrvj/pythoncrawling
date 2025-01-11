@@ -1,8 +1,11 @@
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
                              QTextEdit, QApplication, QProgressBar, QLineEdit)
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
+from queue import Queue
+from threading import Lock
 
 from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -16,21 +19,26 @@ main_url_list = []
 class MainWindow(QWidget):
     
     # 초기화
-    def __init__(self, cookies=None):
+    def __init__(self, cookies=None, site=None, color=None, check_list=None):
         super().__init__()
+        self.site = site
+        self.color = color
         self.set_layout()
         self.daily_worker = None  # 24시 실행 스레드
         self.progress_thread = None
         self.on_demand_worker = None  # 요청 시 실행 스레드
         self.cookies = cookies
-        self.check_list = []
+        self.check_list = check_list
+        self.select_check_list = None
+        self.task_queue = Queue()
+        self.queue_lock = Lock()  # 대기열 접근 보호용 Lock 생성
 
         # 세션 관리용 API Worker 초기화
         self.api_worker = CheckWorker(cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
         self.api_worker.start()  # 스레드 시작
 
-        self.check_popup = CheckPopup(parent=self)
+        self.check_popup = CheckPopup(site, check_list)
         self.check_popup.check_list_signal.connect(self.check_list_update)
 
 
@@ -38,13 +46,38 @@ class MainWindow(QWidget):
     def handle_api_failure(self, error_message):
         """API 요청 실패 처리"""
         QMessageBox.critical(self, "프로그램 종료", f"동일 접속자가 존재해서 프로그램을 종료합니다.\n오류: {error_message}")
-        # self.api_worker.stop()  # 스레드 중지
+        # API Worker 종료
+        if self.api_worker is not None and self.api_worker.isRunning():
+            self.api_worker.stop()  # 안전 종료 호출
+            self.api_worker.wait()  # 종료 대기
+
+        # ProgressThread 종료
+        if self.progress_thread is not None and self.progress_thread.isRunning():
+            self.progress_thread.stop()  # 안전 종료 호출
+            self.progress_thread.wait()  # 종료 대기
+
+        if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
+            self.on_demand_worker.stop()  # 안전 종료 호출
+            self.on_demand_worker.wait()  # 종료 대기
+
         QApplication.instance().quit()  # 프로그램 종료
 
 
     # 레이아웃 설정
     def set_layout(self):
         self.setWindowTitle("메인 화면")
+
+        # 동그란 파란색 원을 그린 아이콘 생성
+        icon_pixmap = QPixmap(32, 32)  # 아이콘 크기 (64x64 픽셀)
+        icon_pixmap.fill(QColor("transparent"))  # 투명 배경
+        painter = QPainter(icon_pixmap)
+        painter.setBrush(QColor("#e0e0e0"))  # 파란색 브러시
+        painter.setPen(QColor("#e0e0e0"))  # 테두리 색상
+        painter.drawRect(0, 0, 32, 32)  # 동그란 원 그리기 (좌상단 0,0에서 64x64 크기)
+        painter.end()
+        # 윈도우 아이콘 설정
+        self.setWindowIcon(QIcon(icon_pixmap))
+
         self.setGeometry(100, 100, 1000, 700)  # 메인 화면 크기 설정
         self.setStyleSheet("background-color: white;")  # 배경색 흰색
 
@@ -62,7 +95,7 @@ class MainWindow(QWidget):
         # 항목선택
         self.check_list_button = QPushButton("항목선택")
         self.check_list_button.setStyleSheet("""
-            background-color: black;
+            background-color: #7d7c7c;
             color: white;
             border-radius: 15%;
             font-size: 16px;
@@ -76,8 +109,8 @@ class MainWindow(QWidget):
 
         # 선택수집
         self.collect_button = QPushButton("시작")
-        self.collect_button.setStyleSheet("""
-            background-color: #4682B4;
+        self.collect_button.setStyleSheet(f"""
+            background-color: {self.color};
             color: white;
             border-radius: 15%;
             font-size: 16px;
@@ -97,7 +130,7 @@ class MainWindow(QWidget):
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
 
         # 헤더에 텍스트 추가
-        header_label = QLabel("METASTYLE 데이터 추출")
+        header_label = QLabel(f"{self.site} 데이터 추출")
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
 
@@ -139,21 +172,24 @@ class MainWindow(QWidget):
         self.center_window()
 
 
-    # 게이티 세팅
     def set_progress(self, end_value):
+        with self.queue_lock:  # 대기열 접근 보호
+            self.task_queue.put(end_value)
 
+        # 실행 중인 쓰레드가 없으면 작업 시작
         if self.progress_thread is None or not self.progress_thread.isRunning():
+            self.start_next_task()
 
-            start_value = self.progress_bar.value()  # 현재 진행 상태 값을 시작값으로 설정
 
-            # ProgressThread를 사용하여 별도의 스레드에서 실행
-            self.progress_thread = ProgressThread(start_value, end_value)
-
-            # 진행 상태가 변경될 때마다 progress_signal을 받으면 progress_bar를 업데이트
-            self.progress_thread.progress_signal.connect(self.update_progress)
-
-            # 별도의 스레드에서 실행 시작
-            self.progress_thread.start()
+    # 게이지 세팅
+    def start_next_task(self):
+        with self.queue_lock:  # 대기열 보호
+            if not self.task_queue.empty():
+                next_end_value = self.task_queue.get()
+                self.progress_thread = ProgressThread(self.progress_bar.value(), next_end_value)
+                self.progress_thread.progress_signal.connect(self.update_progress)
+                self.progress_thread.finished.connect(self.on_thread_finished)
+                self.progress_thread.start()
 
 
     def update_progress(self, value):
@@ -174,7 +210,7 @@ class MainWindow(QWidget):
     def start_on_demand_worker(self):
 
         if self.check_list is None:
-            self.show_message("목록을 선택하세요.", 'warn')
+            self.show_message("크롤링 목록을 선택하세요.", 'warn')
             return
 
         # 버튼의 텍스트와 스타일 변경
@@ -190,17 +226,25 @@ class MainWindow(QWidget):
             """)
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
-                self.on_demand_worker = ApiMytheresaSetLoadWorker(self.check_list)
+
+                if self.site == 'MYTHERESA':
+                    self.on_demand_worker = ApiMytheresaSetLoadWorker(self.select_check_list)
+                elif self.site == 'ZALANDO':
+                    self.on_demand_worker = None
+
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
+                self.on_demand_worker.progress_end_signal.connect(self.on_thread_last_finished)
                 self.on_demand_worker.start()
+
             elif not self.on_demand_worker.isRunning():  # 이미 종료된 worker라면 다시 시작
+
                 self.on_demand_worker.start()
 
         else:
             self.collect_button.setText("시작")
-            self.collect_button.setStyleSheet("""
-                background-color: #8A2BE2;
+            self.collect_button.setStyleSheet(f"""
+                background-color: {self.color};
                 color: white;
                 border-radius: 15%;
                 font-size: 16px;
@@ -213,6 +257,7 @@ class MainWindow(QWidget):
                 self.on_demand_worker.terminate()  # 중지
                 self.on_demand_worker.wait()  # 완료될 때까지 대기
                 self.on_demand_worker = None  # worker 객체 초기화
+                self.on_thread_last_finished()
 
 
     # 화면 중앙
@@ -249,7 +294,17 @@ class MainWindow(QWidget):
 
 
     # 항목 업데이트
-    def check_list_update(self, check_list):
-        self.check_list = check_list
-        self.add_log(f'목록 {check_list}')
-        self.add_log('크롤링 목록이 선택되었습니다.')
+    def check_list_update(self, select_check_list):
+        self.select_check_list = select_check_list
+        self.add_log(f'크롤링 목록 : {select_check_list}')
+
+
+    def on_thread_finished(self):
+        self.progress_thread = None
+        self.start_next_task()
+
+
+    def on_thread_last_finished(self):
+        self.progress_thread = None
+        self.add_log("모든 작업이 종료되었습니다.")
+        self.progress_bar.setValue(100)  # 게이지 초기화 (또는 완료 상태 유지)

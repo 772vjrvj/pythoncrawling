@@ -1,7 +1,8 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 
-from src.ui.main_window import MainWindow
+from src.ui.select_window import SelectWindow
 from src.workers.login_thread import LoginThread
 from src.ui.password_change_window import PasswordChangeWindow
 
@@ -13,6 +14,18 @@ class LoginWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle("로그인")
+
+        # 동그란 파란색 원을 그린 아이콘 생성
+        icon_pixmap = QPixmap(32, 32)  # 아이콘 크기 (64x64 픽셀)
+        icon_pixmap.fill(QColor("transparent"))  # 투명 배경
+        painter = QPainter(icon_pixmap)
+        painter.setBrush(QColor("#e0e0e0"))  # 파란색 브러시
+        painter.setPen(QColor("#e0e0e0"))  # 테두리 색상
+        painter.drawRect(0, 0, 32, 32)  # 동그란 원 그리기 (좌상단 0,0에서 64x64 크기)
+        painter.end()
+        # 윈도우 아이콘 설정
+        self.setWindowIcon(QIcon(icon_pixmap))
+
         self.setGeometry(100, 100, 500, 300)  # 화면 크기 설정
         self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
 
@@ -130,5 +143,5 @@ class LoginWindow(QWidget):
     def main_window(self, cookies):
         # 로그인 성공 시 메인 화면을 새롭게 생성
         self.close()  # 로그인 화면 종료
-        self.main_screen = MainWindow(cookies)
-        self.main_screen.show()
+        self.select_screen = SelectWindow(cookies)
+        self.select_screen.show()
