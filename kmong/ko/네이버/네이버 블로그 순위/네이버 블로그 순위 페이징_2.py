@@ -115,7 +115,7 @@ class MainWindow(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("카페 게시글 검색기")
+        self.setWindowTitle("네이버 블로그 검산")
         self.setGeometry(100, 100, 1000, 720)
         self.setStyleSheet(""" 
             QWidget { 
@@ -186,10 +186,10 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
         # 검색 레이아웃에 로그인 버튼 추가
-        login_button = QPushButton("로그인")
-        login_button.clicked.connect(self.on_login_clicked)
+        self.login_button = QPushButton("로그인")
+        self.login_button.clicked.connect(self.on_login_clicked)
 
-        search_layout.addWidget(login_button)  # 로그인 버튼을 검색 레이아웃에 추가
+        search_layout.addWidget(self.login_button)  # 로그인 버튼을 검색 레이아웃에 추가
 
 
     def on_login_clicked(self):
@@ -203,8 +203,19 @@ class MainWindow(QWidget):
         if cookies:
             QMessageBox.information(self, "로그인 성공", message)
             global_cookies.update(cookies)  # 전역 쿠키 업데이트
+            self.login_button.setText("로그아웃")  # 버튼 텍스트 변경
+            self.login_button.clicked.disconnect()  # 기존 클릭 이벤트 제거
+            self.login_button.clicked.connect(self.on_logout_clicked)  # 새로운 클릭 이벤트 연결
+
         else:
             QMessageBox.warning(self, "로그인 실패", message)
+
+    def on_logout_clicked(self):
+        global_cookies.update({})
+        QMessageBox.information(self, "로그아웃 성공", "로그아웃 되었습니다.")
+        self.login_button.setText("로그인")  # 버튼 텍스트 변경
+        self.login_button.clicked.disconnect()  # 기존 클릭 이벤트 제거
+        self.login_button.clicked.connect(self.on_login_clicked)  # 새로운 클릭 이벤트 연결
 
     def update_userID(self, text):
         MainWindow.userID = text  # 전역 변수 userID 업데이트
