@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QObject
+from PyQt5.QtCore import Qt, QObject, QTimer
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
                              QTextEdit, QApplication, QProgressBar, QLineEdit)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
@@ -36,31 +36,65 @@ class MainWindow(QWidget):
         # 세션 관리용 API Worker 초기화
         self.api_worker = CheckWorker(cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
+        self.api_worker.log_signal.connect(self.add_log)
+
         self.api_worker.start()  # 스레드 시작
 
         self.check_popup = CheckPopup(site, check_list)
         self.check_popup.check_list_signal.connect(self.check_list_update)
 
 
-
+    # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):
         """API 요청 실패 처리"""
-        QMessageBox.critical(self, "프로그램 종료", f"동일 접속자가 존재해서 프로그램을 종료합니다.\n오류: {error_message}")
-        # API Worker 종료
-        if self.api_worker is not None and self.api_worker.isRunning():
-            self.api_worker.stop()  # 안전 종료 호출
-            self.api_worker.wait()  # 종료 대기
+        self.collect_button.setEnabled(False)  # 버튼 비활성화
+        self.collect_button.setStyleSheet("""
+            background-color: #7d7c7c;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.collect_button.repaint()
 
-        # ProgressThread 종료
-        if self.progress_thread is not None and self.progress_thread.isRunning():
-            self.progress_thread.stop()  # 안전 종료 호출
-            self.progress_thread.wait()  # 종료 대기
+        self.check_list_button.setEnabled(False)
+        self.check_list_button.setStyleSheet("""
+            background-color: #7d7c7c;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.check_list_button.repaint()
 
-        if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
-            self.on_demand_worker.stop()  # 안전 종료 호출
-            self.on_demand_worker.wait()  # 종료 대기
+        self.log_window.setStyleSheet("background-color: #7d7c7c; border: 1px solid #ccc; padding: 5px;")
+        self.log_window.repaint()
 
-        QApplication.instance().quit()  # 프로그램 종료
+        # 모든 스레드 종료 요청
+        self.stop_thread_async(self.api_worker)
+        self.stop_thread_async(self.progress_thread)
+        self.stop_thread_async(self.on_demand_worker)
+
+        self.add_log("동시사용자 접속으로 프로그램을 종료하겠습니다...")
+
+
+        # QTimer를 사용해 주기적으로 스레드 상태 확인
+        def check_threads():
+            if all(not t or not t.isRunning() for t in [self.api_worker, self.progress_thread, self.on_demand_worker]):
+                # 모든 스레드가 종료되었으면 메시지 박스와 프로그램 종료
+                QMessageBox.critical(self, "프로그램 종료", f"동일 접속자가 존재해서 프로그램을 종료합니다.\n오류: {error_message}")
+                QApplication.quit()
+            else:
+                QTimer.singleShot(1000, check_threads)  # 100ms 후 다시 확인
+
+        QTimer.singleShot(0, check_threads)  # 즉시 시작
+
+
+    def stop_thread_async(self, thread):
+        """스레드 비동기 안전 종료"""
+        if thread is not None and thread.isRunning():
+            thread.stop()
+            self.add_log(f"{thread.__class__.__name__} 종료 요청됨")
 
 
     # 레이아웃 설정
@@ -90,7 +124,6 @@ class MainWindow(QWidget):
         # 왼쪽 버튼들 레이아웃
         left_button_layout = QHBoxLayout()
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
-
 
         # 항목선택
         self.check_list_button = QPushButton("항목선택")
@@ -172,6 +205,7 @@ class MainWindow(QWidget):
         self.center_window()
 
 
+
     def set_progress(self, end_value):
         with self.queue_lock:  # 대기열 접근 보호
             self.task_queue.put(end_value)
@@ -187,8 +221,9 @@ class MainWindow(QWidget):
             if not self.task_queue.empty():
                 next_end_value = self.task_queue.get()
                 self.progress_thread = ProgressThread(self.progress_bar.value(), next_end_value)
+                self.progress_thread.log_signal.connect(self.add_log)
                 self.progress_thread.progress_signal.connect(self.update_progress)
-                self.progress_thread.finished.connect(self.on_thread_finished)
+                self.progress_thread.finished.connect(self.on_progress_thread_finished)
                 self.progress_thread.start()
 
 
@@ -234,7 +269,7 @@ class MainWindow(QWidget):
 
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
-                self.on_demand_worker.progress_end_signal.connect(self.on_thread_last_finished)
+                self.on_demand_worker.progress_end_signal.connect(self.on_progress_thread_last_finished)
                 self.on_demand_worker.start()
 
             elif not self.on_demand_worker.isRunning():  # 이미 종료된 worker라면 다시 시작
@@ -257,7 +292,7 @@ class MainWindow(QWidget):
                 self.on_demand_worker.terminate()  # 중지
                 self.on_demand_worker.wait()  # 완료될 때까지 대기
                 self.on_demand_worker = None  # worker 객체 초기화
-                self.on_thread_last_finished()
+                self.on_progress_thread_last_finished()
 
 
     # 화면 중앙
@@ -266,6 +301,7 @@ class MainWindow(QWidget):
         screen = QDesktopWidget().screenGeometry()  # 화면 크기 가져오기
         size = self.geometry()  # 현재 창 크기
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
 
     # 경고 alert창
     def show_message(self, message, type):
@@ -281,11 +317,13 @@ class MainWindow(QWidget):
         msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
         msg.exec_()  # 메시지 박스 표시
 
+
     # url 세팅
     def set_url_list(self, url_list):
         global main_url_list
         main_url_list = url_list
         self.add_log(f'URL 세팅완료: {main_url_list}')
+
 
     # 개별 등록 팝업
     def open_check_popup(self):
@@ -299,12 +337,14 @@ class MainWindow(QWidget):
         self.add_log(f'크롤링 목록 : {select_check_list}')
 
 
-    def on_thread_finished(self):
+    # 프로그래쓰 쓰레드 정료 후 queue 실행
+    def on_progress_thread_finished(self):
         self.progress_thread = None
         self.start_next_task()
 
 
-    def on_thread_last_finished(self):
+    # 프로그래쓰 쓰레드 완전 종료
+    def on_progress_thread_last_finished(self):
         self.progress_thread = None
         self.add_log("모든 작업이 종료되었습니다.")
         self.progress_bar.setValue(100)  # 게이지 초기화 (또는 완료 상태 유지)
