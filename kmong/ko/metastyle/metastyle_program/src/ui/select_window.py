@@ -122,15 +122,13 @@ class SelectWindow(QWidget):
             self.show_message("접속실패", "해당 사이트는 준비중 입니다...")
             return None
         else:
-            color = ""
-            check_list = []
 
             if site == "MYTHERESA":
                 color = "#000"
                 check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
             elif site == "ZALANDO":
                 color = "#D2451E"
-                check_list = []
+                check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
             else:
                 color = ""
                 check_list = []

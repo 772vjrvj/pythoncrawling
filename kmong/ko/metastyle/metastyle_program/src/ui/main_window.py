@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QObject, QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
-                             QTextEdit, QApplication, QProgressBar, QLineEdit)
+                             QTextEdit, QApplication, QProgressBar)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from queue import Queue
 from threading import Lock
@@ -10,6 +10,8 @@ from threading import Lock
 from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
+from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
+
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -67,7 +69,7 @@ class MainWindow(QWidget):
         """)
         self.check_list_button.repaint()
 
-        self.log_window.setStyleSheet("background-color: #7d7c7c; border: 1px solid #ccc; padding: 5px;")
+        self.log_window.setStyleSheet("background-color: #8a8a8a; border: 1px solid #ccc; padding: 5px;")
         self.log_window.repaint()
 
         # 모든 스레드 종료 요청
@@ -265,7 +267,7 @@ class MainWindow(QWidget):
                 if self.site == 'MYTHERESA':
                     self.on_demand_worker = ApiMytheresaSetLoadWorker(self.select_check_list)
                 elif self.site == 'ZALANDO':
-                    self.on_demand_worker = None
+                    self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
 
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
