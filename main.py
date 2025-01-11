@@ -81,10 +81,12 @@ def naver_login():
 
     driver.quit()  # 작업이 끝난 후 드라이버 종료
 
-def naver_login_thread():
-    thread = threading.Thread(target=naver_login, daemon=True)  # 데몬 쓰레드로 설정
-    thread.start()
 
+def start_login_thread():
+    """로그인 기능을 별도의 스레드에서 실행"""
+    login_thread = threading.Thread(target=naver_login)
+    login_thread.daemon = True  # 메인 스레드 종료 시 함께 종료
+    login_thread.start()
 
 # 로그인 초기화
 def reset_login():
@@ -373,8 +375,7 @@ def save_data(format_type):
 # (1) 로그인 섹션
 login_frame = tk.Frame(root, bg="#d2e7d3")
 login_frame.pack(pady=10)
-# tk.Button(login_frame, text="로그인", command=naver_login).grid(row=0, column=0, rowspan=2, padx=10)
-tk.Button(login_frame, text="로그인", command=naver_login_thread).grid(row=0, column=0, rowspan=2, padx=10)
+tk.Button(login_frame, text="로그인", command=start_login_thread).grid(row=0, column=0, rowspan=2, padx=10)
 
 # (2) 카페 URL 및 메뉴 선택 섹션
 cafe_frame = tk.Frame(root, bg="#d2e7d3")

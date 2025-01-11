@@ -1,1 +1,10 @@
 https://www.mytheresa.com
+
+pyinstaller --noconsole main.py
+
+무료 아이콘 다운로드
+https://www.flaticon.com/
+
+png -> ico 변환
+https://convertico.com/
+https://icoconvert.com/
