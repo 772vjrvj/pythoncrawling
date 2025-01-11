@@ -4,7 +4,7 @@ import requests
 
 class CheckWorker(QThread):
     api_failure = pyqtSignal(str)  # API 실패 시그널 (에러 메시지 전달)
-    log_signal =  pyqtSignal(str)
+    log_signal = pyqtSignal(str)
 
     def __init__(self, cookies, server_url):
         super().__init__()
