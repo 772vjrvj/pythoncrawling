@@ -103,7 +103,7 @@ def extract_ul_class(driver):
         uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')  # ul 목록
         for e in uls:  # ul 안에 li class 이름 가져오기
             if 'productList_list_seller' in e.get_attribute('class'):
-                return e.get_attribute('class').split(' ')[0]
+                return e.get_attribute('class').replace(' ', '.')
     except Exception as e:
         print(f"Error in extracting ul class: {e}")
     return ""
@@ -150,27 +150,26 @@ def scrape_naver(driver, name, naver_url):
         time.sleep(3)
 
 
+        # 카드할인 토글 클릭 ON으로 둘 다 변경 (위, 아래 있음)
+        discount_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="카드할인가 정렬"]')
+        if discount_elements:
+            discount_elements[0].click()  # 카드할인 클릭
+            time.sleep(0.5)
+        else:
+            print("카드할인가 정렬 옵션을 찾을 수 없습니다. 중지합니다.")
+            return []
+
+
+        # 옵션 이름 ex) 수량, 개수, 상품구성 등등 / 개당 중량, 수량 : 2개입, 1개
+        opt_name = driver.execute_script('return document.querySelector("#section_price em").closest("div");').text.split(" : ")[0].split(',')[-1]
+        print(opt_name)
+
         # 상품구성: 1개, 2개, 3개 등 옵션 처리
         qtys = []
-
-        product_options = driver.find_element(By.CLASS_NAME, "condition_area")
-
-        target_elements = product_options.find_elements(
-            By.CLASS_NAME,
-            "stdOpt_standard_option_area__kh9jP"
-        )
-
-        # 두 번째 요소 선택
-        if len(target_elements) > 1:
-            second_element = target_elements[1]
-            scroll_area = second_element.find_element(By.CLASS_NAME, "stdOpt_scroll_area__yTJwJ")
-
-            buttons = scroll_area.find_elements(By.TAG_NAME, "button")
-
-            for button in buttons:
-                span = button.find_element(By.CLASS_NAME, "stdOpt_title__Rky56")
-                qtys.append(span)
-
+        if len(driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')) != 0:
+            qtys = driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')
+        elif len(driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')) != 0:
+            qtys = driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')  # 수량, 개수 옵션이 없다면 2번째 옵션으로 지정
 
         ul_class = extract_ul_class(driver)  # ul 클래스 추출
 
@@ -189,7 +188,7 @@ def scrape_naver(driver, name, naver_url):
 
             for p in range(len(qtys)):
                 print(qlist[p])
-                driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-type="{qlist[p]}"]').click()
+                driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-id="{qlist[p]}"]').click()
                 time.sleep(2)
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 driver.execute_script("window.scrollTo(0, 0);")
@@ -827,6 +826,3 @@ if __name__ == "__main__":
 # 2024-10-19 ver_5
 # 기준가격 수정
 # 단위수정
-
-# 2025-01-12 ver_6
-# 오류 1 (기준가격 수집 오류)
