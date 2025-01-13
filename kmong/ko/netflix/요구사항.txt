@@ -10,3 +10,5 @@
 페이지에서 추출 가능하지 않을까 합니다. 보통 첨부드린 데이터셋의 경우에는 견적이 어떻게 될까요?
 
 pyinstaller --onefile --noconsole main.py
+
+
