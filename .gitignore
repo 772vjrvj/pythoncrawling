@@ -106,3 +106,8 @@ node_modules/
 *.gif
 *.bmp
 *.svg
+*.csv
+
+tving_url/
+
+*.zip
