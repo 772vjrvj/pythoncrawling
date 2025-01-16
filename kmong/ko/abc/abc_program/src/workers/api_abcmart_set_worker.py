@@ -26,7 +26,7 @@ baseUrl = "https://www.mytheresa.com"
 
 
 # API
-class ApiMytheresaSetLoadWorker(QThread):
+class ApiAbcmartSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널

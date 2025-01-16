@@ -7,10 +7,10 @@ from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from queue import Queue
 from threading import Lock
 
-from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
-from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
+from src.workers.api_abcmart_set_worker import ApiAbcmartSetLoadWorker
 from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
+from src.ui.all_register_popup import AllRegisterPopup
 
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
@@ -33,6 +33,7 @@ class MainWindow(QWidget):
         self.select_check_list = None
         self.task_queue = Queue()
         self.queue_lock = Lock()  # 대기열 접근 보호용 Lock 생성
+        self.excel_popup = None
 
         # 세션 관리용 API Worker 초기화
         self.api_worker = CheckWorker(cookies, server_url)
@@ -41,8 +42,7 @@ class MainWindow(QWidget):
 
         self.api_worker.start()  # 스레드 시작
 
-        self.check_popup = CheckPopup(site)
-        self.check_popup.check_list_signal.connect(self.check_list_update)
+        self.all_register_button = None
 
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
@@ -58,15 +58,15 @@ class MainWindow(QWidget):
         """)
         self.collect_button.repaint()
 
-        self.check_list_button.setEnabled(False)
-        self.check_list_button.setStyleSheet("""
+        self.all_register_button.setEnabled(False)
+        self.all_register_button.setStyleSheet("""
             background-color: #7d7c7c;
             color: white;
             border-radius: 15%;
             font-size: 16px;
             padding: 10px;
         """)
-        self.check_list_button.repaint()
+        self.all_register_button.repaint()
 
         self.log_window.setStyleSheet("background-color: #8a8a8a; border: 1px solid #ccc; padding: 5px;")
         self.log_window.repaint()
@@ -91,6 +91,7 @@ class MainWindow(QWidget):
         QTimer.singleShot(0, check_threads)  # 즉시 시작
 
 
+    # 쓰레드 중지
     def stop_thread_async(self, thread):
         """스레드 비동기 안전 종료"""
         if thread is not None and thread.isRunning():
@@ -126,19 +127,35 @@ class MainWindow(QWidget):
         left_button_layout = QHBoxLayout()
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
-        # 항목선택
-        self.check_list_button = QPushButton("BRAND 선택")
-        self.check_list_button.setStyleSheet("""
-            background-color: #7d7c7c;
+
+        # 전체등록
+        self.all_register_button = QPushButton("브랜드 URL 등록")
+        self.all_register_button.setStyleSheet("""
+                    background-color: black;
+                    color: white;
+                    border-radius: 15%;
+                    font-size: 16px;
+                    padding: 10px;
+                """)
+        self.all_register_button.setFixedWidth(180)  # 고정된 너비
+        self.all_register_button.setFixedHeight(40)  # 고정된 높이
+        self.all_register_button.setCursor(Qt.PointingHandCursor)
+        self.all_register_button.clicked.connect(self.open_all_register_popup)
+
+
+        # 선택수집
+        self.log_clear_button = QPushButton("초기화")
+        self.log_clear_button.setStyleSheet(f"""
+            background-color: {self.color};
             color: white;
             border-radius: 15%;
             font-size: 16px;
             padding: 10px;
         """)
-        self.check_list_button.setFixedWidth(100)  # 고정된 너비
-        self.check_list_button.setFixedHeight(40)  # 고정된 높이
-        self.check_list_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
-        self.check_list_button.clicked.connect(self.open_check_popup)
+        self.log_clear_button.setFixedWidth(100)  # 고정된 너비
+        self.log_clear_button.setFixedHeight(40)  # 고정된 높이
+        self.log_clear_button.setCursor(Qt.PointingHandCursor)
+        self.log_clear_button.clicked.connect(self.log_clear)
 
 
         # 선택수집
@@ -157,7 +174,8 @@ class MainWindow(QWidget):
 
 
         # 왼쪽 버튼 레이아웃
-        left_button_layout.addWidget(self.check_list_button)
+        left_button_layout.addWidget(self.all_register_button)
+        left_button_layout.addWidget(self.log_clear_button)
         left_button_layout.addWidget(self.collect_button)
 
         # 레이아웃에 요소 추가
@@ -206,7 +224,7 @@ class MainWindow(QWidget):
         self.center_window()
 
 
-
+    # 프로그래스바 세팅
     def set_progress(self, end_value):
         with self.queue_lock:  # 대기열 접근 보호
             self.task_queue.put(end_value)
@@ -218,6 +236,9 @@ class MainWindow(QWidget):
 
     # 게이지 세팅
     def start_next_task(self):
+        # 스레드 동기화를 위한 잠금(lock) 메커니즘.
+        # self.queue_lock은 다중 스레드 환경에서 작업 큐(task_queue)에 동시 접근하지 못하도록 보호합니다.
+        # with 블록 안에서만 잠금이 유지되며, 블록이 끝나면 자동으로 잠금이 해제됩니다.
         with self.queue_lock:  # 대기열 보호
             if not self.task_queue.empty():
                 next_end_value = self.task_queue.get()
@@ -228,6 +249,7 @@ class MainWindow(QWidget):
                 self.progress_thread.start()
 
 
+    # 프로그래스바 업데이트
     def update_progress(self, value):
         self.progress_bar.setValue(value)
 
@@ -242,7 +264,8 @@ class MainWindow(QWidget):
 
         self.log_window.append(log_message)  # 직접 호출
 
-
+    
+    
     def start_on_demand_worker(self):
 
         if self.check_list is None:
@@ -264,11 +287,11 @@ class MainWindow(QWidget):
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
 
                 if self.site == 'ABC-MART':
-                    self.on_demand_worker = ApiMytheresaSetLoadWorker(self.select_check_list)
-                elif self.site == 'GRAND STAGE':
-                    self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
-                elif self.site == 'On the spot':
-                    self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
+                    self.on_demand_worker = ApiAbcmartSetLoadWorker(self.select_check_list)
+                # elif self.site == 'GRAND STAGE':
+                #     self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
+                # elif self.site == 'On the spot':
+                #     self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
 
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
@@ -292,10 +315,10 @@ class MainWindow(QWidget):
             self.add_log('중지')
             # 중지 시 on_demand_worker만 종료
             if self.on_demand_worker is not None and self.on_demand_worker.isRunning():
-                self.on_demand_worker.terminate()  # 중지
+                self.on_demand_worker.stop()  # 사용자 정의 루프(while self.running) 기반 작업에 적합.
                 self.on_demand_worker.wait()  # 완료될 때까지 대기
                 self.on_demand_worker = None  # worker 객체 초기화
-                self.on_progress_thread_last_finished()
+                self.on_progress_stop()
 
 
     # 화면 중앙
@@ -321,10 +344,20 @@ class MainWindow(QWidget):
         msg.exec_()  # 메시지 박스 표시
 
 
-    # 체크 팝업
-    def open_check_popup(self):
-        # 체크 팝업 열기
-        self.check_popup.exec_()
+    # 전체 등록 팝업
+    def open_all_register_popup(self):
+        # 등록 팝업창 열기
+        self.excel_popup = AllRegisterPopup(parent=self)  # 부모 객체 전달
+        self.excel_popup.updateList.connect(self.update_list)
+        self.excel_popup.exec_()
+
+
+    # url list 업데이트
+    def update_list(self, url_list):
+        self.url_list = url_list
+        self.add_log(f'브랜드 목록 갯수 : {len(self.url_list)}')
+        for url in url_list:
+            self.add_log(url)
 
 
     # 항목 업데이트
@@ -336,7 +369,6 @@ class MainWindow(QWidget):
     # 프로그래쓰 쓰레드 종료 후 queue 실행
     def on_progress_thread_finished(self):
         self.progress_thread = None
-        self.start_next_task()
 
 
     # 프로그래쓰 쓰레드 완전 종료
@@ -344,3 +376,28 @@ class MainWindow(QWidget):
         self.progress_thread = None
         self.add_log("모든 작업이 종료되었습니다.")
         self.progress_bar.setValue(100)  # 게이지 초기화 (또는 완료 상태 유지)
+
+
+
+    def on_progress_stop(self):
+        """
+        중지 버튼을 눌렀을 때 호출되는 메서드
+        현재 진행 중인 작업을 중단하고, 대기 중인 작업을 모두 제거.
+        """
+        # 현재 실행 중인 작업 중단
+        if self.progress_thread and self.progress_thread.isRunning():
+            self.progress_thread.stop()  # 스레드 중단 요청
+            self.progress_thread.wait()  # 스레드 종료 대기
+            self.progress_thread = None  # 스레드 객체 초기화
+            self.add_log("현재 작업이 강제로 중단되었습니다.")
+
+        # 작업 큐 비우기
+        with self.queue_lock:
+            while not self.task_queue.empty():
+                self.task_queue.get()  # 큐에서 작업 제거
+            self.add_log("작업 큐가 초기화되었습니다.")
+
+    # 로그 초기화
+    def log_clear(self):
+        self.url_list = []
+        self.log_window.clear()
