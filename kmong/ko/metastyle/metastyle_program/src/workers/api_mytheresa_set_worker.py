@@ -31,68 +31,59 @@ class ApiMytheresaSetLoadWorker(QThread):
     progress_signal = pyqtSignal(float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
 
-
     # 초기화
-    def __init__(self, select_check_list):
+    def __init__(self, checked_list):
         super().__init__()
         self.baseUrl = baseUrl
         self.sess = requests.Session()
-        # 필터링 및 변환
-        self.check_list = select_check_list
+        self.checked_list = checked_list
         self.running = True  # 실행 상태 플래그 추가
-
 
     # 프로그램 실행
     def run(self):
         global image_main_directory, company_name, site_name, excel_filename, baseUrl
 
         self.log_signal.emit("크롤링 시작")
-        total_cnt = 0
-        current_cnt = 0
-        now_per = 0
 
-        if self.check_list:
+        if self.checked_list:
             self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
             self.login()
             self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
             current_time = get_current_yyyymmddhhmmss()
             excel_filename = f"{company_name}_{current_time}.xlsx"
-
+            current_cnt = 0
+            now_per = 0
             result_list = []
-
             ## 전체 갯수 계산
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             check_obj_list = self.total_cnt_cal()
             total_cnt = sum(int(obj['total_item_cnt']) for obj in check_obj_list)
 
-            self.log_signal.emit(f"전체 항목수 {self.check_list} ({len(self.check_list)})개")
+            self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
 
-
-            for index, obj in enumerate(check_obj_list, start=1):
-                item = obj['item']
-                current_total_page = int(obj['total_page_cnt'])
+            for index, check_obj in enumerate(check_obj_list, start=1):
+                item = check_obj['name']
+                total_pages = int(check_obj['total_page_cnt'])
+                start_page = int(check_obj['start_page'])
+                end_page = int(check_obj['end_page'])
 
                 if not self.running:  # 실행 상태 확인
                     break
 
-                self.log_signal.emit(f'{site_name}({total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})')
+                self.log_signal.emit(f'{site_name}({total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})')
                 category, slug, main_url = self.get_url_info(item)
 
-                for page in range(1, current_total_page + 1):
+                for page in range(start_page, end_page + 1):
                     if not self.running:  # 실행 상태 확인
                         self.log_signal.emit("크롤링이 중지되었습니다.")
                         break
 
-                    page_url = f"{main_url}?page={page}"
                     response_json = self.get_api_request(category, slug, page)
-
                     if isinstance(response_json, dict):
                         data = response_json.get('data', {}).get('xProductListingPage', {})
                         products = data.get('products', [])
-                        pagination = data.get('pagination', {})
-                        totalPages = pagination.get('totalPages')
-                        self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})  Page({page}/{totalPages})')
+                        self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})')
                         if not products:
                             self.log_signal.emit(f"No more data for category {category} at page {page}")
                             break
@@ -104,7 +95,7 @@ class ApiMytheresaSetLoadWorker(QThread):
 
                             current_cnt += 1
                             now_per = divide_and_truncate(current_cnt, total_cnt)
-                            self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})')
+                            self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})')
 
                             detail_url = f'{main_url}{product.get('slug')}'
                             images, brand_name, product_name, detail = self.get_detail_data(detail_url)
@@ -113,7 +104,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                                 if not self.running:  # 실행 상태 확인
                                     break
 
-                                self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
+                                self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
                                 obj = {
                                     'site_name': site_name,
                                     'category': item,
@@ -142,16 +133,13 @@ class ApiMytheresaSetLoadWorker(QThread):
                             pro_value = (current_cnt / total_cnt) * 1000000
                             self.progress_signal.emit(pro_value)
 
-
         self.log_signal.emit("크롤링 종료")
         self.progress_end_signal.emit()
 
 
     # 프로그램 중단
     def stop(self):
-        """스레드 중지를 요청하는 메서드"""
         self.running = False
-
 
     # 로그인 쿠키가져오기
     def login(self):
@@ -202,7 +190,6 @@ class ApiMytheresaSetLoadWorker(QThread):
             "User-Agent": f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{self.version}"
         }
         self.driver.quit()
-
 
     # 페이지 데이터 가져오기
     def get_api_request(self, category, slug, page):
@@ -277,7 +264,6 @@ class ApiMytheresaSetLoadWorker(QThread):
             self.log_signal.emit(f"요청 중 에러 발생: {e}")
             return None
 
-
     # 상세보기 데이터 가져오기
     def get_detail_data(self, url):
 
@@ -317,11 +303,9 @@ class ApiMytheresaSetLoadWorker(QThread):
 
         return images, brand_name, product_name, detail
 
-
     # URL 가져오기
     def get_url_info(self, item):
         global baseUrl
-
         category = ''
         slug = ''
         main_url = ''
@@ -352,32 +336,56 @@ class ApiMytheresaSetLoadWorker(QThread):
 
         return category, slug, main_url
 
-
     # 전체 갯수 조회
     def total_cnt_cal(self):
         check_obj_list = []
 
-        for index, item in enumerate(self.check_list, start=1):
-            obj = {
-                'total_page_cnt': 0,
-                'total_item_cnt': 0,
-                'item': item.lower()
-            }
+        for index, checked_obj in enumerate(self.checked_list, start=1):
+            item = checked_obj.name
+            start_page = checked_obj.start_page
+            end_page = checked_obj.end_page
+
             category, slug, main_url = self.get_url_info(item)
             response_json = self.get_api_request(category, slug, 1)
+
+            total_items_cnt = 0
+            total_page = 0
+            last_page_cnt = 0
 
             if isinstance(response_json, dict):
                 data = response_json.get('data', {}).get('xProductListingPage', {})
                 pagination = data.get('pagination', {})
                 total_items_cnt = pagination.get('totalItems')
                 total_page = pagination.get('totalPages')
-                obj['total_page_cnt'] = total_page
-                obj['total_item_cnt'] = total_items_cnt
+                last_page_cnt = total_items_cnt % 60
 
-            check_obj_list.append(obj)
+            if not end_page:
+                end_page = total_page
+
+            if not start_page:
+                start_page = 1
+
+            if end_page >= total_page:
+                if start_page >= end_page:
+                    start_page = end_page
+                    total_items_cnt = last_page_cnt
+                else:
+                    total_items_cnt = ((end_page - start_page) * 60) + last_page_cnt
+            if end_page < total_page:
+                if start_page >= end_page:
+                    start_page = end_page
+                    total_items_cnt = 60
+                else:
+                    total_items_cnt = (end_page - start_page) * 60
+
+            checked_obj['start_page'] = start_page
+            checked_obj['end_page'] = end_page
+            checked_obj['total_page_cnt'] = total_page
+            checked_obj['total_item_cnt'] = total_items_cnt
+            checked_obj['item'] = item.lower()
+            check_obj_list.append(checked_obj)
 
         return check_obj_list
-
 
     # 엑셀 한껀씩 저장
     def save_to_excel_one_by_one(self, results, file_name, sheet_name='Sheet1'):
@@ -420,7 +428,6 @@ class ApiMytheresaSetLoadWorker(QThread):
             # 예기치 않은 오류 처리
             self.log_signal.emit(f'엑셀 에러 발생: {e}')
             return False
-
 
     # 구글 클라우드 업로드
     def google_cloud_upload(self, site_name, category, product_name, image_url, obj):
@@ -504,7 +511,6 @@ class ApiMytheresaSetLoadWorker(QThread):
         #     self.log_signal.emit(f"업로드 완료: {blob_name}")
         # else:
         #     self.log_signal.emit(f"업로드 실패: {blob_name}이 존재하지 않습니다.")
-
 
     # 이미지 로컬 다운로드
     def download_image(self, image_url, site_name, category, product_name, obj):

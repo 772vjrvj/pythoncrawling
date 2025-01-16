@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel,
-                             QTableWidgetItem,
+                             QTableWidgetItem, QMessageBox,
                              QCheckBox, QDesktopWidget, QDialog, QSizePolicy)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 
@@ -47,13 +47,41 @@ class CheckPopup(QDialog):
 
         self.checkboxes = []
         for name in check_list:
-            checkbox = QCheckBox(name)
-            checkbox.setStyleSheet("margin-left: 10px; margin-right: 20px;")  # 좌우 마진 설정
-            site_layout.addWidget(checkbox)
-            self.checkboxes.append(checkbox)
+            # 가로로 배치할 레이아웃 생성
+            row_layout = QHBoxLayout()
 
-        checkbox_layout.addLayout(site_layout)
-        checkbox_layout.setAlignment(Qt.AlignCenter)
+            # 체크박스 추가
+            checkbox = QCheckBox(name)
+            row_layout.addWidget(checkbox)
+
+            # "시작" 문구와 입력 박스 추가
+            start_label = QLabel("시작")
+            row_layout.addWidget(start_label)
+
+            start_input = QLineEdit()
+            start_input.setFixedWidth(80)
+            start_input.setText("1")  # 기본값
+            row_layout.addWidget(start_input)
+
+            # "종료" 문구와 입력 박스 추가
+            end_label = QLabel("종료")
+            row_layout.addWidget(end_label)
+
+            end_input = QLineEdit()
+            end_input.setFixedWidth(80)
+            end_input.setText("10000")  # 기본값
+            row_layout.addWidget(end_input)
+
+            # 체크박스와 입력 박스 저장
+            self.checkboxes.append({
+                "checkbox": checkbox,
+                "start_input": start_input,
+                "end_input": end_input,
+            })
+
+            # 메인 레이아웃에 가로 레이아웃 추가
+            checkbox_layout.addLayout(row_layout)
+            checkbox_layout.setAlignment(Qt.AlignCenter)
 
         # 버튼
         button_layout = QHBoxLayout()
@@ -91,10 +119,40 @@ class CheckPopup(QDialog):
         # 체크된 항목 수집
         self.select_check_list = []
 
-        for checkbox in self.checkboxes:
-            if checkbox.isChecked():
-                self.select_check_list.append(checkbox.text())
+        for item in self.checkboxes:
+            checkbox = item["checkbox"]
+            start_input = item["start_input"]
+            end_input = item["end_input"]
 
+            if checkbox.isChecked():
+                # 입력값 가져오기
+                try:
+                    start_page = int(start_input.text())
+                    end_page = int(end_input.text())
+                except ValueError:
+                    self.show_error_message(f"'{checkbox.text()}'의 시작값과 종료값은 숫자여야 합니다.")
+                    return
+
+                # 유효성 검사
+                if start_page <= 0 or end_page <= 0:
+                    self.show_error_message(f"'{checkbox.text()}'의 시작값과 종료값은 양수여야 합니다.")
+                    return
+
+                if start_page > end_page:
+                    self.show_error_message(f"'{checkbox.text()}'의 시작값은 종료값보다 클 수 없습니다.")
+                    return
+
+                # 결과 리스트에 추가
+                self.select_check_list.append({
+                    "name": checkbox.text(),
+                    "start_page": start_page,
+                    "end_page": end_page,
+                })
         # 시그널로 체크된 항목 전달
         self.check_list_signal.emit(self.select_check_list)
         self.accept()  # 팝업 닫기
+
+
+    def show_error_message(self, message):
+        """에러 메시지 박스 표시"""
+        QMessageBox.critical(self, "입력 오류", message)

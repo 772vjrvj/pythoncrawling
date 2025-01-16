@@ -38,12 +38,11 @@ class ApiZalandoSetLoadWorker(QThread):
 
 
     # 초기화
-    def __init__(self, select_check_list):
+    def __init__(self, checked_list):
         super().__init__()
         self.baseUrl = baseUrl
         self.sess = requests.Session()
-        # 필터링 및 변환
-        self.check_list = select_check_list
+        self.checked_list = checked_list
         self.running = True  # 실행 상태 플래그 추가
         self.driver = None
 
@@ -58,7 +57,7 @@ class ApiZalandoSetLoadWorker(QThread):
         now_per = 0.0
         result_list = []
 
-        if self.check_list:
+        if self.checked_list:
             self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
             self.login()
             self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
@@ -71,19 +70,21 @@ class ApiZalandoSetLoadWorker(QThread):
 
             total_cnt = sum(int(obj['total_item_cnt']) for obj in check_obj_list)
 
-            self.log_signal.emit(f"전체 항목수 {self.check_list} ({len(self.check_list)})개")
+            self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
 
-            for index, obj in enumerate(check_obj_list, start=1):
-                item = obj['item']
-                current_total_page = int(obj['total_page_cnt'])
+            for index, check_obj in enumerate(check_obj_list, start=1):
+                item = check_obj['name']
+                start_page = int(check_obj['start_page'])
+                end_page = int(check_obj['end_page'])
+
                 if not self.running:  # 실행 상태 확인
                     break
 
                 self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})')
                 main_url = self.get_url_info(item)
 
-                for page in range(1, current_total_page + 1):
+                for page in range(start_page, end_page + 1):
 
                     if not self.running:  # 실행 상태 확인
                         self.log_signal.emit("크롤링이 중지되었습니다.")
@@ -95,7 +96,7 @@ class ApiZalandoSetLoadWorker(QThread):
                     if main_html:
                         products, totalPages = self.process_data(main_html)
 
-                        self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})  Page({page}/{totalPages})')
+                        self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})')
 
                         # products 배열에서 각 item의 'name' 값을 출력
                         for idx, detail_url in enumerate(products, start=1):
@@ -104,7 +105,7 @@ class ApiZalandoSetLoadWorker(QThread):
 
                             current_cnt += 1
                             now_per = divide_and_truncate(current_cnt, total_cnt)
-                            self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})')
+                            self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})')
 
                             detail_html = self.sub_request(detail_url)
 
@@ -115,7 +116,7 @@ class ApiZalandoSetLoadWorker(QThread):
                                     if not self.running:  # 실행 상태 확인
                                         break
 
-                                    self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(self.check_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
+                                    self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
                                     obj = {
                                         'site_name': site_name,
                                         'category': item,
@@ -433,21 +434,44 @@ class ApiZalandoSetLoadWorker(QThread):
     # 전체 갯수 조회
     def total_cnt_cal(self):
         check_obj_list = []
-        for index, item in enumerate(self.check_list, start=1):
+        for index, checked_obj in enumerate(self.checked_list, start=1):
 
-            obj = {
-                'total_page_cnt': 0,
-                'total_item_cnt': 0,
-                'item': item.lower()
-            }
+            item = checked_obj.name
+            start_page = checked_obj.start_page
+            end_page = checked_obj.end_page
 
             main_url = self.get_url_info(item)
             main_html = self.main_request(main_url, 3)
             total_items_cnt, total_page = self.process_total_data(main_html)
-            obj['total_page_cnt'] = total_page
-            obj['total_item_cnt'] = total_items_cnt
 
-            check_obj_list.append(obj)
+            last_page_cnt = total_items_cnt % 87
+
+            if not end_page:
+                end_page = total_page
+
+            if not start_page:
+                start_page = 1
+
+            if end_page >= total_page:
+                if start_page >= end_page:
+                    start_page = end_page
+                    total_items_cnt = last_page_cnt
+                else:
+                    total_items_cnt = ((end_page - start_page) * 87) + last_page_cnt
+            if end_page < total_page:
+                if start_page >= end_page:
+                    start_page = end_page
+                    total_items_cnt = 87
+                else:
+                    total_items_cnt = (end_page - start_page) * 87
+
+            checked_obj['start_page'] = start_page
+            checked_obj['end_page'] = end_page
+            checked_obj['total_page_cnt'] = total_page
+            checked_obj['total_item_cnt'] = total_items_cnt
+            checked_obj['item'] = item.lower()
+
+            check_obj_list.append(checked_obj)
 
         return check_obj_list
 
