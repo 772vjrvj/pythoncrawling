@@ -50,21 +50,31 @@ def get_detail(action, product_no):
     li_elements = ul.find_all("li")
     return [li.text.strip() for li in li_elements]
 
-def get_str_option(options):
 
+def get_str_option(options):
     # 색상과 사이즈를 각각 추출
     colors = set()
     sizes = set()
 
     for option in options:
-        parts = option.split(' / ')
-        color = parts[0].split(': ')[1].strip()
-        size = parts[1].split(': ')[1].strip()
-        colors.add(color)
-        sizes.add(size)
+        if '/' in option:
+            # 옵션이 "색상: [컬러] / 사이즈: [사이즈]" 형식인 경우
+            parts = option.split(' / ')
+            color = parts[0].split(': ')[1].strip()
+            size = parts[1].split(': ')[1].strip()
+            colors.add(color)
+            sizes.add(size)
+        else:
+            # 옵션이 "사이즈: [사이즈]" 형식인 경우
+            size = option.split(': ')[1].strip()
+            sizes.add(size)
 
     # 원하는 형식으로 출력
-    formatted_option = f"색상{{{'|'.join(colors)}}}//사이즈{{{'|'.join(sizes)}}}"
+    if colors:
+        formatted_option = f"색상{{{'|'.join(colors)}}}//사이즈{{{'|'.join(sizes)}}}"
+    else:
+        formatted_option = f"색상{{}}//사이즈{{{'|'.join(sizes)}}}"
+
     return formatted_option
 
 
@@ -107,13 +117,11 @@ def main():
 
     base_url = "https://saphir1612.shop/category/BEST/45/?page={}"
     page = 1
-    page_data = []
 
     while True:
+        page_data = []
         url = base_url.format(page)
         response = requests.get(url, headers=headers)
-        if page == 3:
-            break
 
         if response.status_code != 200:
             print(f"Failed to fetch page {page}. Status code: {response.status_code}")
@@ -169,12 +177,9 @@ def main():
 
         # 페이지 데이터 엑셀에 저장
         save_to_excel(page_data)
-
-        print(f"\npage :{page}, page_data : {page_data}")
+        print(f"\npage :{page}, page_data : {len(page_data)}")
         page += 1
         time.sleep(1)
-
-    print(page_data)
 
 
 # 메인함수
