@@ -215,7 +215,7 @@ class MainWindow(QWidget):
 
             self.task_queue = Queue()
             self.progress_thread = ProgressThread(self.task_queue)
-            self.progress_thread.progress_signal.connect(self.set_progress)
+            self.progress_thread.progress_signal.connect(self.update_progress)
             self.progress_thread.log_signal.connect(self.add_log)
             self.progress_thread.start()
 
