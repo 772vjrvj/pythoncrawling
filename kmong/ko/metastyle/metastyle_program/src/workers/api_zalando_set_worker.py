@@ -20,6 +20,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
 from src.utils.number_utils import divide_and_truncate
 from requests.exceptions import RequestException, Timeout, TooManyRedirects
+from urllib.parse import urlparse
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -33,7 +34,7 @@ baseUrl = "https://en.zalando.de"
 # API
 class ApiZalandoSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
-    progress_signal = pyqtSignal(float)  # 진행률 업데이트를 전달하는 시그널
+    progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
 
 
@@ -82,7 +83,7 @@ class ApiZalandoSetLoadWorker(QThread):
                     break
 
                 self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})')
-                main_url = self.get_url_info(item)
+                main_url, partition = self.get_url_info(item)
 
                 for page in range(start_page, end_page + 1):
 
@@ -90,7 +91,9 @@ class ApiZalandoSetLoadWorker(QThread):
                         self.log_signal.emit("크롤링이 중지되었습니다.")
                         break
 
-                    page_url = f"{main_url}/?p={page}"
+                    page_url = f"{main_url}{partition}p={page}"
+
+
                     main_html = self.main_request(page_url, 5)
 
                     if main_html:
@@ -124,6 +127,8 @@ class ApiZalandoSetLoadWorker(QThread):
                                         'product_name': product_name,
                                         'image_name': '',
                                         'image_success': 'O',
+                                        'page': page,
+                                        'page_index': idx,
                                         'detail': detail,
                                         'images': images,
                                         'main_url': main_url,
@@ -143,7 +148,8 @@ class ApiZalandoSetLoadWorker(QThread):
                                     time.sleep(1)
 
                                 pro_value = (current_cnt / total_cnt) * 1000000
-                                self.progress_signal.emit(pro_value)
+                                self.progress_signal.emit(now_per, pro_value)
+                                now_per = pro_value
 
         self.log_signal.emit(f"크롤링 종료. 처리한 상품 수 : {len(result_list)}")
         self.progress_end_signal.emit()
@@ -346,22 +352,28 @@ class ApiZalandoSetLoadWorker(QThread):
         global baseUrl
 
         main_url = ''
+        partition = ''
 
         if item:
             name = item.lower()
 
             if name == 'men':
                 main_url = f"{baseUrl}/mens-clothing"
+                partition = '/?'
             elif name == 'women':
                 main_url = f"{baseUrl}/womens-clothing"
+                partition = '/?'
             elif name == 'boys':
                 main_url = f"{baseUrl}/kids/?gender=25"
+                partition = '&'
             elif name == 'girls':
                 main_url = f"{baseUrl}/kids/?gender=26"
+                partition = '&'
             elif name == 'baby':
                 main_url = f"{baseUrl}/kids/?gender=4"
+                partition = '&'
 
-        return main_url
+        return main_url, partition
 
 
     # 카테고리별 전체 개수
@@ -390,7 +402,7 @@ class ApiZalandoSetLoadWorker(QThread):
         except Exception as e:
             self.log_signal.emit(f"Error : {e}")
         finally:
-            return total_cnt, total_page
+            return int(total_cnt), int(total_page)
 
 
     # 상세리스트 가져오기
@@ -435,16 +447,15 @@ class ApiZalandoSetLoadWorker(QThread):
     def total_cnt_cal(self):
         check_obj_list = []
         for index, checked_obj in enumerate(self.checked_list, start=1):
+            name = checked_obj['name']
+            start_page = checked_obj['start_page']
+            end_page = checked_obj['end_page']
 
-            item = checked_obj.name
-            start_page = checked_obj.start_page
-            end_page = checked_obj.end_page
-
-            main_url = self.get_url_info(item)
+            main_url, partition = self.get_url_info(name)
             main_html = self.main_request(main_url, 3)
             total_items_cnt, total_page = self.process_total_data(main_html)
 
-            last_page_cnt = total_items_cnt % 87
+            last_page_cnt = total_items_cnt % 84
 
             if not end_page:
                 end_page = total_page
@@ -453,23 +464,24 @@ class ApiZalandoSetLoadWorker(QThread):
                 start_page = 1
 
             if end_page >= total_page:
+                end_page = total_page
                 if start_page >= end_page:
                     start_page = end_page
                     total_items_cnt = last_page_cnt
-                else:
-                    total_items_cnt = ((end_page - start_page) * 87) + last_page_cnt
+                elif start_page != 1:
+                    total_items_cnt = ((end_page - start_page) * 84) + last_page_cnt
             if end_page < total_page:
                 if start_page >= end_page:
                     start_page = end_page
-                    total_items_cnt = 87
+                    total_items_cnt = 84
                 else:
-                    total_items_cnt = (end_page - start_page) * 87
+                    total_items_cnt = (end_page - start_page) * 84
 
             checked_obj['start_page'] = start_page
             checked_obj['end_page'] = end_page
             checked_obj['total_page_cnt'] = total_page
             checked_obj['total_item_cnt'] = total_items_cnt
-            checked_obj['item'] = item.lower()
+            checked_obj['item'] = name.lower()
 
             check_obj_list.append(checked_obj)
 
@@ -608,11 +620,15 @@ class ApiZalandoSetLoadWorker(QThread):
             # 이미지 데이터를 메모리에서 처리
             image_data = BytesIO(response.content)
 
-            # 이미지 이름 변경: URL에서 'media/...' 부분을 'media_'로 변경
-            image_name = image_url.split("media/")[-1].replace("/", "_")  # 'media/...'를 'media_...'로 변경
+            # URL 파싱
+            parsed_url = urlparse(image_url)
+
+            # path의 마지막 부분 추출
+            image_name = parsed_url.path.split('/')[-1]
 
             # 업로드할 경로 설정: site_name/category/product_name/media_...
-            blob_name = f"test_program/{site_name}/{category}_{image_name}"
+            # blob_name = f"test_program_20250117/{site_name}/{category}_{image_name}"
+            blob_name = f"{site_name}/{category}/{category}_{image_name}"
 
             # 이미지의 MIME 타입을 자동으로 감지
             mime_type, _ = mimetypes.guess_type(image_url)
@@ -625,7 +641,7 @@ class ApiZalandoSetLoadWorker(QThread):
 
             # 이미지 업로드 확인
             if blob.exists():  # 업로드 확인
-                self.log_signal.emit(f"Image from {image_url} has been successfully uploaded to {bucket_name}/{blob_name}.")
+                self.log_signal.emit(f"success {image_url} -> {bucket_name}/{blob_name}.")
                 obj['image_name'] = f"{category}_{image_name}"
             else:
                 obj['error_message'] = f"Image upload failed for {image_url}. Check the destination bucket."

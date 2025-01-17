@@ -113,6 +113,8 @@ class ApiMytheresaSetLoadWorker(QThread):
                                     'product_name': product_name,
                                     'image_name': '',
                                     'image_success': 'O',
+                                    'page': page,
+                                    'page_index': idx,
                                     'detail': detail,
                                     'images': images,
                                     'main_url': main_url,
@@ -368,10 +370,11 @@ class ApiMytheresaSetLoadWorker(QThread):
                 start_page = 1
 
             if end_page >= total_page:
+                end_page = total_page
                 if start_page >= end_page:
                     start_page = end_page
                     total_items_cnt = last_page_cnt
-                else:
+                elif start_page != 1:
                     total_items_cnt = ((end_page - start_page) * 60) + last_page_cnt
             if end_page < total_page:
                 if start_page >= end_page:
@@ -479,7 +482,7 @@ class ApiMytheresaSetLoadWorker(QThread):
 
             # 이미지 업로드 확인
             if blob.exists():  # 업로드 확인
-                self.log_signal.emit(f"Image from {image_url} has been successfully uploaded to {bucket_name}/{blob_name}.")
+                self.log_signal.emit(f"success {image_url} -> {bucket_name}/{blob_name}.")
                 obj['image_name'] = f"{category}_{image_name}"
             else:
                 obj['error_message'] = f"Image upload failed for {image_url}. Check the destination bucket."
