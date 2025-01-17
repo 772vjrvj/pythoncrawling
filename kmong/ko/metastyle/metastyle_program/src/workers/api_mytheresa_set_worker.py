@@ -98,7 +98,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                             now_per = divide_and_truncate(current_cnt, total_cnt)
                             self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})')
 
-                            detail_url = f'{main_url}{product.get('slug')}'
+                            detail_url = f'{main_url}{product.get("slug")}'
                             images, brand_name, product_name, detail = self.get_detail_data(detail_url)
 
                             for ix, image_url in enumerate(images, start=1):
@@ -464,7 +464,7 @@ class ApiMytheresaSetLoadWorker(QThread):
             image_name = image_url.split("media/")[-1].replace("/", "_")  # 'media/...'를 'media_...'로 변경
 
             # 업로드할 경로 설정: site_name/category/product_name/media_...
-            blob_name = f"test_program/{site_name}/{category}_{image_name}"
+            blob_name = f"{site_name}/{category}/{category}_{image_name}"
 
             # 이미지의 MIME 타입을 자동으로 감지
             mime_type, _ = mimetypes.guess_type(image_url)

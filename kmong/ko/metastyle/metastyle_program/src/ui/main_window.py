@@ -215,7 +215,7 @@ class MainWindow(QWidget):
 
             self.task_queue = Queue()
             self.progress_thread = ProgressThread(self.task_queue)
-            self.progress_thread.progress_signal.connect(self.add_log)
+            self.progress_thread.progress_signal.connect(self.set_progress)
             self.progress_thread.log_signal.connect(self.add_log)
             self.progress_thread.start()
 
@@ -257,7 +257,8 @@ class MainWindow(QWidget):
 
     # 프로그래스 큐 데이터 담기
     def set_progress(self, end_value):
-        self.task_queue.put((self.progress_bar.value(), end_value))
+        if self.task_queue:
+            self.task_queue.put((self.progress_bar.value(), end_value))
 
     # 프로그래스 UI 업데이트
     def update_progress(self, value):
