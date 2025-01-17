@@ -117,6 +117,20 @@ class MainWindow(QWidget):
         self.check_list_button.clicked.connect(self.open_check_popup)
 
         # 선택수집
+        self.log_reset_button = QPushButton("초기화")
+        self.log_reset_button.setStyleSheet(f"""
+            background-color: {self.color};
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.log_reset_button.setFixedWidth(100)  # 고정된 너비
+        self.log_reset_button.setFixedHeight(40)  # 고정된 높이
+        self.log_reset_button.setCursor(Qt.PointingHandCursor)
+        self.log_reset_button.clicked.connect(self.log_reset)
+
+        # 선택수집
         self.collect_button = QPushButton("시작")
         self.collect_button.setStyleSheet(f"""
             background-color: {self.color};
@@ -132,6 +146,7 @@ class MainWindow(QWidget):
 
         # 왼쪽 버튼 레이아웃
         left_button_layout.addWidget(self.check_list_button)
+        left_button_layout.addWidget(self.log_reset_button)
         left_button_layout.addWidget(self.collect_button)
 
         # 레이아웃에 요소 추가
@@ -283,3 +298,7 @@ class MainWindow(QWidget):
     def check_list_update(self, select_check_list):
         self.select_check_list = select_check_list
         self.add_log(f'크롤링 목록 : {select_check_list}')
+
+
+    def log_reset(self):
+        self.log_window.clear()

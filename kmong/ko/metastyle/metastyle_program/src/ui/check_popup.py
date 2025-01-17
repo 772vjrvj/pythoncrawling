@@ -1,8 +1,8 @@
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel,
-                             QTableWidgetItem, QMessageBox,
-                             QCheckBox, QDesktopWidget, QDialog, QSizePolicy)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
+from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel,
+                             QMessageBox, QSpinBox,
+                             QCheckBox, QDesktopWidget, QDialog)
 
 
 # 개별등록 팝업창 클래스 (URL 입력)
@@ -30,7 +30,7 @@ class CheckPopup(QDialog):
         self.site = site
         self.check_list = check_list
         self.setWindowTitle("크롤링 항목")
-        self.setGeometry(200, 200, 700, 300)  # 팝업 창 크기 설정
+        self.setGeometry(200, 200, 500, 300)  # 팝업 창 크기 설정
         self.setStyleSheet("background-color: white;")
 
         # 제목과 밑줄
@@ -52,24 +52,27 @@ class CheckPopup(QDialog):
 
             # 체크박스 추가
             checkbox = QCheckBox(name)
+            checkbox.setStyleSheet("margin-left: 20px;")  # 좌측 마진 20px 설정
             row_layout.addWidget(checkbox)
 
-            # "시작" 문구와 입력 박스 추가
+            # "시작" 라벨과 입력 박스 추가
             start_label = QLabel("시작")
+            start_label.setAlignment(Qt.AlignRight)  # 텍스트 우측 정렬
             row_layout.addWidget(start_label)
-
-            start_input = QLineEdit()
+            start_input = QSpinBox()
             start_input.setFixedWidth(80)
-            start_input.setText("1")  # 기본값
+            start_input.setRange(1, 100000)  # 범위 설정
+            start_input.setValue(1)  # 기본값
             row_layout.addWidget(start_input)
 
-            # "종료" 문구와 입력 박스 추가
+            # "종료" 라벨과 입력 박스 추가
             end_label = QLabel("종료")
+            end_label.setAlignment(Qt.AlignRight)  # 텍스트 우측 정렬
             row_layout.addWidget(end_label)
-
-            end_input = QLineEdit()
+            end_input = QSpinBox()
             end_input.setFixedWidth(80)
-            end_input.setText("10000")  # 기본값
+            end_input.setRange(1, 100000)  # 범위 설정
+            end_input.setValue(1000)  # 기본값
             row_layout.addWidget(end_input)
 
             # 체크박스와 입력 박스 저장
@@ -81,7 +84,7 @@ class CheckPopup(QDialog):
 
             # 메인 레이아웃에 가로 레이아웃 추가
             checkbox_layout.addLayout(row_layout)
-            checkbox_layout.setAlignment(Qt.AlignCenter)
+
 
         # 버튼
         button_layout = QHBoxLayout()

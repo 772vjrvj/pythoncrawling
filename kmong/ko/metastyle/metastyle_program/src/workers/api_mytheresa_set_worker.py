@@ -37,6 +37,7 @@ class ApiMytheresaSetLoadWorker(QThread):
         self.baseUrl = baseUrl
         self.sess = requests.Session()
         self.checked_list = checked_list
+        self.log_signal.emit(f"checked_list : {checked_list}")
         self.running = True  # 실행 상태 플래그 추가
 
     # 프로그램 실행
@@ -341,11 +342,11 @@ class ApiMytheresaSetLoadWorker(QThread):
         check_obj_list = []
 
         for index, checked_obj in enumerate(self.checked_list, start=1):
-            item = checked_obj.name
-            start_page = checked_obj.start_page
-            end_page = checked_obj.end_page
+            name = checked_obj['name']
+            start_page = checked_obj['start_page']
+            end_page = checked_obj['end_page']
 
-            category, slug, main_url = self.get_url_info(item)
+            category, slug, main_url = self.get_url_info(name)
             response_json = self.get_api_request(category, slug, 1)
 
             total_items_cnt = 0
@@ -382,7 +383,7 @@ class ApiMytheresaSetLoadWorker(QThread):
             checked_obj['end_page'] = end_page
             checked_obj['total_page_cnt'] = total_page
             checked_obj['total_item_cnt'] = total_items_cnt
-            checked_obj['item'] = item.lower()
+            checked_obj['item'] = name.lower()
             check_obj_list.append(checked_obj)
 
         return check_obj_list
