@@ -28,7 +28,7 @@ baseUrl = "https://www.mytheresa.com"
 # API
 class ApiMytheresaSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
-    progress_signal = pyqtSignal(float)  # 진행률 업데이트를 전달하는 시그널
+    progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
 
     # 초기화
@@ -132,7 +132,8 @@ class ApiMytheresaSetLoadWorker(QThread):
                                 time.sleep(1)
 
                             pro_value = (current_cnt / total_cnt) * 1000000
-                            self.progress_signal.emit(pro_value)
+                            self.progress_signal.emit(now_per, pro_value)
+                            now_per = pro_value
 
         self.log_signal.emit("크롤링 종료")
         self.progress_end_signal.emit()

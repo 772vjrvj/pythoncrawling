@@ -256,9 +256,9 @@ class MainWindow(QWidget):
             self.on_demand_worker = None  # worker 객체 초기화
 
     # 프로그래스 큐 데이터 담기
-    def set_progress(self, end_value):
+    def set_progress(self, start_value, end_value):
         if self.task_queue:
-            self.task_queue.put((self.progress_bar.value(), end_value))
+            self.task_queue.put((start_value, end_value))
 
     # 프로그래스 UI 업데이트
     def update_progress(self, value):
