@@ -12,5 +12,5 @@ def divide_and_truncate(param1, param2):
         return 0
 
     result = param1 / param2  # 나누기 연산
-    truncated_result = floor(result * 100) / 100  # 소수점 2자리까지 버림
+    truncated_result = floor(result * 10000) / 10000  # 소수점 2자리까지 버림
     return truncated_result

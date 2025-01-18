@@ -43,7 +43,7 @@ class ApiMytheresaSetLoadWorker(QThread):
     # 프로그램 실행
     def run(self):
         global image_main_directory, company_name, site_name, excel_filename, baseUrl
-
+        result_list = []
         self.log_signal.emit("크롤링 시작")
 
         if self.checked_list:
@@ -54,7 +54,7 @@ class ApiMytheresaSetLoadWorker(QThread):
             excel_filename = f"{company_name}_{current_time}.xlsx"
             current_cnt = 0
             now_per = 0
-            result_list = []
+
             ## 전체 갯수 계산
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             check_obj_list = self.total_cnt_cal()
@@ -101,43 +101,47 @@ class ApiMytheresaSetLoadWorker(QThread):
                             detail_url = f'{main_url}{product.get("slug")}'
                             images, brand_name, product_name, detail = self.get_detail_data(detail_url)
 
-                            for ix, image_url in enumerate(images, start=1):
-                                if not self.running:  # 실행 상태 확인
-                                    break
+                            if images:
+                                for ix, image_url in enumerate(images, start=1):
+                                    if not self.running:  # 실행 상태 확인
+                                        break
 
-                                self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
-                                obj = {
-                                    'site_name': site_name,
-                                    'category': item,
-                                    'brand_name': brand_name,
-                                    'product_name': product_name,
-                                    'image_name': '',
-                                    'image_success': 'O',
-                                    'page': page,
-                                    'page_index': idx,
-                                    'detail': detail,
-                                    'images': images,
-                                    'main_url': main_url,
-                                    'detail_url': detail_url,
-                                    'error_message': '',
-                                    'reg_date': ''
-                                }
+                                    self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
+                                    obj = {
+                                        'site_name': site_name,
+                                        'category': item,
+                                        'brand_name': brand_name,
+                                        'product_name': product_name,
+                                        'image_name': '',
+                                        'image_success': 'O',
+                                        'page': page,
+                                        'page_index': idx,
+                                        'detail': detail,
+                                        'images': images,
+                                        'main_url': main_url,
+                                        'detail_url': detail_url,
+                                        'excel_save': 'O',
+                                        'error_message': '',
+                                        'reg_date': ''
+                                    }
 
-                                # 이미지 다운로드
-                                # self.download_image(image_url, site_name, category, product_name, obj)
-                                # 구글 업로드
-                                self.google_cloud_upload(site_name, item, product_name, image_url, obj)
-                                obj['reg_date'] = get_current_formatted_datetime()
-                                self.save_to_excel_one_by_one([obj], excel_filename)  # 엑셀 파일 경로를 지정
-                                self.log_signal.emit(f'data : {obj}')
-                                result_list.append(obj)
-                                time.sleep(1)
+                                    # 이미지 다운로드
+                                    # self.download_image(image_url, site_name, category, product_name, obj)
+                                    # 구글 업로드
+                                    self.google_cloud_upload(site_name, item, product_name, image_url, obj)
+                                    obj['reg_date'] = get_current_formatted_datetime()
+                                    self.save_to_excel_one_by_one([obj], excel_filename, obj)  # 엑셀 파일 경로를 지정
+
+                                    self.log_signal.emit(f'data : {obj}')
+                                    result_list.append(obj)
+                                    time.sleep(1)
 
                             pro_value = (current_cnt / total_cnt) * 1000000
                             self.progress_signal.emit(now_per, pro_value)
                             now_per = pro_value
 
-        self.log_signal.emit("크롤링 종료")
+        self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
+        self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
 
     # 프로그램 중단
@@ -270,41 +274,57 @@ class ApiMytheresaSetLoadWorker(QThread):
     # 상세보기 데이터 가져오기
     def get_detail_data(self, url):
 
-        response = requests.get(url)
-        response.encoding = 'utf-8'
-        soup = BeautifulSoup(response.text, 'html.parser')
+        images = ""
+        brand_name = ""
+        product_name = ""
+        detail = ""
 
-        # 'product__gallery__carousel' 클래스를 가진 div 안에서 'swiper-slide' 클래스를 가진 div를 찾기
-        carousel_div = soup.find('div', class_='product__gallery__carousel')
-        swiper_slides = carousel_div.find_all('div', class_='swiper-slide')
+        try:
+            response = requests.get(url)
+            response.encoding = 'utf-8'
+            soup = BeautifulSoup(response.text, 'html.parser')
 
-        # 'swiper-slide' 안의 img 태그의 src를 배열에 담기
-        images = set()  # set을 사용하여 중복 제거
-        for slide in swiper_slides:
-            img_tag = slide.find('img')
-            if img_tag and img_tag.get('src'):  # img 태그가 존재하고 src 속성이 있을 경우
-                images.add(img_tag['src'])  # set에 추가 (중복 자동 제거)
+            # 'product__gallery__carousel' 클래스를 가진 div 안에서 'swiper-slide' 클래스를 가진 div를 찾기
+            carousel_div = soup.find('div', class_='product__gallery__carousel')
 
-        # 중복 제거된 img_sources 리스트로 변환
-        images = list(images)
-        images = images[:3]
+            if not carousel_div:
+                self.log_signal.emit("carousel_div not found")
+                return []
 
-        product_name = soup.find('div', class_='product__area__branding__name').get_text(strip=True)
-        brand_name = soup.find('a', class_='product__area__branding__designer__link').get_text(strip=True)
+            swiper_slides = carousel_div.find_all('div', class_='swiper-slide')
 
-        # 'accordion__body__content' 클래스 중 첫 번째 div 찾기
-        accordion_body_content = soup.find('div', class_='accordion__body__content')
+            # 'swiper-slide' 안의 img 태그의 src를 배열에 담기
+            images = set()  # set을 사용하여 중복 제거
+            if swiper_slides:
+                for slide in swiper_slides:
+                    img_tag = slide.find('img')
+                    if img_tag and img_tag.get('src'):  # img 태그가 존재하고 src 속성이 있을 경우
+                        images.add(img_tag['src'])  # set에 추가 (중복 자동 제거)
 
-        # ul 안의 li들에서 텍스트를 배열에 담기
-        detail = []
-        if accordion_body_content:
-            ul_tag = accordion_body_content.find('ul')  # ul 태그 찾기
+                # 중복 제거된 img_sources 리스트로 변환
+                images = list(images)
+                images = images[:3]
+
+            product_tag = soup.find('div', class_='product__area__branding__name')
+            product_name = product_tag.get_text(strip=True) if product_tag else ''
+
+            brand_tag = soup.find('a', class_='product__area__branding__designer__link')
+            brand_name = brand_tag.get_text(strip=True) if brand_tag else ''
+
+            accordion_body_content = soup.find('div', class_='accordion__body__content')
+
+            # ul 안의 li들에서 텍스트를 배열에 담기
+            detail = []
+            ul_tag = accordion_body_content.find('ul') if accordion_body_content else None
             if ul_tag:
                 li_tags = ul_tag.find_all('li')  # li 태그들 찾기
                 for li in li_tags:
                     detail.append(li.get_text(strip=True))  # li 안의 텍스트를 가져와서 배열에 담기
 
-        return images, brand_name, product_name, detail
+        except Exception as e:
+            self.log_signal.emit(f"Error : {e}")
+        finally:
+            return images, brand_name, product_name, detail
 
     # URL 가져오기
     def get_url_info(self, item):
@@ -392,7 +412,7 @@ class ApiMytheresaSetLoadWorker(QThread):
         return check_obj_list
 
     # 엑셀 한껀씩 저장
-    def save_to_excel_one_by_one(self, results, file_name, sheet_name='Sheet1'):
+    def save_to_excel_one_by_one(self, results, file_name, obj, sheet_name='Sheet1'):
         try:
             # 결과 데이터가 비어있는지 확인
             if not results:
@@ -415,10 +435,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                 # 엑셀 파일에 덧붙이기 (index는 제외)
                 with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
                     df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
-
                 self.log_signal.emit('엑셀 추가 성공')
-
-                return True  # 엑셀 파일에 성공적으로 덧붙였으면 True 리턴
 
             else:
                 # 파일이 없으면 새로 생성
@@ -426,12 +443,15 @@ class ApiMytheresaSetLoadWorker(QThread):
                 with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
                     self.log_signal.emit('엑셀 추가 성공')
-                return True  # 새로 생성한 파일에 데이터를 저장했으면 True 리턴
+
+            obj['excel_save'] = 'O'
 
         except Exception as e:
             # 예기치 않은 오류 처리
             self.log_signal.emit(f'엑셀 에러 발생: {e}')
-            return False
+            obj['excel_save'] = 'X'
+            obj['error_message'] = e
+
 
     # 구글 클라우드 업로드
     def google_cloud_upload(self, site_name, category, product_name, image_url, obj):
