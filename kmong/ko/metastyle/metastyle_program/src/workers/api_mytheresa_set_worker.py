@@ -14,7 +14,7 @@ from google.oauth2 import service_account
 from selenium import webdriver
 
 from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
-from src.utils.number_utils import divide_and_truncate
+from src.utils.number_utils import divide_and_truncate_per
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -53,7 +53,8 @@ class ApiMytheresaSetLoadWorker(QThread):
             current_time = get_current_yyyymmddhhmmss()
             excel_filename = f"{company_name}_{current_time}.xlsx"
             current_cnt = 0
-            now_per = 0
+            before_pro_value = 0
+            now_per = 0.0
 
             ## 전체 갯수 계산
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
@@ -95,7 +96,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                                 break
 
                             current_cnt += 1
-                            now_per = divide_and_truncate(current_cnt, total_cnt)
+                            now_per = divide_and_truncate_per(current_cnt, total_cnt)
                             self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})')
 
                             detail_url = f'{main_url}{product.get("slug")}'
@@ -137,8 +138,8 @@ class ApiMytheresaSetLoadWorker(QThread):
                                     time.sleep(1)
 
                             pro_value = (current_cnt / total_cnt) * 1000000
-                            self.progress_signal.emit(now_per, pro_value)
-                            now_per = pro_value
+                            self.progress_signal.emit(before_pro_value, pro_value)
+                            before_pro_value = pro_value
 
         self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
         self.log_signal.emit("=============== 크롤링 종료")

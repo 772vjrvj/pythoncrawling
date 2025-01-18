@@ -18,7 +18,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
-from src.utils.number_utils import divide_and_truncate
+from src.utils.number_utils import divide_and_truncate_per
 from requests.exceptions import RequestException, Timeout, TooManyRedirects
 from urllib.parse import urlparse
 
@@ -53,9 +53,9 @@ class ApiZalandoSetLoadWorker(QThread):
         global image_main_directory, company_name, site_name, excel_filename, baseUrl
 
         self.log_signal.emit("크롤링 시작")
-        total_cnt = 0
         current_cnt = 0
         now_per = 0.0
+        before_pro_value = 0
         result_list = []
 
         if self.checked_list:
@@ -107,7 +107,7 @@ class ApiZalandoSetLoadWorker(QThread):
                                 break
 
                             current_cnt += 1
-                            now_per = divide_and_truncate(current_cnt, total_cnt)
+                            now_per = divide_and_truncate_per(current_cnt, total_cnt)
                             self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})')
 
                             detail_html = self.sub_request(detail_url)
@@ -149,8 +149,8 @@ class ApiZalandoSetLoadWorker(QThread):
                                     time.sleep(1)
 
                                 pro_value = (current_cnt / total_cnt) * 1000000
-                                self.progress_signal.emit(now_per, pro_value)
-                                now_per = pro_value
+                                self.progress_signal.emit(before_pro_value, pro_value)
+                                before_pro_value = pro_value
 
         self.log_signal.emit(f"크롤링 종료. 처리한 상품 수 : {len(result_list)}")
         self.progress_end_signal.emit()
