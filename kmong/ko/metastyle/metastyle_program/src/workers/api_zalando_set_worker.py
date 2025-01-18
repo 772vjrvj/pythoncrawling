@@ -133,6 +133,7 @@ class ApiZalandoSetLoadWorker(QThread):
                                         'images': images,
                                         'main_url': main_url,
                                         'detail_url': detail_url,
+                                        'excel_save': 'O',
                                         'error_message': '',
                                         'reg_date': ''
                                     }
@@ -299,7 +300,7 @@ class ApiZalandoSetLoadWorker(QThread):
 
     # 상세보기 데이터 가져오기
     def get_detail_data(self, html):
-        images = set()
+        images = []
         brand_name = ''
         product_name = ''
         detail = []
@@ -307,10 +308,12 @@ class ApiZalandoSetLoadWorker(QThread):
             soup = BeautifulSoup(html, 'html.parser')
 
             # 이미지 다운로드 [시작] ====================
-            img_list = soup.find_all('li', class_='LiPgRT DlJ4rT S3xARh') if soup else None
+            img_list = soup.find_all('li', class_='LiPgRT DlJ4rT S3xARh') if soup else []
+
             if len(img_list) < 1:
                 self.log_signal.emit("Image list not found")
 
+            images = set()
             for index, view in enumerate(img_list):
                 img = view.find('img')
 
@@ -321,18 +324,19 @@ class ApiZalandoSetLoadWorker(QThread):
             images = list(images)
             images = images[:2]
 
-            product_name = soup.find('span', class_='EKabf7 R_QwOV').get_text(strip=True)
+            product_tag = soup.find('span', class_='EKabf7 R_QwOV')
+            product_name = product_tag.get_text(strip=True) if product_tag else ''
 
-            brand_name = soup.find('span', class_='OBkCPz Z82GLX m3OCL3 HlZ_Tf _5Yd-hZ').get_text(strip=True)
+            brand_tag = soup.find('span', class_='OBkCPz Z82GLX m3OCL3 HlZ_Tf _5Yd-hZ')
+            brand_name = brand_tag.get_text(strip=True) if brand_tag else ''
 
             # <div> 태그 중 'data-testid' 속성이 'pdp-accordion-details'인 요소 찾기
             accordion_details = soup.find('div', {'data-testid': 'pdp-accordion-details'})
 
             # <dl> 태그 안의 모든 <div>를 찾아서 텍스트 추출
-            dl_items = accordion_details.find_all('div', class_='qMOFyE')
+            dl_items = accordion_details.find_all('div', class_='qMOFyE') if accordion_details else []
 
             # 텍스트를 담을 배열 초기화
-
 
             # <dl> 안의 모든 <div>에서 <dt>와 <dd> 텍스트를 결합하여 배열에 담기
             for item in dl_items:
@@ -435,8 +439,6 @@ class ApiZalandoSetLoadWorker(QThread):
                 if match:
                     # 콤마 제거
                     total_page = match.group().replace(',', '')
-
-
         except Exception as e:
             self.log_signal.emit(f"Error : {e}")
         finally:
@@ -548,46 +550,46 @@ class ApiZalandoSetLoadWorker(QThread):
 
 
     # 엑셀 한껀씩 저장
-    def save_to_excel_one_by_one(self, results, file_name, sheet_name='Sheet1'):
+    def save_to_excel_one_by_one(self, results, file_name, obj, sheet_name='Sheet1'):
         try:
             # 결과 데이터가 비어있는지 확인
             if not results:
                 self.log_signal.emit("결과 데이터가 비어 있습니다.")
-                return False
-
-            # 파일이 존재하는지 확인
-            if os.path.exists(file_name):
-                # 파일이 있으면 기존 데이터 읽어오기
-                df_existing = pd.read_excel(file_name, sheet_name=sheet_name, engine='openpyxl')
-
-                # 새로운 데이터를 DataFrame으로 변환
-                df_new = pd.DataFrame(results)
-
-                # 기존 데이터에 새로운 데이터 추가
-                for index, row in df_new.iterrows():
-                    # 기존 DataFrame에 한 행씩 추가하는 부분
-                    df_existing = pd.concat([df_existing, pd.DataFrame([row])], ignore_index=True)
-
-                # 엑셀 파일에 덧붙이기 (index는 제외)
-                with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-                    df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
-
-                self.log_signal.emit('엑셀 추가 성공')
-
-                return True  # 엑셀 파일에 성공적으로 덧붙였으면 True 리턴
-
+                obj['excel_save'] = 'X'
             else:
-                # 파일이 없으면 새로 생성
-                df = pd.DataFrame(results)
-                with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
-                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+                # 파일이 존재하는지 확인
+                if os.path.exists(file_name):
+                    # 파일이 있으면 기존 데이터 읽어오기
+                    df_existing = pd.read_excel(file_name, sheet_name=sheet_name, engine='openpyxl')
+
+                    # 새로운 데이터를 DataFrame으로 변환
+                    df_new = pd.DataFrame(results)
+
+                    # 기존 데이터에 새로운 데이터 추가
+                    for index, row in df_new.iterrows():
+                        # 기존 DataFrame에 한 행씩 추가하는 부분
+                        df_existing = pd.concat([df_existing, pd.DataFrame([row])], ignore_index=True)
+
+                    # 엑셀 파일에 덧붙이기 (index는 제외)
+                    with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+                        df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
+
                     self.log_signal.emit('엑셀 추가 성공')
-                return True  # 새로 생성한 파일에 데이터를 저장했으면 True 리턴
+
+                else:
+                    # 파일이 없으면 새로 생성
+                    df = pd.DataFrame(results)
+                    with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+                        df.to_excel(writer, sheet_name=sheet_name, index=False)
+                        self.log_signal.emit('엑셀 추가 성공')
+
+                obj['excel_save'] = 'O'
 
         except Exception as e:
             # 예기치 않은 오류 처리
             self.log_signal.emit(f'엑셀 에러 발생: {e}')
-            return False
+            obj['excel_save'] = 'X'
+            obj['error_message'] = e
 
 
     # 구글 클라우드 업로드

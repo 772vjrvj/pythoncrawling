@@ -285,7 +285,7 @@ class ApiMytheresaSetLoadWorker(QThread):
             soup = BeautifulSoup(response.text, 'html.parser')
 
             # 'product__gallery__carousel' 클래스를 가진 div 안에서 'swiper-slide' 클래스를 가진 div를 찾기
-            carousel_div = soup.find('div', class_='product__gallery__carousel')
+            carousel_div = soup.find('div', class_='product__gallery__carousel') if soup else None
 
             if not carousel_div:
                 self.log_signal.emit("carousel_div not found")
@@ -417,34 +417,33 @@ class ApiMytheresaSetLoadWorker(QThread):
             # 결과 데이터가 비어있는지 확인
             if not results:
                 self.log_signal.emit("결과 데이터가 비어 있습니다.")
-                return False
-
-            # 파일이 존재하는지 확인
-            if os.path.exists(file_name):
-                # 파일이 있으면 기존 데이터 읽어오기
-                df_existing = pd.read_excel(file_name, sheet_name=sheet_name, engine='openpyxl')
-
-                # 새로운 데이터를 DataFrame으로 변환
-                df_new = pd.DataFrame(results)
-
-                # 기존 데이터에 새로운 데이터 추가
-                for index, row in df_new.iterrows():
-                    # 기존 DataFrame에 한 행씩 추가하는 부분
-                    df_existing = pd.concat([df_existing, pd.DataFrame([row])], ignore_index=True)
-
-                # 엑셀 파일에 덧붙이기 (index는 제외)
-                with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-                    df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
-                self.log_signal.emit('엑셀 추가 성공')
-
+                obj['excel_save'] = 'X'
             else:
-                # 파일이 없으면 새로 생성
-                df = pd.DataFrame(results)
-                with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
-                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+                # 파일이 존재하는지 확인
+                if os.path.exists(file_name):
+                    # 파일이 있으면 기존 데이터 읽어오기
+                    df_existing = pd.read_excel(file_name, sheet_name=sheet_name, engine='openpyxl')
+
+                    # 새로운 데이터를 DataFrame으로 변환
+                    df_new = pd.DataFrame(results)
+
+                    # 기존 데이터에 새로운 데이터 추가
+                    for index, row in df_new.iterrows():
+                        # 기존 DataFrame에 한 행씩 추가하는 부분
+                        df_existing = pd.concat([df_existing, pd.DataFrame([row])], ignore_index=True)
+
+                    # 엑셀 파일에 덧붙이기 (index는 제외)
+                    with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+                        df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
                     self.log_signal.emit('엑셀 추가 성공')
 
-            obj['excel_save'] = 'O'
+                else:
+                    # 파일이 없으면 새로 생성
+                    df = pd.DataFrame(results)
+                    with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+                        df.to_excel(writer, sheet_name=sheet_name, index=False)
+                        self.log_signal.emit('엑셀 추가 성공')
+                obj['excel_save'] = 'O'
 
         except Exception as e:
             # 예기치 않은 오류 처리
