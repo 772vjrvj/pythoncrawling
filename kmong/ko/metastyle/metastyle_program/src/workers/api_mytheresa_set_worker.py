@@ -396,7 +396,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                     start_page = end_page
                     total_items_cnt = 60
                 else:
-                    total_items_cnt = (end_page - start_page) * 60
+                    total_items_cnt = (end_page - start_page + 1) * 60
 
             checked_obj['start_page'] = start_page
             checked_obj['end_page'] = end_page

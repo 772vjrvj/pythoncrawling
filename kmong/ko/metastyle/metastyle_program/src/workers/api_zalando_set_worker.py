@@ -473,7 +473,7 @@ class ApiZalandoSetLoadWorker(QThread):
                     start_page = end_page
                     total_items_cnt = 84
                 else:
-                    total_items_cnt = (end_page - start_page) * 84
+                    total_items_cnt = (end_page - start_page + 1) * 84
 
             checked_obj['start_page'] = start_page
             checked_obj['end_page'] = end_page
