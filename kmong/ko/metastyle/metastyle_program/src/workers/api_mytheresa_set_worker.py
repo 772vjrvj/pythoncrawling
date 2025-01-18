@@ -53,39 +53,36 @@ class ApiMytheresaSetLoadWorker(QThread):
             current_time = get_current_yyyymmddhhmmss()
             excel_filename = f"{company_name}_{current_time}.xlsx"
             current_cnt = 0
+            current_page = 0
             before_pro_value = 0
-            now_per = 0.0
 
             ## 전체 갯수 계산
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             check_obj_list = self.total_cnt_cal()
             total_cnt = sum(int(obj['total_item_cnt']) for obj in check_obj_list)
+            total_pages = sum(int(obj['total_page_cnt']) for obj in check_obj_list)
 
             self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
+            self.log_signal.emit(f"전체 페이지수 {total_pages} 개")
 
             for index, check_obj in enumerate(check_obj_list, start=1):
+                if not self.running:  # 실행 상태 확인
+                    self.log_signal.emit("크롤링이 중지되었습니다.")
+                    break
                 item = check_obj['name']
-                total_pages = int(check_obj['total_page_cnt'])
                 start_page = int(check_obj['start_page'])
                 end_page = int(check_obj['end_page'])
-
-                if not self.running:  # 실행 상태 확인
-                    break
-
-                self.log_signal.emit(f'{site_name}({total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})')
                 category, slug, main_url = self.get_url_info(item)
 
                 for page in range(start_page, end_page + 1):
                     if not self.running:  # 실행 상태 확인
-                        self.log_signal.emit("크롤링이 중지되었습니다.")
                         break
-
+                    current_page = current_page + 1
                     response_json = self.get_api_request(category, slug, page)
                     if isinstance(response_json, dict):
                         data = response_json.get('data', {}).get('xProductListingPage', {})
                         products = data.get('products', [])
-                        self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})')
                         if not products:
                             self.log_signal.emit(f"No more data for category {category} at page {page}")
                             break
@@ -97,8 +94,7 @@ class ApiMytheresaSetLoadWorker(QThread):
 
                             current_cnt += 1
                             now_per = divide_and_truncate_per(current_cnt, total_cnt)
-                            self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})')
-
+                            self.log_signal.emit(f'{site_name}({now_per}%)  {item}({index}/{len(check_obj_list)})  TotalPage({current_page}/{total_pages})  TotalProduct({current_cnt}/{total_cnt})')
                             detail_url = f'{main_url}{product.get("slug")}'
                             images, brand_name, product_name, detail = self.get_detail_data(detail_url)
 
@@ -106,8 +102,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                                 for ix, image_url in enumerate(images, start=1):
                                     if not self.running:  # 실행 상태 확인
                                         break
-
-                                    self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{total_pages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
+                                    self.log_signal.emit(f'{item}  Page({page}/{end_page})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
                                     obj = {
                                         'site_name': site_name,
                                         'category': item,

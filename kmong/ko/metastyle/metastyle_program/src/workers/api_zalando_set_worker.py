@@ -54,7 +54,7 @@ class ApiZalandoSetLoadWorker(QThread):
 
         self.log_signal.emit("크롤링 시작")
         current_cnt = 0
-        now_per = 0.0
+        current_page = 0
         before_pro_value = 0
         result_list = []
 
@@ -70,36 +70,32 @@ class ApiZalandoSetLoadWorker(QThread):
             check_obj_list = self.total_cnt_cal()
 
             total_cnt = sum(int(obj['total_item_cnt']) for obj in check_obj_list)
+            total_pages = sum(int(obj['total_page_cnt']) for obj in check_obj_list)
 
             self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
+            self.log_signal.emit(f"전체 페이지수 {total_pages} 개")
 
             for index, check_obj in enumerate(check_obj_list, start=1):
+                if not self.running:  # 실행 상태 확인
+                    self.log_signal.emit("크롤링이 중지되었습니다.")
+                    break
+
                 item = check_obj['name']
                 start_page = int(check_obj['start_page'])
                 end_page = int(check_obj['end_page'])
-
-                if not self.running:  # 실행 상태 확인
-                    break
-
-                self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})')
                 main_url, partition = self.get_url_info(item)
 
                 for page in range(start_page, end_page + 1):
-
                     if not self.running:  # 실행 상태 확인
-                        self.log_signal.emit("크롤링이 중지되었습니다.")
                         break
 
                     page_url = f"{main_url}{partition}p={page}"
-
 
                     main_html = self.main_request(page_url, 5)
 
                     if main_html:
                         products, totalPages = self.process_data(main_html)
-
-                        self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})')
 
                         # products 배열에서 각 item의 'name' 값을 출력
                         for idx, detail_url in enumerate(products, start=1):
@@ -108,8 +104,7 @@ class ApiZalandoSetLoadWorker(QThread):
 
                             current_cnt += 1
                             now_per = divide_and_truncate_per(current_cnt, total_cnt)
-                            self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})')
-
+                            self.log_signal.emit(f'{site_name}({now_per}%)  {item}({index}/{len(check_obj_list)})  TotalPage({current_page}/{total_pages})  TotalProduct({current_cnt}/{total_cnt})')
                             detail_html = self.sub_request(detail_url)
 
                             if detail_html:
@@ -118,8 +113,8 @@ class ApiZalandoSetLoadWorker(QThread):
                                 for ix, image_url in enumerate(images, start=1):
                                     if not self.running:  # 실행 상태 확인
                                         break
+                                    self.log_signal.emit(f'{item}  Page({page}/{end_page})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
 
-                                    self.log_signal.emit(f'{site_name}({current_cnt}/{total_cnt})[{now_per}]  {item}({index}/{len(check_obj_list)})  Page({page}/{totalPages})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
                                     obj = {
                                         'site_name': site_name,
                                         'category': item,
@@ -152,7 +147,8 @@ class ApiZalandoSetLoadWorker(QThread):
                                 self.progress_signal.emit(before_pro_value, pro_value)
                                 before_pro_value = pro_value
 
-        self.log_signal.emit(f"크롤링 종료. 처리한 상품 수 : {len(result_list)}")
+        self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
+        self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
 
 
