@@ -65,56 +65,42 @@ class ApiZalandoSetLoadWorker(QThread):
             current_time = get_current_yyyymmddhhmmss()
             excel_filename = f"{company_name}_{current_time}.xlsx"
 
-            ## 전체 갯수 계산
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             check_obj_list = self.total_cnt_cal()
-
             total_cnt = sum(int(obj['total_item_cnt']) for obj in check_obj_list)
             total_pages = sum(int(obj['total_page_cnt']) for obj in check_obj_list)
 
             self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
             self.log_signal.emit(f"전체 페이지수 {total_pages} 개")
-
             for index, check_obj in enumerate(check_obj_list, start=1):
                 if not self.running:  # 실행 상태 확인
                     self.log_signal.emit("크롤링이 중지되었습니다.")
                     break
-
                 item = check_obj['name']
                 start_page = int(check_obj['start_page'])
                 end_page = int(check_obj['end_page'])
                 main_url, partition = self.get_url_info(item)
-
-                for page in range(start_page, end_page + 1):
+                for indx, page in enumerate(range(start_page, end_page + 1), start=1):
                     if not self.running:  # 실행 상태 확인
                         break
-
                     page_url = f"{main_url}{partition}p={page}"
-
                     main_html = self.main_request(page_url, 5)
-
                     if main_html:
                         products, totalPages = self.process_data(main_html)
-
-                        # products 배열에서 각 item의 'name' 값을 출력
                         for idx, detail_url in enumerate(products, start=1):
                             if not self.running:  # 실행 상태 확인
                                 break
-
                             current_cnt += 1
                             now_per = divide_and_truncate_per(current_cnt, total_cnt)
                             self.log_signal.emit(f'{site_name}({now_per}%)  {item}({index}/{len(check_obj_list)})  TotalPage({current_page}/{total_pages})  TotalProduct({current_cnt}/{total_cnt})')
                             detail_html = self.sub_request(detail_url)
-
                             if detail_html:
                                 images, brand_name, product_name, detail = self.get_detail_data(detail_html)
-
                                 for ix, image_url in enumerate(images, start=1):
-                                    if not self.running:  # 실행 상태 확인
+                                    if not self.running:
                                         break
-                                    self.log_signal.emit(f'{item}  Page({page}/{end_page})  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
-
+                                    self.log_signal.emit(f'{item}  Page({page}/{end_page})[{indx}/{total_pages}]  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
                                     obj = {
                                         'site_name': site_name,
                                         'category': item,
@@ -142,11 +128,9 @@ class ApiZalandoSetLoadWorker(QThread):
                                     self.log_signal.emit(f'data : {obj}')
                                     result_list.append(obj)
                                     time.sleep(1)
-
                                 pro_value = (current_cnt / total_cnt) * 1000000
                                 self.progress_signal.emit(before_pro_value, pro_value)
                                 before_pro_value = pro_value
-
         self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
@@ -477,7 +461,7 @@ class ApiZalandoSetLoadWorker(QThread):
 
             checked_obj['start_page'] = start_page
             checked_obj['end_page'] = end_page
-            checked_obj['total_page_cnt'] = total_page
+            checked_obj['total_page_cnt'] = end_page - start_page + 1
             checked_obj['total_item_cnt'] = total_items_cnt
             checked_obj['item'] = name.lower()
 
