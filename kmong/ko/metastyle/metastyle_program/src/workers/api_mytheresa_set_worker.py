@@ -140,7 +140,6 @@ class ApiMytheresaSetLoadWorker(QThread):
         self.log_signal.emit("크롤링 종료")
         self.progress_end_signal.emit()
 
-
     # 프로그램 중단
     def stop(self):
         self.running = False

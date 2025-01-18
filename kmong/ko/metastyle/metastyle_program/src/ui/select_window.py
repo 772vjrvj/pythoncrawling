@@ -1,17 +1,18 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
-
-from src.ui.main_window import MainWindow
-from src.workers.login_thread import LoginThread
-from src.ui.password_change_window import PasswordChangeWindow
+from src.utils.singleton import GlobalState
 
 # 로그인 창
 class SelectWindow(QWidget):
     
     # 초기화
-    def __init__(self, cookies=None):
+    def __init__(self, app_manager):
         super().__init__()
+        self.app_manager = app_manager
+        self.set_layout()
+
+    def set_layout(self):
         # 동그란 파란색 원을 그린 아이콘 생성
         icon_pixmap = QPixmap(32, 32)  # 아이콘 크기 (64x64 픽셀)
         icon_pixmap.fill(QColor("transparent"))  # 투명 배경
@@ -23,7 +24,6 @@ class SelectWindow(QWidget):
         # 윈도우 아이콘 설정
         self.setWindowIcon(QIcon(icon_pixmap))
 
-        self.cookies = cookies
         self.setWindowTitle("사이트")
         self.setGeometry(100, 100, 500, 500)  # 화면 크기 설정
         self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
@@ -34,73 +34,75 @@ class SelectWindow(QWidget):
         layout.setContentsMargins(20, 20, 20, 20)  # 레이아웃의 외부 마진을 설정
         layout.setSpacing(20)  # 위젯 간 간격 설정
 
-
         # MYTHERESA
-        self.site_button_first = QPushButton("MYTHERESA", self)
-        self.site_button_first.setStyleSheet("""
+        site_button_first = QPushButton("MYTHERESA", self)
+        site_button_first.setStyleSheet("""
             background-color: #000;
             color: white;
             border-radius: 20px;
             font-size: 14px;
             padding: 10px;
         """)
-        self.site_button_first.setFixedHeight(40)
-        self.site_button_first.setFixedWidth(300)  # 버튼 너비 설정
-        self.site_button_first.setCursor(Qt.PointingHandCursor)
-        self.site_button_first.clicked.connect(lambda: self.select_site("MYTHERESA"))
+        site_button_first.setFixedHeight(40)
+        site_button_first.setFixedWidth(300)  # 버튼 너비 설정
+        site_button_first.setCursor(Qt.PointingHandCursor)
+        site_button_first.clicked.connect(lambda: self.select_site("MYTHERESA"))
 
 
         # ZALANDO
-        self.site_button_second = QPushButton("ZALANDO", self)
-        self.site_button_second.setStyleSheet("""
+        site_button_second = QPushButton("ZALANDO", self)
+        site_button_second.setStyleSheet("""
             background-color: #D2451E;
             color: white;
             border-radius: 20px;
             font-size: 14px;
             padding: 10px;
         """)
-        self.site_button_second.setFixedHeight(40)
-        self.site_button_second.setFixedWidth(300)  # 버튼 너비 설정
-        self.site_button_second.setCursor(Qt.PointingHandCursor)
-        self.site_button_second.clicked.connect(lambda: self.select_site("ZALANDO"))
+        site_button_second.setFixedHeight(40)
+        site_button_second.setFixedWidth(300)  # 버튼 너비 설정
+        site_button_second.setCursor(Qt.PointingHandCursor)
+        site_button_second.clicked.connect(lambda: self.select_site("ZALANDO"))
 
 
         # NEW3
-        self.site_button_third = QPushButton("NEW3", self)
-        self.site_button_third.setStyleSheet("""
+        site_button_third = QPushButton("NEW3", self)
+        site_button_third.setStyleSheet("""
             background-color: #cccccc;
             color: white;
             border-radius: 20px;
             font-size: 14px;
             padding: 10px;
         """)
-        self.site_button_third.setFixedHeight(40)
-        self.site_button_third.setFixedWidth(300)  # 버튼 너비 설정
-        self.site_button_third.setCursor(Qt.PointingHandCursor)
-        self.site_button_third.clicked.connect(lambda: self.select_site(""))
+        site_button_third.setFixedHeight(40)
+        site_button_third.setFixedWidth(300)  # 버튼 너비 설정
+        site_button_third.setCursor(Qt.PointingHandCursor)
+        site_button_third.clicked.connect(lambda: self.select_site(""))
 
 
         # NEW4
-        self.site_button_forth = QPushButton("NEW4", self)
-        self.site_button_forth.setStyleSheet("""
+        site_button_forth = QPushButton("NEW4", self)
+        site_button_forth.setStyleSheet("""
             background-color: #cccccc;
             color: white;
             border-radius: 20px;
             font-size: 14px;
             padding: 10px;
         """)
-        self.site_button_forth.setFixedHeight(40)
-        self.site_button_forth.setFixedWidth(300)  # 버튼 너비 설정
-        self.site_button_forth.setCursor(Qt.PointingHandCursor)
-        self.site_button_forth.clicked.connect(lambda: self.select_site(""))
+        site_button_forth.setFixedHeight(40)
+        site_button_forth.setFixedWidth(300)  # 버튼 너비 설정
+        site_button_forth.setCursor(Qt.PointingHandCursor)
+        site_button_forth.clicked.connect(lambda: self.select_site(""))
 
         # 레이아웃에 요소 추가
-        layout.addWidget(self.site_button_first)
-        layout.addWidget(self.site_button_second)
-        layout.addWidget(self.site_button_third)
-        layout.addWidget(self.site_button_forth)
+        layout.addWidget(site_button_first)
+        layout.addWidget(site_button_second)
+        layout.addWidget(site_button_third)
+        layout.addWidget(site_button_forth)
 
         self.center_window()
+
+
+
 
 
     # 화면 중앙배치
@@ -133,7 +135,11 @@ class SelectWindow(QWidget):
                 color = ""
                 check_list = []
 
+            state = GlobalState()
+            state.set("site", site)
+            state.set("color", color)
+            state.set("check_list", check_list)
+
             # 로그인 성공 시 메인 화면을 새롭게 생성
             self.close()  # 로그인 화면 종료
-            self.main_screen = MainWindow(self.cookies, site, color, check_list)
-            self.main_screen.show()
+            self.app_manager.go_to_main()

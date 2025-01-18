@@ -1,16 +1,16 @@
 from datetime import datetime
-
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
-                             QTextEdit, QApplication, QProgressBar)
-from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from queue import Queue
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDesktopWidget, QMessageBox,
+                             QTextEdit, QProgressBar)
 
 from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
+from src.utils.singleton import GlobalState
 from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
 from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
-
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -20,26 +20,29 @@ main_url_list = []
 class MainWindow(QWidget):
     
     # 초기화
-    def __init__(self, cookies=None, site=None, color=None, check_list=None):
+    def __init__(self, app_manager):
         super().__init__()
-        self.site = site
-        self.color = color
+        self.app_manager = app_manager
+        state = GlobalState()
+
+        self.site = state.get("site")
+        self.color = state.get("color")
         self.set_layout()
         self.daily_worker = None  # 24시 실행 스레드
         self.on_demand_worker = None  # 요청 시 실행 스레드
-        self.check_list = check_list
+        self.check_list = state.get("check_list")
         self.select_check_list = None
         self.task_queue = None
         self.progress_thread = None
 
         # 세션 관리용 API Worker 초기화
-        self.cookies = cookies
-        self.api_worker = CheckWorker(cookies, server_url)
+        self.cookies = state.get("cookies")
+        self.api_worker = CheckWorker(self.cookies, server_url)
         self.api_worker.api_failure.connect(self.handle_api_failure)
         self.api_worker.log_signal.connect(self.add_log)
         self.api_worker.start()
 
-        self.check_popup = CheckPopup(site, check_list)
+        self.check_popup = CheckPopup(self.site, self.check_list)
         self.check_popup.check_list_signal.connect(self.check_list_update)
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
@@ -116,8 +119,22 @@ class MainWindow(QWidget):
         self.check_list_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
         self.check_list_button.clicked.connect(self.open_check_popup)
 
+        # 사이트목록
+        self.site_list_button = QPushButton("사이트목록")
+        self.site_list_button.setStyleSheet("""
+            background-color: #7d7c7c;
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.site_list_button.setFixedWidth(100)  # 고정된 너비
+        self.site_list_button.setFixedHeight(40)  # 고정된 높이
+        self.site_list_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
+        self.site_list_button.clicked.connect(self.go_site_list)
+
         # 선택수집
-        self.log_reset_button = QPushButton("초기화")
+        self.log_reset_button = QPushButton("로그리셋")
         self.log_reset_button.setStyleSheet(f"""
             background-color: {self.color};
             color: white;
@@ -129,6 +146,20 @@ class MainWindow(QWidget):
         self.log_reset_button.setFixedHeight(40)  # 고정된 높이
         self.log_reset_button.setCursor(Qt.PointingHandCursor)
         self.log_reset_button.clicked.connect(self.log_reset)
+
+        # 선택수집
+        self.program_reset_button = QPushButton("초기화")
+        self.program_reset_button.setStyleSheet(f"""
+            background-color: {self.color};
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.program_reset_button.setFixedWidth(100)  # 고정된 너비
+        self.program_reset_button.setFixedHeight(40)  # 고정된 높이
+        self.program_reset_button.setCursor(Qt.PointingHandCursor)
+        self.program_reset_button.clicked.connect(self.program_reset)
 
         # 선택수집
         self.collect_button = QPushButton("시작")
@@ -146,7 +177,9 @@ class MainWindow(QWidget):
 
         # 왼쪽 버튼 레이아웃
         left_button_layout.addWidget(self.check_list_button)
+        left_button_layout.addWidget(self.site_list_button)
         left_button_layout.addWidget(self.log_reset_button)
+        left_button_layout.addWidget(self.program_reset_button)
         left_button_layout.addWidget(self.collect_button)
 
         # 레이아웃에 요소 추가
@@ -303,3 +336,15 @@ class MainWindow(QWidget):
 
     def log_reset(self):
         self.log_window.clear()
+
+
+    def program_reset(self):
+        self.log_reset()
+        self.update_progress(0)
+        self.stop()
+
+    def go_site_list(self):
+        self.close()  # 로그인 화면 종료
+        self.app_manager.go_to_select()
+
+
