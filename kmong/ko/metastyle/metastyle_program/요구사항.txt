@@ -8,3 +8,13 @@ https://www.flaticon.com/
 png -> ico 변환
 https://convertico.com/
 https://icoconvert.com/
+
+프록시 서버 필요
+
+csv파일로 한줄씩 업데이트 하고
+에러 났거나 마지막에 엑셀파일로 변환
+
+또는
+
+10개 20개씩 csv저장 후 엑셀 저장
+
