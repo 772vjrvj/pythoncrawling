@@ -1,18 +1,18 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
-
-from src.ui.select_window import SelectWindow
 from src.workers.login_thread import LoginThread
 from src.ui.password_change_window import PasswordChangeWindow
+from src.utils.singleton import GlobalState
 
-# 로그인 창
+
 class LoginWindow(QWidget):
-    
     # 초기화
-    def __init__(self):
+    def __init__(self, app_manager):
         super().__init__()
 
+        self.app_manager = app_manager
+        self.login_thread = None
         self.setWindowTitle("로그인")
 
         # 동그란 파란색 원을 그린 아이콘 생성
@@ -117,23 +117,19 @@ class LoginWindow(QWidget):
         if not username or not password:
             self.show_message("로그인 실패", "아이디와 비밀번호를 입력해주세요.")
             return
-
-        # 로그인 요청을 비동기적으로 처리하는 스레드 생성
         self.login_thread = LoginThread(username, password)
-        self.login_thread.login_success.connect(self.main_window)  # 로그인 성공 시 메인 화면으로 전환
-        self.login_thread.login_failed.connect(self.show_error_message)  # 로그인 실패 시 메시지 표시
-        self.login_thread.start()  # 스레드 실행
+        self.login_thread.login_success.connect(self.main_window)
+        self.login_thread.login_failed.connect(self.show_error_message)
+        self.login_thread.start()
 
     # 에러 메시지
     def show_error_message(self, message):
-        """로그인 실패 메시지를 표시"""
         QMessageBox.critical(self, "로그인 실패", message)
 
     # 메시지 박스
     def show_message(self, title, message):
-        """일반 메시지 박스"""
         QMessageBox.information(self, title, message)
-    
+
     # 비밀번호 변경
     def change_password(self):
         popup = PasswordChangeWindow(parent=self)
@@ -141,7 +137,7 @@ class LoginWindow(QWidget):
 
     # 메인 화면 실행
     def main_window(self, cookies):
-        # 로그인 성공 시 메인 화면을 새롭게 생성
+        state = GlobalState()
+        state.set("cookies", cookies)
         self.close()  # 로그인 화면 종료
-        self.select_screen = SelectWindow(cookies)
-        self.select_screen.show()
+        self.app_manager.go_to_select()

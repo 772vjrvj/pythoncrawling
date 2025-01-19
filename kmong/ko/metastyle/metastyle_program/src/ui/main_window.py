@@ -14,36 +14,80 @@ from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
-main_url_list = []
-
 
 class MainWindow(QWidget):
     
     # 초기화
     def __init__(self, app_manager):
         super().__init__()
-        self.app_manager = app_manager
-        state = GlobalState()
-
-        self.site = state.get("site")
-        self.color = state.get("color")
-        self.set_layout()
-        self.daily_worker = None  # 24시 실행 스레드
-        self.on_demand_worker = None  # 요청 시 실행 스레드
-        self.check_list = state.get("check_list")
+        self.header_label = None
+        self.log_reset_button = None
+        self.site_list_button = None
+        self.program_reset_button = None
+        self.collect_button = None
+        self.check_list_button = None
         self.select_check_list = None
         self.task_queue = None
         self.progress_thread = None
+        self.progress_bar = None
+        self.log_window = None
+        self.daily_worker = None  # 24시 실행 스레드
+        self.on_demand_worker = None  # 요청 시 실행 스레드
+        self.app_manager = app_manager
+        self.site = None
+        self.color = None
+        self.check_list = None
+        self.cookies = None
+        self.api_worker = None
+        self.check_popup = None
 
-        # 세션 관리용 API Worker 초기화
+    # 변경값 세팅
+    def common_data_set(self):
+        state = GlobalState()
+        self.site = state.get("site")
+        self.color = state.get("color")
+        self.check_list = state.get("check_list")
         self.cookies = state.get("cookies")
-        self.api_worker = CheckWorker(self.cookies, server_url)
-        self.api_worker.api_failure.connect(self.handle_api_failure)
-        self.api_worker.log_signal.connect(self.add_log)
-        self.api_worker.start()
 
+    # 재 초기화
+    def init_reset(self):
+        self.common_data_set()
+        self.api_worker()
+        self.check_popup_set()
+        self.ui_set()
+
+    # 로그인 확인 체크
+    def api_worker(self):
+        if self.api_worker is None:  # 스레드가 있으면 중단
+            self.api_worker = CheckWorker(self.cookies, server_url)
+            self.api_worker.api_failure.connect(self.handle_api_failure)
+            self.api_worker.log_signal.connect(self.add_log)
+            self.api_worker.start()
+
+    # 선택 리스트 팝업
+    def check_popup_set(self):
+        if self.check_popup:
+            self.check_popup.close()
+            self.check_popup.deleteLater()  # 명시적으로 객체 삭제
+            self.check_popup = None  # 기존 팝업 객체 해제
         self.check_popup = CheckPopup(self.site, self.check_list)
         self.check_popup.check_list_signal.connect(self.check_list_update)
+
+    # 화면 업데이트
+    def ui_set(self):
+        if self.layout():
+            self.header_label.setText(f"{self.site}")
+            self.update_style_prop('log_reset_button', 'background-color', self.color)
+            self.update_style_prop("program_reset_button", 'background-color', self.color)
+            self.update_style_prop("self.collect_button", 'background-color', self.color)
+        else:
+            self.set_layout()
+
+    # ui 속성 변경
+    def update_style_prop(self, item, prop, value):
+        current_stylesheet = self[item].styleSheet()
+        new_stylesheet = current_stylesheet + f"{prop}: {value};"
+        self[item].setStyleSheet(new_stylesheet)
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):
@@ -186,9 +230,9 @@ class MainWindow(QWidget):
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
 
         # 헤더에 텍스트 추가
-        header_label = QLabel(f"{self.site} 데이터 추출")
-        header_label.setAlignment(Qt.AlignCenter)
-        header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
+        self.header_label = QLabel(f"{self.site} 데이터 추출")
+        self.header_label.setAlignment(Qt.AlignCenter)
+        self.header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
 
         # 진행 상태 게이지바 추가
         self.progress_bar = QProgressBar(self)
@@ -216,7 +260,7 @@ class MainWindow(QWidget):
         self.log_window.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 수평 스크롤바 항상 표시
 
         main_layout.addLayout(header_layout) # 버튼 레이아웃
-        main_layout.addWidget(header_label)
+        main_layout.addWidget(self.header_label)
         main_layout.addWidget(self.progress_bar)  # 진행 상태 게이지바 추가
         main_layout.addWidget(self.log_window, stretch=2)  # 로그 창 추가
 
@@ -245,7 +289,6 @@ class MainWindow(QWidget):
                 padding: 10px;
             """)
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
-
             self.task_queue = Queue()
             self.progress_thread = ProgressThread(self.task_queue)
             self.progress_thread.progress_signal.connect(self.update_progress)
@@ -280,12 +323,14 @@ class MainWindow(QWidget):
         if self.progress_thread is not None:  # 스레드가 있으면 중단
             self.progress_thread.stop()
             self.progress_thread.wait()
+            self.progress_thread.deleteLater()
             self.progress_thread = None
             self.task_queue = None
         # 크롤링 중지
         if self.on_demand_worker is not None:
             self.on_demand_worker.stop()  # 중지
             self.on_demand_worker.wait()  # 완료될 때까지 대기
+            self.on_demand_worker.deleteLater()
             self.on_demand_worker = None  # worker 객체 초기화
 
     # 프로그래스 큐 데이터 담기
@@ -333,18 +378,17 @@ class MainWindow(QWidget):
         self.select_check_list = select_check_list
         self.add_log(f'크롤링 목록 : {select_check_list}')
 
-
+    # 로그 리셋
     def log_reset(self):
         self.log_window.clear()
 
-
+    # 프로그램 리셋
     def program_reset(self):
         self.log_reset()
         self.update_progress(0)
         self.stop()
 
+    # 사이트 이동
     def go_site_list(self):
         self.close()  # 로그인 화면 종료
         self.app_manager.go_to_select()
-
-

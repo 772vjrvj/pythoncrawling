@@ -14,18 +14,18 @@ from src.utils.time_utils import get_current_yyyymmddhhmmss
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # API
-class ApiAbcmartSetLoadWorker(QThread):
+class ApiOnthespotSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
 
     def __init__(self, url_list):
         super().__init__()
-        self.baseUrl = "https://abcmart.a-rt.com/"
+        self.baseUrl = "https://www.onthespot.co.kr/"
         self.sess = requests.Session()
         self.url_list = url_list
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "abcmart"
+        self.company_name = "onthespot"
         self.excel_filename = ""
         self.brand_obj_list = []
         self.product_obj_list = []
@@ -137,7 +137,7 @@ class ApiAbcmartSetLoadWorker(QThread):
     # 브랜드 api_data
     def product_api_data(self, prdt_no):
         product_detail_list = []
-        url = f"https://abcmart.a-rt.com/product/info"
+        url = f"https://www.onthespot.co.kr/product/info"
         payload = {
             "prdtNo": f"{prdt_no}"
         }
@@ -146,8 +146,8 @@ class ApiAbcmartSetLoadWorker(QThread):
             "accept-encoding": "gzip, deflate, br, zstd",
             "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
             "connection": "keep-alive",
-            "host": "abcmart.a-rt.com",
-            "referer": f"https://abcmart.a-rt.com/product/new?prdtNo={prdt_no}",
+            "host": "www.onthespot.co.kr",
+            "referer": f"https://www.onthespot.co.kr/product?prdtNo={prdt_no}",
             "sec-ch-ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": '"Windows"',
@@ -182,7 +182,7 @@ class ApiAbcmartSetLoadWorker(QThread):
                         "스타일코드": style_info,
                         "사이즈": optnName,
                         "가격": sell_amt,
-                        "상품 링크": f"https://abcmart.a-rt.com/product/new?prdtNo={prdt_no}"
+                        "상품 링크": f"https://www.onthespot.co.kr/product?prdtNo={prdt_no}"
                     }
                     product_detail_list.append(extracted_data)
         except requests.exceptions.RequestException as e:
@@ -237,23 +237,13 @@ class ApiAbcmartSetLoadWorker(QThread):
             'brand_name_en': '',
             'product_list': []
         }
-        url = "https://abcmart.a-rt.com/display/search-word/result/list"
+        url = "https://www.onthespot.co.kr/display/search-word/result/list"
         payload = {
             "searchPageType": "brand",
-            "channel": "10001",
             "page": f"{page}",
-            "pageColumn": "4",
-            "deviceCode": "10000",
-            "firstSearchYn": "Y",
-            "tabGubun": "total",
-            "searchPageGubun": "brsearch",
-            "searchRcmdYn": "Y",
             "brandNo": f"{brand_no}",
-            "searchBrandNo": f"{brand_no}",
-            "brandPrdtArtDispYn": "Y",
             "sort": "latest",
-            "perPage": "30",
-            "rdoProdGridModule": "col3",
+            "perPage": "40",
             # "_": "1736952631519"
         }
         headers = {
@@ -261,8 +251,8 @@ class ApiAbcmartSetLoadWorker(QThread):
             "accept-encoding": "gzip, deflate, br, zstd",
             "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
             "connection": "keep-alive",
-            "host": "abcmart.a-rt.com",
-            "referer": f"https://abcmart.a-rt.com/product/brand/page/main?brandNo={brand_no}&page={page}",
+            "host": "www.onthespot.co.kr",
+            "referer": f"https://www.onthespot.co.kr/product/brand/page?brandNo={brand_no}",
             "sec-ch-ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": '"Windows"',
@@ -280,11 +270,11 @@ class ApiAbcmartSetLoadWorker(QThread):
             product_list = []
             if links and len(links) > 0:
                 product_list = [link.get('href') for link in links if link.get('href')]
-            input_tag = soup.find('input', id="GROUP_COUNT_CHNNL_NO_10001")
+            input_tag = soup.find('input', {'name': 'searchTotalCount'})
             if input_tag:
                 value = input_tag.get('value')  # value 값 반환
                 total_cnt = int(value)
-                quotient, remainder = calculate_divmod(total_cnt, 30)
+                quotient, remainder = calculate_divmod(total_cnt, 40)
                 total_page = quotient + 1
                 obj['page'] = page
                 obj['total_cnt'] = total_cnt
@@ -302,10 +292,9 @@ class ApiAbcmartSetLoadWorker(QThread):
     # 브랜드 api name
     def brand_api_name_list(self, brand_no):
         brand_name_list = []
-        url = "https://abcmart.a-rt.com/display/search-word/smart-option/list"
+        url = "https://www.onthespot.com/display/search-word/smart-option/list"
         payload = {
             "searchPageType": "brand",
-            "channel": "10001",
             "page": "1",
             "pageColumn": "4",
             "deviceCode": "10000",
@@ -314,7 +303,6 @@ class ApiAbcmartSetLoadWorker(QThread):
             "searchPageGubun": "brsearch",
             "searchRcmdYn": "Y",
             "brandNo": f"{brand_no}",
-            "searchBrandNo": f"{brand_no}",
             # "_": "1736952631519"
         }
         headers = {
@@ -322,8 +310,8 @@ class ApiAbcmartSetLoadWorker(QThread):
             "accept-encoding": "gzip, deflate, br, zstd",
             "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
             "connection": "keep-alive",
-            "host": "abcmart.a-rt.com",
-            "referer": f"https://abcmart.a-rt.com/product/brand/page/main?brandNo=={brand_no}",
+            "host": "www.onthespot.com",
+            "referer": f"https://www.onthespot.com/product/brand/page/main?brandNo={brand_no}",
             "sec-ch-ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": '"Windows"',

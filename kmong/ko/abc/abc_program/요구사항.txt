@@ -28,7 +28,7 @@ ABC, 그랜드스테이지, 온더스팟 사이트에서 전체 상품 크롤링
 
 https://abcmart.a-rt.com/product/brand/page/main?brandNo=000050&page=1
 https://abcmart.a-rt.com/product/brand/page/main?brandNo=000003&page=1
-
+https://abcmart.a-rt.com/product/brand/page/main?brandNo=000072&page=1
 
 
 요구사항
