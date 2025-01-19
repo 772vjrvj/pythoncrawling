@@ -21,6 +21,7 @@ class MainWindow(QWidget):
     # 초기화
     def __init__(self, app_manager):
         super().__init__()
+        self.header_layout = None
         self.url_list_button = None
         self.site_list_button = None
         self.collect_button = None
@@ -34,15 +35,53 @@ class MainWindow(QWidget):
         self.log_window = None
         self.url_list = []
         self.app_manager = app_manager
+        self.site = None
+        self.color = None
+        self.cookies = None
+        self.api_worker = None
+
+    # 변경값 세팅
+    def common_data_set(self):
         state = GlobalState()
         self.site = state.get("site")
         self.color = state.get("color")
         self.cookies = state.get("cookies")
-        self.api_worker = CheckWorker(self.cookies, server_url)
-        self.api_worker.api_failure.connect(self.handle_api_failure)
-        self.api_worker.log_signal.connect(self.add_log)
-        self.api_worker.start()
-        self.set_layout()
+
+    # 재 초기화
+    def init_reset(self):
+        self.common_data_set()
+        self.api_worker_set()
+        self.ui_set()
+
+    # 로그인 확인 체크
+    def api_worker_set(self):
+        if self.api_worker is None:  # 스레드가 있으면 중단
+            self.api_worker = CheckWorker(self.cookies, server_url)
+            self.api_worker.api_failure.connect(self.handle_api_failure)
+            self.api_worker.log_signal.connect(self.add_log)
+            self.api_worker.start()
+
+    # 화면 업데이트
+    def ui_set(self):
+        if self.layout():
+            self.header_label.setText(f"{self.site}")
+            self.update_style_prop('log_reset_button', 'background-color', self.color)
+            self.update_style_prop("program_reset_button", 'background-color', self.color)
+            self.update_style_prop("collect_button", 'background-color', self.color)
+        else:
+            self.set_layout()
+
+
+    # ui 속성 변경
+    def update_style_prop(self, item_name, prop, value):
+        widget = getattr(self, item_name, None)  # item_name에 해당하는 속성 가져오기
+        if widget is None:
+            raise AttributeError(f"No widget found with name '{item_name}'")
+
+        current_stylesheet = widget.styleSheet()
+        new_stylesheet = f"{current_stylesheet}{prop}: {value};"
+        widget.setStyleSheet(new_stylesheet)
+
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):
@@ -76,6 +115,7 @@ class MainWindow(QWidget):
         self.stop()
         self.add_log("동시사용자 접속으로 프로그램을 종료하겠습니다...")
 
+
     # 레이아웃 설정
     def set_layout(self):
         self.setWindowTitle("메인 화면")
@@ -97,7 +137,7 @@ class MainWindow(QWidget):
         main_layout = QVBoxLayout()
 
         # 상단 버튼들 레이아웃
-        header_layout = QHBoxLayout()
+        self.header_layout = QHBoxLayout()
 
         # 왼쪽 버튼들 레이아웃
         left_button_layout = QHBoxLayout()
@@ -180,12 +220,12 @@ class MainWindow(QWidget):
         left_button_layout.addWidget(self.collect_button)
 
         # 레이아웃에 요소 추가
-        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+        self.header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
 
         # 헤더에 텍스트 추가
-        header_label = QLabel(f"{self.site} 데이터 추출")
-        header_label.setAlignment(Qt.AlignCenter)
-        header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
+        self.header_label = QLabel(f"{self.site} 데이터 추출")
+        self.header_label.setAlignment(Qt.AlignCenter)
+        self.header_label.setStyleSheet("font-size: 18px; font-weight: bold; background-color: white; color: black; padding: 10px;")
 
         # 진행 상태 게이지바 추가
         self.progress_bar = QProgressBar(self)
@@ -213,8 +253,8 @@ class MainWindow(QWidget):
         self.log_window.setLineWrapMode(QTextEdit.NoWrap)  # 줄 바꿈 비활성화
         self.log_window.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 수평 스크롤바 항상 표시
 
-        main_layout.addLayout(header_layout)        # 버튼 레이아웃
-        main_layout.addWidget(header_label)
+        main_layout.addLayout(self.header_layout)        # 버튼 레이아웃
+        main_layout.addWidget(self.header_label)
         main_layout.addWidget(self.progress_bar)  # 진행 상태 게이지바 추가
         main_layout.addWidget(self.log_window, stretch=2)  # 로그 창 추가
 

@@ -45,6 +45,10 @@ class ApiOnthespotSetLoadWorker(QThread):
         # 제품 목록 가져오기
         self.brand_obj_list_call_product_list()
 
+        # 마지막 세팅
+        pro_value = 1000000
+        self.progress_signal.emit(self.before_pro_value, pro_value)
+
         self.log_signal.emit(f"=============== 처리 데이터 수 : {self.total_cnt}")
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
@@ -84,12 +88,19 @@ class ApiOnthespotSetLoadWorker(QThread):
                 self.product_obj_list.extend(prdt_obj_list)
                 self.save_to_excel_one_by_one(prdt_obj_list, self.excel_filename)
                 now_per = divide_and_truncate_per(self.current_cnt, self.total_cnt)
+
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
                 self.log_signal.emit("====================================================================================================")
                 self.log_signal.emit(f"전체 브랜드({index}/{len(self.brand_obj_list)})[{now_per}%],  전체 페이지({self.current_page}/{self.total_pages}),  전체 상품({self.current_cnt}/{self.total_cnt})")
                 self.log_signal.emit("----------------------------------------------------------------------------------------------------")
                 self.log_signal.emit(f"현재 브랜드({brand_obj['brand_name_en']}),  현재 페이지({idx}/{brand_obj['total_page']}),  현재 상품({ix}/{brand_obj['total_cnt']})")
                 self.log_signal.emit(f"현재 상품 상세 : {prdt_obj_list}")
                 self.log_signal.emit("====================================================================================================")
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)
@@ -217,10 +228,8 @@ class ApiOnthespotSetLoadWorker(QThread):
             time.sleep(0.5)
             brand_name_list = self.brand_api_name_list(brand_no)
             if brand_name_list:
-                brand_entry = brand_name_list[0]  # 첫 번째 항목
-                brand_name = brand_entry.split(",")  # 쉼표로 분리하여 첫 번째 값 추출
-                brand_obj['brand_name_ko'] = brand_name[2]
-                brand_obj['brand_name_en'] = brand_name[0]
+                brand_obj['brand_name_ko'] = brand_name_list[1]
+                brand_obj['brand_name_en'] = brand_name_list[0]
             brand_obj_list.append(brand_obj)
             self.log_signal.emit(f"brand: {brand_obj}")
             time.sleep(0.5)
@@ -291,41 +300,41 @@ class ApiOnthespotSetLoadWorker(QThread):
 
     # 브랜드 api name
     def brand_api_name_list(self, brand_no):
-        brand_name_list = []
-        url = "https://www.onthespot.com/display/search-word/smart-option/list"
-        payload = {
-            "searchPageType": "brand",
-            "page": "1",
-            "pageColumn": "4",
-            "deviceCode": "10000",
-            "firstSearchYn": "Y",
-            "tabGubun": "total",
-            "searchPageGubun": "brsearch",
-            "searchRcmdYn": "Y",
-            "brandNo": f"{brand_no}",
-            # "_": "1736952631519"
-        }
+        brand_name_list = ["", ""]
+        url = "https://www.onthespot.co.kr/product/brand/page"
         headers = {
-            "accept": "*/*",
-            "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "connection": "keep-alive",
-            "host": "www.onthespot.com",
-            "referer": f"https://www.onthespot.com/product/brand/page/main?brandNo={brand_no}",
-            "sec-ch-ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            "x-requested-with": "XMLHttpRequest"
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Host": "www.onthespot.co.kr",
+            "Sec-CH-UA": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+            "Sec-CH-UA-Mobile": "?0",
+            "Sec-CH-UA-Platform": "Windows",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        }
+        payload = {
+            "brandNo": brand_no
         }
         try:
             response = self.sess.get(url, headers=headers, params=payload)
-            response.raise_for_status()  # HTTP 에러 발생 시 예외 처리
-            data = response.json()
-            brand_name_list = data.get("SELECT", {}).get("BRAND_LIST", [])
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+
+                og_title = soup.find("meta", property="og:title")
+                if og_title:
+                    content = og_title.get("content", "")
+                    if content:
+                        brand_name_list = content.split(" | ")
+            else:
+                print(f"Failed to fetch page. Status code: {response.status_code}")
+                return None
         except requests.exceptions.RequestException as e:
             print(f"HTTP 요청 에러: {e}")
         except Exception as e:

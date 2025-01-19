@@ -45,6 +45,10 @@ class ApiGrandstageSetLoadWorker(QThread):
         # 제품 목록 가져오기
         self.brand_obj_list_call_product_list()
 
+        # 마지막 세팅
+        pro_value = 1000000
+        self.progress_signal.emit(self.before_pro_value, pro_value)
+
         self.log_signal.emit(f"=============== 처리 데이터 수 : {self.total_cnt}")
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
@@ -84,12 +88,19 @@ class ApiGrandstageSetLoadWorker(QThread):
                 self.product_obj_list.extend(prdt_obj_list)
                 self.save_to_excel_one_by_one(prdt_obj_list, self.excel_filename)
                 now_per = divide_and_truncate_per(self.current_cnt, self.total_cnt)
+
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
                 self.log_signal.emit("====================================================================================================")
                 self.log_signal.emit(f"전체 브랜드({index}/{len(self.brand_obj_list)})[{now_per}%],  전체 페이지({self.current_page}/{self.total_pages}),  전체 상품({self.current_cnt}/{self.total_cnt})")
                 self.log_signal.emit("----------------------------------------------------------------------------------------------------")
                 self.log_signal.emit(f"현재 브랜드({brand_obj['brand_name_en']}),  현재 페이지({idx}/{brand_obj['total_page']}),  현재 상품({ix}/{brand_obj['total_cnt']})")
                 self.log_signal.emit(f"현재 상품 상세 : {prdt_obj_list}")
                 self.log_signal.emit("====================================================================================================")
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
+                self.log_signal.emit("\n")
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)

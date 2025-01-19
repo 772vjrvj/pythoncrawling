@@ -20,5 +20,6 @@ class AppManager:
         if not self.main_window:
             from src.ui.main_window import MainWindow
             self.main_window = MainWindow(self)
+        self.main_window.init_reset()
         self.main_window.show()
 
