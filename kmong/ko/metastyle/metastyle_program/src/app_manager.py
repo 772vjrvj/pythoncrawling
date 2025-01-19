@@ -1,6 +1,3 @@
-from src.utils.singleton import GlobalState
-
-
 class AppManager:
     def __init__(self):
         self.login_window = None

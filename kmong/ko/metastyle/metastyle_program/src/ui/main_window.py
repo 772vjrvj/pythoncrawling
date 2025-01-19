@@ -52,12 +52,12 @@ class MainWindow(QWidget):
     # 재 초기화
     def init_reset(self):
         self.common_data_set()
-        self.api_worker()
+        self.api_worker_set()
         self.check_popup_set()
         self.ui_set()
 
     # 로그인 확인 체크
-    def api_worker(self):
+    def api_worker_set(self):
         if self.api_worker is None:  # 스레드가 있으면 중단
             self.api_worker = CheckWorker(self.cookies, server_url)
             self.api_worker.api_failure.connect(self.handle_api_failure)
