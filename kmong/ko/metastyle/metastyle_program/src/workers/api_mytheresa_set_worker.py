@@ -127,6 +127,8 @@ class ApiMytheresaSetLoadWorker(QThread):
                             pro_value = (current_cnt / total_cnt) * 1000000
                             self.progress_signal.emit(before_pro_value, pro_value)
                             before_pro_value = pro_value
+
+        self.progress_signal.emit(before_pro_value, 1000000)
         self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()

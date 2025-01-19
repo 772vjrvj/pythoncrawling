@@ -79,15 +79,20 @@ class MainWindow(QWidget):
             self.header_label.setText(f"{self.site}")
             self.update_style_prop('log_reset_button', 'background-color', self.color)
             self.update_style_prop("program_reset_button", 'background-color', self.color)
-            self.update_style_prop("self.collect_button", 'background-color', self.color)
+            self.update_style_prop("collect_button", 'background-color', self.color)
         else:
             self.set_layout()
 
     # ui 속성 변경
-    def update_style_prop(self, item, prop, value):
-        current_stylesheet = self[item].styleSheet()
-        new_stylesheet = current_stylesheet + f"{prop}: {value};"
-        self[item].setStyleSheet(new_stylesheet)
+    def update_style_prop(self, item_name, prop, value):
+        widget = getattr(self, item_name, None)  # item_name에 해당하는 속성 가져오기
+        if widget is None:
+            raise AttributeError(f"No widget found with name '{item_name}'")
+
+        current_stylesheet = widget.styleSheet()
+        new_stylesheet = f"{current_stylesheet}{prop}: {value};"
+        widget.setStyleSheet(new_stylesheet)
+
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):

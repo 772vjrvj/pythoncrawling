@@ -124,13 +124,15 @@ class ApiZalandoSetLoadWorker(QThread):
                                     # 구글 업로드
                                     self.google_cloud_upload(site_name, item, product_name, image_url, obj)
                                     obj['reg_date'] = get_current_formatted_datetime()
-                                    self.save_to_excel_one_by_one([obj], excel_filename)  # 엑셀 파일 경로를 지정
+                                    self.save_to_excel_one_by_one([obj], excel_filename, obj)  # 엑셀 파일 경로를 지정
                                     self.log_signal.emit(f'data : {obj}')
                                     result_list.append(obj)
                                     time.sleep(1)
                                 pro_value = (current_cnt / total_cnt) * 1000000
                                 self.progress_signal.emit(before_pro_value, pro_value)
                                 before_pro_value = pro_value
+
+        self.progress_signal.emit(before_pro_value, 1000000)
         self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
