@@ -169,7 +169,7 @@ def paste_to_docx_with_format(index):
 
 
 if __name__ == "__main__":
-    excel_path = "비플랜 목차 테스트.xlsx"
+    excel_path = "비플랜 목차.xlsx"
     if not os.path.exists(excel_path):
         raise FileNotFoundError(f"엑셀 파일이 존재하지 않습니다: {excel_path}")
 

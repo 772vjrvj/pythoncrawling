@@ -36,4 +36,5 @@ https://abcmart.a-rt.com/product/brand/page/main?brandNo=000072&page=1
 다음에
 특정 브랜드만 크롤링 할수 있게 선택 할수도 있을까요?
 
+pyinstaller --noconsole --icon=crawling.ico main.py
 

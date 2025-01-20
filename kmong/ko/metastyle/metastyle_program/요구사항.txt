@@ -17,8 +17,8 @@ csv파일로 한줄씩 업데이트 하고
 또는
 
 10개 20개씩 csv저장 후 엑셀 저장
-aller --noconsole --icon=crawling.ico main.py
-pyinst
+pyinstaller --noconsole --icon=crawling.ico main.py
+
 
 엑셀 한 시트에 들어갈수 있는
 since it exceeds Excel's limit of 65,530 URLS per worksheet.
