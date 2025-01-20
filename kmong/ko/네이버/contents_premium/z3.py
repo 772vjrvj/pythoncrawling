@@ -3,13 +3,16 @@ import time
 
 import pdfkit
 import psutil
-from bs4 import BeautifulSoup
+import pyautogui
+import pyperclip
+from docx import Document
 from openpyxl import load_workbook
+from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium import webdriver
+
 
 def close_chrome_processes():
     """모든 Chrome 프로세스를 종료합니다."""
@@ -57,6 +60,7 @@ def setup_driver():
         print(f"Error setting up the WebDriver: {e}")
         return None
 
+
 if __name__ == "__main__":
     excel_path = "비플랜 목차 테스트.xlsx"
     if not os.path.exists(excel_path):
@@ -67,74 +71,39 @@ if __name__ == "__main__":
 
     urls = [row[0] for row in sheet.iter_rows(min_row=2, max_col=1, values_only=True)]
 
-    # wkhtmltopdf 실행 파일 경로 지정
-    wkhtmltopdf_path = r"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
-    if not os.path.exists(wkhtmltopdf_path):
-        raise FileNotFoundError(f"wkhtmltopdf 실행 파일을 찾을 수 없습니다: {wkhtmltopdf_path}")
-
-    config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
-
     driver = setup_driver()
 
-    if driver:
-        for index, url in enumerate(urls):
-            try:
-                if not url.startswith(("http://", "https://")):
-                    print(f"Unsupported URL format: {url}")
-                    continue
+    for url in urls:
+        try:
+            driver.get(url)
+            time.sleep(3)  # 페이지 로드 대기
 
-                driver.get(url)
-                time.sleep(3)  # 페이지 로드 대기
+            # 뷰티풀숲으로 HTML 가져오기
+            html = driver.page_source
+            soup = BeautifulSoup(html, "html.parser")
 
-                # 뷰티풀숲으로 HTML 가져오기
-                html = driver.page_source
-                soup = BeautifulSoup(html, "html.parser")
+            # 특정 요소 제거
+            selectors_to_remove = [
+                "div.container_aside._CONTAINER_ASIDE",
+                "header.header_wrap",
+                "footer[role='contentinfo']",
+                "div._GRID_TEMPLATE_COLUMN_OUTSIDE",
+                "div.comment_u_cbox_wrap",
+                "div.viewer_bottom_section",
+            ]
+            for selector in selectors_to_remove:
+                for element in soup.select(selector):
+                    element.decompose()
 
-                # HTML에 스타일 추가
-                style_tag = soup.new_tag("style")
-                style_tag.string = """
-                    body {
-                        font-family: Arial, sans-serif; /* 폰트 설정 */
-                        line-height: 1.4; /* 줄 간격 조정 */
-                        margin: 0; /* 외부 여백 제거 */
-                        padding: 0; /* 내부 여백 제거 */
-                    }
-                    p {
-                        margin: 0 0 10px; /* 문단 간격 줄이기 */
-                    }
-                    h1, h2, h3, h4, h5, h6 {
-                        margin: 0 0 15px; /* 제목 간격 조정 */
-                    }
-                """
-                soup.head.append(style_tag)
+            # 남은 HTML을 PDF로 저장
+            cleaned_html = soup.prettify()
+            output_pdf = f"{url.split('/')[-1]}.pdf"
+            pdfkit.from_string(cleaned_html, output_pdf)
+            print(f"PDF 파일 생성: {output_pdf}")
 
-                # 특정 요소 제거
-                selectors_to_remove = [
-                    "div.container_aside._CONTAINER_ASIDE",
-                    "header.header_wrap",
-                    "footer[role='contentinfo']",
-                    "div._GRID_TEMPLATE_COLUMN_OUTSIDE",
-                    "div.comment_u_cbox_wrap",
-                    "div.viewer_bottom_section",
-                ]
-                for selector in selectors_to_remove:
-                    for element in soup.select(selector):
-                        element.decompose()
 
-                # 남은 HTML을 PDF로 저장
-                cleaned_html = soup.prettify()
-                output_pdf = f"output_{index + 1}.pdf"
-                pdfkit.from_string(
-                    cleaned_html,
-                    output_pdf,
-                    configuration=config,
-                    options={"--ignore-load-errors": "", "--enable-local-file-access": ""}
-                )
-                print(f"PDF 파일 생성: {output_pdf}")
 
-            except Exception as e:
-                print(f"Error processing URL {url}: {e}")
+        except Exception as e:
+            print(f"Error processing URL {url}: {e}")
 
-        driver.quit()
-    else:
-        print("WebDriver 초기화에 실패했습니다.")
+    driver.quit()
