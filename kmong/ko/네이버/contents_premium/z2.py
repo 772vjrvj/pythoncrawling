@@ -138,7 +138,7 @@ def perform_mouse_and_keyboard_actions():
 def paste_to_docx_with_format(index):
     # 실행 경로를 기준으로 파일 저장 경로 생성
     current_path = os.getcwd()  # 현재 실행 경로 가져오기
-    output_path = os.path.join(current_path, f"output_{index}.docx")  # 파일 경로 설정
+    output_path = os.path.join(current_path, f"doc/output_{index}.docx")  # 파일 경로 설정
 
     # Word 애플리케이션 시작
     word = win32com.client.Dispatch("Word.Application")

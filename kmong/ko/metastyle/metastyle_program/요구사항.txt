@@ -18,3 +18,4 @@ csv파일로 한줄씩 업데이트 하고
 
 10개 20개씩 csv저장 후 엑셀 저장
 
+pyinstaller --noconsole --icon=crawling.ico main.py

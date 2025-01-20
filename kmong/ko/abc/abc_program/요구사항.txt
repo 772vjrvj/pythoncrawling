@@ -35,3 +35,5 @@ https://abcmart.a-rt.com/product/brand/page/main?brandNo=000072&page=1
 1. ABC, 그랜드스테이지, 온더스팟 중에서 크롤링할 사이트 선택
 다음에
 특정 브랜드만 크롤링 할수 있게 선택 할수도 있을까요?
+
+
