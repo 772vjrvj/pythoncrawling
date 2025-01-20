@@ -1,5 +1,6 @@
 from datetime import datetime
 from queue import Queue
+import ctypes
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
@@ -71,7 +72,6 @@ class MainWindow(QWidget):
         else:
             self.set_layout()
 
-
     # ui 속성 변경
     def update_style_prop(self, item_name, prop, value):
         widget = getattr(self, item_name, None)  # item_name에 해당하는 속성 가져오기
@@ -81,7 +81,6 @@ class MainWindow(QWidget):
         current_stylesheet = widget.styleSheet()
         new_stylesheet = f"{current_stylesheet}{prop}: {value};"
         widget.setStyleSheet(new_stylesheet)
-
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):
@@ -114,7 +113,6 @@ class MainWindow(QWidget):
         self.api_worker = None
         self.stop()
         self.add_log("동시사용자 접속으로 프로그램을 종료하겠습니다...")
-
 
     # 레이아웃 설정
     def set_layout(self):
@@ -296,11 +294,9 @@ class MainWindow(QWidget):
                     self.on_demand_worker = ApiGrandstageSetLoadWorker(self.url_list)
                 elif self.site == 'On the spot':
                     self.on_demand_worker = ApiOnthespotSetLoadWorker(self.url_list)
-
-
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
-                self.on_demand_worker.progress_end_signal.connect(self.stop)
+                self.on_demand_worker.progress_end_signal.connect(self.progress_end)
                 self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
@@ -314,6 +310,11 @@ class MainWindow(QWidget):
             self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
             self.add_log('중지')
             self.stop()
+
+    # 크롤링 완료
+    def progress_end(self):
+        self.stop()
+        self.show_message("크롤링이 완료되었습니다.", "info")
 
     # 프로그램 중지
     def stop(self):
@@ -357,6 +358,10 @@ class MainWindow(QWidget):
             msg.setWindowTitle("확인")  # 창 제목 설정
         msg.setText(message)  # 메시지 내용 설정
         msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
+
+        # 깜빡이게 설정
+        ctypes.windll.user32.FlashWindow(int(self.winId()), True)
+
         msg.exec_()  # 메시지 박스 표시
 
     # url list 업데이트
@@ -374,6 +379,7 @@ class MainWindow(QWidget):
 
     # 로그 초기화
     def log_reset(self):
+        self.show_message("크롤링이 완료되었습니다.", "info")
         self.log_window.clear()
 
     # 프로그램 리셋
