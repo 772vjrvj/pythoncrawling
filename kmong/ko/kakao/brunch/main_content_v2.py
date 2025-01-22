@@ -59,20 +59,13 @@ for index, record in enumerate(records):
 
         # 내용 추출
         content_div = soup.find("div", class_="wrap_body text_align_left")
-        paragraphs = content_div.find_all("p", class_="wrap_item item_type_text") if content_div else []
-
-        content = ""
-        for p in paragraphs:
-            data_app = p.get("data-app")
-            if data_app:
-                matches = re.findall(r'\"text\":\"(.*?)\"', data_app)
-                sentence = "".join(matches)
-                content += sentence + "\n"
+        paragraphs = content_div.find_all("span") if content_div else []
+        content = "\n".join(p.text.strip() for p in paragraphs if p.text.strip())
 
         obj = {
             "URL": url,
             "제목": title,
-            "내용": content.strip()
+            "내용": content
         }
 
         # 결과 저장
