@@ -732,7 +732,7 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name):
 if __name__ == "__main__":
 
     # 원하는 값을 여기에 입력하세요.
-    excel_path = "프로그램.xlsx"    # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
+    excel_path = "../프로그램.xlsx"  # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
     limit_count = 3                    # 수집 갯수
     on_and_off = 0                     # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
     five_per_mall_name = ['11번가', '옥션']        # 5% 할인 적용 판매처 (옥션, G마켓, 11번가...)

@@ -14,9 +14,21 @@ import time
 import traceback
 from selenium.common.exceptions import ElementNotInteractableException
 import re
+import math
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+from datetime import datetime
+import calendar
+
+
 
 unit = '개'
 stnd_cnt = '1'
+email_list = []
+global_month_review_cnt = 0
 
 # 드라이버 설정 함수
 def setup_driver():
@@ -103,7 +115,7 @@ def extract_ul_class(driver):
         uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')  # ul 목록
         for e in uls:  # ul 안에 li class 이름 가져오기
             if 'productList_list_seller' in e.get_attribute('class'):
-                return e.get_attribute('class').replace(' ', '.')
+                return e.get_attribute('class').split(' ')[0]
     except Exception as e:
         print(f"Error in extracting ul class: {e}")
     return ""
@@ -150,26 +162,27 @@ def scrape_naver(driver, name, naver_url):
         time.sleep(3)
 
 
-        # 카드할인 토글 클릭 ON으로 둘 다 변경 (위, 아래 있음)
-        discount_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="카드할인가 정렬"]')
-        if discount_elements:
-            discount_elements[0].click()  # 카드할인 클릭
-            time.sleep(0.5)
-        else:
-            print("카드할인가 정렬 옵션을 찾을 수 없습니다. 중지합니다.")
-            return []
-
-
-        # 옵션 이름 ex) 수량, 개수, 상품구성 등등 / 개당 중량, 수량 : 2개입, 1개
-        opt_name = driver.execute_script('return document.querySelector("#section_price em").closest("div");').text.split(" : ")[0].split(',')[-1]
-        print(opt_name)
-
         # 상품구성: 1개, 2개, 3개 등 옵션 처리
         qtys = []
-        if len(driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')) != 0:
-            qtys = driver.find_elements(By.CSS_SELECTOR, f'.condition_area a[data-shp-contents-type="{opt_name}"] .info')
-        elif len(driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')) != 0:
-            qtys = driver.find_elements(By.CSS_SELECTOR, '.condition_area a .info')  # 수량, 개수 옵션이 없다면 2번째 옵션으로 지정
+
+        product_options = driver.find_element(By.CLASS_NAME, "condition_area")
+
+        target_elements = product_options.find_elements(
+            By.CLASS_NAME,
+            "stdOpt_standard_option_area__kh9jP"
+        )
+
+        # 두 번째 요소 선택
+        if len(target_elements) > 1:
+            second_element = target_elements[1]
+            scroll_area = second_element.find_element(By.CLASS_NAME, "stdOpt_scroll_area__yTJwJ")
+
+            buttons = scroll_area.find_elements(By.TAG_NAME, "button")
+
+            for button in buttons:
+                span = button.find_element(By.CLASS_NAME, "stdOpt_title__Rky56")
+                qtys.append(span)
+
 
         ul_class = extract_ul_class(driver)  # ul 클래스 추출
 
@@ -188,7 +201,7 @@ def scrape_naver(driver, name, naver_url):
 
             for p in range(len(qtys)):
                 print(qlist[p])
-                driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-id="{qlist[p]}"]').click()
+                driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-type="{qlist[p]}"]').click()
                 time.sleep(2)
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 driver.execute_script("window.scrollTo(0, 0);")
@@ -603,7 +616,7 @@ def convert_to_float(value, default=1.0):
 
 
 # 행별로 데이터를 처리하고 엑셀에 업데이트하는 함수
-def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name):
+def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name, open_market_list, producdt_count):
     try:
         except_list = ws[f'A{row_index}'].value.split(',') if ws[f'A{row_index}'].value else []
 
@@ -612,10 +625,12 @@ def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name):
         filtered_naver = next((entry for entry in merge_list if entry[1] == '네이버' and entry[3]), None)
         if filtered_naver:
             naver_price = filtered_naver[6] / convert_to_float(filtered_naver[2])  # 숫자로 변환, 실패 시 기본값 사용
-            ws[f'G{row_index}'] = naver_price * int(stnd_cnt)  # 기준가격(네이버) 셀
+            ws[f'G{row_index}'] = int(naver_price * int(stnd_cnt))  # 기준가격(네이버) 셀
 
-        # except_list에 포함된 mall_name 제외
-        merge_list = [entry for entry in merge_list if entry[3] not in except_list]
+        # except_list에 포함된 mall_name 제외 수집 제외몰 사용 X
+        # merge_list = [entry for entry in merge_list if entry[3] not in except_list]
+        # 자사몰로 변경
+        merge_list = [entry for entry in merge_list if entry[3] in open_market_list]
 
         # 5% 할인을 적용할 상점 이름과 비교
         for entry in merge_list:
@@ -644,21 +659,21 @@ def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name):
             numeric_price_0 = filtered_list[0][6]
             ws[f'H{row_index}'] = f"{filtered_list[0][1]}-{filtered_list[0][2]}-{filtered_list[0][3]}"  # 판매처1
             ws[f'I{row_index}'] = filtered_list[0][5]  # 상품명1
-            ws[f'J{row_index}'] = (numeric_price_0 / numeric_qty_0) * float(stnd_cnt)  # 가격1
+            ws[f'J{row_index}'] = int((numeric_price_0 / numeric_qty_0) * float(stnd_cnt))  # 가격1
 
-        if len(filtered_list) > 1:
+        if len(filtered_list) > 1 and producdt_count > 1:
             numeric_price_1 = filtered_list[1][6]
             numeric_qty_1 = convert_to_float(filtered_list[1][2])  # 숫자로 변환
             ws[f'K{row_index}'] = f"{filtered_list[1][1]}-{filtered_list[1][2]}-{filtered_list[1][3]}"  # 판매처2
             ws[f'L{row_index}'] = filtered_list[1][5]  # 상품명2
-            ws[f'M{row_index}'] = (numeric_price_1 / numeric_qty_1) * float(stnd_cnt) # 가격2
+            ws[f'M{row_index}'] = int((numeric_price_1 / numeric_qty_1) * float(stnd_cnt)) # 가격2
 
-        if len(filtered_list) > 2:
+        if len(filtered_list) > 2 and producdt_count > 2:
             numeric_price_2 = filtered_list[2][6]
             numeric_qty_2 = convert_to_float(filtered_list[2][2])  # 숫자로 변환
             ws[f'N{row_index}'] = f"{filtered_list[2][1]}-{filtered_list[2][2]}-{filtered_list[2][3]}"  # 판매처3
             ws[f'O{row_index}'] = filtered_list[2][5]  # 상품명3
-            ws[f'P{row_index}'] = (numeric_price_2 / numeric_qty_2) * float(stnd_cnt)  # 가격3
+            ws[f'P{row_index}'] = int((numeric_price_2 / numeric_qty_2) * float(stnd_cnt))  # 가격3
 
         # 배경색 설정 (빨간색)
         red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
@@ -709,8 +724,304 @@ def result_print(result, name):
         print(f'{name} {idx + 1}: {obj[7]} {obj}')
 
 
+
+def send_email(email_data):
+    global email_list
+    for recip_email in email_data['수신자이메일']:
+        sender_email = email_data['발신자이메일']
+        sender_password = email_data['발신자비밀번호']
+        recipient_email = recip_email
+        subject = email_data['제목']
+
+        body = create_email_table(email_list)
+
+        send_naver_email(sender_email, sender_password, recipient_email, subject, body, attachment_path=None)
+        time.sleep(1)
+
+
+
+def send_naver_email(sender_email, sender_password, recipient_email, subject, body, attachment_path=None):
+    try:
+        # SMTP 서버 설정 (네이버)
+        smtp_server = "smtp.naver.com"
+        smtp_port = 587
+
+        # 이메일 메시지 생성
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = recipient_email
+        message["Subject"] = subject
+
+        # 본문 추가
+        message.attach(MIMEText(body, "html"))
+
+        # 첨부 파일 추가 (옵션)
+        if attachment_path:
+            with open(attachment_path, "rb") as attachment:
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(attachment.read())
+                encoders.encode_base64(part)
+                part.add_header(
+                    "Content-Disposition",
+                    f"attachment; filename={attachment_path.split('/')[-1]}",
+                )
+                message.attach(part)
+
+        # SMTP 서버에 연결
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()  # TLS 보안 활성화
+        server.login(sender_email, sender_password)  # 로그인
+
+        # 이메일 전송
+        server.sendmail(sender_email, recipient_email, message.as_string())
+        print("이메일이 성공적으로 전송되었습니다.")
+
+        # 서버 종료
+        server.quit()
+
+    except Exception as e:
+        print(f"이메일 전송 중 오류 발생: {e}")
+
+
+
+def email_setting(ws, index, email_data):
+    global email_list
+    columns = [
+        "수집제외몰", "네이버 URL", "다나와 URL", "에누리 URL", "상품명", "메모", "기준가격",  # 0, 1, 2, 3, 4, 5, 6
+        "판매처1", "상품명1", "가격1",  # 7, 8, 9
+        "판매처2", "상품명2", "가격2",  # 10, 11, 12
+        "판매처3", "상품명3", "가격3"  # 13, 14, 15
+                        "키워드"
+    ]
+
+    # 기본값 설정
+    default_values = {
+        "수집제외몰": "", "네이버 URL": "", "다나와 URL": "", "에누리 URL": "",
+        "상품명": "", "메모": "", "기준가격": 0.0,
+        "판매처1": "", "상품명1": "", "가격1": 0.0,
+        "판매처2": "", "상품명2": "", "가격2": 0.0,
+        "판매처3": "", "상품명3": "", "가격3": 0.0,
+        "키워드": ""
+    }
+
+    # 특정 index의 행 가져오기 (Excel은 1-based index이므로 min_row와 조정)
+    row = ws[index]
+
+    # Cell 값 추출
+    row_values = [cell.value for cell in row]
+
+    # 행 데이터를 딕셔너리로 매핑
+    row_object = {
+        columns[i]: row_values[i] if i < len(row_values) and row_values[i] is not None else default_values[columns[i]]
+        for i in range(len(columns))
+    }
+
+    # 판매처에 대해 처리
+    for seller in email_data['판매처']:
+        process_seller(index, row_object, seller, email_data, '판매처1', '상품명1', '가격1')
+
+
+    # 전송 조건 확인
+    if len(email_list) >= email_data['전송기준수']:
+        print('전송가능한 데이터 수가 전송 기준수 보다 큽니다. 전송 시도 하겠습니다.')
+        print(f'전송가능한 데이터 수 : {len(email_list)}')
+        send_email(email_data)
+        email_list = [] # 이메일 전송후 초기화
+        print(f'전송 후 초기화 : {len(email_list)}')
+    else:
+        print('전송가능한 데이터 수가 전송 기준수 보다 작습니다. 다음에 전송 하겠습니다.')
+        print(f'전송가능한 데이터 수 : {len(email_list)}')
+
+
+
+def process_seller(index, row, seller, email_data, seller_key, product_key, price_key):
+    global email_list, global_month_review_cnt
+
+    keywords = row['키워드'].split(',')
+    product_string = row[product_key]
+
+    if email_data['리뷰'] and global_month_review_cnt >= email_data['리뷰수']:
+        if seller in row[seller_key] or any(keyword in product_string for keyword in keywords):
+            # 순수익 계산
+            net_profit = row['기준가격'] - row[price_key] - (row['기준가격'] * (email_data['수수료율'] / 100)) - email_data['배송비']
+
+            # 마진율 계산
+            if row['기준가격'] > 0:
+                net_profit_rate = (net_profit / row['기준가격']) * 100
+                net_profit_rate = math.floor(net_profit_rate * 100) / 100  # 소수점 두 자리까지 내림
+            else:
+                net_profit_rate = 0.0  # 기준가격이 0일 때는 마진율 0으로 처리
+
+            if email_data['마진율시작'] <= net_profit_rate <= email_data['마진율끝']:
+                excel_row = index + 2
+
+                # URL 결정
+                email_url = ''
+                if '에누리' in row[seller_key]:
+                    email_url = row['에누리 URL']
+                elif '네이버' in row[seller_key]:
+                    email_url = row['네이버 URL']
+                elif '다나와' in row[seller_key]:
+                    email_url = row['다나와 URL']
+
+                # 엑셀 행 내용 생성
+                # email_content = f"{excel_row} / {row['상품명']} / {row['네이버 URL']} / {row[product_key]} / {row['메모']} / {row[seller_key]} / {net_profit_rate}% / {email_url}"
+                email_content = [excel_row, row['상품명'], row['네이버 URL'], row[product_key], row['메모'], row[seller_key], net_profit_rate, email_url]
+                email_list.append(email_content)
+
+
+# 이메일 테이블 형식으로
+def create_email_table(email_list):
+
+    table_rows = ""
+
+    for row in email_list:
+        table_rows += f"""
+        <tr style="border: 1px solid #dddddd; text-align: left; padding: 12px;">
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['excel_row']}</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['product_name']}</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;"><a href=\"{row['naver_url']}\" target=\"_blank\">{row['naver_url']}</a></td>
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['product_key']}</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['memo']}</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['seller_key']}</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['net_profit_rate']}%</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;"><a href=\"{row['email_url']}\" target=\"_blank\">{row['email_url']}</a></td>
+        </tr>
+        """
+
+    email_content = f"""
+    <html>
+    <body>
+        <p>안녕하세요, 상품 정보입니다:)</p>
+        <br>
+        <br>
+        <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 16px; font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+            <tr style="border: 1px solid #dddddd; background-color: #f4f4f4; font-weight: bold;">
+                <th style="border: 1px solid #dddddd; padding: 12px;">엑셀 번호</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">상품명</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">네이버 URL</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">상품 키</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">메모</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">판매처</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">마진율</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">URL</th>
+            </tr>
+            {table_rows}
+        </table>
+    </body>
+    </html>
+    """
+    return email_content
+
+
+def previous_month_date(today):
+    current_day = today.day
+    current_month = today.month
+    current_year = today.year
+
+    if current_month == 1:
+        previous_month = 12
+        previous_year = current_year - 1
+    else:
+        previous_month = current_month - 1
+        previous_year = current_year
+
+    last_day_of_previous_month = calendar.monthrange(previous_year, previous_month)[1]
+
+    start_date_of_previous_month = today.replace(
+        year=previous_year,
+        month=previous_month,
+        day=min(current_day, last_day_of_previous_month)
+    )
+
+    return start_date_of_previous_month
+
+
+
+def check_previous_month_add(today, start_date_of_previous_month, input_date):
+    date_object = datetime.strptime(input_date.strip(), '%y.%m.%d.')
+    if start_date_of_previous_month <= date_object <= today:
+        return 1
+    elif date_object > today:
+        return 0
+    else:
+        return -1
+
+
+
+def get_month_review_cnt(driver, naver_url, email_data):
+    driver.get(naver_url)
+    time.sleep(3)
+
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    month_review_cnt = 0
+
+    try:
+        element = driver.find_element(By.CSS_SELECTOR, 'a[data-shp-contents-id="최신순"]')
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        element.click()
+        time.sleep(2)
+    except Exception as e:
+        print("Initial sort button click error:", e)
+        return month_review_cnt
+
+    group_page = 0
+    today = datetime.now()  # 현재 날짜 및 시간
+    start_date_of_previous_month = previous_month_date(today)
+
+    while True:
+        for page_num in range(1, 11):  # 한 번에 최대 10페이지까지 탐색
+            try:
+                page_button = driver.find_element(By.CSS_SELECTOR, f'a[data-shp-contents-id="{group_page + page_num}"]')
+                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", page_button)
+                page_button.click()
+                time.sleep(2)
+
+                review_items = driver.find_elements(By.CSS_SELECTOR, '.reviewItems_list_review__q726A li')
+
+                for li in review_items:
+                    try:
+                        div_date = li.find_element(By.CLASS_NAME, "reviewItems_etc_area__3VUjt")
+                        span_tags = div_date.find_elements(By.CSS_SELECTOR, '.reviewItems_etc__9ej69')
+
+                        input_date = span_tags[2].text.strip()
+
+                        check = check_previous_month_add(today, start_date_of_previous_month, input_date)
+
+                        if check == -1:
+                            print("-1 returned, stopping.")
+                            return month_review_cnt
+
+                        month_review_cnt += check
+
+                        if month_review_cnt > email_data['리뷰수']:
+                            print("Review count exceeded, stopping.")
+                            return month_review_cnt
+                    except Exception as e:
+                        print(f"Review item parsing error: {e}")
+
+                print(f'month_review_cnt: {month_review_cnt}')
+
+            except Exception as e:
+                print(f"Page {page_num} click failed or not found: {e}")
+                return month_review_cnt
+
+        try:
+            next_button = driver.find_element(By.CSS_SELECTOR, '.pagination_next__3_3ip')
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
+            next_button.click()
+            group_page += 10
+            time.sleep(2)
+        except Exception:
+            print("Reached last pagination group.")
+            return month_review_cnt
+
+
+
 # 메인 함수
-def main(excel_path, limit_count, on_and_off, five_per_mall_name):
+def main(excel_path, limit_count, on_and_off, five_per_mall_name, start_row, end_row, repeat, email_data, open_market_list, producdt_count):
+    global global_month_review_cnt
     # 엑셀 파일 열기 (openpyxl로 읽기)
     wb = load_workbook(excel_path)
     ws = wb.active
@@ -720,67 +1031,96 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name):
         print("Failed to initialize the web driver.")
         return
 
-    # 엑셀의 각 행을 처리
-    for i in range(2, ws.max_row + 1):
-        try:
-            name = ws[f'E{i}'].value
-            naver_url = ws[f'B{i}'].value
-            danawa_url = ws[f'C{i}'].value
-            enuri_url = ws[f'D{i}'].value
+    if start_row < 2 or end_row > ws.max_row:
+        print("범위를 잘못 지정했습니다..")
+        return
 
-            # 에러 리스트 초기화 (각 크롤링 사이트별 에러 체크)
-            err_list = [0, 0, 0]
+    while True:  # 무한 루프
 
-            # 전체 병합 리스트 초기화
-            merge_list = []
+        # 엑셀의 각 행을 처리
+        for i in range(start_row, end_row + 1):
+            global_month_review_cnt = 0
+            if i > ws.max_row:
+                print("값을 초과하였습니다.")
+                break
 
-            # 1. 네이버 크롤링 처리
-            print("============================== 네이버 시작 ==============================")
-            naver_result = scrape_naver(driver, name, naver_url)
-            sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
-            result_print(sorted_merge_list, '네이버')
-            print(f'네이버 수: {len(naver_result)}')
-            print("============================== 네이버 끝 ==============================")
-            handle_scraping_result(naver_result, 0, err_list, merge_list)
-            print(f'\n\n')
+            # 시작행 ~ 끝행 사이에서만 작업함
+            try:
+                name = ws[f'E{i}'].value
+                naver_url = ws[f'B{i}'].value
+                danawa_url = ws[f'C{i}'].value
+                enuri_url = ws[f'D{i}'].value
 
-            # 2. 다나와 크롤링 처리
-            print("============================== 다나와 시작 ==============================")
-            danawa_result = scrape_danawa(driver, name, danawa_url, limit_count, on_and_off)
-            sorted_merge_list = sorted(danawa_result, key=lambda x: x[-1])
-            result_print(sorted_merge_list, '다나와')
-            print(f'다나와 수: {len(danawa_result)}')
-            print('===================================================')
-            handle_scraping_result(danawa_result, 1, err_list, merge_list)
-            print("============================== 다나와 끝 ==============================")
-            print(f'\n\n')
+                # 에러 리스트 초기화 (각 크롤링 사이트별 에러 체크)
+                err_list = [0, 0, 0]
 
-            # 3. 에누리 크롤링 처리
-            print("============================== 에누리 시작 ==============================")
-            enuri_result = scrape_enuri(driver, name, enuri_url, limit_count, on_and_off)
-            sorted_merge_list = sorted(enuri_result, key=lambda x: x[-1])
-            result_print(sorted_merge_list, '에누리')
-            print(f'에누리 수: {len(enuri_result)}')
-            handle_scraping_result(enuri_result, 2, err_list, merge_list)
-            print("============================== 에누리 끝 ==============================")
-            print(f'\n\n')
+                # 전체 병합 리스트 초기화
+                merge_list = []
 
-            # 4. 전체 목록
-            print("============================== 전체 시작 ==============================")
-            sorted_merge_list = sorted(merge_list, key=lambda x: x[-1])
-            result_print(sorted_merge_list, '전체')
-            print(f'전체 수: {len(merge_list)}')
-            print("============================== 전체 끝 ==============================")
+                # 1. 네이버 크롤링 처리
+                print("============================== 네이버 시작 ==============================")
+                naver_result = scrape_naver(driver, name, naver_url)
+                sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
 
-            # 엑셀로 저장 (각 행별로 저장)
-            save_row_to_excel(ws, merge_list, i, err_list, five_per_mall_name)
+                if email_data['리뷰']:
+                    global_month_review_cnt = get_month_review_cnt(driver, naver_url, email_data)
+                    print(f'리뷰수 : {global_month_review_cnt}')
+                    if global_month_review_cnt > email_data['리뷰수']:
+                        ws[f'F{i}'] = f'{email_data['리뷰수']}+'
+                    else:
+                        ws[f'F{i}'] = email_data['리뷰수']
 
-            # 엑셀 파일을 즉시 저장
-            wb.save(excel_path)
+                result_print(sorted_merge_list, '네이버')
+                print(f'네이버 수: {len(naver_result)}')
+                print("============================== 네이버 끝 ==============================")
+                handle_scraping_result(naver_result, 0, err_list, merge_list)
+                print(f'\n\n')
 
-        except Exception as e:
-            print(f"Error processing row {i}: {e}")
-            # 특정 행에서 에러가 발생하더라도 계속 진행하도록 함
+                # 2. 다나와 크롤링 처리
+                print("============================== 다나와 시작 ==============================")
+                danawa_result = scrape_danawa(driver, name, danawa_url, limit_count, on_and_off)
+                sorted_merge_list = sorted(danawa_result, key=lambda x: x[-1])
+                result_print(sorted_merge_list, '다나와')
+                print(f'다나와 수: {len(danawa_result)}')
+                print('===================================================')
+                handle_scraping_result(danawa_result, 1, err_list, merge_list)
+                print("============================== 다나와 끝 ==============================")
+                print(f'\n\n')
+
+                # 3. 에누리 크롤링 처리
+                print("============================== 에누리 시작 ==============================")
+                enuri_result = scrape_enuri(driver, name, enuri_url, limit_count, on_and_off)
+                sorted_merge_list = sorted(enuri_result, key=lambda x: x[-1])
+                result_print(sorted_merge_list, '에누리')
+                print(f'에누리 수: {len(enuri_result)}')
+                handle_scraping_result(enuri_result, 2, err_list, merge_list)
+                print("============================== 에누리 끝 ==============================")
+                print(f'\n\n')
+
+                # 4. 전체 목록
+                print("============================== 전체 시작 ==============================")
+                sorted_merge_list = sorted(merge_list, key=lambda x: x[-1])
+                result_print(sorted_merge_list, '전체')
+                print(f'전체 수: {len(merge_list)}')
+                print("============================== 전체 끝 ==============================")
+
+                # 엑셀로 저장 (각 행별로 저장)
+                save_row_to_excel(ws, merge_list, i, err_list, five_per_mall_name, open_market_list, producdt_count)
+
+                # 엑셀 파일을 즉시 저장
+                wb.save(excel_path)
+
+                # 이메일 발송
+                email_setting(ws, i, email_data)
+
+            except Exception as e:
+                print(f"Error processing row {i}: {e}")
+                # 특정 행에서 에러가 발생하더라도 계속 진행하도록 함
+
+
+        # 무한 반복 여부 확인
+        if not repeat:  # repeat가 False면 1회 반복 후 종료
+            break
 
     driver.quit()
 
@@ -788,17 +1128,73 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name):
 if __name__ == "__main__":
 
     # 원하는 값을 여기에 입력하세요.
-    excel_path = "프로그램.xlsx"    # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
-    limit_count = 3                    # 수집 갯수
-    on_and_off = 0                     # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
+    excel_path = "프로그램_테스트.xlsx"     # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
+    limit_count = 5                      # 사이트의 갯수별 수집 갯수
+    producdt_count = 5                      # 판매처 갯수 1~3까지 입력가능
+    on_and_off = 0                       # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
     five_per_mall_name = ['11번가', '옥션']        # 5% 할인 적용 판매처 (옥션, G마켓, 11번가...)
+
+    start_row = 2  # 첫 row값은 기본 2이상으로 설정
+    end_row = 2    # 실제 row수보다 작거나 같게 설정
+
+    # repeat가 False면 1회 반복 후 종료 True면 무한반복
+    repeat = False
+
+    # 자사몰인 경우만 메일 발송 및 엑셀에 넣기
+    # 수집 제외몰은 사용하지 않음
+    open_market_list = ['auction', # 옥션
+                        'gmarket', # 지마켓
+                        'coupang', # 쿠팡
+                        '11st', # 11번가
+                        'interpark', # 인터파크
+                        'lotteon', # 롯데온
+                        'tmon', # 티몬
+                        'gsshop', # GSSHOP
+                        'ohou', # 오늘의집
+                        'ssg.com', # SSG닷컴, 이마트몰, 신세계몰
+                        'lotteimall', # 롯데홈쇼핑
+                        'hmall', # 현대Hmall
+                        'cjonstyle', # CJ온스타일
+                        'hnsmall', # 홈앤쇼핑
+                        'musinsa', # 무신사
+                        'kurly', # 컬리
+                        'smelchi', # 멸치쇼핑
+                        'nsmall', # NS홈쇼핑
+                        'samsung', # 삼성닷컴
+                        'shinsegaetvshopping', # 신세계라이브쇼핑
+                        'halfclub', # 하프클럽
+                        'fashionplus' # 패션플러스
+                        ]
+
+    # 이메일 설정
+    email_data = {
+        '수수료율': 1, #(단위 %)
+        '배송비': 10,        #(단위 원)
+        '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
+        '마진율시작': 1,        #(단위 %)
+        '마진율끝': 2,        #(단위 %)
+        '전송기준수': 3,     #(단위 개 매진률수 이상이 되면 메일 발송)
+        '발신자이메일': '772vjrvj@naver.com',
+        '발신자비밀번호': 'Ksh#8818510',
+        '수신자이메일': ['goodbye772@naver.com', '772vjrvj@naver.com'],
+        '제목': '특정 마진률 이상이면 메일 전송',
+        '내용': '', # 엑셀행/ 상품명 / 네or다or에-N개-판매처 / 마진% / URL(네or다or에) 이 형식으로 바뀔것임 초기값은 공백
+        '리뷰수': 10, # 0이면 off / 0이상 이면 on
+        '리뷰': True # True / False (on / off)
+    }
 
     # 메인실행 함수
     main(
         excel_path,
         limit_count,
         on_and_off,
-        five_per_mall_name
+        five_per_mall_name,
+        start_row,
+        end_row,
+        repeat,
+        email_data,
+        open_market_list,
+        producdt_count
     )
 
 
@@ -826,3 +1222,19 @@ if __name__ == "__main__":
 # 2024-10-19 ver_5
 # 기준가격 수정
 # 단위수정
+
+
+# 2025-01-12 ver_6
+# 오류 1 (기준가격 수집 오류) - 네이버 class이름 태그 바뀜, 카드할인 부분 코드 제거
+# 오류 2 (기준가격 미 수집 오류) / 빨간색으로 표시가 안 되어있는데 미수집
+# 특정 마진률 이상이면 메일 전송되도록
+# 개선사항2. 코딩상에서 엑셀 번호 적어서 거기서부터 돌아가도록
+# 개선사항3. 프로그램이 끝나는게 아니라 계속 돌아가도록
+
+
+# 2025-01-22 ver_7
+# 마진율 사이값 10 ~ 50%
+# star_row end_row -> end_row가 엑셀 row안넘기만 하면 되게 수정
+# 상품명의 특정 키워드가 들어가면 판매처에 안 들어가 있어도, 다른 오픈마켓도 메일 발송하도록 "키워드" Q열에 적어주세요
+# 전송규칙에 상품명 / 네이버 URL 추가
+# 메일좀 예쁘게
