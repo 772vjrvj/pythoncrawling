@@ -1,0 +1,6 @@
+requests
+beautifulsoup4
+cx_Oracle
+urllib3
+sqlalchemy
+apscheduler

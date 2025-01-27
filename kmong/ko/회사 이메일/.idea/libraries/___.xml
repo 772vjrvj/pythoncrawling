@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="회사 이메일 추출 프로그램">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/모듈/모듈1/dist/회사 이메일 추출 프로그램.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

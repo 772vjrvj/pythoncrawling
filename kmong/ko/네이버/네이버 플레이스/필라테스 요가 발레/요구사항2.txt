@@ -1,0 +1,108 @@
+안녕하세요. 네이버 플레이스에 있는 필라테스 요가 헬스장 등의 정보를 수집하고싶어 연락드렸습니다.
+
+수집목록은: 상호명, 연락,이메 ,블로그, 인스타주소, 매장주소등 입니다.
+
+
+
+요구사항 네이버 플레이스 3천건
+
+서울 강남구 필라테스 : 1천건
+서울 강남구 요가 : 1천건
+서울 강남구 발레 : 1천건
+
+필수 : 상호명, 주소, 연락처
+필수 선택 1 : 이메일, 인스타
+추가 : 홈페이지, 블로그
+
+천건 미만시
+서초구 -> 송파구 -> 강북구 -> 용산구 -> 강동구 -> 마포구 -> 중랑구  등으로 지역 넓힘
+
+가격 3만원 선결제
+
+기간 내일 오전 9시 받을수 있음
+
+
+https://map.naver.com/p/search/%EA%B0%95%EB%82%A8%EA%B5%AC%20%ED%95%84%EB%9D%BC%ED%85%8C%EC%8A%A4?searchType=place&c=15.00,0,0,0,dh
+https://map.naver.com/p/search/{place}%20{category}/place/1809360730?c=12.00,0,0,0,dh&placePath=%3Fentry%253Dbmp
+
+
+
+https://m.place.naver.com/place/1850207628/home?entry=pll
+https://m.place.naver.com/place/1266783859/home?entry=pll
+
+
+https://m.place.naver.com/place/{id}/home?entry=pll
+여기 접속해서
+
+객체 리스트 만든후
+
+
+<span class="GHAhO">바름PT필라테스 청담점</span>
+이거 텍스트 상호명에 담고
+
+<span class="lnJFt">필라테스</span>
+이거 텍스트 카테고리 담고
+
+<span class="LDgIH">서울 강남구 압구정로79길 75 2층</span>
+이거 텍스트 주소에 담고
+
+<span class="xlx7Q">0507-1467-0302</span>
+이거 텍스트 연락처에 담고
+
+
+
+
+
+
+class="jO09N" 안에 A태그안에 href 값 https://blog.naver.com/enufpilates 와
+class="S8peq"들의 A태그안에 href값 https://enufpilates.modoo.at
+
+이 주소들 중에 insta가 포함 되는게 있으면 인스타에 담고
+blog가 포함되면 블로그에 담고
+이제 나머지가 존재하면 그중 1개만 주소에 담고
+
+list만들어서 엑셀에 저장하는 코드 짜줘
+
+
+https://m.place.naver.com/place/1168797113/home?entry=pll
+
+https://m.search.naver.com/search.naver?sm=mtp_sly.hst&where=m&query=%EA%B0%95%EB%82%A8%EA%B5%AC+%ED%95%84%EB%9D%BC%ED%85%8C%EC%8A%A4&acr=1
+
+https://map.naver.com/p/search/%EA%B0%95%EB%82%A8%EA%B5%AC%20%ED%95%84%EB%9D%BC%ED%85%8C%EC%8A%A4/place/1121099868?c=12.00,0,0,0,dh&placePath=%3Fentry%253Dpll
+
+
+
+그럼 인스타, 블로그, 이메일, 홈페이지, 페이스북, 네이버 플레이스 주소, 전화번호 중 한개는 필수로 들어가 있는걸로 추출하면 될까요?
+
+
+네 그럼 중복건 수정해서 보내주시고 최소한 인스타,블로그,홈페이지 중 한개는 필수로 부탁드립니다!
+
+
+
+places = [
+        {"city": "서울시", "gu": "강남구"}, {"city": "서울시", "gu": "서초구"},
+        {"city": "서울시", "gu": "송파구"}, {"city": "서울시", "gu": "강북구"},
+        {"city": "서울시", "gu": "용산구"}, {"city": "서울시", "gu": "강동구"},
+        {"city": "서울시", "gu": "마포구"}, {"city": "서울시", "gu": "중랑구"},
+        {"city": "서울시", "gu": "은평구"}, {"city": "서울시", "gu": "관악구"},
+        {"city": "서울시", "gu": "금천구"}, {"city": "서울시", "gu": "구로구"},
+        {"city": "서울시", "gu": "광진구"}, {"city": "서울시", "gu": "노원구"},
+        {"city": "서울시", "gu": "도봉구"}, {"city": "서울시", "gu": "동대문구"},
+        {"city": "서울시", "gu": "동작구"}, {"city": "서울시", "gu": "서대문구"},
+        {"city": "서울시", "gu": "성동구"}, {"city": "서울시", "gu": "성북구"},
+        {"city": "서울시", "gu": "양천구"}, {"city": "서울시", "gu": "영등포구"},
+        {"city": "서울시", "gu": "종로구"}, {"city": "서울시", "gu": "중구"},
+        {"city": "용인시", "gu": "처인구"}, {"city": "용인시", "gu": "기흥구"},
+        {"city": "용인시", "gu": "수지구"}, {"city": "수원시", "gu": "장안구"},
+        {"city": "수원시", "gu": "권선구"}, {"city": "수원시", "gu": "팔달구"},
+        {"city": "수원시", "gu": "영통구"}, {"city": "성남시", "gu": "수정구"},
+        {"city": "성남시", "gu": "중원구"}, {"city": "성남시", "gu": "분당구"},
+        {"city": "고양시", "gu": "덕양구"}, {"city": "고양시", "gu": "일산동구"},
+        {"city": "고양시", "gu": "일산서구"}, {"city": "부천시", "gu": "원미구"},
+        {"city": "부천시", "gu": "소사구"}, {"city": "부천시", "gu": "오정구"},
+        {"city": "인천시", "gu": "중구"}, {"city": "인천시", "gu": "동구"},
+        {"city": "인천시", "gu": "미추홀구"}, {"city": "인천시", "gu": "연수구"},
+        {"city": "인천시", "gu": "남동구"}, {"city": "인천시", "gu": "부평구"},
+        {"city": "인천시", "gu": "계양구"}, {"city": "인천시", "gu": "서구"},
+        {"city": "인천시", "gu": "강화군"}, {"city": "인천시", "gu": "옹진군"}
+    ]

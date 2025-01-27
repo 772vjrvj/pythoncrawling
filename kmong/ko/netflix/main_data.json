@@ -1,0 +1,164 @@
+{
+  "data": {
+    "id": "d655b00c-d71b-444c-a4b4-3ca2fd3048ef",
+    "parent_id": "fb2bb8b0-a544-4be1-8489-83cb38adad05",
+    "title": "2. 하지원",
+    "description": "연기 인생 20년 만에 발견한 하지원의 놀라운 필살기, 그리고 ‘황진이’부터 ‘AI’까지 섭렵한 ‘연기 천재’ 하지원의 팔색조 매력!",
+    "short_description": "연기 인생 20년 만에 발견한 하지원의 놀라운 필살기, 그리고 ‘황진이’부터 ‘AI’까지 섭렵한 ‘연기 천재’ 하지원의 팔색조 매력!",
+    "as": "EPISODE",
+    "region": "KR",
+    "languages": [
+      "한국어"
+    ],
+    "audios": [
+      "한국어"
+    ],
+    "age_rating": "19+",
+    "age_rating_localized": "19+",
+    "is_rating_category_exempted": false,
+    "streamable": true,
+    "downloadable": true,
+    "running_time": 4560,
+    "images": {
+      "story-art": {
+        "id": "bd1a5760-d59b-40bd-99d5-a93a3204c9db",
+        "url": "https://img.coupangstreaming.com/titles/d655b00c-d71b-444c-a4b4-3ca2fd3048ef/story-art/fbf85eb2-2770-4804-b0fe-204b7af9c506.png",
+        "tags": null,
+        "index": 0,
+        "language": "ko",
+        "title_id": "d655b00c-d71b-444c-a4b4-3ca2fd3048ef",
+        "created_at": "2021-09-18T09:48:34.495Z",
+        "updated_at": null
+      }
+    },
+    "tags": [
+      {
+        "tag": "예능",
+        "meta": {
+          "genre": true
+        },
+        "label": "예능",
+        "language": "ko",
+        "id": "6277fe1f-efc6-484a-a8f7-cbde481e9d81"
+      },
+      {
+        "tag": "코미디",
+        "meta": {
+          "genre": true
+        },
+        "label": "코미디",
+        "language": "ko",
+        "id": "14f25e3a-d954-484c-bce2-05f05f4b74ad"
+      }
+    ],
+    "people": [
+      {
+        "name": "신동엽",
+        "role": "CAST",
+        "language": "ko"
+      },
+      {
+        "name": "안영미",
+        "role": "CAST",
+        "language": "ko"
+      },
+      {
+        "name": "정상훈",
+        "role": "CAST",
+        "language": "ko"
+      },
+      {
+        "name": "김민교",
+        "role": "CAST",
+        "language": "ko"
+      },
+      {
+        "name": "권혁수",
+        "role": "CAST",
+        "language": "ko"
+      }
+    ],
+    "meta": {
+      "awards": [],
+      "copyright": null,
+      "releaseYear": 2021,
+      "rating_levels": {
+        "drugs": "none",
+        "theme": "high",
+        "horror": "none",
+        "language": "high",
+        "violence": "none",
+        "sex_and_nudity": "high",
+        "imitable_behavior": "none"
+      },
+      "display_runtime": "01:16:00",
+      "production_company": "ASTORY"
+    },
+    "published_at": "2021-09-11T00:00:00.000Z",
+    "expires_on": "2027-09-10T14:59:00.000Z",
+    "availability": "SVOD",
+    "asset_id": "6281640085001",
+    "deal_id": "01b20213-1bb5-49c6-aad3-4b329e6a35a2",
+    "created_at": "2021-09-11T08:24:51.860Z",
+    "updated_at": "2024-09-09T05:26:04.989Z",
+    "rating": {
+      "age": "18+",
+      "levels": {
+        "drugs": "none",
+        "theme": "high",
+        "horror": "none",
+        "language": "high",
+        "violence": "none",
+        "sex_and_nudity": "high",
+        "imitable_behavior": "none"
+      },
+      "category": "kmrb-2021",
+      "legal_cp_name": "에이스토리",
+      "broadcast_date": null,
+      "broadcast_channel": "",
+      "classification_number": "2021-VK08105",
+      "broadcast_date_friendly": ""
+    },
+    "title_type": null,
+    "raw_badge": "NONE",
+    "badge": {},
+    "badges": [],
+    "clips": [],
+    "stream_type": "VOD",
+    "vod_start_at": "2021-09-11T00:00:00.000Z",
+    "upcoming_text": null,
+    "live_start_at": null,
+    "live_end_at": null,
+    "support_live": false,
+    "airing_date": "",
+    "premium_vod_start_at": null,
+    "season": 1,
+    "episode": 2,
+    "title_canonical": "2. 하지원",
+    "playState": "WATCHNOW",
+    "bestReviews": [],
+    "social": "",
+    "running_time_friendly": "1시간 16분",
+    "subType": "DEFAULT"
+  },
+  "featureFlags": {
+    "showPollButton": false,
+    "showClipsButton": false,
+    "showMarketingBanner": false,
+    "showMyListButton": true,
+    "showRemindMeButton": false,
+    "showChatButton": false,
+    "showKidsBanner": true
+  },
+  "pollDetails": {},
+  "marketingEventDetails": {},
+  "marketingBannerDetails": {},
+  "extra": {
+    "hasSimilarContents": false
+  },
+  "meta": {
+    "requestId": "4f753456-f59d-466f-925a-1966d9ff0282",
+    "timestamp": 1737918299321,
+    "variant": "A"
+  }
+}

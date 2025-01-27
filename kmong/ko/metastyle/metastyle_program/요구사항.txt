@@ -1,0 +1,24 @@
+https://www.mytheresa.com
+
+pyinstaller --noconsole main.py
+
+무료 아이콘 다운로드
+https://www.flaticon.com/
+
+png -> ico 변환
+https://convertico.com/
+https://icoconvert.com/
+
+프록시 서버 필요
+
+csv파일로 한줄씩 업데이트 하고
+에러 났거나 마지막에 엑셀파일로 변환
+
+또는
+
+10개 20개씩 csv저장 후 엑셀 저장
+pyinstaller --noconsole --icon=crawling.ico main.py
+
+
+엑셀 한 시트에 들어갈수 있는
+since it exceeds Excel's limit of 65,530 URLS per worksheet.

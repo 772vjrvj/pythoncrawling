@@ -1,0 +1,94 @@
+[
+  {
+    "PW_CHG_DT": "2121-03-08",
+    "CREATE_USER": null,
+    "PHONE": "",
+    "UPDATE_USER": "admin",
+    "CUD_TYPE": "R",
+    "UPDATE_DT": "2024-01-10T03:02:52.000+00:00",
+    "EMAIL": "",
+    "USER_STATUS_CD": "2",
+    "EMP_SEQ": "EMP001",
+    "NAME": "관리자",
+    "CREATE_DT": null,
+    "APPROVE_DT": null,
+    "PASSWORD": "{bcrypt}$2a$10$IE3YzWdYIf6u1wLTGrKQFud4gI2e0.TvfcGuKFP5o3kL8MgIrG61O",
+    "USER_STATUS_CD_NM": "승인완료",
+    "USER_ROLE_CD_LIST": [
+      "99"
+    ],
+    "ID": "admin",
+    "EMAIL_YN": true,
+    "SMS_YN": true,
+    "SEQ": "USR000000001"
+  },
+  {
+    "PW_CHG_DT": "2022-07-21",
+    "CREATE_USER": "admin",
+    "PHONE": null,
+    "UPDATE_USER": "admin",
+    "CUD_TYPE": "R",
+    "UPDATE_DT": "2024-01-10T03:02:20.000+00:00",
+    "EMAIL": null,
+    "USER_STATUS_CD": "2",
+    "EMP_SEQ": "",
+    "NAME": "퀸",
+    "CREATE_DT": "2021-03-11T11:07:56.000+00:00",
+    "APPROVE_DT": null,
+    "PASSWORD": "{bcrypt}$2a$10$Q2/tlWsJNRWIwQOz7pfFU.qSD5ZpMxP1FQuc9tjYt.Q9aa/pSERz2",
+    "USER_STATUS_CD_NM": "승인완료",
+    "USER_ROLE_CD_LIST": [
+      "1"
+    ],
+    "ID": "queen",
+    "EMAIL_YN": false,
+    "SMS_YN": false,
+    "SEQ": "USR20210311110756569000"
+  },
+  {
+    "PW_CHG_DT": "2022-07-21",
+    "CREATE_USER": "admin",
+    "PHONE": null,
+    "UPDATE_USER": "admin",
+    "CUD_TYPE": "R",
+    "UPDATE_DT": "2024-01-10T03:02:38.000+00:00",
+    "EMAIL": null,
+    "USER_STATUS_CD": "2",
+    "EMP_SEQ": "",
+    "NAME": "샵",
+    "CREATE_DT": "2021-03-11T11:08:44.000+00:00",
+    "APPROVE_DT": null,
+    "PASSWORD": "{bcrypt}$2a$10$YCTFCVQxD2UNMcjDhRzDV.8XyNWYh0/iVQxsE1GBOG6zDWkdFfXmi",
+    "USER_STATUS_CD_NM": "승인완료",
+    "USER_ROLE_CD_LIST": [
+      "1"
+    ],
+    "ID": "sharp",
+    "EMAIL_YN": false,
+    "SMS_YN": false,
+    "SEQ": "USR20210311110844522000"
+  },
+  {
+    "PW_CHG_DT": "2021-12-01",
+    "CREATE_USER": "admin",
+    "PHONE": null,
+    "UPDATE_USER": "admin",
+    "CUD_TYPE": "R",
+    "UPDATE_DT": "2022-04-27T09:04:21.000+00:00",
+    "EMAIL": null,
+    "USER_STATUS_CD": "2",
+    "EMP_SEQ": "",
+    "NAME": "맥심",
+    "CREATE_DT": "2021-12-01T03:36:49.000+00:00",
+    "APPROVE_DT": null,
+    "PASSWORD": "{bcrypt}$2a$10$YvoGUuoXAM/RecOZ4/3PC.bZW82b9vCJJY1A30B.Obt5LfBWzwuve",
+    "USER_STATUS_CD_NM": "승인완료",
+    "USER_ROLE_CD_LIST": [
+      "1"
+    ],
+    "ID": "maxim",
+    "EMAIL_YN": false,
+    "SMS_YN": false,
+    "SEQ": "USR20211201033649442000"
+  }
+]

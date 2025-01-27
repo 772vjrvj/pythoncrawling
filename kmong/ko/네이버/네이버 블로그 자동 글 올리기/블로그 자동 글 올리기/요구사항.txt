@@ -1,0 +1,8 @@
+해맑은무궁화5640
+
+20240920
+15만
+
+이미지와 엑셀 내용 자동 올리기
+
+pyinstaller --onefile --noconsole --add-data "C:\Users\772vj\AppData\Local\Programs\Python\Python312\tcl\tkdnd2.8;tkdnd2.8" main.py

@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A0XB-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21A0UQ-J11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E00B-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A10G-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21J0JG-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21I0RM-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21A0SW-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A0YI-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21J199-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41D07V-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41D08U-J11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41D08Y-O11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21A0VS-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A10S-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21D20A-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21I0RK-M11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::OY241E03I-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A11P-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21N0I9-K13",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS21A00O-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21D2YD-B11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41G03N-M11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::AN621D1AL-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21A0VT-C12",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E0B2-O11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21J18Q-M11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E0CQ-M11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41I03T-M11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::KH121U1FN-N11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::KH121U1IV-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A0YI-O12",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21I0VU-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21U0L9-A11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21I0WB-O11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::EV421A0A5-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::OY141E0J9-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21D21A-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E009-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::OY121A0BD-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::GID21I09Z-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A110-B11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::F2121J00G-O11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21U0I7-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E0DZ-M11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21A0WH-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21D2YX-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E026-K11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PC721I0MG-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21I0RR-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::STH21C14J-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21G0MA-K11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41D06R-J11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41E0C7-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::LLS41I00U-Q11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21N0K8-K11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::BEJ21J0JG-C11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21I0VU-O11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21D2YM-K11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::AN681V005-K11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  },
+  {
+    "id": "ce9f5a836c8a7490402cd21c7f2b73eda3831e72a1302268bf953364d7eeaea5",
+    "variables": {
+      "id": "ern:product::PUC21A10S-G11",
+      "skipHoverData": false,
+      "isSustainabilityProductScoreEnabled": false,
+      "version": 1,
+      "enableFlexiPrice": true,
+      "moduleInput": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "displayContext": {
+        "module": "PRODUCT_CARD_WITH_HOVER"
+      },
+      "isRatingEnabled": true
+    }
+  }
+]
