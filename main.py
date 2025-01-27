@@ -1085,7 +1085,7 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name, start_row, end
                     if global_month_review_cnt > email_data['리뷰수']:
                         ws[f'F{i}'] = f'{email_data['리뷰수']}+'
                     else:
-                        ws[f'F{i}'] = email_data['리뷰수']
+                        ws[f'F{i}'] = global_month_review_cnt
 
                 result_print(sorted_merge_list, '네이버')
                 print(f'네이버 수: {len(naver_result)}')
