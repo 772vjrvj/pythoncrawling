@@ -679,20 +679,23 @@ def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name, o
 
         # 배경색 설정 (빨간색)
         red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+        white_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
 
-        # err_list 값에 따라 배경색 변경
-        if err_list[0] == 1:
-            ws[f'B{row_index}'].fill = red_fill  # "네이버 URL" 셀
-        if err_list[1] == 1:
-            ws[f'C{row_index}'].fill = red_fill  # "다나와 URL" 셀
-        if err_list[2] == 1:
-            ws[f'D{row_index}'].fill = red_fill  # "에누리 URL" 셀
+        set_cell_color(ws, 'B', row_index, err_list, 0, red_fill, white_fill)
+        set_cell_color(ws, 'C', row_index, err_list, 1, red_fill, white_fill)
+        set_cell_color(ws, 'D', row_index, err_list, 2, red_fill, white_fill)
 
         print(f"Row {row_index} 엑셀에 업데이트됨.")
 
     except Exception as e:
         print(f"Error saving row {row_index} to Excel: {e}")
         traceback.print_exc()  # 에러 위치와 호출 스택을 출력
+
+def set_cell_color(ws, cell_name, row_index, err_list, err_index, red_fill, white_fill):
+    if err_list[err_index] == 1:
+        ws[f'{cell_name}{row_index}'].fill = red_fill
+    else:
+        ws[f'{cell_name}{row_index}'].fill = white_fill
 
 
 # 중복 체크 함수
@@ -719,6 +722,7 @@ def add_non_duplicates(merge_list, new_entries):
     for entry in new_entries:
         if not is_duplicate(entry, merge_list):
             merge_list.append(entry)
+
 
 
 def result_print(result, name):
@@ -1157,7 +1161,7 @@ if __name__ == "__main__":
     end_row = 100    # 실제 row수보다 작거나 같게 설정
 
     # repeat가 False면 1회 반복 후 종료 True면 무한반복
-    repeat = True
+    repeat = False
 
     # 자사몰인 경우만 메일 발송 및 엑셀에 넣기
     # 수집 제외몰은 사용하지 않음
