@@ -107,6 +107,10 @@ node_modules/
 *.bmp
 *.svg
 *.csv
+*.xml
+
+
+
 
 tving_url/
 
@@ -117,3 +121,5 @@ kmong/ko/netflix/.idea/
 
 # 파일지정
 misc.xml
+
+.idea/
