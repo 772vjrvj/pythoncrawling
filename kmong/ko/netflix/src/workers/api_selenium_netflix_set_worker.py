@@ -1,26 +1,19 @@
-from PyQt5.QtCore import QThread, pyqtSignal
-import requests
-from bs4 import BeautifulSoup
-import json
-import re
 import os
+import random
+import re
+import ssl
 import time
 import pandas as pd
-from datetime import datetime
-import random
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from tkinter import messagebox
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
-import ssl
 import psutil
-
+import requests
+from datetime import datetime
+from PyQt5.QtCore import QThread, pyqtSignal
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -29,12 +22,14 @@ ssl._create_default_https_context = ssl._create_unverified_context
 class ApiNetflixSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)  # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float)  # 진행률 업데이트를 전달하는 시그널
+    progress_end_signal = pyqtSignal()   # 종료 시그널
 
     def __init__(self, url_list, parent=None):
         super().__init__(parent)
         self.parent = parent  # 부모 객체 저장
         self.url_list = url_list  # URL을 클래스 속성으로 저장
         self.cookies = None
+        self.running = True  # 실행 상태 플래그 추가
 
         # 현재 시간을 'yyyymmddhhmmss' 형식으로 가져오기
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -164,11 +159,14 @@ class ApiNetflixSetLoadWorker(QThread):
                 self.log_signal.emit("크롤링 시작")
                 result_list = []
                 for idx, url in enumerate(self.url_list, start=1):
-
+                    if not self.running:  # 실행 상태 확인
+                        self.log_signal.emit("크롤링이 중지되었습니다.")
+                        break
                     # 100개의 항목마다 임시로 엑셀 저장
-                    if (idx - 1) % 100 == 0:
-                        self.save_to_excel(result_list)  # 임시 엑셀 저장 호출
+                    if (idx - 1) % 10 == 0 and result_list:
+                        self.save_to_csv_append(result_list)  # 임시 엑셀 저장 호출
                         self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
+                        result_list = []  # 저장 후 초기화
 
                     result = {
                         "url": url,
@@ -224,7 +222,28 @@ class ApiNetflixSetLoadWorker(QThread):
                     result_list.append(result)
                     time.sleep(random.uniform(2, 3))
 
-                self.save_to_excel(result_list)
+                # 남은 데이터 저장
+                if result_list:
+                    self.save_to_csv_append(result_list)
+
+                # CSV 파일을 엑셀 파일로 변환
+                try:
+                    csv_file_name = self.file_name  # 기존 CSV 파일 이름
+                    excel_file_name = csv_file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+
+                    self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {csv_file_name} → {excel_file_name}")
+                    df = pd.read_csv(csv_file_name)  # CSV 파일 읽기
+                    df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
+
+                    # 마지막 세팅
+                    pro_value = 1000000
+                    self.progress_signal.emit(self.before_pro_value, pro_value)
+
+                    self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
+                    self.progress_end_signal.emit()
+                except Exception as e:
+                    self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+
             else:
                 self.log_signal.emit("로그인 실패.")
         else:
@@ -306,39 +325,25 @@ class ApiNetflixSetLoadWorker(QThread):
                 time.sleep(2)  # 2초 대기 후 재시도
 
 
-    def save_to_excel(self, results):
-        self.parent.add_log("엑셀 저장 시작")
+    def save_to_csv_append(self, results):
+        self.log_signal.add_log("CSV 저장 시작")
 
         try:
             # 파일이 존재하는지 확인
-            if os.path.exists(self.file_name):
-                # 파일이 있으면 기존 데이터 읽어오기
-                df_existing = pd.read_excel(self.file_name)
-
-                # 새로운 데이터를 DataFrame으로 변환
-                df_new = pd.DataFrame(results)
-
-                # 기존 데이터의 마지막 행 인덱스를 기준으로 새로운 데이터의 추가 범위 계산
-                last_existing_index = df_existing.shape[0]  # 기존 데이터의 행 개수
-
-                # 새로운 데이터에서 추가할 부분만 선택 (기존 데이터 이후의 데이터)
-                df_to_add = df_new.iloc[last_existing_index:]
-
-                # 기존 데이터와 추가할 데이터 합치기
-                df_combined = pd.concat([df_existing, df_to_add], ignore_index=True)
-
-                # 엑셀 파일에 데이터 덧붙이기 (index는 제외)
-                df_combined.to_excel(self.file_name, index=False)
-            else:
-                # 파일이 없으면 새로 생성
+            if not os.path.exists(self.file_name):
+                # 파일이 없으면 새로 생성 및 저장
                 df = pd.DataFrame(results)
-                df.to_excel(self.file_name, index=False)
-
-            self.parent.add_log(f"엑셀 저장 완료: {self.file_name}")
+                df.to_csv(self.file_name, index=False)
+                self.log_signal.add_log(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
+            else:
+                # 파일이 있으면 append 모드로 데이터 추가
+                df = pd.DataFrame(results)
+                df.to_csv(self.file_name, mode='a', header=False, index=False)
+                self.log_signal.add_log(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
 
         except Exception as e:
             # 예기치 않은 오류 처리
-            self.parent.add_log(f"엑셀 저장 실패: {e}")
+            self.log_signal.add_log(f"CSV 저장 실패: {e}")
 
 
     def fetch_place_info(self, url, result):
@@ -507,3 +512,8 @@ class ApiNetflixSetLoadWorker(QThread):
         except AttributeError as e:
             result['error'] = 'Y'
             result['message'] = f"데이터 추출 중 오류 발생: {e}"
+
+    # 프로그램 중단
+    def stop(self):
+        """스레드 중지를 요청하는 메서드"""
+        self.running = False

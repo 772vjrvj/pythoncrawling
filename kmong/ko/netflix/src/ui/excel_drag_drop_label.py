@@ -1,10 +1,11 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from PyQt5.QtWidgets import (QLabel)
 
 
 # 엑셀 드래그
 class ExcelDragDropLabel(QLabel):
+    fileDropped = pyqtSignal(list)  # 파일 경로를 전달하는 시그널
 
     # 초기화
     def __init__(self):
@@ -26,9 +27,9 @@ class ExcelDragDropLabel(QLabel):
     def dropEvent(self, event: QDropEvent):
         if event.mimeData().hasUrls():
             files = [url.toLocalFile() for url in event.mimeData().urls()]
-            for file in files:
-                if file.endswith(('.xlsx', '.xlsm')):  # 엑셀 파일만 처리
-                    self.parent().load_excel(file)
-                else:
-                    self.setText("지원하지 않는 파일 형식입니다. 엑셀 파일을 드래그하세요.")
+            valid_files = [file for file in files if file.endswith(('.xlsx', '.xlsm', '.csv'))]  # 유효한 파일만 필터링
+            if valid_files:
+                self.fileDropped.emit(valid_files)  # 유효한 파일 리스트를 시그널로 전달
+            else:
+                self.setText("지원하지 않는 파일 형식입니다. 엑셀 파일을 드래그하세요.")
             event.acceptProposedAction()

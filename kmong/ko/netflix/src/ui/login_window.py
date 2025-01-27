@@ -1,18 +1,31 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
-
-from src.ui.main_window import MainWindow
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from src.workers.login_thread import LoginThread
 from src.ui.password_change_window import PasswordChangeWindow
+from src.utils.singleton import GlobalState
 
-# 로그인 창
+
 class LoginWindow(QWidget):
-    
     # 초기화
-    def __init__(self):
+    def __init__(self, app_manager):
         super().__init__()
 
-        self.setWindowTitle("로그인 화면")
+        self.app_manager = app_manager
+        self.login_thread = None
+        self.setWindowTitle("로그인")
+
+        # 동그란 파란색 원을 그린 아이콘 생성
+        icon_pixmap = QPixmap(32, 32)  # 아이콘 크기 (64x64 픽셀)
+        icon_pixmap.fill(QColor("transparent"))  # 투명 배경
+        painter = QPainter(icon_pixmap)
+        painter.setBrush(QColor("#e0e0e0"))  # 파란색 브러시
+        painter.setPen(QColor("#e0e0e0"))  # 테두리 색상
+        painter.drawRect(0, 0, 32, 32)  # 동그란 원 그리기 (좌상단 0,0에서 64x64 크기)
+        painter.end()
+        # 윈도우 아이콘 설정
+        self.setWindowIcon(QIcon(icon_pixmap))
+
         self.setGeometry(100, 100, 500, 300)  # 화면 크기 설정
         self.setStyleSheet("background-color: #ffffff;")  # 배경색 흰색
 
@@ -54,7 +67,7 @@ class LoginWindow(QWidget):
 
         self.login_button = QPushButton("로그인", self)
         self.login_button.setStyleSheet("""
-            background-color: #8A2BE2;
+            background-color: #4682B4;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -68,7 +81,7 @@ class LoginWindow(QWidget):
         # 비밀번호 변경 버튼
         self.change_password_button = QPushButton("비밀번호 변경", self)
         self.change_password_button.setStyleSheet("""
-            background-color: #8A2BE2;
+            background-color: #4682B4;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -104,23 +117,19 @@ class LoginWindow(QWidget):
         if not username or not password:
             self.show_message("로그인 실패", "아이디와 비밀번호를 입력해주세요.")
             return
-
-        # 로그인 요청을 비동기적으로 처리하는 스레드 생성
         self.login_thread = LoginThread(username, password)
-        self.login_thread.login_success.connect(self.main_window)  # 로그인 성공 시 메인 화면으로 전환
-        self.login_thread.login_failed.connect(self.show_error_message)  # 로그인 실패 시 메시지 표시
-        self.login_thread.start()  # 스레드 실행
+        self.login_thread.login_success.connect(self.main_window)
+        self.login_thread.login_failed.connect(self.show_error_message)
+        self.login_thread.start()
 
     # 에러 메시지
     def show_error_message(self, message):
-        """로그인 실패 메시지를 표시"""
         QMessageBox.critical(self, "로그인 실패", message)
 
     # 메시지 박스
     def show_message(self, title, message):
-        """일반 메시지 박스"""
         QMessageBox.information(self, title, message)
-    
+
     # 비밀번호 변경
     def change_password(self):
         popup = PasswordChangeWindow(parent=self)
@@ -128,7 +137,7 @@ class LoginWindow(QWidget):
 
     # 메인 화면 실행
     def main_window(self, cookies):
-        # 로그인 성공 시 메인 화면을 새롭게 생성
+        state = GlobalState()
+        state.set("cookies", cookies)
         self.close()  # 로그인 화면 종료
-        self.main_screen = MainWindow(cookies)
-        self.main_screen.show()
+        self.app_manager.go_to_select()

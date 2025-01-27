@@ -28,6 +28,9 @@ deactivate
 가상환경 진입
 .\mypiplist\Scripts\activate
 
+가상환경 활성화
+venv\Scripts\activate
+
 패키지 보기
 pip list
 

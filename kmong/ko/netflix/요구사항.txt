@@ -12,3 +12,4 @@
 pyinstaller --onefile --noconsole main.py
 
 
+pip install pandas PyQt5 psutil
