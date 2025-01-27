@@ -4,6 +4,7 @@ import requests
 
 class CheckWorker(QThread):
     api_failure = pyqtSignal(str)  # API 실패 시그널 (에러 메시지 전달)
+    log_signal = pyqtSignal(str)
 
     def __init__(self, cookies, server_url):
         super().__init__()
@@ -35,5 +36,6 @@ class CheckWorker(QThread):
             self.sleep(60)  # 1분 대기
 
     def stop(self):
+        self.log_signal.emit("로그인 체크 종료")
         self.running = False
 
