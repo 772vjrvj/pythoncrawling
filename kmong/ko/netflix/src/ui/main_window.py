@@ -378,7 +378,6 @@ class MainWindow(QWidget):
 
     # 로그 초기화
     def log_reset(self):
-        self.show_message("크롤링이 완료되었습니다.", "info")
         self.log_window.clear()
 
     # 프로그램 리셋

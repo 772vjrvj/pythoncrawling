@@ -211,8 +211,6 @@ class ApiRequestCoupangSetLoadWorker(QThread):
             "director": self.director or ", ".join(
                 person["name"] for person in data["data"].get("people", []) if person["role"] == "DIRECTOR"
             ),
-
-
             "success": "O",
             "message": "데이터 추출 성공",
             "error": "X"
