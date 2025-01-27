@@ -111,3 +111,10 @@ node_modules/
 tving_url/
 
 *.zip
+kmong/ko/abc/abc_program/.idea/abc_program.iml
+kmong/ko/abc/abc_program/.idea/misc.xml
+kmong/ko/netflix/.idea/misc.xml
+*.iml
+
+# 파일지정
+misc.xml
