@@ -1,3 +1,0 @@
-혹시 인디드 추출이 가능할가요?
-https://kr.indeed.com/?from=gnav-jobsearch--indeedmobile
-여기서 업체명 , 주소 , 이멜, 휴대폰번호, 다른업체번호 등을 엑셀로 다운자동화도 가능할까요?

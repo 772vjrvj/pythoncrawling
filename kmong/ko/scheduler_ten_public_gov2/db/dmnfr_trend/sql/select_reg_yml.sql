@@ -1,4 +1,0 @@
-SELECT DMNFR_TREND_NO, STTS_CHG_CD, TTL, SRC, REG_YMD, URL
-FROM DMNFR_TREND
-WHERE SRC = :src
-  AND REG_YMD IN (:reg_ymd_today, :reg_ymd_yesterday)

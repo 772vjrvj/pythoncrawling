@@ -1,9 +1,0 @@
-
-20240824
-티몬 위메프 제거
-
-20241013
-G마켓 제거
-
-
-pyinstaller --onefile --noconsole main.py
