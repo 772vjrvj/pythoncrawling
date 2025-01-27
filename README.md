@@ -42,3 +42,5 @@ pip install pyperclip
 pip install requests
 
 https://brightdata.com/
+
+
