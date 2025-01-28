@@ -30,6 +30,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
     def __init__(self, url_list):
         super().__init__()
         self.url_list = url_list  # URL을 클래스 속성으로 저장
+        self.result_list = []
         self.before_pro_value = 0
         self.running = True  # 실행 상태 플래그 추가
         self.sess = requests.Session()
@@ -149,7 +150,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
             login = self.login()
             if login:
                 self.log_signal.emit("크롤링 시작")
-                result_list = []
+                self.result_list = []
                 for idx, url in enumerate(self.url_list, start=1):
 
                     if not self.running:  # 실행 상태 확인
@@ -157,10 +158,10 @@ class ApiRequestTvingSetLoadWorker(QThread):
                         break
 
                     # 10개의 항목마다 임시로 엑셀 저장
-                    if (idx - 1) % 10 == 0 and result_list:
-                        self._save_to_csv_append(result_list)  # 임시 엑셀 저장 호출
+                    if (idx - 1) % 10 == 0 and self.result_list:
+                        self._save_to_csv_append(self.result_list)  # 임시 엑셀 저장 호출
                         self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
-                        result_list = []  # 저장 후 초기화
+                        self.result_list = []  # 저장 후 초기화
 
                     result = {
                         "origin_url": url,
@@ -191,31 +192,11 @@ class ApiRequestTvingSetLoadWorker(QThread):
                     self.progress_signal.emit(self.before_pro_value, pro_value)
                     self.before_pro_value = pro_value
 
-                    result_list.append(result)
+                    self.result_list.append(result)
                     time.sleep(random.uniform(0.5, 1))
 
-                # 남은 데이터 저장
-                if result_list:
-                    self._save_to_csv_append(result_list)
+                self.remain_data_set()
 
-                # CSV 파일을 엑셀 파일로 변환
-                try:
-                    csv_file_name = self.file_name  # 기존 CSV 파일 이름
-                    excel_file_name = csv_file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
-
-                    self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {csv_file_name} → {excel_file_name}")
-                    df = pd.read_csv(csv_file_name)  # CSV 파일 읽기
-                    df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
-
-                    # 마지막 세팅
-                    pro_value = 1000000
-                    self.progress_signal.emit(self.before_pro_value, pro_value)
-
-                    self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
-                    self.progress_end_signal.emit()
-
-                except Exception as e:
-                    self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
             else:
                 self.log_signal.emit("로그인 실패.")
         else:
@@ -223,13 +204,34 @@ class ApiRequestTvingSetLoadWorker(QThread):
         self.driver.quit()
 
 
+    def remain_data_set(self):
+        # 남은 데이터 저장
+        if self.result_list:
+            self._save_to_csv_append(self.result_list)
+
+        # CSV 파일을 엑셀 파일로 변환
+        try:
+            excel_file_name = self.file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+            self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {self.file_name} → {excel_file_name}")
+            df = pd.read_csv(self.file_name)  # CSV 파일 읽기
+            df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
+
+            # 마지막 세팅
+            pro_value = 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+
+            self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
+            self.progress_end_signal.emit()
+
+        except Exception as e:
+            self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+
+
     def _error_chk(self, result):
         if result['error'] == 'Y':
             self.log_signal.emit(result['message'])
             return True
         return False
-
-
 
 
     def _save_to_csv_append(self, results):
@@ -425,6 +427,15 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 result['year']              = program.get("product_year", "")
                 result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
 
+                result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
+                category1_name = episode.get("category1_name", {}).get("ko", "")
+                category2_name = episode.get("category2_name", {}).get("ko", "")
+                if category1_name and category2_name:
+                    category = f"{category1_name}, {category2_name}"
+                else:
+                    category = category1_name
+                result['genre'] = category
+
             if episode:
                 result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
                 category1_name = episode.get("category1_name", {}).get("ko", "")
@@ -478,5 +489,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
     # 프로그램 중단
     def stop(self):
+        self.remain_data_set()
         """스레드 중지를 요청하는 메서드"""
         self.running = False
