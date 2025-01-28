@@ -12,6 +12,8 @@ from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.singleton import GlobalState
 from src.workers.api_selenium_netflix_set_worker import ApiNetflixSetLoadWorker
 from src.workers.api_request_coupang_set_worker import ApiRequestCoupangSetLoadWorker
+from src.workers.api_request_tving_set_worker import ApiRequestTvingSetLoadWorker
+
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -292,7 +294,7 @@ class MainWindow(QWidget):
                 elif self.site == 'COUPANG':
                     self.on_demand_worker = ApiRequestCoupangSetLoadWorker(self.url_list)
                 elif self.site == 'TVING':
-                    self.on_demand_worker = ApiRequestCoupangSetLoadWorker(self.url_list)
+                    self.on_demand_worker = ApiRequestTvingSetLoadWorker(self.url_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)

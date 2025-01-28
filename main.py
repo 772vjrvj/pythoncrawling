@@ -258,6 +258,7 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
         if not danawa_url:
             return []
         driver.get(danawa_url)
+        time.sleep(3)
         print(danawa_url)
         danawa_temp_list = []
 
@@ -404,7 +405,7 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
         print(f"enuri_url : {enuri_url}")
 
         driver.get(enuri_url)
-        time.sleep(0.5)
+        time.sleep(3)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") # SCroll 맨 아래로
         driver.execute_script("window.scrollTo(0, 0);") # SCroll 맨 위로
         time.sleep(0.5)
@@ -1197,10 +1198,11 @@ if __name__ == "__main__":
     email_data = {
         '수수료율': 1, #(단위 %)
         '배송비': 1,        #(단위 원)
-        '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
+        # '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
+        '판매처': [], #(명확히 입력)
         '마진율시작': 1,        #(단위 %)
         '마진율끝': 100,        #(단위 %)
-        '전송기준수': 1,     #(단위 개 매진률수 이상이 되면 메일 발송)
+        '전송기준수': 10,     #(단위 개 매진률수 이상이 되면 메일 발송)
         '발신자이메일': '772vjrvj@naver.com',
         '발신자비밀번호': 'Ksh#8818510',
         '수신자이메일': ['goodbye772@naver.com', '772vjrvj@naver.com'],
