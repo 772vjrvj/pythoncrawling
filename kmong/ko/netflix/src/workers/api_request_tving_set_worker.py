@@ -38,7 +38,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
         # 현재 시간을 'yyyymmddhhmmss' 형식으로 가져오기
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-        self.file_name = f"티빙_{current_time}.xlsx"
+        self.file_name = f"티빙_{current_time}.csv"
         if len(self.url_list) <= 0:
             self.log_signal.emit(f'등록된 url이 없습니다.')
         else:
