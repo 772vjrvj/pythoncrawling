@@ -240,12 +240,13 @@ class ApiRequestTvingSetLoadWorker(QThread):
             if not os.path.exists(self.file_name):
                 # 파일이 없으면 새로 생성 및 저장
                 df = pd.DataFrame(results)
-                df.to_csv(self.file_name, index=False)
+                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
+
                 self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
             else:
                 # 파일이 있으면 append 모드로 데이터 추가
                 df = pd.DataFrame(results)
-                df.to_csv(self.file_name, mode='a', header=False, index=False)
+                df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
                 self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
 
         except Exception as e:
@@ -402,30 +403,37 @@ class ApiRequestTvingSetLoadWorker(QThread):
         content_info_content = content_info.get("content", {})
 
         if content:
-            content_schedule = content.get("info", {}).get("schedule", {})
-            program = content_schedule.get("program", {})
-            episode = content_schedule.get("episode", {})
+            info = content.get("info", {})
+            schedule = info.get("schedule", {})
+            if schedule:
+                program = schedule.get("program", {})
+                episode = schedule.get("episode", {})
+            else:
+                program = info.get("program", {})
+                episode = info.get("episode", {})
 
             result['title']             = content.get("program_name", {})
             result['episode_title']     = content.get("episode_name", {})
             result['episode_seq']       = content.get("frequency", "")
 
-            result['summary']           = program.get("synopsis", {}).get("ko", "")
-            result['cast']              = ", ".join(program.get("actor", []))
-            result['director']          = ", ".join(program.get("director", []))
-            result['episode_season']    = program.get("season_pgm_no", "")
-            result['season']            = program.get("season_pgm_no", "")
-            result['year']              = program.get("product_year", "")
-            result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
+            if program:
+                result['summary']           = program.get("synopsis", {}).get("ko", "")
+                result['cast']              = ", ".join(program.get("actor", []))
+                result['director']          = ", ".join(program.get("director", []))
+                result['episode_season']    = program.get("season_pgm_no", "")
+                result['season']            = program.get("season_pgm_no", "")
+                result['year']              = program.get("product_year", "")
+                result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
 
-            result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
-            category1_name = episode.get("category1_name", {}).get("ko", "")
-            category2_name = episode.get("category2_name", {}).get("ko", "")
-            if category1_name and category2_name:
-                category = f"{category1_name}, {category2_name}"
-            else:
-                category = category1_name
-            result['genre'] = category
+            if episode:
+                result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
+                category1_name = episode.get("category1_name", {}).get("ko", "")
+                category2_name = episode.get("category2_name", {}).get("ko", "")
+                if category1_name and category2_name:
+                    category = f"{category1_name}, {category2_name}"
+                else:
+                    category = category1_name
+                result['genre'] = category
 
             result['success'] = "O"
             result['message'] = "성공"

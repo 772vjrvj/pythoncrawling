@@ -124,12 +124,12 @@ class ApiRequestCoupangSetLoadWorker(QThread):
             if not os.path.exists(self.file_name):
                 # 파일이 없으면 새로 생성 및 저장
                 df = pd.DataFrame(results)
-                df.to_csv(self.file_name, index=False)
+                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
                 self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
             else:
                 # 파일이 있으면 append 모드로 데이터 추가
                 df = pd.DataFrame(results)
-                df.to_csv(self.file_name, mode='a', header=False, index=False)
+                df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
                 self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
 
         except Exception as e:
