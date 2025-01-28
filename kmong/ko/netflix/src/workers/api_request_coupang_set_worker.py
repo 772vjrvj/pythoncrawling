@@ -18,9 +18,11 @@ class ApiRequestCoupangSetLoadWorker(QThread):
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
 
+    # 초기화
     def __init__(self, url_list):
         super().__init__()
         self.url_list = url_list  # URL을 클래스 속성으로 저장
+        self.result_list = []
         self.director = ''
         self.title = ''
         self.before_pro_value = 0
@@ -34,22 +36,22 @@ class ApiRequestCoupangSetLoadWorker(QThread):
         if len(self.url_list) <= 0:
             self.log_signal.emit(f'등록된 url이 없습니다.')
 
-
+    # 실행
     def run(self):
         if len(self.url_list) > 0:
             self.log_signal.emit("크롤링 시작")
-            result_list = []
+            self.result_list = []
             for idx, url in enumerate(self.url_list, start=1):
 
                 if not self.running:  # 실행 상태 확인
                     self.log_signal.emit("크롤링이 중지되었습니다.")
                     break
 
-                # 100개의 항목마다 임시로 엑셀 저장
-                if (idx - 1) % 10 == 0 and result_list:
-                    self._save_to_csv_append(result_list)  # 임시 엑셀 저장 호출
+                # 10개의 항목마다 임시로 엑셀 저장
+                if (idx - 1) % 10 == 0 and self.result_list:
+                    self._save_to_csv_append(self.result_list)  # 임시 엑셀 저장 호출
                     self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
-                    result_list = []  # 저장 후 초기화
+                    self.result_list = []  # 저장 후 초기화
 
                 result = {
                     "url": url,
@@ -79,63 +81,14 @@ class ApiRequestCoupangSetLoadWorker(QThread):
                 self.progress_signal.emit(self.before_pro_value, pro_value)
                 self.before_pro_value = pro_value
 
-                result_list.append(result)
+                self.result_list.append(result)
                 time.sleep(random.uniform(0.5, 1))
 
-            # 남은 데이터 저장
-            if result_list:
-                self._save_to_csv_append(result_list)
-
-            # CSV 파일을 엑셀 파일로 변환
-            try:
-                csv_file_name = self.file_name  # 기존 CSV 파일 이름
-                excel_file_name = csv_file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
-
-                self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {csv_file_name} → {excel_file_name}")
-                df = pd.read_csv(csv_file_name)  # CSV 파일 읽기
-                df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
-
-                # 마지막 세팅
-                pro_value = 1000000
-                self.progress_signal.emit(self.before_pro_value, pro_value)
-
-
-                self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
-                self.progress_end_signal.emit()
-
-            except Exception as e:
-                self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
-
+            self._remain_data_set()
         else:
             self.log_signal.emit("url를 입력하세요.")
 
-
-    def _error_chk(self, result):
-        if result['error'] == 'Y':
-            self.log_signal.emit(result['message'])
-            return True
-        return False
-
-    def _save_to_csv_append(self, results):
-        self.log_signal.emit("CSV 저장 시작")
-
-        try:
-            # 파일이 존재하는지 확인
-            if not os.path.exists(self.file_name):
-                # 파일이 없으면 새로 생성 및 저장
-                df = pd.DataFrame(results)
-                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
-                self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
-            else:
-                # 파일이 있으면 append 모드로 데이터 추가
-                df = pd.DataFrame(results)
-                df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
-                self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
-
-        except Exception as e:
-            # 예기치 않은 오류 처리
-            self.log_signal.emit(f"CSV 저장 실패: {e}")
-
+    # url 에서 아이디 가저오기
     def _extract_id_from_url(self, url):
         # URL을 파싱
         parsed_url = urlparse(url)
@@ -146,6 +99,7 @@ class ApiRequestCoupangSetLoadWorker(QThread):
         # 값 반환 (없으면 None)
         return match.group(2) if match else None
 
+    # 데이터 가져오기
     def _fetch_place_info(self, main_url, result):
         base_url = "https://discover.coupangstreaming.com/v1/discover/titles/"
         uuid = self._extract_id_from_url(main_url)
@@ -177,6 +131,7 @@ class ApiRequestCoupangSetLoadWorker(QThread):
                     break
                 time.sleep(1)
 
+    # 감동 정보 가저오기
     def _fetch_director_title(self, data, base_url, headers):
         parent_id = data["data"].get("parent_id")
         if parent_id:
@@ -189,7 +144,7 @@ class ApiRequestCoupangSetLoadWorker(QThread):
             )
             self.title = parent_data["data"].get("title", "")
 
-
+    # 데이터 추출
     def _extract_data(self, data, result, main_url):
         result.update({
             "url": main_url,
@@ -216,7 +171,60 @@ class ApiRequestCoupangSetLoadWorker(QThread):
             "error": "X"
         })
 
-    # 프로그램 중단
+    # [공통] 에러 메시지 로그
+    def _error_chk(self, result):
+        if result['error'] == 'Y':
+            self.log_signal.emit(result['message'])
+            return True
+        return False
+
+    # [공통] csv 남은 데이터 처리
+    def _remain_data_set(self):
+        # 남은 데이터 저장
+        if self.result_list:
+            self._save_to_csv_append(self.result_list)
+
+        # CSV 파일을 엑셀 파일로 변환
+        try:
+            excel_file_name = self.file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+            self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {self.file_name} → {excel_file_name}")
+            df = pd.read_csv(self.file_name)  # CSV 파일 읽기
+            df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
+
+            # 마지막 세팅
+            pro_value = 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+
+            self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
+            self.progress_end_signal.emit()
+
+        except Exception as e:
+            self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+
+
+    # [공통] csv 데이터 추가
+    def _save_to_csv_append(self, results):
+        self.log_signal.emit("CSV 저장 시작")
+
+        try:
+            # 파일이 존재하는지 확인
+            if not os.path.exists(self.file_name):
+                # 파일이 없으면 새로 생성 및 저장
+                df = pd.DataFrame(results)
+                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
+
+                self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
+            else:
+                # 파일이 있으면 append 모드로 데이터 추가
+                df = pd.DataFrame(results)
+                df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
+                self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
+
+        except Exception as e:
+            # 예기치 않은 오류 처리
+            self.log_signal.emit(f"CSV 저장 실패: {e}")
+
+    # [공통] 프로그램 중단
     def stop(self):
-        """스레드 중지를 요청하는 메서드"""
+        self._remain_data_set()
         self.running = False

@@ -44,7 +44,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
         if len(self.url_list) <= 0:
             self.log_signal.emit(f'등록된 url이 없습니다.')
         else:
-            self.driver = self.setup_driver()
+            self.driver = self._setup_driver()
 
     # 실행
     def run(self):
@@ -97,7 +97,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
                     self.result_list.append(result)
                     time.sleep(random.uniform(0.5, 1))
 
-                self.remain_data_set()
+                self._remain_data_set()
 
             else:
                 self.log_signal.emit("로그인 실패.")
@@ -106,7 +106,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
         self.driver.quit()
 
     # 로그인
-    def login(self):
+    def _login(self):
         try:
             # 필요한 쿠키 키 목록
             required_cookies = [
@@ -115,8 +115,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 "refreshToken",
             ]
 
-            cookies = self.get_cookies_from_browser(self.baseUrl)
-
+            cookies = self._get_cookies_from_browser(self.baseUrl)
             if cookies is None:
                 self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
                 return False
@@ -359,7 +358,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
             result['message'] = "Failed to parse JSON"
 
     # [공통] 브라우저 닫기
-    def close_chrome_processes(self):
+    def _close_chrome_processes(self):
         """모든 Chrome 프로세스를 종료합니다."""
         for proc in psutil.process_iter(['pid', 'name']):
             try:
@@ -369,9 +368,9 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 pass
 
     # [공통] 셀레니움 세팅
-    def setup_driver(self):
+    def _setup_driver(self):
         try:
-            self.close_chrome_processes()
+            self._close_chrome_processes()
 
             chrome_options = Options()
             user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
@@ -418,7 +417,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
             return None
 
     # [공통] 브라우저에서 쿠키 가져오기
-    def get_cookies_from_browser(self, url):
+    def _get_cookies_from_browser(self, url):
         self.driver.get(url)
         cookies = self.driver.get_cookies()
 
@@ -436,7 +435,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
         return False
 
     # [공통] csv 남은 데이터 처리
-    def remain_data_set(self):
+    def _remain_data_set(self):
         # 남은 데이터 저장
         if self.result_list:
             self._save_to_csv_append(self.result_list)
@@ -484,6 +483,5 @@ class ApiRequestTvingSetLoadWorker(QThread):
     def stop(self):
         if self.driver:
             self.driver.quit()
-        self.remain_data_set()
-        """스레드 중지를 요청하는 메서드"""
+        self._remain_data_set()
         self.running = False
