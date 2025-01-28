@@ -27,6 +27,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
 
+    # 초기화
     def __init__(self, url_list):
         super().__init__()
         self.url_list = url_list  # URL을 클래스 속성으로 저장
@@ -45,106 +46,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
         else:
             self.driver = self.setup_driver()
 
-
-    def close_chrome_processes(self):
-        """모든 Chrome 프로세스를 종료합니다."""
-        for proc in psutil.process_iter(['pid', 'name']):
-            try:
-                if 'chrome' in proc.info['name'].lower():
-                    proc.kill()  # Chrome 프로세스를 종료
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
-
-
-    def setup_driver(self):
-        try:
-            self.close_chrome_processes()
-
-            chrome_options = Options()
-            user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
-            profile = "Default"
-
-            chrome_options.add_argument(f"user-data-dir={user_data_dir}")
-            chrome_options.add_argument(f"profile-directory={profile}")
-            chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.add_argument("--disable-software-rasterizer")
-            chrome_options.add_argument("--start-maximized")
-            # chrome_options.add_argument("--headless")  # Headless 모드 추가
-
-            user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            chrome_options.add_argument(f'user-agent={user_agent}')
-            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-            chrome_options.add_experimental_option('useAutomationExtension', False)
-
-            download_dir = os.path.abspath("downloads")
-            os.makedirs(download_dir, exist_ok=True)
-
-            chrome_options.add_experimental_option('prefs', {
-                "download.default_directory": download_dir,
-                "download.prompt_for_download": False,
-                "download.directory_upgrade": True,
-                "safebrowsing.enabled": True
-            })
-
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-            script = '''
-                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-                window.navigator.chrome = { runtime: {} };
-                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
-            '''
-            driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
-
-            return driver
-        except WebDriverException as e:
-            print(f"Error setting up the WebDriver: {e}")
-            return None
-
-
-    def get_cookies_from_browser(self, url):
-        self.driver.get(url)
-        cookies = self.driver.get_cookies()
-
-        if not cookies:  # 쿠키가 없는 경우
-            return None
-
-        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-        return cookie_dict
-
-
-    def login(self):
-        try:
-            # 필요한 쿠키 키 목록
-            required_cookies = [
-                "authToken",
-                "accessToken",
-                "refreshToken",
-            ]
-
-            cookies = self.get_cookies_from_browser(self.baseUrl)
-
-            if all(key in cookies for key in required_cookies):
-                self.cookies = cookies
-                self.log_signal.emit("회원 확인.")
-
-            if cookies is None:
-                self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
-                return False
-            else:
-                self.cookies = cookies
-                self.log_signal.emit("★ 쿠키 확인 성공.")
-                self.log_signal.emit("※※※※ ★회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
-                return True
-
-        except Exception as e:
-            self.log_signal.emit(f"넷플릭스 로그인 중 에러 발생 : {e}")
-            return False
-
-
+    # 실행
     def run(self):
         if len(self.url_list) > 0:
             login = self.login()
@@ -203,70 +105,36 @@ class ApiRequestTvingSetLoadWorker(QThread):
             self.log_signal.emit("url를 입력하세요.")
         self.driver.quit()
 
-
-    def remain_data_set(self):
-        # 남은 데이터 저장
-        if self.result_list:
-            self._save_to_csv_append(self.result_list)
-
-        # CSV 파일을 엑셀 파일로 변환
+    # 로그인
+    def login(self):
         try:
-            excel_file_name = self.file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
-            self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {self.file_name} → {excel_file_name}")
-            df = pd.read_csv(self.file_name)  # CSV 파일 읽기
-            df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
+            # 필요한 쿠키 키 목록
+            required_cookies = [
+                "authToken",
+                "accessToken",
+                "refreshToken",
+            ]
 
-            # 마지막 세팅
-            pro_value = 1000000
-            self.progress_signal.emit(self.before_pro_value, pro_value)
+            cookies = self.get_cookies_from_browser(self.baseUrl)
 
-            self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
-            self.progress_end_signal.emit()
+            if all(key in cookies for key in required_cookies):
+                self.cookies = cookies
+                self.log_signal.emit("회원 확인.")
 
-        except Exception as e:
-            self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
-
-
-    def _error_chk(self, result):
-        if result['error'] == 'Y':
-            self.log_signal.emit(result['message'])
-            return True
-        return False
-
-
-    def _save_to_csv_append(self, results):
-        self.log_signal.emit("CSV 저장 시작")
-
-        try:
-            # 파일이 존재하는지 확인
-            if not os.path.exists(self.file_name):
-                # 파일이 없으면 새로 생성 및 저장
-                df = pd.DataFrame(results)
-                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
-
-                self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
+            if cookies is None:
+                self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
+                return False
             else:
-                # 파일이 있으면 append 모드로 데이터 추가
-                df = pd.DataFrame(results)
-                df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
-                self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
+                self.cookies = cookies
+                self.log_signal.emit("★ 쿠키 확인 성공.")
+                self.log_signal.emit("※※※※ ★회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
+                return True
 
         except Exception as e:
-            # 예기치 않은 오류 처리
-            self.log_signal.emit(f"CSV 저장 실패: {e}")
+            self.log_signal.emit(f"넷플릭스 로그인 중 에러 발생 : {e}")
+            return False
 
-
-    def _extract_id_from_url(self, url):
-        # URL을 파싱
-        parsed_url = urlparse(url)
-
-        # path에서 play/ 또는 titles/ 다음에 오는 값을 정규식으로 추출
-        match = re.search(r'/(play|titles)/([^/]+)', parsed_url.path)
-
-        # 값 반환 (없으면 None)
-        return match.group(2) if match else None
-
-
+    # 데이터 요청 분기 처리
     def _fetch_place_info(self, url, result):
         # CASE1
         if "/player/" in url:
@@ -303,7 +171,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
             new_url = f"http://www.tving.com/contents/{contents_id}"
             self._api_tving_contents(new_url, result)
 
-
+    # tving api player
     def _api_tving_player(self, new_url, result):
         result['url'] = new_url
 
@@ -336,7 +204,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
         except Exception as e:
             result['message'] = str(e)
 
-
+    # tving api contents
     def _api_tving_contents(self, new_url, result):
         result['url'] = new_url
 
@@ -393,7 +261,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
         except Exception as e:
             result['message'] = str(e)
 
-
+    # json 데이터 세팅
     def _data_set_json_info(self, json_data, result):
         # JSON 내 필요한 데이터 접근
         pageProps = json_data.get("props", {}).get("pageProps", {})
@@ -486,8 +354,129 @@ class ApiRequestTvingSetLoadWorker(QThread):
             result['message']           = "성공"
             result['error']             = "X"
 
+    # [공통] 브라우저 닫기
+    def close_chrome_processes(self):
+        """모든 Chrome 프로세스를 종료합니다."""
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                if 'chrome' in proc.info['name'].lower():
+                    proc.kill()  # Chrome 프로세스를 종료
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
 
-    # 프로그램 중단
+    # [공통] 셀레니움 세팅
+    def setup_driver(self):
+        try:
+            self.close_chrome_processes()
+
+            chrome_options = Options()
+            user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
+            profile = "Default"
+
+            chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+            chrome_options.add_argument(f"profile-directory={profile}")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-software-rasterizer")
+            chrome_options.add_argument("--start-maximized")
+            # chrome_options.add_argument("--headless")  # Headless 모드 추가
+
+            user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            chrome_options.add_argument(f'user-agent={user_agent}')
+            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_options.add_experimental_option('useAutomationExtension', False)
+
+            download_dir = os.path.abspath("downloads")
+            os.makedirs(download_dir, exist_ok=True)
+
+            chrome_options.add_experimental_option('prefs', {
+                "download.default_directory": download_dir,
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing.enabled": True
+            })
+
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+            script = '''
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                window.navigator.chrome = { runtime: {} };
+                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+            '''
+            driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+
+            return driver
+        except WebDriverException as e:
+            print(f"Error setting up the WebDriver: {e}")
+            return None
+
+    # [공통] 브라우저에서 쿠키 가져오기
+    def get_cookies_from_browser(self, url):
+        self.driver.get(url)
+        cookies = self.driver.get_cookies()
+
+        if not cookies:  # 쿠키가 없는 경우
+            return None
+
+        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        return cookie_dict
+
+    # [공통] 에러 메시지 로그
+    def _error_chk(self, result):
+        if result['error'] == 'Y':
+            self.log_signal.emit(result['message'])
+            return True
+        return False
+
+    # [공통] csv 남은 데이터 처리
+    def remain_data_set(self):
+        # 남은 데이터 저장
+        if self.result_list:
+            self._save_to_csv_append(self.result_list)
+
+        # CSV 파일을 엑셀 파일로 변환
+        try:
+            excel_file_name = self.file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+            self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {self.file_name} → {excel_file_name}")
+            df = pd.read_csv(self.file_name)  # CSV 파일 읽기
+            df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
+
+            # 마지막 세팅
+            pro_value = 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+
+            self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
+            self.progress_end_signal.emit()
+
+        except Exception as e:
+            self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+
+    # [공통] csv 데이터 추가
+    def _save_to_csv_append(self, results):
+        self.log_signal.emit("CSV 저장 시작")
+
+        try:
+            # 파일이 존재하는지 확인
+            if not os.path.exists(self.file_name):
+                # 파일이 없으면 새로 생성 및 저장
+                df = pd.DataFrame(results)
+                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
+
+                self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
+            else:
+                # 파일이 있으면 append 모드로 데이터 추가
+                df = pd.DataFrame(results)
+                df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
+                self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
+
+        except Exception as e:
+            # 예기치 않은 오류 처리
+            self.log_signal.emit(f"CSV 저장 실패: {e}")
+
+    # [공통] 프로그램 중단
     def stop(self):
         self.remain_data_set()
         """스레드 중지를 요청하는 메서드"""
