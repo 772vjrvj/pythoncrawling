@@ -2,10 +2,117 @@ import json
 import requests
 from bs4 import BeautifulSoup
 import re
-
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import psutil
+import os
 # 쿠팡 api 호출 테스트
 
 episode_seq = ""
+baseUrl = "https://www.tving.com"
+driver = None
+cookies = None
+
+def get_cookies_from_browser(url):
+    driver.get(url)
+    cookies = driver.get_cookies()
+
+    if not cookies:  # 쿠키가 없는 경우
+        return None
+
+    cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+    return cookie_dict
+
+
+
+def login():
+    try:
+        # 필요한 쿠키 키 목록
+        required_cookies = [
+            "authToken",
+            "accessToken",
+            "refreshToken",
+        ]
+
+        cookies = get_cookies_from_browser(baseUrl)
+
+        if all(key in cookies for key in required_cookies):
+            cookies = cookies
+            print("회원 확인.")
+
+        if cookies is None:
+            print("로그인 후 프로그램을 다시 실행하세요.")
+            return False
+        else:
+            cookies = cookies
+            print("★ 쿠키 확인 성공.")
+            print("※※※※ ★회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
+            return True
+
+    except Exception as e:
+        print(f"넷플릭스 로그인 중 에러 발생 : {e}")
+        return False
+
+
+def close_chrome_processes(self):
+    """모든 Chrome 프로세스를 종료합니다."""
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            if 'chrome' in proc.info['name'].lower():
+                proc.kill()  # Chrome 프로세스를 종료
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
+def setup_driver():
+    try:
+        close_chrome_processes()
+
+        chrome_options = Options()
+        user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
+        profile = "Default"
+
+        chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+        chrome_options.add_argument(f"profile-directory={profile}")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--start-maximized")
+        # chrome_options.add_argument("--headless")  # Headless 모드 추가
+
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        download_dir = os.path.abspath("downloads")
+        os.makedirs(download_dir, exist_ok=True)
+
+        chrome_options.add_experimental_option('prefs', {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        })
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+        script = '''
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                window.navigator.chrome = { runtime: {} };
+                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+            '''
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+
+        return driver
+    except WebDriverException as e:
+        print(f"Error setting up the WebDriver: {e}")
+        return None
 
 def _url_change(url):
     global episode_seq

@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import re
@@ -5,23 +6,10 @@ import ssl
 import time
 from datetime import datetime
 from urllib.parse import urlparse
-from bs4 import BeautifulSoup
-import re
-import json
 
-import pandas as pd
-import requests
-from PyQt5.QtCore import QThread, pyqtSignal
-from selenium import webdriver
-import os
-import random
-import re
-import ssl
-import time
 import pandas as pd
 import psutil
 import requests
-from datetime import datetime
 from PyQt5.QtCore import QThread, pyqtSignal
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -29,6 +17,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -62,7 +51,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
             try:
                 if 'chrome' in proc.info['name'].lower():
                     proc.kill()  # Chrome 프로세스를 종료
-                    # print(f"종료된 프로세스: {proc.info['name']} (PID: {proc.info['pid']})")
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
@@ -232,6 +220,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 self.log_signal.emit("로그인 실패.")
         else:
             self.log_signal.emit("url를 입력하세요.")
+        self.driver.quit()
 
 
     def _error_chk(self, result):
@@ -239,6 +228,8 @@ class ApiRequestTvingSetLoadWorker(QThread):
             self.log_signal.emit(result['message'])
             return True
         return False
+
+
 
 
     def _save_to_csv_append(self, results):
@@ -289,7 +280,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 contents_id = contents_id.replace('.', '').replace('#', '')
 
             new_url = f"https://www.tving.com/player/{contents_id}"
-            print(f'player new_url : {new_url}')
             self._api_tving_player(new_url, result)
 
 
@@ -308,11 +298,10 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 contents_id = contents_id.replace('.', '').replace('#', '')
 
             new_url = f"http://www.tving.com/contents/{contents_id}"
-            print(f'program new_url : {new_url}')
             self._api_tving_contents(new_url, result)
 
 
-    def _api_tving_player(self, new_url, result, type, id):
+    def _api_tving_player(self, new_url, result):
         result['url'] = new_url
 
         try:
@@ -413,7 +402,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
         content_info_content = content_info.get("content", {})
 
         if content:
-            print('content')
             content_schedule = content.get("info", {}).get("schedule", {})
             program = content_schedule.get("program", {})
             episode = content_schedule.get("episode", {})
@@ -443,12 +431,10 @@ class ApiRequestTvingSetLoadWorker(QThread):
             result['message'] = "성공"
             result['error']   = "X"
         elif content_info_message:
-            print('content_info_message')
             result['success']           = "O"
             result['message']           = content_info_message
             result['error']             = "X"
         elif content_info_content:
-            print('content_info_content')
             result['title']             = content_info_content.get("title", "")
             result['episode_synopsis']  = content_info_content.get("episode_synopsis", "")
             result['episode_title']     = content_info_content.get("episode_title", "")
@@ -465,7 +451,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
             result['message']           = "성공"
             result['error']             = "X"
         elif content_info:
-            print('content_info_content')
             result['title']             = content_info.get("title", "")
             result['episode_synopsis']  = content_info.get("episode_synopsis", "")
             result['episode_title']     = content_info.get("episode_title", "")
@@ -481,7 +466,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
             result['success']           = "O"
             result['message']           = "성공"
             result['error']             = "X"
-
 
 
     # 프로그램 중단
