@@ -117,18 +117,19 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
             cookies = self.get_cookies_from_browser(self.baseUrl)
 
-            if all(key in cookies for key in required_cookies):
-                self.cookies = cookies
-                self.log_signal.emit("회원 확인.")
-
             if cookies is None:
                 self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
                 return False
-            else:
+
+            if all(key in cookies for key in required_cookies):
+                self.cookies = cookies
+                self.log_signal.emit("회원 확인.")
                 self.cookies = cookies
                 self.log_signal.emit("★ 쿠키 확인 성공.")
                 self.log_signal.emit("※※※※ ★회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
                 return True
+            else:
+                return False
 
         except Exception as e:
             self.log_signal.emit(f"넷플릭스 로그인 중 에러 발생 : {e}")
@@ -199,8 +200,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
         except WebDriverException as e:
             result['message'] = f"WebDriver Error: {str(e)}"
-        except json.JSONDecodeError:
-            result['message'] = "Failed to parse JSON"
         except Exception as e:
             result['message'] = str(e)
 
@@ -263,96 +262,101 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
     # json 데이터 세팅
     def _data_set_json_info(self, json_data, result):
-        # JSON 내 필요한 데이터 접근
-        pageProps = json_data.get("props", {}).get("pageProps", {})
+        try:
+            # JSON 내 필요한 데이터 접근
+            pageProps = json_data.get("props", {}).get("pageProps", {})
 
-        content = pageProps.get("streamData", {}).get("body", {}).get("content", {})
+            content = pageProps.get("streamData", {}).get("body", {}).get("content", {})
 
-        content_info         = pageProps.get("contentInfo", {})
-        content_info_message = content_info.get("message", {})
-        content_info_content = content_info.get("content", {})
+            content_info         = pageProps.get("contentInfo", {})
+            content_info_message = content_info.get("message", {})
+            content_info_content = content_info.get("content", {})
 
-        if content:
-            info = content.get("info", {})
-            schedule = info.get("schedule", {})
-            if schedule:
-                program = schedule.get("program", {})
-                episode = schedule.get("episode", {})
-            else:
-                program = info.get("program", {})
-                episode = info.get("episode", {})
-
-            result['title']             = content.get("program_name", {})
-            result['episode_title']     = content.get("episode_name", {})
-            result['episode_seq']       = content.get("frequency", "")
-
-            if program:
-                result['summary']           = program.get("synopsis", {}).get("ko", "")
-                result['cast']              = ", ".join(program.get("actor", []))
-                result['director']          = ", ".join(program.get("director", []))
-                result['episode_season']    = program.get("season_pgm_no", "")
-                result['season']            = program.get("season_pgm_no", "")
-                result['year']              = program.get("product_year", "")
-                result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
-
-                result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
-                category1_name = episode.get("category1_name", {}).get("ko", "")
-                category2_name = episode.get("category2_name", {}).get("ko", "")
-                if category1_name and category2_name:
-                    category = f"{category1_name}, {category2_name}"
+            if content:
+                info = content.get("info", {})
+                schedule = info.get("schedule", {})
+                if schedule:
+                    program = schedule.get("program", {})
+                    episode = schedule.get("episode", {})
                 else:
-                    category = category1_name
-                result['genre'] = category
+                    program = info.get("program", {})
+                    episode = info.get("episode", {})
 
-            if episode:
-                result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
-                category1_name = episode.get("category1_name", {}).get("ko", "")
-                category2_name = episode.get("category2_name", {}).get("ko", "")
-                if category1_name and category2_name:
-                    category = f"{category1_name}, {category2_name}"
-                else:
-                    category = category1_name
-                result['genre'] = category
+                result['title']             = content.get("program_name", {})
+                result['episode_title']     = content.get("episode_name", {})
+                result['episode_seq']       = content.get("frequency", "")
 
-            result['success'] = "O"
-            result['message'] = "성공"
-            result['error']   = "X"
-        elif content_info_message:
-            result['success']           = "O"
-            result['message']           = content_info_message
-            result['error']             = "X"
-        elif content_info_content:
-            result['title']             = content_info_content.get("title", "")
-            result['episode_synopsis']  = content_info_content.get("episode_synopsis", "")
-            result['episode_title']     = content_info_content.get("episode_title", "")
-            result['episode_seq']       = str(content_info_content.get("frequency", ""))
-            result['episode_season']    = content_info_content.get("episode_sort", "")
-            result['year']              = str(content_info_content.get("product_year", ""))
-            result['season']            = content_info_content.get("season_no", "")
-            result['rating']            = ""
-            result['genre']             = content_info_content.get("genre_name", "")
-            result['summary']           = content_info_content.get("synopsis", "")
-            result['cast']              = ", ".join(content_info_content.get("actor", []))
-            result['director']          = ", ".join(content_info_content.get("director", []))
-            result['success']           = "O"
-            result['message']           = "성공"
-            result['error']             = "X"
-        elif content_info:
-            result['title']             = content_info.get("title", "")
-            result['episode_synopsis']  = content_info.get("episode_synopsis", "")
-            result['episode_title']     = content_info.get("episode_title", "")
-            result['episode_seq']       = str(content_info.get("frequency", ""))
-            result['episode_season']    = content_info.get("episode_sort", "")
-            result['year']              = str(content_info.get("product_year", ""))
-            result['season']            = content_info.get("season_no", "")
-            result['rating']            = ""
-            result['genre']             = content_info.get("genre_name", "")
-            result['summary']           = content_info.get("synopsis", "")
-            result['cast']              = ", ".join(content_info.get("actor", []))
-            result['director']          = ", ".join(content_info.get("director", []))
-            result['success']           = "O"
-            result['message']           = "성공"
-            result['error']             = "X"
+                if program:
+                    result['summary']           = program.get("synopsis", {}).get("ko", "")
+                    result['cast']              = ", ".join(program.get("actor", []))
+                    result['director']          = ", ".join(program.get("director", []))
+                    result['episode_season']    = program.get("season_pgm_no", "")
+                    result['season']            = program.get("season_pgm_no", "")
+                    result['year']              = program.get("product_year", "")
+                    result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
+
+                    result['episode_synopsis']  = program.get("synopsis", {}).get("ko", "")
+                    category1_name = program.get("category1_name", {}).get("ko", "")
+                    category2_name = program.get("category2_name", {}).get("ko", "")
+                    if category1_name and category2_name:
+                        category = f"{category1_name}, {category2_name}"
+                    else:
+                        category = category1_name
+                    result['genre'] = category
+
+                if episode:
+                    result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
+                    category1_name = episode.get("category1_name", {}).get("ko", "")
+                    category2_name = episode.get("category2_name", {}).get("ko", "")
+                    if category1_name and category2_name:
+                        category = f"{category1_name}, {category2_name}"
+                    else:
+                        category = category1_name
+                    result['genre'] = category
+
+                result['success'] = "O"
+                result['message'] = "성공"
+                result['error']   = "X"
+            elif content_info_message:
+                result['success']           = "O"
+                result['message']           = content_info_message
+                result['error']             = "X"
+            elif content_info_content:
+                result['title']             = content_info_content.get("title", "")
+                result['episode_synopsis']  = content_info_content.get("episode_synopsis", "")
+                result['episode_title']     = content_info_content.get("episode_title", "")
+                result['episode_seq']       = str(content_info_content.get("frequency", ""))
+                result['episode_season']    = content_info_content.get("episode_sort", "")
+                result['year']              = str(content_info_content.get("product_year", ""))
+                result['season']            = content_info_content.get("season_no", "")
+                result['rating']            = ""
+                result['genre']             = content_info_content.get("genre_name", "")
+                result['summary']           = content_info_content.get("synopsis", "")
+                result['cast']              = ", ".join(content_info_content.get("actor", []))
+                result['director']          = ", ".join(content_info_content.get("director", []))
+                result['success']           = "O"
+                result['message']           = "성공"
+                result['error']             = "X"
+            elif content_info:
+                result['title']             = content_info.get("title", "")
+                result['episode_synopsis']  = content_info.get("episode_synopsis", "")
+                result['episode_title']     = content_info.get("episode_title", "")
+                result['episode_seq']       = str(content_info.get("frequency", ""))
+                result['episode_season']    = content_info.get("episode_sort", "")
+                result['year']              = str(content_info.get("product_year", ""))
+                result['season']            = content_info.get("season_no", "")
+                result['rating']            = ""
+                result['genre']             = content_info.get("genre_name", "")
+                result['summary']           = content_info.get("synopsis", "")
+                result['cast']              = ", ".join(content_info.get("actor", []))
+                result['director']          = ", ".join(content_info.get("director", []))
+                result['success']           = "O"
+                result['message']           = "성공"
+                result['error']             = "X"
+        except json.JSONDecodeError:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "Failed to parse JSON"
 
     # [공통] 브라우저 닫기
     def close_chrome_processes(self):
@@ -478,6 +482,8 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
     # [공통] 프로그램 중단
     def stop(self):
+        if self.driver:
+            self.driver.quit()
         self.remain_data_set()
         """스레드 중지를 요청하는 메서드"""
         self.running = False
