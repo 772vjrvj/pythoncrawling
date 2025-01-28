@@ -3,15 +3,15 @@
     "pageProps": {
       "userInfo": {
         "token": "596DarMcZ/Q7XUFDf7k3JQ==",
-        "authToken": "QSOjDT0kUTxUKHYNsXGzJtzBtC2IqHJn3eQPyWmJZsA=",
-        "accessToken": "e2a5833910c257c4769cf7b76eb760ea529564bceecc3c113862fb5e3e663b067122142ff4c94bafac107aa101292c19",
-        "refreshToken": "6d444268c9792185b96c7a15854c270ea4173dfafac1bc11fc5484f032f7f6798eb7757870ca4ad29c995df7e3714bc0",
+        "authToken": "jwTioIbI8ArefLLn0jgPeHABwV7p8vGEYWzjAZrAznY=",
+        "accessToken": "bc18222840e95de55b218493960537933e2e2e026ed526aec3ca4e5ca1109a17ce20e524d938425a8f34ddf231baae7f",
+        "refreshToken": "2a6ebb3f534c631741684eae9711f0d6a0efe97fa6cf651e4e17357158323338c2eb357f31a044ba9f507e3c7097bdaa",
         "userInfoData": null,
         "userInfoProfileData": null,
         "userInfoValidTicketData": null,
         "userRegionCode": ""
       },
-      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
       "logoImgUrl": "https://image.tving.com/ntgs/operation/logo/2025/01/21/1737441328_1.png",
       "provisionRes": {
         "region": "KR",
@@ -140,8 +140,3980 @@
         ]
       },
       "provisioningErrorCode": "",
-      "boardApiResponse": null,
-      "boardApiKey": "https://gw.tving.comHOME",
+      "boardApiResponse": [
+        {
+          "idx": 0,
+          "bandType": "BANNER_MAIN",
+          "items": [
+            {
+              "description": [
+                "조선의 왕과 왕비, 남편과 아내,",
+                "그 사이 감춰진 뜨거운 이야기"
+              ],
+              "titleImageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/07/1736216914_2.png",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/07/1736216929_1.jpg",
+              "code": "P001764734",
+              "bannerCode": "BN2386",
+              "isManual": true,
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "description": [
+                "\u003c원경\u003e 그 이전의 사랑 이야기",
+                "원경과 방원, 사랑으로 가득했던 시절"
+              ],
+              "titleImageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/20/1737354499_2.png",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/20/1737354521_1.jpg",
+              "code": "P001766778",
+              "bannerCode": "BN2472",
+              "isManual": true,
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "description": [
+                "\"죽였다, 내 아들이\"",
+                "\"내 아들이, 죽었다.\""
+              ],
+              "titleImageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/14/1736832611_2.png",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/14/1736832622_1.jpg",
+              "code": "P001766813",
+              "bannerCode": "BN2431",
+              "isManual": true,
+              "label": {
+              }
+            },
+            {
+              "description": [
+                "손이 가장 빠른 이연복 셰프",
+                "vs 손이 가장 느린 최강록 셰프"
+              ],
+              "titleImageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/24/1737696667_2.png",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/24/1737696676_1.jpg",
+              "code": "P001765388",
+              "bannerCode": "BN2492",
+              "isManual": true,
+              "label": {
+              }
+            },
+            {
+              "titleImageUrl": "https://image.tving.com/ntgs/operation/banner/2024/12/20/1734676860_2.png",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2024/12/20/1734676883_1.jpg",
+              "code": "P001764477",
+              "bannerCode": "BN2343",
+              "isManual": false,
+              "label": {
+              }
+            },
+            {
+              "titleImageUrl": "https://image.tving.com/ntgs/operation/banner/2024/08/14/1723615808_2.png",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2024/08/14/1723615820_1.jpg",
+              "code": "P001609758",
+              "bannerCode": "BN1761",
+              "isManual": false,
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_BANNER_MAIN_TOP",
+          "bandModel": "recban_v2_like_c01:2025-01-28-00",
+          "abtestGroup": "like_i2v01"
+        },
+        {
+          "idx": 1,
+          "bandType": "VOD_SPECIAL_BUTTON",
+          "items": [
+            {
+              "title": "Apple TV+",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2025/01/20/1737367043_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0071",
+              "isNewWindow": false
+            },
+            {
+              "title": "KBL",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2024/12/10/1733821492_1.png",
+              "linkUrl": "https://www.tving.com/sports/kbl",
+              "isNewWindow": true
+            },
+            {
+              "title": "키즈",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2024/10/21/1729475548_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0017",
+              "isNewWindow": false
+            },
+            {
+              "title": "K-명작 컬렉션",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2025/01/17/1737076214_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0080",
+              "isNewWindow": false
+            },
+            {
+              "title": "스타일 컬렉션",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2024/10/07/1728293421_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0053",
+              "isNewWindow": false
+            },
+            {
+              "title": "UFC",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2023/10/19/1697689505_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0009",
+              "isNewWindow": false
+            },
+            {
+              "title": "AFC 챔피언스리그",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2024/09/19/1726753837_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0046",
+              "isNewWindow": false
+            },
+            {
+              "title": "테니스",
+              "imageUrl": "https://image.tving.com/ntgs/operation/specialHall/2024/09/23/1727035728_1.png",
+              "linkUrl": "https://www.tving.com/more/special/SP0008",
+              "isNewWindow": false
+            }
+          ],
+          "bandCode": "HM181205"
+        },
+        {
+          "idx": 2,
+          "bandType": "LIVE_RANKING",
+          "bandName": "실시간 인기 LIVE",
+          "moreUrl": "https://www.tving.com/more/band/HM181207",
+          "items": [
+            {
+              "code": "C00708",
+              "channelName": "MBN",
+              "type": "LIVE",
+              "title": "[설특집] 현역가왕 2 1부",
+              "frequency": 9,
+              "broadcastStartTime": 20250128214000,
+              "broadcastEndTime": 20250128224500,
+              "liveRating": 34,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00708_{4}_640x360.jpg"
+            },
+            {
+              "code": "C01582",
+              "channelName": "JTBC",
+              "type": "LIVE",
+              "title": "한문철의 블랙박스 리뷰",
+              "frequency": 113,
+              "broadcastStartTime": 20250128205000,
+              "broadcastEndTime": 20250128230000,
+              "liveRating": 16.6,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C01582_{4}_640x360.jpg"
+            },
+            {
+              "code": "C00593",
+              "channelName": "YTN",
+              "type": "LIVE",
+              "title": "YTN 뉴스 와이드",
+              "broadcastStartTime": 20250128215000,
+              "broadcastEndTime": 20250128232500,
+              "liveRating": 7.9,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00593_{4}_640x360.jpg"
+            },
+            {
+              "code": "C00551",
+              "channelName": "tvN",
+              "type": "LIVE",
+              "title": "벌거벗은 세계사",
+              "frequency": 188,
+              "broadcastStartTime": 20250128221000,
+              "broadcastEndTime": 20250129000300,
+              "liveRating": 7.2,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00551_{4}_640x360.jpg"
+            },
+            {
+              "code": "C07381",
+              "channelName": "OCN",
+              "type": "LIVE",
+              "title": "트랜스포머:비스트의 서막",
+              "broadcastStartTime": 20250128210000,
+              "broadcastEndTime": 20250128231000,
+              "liveRating": 5,
+              "label": {
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C07381_{4}_640x360.jpg"
+            },
+            {
+              "code": "C01141",
+              "channelName": "tvN SHOW",
+              "type": "LIVE",
+              "title": "삼시세끼 어촌편5",
+              "frequency": 4,
+              "broadcastStartTime": 20250128211000,
+              "broadcastEndTime": 20250128231000,
+              "liveRating": 4.2,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C01141_{4}_640x360.jpg"
+            },
+            {
+              "code": "C06941",
+              "channelName": "투니버스",
+              "type": "LIVE",
+              "title": "명탐정 코난 극장판: 흑철의 어영",
+              "broadcastStartTime": 20250128220400,
+              "broadcastEndTime": 20250129000900,
+              "liveRating": 4.2,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C06941_{4}_640x360.jpg"
+            },
+            {
+              "code": "C01723",
+              "channelName": "연합뉴스TV",
+              "type": "LIVE",
+              "title": "뉴스 22",
+              "broadcastStartTime": 20250128220000,
+              "broadcastEndTime": 20250128230000,
+              "liveRating": 2.4,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C01723_{4}_640x360.jpg"
+            },
+            {
+              "code": "C07382",
+              "channelName": "OCN Movies2",
+              "type": "LIVE",
+              "title": "레드:더 레전드",
+              "broadcastStartTime": 20250128203000,
+              "broadcastEndTime": 20250128223000,
+              "liveRating": 2.3,
+              "label": {
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C07382_{4}_640x360.jpg"
+            },
+            {
+              "code": "C22041",
+              "channelName": "JTBC4",
+              "type": "LIVE",
+              "title": "[신혜선X지창욱] 웰컴투 삼달리",
+              "frequency": 16,
+              "broadcastStartTime": 20250128211700,
+              "broadcastEndTime": 20250128223900,
+              "liveRating": 2.2,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C22041_{4}_640x360.jpg"
+            },
+            {
+              "code": "C04601",
+              "channelName": "OCN Movies",
+              "type": "LIVE",
+              "title": "외계+인 2부",
+              "broadcastStartTime": 20250128220000,
+              "broadcastEndTime": 20250129001000,
+              "liveRating": 2.1,
+              "label": {
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C04601_{4}_640x360.jpg"
+            },
+            {
+              "code": "C51258",
+              "channelName": "tvN STORY",
+              "type": "LIVE",
+              "title": "이젠 사랑할 수 있을까",
+              "frequency": 12,
+              "broadcastStartTime": 20250128214500,
+              "broadcastEndTime": 20250128233000,
+              "liveRating": 1.8,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C51258_{4}_640x360.jpg"
+            },
+            {
+              "code": "C00901",
+              "channelName": "애니플러스",
+              "type": "LIVE",
+              "title": "나 혼자만 레벨업 (한국어더빙) 몰아보기",
+              "broadcastStartTime": 20250128220600,
+              "broadcastEndTime": 20250129000100,
+              "liveRating": 1.2,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00901_{4}_640x360.jpg"
+            },
+            {
+              "code": "C00611",
+              "channelName": "LIFETIME",
+              "type": "LIVE",
+              "title": "용감한 형사들 4",
+              "frequency": 1,
+              "broadcastStartTime": 20250128211400,
+              "broadcastEndTime": 20250128225100,
+              "liveRating": 1.2,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00611_{4}_640x360.jpg"
+            },
+            {
+              "code": "C05441",
+              "channelName": "ANIBOX",
+              "type": "LIVE",
+              "title": "[극장판-자막] 목소리의 형태",
+              "broadcastStartTime": 20250128210000,
+              "broadcastEndTime": 20250128232700,
+              "liveRating": 1.1,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C05441_{4}_640x360.jpg"
+            },
+            {
+              "code": "C01581",
+              "channelName": "TV CHOSUN",
+              "type": "LIVE",
+              "title": "미스터트롯3 미공개 스페셜 1부",
+              "frequency": 3,
+              "broadcastStartTime": 20250128215000,
+              "broadcastEndTime": 20250128223000,
+              "liveRating": 1,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C01581_{4}_640x360.jpg"
+            },
+            {
+              "code": "C00585",
+              "channelName": "TV CHOSUN 2",
+              "type": "LIVE",
+              "title": "조선의 사랑꾼",
+              "frequency": 62,
+              "broadcastStartTime": 20250128210000,
+              "broadcastEndTime": 20250128230000,
+              "liveRating": 0.9,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00585_{4}_640x360.jpg"
+            },
+            {
+              "code": "C15741",
+              "channelName": "JTBC2",
+              "type": "LIVE",
+              "title": "[최종회]옥씨부인전",
+              "frequency": 16,
+              "broadcastStartTime": 20250128204800,
+              "broadcastEndTime": 20250128221600,
+              "liveRating": 0.8,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C15741_{4}_640x360.jpg"
+            },
+            {
+              "code": "C00544",
+              "channelName": "중화TV",
+              "type": "LIVE",
+              "title": "유수초초",
+              "frequency": 15,
+              "broadcastStartTime": 20250128220000,
+              "broadcastEndTime": 20250128230000,
+              "liveRating": 0.7,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C00544_{4}_640x360.jpg"
+            },
+            {
+              "code": "C01143",
+              "channelName": "tvN DRAMA",
+              "type": "LIVE",
+              "title": "별들에게 물어봐",
+              "frequency": 8,
+              "broadcastStartTime": 20250128221000,
+              "broadcastEndTime": 20250128232500,
+              "liveRating": 0.6,
+              "label": {
+                "isFree": true
+              },
+              "stillshotUrl": "https://stillshot.tving.com/thumbnail/C01143_{4}_640x360.jpg"
+            }
+          ],
+          "bandCode": "HM181207"
+        },
+        {
+          "idx": 3,
+          "bandType": "LIVE_BASIC",
+          "bandName": "인기 정주행 채널",
+          "moreUrl": "https://www.tving.com/more/band/HM181236",
+          "items": [
+            {
+              "code": "C52069",
+              "channelName": "CH.크라임씬 1~3",
+              "type": "TVING_TV",
+              "frequency": 7,
+              "broadcastStartTime": 20250128212007,
+              "broadcastEndTime": 20250128225309,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231228/0250/P000539640.jpg"
+            },
+            {
+              "code": "C49742",
+              "channelName": "CH.신서유기 레전드 정주행",
+              "type": "TVING_TV",
+              "frequency": 3,
+              "broadcastStartTime": 20250128205933,
+              "broadcastEndTime": 20250128223843,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caic/CAIC3000/ko/20241024/0829/C49742.jpg"
+            },
+            {
+              "code": "C52178",
+              "channelName": "CH.선재 업고 튀어",
+              "type": "TVING_TV",
+              "frequency": 13,
+              "broadcastStartTime": 20250128212857,
+              "broadcastEndTime": 20250128223050,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20240315/0735/P001754312.jpg"
+            },
+            {
+              "code": "C06762",
+              "channelName": "CH.응답하라1988",
+              "type": "TVING_TV",
+              "frequency": 4,
+              "broadcastStartTime": 20250128213257,
+              "broadcastEndTime": 20250128224939,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231228/0230/P000205285.jpg"
+            },
+            {
+              "code": "C52077",
+              "channelName": "CH.뿅뿅 지구오락실2",
+              "type": "TVING_TV",
+              "frequency": 3,
+              "broadcastStartTime": 20250128205457,
+              "broadcastEndTime": 20250128223258,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20230505/P001716794.jpg"
+            },
+            {
+              "code": "C34941",
+              "channelName": "CH.대탈출2",
+              "type": "TVING_TV",
+              "frequency": 10,
+              "broadcastStartTime": 20250128221305,
+              "broadcastEndTime": 20250128233200,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231218/1141/P000821660.jpg"},
+            {
+              "code": "C15442",
+              "channelName": "CH.도깨비",
+              "type": "TVING_TV",
+              "frequency": 5,
+              "broadcastStartTime": 20250128212037,
+              "broadcastEndTime": 20250128222813,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231116/0116/P000340362.jpg"
+            },
+            {
+              "code": "C44541",
+              "channelName": "CH.대탈출3",
+              "type": "TVING_TV",
+              "frequency": 6,
+              "broadcastStartTime": 20250128212936,
+              "broadcastEndTime": 20250128224453,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231218/1045/P001164763.png"
+            },
+            {
+              "code": "C52237",
+              "channelName": "CH.삼시세끼 Light",
+              "type": "TVING_TV",
+              "frequency": 4,
+              "broadcastStartTime": 20250128210839,
+              "broadcastEndTime": 20250128225119,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20240912/0616/P001761486.jpg"
+            },
+            {
+              "code": "C18742",
+              "channelName": "CH.슬기로운 감빵생활",
+              "type": "TVING_TV",
+              "frequency": 12,
+              "broadcastStartTime": 20250128215654,
+              "broadcastEndTime": 20250128233013,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231228/0300/P000416180.jpg"
+            },
+            {
+              "code": "C51373",
+              "channelName": "CH.슬기로운 의사생활 시즌2",
+              "type": "TVING_TV",
+              "frequency": 7,
+              "broadcastStartTime": 20250128205917,
+              "broadcastEndTime": 20250128222718,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20210611/P001479830.png"
+            },
+            {
+              "code": "C52171",
+              "channelName": "CH.눈물의 여왕",
+              "type": "TVING_TV",
+              "frequency": 2,
+              "broadcastStartTime": 20250128210835,
+              "broadcastEndTime": 20250128223721,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20240215/0520/P001753352.jpg"
+            },
+            {
+              "code": "C51866",
+              "channelName": "CH.구미호뎐 1938",
+              "type": "TVING_TV",
+              "frequency": 11,
+              "broadcastStartTime": 20250128210959,
+              "broadcastEndTime": 20250128222139,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20230429/P001715488.jpg"
+            },
+            {
+              "code": "C32441",
+              "channelName": "CH.놀라운 토요일",
+              "type": "TVING_TV",
+              "frequency": 330,
+              "broadcastStartTime": 20250128221451,
+              "broadcastEndTime": 20250128234255,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231028/1210/P000515167.png"
+            },
+            {
+              "code": "C42241",
+              "channelName": "CH.사랑의불시착",
+              "type": "TVING_TV",
+              "frequency": 15,
+              "broadcastStartTime": 20250128215110,
+              "broadcastEndTime": 20250128231629,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20191207/P001096961.png"
+            },
+            {
+              "code": "C45043",
+              "channelName": "CH.삼시세끼 어촌편5",
+              "type": "TVING_TV",
+              "frequency": 5,
+              "broadcastStartTime": 20250128214435,
+              "broadcastEndTime": 20250128232152,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231228/0230/P001219965.jpg"
+            },
+            {
+              "code": "C52214",
+              "channelName": "Ch. 엄마친구아들",
+              "type": "TVING_TV",
+              "frequency": 14,
+              "broadcastStartTime": 20250128214652,
+              "broadcastEndTime": 20250128230652,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20240722/0651/P001759473.jpg"
+            },
+            {
+              "code": "C49941",
+              "channelName": "CH.신서유기8",
+              "type": "TVING_TV",
+              "frequency": 7,
+              "broadcastStartTime": 20250128211743,
+              "broadcastEndTime": 20250128224832,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231228/0215/P001337958.jpg"
+            },
+            {
+              "code": "C14946",
+              "channelName": "CH.삼시세끼 고창편",
+              "type": "TVING_TV",
+              "frequency": 6,
+              "broadcastStartTime": 20250128220830,
+              "broadcastEndTime": 20250128234214,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20160625/P000292443.jpg"
+            },
+            {
+              "code": "C28241",
+              "channelName": "CH.대탈출",
+              "type": "TVING_TV",
+              "frequency": 12,
+              "broadcastStartTime": 20250128220738,
+              "broadcastEndTime": 20250128232853,
+              "label": {
+                "isFree": true
+              },
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0500/ko/20231116/0710/P000587159.jpg"
+            }
+          ],
+          "bandCode": "HM181236"
+        },
+        {
+          "idx": 4,
+          "bandType": "VOD_BASIC_RANKING",
+          "bandName": "오늘의 티빙 TOP 20",
+          "items": [
+            {
+              "code": "P001764477",
+              "title": "옥씨부인전",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20241212/0018/P001764477.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20250106/0500/P001764734.jpg",
+              "label": {
+                "isOriginal": true,
+                "isNewEpisode": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765388",
+              "title": "냉장고를 부탁해 since 2014",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241212/0436/P001765388.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001609758",
+              "title": "최강야구",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240415/1250/P001609758.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001766476",
+              "title": "콩 심은 데 콩 나고 밥 먹으면 밥심 난다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250102/0802/P001766476.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20250122/0739/P001765418.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765419",
+              "title": "별들에게 물어봐",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241216/0731/P001765419.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765386",
+              "title": "체크인 한양",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241211/0241/P001765386.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001760343",
+              "title": "이혼숙려캠프",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240814/1707/P001760343.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250107/0552/P001765664.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001764786",
+              "title": "핀란드 셋방살이",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241129/0731/P001764786.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P000515167",
+              "title": "놀라운 토요일",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20240110/0741/P000515167.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001747580",
+              "title": "뭉쳐야 찬다 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240701/0835/P001747580.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001759776",
+              "title": "짱구는 못말려 24",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240731/0016/P001759776.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001766152",
+              "title": "나 혼자만 레벨업 -ARISE FROM THE SHADOW- (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241227/0012/P001766152.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001492081",
+              "title": "나는 SOLO",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231025/1510/P001492081.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000643144",
+              "title": "유 퀴즈 온 더 블럭",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0505/P000643144.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001754312",
+              "title": "선재 업고 튀어",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240416/0652/P001754312.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001632868",
+              "title": "나는 SOLO, 그후 사랑은 계속된다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241114/1441/P001632868.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001392765",
+              "title": "벌거벗은 세계사",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0130/P001392765.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            }
+          ],
+          "bandCode": "HM181206"
+        },
+        {
+          "idx": 5,
+          "bandType": "VOD_BASIC",
+          "bandName": "지금 방영 중인 콘텐츠",
+          "moreUrl": "https://www.tving.com/more/curation/CR4588",
+          "items": [
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20250122/0739/P001765418.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250107/0552/P001765664.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001392765",
+              "title": "벌거벗은 세계사",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0130/P001392765.jpg",
+              "label": {
+                "isOnly": true,
+                "isQuickVod": true
+              }
+            },
+            {
+              "code": "P001764199",
+              "title": "현역가왕 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241115/0012/P001764199.jpg",
+              "label": {
+              }
+            },
+            {"code": "P001765419",
+              "title": "별들에게 물어봐",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241216/0731/P001765419.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765386",
+              "title": "체크인 한양",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20241226/0141/P001765386.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001760896",
+              "title": "김창옥쇼 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240829/0615/P001760896.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001766778",
+              "title": "원경 : 단오의 인연",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250110/0418/P001766778.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1170/ko/20250106/0500/P001764734.jpg",
+              "label": {
+                "isOriginal": true,
+                "isNewEpisode": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001609758",
+              "title": "최강야구",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240415/1250/P001609758.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765388",
+              "title": "냉장고를 부탁해 since 2014",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241212/0436/P001765388.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001559629",
+              "title": "톡파원 25시",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240115/0910/P001559629.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001766476",
+              "title": "콩 심은 데 콩 나고 밥 먹으면 밥심 난다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250102/0802/P001766476.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001747580",
+              "title": "뭉쳐야 찬다 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240701/0835/P001747580.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001752507",
+              "title": "탐정들의 영업비밀",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240129/0200/P001752507.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001644914",
+              "title": "한문철의 블랙박스 리뷰",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20220916/P001644914.jpg",
+              "label": {
+                "isOnly": true,
+                "isQuickVod": true
+              }
+            },
+            {"code": "P001764786",
+              "title": "핀란드 셋방살이",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241129/0731/P001764786.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001760343",
+              "title": "이혼숙려캠프",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240814/1707/P001760343.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000515167",
+              "title": "놀라운 토요일",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231028/1210/P000515167.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001764354",
+              "title": "달려라 불꽃소녀",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241118/0037/P001764354.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            }
+          ],
+          "bandCode": "HM181208"
+        },
+        {
+          "idx": 6,
+          "bandType": "VOD_LASTS",
+          "bandName": "{{name}}님이 시청하는 콘텐츠",
+          "apiUrl": "/bff/web/v3/my/watch/last/all?pageNo=1\u0026pageSize=20",
+          "isRefresh": true,
+          "moreUrl": "https://www.tving.com/my/watch",
+          "bandCode": "HM181209"
+        },
+        {
+          "idx": 7,
+          "bandType": "VOD_BASIC",
+          "bandName": "온 가족이 함께 보는 영화",
+          "moreUrl": "https://www.tving.com/more/curation/CR4586",
+          "items": [
+            {
+              "code": "M000376096",
+              "title": "해적왕의 황금나침반",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20231016/M000376096.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "M000369853",
+              "title": "극한직업",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20240118/0836/M000369853.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000359138",
+              "title": "귀여운 남자",
+              "imageUrl": "https://image.tving.com/upload/cms/caim/CAIM2100/M000359138.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000312340",
+              "title": "전국노래자랑",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20241017/0155/M000312340.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000182233",
+              "title": "레슬러",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20240904/2221/M000182233.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000370873",
+              "title": "이스터 선데이",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240823/0704/M000370873.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000130886",
+              "title": "엉망진창 장례식",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20231120/0056/M000130886.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000250033",
+              "title": "엑시트",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1150/ko/20190909/M000250033.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000334233",
+              "title": "오！문희",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20240409/0644/M000334233.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369285",
+              "title": "노후자금이 없어!",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240416/2340/M000369285.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000164535",
+              "title": "그것만이 내 세상",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1130/ko/20180220/M000164535.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000372547",
+              "title": "수상한 가족",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241017/1408/M000372547.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000365457",
+              "title": "비긴 어게인",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1150/ko/20241212/0026/M000365457.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000290436",
+              "title": "패밀리 맨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241126/2300/M000290436.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000167734",
+              "title": "패딩턴 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20241128/0459/M000167734.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "M000256433",
+              "title": "두근두근 내인생",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20231127/1612/M000256433.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369182",
+              "title": "원더",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20240327/0414/M000369182.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000376407",
+              "title": "3일의 휴가",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1120/ko/20240327/0416/M000376407.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000147377",
+              "title": "행복 목욕탕",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1170/ko/20240623/0447/M000147377.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378036",
+              "title": "'패밀리 플랜' - The Family Plan",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241219/0520/M000378036.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            }
+          ],
+          "bandCode": "HM181210"
+        },
+        {
+          "idx": 8,
+          "bandType": "VOD_BASIC",
+          "bandName": "정주행 추천 드라마",
+          "items": [
+            {
+              "code": "P001764477",
+              "title": "옥씨부인전",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20241212/0018/P001764477.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20250106/0500/P001764734.jpg",
+              "label": {
+                "isOriginal": true,
+                "isNewEpisode": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20250122/0739/P001765418.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765419",
+              "title": "별들에게 물어봐",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241216/0731/P001765419.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765386",
+              "title": "체크인 한양",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20241226/0141/P001765386.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001766778",
+              "title": "원경 : 단오의 인연",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250110/0418/P001766778.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001754312",
+              "title": "선재 업고 튀어",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20240416/0652/P001754312.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001766813",
+              "title": "유어 아너",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250113/0452/P001766813.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001766663",
+              "title": "나의 해리에게",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250107/0421/P001766663.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001753352",
+              "title": "눈물의 여왕",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20240325/0144/P001753352.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001765052",
+              "title": "오늘도 지송합니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20250116/0001/P001765052.jpg",
+              "label": {
+              }},
+            {
+              "code": "P001764092",
+              "title": "사랑은 외나무 다리에서",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241111/0018/P001764092.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001761481",
+              "title": "좋거나 나쁜 동재",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20241010/0029/P001761481.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001454014",
+              "title": "언더커버",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20210318/P001454014.jpg",
+              "label": {
+                "isOnly": true
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_63",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 9,
+          "bandType": "BANNER_LINE",
+          "bandName": "네플멤굿바이이벤트",
+          "items": [
+            {
+              "title": "",
+              "imageUrl": "https://image.tving.com/ntgs/operation/banner/2025/01/06/1736157877_1.jpg",
+              "linkUrl": "https://mkt.tving.com/goodbyeevent/index.html",
+              "bannerCode": "BN2378"
+            }
+          ],
+          "bandCode": "HM181212"
+        },
+        {
+          "idx": 10,
+          "bandType": "VOD_BASIC_RANKING",
+          "bandName": "실시간 인기 영화",
+          "moreUrl": "https://www.tving.com/more/band/HM181213",
+          "items": [
+            {
+              "code": "M000289333",
+              "title": "히트맨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20240920/0520/M000289333.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377909",
+              "title": "명탐정 코난 : 100만달러의 펜타그램 - 극장판 27기",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20250113/0420/M000377909.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "M000378117",
+              "title": "더러운 돈에 손대지 마라",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20250116/0019/M000378117.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378088",
+              "title": "해리포터와 마법사의 돌",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0430/M000378088.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377869",
+              "title": "6시간 후 너는 죽는다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20250107/0715/M000377869.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378087",
+              "title": "해리포터와 비밀의 방",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0436/M000378087.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378085",
+              "title": "해리포터와 아즈카반의 죄수",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0436/M000378085.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369853",
+              "title": "극한직업",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1120/ko/20240118/0836/M000369853.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377290",
+              "title": "파묘",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1150/ko/20240705/0254/M000377290.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378089",
+              "title": "해리포터와 죽음의 성물 - 2부",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0455/M000378089.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378090",
+              "title": "해리포터와 불의 잔",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0440/M000378090.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378086",
+              "title": "해리포터와 불사조 기사단",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0445/M000378086.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377945",
+              "title": "데드라인",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241127/0055/M000377945.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000123705",
+              "title": "검은 사제들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1170/ko/20231026/0725/M000123705.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378092",
+              "title": "해리포터와 혼혈왕자",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0445/M000378092.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377861",
+              "title": "원맨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20241212/0021/M000377861.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378091",
+              "title": "해리포터와 죽음의 성물 - 1부",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0445/M000378091.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000365750",
+              "title": "샤크：더 비기닝",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1130/ko/20231221/0801/M000365750.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "M000377680",
+              "title": "더 퍼스트 슬램덩크",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241017/0511/M000377680.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "M000374462",
+              "title": "[극장판] 짱구는 못말려 30기 - 동물소환 닌자 배꼽수비대",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20241212/0022/M000374462.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            }
+          ],
+          "bandCode": "HM181213"
+        },
+        {
+          "idx": 11,
+          "bandType": "VOD_BASIC",
+          "bandName": "명절에는 가족과 함께 트로트!",
+          "moreUrl": "https://www.tving.com/more/curation/CR4589",
+          "items": [
+            {
+              "code": "P001765389",
+              "title": "미스터트롯 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241211/0742/P001765389.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001766941",
+              "title": "미스터트롯 3 미공개 스페셜",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250114/0836/P001766941.jpg",
+              "label": {
+                "isQuickVod": true
+              }
+            },
+            {
+              "code": "P001764199",
+              "title": "현역가왕 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241115/0012/P001764199.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001755721",
+              "title": "미스쓰리랑",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240422/0635/P001755721.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001751031",
+              "title": "미스트롯 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231220/0800/P001751031.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001762387",
+              "title": "트랄랄라 유랑단",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241003/1920/P001762387.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001761692",
+              "title": "2024 TV CHOSUN 추석특집 \u003c영탁쇼\u003e",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240915/1615/P001761692.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001749542",
+              "title": "현역가왕",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231121/0411/P001749542.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001754507",
+              "title": "한일가왕전",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240319/0015/P001754507.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001757271",
+              "title": "한일톱텐쇼",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240527/2335/P001757271.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001753765",
+              "title": "현역가왕 갈라쇼",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240226/1810/P001753765.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001764955",
+              "title": "미스\u0026미스터트롯 추억여행",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241202/1452/P001764955.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001726735",
+              "title": "TVCHOSUN 슈퍼콘서트",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20230611/P001726735.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001680158",
+              "title": "미스터트롯 2 : 새로운 전설의 시작",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231127/0830/P001680158.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001757388",
+              "title": "산따라 물따라 딴따라",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240531/1005/P001757388.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001228762",
+              "title": "뽕숭아학당",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/2327/P001228762.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001679479",
+              "title": "불타는 트롯맨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231207/0508/P001679479.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001540732",
+              "title": "화요일은 밤이 좋아",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231024/1655/P001540732.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001547840",
+              "title": "장윤정의 도장깨기",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/2115/P001547840.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "HM181214"
+        },
+        {
+          "idx": 12,
+          "bandType": "VOD_BASIC",
+          "bandName": "연애 리얼리티",
+          "moreUrl": "https://www.tving.com/more/curation/CR4590",
+          "items": [
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20250123/0454/P001765664.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001749878",
+              "title": "환승연애 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240305/0854/P001749878.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001613931",
+              "title": "환승연애 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1190/ko/20231128/0550/P001613931.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001496087",
+              "title": "환승연애",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231121/0235/P001496087.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001492081",
+              "title": "나는 SOLO",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231025/1510/P001492081.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001763019",
+              "title": "파라다이스 아일랜드",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241017/2205/P001763019.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001706738",
+              "title": "조 밀리어네어 : 백만장자의 사랑 게임",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231219/0000/P001706738.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001761238",
+              "title": "돌싱글즈 6",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240906/0356/P001761238.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001119239",
+              "title": "연애의 참견 NEW",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231024/1515/P001119239.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001752235",
+              "title": "커플팰리스",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240125/0920/P001752235.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001746633",
+              "title": "소년 소녀 연애하다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20231117/0154/P001746633.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001750321",
+              "title": "에덴 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231219/2325/P001750321.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001665231",
+              "title": "러브캐처 인 발리",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20231121/0549/P001665231.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001521836",
+              "title": "러브캐처 인 서울",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20231121/0552/P001521836.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001743518",
+              "title": "애프터시그널",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20230829/P001743518.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001718937",
+              "title": "하트시그널 시즌4",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20230512/P001718937.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001190244",
+              "title": "하트시그널 시즌3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/2211/P001190244.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000490458",
+              "title": "하트시그널 시즌2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20180309/P000490458.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001045670",
+              "title": "썸바디 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/1040/P001045670.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001726899",
+              "title": "마녀사냥 2023",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20230612/P001726899.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            }
+          ],
+          "bandCode": "HM181215"
+        },
+        {
+          "idx": 13,
+          "bandType": "VOD_BASIC",
+          "bandName": "요리/음식 예능",
+          "items": [
+            {
+              "code": "P001765388",
+              "title": "냉장고를 부탁해 since 2014",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241212/0436/P001765388.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001762429",
+              "title": "전현무계획 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241003/2357/P001762429.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001761486",
+              "title": "삼시세끼 Light",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240912/0616/P001761486.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001765185",
+              "title": "유별난 역사 한 끼",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241206/1206/P001765185.jpg",
+              "label": {
+                "isOnly": true
+              }},
+            {
+              "code": "P001219965",
+              "title": "삼시세끼 어촌편 5",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231228/0230/P001219965.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001757060",
+              "title": "백패커 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240522/0505/P001757060.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P000887459",
+              "title": "신서유기 외전 강식당 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/1143/P000887459.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001758020",
+              "title": "서진이네 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20240720/0254/P001758020.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000420858",
+              "title": "신서유기 외전 강식당",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/1033/P000420858.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000526940",
+              "title": "스트리트 푸드 파이터",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231116/0706/P000526940.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000292443",
+              "title": "삼시세끼 고창편",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20160625/P000292443.png",
+              "label": {
+              }
+            },
+            {
+              "code": "P000196039",
+              "title": "삼시세끼 어촌편 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231228/0230/P000196039.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000940460",
+              "title": "신서유기 외전 강식당 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231207/0454/P000940460.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000157777",
+              "title": "삼시세끼 어촌편",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231228/0230/P000157777.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_122",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 14,
+          "bandType": "VOD_BASIC",
+          "bandName": "공개예정",
+          "moreUrl": "https://www.tving.com/more/band/HM181217",
+          "items": [
+            {
+              "code": "P001767298",
+              "title": "사장낭만",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250124/0204/P001767298.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001767216",
+              "title": "실소 : 네가 웃을 수 있다면",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250121/0620/P001767216.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001767211",
+              "title": "그놈은 흑염룡",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250121/0512/P001767211.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001766971",
+              "title": "춘화연애담",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250114/0656/P001766971.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001595642",
+              "title": "TVING NOW",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250105/2255/P001595642.jpg",
+              "label": {
+                "isFree": true
+              }
+            }
+          ],
+          "bandCode": "HM181217"
+        },
+        {
+          "idx": 15,
+          "bandType": "VOD_BASIC_CONTENT",
+          "bandName": "환승연애, 또 다른 시작",
+          "items": [
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505438_1.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505441_2.jpg"
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505445_3.jpg"
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505449_4.jpg"
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505463_5.jpg"
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505468_6.jpg"
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505471_7.jpg"
+            },
+            {"code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505475_8.jpg"
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/22/1737505478_9.jpg"
+            }
+          ],
+          "bandCode": "HM181218"
+        },
+        {
+          "idx": 16,
+          "bandType": "VOD_BASIC",
+          "bandName": "인기 애니메이션",
+          "moreUrl": "https://www.tving.com/more/band/HM181219",
+          "items": [
+            {
+              "code": "P001766152",
+              "title": "나 혼자만 레벨업 -ARISE FROM THE SHADOW- (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241227/0012/P001766152.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001762706",
+              "title": "샹그릴라 프론티어 -망겜 헌터, 갓겜에 도전하다- 2nd Season",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241010/0730/P001762706.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766566",
+              "title": "나 혼자만 레벨업 -ARISE FROM THE SHADOW- (더빙)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250104/0922/P001766566.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001759776",
+              "title": "짱구는 못말려 24",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240731/0016/P001759776.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001767077",
+              "title": "명탐정 코난 2025 (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250117/1515/P001767077.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true}
+            },
+            {
+              "code": "P001767209",
+              "title": "파티에서 추방당한 그 치유사, 실은 최강인 것에 대하여",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250122/0701/P001767209.jpg",
+              "label": {
+                "isSubtitle": true
+              }},
+            {
+              "code": "P001766662",
+              "title": "반에서 가장 싫어하는 여자애와 결혼하게 되었다.",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250106/1116/P001766662.jpg",
+              "label": {"isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766909",
+              "title": "A랭크 파티를 이탈한 나는, 전 제자들과 미궁 심부를 목표로 한다.",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250112/1026/P001766909.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766610",
+              "title": "S랭크 몬스터 베헤모스지만 고양이라고 착각하길래 엘프 소녀의 기사(애완묘)로 살고 있습니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250105/1411/P001766610.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true,
+                "isGrade19": true
+              }
+            },
+            {
+              "code": "P001752045",
+              "title": "명탐정 코난 2024 (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240116/0805/P001752045.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001764802",
+              "title": "명탐정 코난 Part1 (더빙)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241129/1332/P001764802.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001751289",
+              "title": "나 혼자만 레벨업 (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231226/0300/P001751289.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766943",
+              "title": "일본에 어서 오세요 엘프 씨.",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250113/1557/P001766943.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {"code": "P001766567",
+              "title": "블루 록 VS. U-20 JAPAN (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250104/0942/P001766567.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001762559",
+              "title": "바람의 검심 -메이지 검객 낭만기- 교토 동란",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241006/1106/P001762559.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001763054",
+              "title": "드래곤볼 다이마(자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241018/1820/P001763054.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001751877",
+              "title": "나 혼자만 레벨업 (더빙)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240108/1055/P001751877.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001760147",
+              "title": "명탐정 코난 22기 (더빙)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240809/1015/P001760147.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001759035",
+              "title": "짱구는 못말려 4",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240716/1316/P001759035.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001755909",
+              "title": "귀멸의 칼날 : 합동 강화 훈련편",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240423/0600/P001755909.jpg",
+              "label": {
+                "isSubtitle": true,
+                "isGrade19": true
+              }
+            }
+          ],
+          "bandCode": "HM181219"
+        },
+        {
+          "idx": 17,
+          "bandType": "VOD_BASIC",
+          "bandName": "추천 애니",
+          "items": [
+            {
+              "code": "P001766152",
+              "title": "나 혼자만 레벨업 -ARISE FROM THE SHADOW- (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241227/0012/P001766152.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001759776",
+              "title": "짱구는 못말려 24",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240731/0016/P001759776.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001767209",
+              "title": "파티에서 추방당한 그 치유사, 실은 최강인 것에 대하여",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250122/0701/P001767209.jpg",
+              "label": {
+                "isSubtitle": true}
+            },
+            {
+              "code": "P001752045",
+              "title": "명탐정 코난 2024 (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240116/0805/P001752045.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766452",
+              "title": "언젠가 최강의 연금술사?",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250101/2021/P001766452.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766909",
+              "title": "A랭크 파티를 이탈한 나는, 전 제자들과 미궁 심부를 목표로 한다.",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250112/1026/P001766909.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001766610",
+              "title": "S랭크 몬스터 베헤모스지만 고양이라고 착각하길래 엘프 소녀의 기사(애완묘)로 살고 있습니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250105/1411/P001766610.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true,
+                "isGrade19": true
+              }
+            },
+            {
+              "code": "P001751289",
+              "title": "나 혼자만 레벨업 (자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231226/0300/P001751289.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001763054",
+              "title": "드래곤볼 다이마(자막)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241018/1820/P001763054.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "P001764802",
+              "title": "명탐정 코난 Part1 (더빙)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241129/1332/P001764802.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001760147",
+              "title": "명탐정 코난 22기 (더빙)",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240809/1015/P001760147.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001759035",
+              "title": "짱구는 못말려 4",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240716/1316/P001759035.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001742943",
+              "title": "짱구는 못말려 23",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0435/P001742943.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001312343",
+              "title": "짱구는 못말려 20",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20200821/P001312343.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            }],
+          "bandCode": "AI_REC_POOL_66",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 18,
+          "bandType": "VOD_BASIC",
+          "bandName": "드라마 시리즈",
+          "items": [
+            {
+              "code": "P001761481",
+              "title": "좋거나 나쁜 동재",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1130/ko/20241010/0029/P001761481.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001454014",
+              "title": "언더커버",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20210318/P001454014.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001757062",
+              "title": "조폭인 내가 고등학생이 되었습니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20240705/0102/P001757062.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001479830",
+              "title": "슬기로운 의사생활 시즌2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20210611/P001479830.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000205285",
+              "title": "응답하라 1988",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20240108/0630/P000205285.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001752505",
+              "title": "피라미드 게임",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20240229/0256/P001752505.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001748996",
+              "title": "이재, 곧 죽습니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20240105/0230/P001748996.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001759741",
+              "title": "우씨왕후",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20240829/0656/P001759741.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001715488",
+              "title": "구미호뎐1938",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20230429/P001715488.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001761804",
+              "title": "정년이",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20241021/0222/P001761804.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001743591",
+              "title": "반짝이는 워터멜론",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1170/ko/20231026/0713/P001743591.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001178341",
+              "title": "슬기로운 의사생활",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231115/0900/P001178341.png",
+              "label": {
+              }
+            },
+            {
+              "code": "P000120061",
+              "title": "응답하라 1994",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20131004/P000120061.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000416180",
+              "title": "슬기로운 감빵생활",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20231214/0733/P000416180.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_1",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 19,
+          "bandType": "VOD_BASIC_ORIGINAL",
+          "bandName": "티빙 오리지널",
+          "moreUrl": "https://www.tving.com/more/band/HM181221",
+          "items": [
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2550/com/20250103/0130/P001764734.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20250103/0130/P001764734.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2540/com/20250120/0121/P001765418.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20250120/0121/P001765418.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20250115/0630/P001765664.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20250115/0630/P001765664.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001766778",
+              "title": "원경 : 단오의 인연",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20250115/0630/P001766778.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20250115/0630/P001766778.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001761481",
+              "title": "좋거나 나쁜 동재",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2550/com/20241008/0546/P001761481.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20241008/0546/P001761481.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "M000365750",
+              "title": "샤크：더 비기닝",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2940/com/20220210/M000365750.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2960/ko/20220210/M000365750.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001613931",
+              "title": "환승연애 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20231127/0829/P001613931.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231127/0829/P001613931.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001751684",
+              "title": "크라임씬 리턴즈",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP3110/com/20240129/0652/P001751684.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20240129/0411/P001751684.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001496087",
+              "title": "환승연애",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20231121/0140/P001496087.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231121/0140/P001496087.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001754831",
+              "title": "여고추리반 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP3110/com/20240422/0733/P001754831.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20240422/0730/P001754831.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001749878",
+              "title": "환승연애 3",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP3110/com/20240116/0152/P001749878.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231229/0300/P001749878.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001537909",
+              "title": "여고추리반 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2540/com/20231219/0047/P001537909.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231219/0047/P001537909.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001748996",
+              "title": "이재, 곧 죽습니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20231212/0205/P001748996.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231212/0205/P001748996.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001759741",
+              "title": "우씨왕후",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20240821/0511/P001759741.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20240821/0511/P001759741.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001433241",
+              "title": "여고추리반",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2550/com/20231024/0950/P001433241.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231024/0950/P001433241.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001665114",
+              "title": "아일랜드",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2550/com/20231218/2141/P001665114.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231218/2141/P001665114.png",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001693843",
+              "title": "방과 후 전쟁활동",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2550/com/20230206/P001693843.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20230206/P001693843.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001752505",
+              "title": "피라미드 게임",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2530/com/20240228/0240/P001752505.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20240228/0240/P001752505.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001518829",
+              "title": "술꾼도시여자들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2540/com/20231024/0925/P001518829.jpg",
+              "titleImageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP2560/ko/20231024/0925/P001518829.png",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            }
+          ],
+          "bandCode": "HM181221"
+        },
+        {
+          "idx": 20,
+          "bandType": "VOD_BASIC",
+          "bandName": "로맨스 드라마",
+          "items": [
+            {
+              "code": "P001749924",
+              "title": "내 남편과 결혼해줘",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1190/ko/20240118/0754/P001749924.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000340362",
+              "title": "도깨비",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20161125/P000340362.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001762001",
+              "title": "조립식 가족",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20241021/0225/P001762001.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000592767",
+              "title": "미스터 션샤인",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20180630/P000592767.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001392764",
+              "title": "철인왕후",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240216/0958/P001392764.jpg",
+              "label": {
+                "isFree": true
+              }
+            },
+            {
+              "code": "P001762656",
+              "title": "대도시의 사랑법",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20241222/2208/P001762656.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001759473",
+              "title": "엄마친구아들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20240826/0109/P001759473.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001096961",
+              "title": "사랑의 불시착",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20191207/P001096961.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001608117",
+              "title": "이브",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20220527/P001608117.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001391055",
+              "title": "여신강림",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20201204/P001391055.jpg",
+              "label": {
+                "isFree": true
+              }
+            },
+            {
+              "code": "P000898139",
+              "title": "검색어를 입력하세요 WWW",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1190/ko/20190531/P000898139.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001715471",
+              "title": "연애혁명",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/2124/P001715471.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001518829",
+              "title": "술꾼도시여자들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20231128/0548/P001518829.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P000273930",
+              "title": "또 오해영",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20160429/P000273930.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_30",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 21,
+          "bandType": "VOD_BASIC",
+          "bandName": "예능 몰아보기",
+          "items": [
+            {
+              "code": "P001751684",
+              "title": "크라임씬 리턴즈",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240216/0952/P001751684.jpg",
+              "label": {
+                "isOriginal": true,
+                "isFree": true
+              }
+            },
+            {
+              "code": "P000464040",
+              "title": "맛있는 녀석들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240629/1740/P000464040.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001761483",
+              "title": "끝내주는 부부",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240912/0431/P001761483.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001433241",
+              "title": "여고추리반",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20231116/0158/P001433241.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P000153585",
+              "title": "냉장고를 부탁해",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/2210/P000153585.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001190459",
+              "title": "이십세기 힛-트쏭",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240125/0835/P001190459.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000791342",
+              "title": "무엇이든 물어보살",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231024/1515/P000791342.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001457348",
+              "title": "신서유기 스페셜 스프링 캠프",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231024/0925/P001457348.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001758025",
+              "title": "이 말을 꼭 하고 싶었어요",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240617/0321/P001758025.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001291364",
+              "title": "나홀로 이식당",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231204/0610/P001291364.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000537453",
+              "title": "방구석1열",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231228/0255/P000537453.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001751242",
+              "title": "백앤아 : 게임튜브 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231225/1115/P001751242.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001763747",
+              "title": "제2의결혼전쟁-살까말까",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241105/0212/P001763747.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001086739",
+              "title": "신서유기 외전: 아이슬란드 간 세끼 60분 특별판",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20191127/P001086739.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_103",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 22,
+          "bandType": "VOD_BASIC",
+          "bandName": "Apple TV+고퀄리티 영화 모음",
+          "moreUrl": "https://www.tving.com/more/curation/CR4557",
+          "items": [
+            {
+              "code": "M000377953",
+              "title": "'울프스' - Wolfs",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241128/0935/M000377953.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377964",
+              "title": "'핀치' - Finch",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241203/0831/M000377964.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377965",
+              "title": "'럭' - Luck",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241203/0831/M000377965.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "M000378045",
+              "title": "'아가일' - Argylle",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241219/0521/M000378045.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378033",
+              "title": "'인스티게이터' - The Instigators",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241220/0532/M000378033.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000377978",
+              "title": "'고스팅' - Ghosted",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241212/0905/M000377978.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000377976",
+              "title": "'플라워 킬링 문' - Killers of the Flower Moon",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241212/0846/M000377976.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000377977",
+              "title": "'플라이 미 투 더 문' - Fly Me to the Moon",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241212/0901/M000377977.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378031",
+              "title": "'플로라 앤 썬' - Flora and Son",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241220/0532/M000378031.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378052",
+              "title": "'나폴레옹' - Napoleon",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241219/0521/M000378052.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isGrade18": true
+              }},
+            {
+              "code": "M000378038",
+              "title": "'런던 공습' - Blitz",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241220/0532/M000378038.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378036",
+              "title": "'패밀리 플랜' - The Family Plan",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241219/0520/M000378036.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378018",
+              "title": "'그레이하운드' - Greyhound",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241220/0531/M000378018.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378061",
+              "title": "'테트리스' - Tetris",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20241219/0521/M000378061.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "M000378035",
+              "title": "'소년과 두더지와 여우와 말' - The Boy, the Mole, the Fox and the Horse",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2200/ko/20250106/0030/M000378035.jpg",
+              "label": {
+                "isNewEpisode": true,
+                "isSubtitle": true
+              }
+            }
+          ],
+          "bandCode": "HM181223"
+        },
+        {
+          "idx": 23,
+          "bandType": "VOD_BASIC",
+          "bandName": "급상승 영화",
+          "items": [
+            {
+              "code": "M000289333",
+              "title": "히트맨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240726/0120/M000289333.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000364753",
+              "title": "색다른 그녀",
+              "imageUrl": "https://image.tving.com/upload/cms/caim/CAIM2100/M000364753.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000378091",
+              "title": "해리포터와 죽음의 성물 - 1부",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0445/M000378091.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378089",
+              "title": "해리포터와 죽음의 성물 - 2부",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0455/M000378089.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000131825",
+              "title": "위선자들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20160418/M000131825.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000378092",
+              "title": "해리포터와 혼혈왕자",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0445/M000378092.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377111",
+              "title": "월레스와 그로밋 더 클래식 컬렉션",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240627/0755/M000377111.jpg",
+              "label": {
+                "isSubtitle": true
+              }
+            },
+            {
+              "code": "M000378086",
+              "title": "해리포터와 불사조 기사단",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0445/M000378086.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000145447",
+              "title": "음란서생",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240322/0140/M000145447.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000378090",
+              "title": "해리포터와 불의 잔",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0440/M000378090.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000054064",
+              "title": "그 시절, 우리가 좋아했던 소녀",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1150/ko/20241226/0149/M000054064.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000368892",
+              "title": "리얼",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20220825/M000368892.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000306838",
+              "title": "[확장판] 상류사회",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20200512/M000306838.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000169134",
+              "title": "간기남",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240627/0850/M000169134.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000378094",
+              "title": "신비한 동물들과 그린델왈드의 범죄",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0455/M000378094.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378085",
+              "title": "해리포터와 아즈카반의 죄수",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0436/M000378085.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000234633",
+              "title": "걸캅스",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20190604/M000234633.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000145947",
+              "title": "나이스 가이즈",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1180/ko/20241226/0150/M000145947.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000292234",
+              "title": "연애의 목적",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20250116/0008/M000292234.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000123705",
+              "title": "검은 사제들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1110/ko/20231026/0725/M000123705.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "HM181224"
+        },
+        {
+          "idx": 24,
+          "bandType": "VOD_BASIC_CONTENT",
+          "bandName": "스터디그룹",
+          "items": [
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_1.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_2.jpg"
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_3.jpg"
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_5.jpg"
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_6.jpg"
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_7.jpg"
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_8.jpg"
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/23/1737610859_4.jpg"
+            }
+          ],
+          "bandCode": "HM181225"
+        },
+        {
+          "idx": 25,
+          "bandType": "VOD_BASIC_RANKING",
+          "bandName": "실시간 인기 시리즈",
+          "moreUrl": "https://www.tving.com/more/band/HM181226",
+          "items": [
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20250106/0500/P001764734.jpg",
+              "label": {
+                "isOriginal": true,
+                "isNewEpisode": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001764477",
+              "title": "옥씨부인전",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20241212/0018/P001764477.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001609758",
+              "title": "최강야구",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240415/1250/P001609758.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765388",
+              "title": "냉장고를 부탁해 since 2014",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241212/0436/P001765388.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765418",
+              "title": "스터디그룹",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20250122/0739/P001765418.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001766476",
+              "title": "콩 심은 데 콩 나고 밥 먹으면 밥심 난다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250102/0802/P001766476.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001760343",
+              "title": "이혼숙려캠프",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240814/1707/P001760343.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001765386",
+              "title": "체크인 한양",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1190/ko/20241226/0141/P001765386.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765419",
+              "title": "별들에게 물어봐",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241216/0731/P001765419.jpg",
+              "label": {
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001754312",
+              "title": "선재 업고 튀어",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20240416/0652/P001754312.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001764786",
+              "title": "핀란드 셋방살이",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20241129/0731/P001764786.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P000515167",
+              "title": "놀라운 토요일",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20240110/0741/P000515167.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001392765",
+              "title": "벌거벗은 세계사",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0130/P001392765.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P001765664",
+              "title": "환승연애, 또 다른 시작",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20250123/0454/P001765664.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001492081",
+              "title": "나는 SOLO",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231025/1510/P001492081.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001759776",
+              "title": "짱구는 못말려 24",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240731/0016/P001759776.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            },
+            {
+              "code": "P001766813",
+              "title": "유어 아너",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250113/0452/P001766813.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001559629",
+              "title": "톡파원 25시",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240115/0910/P001559629.jpg",
+              "label": {
+                "isOnly": true,
+                "isNewEpisode": true
+              }
+            },
+            {
+              "code": "P000643144",
+              "title": "유 퀴즈 온 더 블럭",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0505/P000643144.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001753352",
+              "title": "눈물의 여왕",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240307/0930/P001753352.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "HM181226"
+        },
+        {
+          "idx": 26,
+          "bandType": "VOD_BASIC",
+          "bandName": "K-명작 컬렉션",
+          "moreUrl": "https://www.tving.com/more/curation/CR4552",
+          "items": [
+            {
+              "code": "M000368400",
+              "title": "공동경비구역 JSA",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20241028/0051/M000368400.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001764507",
+              "title": "2024 MAMA AWARDS JAPAN Chapter 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250120/0850/P001764507.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P26736",
+              "title": "슈퍼스타K 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231206/0645/P26736.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000205285",
+              "title": "응답하라 1988",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1130/ko/20240108/0630/P000205285.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000070051",
+              "title": "Show Me The Money",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20120615/P000070051.png",
+              "label": {
+              }
+            },
+            {
+              "code": "M000232837",
+              "title": "설국열차",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1150/ko/20190524/M000232837.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000111318",
+              "title": "꽃보다 할배 유럽 \u0026 대만편",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240808/2130/P000111318.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001767022",
+              "title": "킹키부츠",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250116/0741/P001767022.jpg",
+              "label": {
+                "isFree": true
+              }
+            },
+            {
+              "code": "M000237433",
+              "title": "베테랑",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1150/ko/20190624/M000237433.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000887459",
+              "title": "신서유기 외전 강식당 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/1143/P000887459.jpg",
+              "label": {
+              }
+            },
+            {"code": "P000340362",
+              "title": "도깨비",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20161125/P000340362.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000232417",
+              "title": "시그널",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240110/0743/P000232417.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000275500",
+              "title": "디어 마이 프렌즈",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240129/0231/P000275500.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000497140",
+              "title": "나의 아저씨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1170/ko/20180316/P000497140.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000643144",
+              "title": "유 퀴즈 온 더 블럭",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0505/P000643144.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "M000244233",
+              "title": "기생충",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1170/ko/20240110/0756/M000244233.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369853",
+              "title": "극한직업",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20240118/0836/M000369853.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001503248",
+              "title": "유미의 세포들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20231113/0427/P001503248.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001738917",
+              "title": "스트릿 우먼 파이터 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0335/P001738917.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001753352",
+              "title": "눈물의 여왕",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1130/ko/20240325/0144/P001753352.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "HM181227"
+        },
+        {
+          "idx": 27,
+          "bandType": "VOD_BASIC",
+          "bandName": "판타지 드라마 영화",
+          "moreUrl": "https://www.tving.com/more/curation/CR4587",
+          "items": [
+            {
+              "code": "M000377315",
+              "title": "원더랜드",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1120/ko/20240819/0502/M000377315.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378088",
+              "title": "해리포터와 마법사의 돌",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0430/M000378088.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000305842",
+              "title": "신과함께: 죄와 벌",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20200507/M000305842.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000366267",
+              "title": "백설공주",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1120/ko/20241128/0521/M000366267.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377145",
+              "title": "타이거스 네스트: 호랑이의 보디가드",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1120/ko/20240725/2216/M000377145.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369418",
+              "title": "시월애",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20240715/2221/M000369418.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369405",
+              "title": "벽 속에 숨은 마법시계",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1110/ko/20250103/0651/M000369405.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000368505",
+              "title": "시간이탈자",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1140/ko/20240228/0154/M000368505.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000377019",
+              "title": "어게인 1997",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20240705/0115/M000377019.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000369239",
+              "title": "1＋1",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20231208/0030/M000369239.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000378093",
+              "title": "신비한 동물 사전",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241220/0455/M000378093.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000375559",
+              "title": "오늘 밤, 로맨스 극장에서",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20241104/0609/M000375559.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000372342",
+              "title": "약속의 네버랜드",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240126/0145/M000372342.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000366504",
+              "title": "뱀파이어 아카데미",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20220406/M000366504.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000365443",
+              "title": "수면의과학",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241004/1430/M000365443.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000375574",
+              "title": "울프킨",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240507/0700/M000375574.jpg",
+              "label": {
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "M000368688",
+              "title": "싸이보그지만 괜찮아",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20241005/0455/M000368688.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000376407",
+              "title": "3일의 휴가",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1180/ko/20240327/0416/M000376407.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000292233",
+              "title": "언니가 간다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM1160/ko/20241028/0046/M000292233.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "M000365411",
+              "title": "마리이야기",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caim/CAIM2100/ko/20240318/0150/M000365411.jpg",
+              "label": {
+                "isDubbing": true
+              }
+            }
+          ],
+          "bandCode": "HM181228"
+        },
+        {
+          "idx": 28,
+          "bandType": "VOD_BASIC",
+          "bandName": "스릴러 드라마",
+          "items": [
+            {
+              "code": "P001748996",
+              "title": "이재, 곧 죽습니다",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20240105/0230/P001748996.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001759741",
+              "title": "우씨왕후",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20240829/0656/P001759741.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P000232417",
+              "title": "시그널",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1160/ko/20240110/0743/P000232417.jpg",
+              "label": {
+              }
+            },
+            {"code": "P001665114",
+              "title": "아일랜드",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20231113/0228/P001665114.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001611339",
+              "title": "환혼",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20220611/P001611339.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000380913",
+              "title": "비밀의 숲",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20170603/P000380913.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001674052",
+              "title": "환혼 : 빛과 그림자",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1190/ko/20221203/P001674052.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001641335",
+              "title": "몸값",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20231113/0827/P001641335.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001746510",
+              "title": "운수 오진 날",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1170/ko/20231124/0313/P001746510.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P000169861",
+              "title": "신분을 숨겨라",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1130/ko/20231102/0523/P000169861.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001723203",
+              "title": "이로운 사기",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1170/ko/20230525/P001723203.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P001178342",
+              "title": "메모리스트",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20200306/P001178342.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P000932539",
+              "title": "60일, 지정생존자",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20231026/0718/P000932539.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001302956",
+              "title": "비밀의 숲 2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1120/ko/20240202/0852/P001302956.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_33",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 29,
+          "bandType": "VOD_BASIC",
+          "bandName": "로맨스 코미디",
+          "items": [
+            {
+              "code": "P001096961",
+              "title": "사랑의 불시착",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20191207/P001096961.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001391055",
+              "title": "여신강림",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20201204/P001391055.jpg",
+              "label": {
+                "isFree": true
+              }
+            },
+            {
+              "code": "P001685600",
+              "title": "일타스캔들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1150/ko/20230107/P001685600.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001751069",
+              "title": "LTNS",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20240119/0256/P001751069.jpg",
+              "label": {
+                "isOriginal": true,
+                "isGrade18": true
+              }
+            },
+            {
+              "code": "P001738935",
+              "title": "소용없어 거짓말",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1140/ko/20230727/P001738935.jpg",
+              "label": {
+                "isOnly": true
+              }
+            },
+            {
+              "code": "P000941062",
+              "title": "호텔 델루나",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20190706/P000941062.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001760073",
+              "title": "손해 보기 싫어서",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250106/0540/P001760073.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001503248",
+              "title": "유미의 세포들",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1180/ko/20231113/0427/P001503248.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P000970655",
+              "title": "멜로가 체질",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20190802/P000970655.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001594130",
+              "title": "유미의 세포들 시즌2",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1170/ko/20231221/0753/P001594130.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P000657356",
+              "title": "백일의 낭군님",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231023/2335/P000657356.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001336459",
+              "title": "이가인지명",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/1146/P001336459.jpg",
+              "label": {
+              }
+            },
+            {
+              "code": "P001471948",
+              "title": "간 떨어지는 동거",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231218/1149/P001471948.png",
+              "label": {
+              }
+            },
+            {
+              "code": "P000567863",
+              "title": "김비서가 왜 그럴까",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP1110/ko/20180601/P000567863.jpg",
+              "label": {
+              }
+            }
+          ],
+          "bandCode": "AI_REC_POOL_61",
+          "bandModel": "rec_v2_likemulti_c02:2025-01-28-10",
+          "abtestGroup": "likemulti_m01"
+        },
+        {
+          "idx": 30,
+          "bandType": "VOD_BASIC_CONTENT",
+          "bandName": "원경",
+          "items": [
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043088_1.jpg",
+              "label": {
+                "isOriginal": true
+              }
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043092_2.jpg"
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043096_3.jpg"
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043100_4.jpg"
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043104_5.jpg"
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043109_6.jpg"
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043114_7.jpg"
+            },
+            {
+              "code": "P001764734",
+              "title": "원경",
+              "imageUrl": "https://image.tving.com/ntgs/operation/curation/2025/01/05/1736043119_8.jpg"
+            }
+          ],
+          "bandCode": "HM181230"
+        },
+        {
+          "idx": 31,
+          "bandType": "VOD_BASIC",
+          "bandName": "{{name}}님이 좋아할만한 시리즈",
+          "apiUrl": "/bff/web/v3/content/recommendation/program/like?count=20",
+          "bandCode": "HM181232"
+        },
+        {
+          "idx": 32,
+          "bandType": "VOD_BASIC",
+          "bandName": "{{name}}님이 좋아할만한 영화",
+          "apiUrl": "/bff/web/v3/content/recommendation/movie/like?count=20",
+          "bandCode": "HM181233"
+        },
+        {
+          "idx": 33,
+          "bandType": "VOD_BASIC",
+          "bandName": "QUICK VOD",
+          "moreUrl": "https://www.tving.com/more/band/HM181234",
+          "items": [
+            {
+              "code": "E004310431",
+              "title": "벌거벗은 세계사",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0130/P001392765.jpg",
+              "label": {
+                "isOnly": true,
+                "isQuickVod": true
+              }
+            },
+            {
+              "code": "E004312859",
+              "title": "미스터트롯 3 미공개 스페셜",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20250114/0836/P001766941.jpg",
+              "label": {
+                "isQuickVod": true
+              }
+            },
+            {
+              "code": "E004311420",
+              "title": "한문철의 블랙박스 리뷰",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20220916/P001644914.jpg",
+              "label": {
+                "isOnly": true,
+                "isQuickVod": true
+              }
+            },
+            {
+              "code": "E002963921",
+              "title": "JTBC 뉴스룸",
+              "imageUrl": "https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20240311/1005/P001152940.jpg",
+              "label": {
+                "isQuickVod": true
+              }
+            }
+          ],
+          "bandCode": "HM181234"
+        },
+        {
+          "idx": 34,
+          "bandType": "NOTICE",
+          "items": [
+            {
+              "title": "TVING X 네이버플러스 멤버십 제휴 종료 예정 안내 (25년 3월 1일 00시)",
+              "code": "139215"
+            }
+          ],
+          "bandCode": "HM181235"
+        }
+      ],
+      "boardApiKey": "https://gw.tving.com/bff/web/v3/home/main",
       "isWebviewDevice": false,
       "device": {
         "isMobileWebview": false,
@@ -151,200 +4123,644 @@
         "isAndroid": false,
         "isTablet": false
       },
-      "isPreRelease": false,
-      "contentType": "program",
+      "streamData": {
+        "header": {
+          "message": "OK",
+          "status": 200
+        },
+        "body": {
+          "server": {
+            "time": "20250128221557",
+            "host": "api.tving.com",
+            "port": 80,
+            "context": ""
+          },
+          "user": {
+            "id": "772vjrvj@naver.com",
+            "age": 0,
+            "type": "94",
+            "ip": "218.147.132.236",
+            "profile_no": "0",
+            "no": "299318132"
+          },
+          "result": {
+            "code": "000",
+            "message": null,
+            "sub_message": null,
+            "auth_type": "FREE",
+            "content_type": "LIVE",
+            "link_url": null,
+            "link_target": null
+          },
+          "content": {
+            "program_code": "P001392765",
+            "program_name": "벌거벗은 세계사",
+            "episode_code": "E004310431",
+            "episode_name": "벌거벗은 세계사 188회",
+            "program_enm_code": "B120209766",
+            "frequency": 188,
+            "broadcast_start_date": 20250128221000,
+            "broadcast_end_date": 20250129000300,
+            "info": {
+              "content_type": "live",
+              "live_code": "C00551",
+              "live_rating": {
+                "realtime": 5.8,
+                "day": 0,
+                "week": 0,
+                "count": 799
+              },
+              "schedule": {
+                "id": "6792c2a05d765050f84f9b2a",
+                "sch_id": null,
+                "schedule_code": "C00551",
+                "broadcast_date": 20250128,
+                "broadcast_start_time": 20250128221000,
+                "broadcast_end_time": 20250129000300,
+                "schedule_type": "CSMD0100",
+                "rerun_yn": null,
+                "stream_type": null,
+                "channel": {
+                  "id": null,
+                  "code": "C00551",
+                  "name": {
+                    "prefix_ko": null,
+                    "ko": "tvN",
+                    "en": null
+                  },
+                  "category_code": "CG110",
+                  "category_name": {
+                    "prefix_ko": null,
+                    "ko": "드라마",
+                    "en": null
+                  },
+                  "description": {
+                    "prefix_ko": null,
+                    "ko": "티비앤",
+                    "en": null
+                  },
+                  "quality": "CVPR0200",
+                  "hd_yn": null,
+                  "price": null,
+                  "free_yn": "Y",
+                  "adult_yn": "N",
+                  "item_sale_yn": null,
+                  "guest_watch_yn": "N",
+                  "oversea_watch_yn": null,
+                  "image": [
+                    {
+                      "url": "/ntgs/contents/CTC/caic/CAIC0100/ko/20241024/0937/C00551.png",
+                      "url2": null,
+                      "code": "CAIC0100"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC0300/C00551.png",
+                      "url2": null,
+                      "code": "CAIC0300"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC0400/C00551.png",
+                      "url2": null,
+                      "code": "CAIC0400"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC0500/C00551.png",
+                      "url2": null,
+                      "code": "CAIC0500"
+                    },
+                    {
+                      "url": "/upload/cms/caic/20110303182808IMG_FILE_5.jpg",
+                      "url2": null,
+                      "code": "CAIC0600"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC0700/C00551.png",
+                      "url2": null,
+                      "code": "CAIC0700"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC0800/C00551.png",
+                      "url2": null,
+                      "code": "CAIC0800"
+                    },
+                    {
+                      "url": "/upload/cms/caic/20110517154214IMG_FILE_8.png",
+                      "url2": null,
+                      "code": "CAIC0900"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1100/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1100"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1200/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1200"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1300/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1300"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1400/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1400"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1500/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1500"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1600/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1600"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1700/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1700"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1800/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1800"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC1900/C00551.png",
+                      "url2": null,
+                      "code": "CAIC1900"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC2100/C00551.png",
+                      "url2": null,
+                      "code": "CAIC2100"
+                    },
+                    {
+                      "url": "/upload/cms/caic/CAIC2200/C00551.png",
+                      "url2": null,
+                      "code": "CAIC2200"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caic/CAIC2300/ko/20241104/0232/C00551.png",
+                      "url2": null,
+                      "code": "CAIC2300"
+                    }
+                  ],
+                  "no": 2,
+                  "sort_no": 2,
+                  "stick_channel_no": 0,
+                  "mcp_code": "1115",
+                  "scp_code": "18",
+                  "time_shift_time": 120,
+                  "type": "CPCS0100",
+                  "broadcast_type": "CPSE0200",
+                  "service_yn": "Y",
+                  "fan_yn": "N",
+                  "parent_code": null,
+                  "enm_code": "EA",
+                  "ch_home_url": null,
+                  "ch_home_m_url": null,
+                  "adpre": "0",
+                  "admid": "0",
+                  "drm_multi_yn": null,
+                  "contenttype": "",
+                  "dai_asset_id": null
+                },
+                "multiview_url": null,
+                "preview_url": null,
+                "insert_date": 20250124072833,
+                "program": {
+                  "id": null,
+                  "code": "P001392765",
+                  "name": {
+                    "prefix_ko": null,
+                    "ko": "벌거벗은 세계사",
+                    "en": null
+                  },
+                  "category1_code": "PCD",
+                  "category1_name": {
+                    "prefix_ko": null,
+                    "ko": "예능",
+                    "en": null
+                  },
+                  "category2_code": "PCD038",
+                  "category2_name": {
+                    "prefix_ko": null,
+                    "ko": "교육\u0026독서 예능",
+                    "en": null
+                  },
+                  "product_year": 2020,
+                  "product_country": "CACT1001",
+                  "production": "",
+                  "director": [
+                    "김형오",
+                    "이윤호",
+                    "서용석"
+                  ],
+                  "actor": [
+                    "은지원",
+                    "이혜성",
+                    "규현"
+                  ],
+                  "synopsis": {
+                    "prefix_ko": null,
+                    "ko": "전 세계 곳곳을 온택트로 둘러보며 각 나라의 명소를 살펴보고, 다양한 관점에서 우리가 몰랐던 세계의 역사를 파헤치는 프로그램",
+                    "en": null
+                  },
+                  "story": null,
+                  "image": [
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP0200/ko/20231030/0130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP0200"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP0400/ko/20231030/0130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP0400"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP0500/ko/20231030/0130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP0500"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP0900/ko/20231030/0130/P001392765.jpg",
+                      "url2": null,
+                      "code": "CAIP0900"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP1500/ko/20231030/0130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP1500"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP1700/com/20241022/1000/P001392765.jpg",
+                      "url2": null,
+                      "code": "CAIP1700"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP1800/ko/20231030/0130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP1800"
+                    },
+                    {
+                      "url": "/upload/cms/caip/CAIP1900/P001392765.jpg",
+                      "url2": null,
+                      "code": "CAIP1900"
+                    },
+                    {
+                      "url": "/upload/cms/caip/CAIP2000/P001392765.jpg",
+                      "url2": null,
+                      "code": "CAIP2000"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP4000/com/20240611/1130/P001392765.jpg",
+                      "url2": null,
+                      "code": "CAIP4000"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP4200/com/20240611/1130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP4200"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP4210/com/20240611/1130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP4210"
+                    },
+                    {
+                      "url": "/ntgs/contents/CTC/caip/CAIP4220/com/20240611/1130/P001392765.png",
+                      "url2": null,
+                      "code": "CAIP4220"
+                    }
+                  ],
+                  "channel_code": "C00551",
+                  "display_category1": [
+                    "PCD"
+                  ],
+                  "display_category2": [
+                    "PCD038"
+                  ],
+                  "grade_code": "CPTG0300",
+                  "adult_yn": "N",
+                  "series_code": "T100001824",
+                  "keywords1": null,
+                  "keywords2": null,
+                  "fan_yn": "N",
+                  "enm_code": "B120209766",
+                  "pgm_home_url": null,
+                  "pgm_home_m_url": null,
+                  "script": null,
+                  "broad_state": "CPBS0200",
+                  "broad_dt": "20201212",
+                  "broad_end_dt": null,
+                  "broad_week": "화",
+                  "broad_hour": "22",
+                  "broad_minu": "10",
+                  "sub_info_list": null,
+                  "smr_program_code": null,
+                  "quickup_yn": "N",
+                  "season_pgm_code": "T100001824",
+                  "season_pgm_no": "0",
+                  "season_etc_vod_yn": "N",
+                  "tving_original_yn": "N",
+                  "tving_exclusive_yn": "Y",
+                  "stream_meta_info": "stream20,stream25,stream30,stream40,stream50",
+                  "episode_sort": 0,
+                  "service_episode_count": 185,
+                  "free_episode_count": 0,
+                  "free_yn": "N"
+                },
+                "episode": {
+                  "id": null,
+                  "actor": [
+                  ],
+                  "broadcast_date": 20250128,
+                  "broadcast_day": "PGWD0200",
+                  "category1_code": "PCD",
+                  "category1_name": {
+                    "prefix_ko": null,
+                    "ko": "예능",
+                    "en": null
+                  },
+                  "category2_code": "PCD038",
+                  "category2_name": {
+                    "prefix_ko": null,
+                    "ko": "교육\u0026독서 예능",
+                    "en": null
+                  },
+                  "code": "E004310431",
+                  "display_category1": [
+                    "PCD"
+                  ],
+                  "display_category2": [
+                    "PCD038"
+                  ],
+                  "download": {
+                    "price": {
+                      "krw": 1650,
+                      "usd": 0,
+                      "appstore": 0,
+                      "playstore": 0,
+                      "rental": 0,
+                      "collect": 1650
+                    },
+                    "mcp_code": null,
+                    "scp_code": null
+                  },
+                  "download_yn": "N",
+                  "duration": 6855,
+                  "free_yn": "N",
+                  "frequency": 188,
+                  "grade_code": "CPTG0300",
+                  "adult_yn": "N",
+                  "guest_watch_yn": null,
+                  "image": [
+                    {
+                      "url": "/ntgs/contents/CTC/caie/CAIE0400/com/20250128/1205/E004310431.jpg",
+                      "url2": null,
+                      "code": "CAIE0400"
+                    }
+                  ],
+                  "keywords1": [
+                    ""
+                  ],
+                  "keywords2": [
+                    ""
+                  ],
+                  "mcp_code": "1115",
+                  "name": {
+                    "prefix_ko": null,
+                    "ko": "벌거벗은 세계사 188회",
+                    "en": null
+                  },
+                  "price": {
+                    "krw": 1650,
+                    "usd": 0,
+                    "appstore": 0,
+                    "playstore": 0,
+                    "rental": 0,
+                    "collect": 1650
+                  },
+                  "program_code": "P001392765",
+                  "hd_yn": null,
+                  "quality": "CVPR0200",
+                  "scp_code": "18",
+                  "synopsis": {
+                    "prefix_ko": null,
+                    "ko": "‘히스토리 에어라인’ 설레는 백여든여덟 번째 여행!\r\n\u003c세계 최대의 영토 정복자 칭기즈 칸의 후예 쿠빌라이\u003e\r\n\r\n인류 역사상 가장 위대한 정복자 중\r\n하나로 손꼽히는 칭기즈 칸\r\n\r\n그런데!\r\n칭기즈 칸을 뛰어넘는\r\n몽골 제국 최대 영토의 주인공이 있다?\r\n\r\n무려 약 3,300만㎢!\r\n이민족 최초로 중국을 통일하고\r\n중국의 황제로 등극한 쿠빌라이 칸!\r\n\r\n몽골 제국의 눈부신 전성기를 완성한\r\n쿠빌라이 칸의 비결이 궁금하다면~\r\n\r\n1월 28일 화요일 밤 10시 10분! \r\n\u003c벌거벗은 세계사\u003e에서 낱낱이 벗겨드립니다!",
+                    "en": null
+                  },
+                  "broadcast_datetime": 20250128221000,
+                  "same_code": null,
+                  "drm_yn": "N",
+                  "drm_sale_type": null,
+                  "enm_code": "EA_274584|188",
+                  "pip_media_url": "",
+                  "mezzokey": null,
+                  "etc": null,
+                  "mdrm_multi_yn": "N",
+                  "mdrm_fair_yn": "N",
+                  "mdrm_fair_filesize": "0",
+                  "mdrm_play_yn": "N",
+                  "mdrm_play_filesize": "0",
+                  "mdrm_wide_yn": "N",
+                  "mdrm_wide_filesize": null,
+                  "mdrm_package_key": "",
+                  "pip_cliptype": "C012",
+                  "stream_meta_info": "stream20,stream25,stream30,stream40,stream50",
+                  "skip_sec": "0",
+                  "abr_flag": "N",
+                  "audio_type": "",
+                  "hdr_type": "",
+                  "vtt_path": "",
+                  "vtt_img": "",
+                  "preview_display_yn": "Y",
+                  "legacy_yn": "N",
+                  "ending_credit_sec": 6717,
+                  "opening_skip_start_sec": 0,
+                  "opening_skip_end_sec": 0,
+                  "story_skip_start_sec": 0,
+                  "story_skip_end_sec": 0,
+                  "cookies_cnt": 0,
+                  "paramount_yn": "N",
+                  "ko_cc_yn": "N",
+                  "uhd_4k_yn": "N",
+                  "apple_yn": "N",
+                  "new_broadcast_yn": "Y"
+                },
+                "movie": null,
+                "clip": null,
+                "ad": null,
+                "broadcast_url": [
+                  {
+                    "block_yn": "N",
+                    "broad_url1": "http://tvn-mcdn.tving.com/tvn/live1000.smil/playlist.m3u8",
+                    "broad_url2": "http://tvn-mcdn.tving.com/tvn/live500.smil/playlist.m3u8",
+                    "broad_url3": "",
+                    "broad_url4": "http://tvn-mcdn.tving.com/tvn/live2000.smil/playlist.m3u8",
+                    "broad_url5": "http://tvn-mcdn.tving.com/tvn/live5000.smil/playlist.m3u8",
+                    "broad_url6": "",
+                    "broad_url7": "",
+                    "multiview_url": null,
+                    "preview_url": "",
+                    "network_code": "CSND0900",
+                    "os_code": "CSOD0900",
+                    "screen_code": "CSSD0100",
+                    "tele_code": "CSCD0900",
+                    "audio_url": "",
+                    "abr_url": null,
+                    "stillshot_url": "t/ELar4xCDnkmPfBWhjGB1xYMxrD10cSnIaONZH5DoxB8V0WhfwZMFueMRoCHMwuOE6u8xFu4H40d2xLMwQujQ==",
+                    "ndvr_host": "http://tvn-ndvr-mcdn.tving.com/live",
+                    "subpolicy_code": "type1"
+                  }
+                ],
+                "support_info": [
+                  "CSSD0100,CSND0900,CSOD0900,CSCD0900",
+                  "CSSD0200,CSND0200,CSOD0100,CSCD0900",
+                  "CSSD0200,CSND0200,CSOD0200,CSCD0900",
+                  "CSSD0200,CSND0900,CSOD0900,CSCD0900",
+                  "CSSD0300,CSND0200,CSOD0100,CSCD0900",
+                  "CSSD0300,CSND0200,CSOD0200,CSCD0900",
+                  "CSSD0600,CSND0900,CSOD0900,CSCD0900",
+                  "CSSD0700,CSND0900,CSOD0900,CSCD0900"
+                ],
+                "free_yn": "Y",
+                "guest_watch_yn": "N",
+                "isfullvod": null,
+                "pip_media_url": "",
+                "mezzokey": null,
+                "kbo_schedule_info": null
+              },
+              "next_schedule": null,
+              "like_count": 0,
+              "insert_date": 20250128221500,
+              "real_yn": "L",
+              "use_yn": "Y",
+              "live_yn": "N",
+              "live_smr_brand": {
+                "cpid": "CG",
+                "channelid": "C11",
+                "section": "01"
+              },
+              "live_smr_program": {
+                "programid": "C01_B120209766",
+                "category": "03",
+                "section": "02"
+              }
+            }
+          },
+          "bill": {
+          },
+          "ad": null,
+          "stream": {
+            "cdn_server": "AwsCloudFrontCDN",
+            "broadcast": {
+              "broad_url": "958|b5giHTENJ3f3nKKQdSQoKqkuzhjLX/UuqG0OpIzioJLDYzcctL5GLyVD/CeYj+QOJ08B9WhsyTWIcICG3MnPohj6z0U/ITf+nvbxRO0f9vmhEz3u7vZG5+0PWUw1ZcspaZLr3Sn4NabvC0Y9vZDUtb14fsOPgLgIXBoM/4QSQb4HQiXWeAtoiFtjuOPDSLbQwDFc7jMLe3GeslOIfbzXu9MNwGnOk/IoyqXxpxdDuGgeuQQsVlOjMyWTJQ+Wo5LCPH8E/ShZjzVF85mjAo9IMYbHI7LXuTxtwqBbqQQd8iXySEx6Q67W7kLpSMEOFcvikSPHdjSNazEmWE414ut0vYSdUfqE0pwUBDjvCZ1yr5fd/0iwvN9blRYeEyFtCb4oMIOetPTmOePRgAgzAsfiz2AMm3t2Ji3CG8haVFIe5WwWa6L272CEQPmCP/hWlSjxI/V0rCm60B6ro7zMCTYEe+zq7/4euFpkA3SO8HmvOHwMMnPCEdHP84cok38MBSIqUfF1R6E/Ebuo4W7Egv6sNwr9OJdAzQjFwGS42Th0PjJRWBcSYRoxo9Y5TeqGsFUe+OkIns1kMq7s3MkavqymtJoeaE8FHvFiil1WYeLRNa/RehtieFCeecwWoWObAR12VL8LsaoZryNh9+ydElp/OAvCsckPfSGfE99cUrKd9peJZQa78U3L6cTpv5Iodxj+KmRD7td+gWVLmhWkYRCjw5sA0B/qUGQ08Vx1MiS1e9qaZITDuS82crD0zoLsqztWC44ydb7Nmts3FXlViYpbod1sFfV4rmJ6VtED8hot7n2VlrYy2o8j7AfevvcsCs2m9u057raM1UV17X+R3oygSsLN8JkHbWgAP+3JjmhoTEWzCh+qILtdcW7N92Z5BORszdKiszhpyYyWuL3CBhTjI1lIrDja55KGktky8hO48d3pGW8DMTNAfjVb5+xYkOxGsrWWdp56NmyEXccFxTsoL+wdWnxqo/T5SRhUyMdm0H8OxTQonrkzhv26Mw5u8saBY5MWATiUdjv2D+3ABk5vmLpRis0+E7qYL7esIVqW2zncF16rsPZkSleU3gj5W6GNv9GSHMPbINFj4QRw/p8UBGC3rPtguysx/P+QUj8ecackjsOAhnQ8B85mEs4kEiPmWR9L1xtRIODhA8AxDWd8KLW+pxkoKaWbRfJlNB883qQxPnFoMW7dVs/o1vdjY3W0XpDRWp93ho0cSDGt/lJLdOzF1w5L0mvBnB3sMRXa/+hwQor/qWoakls4bnMcJSTI"
+            },
+            "drm_multi_yn": "N",
+            "timeshift_paid_yn": "N",
+            "drm_yn": "N",
+            "quality": [
+              {
+                "code": "stream50",
+                "name": "fullhd",
+                "active": "N",
+                "selected": "N"
+              },
+              {
+                "code": "stream40",
+                "name": "hd",
+                "active": "Y",
+                "selected": "Y"
+              },
+              {
+                "code": "stream30",
+                "name": "high",
+                "active": "Y",
+                "selected": "N"
+              },
+              {
+                "code": "stream25",
+                "name": "low",
+                "active": "Y",
+                "selected": "N"
+              }
+            ],
+            "adaptive": "N",
+            "payType": "nomal",
+            "convivaYn": "N",
+            "audioLufsYn": "N",
+            "timeshift": "Y",
+            "timeshift_time": 120,
+            "audios": [
+            ],
+            "default_stream": "hd",
+            "audioTargetValue": -24
+          },
+          "adProxy": {
+            "policy_id": "WEB_NPU_LIVE",
+            "cutting_points": [
+            ],
+            "mcp_code": "1115",
+            "scp_code": "18",
+            "p_key": "0/1/KOR//299318132/0//299318132",
+            "content_type": "l",
+            "naver_oauth_id": null,
+            "is_cc": "N",
+            "targeting": 1,
+            "channel_code": "C00551",
+            "program_code": "P001392765",
+            "episode_code": "E004310431",
+            "movie_code": null,
+            "clip_code": null,
+            "pip_channel_code": "EA",
+            "pip_program_code": "B120209766",
+            "pip_episode_code": "EA_274584|188",
+            "pip_movie_code": null,
+            "pip_clip_code": null,
+            "grade_code": "CPTG0300",
+            "c_key": "ALL_TOP20/tier_4",
+            "mezzokey": "2/ADV012//EA/P001392765/E004310431/12/1",
+            "adlink": "cpid=CG\u0026channelid=C11\u0026category=03\u0026section=02\u0026programid=C01_B120209766\u0026clipid=\u0026contentnumber=\u0026targetnation=KR\u0026isonair=Y\u0026ispay=N\u0026vodtype=O\u0026broaddate=20250128\u0026playtime=6855\u0026starttime=0\u0026endtime=0",
+            "subpolicy_code": "type1"
+          }
+        }
+      },
+      "mediaCode": "C00551",
+      "programName": "tvN",
+      "cookies": "9f5Ec1XTDj8d1mYCvfcoIw=N; AWSALBTG=7ZD+6RZIRwsOz/QJ2GqhkyQrIx7cTWBYoF0rS0WSxMApNB5WpISbDJzOcgrfFd/ri90kZ7qLwxSGkL2db2M8bAnZEJ4keJFVNp4Ely1tr8jG6uWp9lTDSsTuAaYVxgcdRr7yxahRhjxiF14aDwQMpw1ibqqlhPI+QvqfYytnfpVc; AWSALBTGCORS=7ZD+6RZIRwsOz/QJ2GqhkyQrIx7cTWBYoF0rS0WSxMApNB5WpISbDJzOcgrfFd/ri90kZ7qLwxSGkL2db2M8bAnZEJ4keJFVNp4Ely1tr8jG6uWp9lTDSsTuAaYVxgcdRr7yxahRhjxiF14aDwQMpw1ibqqlhPI+QvqfYytnfpVc; CloudFront-Key-Pair-Id=APKAIXCIJCFRGOUEZDWA; CloudFront-Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Iio6Ly90dm4tbWNkbi50dmluZy5jb20vdHZuL2xpdmUxMDAwLnNtaWwqIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzM4MTU2NTU0fSwiSXBBZGRyZXNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__; CloudFront-Signature=EHCS71So42er0NKbzTv2T09B7Mqwu5hhFqWBTRuo7dJYI80pJHwTfK7lt-YTNzcTBBe6GWQ0Xsw2-45vF9DbID7WZN3Ky9lctgl8ODiXCsknojLr5KyD2mp1l6PG9-Nwm8wZYRvYLy5xeU0hL0KDlq9HWXnlYz~tPopSPdLDEgF5gWeZD3R4B7prgicYJgRD7n4gXbDuySQtGD4RdbZDj710RayS3JE9RHXnUcDFcf4UsfX8-EXBj0TvZ41b-syRBWiMqkTSJKxpsOmjPYPbk85VBts5PYoTNnGpRyYXKC1wQm1azSmFGuKwuEx10ea10pAUIzJvyLjMolbwixvj0w__; GA360_USERTYPE_JSON=%7B%22dm019_paycnt%22%3A%22%22%2C%22dm016_TL_FYMD%22%3A%22%22%2C%22dm018_LP_FYMD%22%3A%22%22%2C%22dm022_MP_CYMD%22%3A%22%22%2C%22dm051_CYMD%22%3A%22%22%2C%22dm017_TL_CYMD%22%3A%22%22%2C%22dm020_LP_CYMD%22%3A%22%22%2C%22dm001_userToken%22%3A%22596DarMcZ%2FQ7XUFDf7k3JQ%3D%3D%22%2C%22dm009_usertype%22%3A%22N%22%2C%22dm050_FYMD%22%3A%22%22%2C%22dm021_MP_FYMD%22%3A%22%22%2C%22dm013_resIsPaid%22%3A%22F%22%7D; LAST_LOGIN_TYPE=94; LEGAL_CONFIRM_YN=N; MASTER_PROFILE_LOCK_YN=N; TLPUDB35Qhn7=20250114004059; TP2wgas1K9Q8F7B359108383=Y; TPLYFLt9NxVcJjQhn7Ee0069=N; TVING_AUTO_EXPIRE_TIME=FHi0wXJTfQXQ30DOaVSmxA%3D%3D; TVING_LOGIN_JOIN_LOGGER_RTURL=\"\"; TVING_SESSION=7a891048-6088-4b71-aec8-7792f6d78925; __cf_bm=5sX8bAEjoKveiIKCv7.d3ADrzAtZQig1ZpVitGyF2NM-1738069649-1.0.1.1-Ji7CVC9RqP8hJyfGV4jT0bRsxlep9cv1UFfQSQJCcjtVisNSAd3P2FBIFYhUG..L9NOf0VJmrwslH.uRNmPRkw; _aproxy_aid=FH83Y2Zp2TTxnG3i; _aproxy_pref={%22WEB_NPU_LIVE%22:{}}; _cfuvid=fM2lkGHdgHVFdIVeWIDHhZgvkpADdFJcePbr0rvDgOs-1738069649820-0.0.1.1-604800000; _fbp=fb.1.1737986220425.732809408289355251; _fwb=6098QhAYgFYeUmYhh3xdqP.1737986218133; _ga=GA1.1.625943814.1737986353; _ga_7ERF1X30YC=GS1.1.1738066545.8.1.1738069854.0.0.0; _ga_Q7X687NZVQ=GS1.2.1738061610.1.1.1738061620.50.0.0; _gcl_au=1.1.1680889509.1737986218; _gid=GA1.2.112182899.1738061610; _login_onetime_www_hellovision=Y; _snsToken=596DarMcZ%2FQ7XUFDf7k3JQ%3D%3D; _tt_enable_cookie=1; _ttp=gHUC07EQd5XSFA9QblLKp69DUjW.tt.1; _tutB3583=596DarMcZ%2FQ7XUFDf7k3JQ%3D%3D; _tving_token=596DarMcZ%2FQ7XUFDf7k3JQ%3D%3D; ab.storage.deviceId.0ba2d3e8-c535-437c-84c2-f5f44a3691a7=%7B%22g%22%3A%2240e6b897-242c-f7d0-146e-cee1727d2884%22%2C%22c%22%3A1737986218410%2C%22l%22%3A1738065289386%7D; ab.storage.sessionId.0ba2d3e8-c535-437c-84c2-f5f44a3691a7=%7B%22g%22%3A%22a0d85b2b-6ad2-d6dc-6b37-1b42810efd01%22%2C%22e%22%3A1738071955122%2C%22c%22%3A1738065289385%2C%22l%22%3A1738070155122%7D; ab.storage.userId.0ba2d3e8-c535-437c-84c2-f5f44a3691a7=%7B%22g%22%3A%22596DarMcZ%2FQ7XUFDf7k3JQ%3D%3D%22%2C%22c%22%3A1737986218402%2C%22l%22%3A1738065289387%7D; accessToken=bc18222840e95de55b218493960537933e2e2e026ed526aec3ca4e5ca1109a17ce20e524d938425a8f34ddf231baae7f; amp_1dd5fb=nHlmFXDWC5wj7t0Vm2pquB...1iim8mf3n.1iim8mf3n.0.0.0; amp_c2b312=yaS8GlyyURDCN685vrw6qN.NTk2RGFyTWNaL1E3WFVGRGY3azNKUT09..1iimbfqa2.1iimgrnl5.aj.8b.iu; amp_c2b312_tving.com=yaS8GlyyURDCN685vrw6qN.NTk2RGFyTWNaL1E3WFVGRGY3azNKUT09..1iiln5uva.1iiloqa4t.97.40.d7; authToken=jwTioIbI8ArefLLn0jgPeHABwV7p8vGEYWzjAZrAznY%3D; cs=screenCode%3DCSSD0100%3BnetworkCode%3DCSND0900%3BosCode%3DCSOD0900%3BteleCode%3DCSCD0900; llsct=XC8DvIP1jqZbEmhS4bcVCw%3D%3D; refreshToken=2a6ebb3f534c631741684eae9711f0d6a0efe97fa6cf651e4e17357158323338c2eb357f31a044ba9f507e3c7097bdaa; sendbirdSession_299318132=%7B%22token%22%3A%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoxNzk1MzE1MDYsInYiOjEsImUiOjE3Mzk3MTQyMjB9.ChpNO9dSF8gpdUykYaayvlnngqJshzTnu5L71qiGCzk%22%2C%22expires%22%3A%222025-02-16T13%3A57%3A00.000Z%22%2C%22refreshBy%22%3A%222025-02-09T13%3A57%3A00.000Z%22%7D; tving_logger=-1; wcs_bt=s_1b6ae80a204f:1738070154; webOauthCancelUrl=https%3A%2F%2Fwww.tving.com%2Faccount%2F%2Flogin",
       "contentInfo": {
-        "code": "E000019908",
-        "vod_type": "CSMD0100",
-        "last_view_time": 0,
-        "preview_display_yn": "Y",
-        "title": "화성인 X파일",
-        "channel": "tvN",
-        "channel_code": "C00551",
-        "frequency": 1,
-        "duration": 2782,
-        "ending_credit_sec": 2726,
-        "grade_code": "CPTG0400",
-        "episode_grade_code": "CPTG0100",
-        "director": [
-          "문태주"
-        ],
-        "actor": [
-          "MC 붐",
-          "대한민국 화성인들"
-        ],
-        "script": null,
-        "keywords": null,
-        "synopsis": "외모, 능력,재력,취미,성격 모든 면에서 보통사람과 다른 특별한 신인류! 그들은 우리와 무엇이 어떻게 다를까??",
-        "image": [
-          {
-            "url": "/upload/cms/caip/CAIP0100/P08214.png",
-            "url2": null,
-            "code": "CAIP0100"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP0200/ko/20110121/P08214.jpg",
-            "url2": null,
-            "code": "CAIP0200"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP0400/ko/20110121/P08214.jpg",
-            "url2": null,
-            "code": "CAIP0400"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP0500/ko/20110121/P08214.jpg",
-            "url2": null,
-            "code": "CAIP0500"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP0600/P08214.png",
-            "url2": null,
-            "code": "CAIP0600"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP0800/P08214.png",
-            "url2": null,
-            "code": "CAIP0800"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP0900/ko/20110121/P08214.jpg",
-            "url2": null,
-            "code": "CAIP0900"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP1000/P08214.jpg",
-            "url2": null,
-            "code": "CAIP1000"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP1200/P08214.jpg",
-            "url2": null,
-            "code": "CAIP1200"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP1300/P08214.jpg",
-            "url2": null,
-            "code": "CAIP1300"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP1400/P08214.png",
-            "url2": null,
-            "code": "CAIP1400"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP1500/ko/20110121/P08214.jpg",
-            "url2": null,
-            "code": "CAIP1500"
-          },
-          {
-            "url": "/upload/cms/caip/CAIP1600/P08214.jpg",
-            "url2": null,
-            "code": "CAIP1600"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP4000/com/20240822/0351/P08214.jpg",
-            "url2": null,
-            "code": "CAIP4000"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP4200/com/20240822/0351/P08214.jpg",
-            "url2": null,
-            "code": "CAIP4200"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP4210/com/20240822/0351/P08214.jpg",
-            "url2": null,
-            "code": "CAIP4210"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caip/CAIP4220/com/20240822/0351/P08214.jpg",
-            "url2": null,
-            "code": "CAIP4220"
-          }
-        ],
-        "episode_broad_dt": "20100916",
-        "episode_title": "쇼퍼홀릭 발레리나, 루저남 ceo",
-        "episode_synopsis": "* 화성인 X파일 1회\r\n\r\n신인류 No.1 쇼퍼홀릭 발레리나\r\n머리끝부터 발끝까지 우아하게! 쇼핑 하나면 만사 OK! 쇼퍼홀릭 발레리나 신인류 등장!\r\n백조보다 우아한 발레리나가 신인류로 목격됐다?!\r\n보유가방 약 100개! 가격표도 안 뗀 옷이 수 십 벌! 한정판은 무조건 구입! 마음에 드는 상품은 색깔별로!\r\n끼니는 걸러도 쇼핑은 거를 수 없다! 1%의 쇼핑 유전자를 타고난 진정한 쇼퍼홀릭 신인류!\r\n물건이 필요해서 쇼핑을 하는 것이 아니라 쇼핑 그 자체를 즐기는 그녀!\r\n다년간의 쇼핑으로 쌓인 신인류의 내공이 담긴 쇼핑 팁부터 똑똑한 신상녀 되는 노하우까지~!\r\n과연 그녀는 진정한 신인류일까?\r\n\r\n신인류 No.1 단신남 쇼핑몰 CEO\r\n168cm의 단신남이라서 행복하다! ′단신남′에서 ′위너남′으로 인생 대역전 신인류 등장!\r\n하루 방문자만 무려 10만명! 하루 최고 매출만 무려 5000만원?! \r\n주목받는 20대 인터넷 쇼핑몰 CEO, 신인류 등장!\r\n피팅모델로도 활동하고 있는 그의 키는 겨우 168cm?!\r\n168cm의 굴욕적인 키에도 불구하고 그에겐 자체발광 여신포스의 약혼녀가 있다?!\r\n′단신남′ 전문 쇼핑몰을 운영하며 ′단신남′에서 ′위너남′으로 인생 대역전! \r\n능력자의 포스를 풍기는 그의 최대 관심사는 차?! \r\n1억 이상의 슈퍼카 두 대! 자동차 튜닝비가 일반 자동차 한 대 값?!\r\n우월한 재력과 능력을 두루 갖춘 신인류의 정체는 과연 무엇일까? \r\n\r\n",
-        "episode_image": [
-          {
-            "url": "/upload/cms/caie/CAIE0200/E000019908.jpg",
-            "url2": null,
-            "code": "CAIE0200"
-          },
-          {
-            "url": "/ntgs/contents/CTC/caie/CAIE0400/com/20110222/E000019908.jpg",
-            "url2": null,
-            "code": "CAIE0400"
-          },
-          {
-            "url": "/upload/cms/caie/20110421132914IMG_FILE_3.jpg",
-            "url2": null,
-            "code": "CAIE0600"
-          },
-          {
-            "url": "/upload/cms/caie/CAIE1200/E000019908.jpg",
-            "url2": null,
-            "code": "CAIE1200"
-          }
-        ],
-        "broad_state": "CPBS0300",
-        "broad_end_dt": "20130801",
-        "broad_dt": "20100916",
-        "broad_week": "목",
-        "broad_hour": "00",
-        "broad_minu": "00",
-        "product_year": 2010,
-        "release_date": 0,
-        "episode_sort": 1,
-        "season_no": "0",
-        "season_code": "T100003943",
-        "category_code": "PCD",
-        "category_name": "예능",
-        "genre_code": "PCD024",
-        "genre_name": "관찰리얼리티",
-        "program_code": "P08214",
-        "insert_date": 20110223002947,
-        "open_text": null,
-        "hdr_type": "",
-        "audio_type": "",
-        "billing_package_tag": "",
-        "drm_yn": "N",
-        "fan_yn": "N",
-        "tving_exclusive_yn": "N",
-        "tving_original_yn": "N",
-        "paramount_yn": "N",
-        "apple_yn": "N",
-        "quickup_yn": "N",
-        "uhd_4k_yn": "N",
-        "subtitle_ver_yn": "N",
-        "dub_ver_yn": "N",
-        "event_yn": "N",
-        "cine_same_yn": "N",
-        "first_open_yn": "N",
-        "ko_cc_yn": "N",
-        "free_yn": "N",
-        "sale_status": 2200
-      },
-      "streamAuthData": {
-        "code": "150",
-        "message": "구매 후 이용 가능합니다.",
-        "sub_message": null,
-        "auth_type": "PRE",
-        "content_type": "PREVIEW",
-        "link_url": null,
-        "link_target": null
-      },
-      "mediaCode": "P08214",
-      "newMediaCode": "E000019908",
-      "programCode": "P08214",
-      "programName": "화성인 X파일",
-      "lastPlayTime": "",
-      "openText": null,
-      "isEroticCode": false,
-      "preReleaseClipInfo": [
-      ],
-      "saleStatus": 2200
+        "server": {
+          "time": "20250128221557",
+          "host": "api.tving.com",
+          "port": 80,
+          "context": ""
+        },
+        "user": {
+          "id": "772vjrvj@naver.com",
+          "age": 0,
+          "type": "94",
+          "ip": "15.165.132.162",
+          "profile_no": "299318132",
+          "no": "299318132"
+        },
+        "result": {
+          "code": "090",
+          "message": "방송 정보를 불러올 수 없습니다.\n잠시 후 다시 시도해주세요. (유효하지 않은 파라미터 (mediaCode))",
+          "sub_message": null,
+          "auth_type": null,
+          "content_type": null,
+          "link_url": null,
+          "link_target": null
+        },
+        "content": null,
+        "bill": null
+      }
     },
     "__lang": "ko",
     "__namespaces": {
@@ -504,7 +4920,8 @@
               "six": "결제 관련 문의는 고객문의 게시판 또는 고객센터(1670-1525)로 문의하시기 바랍니다."
             }
           },
-          "watch": {"delete": "시청 내역이 삭제되었습니다.",
+          "watch": {
+            "delete": "시청 내역이 삭제되었습니다.",
             "select": "삭제할 시청내역을 선택해 주세요.",
             "no_result": "시청 내역이 없습니다.",
             "no_result_program": "시청하신 시리즈가 없습니다.",
@@ -661,9 +5078,9 @@
     },
     "__N_SSP": true
   },
-  "page": "/contents/[mediaCode]",
+  "page": "/player/[slug]",
   "query": {
-    "mediaCode": "P08214"
+    "slug": "C00551"
   },
   "buildId": "feCqEIrkr5JN0wjZ0aZl8",
   "assetPrefix": "/mono",

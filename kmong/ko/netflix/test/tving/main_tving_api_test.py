@@ -267,6 +267,14 @@ def _fetch_place_info(url, result):
         match = re.search(r'/player/(.+)', url)
         if match:
             contents_id = match.group(1)  # '/player/' 뒤의 값 반환
+
+        if '/' in contents_id:
+            # '/'로 나누고 첫 번째 부분 가져오기
+            contents_id = contents_id.split('/')[0]
+            # '.#' 제거
+            contents_id = contents_id.replace('.', '').replace('#', '')
+
+
         new_url = f"https://www.tving.com/player/{contents_id}"
         print(f'player new_url : {new_url}')
         _api_tving_contents(new_url, result)
@@ -278,6 +286,14 @@ def _fetch_place_info(url, result):
         match = re.search(r'/program/(.+)', url)
         if match:
             contents_id = match.group(1)  # '/player/' 뒤의 값 반환
+
+        if '/' in contents_id:
+            # '/'로 나누고 첫 번째 부분 가져오기
+            contents_id = contents_id.split('/')[0]
+            # '.#' 제거
+            contents_id = contents_id.replace('.', '').replace('#', '')
+
+
         new_url = f"http://www.tving.com/contents/{contents_id}"
         print(f'program new_url : {new_url}')
         _api_tving_contents(new_url, result)

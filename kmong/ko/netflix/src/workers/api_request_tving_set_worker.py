@@ -13,7 +13,22 @@ import pandas as pd
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 from selenium import webdriver
-
+import os
+import random
+import re
+import ssl
+import time
+import pandas as pd
+import psutil
+import requests
+from datetime import datetime
+from PyQt5.QtCore import QThread, pyqtSignal
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -30,140 +45,191 @@ class ApiRequestTvingSetLoadWorker(QThread):
         self.running = True  # 실행 상태 플래그 추가
         self.sess = requests.Session()
         self.baseUrl = "https://www.tving.com"
-
         self.driver  = None
-        self.version = None
-        self.headers = None
 
         # 현재 시간을 'yyyymmddhhmmss' 형식으로 가져오기
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
         self.file_name = f"티빙_{current_time}.xlsx"
         if len(self.url_list) <= 0:
             self.log_signal.emit(f'등록된 url이 없습니다.')
+        else:
+            self.driver = self.setup_driver()
+
+
+    def close_chrome_processes(self):
+        """모든 Chrome 프로세스를 종료합니다."""
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                if 'chrome' in proc.info['name'].lower():
+                    proc.kill()  # Chrome 프로세스를 종료
+                    # print(f"종료된 프로세스: {proc.info['name']} (PID: {proc.info['pid']})")
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+
+
+    def setup_driver(self):
+        try:
+            self.close_chrome_processes()
+
+            chrome_options = Options()
+            user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
+            profile = "Default"
+
+            chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+            chrome_options.add_argument(f"profile-directory={profile}")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-software-rasterizer")
+            chrome_options.add_argument("--start-maximized")
+            # chrome_options.add_argument("--headless")  # Headless 모드 추가
+
+            user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            chrome_options.add_argument(f'user-agent={user_agent}')
+            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_options.add_experimental_option('useAutomationExtension', False)
+
+            download_dir = os.path.abspath("downloads")
+            os.makedirs(download_dir, exist_ok=True)
+
+            chrome_options.add_experimental_option('prefs', {
+                "download.default_directory": download_dir,
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing.enabled": True
+            })
+
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+            script = '''
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                window.navigator.chrome = { runtime: {} };
+                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+            '''
+            driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+
+            return driver
+        except WebDriverException as e:
+            print(f"Error setting up the WebDriver: {e}")
+            return None
+
+
+    def get_cookies_from_browser(self, url):
+        self.driver.get(url)
+        cookies = self.driver.get_cookies()
+
+        if not cookies:  # 쿠키가 없는 경우
+            return None
+
+        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        return cookie_dict
 
 
     def login(self):
-        webdriver_options = webdriver.ChromeOptions()
+        try:
+            # 필요한 쿠키 키 목록
+            required_cookies = [
+                "authToken",
+                "accessToken",
+                "refreshToken",
+            ]
 
-        # 이 옵션은 Chrome이 자동화 도구(예: Selenium)에 의해 제어되고 있다는 것을 감지하지 않도록 만듭니다.
-        # AutomationControlled 기능을 비활성화하여 webdriver가 브라우저를 자동으로 제어하는 것을 숨깁니다.
-        # 이는 일부 웹사이트에서 자동화 도구가 감지되는 것을 방지하는 데 유용합니다.
-        ###### 자동 제어 감지 방지 #####
-        webdriver_options.add_argument('--disable-blink-features=AutomationControlled')
+            cookies = self.get_cookies_from_browser(self.baseUrl)
 
-        # Chrome 브라우저를 실행할 때 자동으로 브라우저를 최대화 상태로 시작합니다.
-        # 이 옵션은 사용자가 브라우저를 처음 실행할 때 크기가 자동으로 최대로 설정되도록 합니다.
-        ##### 화면 최대 #####
-        webdriver_options.add_argument("--start-maximized")
+            if all(key in cookies for key in required_cookies):
+                self.cookies = cookies
+                self.log_signal.emit("회원 확인.")
 
-        # headless 모드로 Chrome을 실행합니다.
-        # 이는 화면을 표시하지 않고 백그라운드에서 브라우저를 실행하게 됩니다.
-        # 브라우저 UI 없이 작업을 수행할 때 사용하며, 서버 환경에서 유용합니다.
-        ##### 화면이 안보이게 함 #####
-        webdriver_options.add_argument("--headless")
+            if cookies is None:
+                self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
+                return False
+            else:
+                self.cookies = cookies
+                self.log_signal.emit("★ 쿠키 확인 성공.")
+                self.log_signal.emit("※※※※ ★회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
+                return True
 
-        #이 설정은 Chrome의 자동화 기능을 비활성화하는 데 사용됩니다.
-        #기본적으로 Chrome은 자동화가 활성화된 경우 브라우저의 콘솔에 경고 메시지를 표시합니다.
-        #이 옵션을 설정하면 이러한 경고 메시지가 나타나지 않도록 할 수 있습니다.
-        ##### 자동 경고 제거 #####
-        webdriver_options.add_experimental_option('useAutomationExtension', False)
-
-        # 이 옵션은 브라우저의 로깅을 비활성화합니다.
-        # enable-logging을 제외시키면, Chrome의 로깅 기능이 활성화되지 않아 불필요한 로그 메시지가 출력되지 않도록 할 수 있습니다.
-        ##### 로깅 비활성화 #####
-        webdriver_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
-        # 이 옵션은 enable-automation 스위치를 제외시킵니다.
-        # enable-automation 스위치가 활성화되면,
-        # 자동화 도구를 사용 중임을 알리는 메시지가 브라우저에 표시됩니다.
-        # 이를 제외하면 자동화 도구의 사용이 감지되지 않습니다.
-        ##### 자동화 도구 사용 감지 제거 #####
-        webdriver_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        self.driver = webdriver.Chrome(options=webdriver_options)
-        self.driver.set_page_load_timeout(120)
-        self.driver.get(self.baseUrl)
-        cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            self.sess.cookies.set(cookie['name'], cookie['value'])
-        self.version = self.driver.capabilities["browserVersion"]
-        self.headers = {
-            "User-Agent": f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{self.version}"
-        }
-        self.driver.quit()
+        except Exception as e:
+            self.log_signal.emit(f"넷플릭스 로그인 중 에러 발생 : {e}")
+            return False
 
 
     def run(self):
         if len(self.url_list) > 0:
-            self.login()
-            self.log_signal.emit("크롤링 시작")
-            result_list = []
-            for idx, url in enumerate(self.url_list, start=1):
+            login = self.login()
+            if login:
+                self.log_signal.emit("크롤링 시작")
+                result_list = []
+                for idx, url in enumerate(self.url_list, start=1):
 
-                if not self.running:  # 실행 상태 확인
-                    self.log_signal.emit("크롤링이 중지되었습니다.")
-                    break
+                    if not self.running:  # 실행 상태 확인
+                        self.log_signal.emit("크롤링이 중지되었습니다.")
+                        break
 
-                # 10개의 항목마다 임시로 엑셀 저장
-                if (idx - 1) % 10 == 0 and result_list:
-                    self._save_to_csv_append(result_list)  # 임시 엑셀 저장 호출
-                    self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
-                    result_list = []  # 저장 후 초기화
+                    # 10개의 항목마다 임시로 엑셀 저장
+                    if (idx - 1) % 10 == 0 and result_list:
+                        self._save_to_csv_append(result_list)  # 임시 엑셀 저장 호출
+                        self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
+                        result_list = []  # 저장 후 초기화
 
-                result = {
-                    "origin_url": url,
-                    "url": "",
-                    "title": "",
-                    "episode_synopsis": "",
-                    "episode_title": "",
-                    "episode_seq": "",
-                    "episode_season": "",
-                    "year": "",
-                    "season": "",
-                    "rating": "",
-                    "genre": "",
-                    "summary": "",
-                    "cast": "",
-                    "director": "",
-                    "success": "X",
-                    "message": "",
-                    "error": "X"
-                }
+                    result = {
+                        "origin_url": url,
+                        "url": "",
+                        "title": "",
+                        "episode_synopsis": "",
+                        "episode_title": "",
+                        "episode_seq": "",
+                        "episode_season": "",
+                        "year": "",
+                        "season": "",
+                        "rating": "",
+                        "genre": "",
+                        "summary": "",
+                        "cast": "",
+                        "director": "",
+                        "success": "X",
+                        "message": "",
+                        "error": "X"
+                    }
 
-                self.log_signal.emit(f'번호 : {idx}, 시작')
-                self._fetch_place_info(url, result)
-                self._error_chk(result)
-                self.log_signal.emit(f'번호 : {idx}, 데이터 : {result}')
+                    self.log_signal.emit(f'번호 : {idx}, 시작')
+                    self._fetch_place_info(url, result)
+                    self._error_chk(result)
+                    self.log_signal.emit(f'번호 : {idx}, 데이터 : {result}')
 
-                pro_value = (idx / len(self.url_list)) * 1000000
-                self.progress_signal.emit(self.before_pro_value, pro_value)
-                self.before_pro_value = pro_value
+                    pro_value = (idx / len(self.url_list)) * 1000000
+                    self.progress_signal.emit(self.before_pro_value, pro_value)
+                    self.before_pro_value = pro_value
 
-                result_list.append(result)
-                time.sleep(random.uniform(0.5, 1))
+                    result_list.append(result)
+                    time.sleep(random.uniform(0.5, 1))
 
-            # 남은 데이터 저장
-            if result_list:
-                self._save_to_csv_append(result_list)
+                # 남은 데이터 저장
+                if result_list:
+                    self._save_to_csv_append(result_list)
 
-            # CSV 파일을 엑셀 파일로 변환
-            try:
-                csv_file_name = self.file_name  # 기존 CSV 파일 이름
-                excel_file_name = csv_file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+                # CSV 파일을 엑셀 파일로 변환
+                try:
+                    csv_file_name = self.file_name  # 기존 CSV 파일 이름
+                    excel_file_name = csv_file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
 
-                self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {csv_file_name} → {excel_file_name}")
-                df = pd.read_csv(csv_file_name)  # CSV 파일 읽기
-                df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
+                    self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {csv_file_name} → {excel_file_name}")
+                    df = pd.read_csv(csv_file_name)  # CSV 파일 읽기
+                    df.to_excel(excel_file_name, index=False)  # 엑셀 파일로 저장
 
-                # 마지막 세팅
-                pro_value = 1000000
-                self.progress_signal.emit(self.before_pro_value, pro_value)
+                    # 마지막 세팅
+                    pro_value = 1000000
+                    self.progress_signal.emit(self.before_pro_value, pro_value)
 
-                self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
-                self.progress_end_signal.emit()
+                    self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
+                    self.progress_end_signal.emit()
 
-            except Exception as e:
-                self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
-
+                except Exception as e:
+                    self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+            else:
+                self.log_signal.emit("로그인 실패.")
         else:
             self.log_signal.emit("url를 입력하세요.")
 
@@ -215,9 +281,17 @@ class ApiRequestTvingSetLoadWorker(QThread):
             match = re.search(r'/player/(.+)', url)
             if match:
                 contents_id = match.group(1)  # '/player/' 뒤의 값 반환
+
+            if '/' in contents_id:
+                # '/'로 나누고 첫 번째 부분 가져오기
+                contents_id = contents_id.split('/')[0]
+                # '.#' 제거
+                contents_id = contents_id.replace('.', '').replace('#', '')
+
             new_url = f"https://www.tving.com/player/{contents_id}"
             print(f'player new_url : {new_url}')
-            self._api_tving_contents(new_url, result)
+            self._api_tving_player(new_url, result)
+
 
         # CASE2
         elif "/program/" in url:
@@ -226,17 +300,78 @@ class ApiRequestTvingSetLoadWorker(QThread):
             match = re.search(r'/program/(.+)', url)
             if match:
                 contents_id = match.group(1)  # '/player/' 뒤의 값 반환
+
+            if '/' in contents_id:
+                # '/'로 나누고 첫 번째 부분 가져오기
+                contents_id = contents_id.split('/')[0]
+                # '.#' 제거
+                contents_id = contents_id.replace('.', '').replace('#', '')
+
             new_url = f"http://www.tving.com/contents/{contents_id}"
             print(f'program new_url : {new_url}')
             self._api_tving_contents(new_url, result)
 
 
-    def _api_tving_contents(self, new_url, result):
+    def _api_tving_player(self, new_url, result, type, id):
         result['url'] = new_url
 
         try:
+            self.driver.get(new_url)
+            time.sleep(1)
+            # 페이지 로드 후 HTML 가져오기
+            page_source = self.driver.page_source
+            soup = BeautifulSoup(page_source, 'html.parser')
+
+            script_tags = soup.find_all("script", type="application/json")
+            script_tag = None
+            for tag in script_tags:
+                if tag.get("id") == "__NEXT_DATA__":
+                    script_tag = tag
+                    break
+
+            if not script_tag or not script_tag.string:
+                result['message'] = "JSON script tag not found"
+
+            # JSON 파싱
+            json_data = json.loads(script_tag.string)
+
+            self._data_set_json_info(json_data, result)
+
+        except WebDriverException as e:
+            result['message'] = f"WebDriver Error: {str(e)}"
+        except json.JSONDecodeError:
+            result['message'] = "Failed to parse JSON"
+        except Exception as e:
+            result['message'] = str(e)
+
+
+    def _api_tving_contents(self, new_url, result):
+        result['url'] = new_url
+
+        headers = {
+            "authority": "www.tving.com",
+            "method": "GET",
+            "scheme": "https",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "cache-control": "max-age=0",
+            "priority": "u=0, i",
+            "referer": "https://user.tving.com/",
+            "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+        }
+
+        try:
             # HTML 요청
-            response = self.sess.get(new_url, headers=self.headers)
+            response = requests.get(new_url, headers=headers, cookies=self.cookies)
             response.raise_for_status()  # HTTP 에러 확인
 
             # BeautifulSoup로 HTML 파싱
@@ -277,7 +412,37 @@ class ApiRequestTvingSetLoadWorker(QThread):
         content_info_message = content_info.get("message", {})
         content_info_content = content_info.get("content", {})
 
-        if content_info_message:
+        if content:
+            print('content')
+            content_schedule = content.get("info", {}).get("schedule", {})
+            program = content_schedule.get("program", {})
+            episode = content_schedule.get("episode", {})
+
+            result['title']             = content.get("program_name", {})
+            result['episode_title']     = content.get("episode_name", {})
+            result['episode_seq']       = content.get("frequency", "")
+
+            result['summary']           = program.get("synopsis", {}).get("ko", "")
+            result['cast']              = ", ".join(program.get("actor", []))
+            result['director']          = ", ".join(program.get("director", []))
+            result['episode_season']    = program.get("season_pgm_no", "")
+            result['season']            = program.get("season_pgm_no", "")
+            result['year']              = program.get("product_year", "")
+            result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
+
+            result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
+            category1_name = episode.get("category1_name", {}).get("ko", "")
+            category2_name = episode.get("category2_name", {}).get("ko", "")
+            if category1_name and category2_name:
+                category = f"{category1_name}, {category2_name}"
+            else:
+                category = category1_name
+            result['genre'] = category
+
+            result['success'] = "O"
+            result['message'] = "성공"
+            result['error']   = "X"
+        elif content_info_message:
             print('content_info_message')
             result['success']           = "O"
             result['message']           = content_info_message
@@ -316,36 +481,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
             result['success']           = "O"
             result['message']           = "성공"
             result['error']             = "X"
-        elif content:
-            print('content')
-            content_schedule = content.get("info", {}).get("schedule", {})
-            program = content_schedule.get("program", {})
-            episode = content_schedule.get("episode", {})
 
-            result['title']             = content.get("program_name", {})
-            result['episode_title']     = content.get("episode_name", {})
-            result['episode_seq']       = content.get("frequency", "")
-
-            result['summary']           = program.get("synopsis", {}).get("ko", "")
-            result['cast']              = ", ".join(program.get("actor", []))
-            result['director']          = ", ".join(program.get("director", []))
-            result['episode_season']    = program.get("season_pgm_no", "")
-            result['season']            = program.get("season_pgm_no", "")
-            result['year']              = program.get("product_year", "")
-            result['rating']            = '19+' if program.get("adult_yn", "") == "Y" else 'All'''
-
-            result['episode_synopsis']  = episode.get("synopsis", {}).get("ko", "")
-            category1_name = episode.get("category1_name", {}).get("ko", "")
-            category2_name = episode.get("category2_name", {}).get("ko", "")
-            if category1_name and category2_name:
-                category = f"{category1_name}, {category2_name}"
-            else:
-                category = category1_name
-            result['genre'] = category
-
-            result['success'] = "O"
-            result['message'] = "성공"
-            result['error']   = "X"
 
 
     # 프로그램 중단
