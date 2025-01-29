@@ -5,12 +5,12 @@ import re
 import ssl
 import time
 from datetime import datetime
-from urllib.parse import urlparse
 
 import pandas as pd
 import psutil
 import requests
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop
+from PyQt5.QtWidgets import QMessageBox
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -26,6 +26,9 @@ class ApiRequestTvingSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)  # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
+    msg_signal = pyqtSignal(str, str)
+    msg_response_signal = pyqtSignal(bool)  # 부모가 메시지 응답(확인/취소)을 전달하는 시그널
+    finally_finished_signal = pyqtSignal(str)
 
     # 초기화
     def __init__(self, url_list):
@@ -37,6 +40,9 @@ class ApiRequestTvingSetLoadWorker(QThread):
         self.sess = requests.Session()
         self.baseUrl = "https://www.tving.com"
         self.driver  = None
+        self.response = None  # 사용자의 응답을 저장할 변수
+        self.msg_response_signal.connect(self.handle_message_response)  # 부모 응답 처리 함수 연결
+        self.loop = None  # 이벤트 루프 객체
 
         # 현재 시간을 'yyyymmddhhmmss' 형식으로 가져오기
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -49,64 +55,12 @@ class ApiRequestTvingSetLoadWorker(QThread):
     # 실행
     def run(self):
         if len(self.url_list) > 0:
-            login = self.login()
-            if login:
-                self.log_signal.emit("크롤링 시작")
-                self.result_list = []
-                for idx, url in enumerate(self.url_list, start=1):
-
-                    if not self.running:  # 실행 상태 확인
-                        self.log_signal.emit("크롤링이 중지되었습니다.")
-                        break
-
-                    # 10개의 항목마다 임시로 엑셀 저장
-                    if (idx - 1) % 10 == 0 and self.result_list:
-                        self._save_to_csv_append(self.result_list)  # 임시 엑셀 저장 호출
-                        self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
-                        self.result_list = []  # 저장 후 초기화
-
-                    result = {
-                        "origin_url": url,
-                        "url": "",
-                        "title": "",
-                        "episode_synopsis": "",
-                        "episode_title": "",
-                        "episode_seq": "",
-                        "episode_season": "",
-                        "year": "",
-                        "season": "",
-                        "rating": "",
-                        "genre": "",
-                        "summary": "",
-                        "cast": "",
-                        "director": "",
-                        "success": "X",
-                        "message": "",
-                        "error": "X"
-                    }
-
-                    self.log_signal.emit(f'번호 : {idx}, 시작')
-                    self._fetch_place_info(url, result)
-                    self._error_chk(result)
-                    self.log_signal.emit(f'번호 : {idx}, 데이터 : {result}')
-
-                    pro_value = (idx / len(self.url_list)) * 1000000
-                    self.progress_signal.emit(self.before_pro_value, pro_value)
-                    self.before_pro_value = pro_value
-
-                    self.result_list.append(result)
-                    time.sleep(random.uniform(0.5, 1))
-
-                self._remain_data_set()
-
-            else:
-                self.log_signal.emit("로그인 실패.")
+            self._main()
         else:
             self.log_signal.emit("url를 입력하세요.")
-        self.driver.quit()
 
     # 로그인
-    def _login(self):
+    def _main(self):
         try:
             # 필요한 쿠키 키 목록
             required_cookies = [
@@ -114,25 +68,77 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 "accessToken",
                 "refreshToken",
             ]
-
             cookies = self._get_cookies_from_browser(self.baseUrl)
-            if cookies is None:
-                self.log_signal.emit("로그인 후 프로그램을 다시 실행하세요.")
-                return False
-
             if all(key in cookies for key in required_cookies):
                 self.cookies = cookies
                 self.log_signal.emit("회원 확인.")
                 self.cookies = cookies
-                self.log_signal.emit("★ 쿠키 확인 성공.")
-                self.log_signal.emit("※※※※ ★회원과 ★쿠키가 모두 성공해야 정상적인 크롤링이 진행됩니다.")
+                self.log_signal.emit("쿠키 확인 성공.")
+                self._crawling()
                 return True
             else:
+                self.msg_signal.emit("로그인 필요", "로그인 후 확인을 눌러주세요.")
                 return False
-
         except Exception as e:
             self.log_signal.emit(f"넷플릭스 로그인 중 에러 발생 : {e}")
             return False
+
+    # 크롤링
+    def _crawling(self):
+        self.log_signal.emit("크롤링 시작")
+        self.result_list = []
+        for idx, url in enumerate(self.url_list, start=1):
+            if not self.running:  # 실행 상태 확인
+                self.log_signal.emit("크롤링이 중지되었습니다.")
+                break
+
+            # 10개의 항목마다 임시로 엑셀 저장
+            if (idx - 1) % 10 == 0 and self.result_list:
+                self._save_to_csv_append(self.result_list)  # 임시 엑셀 저장 호출
+                self.log_signal.emit(f"엑셀 {idx - 1}개 까지 임시저장")
+                self.result_list = []  # 저장 후 초기화
+
+            result = {
+                "origin_url": url,
+                "url": "",
+                "title": "",
+                "episode_synopsis": "",
+                "episode_title": "",
+                "episode_seq": "",
+                "episode_season": "",
+                "year": "",
+                "season": "",
+                "rating": "",
+                "genre": "",
+                "summary": "",
+                "cast": "",
+                "director": "",
+                "success": "X",
+                "message": "",
+                "error": "X"
+            }
+
+            self.log_signal.emit(f'번호 : {idx}, 시작')
+            self._fetch_place_info(url, result)
+            self._error_chk(result)
+            self.log_signal.emit(f'번호 : {idx}, 데이터 : {result}')
+
+            pro_value = (idx / len(self.url_list)) * 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+            self.before_pro_value = pro_value
+
+            self.result_list.append(result)
+            time.sleep(random.uniform(0.5, 1))
+        self.progress_end_signal.emit()
+
+    # 메시지 응답
+    def handle_message_response(self, confirmed):
+        self.response = confirmed  # True: 확인, False: 취소
+        if self.response:
+            if self.isRunning():  # 스레드가 실행 중이면 중지 후 재시작
+                self.stop()  # 기존 스레드 중지
+                self.wait()  # 스레드가 완전히 종료될 때까지 대기
+            self.start()  # 새로운 스레드 시작
 
     # 데이터 요청 분기 처리
     def _fetch_place_info(self, url, result):
@@ -153,7 +159,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
             new_url = f"https://www.tving.com/player/{contents_id}"
             self._api_tving_player(new_url, result)
 
-
         # CASE2
         elif "/program/" in url:
             contents_id = ''
@@ -170,6 +175,68 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
             new_url = f"http://www.tving.com/contents/{contents_id}"
             self._api_tving_contents(new_url, result)
+
+        elif "/api.tving.com/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/event.tving.com/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/ocn.tving.com/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/ocnseries.tving.com/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/otvn.tving.com/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/catchon/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/ocn/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/ogn/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/olive/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/olive/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/ongamenet/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/onstyle/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/Program/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+        elif "/program.tving.com/Rss/" in url:
+            result['success'] = "X"
+            result['error'] = "O"
+            result['message'] = "404 Error"
+
+
+
+        # 봐야함
+        # program.tving.com/otvn
 
     # tving api player
     def _api_tving_player(self, new_url, result):
@@ -450,9 +517,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
             # 마지막 세팅
             pro_value = 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
-
             self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
-            self.progress_end_signal.emit()
 
         except Exception as e:
             self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
@@ -481,7 +546,20 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
     # [공통] 프로그램 중단
     def stop(self):
-        if self.driver:
-            self.driver.quit()
+        if not self.running:
+            return  # 이미 중단된 경우 중복 실행 방지
+
+        self.running = False  # 실행 상태 변경
         self._remain_data_set()
-        self.running = False
+
+        if self.driver:
+            try:
+                self.driver.quit()  # 브라우저 정상 종료
+                if self.driver.service.process:
+                    self.driver.service.process.wait()  # 프로세스가 완전히 종료될 때까지 대기 (선택적)
+            except Exception as e:
+                print(f"Selenium 종료 중 예외 발생: {e}")
+
+        self.quit()  # QThread 이벤트 루프 종료 요청
+        self.wait()  # QThread가 완전히 종료될 때까지 대기
+        self.finally_finished_signal.emit('크롤링 종료 및 자원해재 완료!')

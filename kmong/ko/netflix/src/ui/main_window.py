@@ -287,6 +287,7 @@ class MainWindow(QWidget):
             self.progress_thread = ProgressThread(self.task_queue)
             self.progress_thread.progress_signal.connect(self.update_progress)
             self.progress_thread.log_signal.connect(self.add_log)
+            self.progress_thread.finally_finished_signal.connect(self.finally_finished)
             self.progress_thread.start()
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
                 if self.site == 'NETFLIX':
@@ -298,6 +299,9 @@ class MainWindow(QWidget):
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)
+                self.on_demand_worker.finally_finished_signal.connect(self.finally_finished)
+                self.on_demand_worker.msg_signal.connect(self.show_message_box)  # 메시지 박스 표시
+
                 self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
@@ -317,19 +321,25 @@ class MainWindow(QWidget):
         self.stop()
         self.show_message("크롤링이 완료되었습니다.", "info")
 
+    def finally_finished(self, msg):
+        self.add_log(msg)
+
     # 프로그램 중지
     def stop(self):
-        # 프로그래스 중지
-        if self.progress_thread is not None:  # 스레드가 있으면 중단
-            self.progress_thread.stop()
-            self.progress_thread.wait()
-            self.progress_thread = None
-            self.task_queue = None
         # 크롤링 중지
         if self.on_demand_worker is not None:
-            self.on_demand_worker.stop()  # 중지
-            self.on_demand_worker.wait()  # 완료될 때까지 대기
-            self.on_demand_worker = None  # worker 객체 초기화
+            self.on_demand_worker.stop()
+            self.on_demand_worker = None
+
+        # 프로그래스 중지
+        if self.progress_thread is not None:
+            self.progress_thread.stop()
+            self.progress_thread = None
+            self.task_queue = None
+
+    # 정상 종료 확인
+    def on_worker_stopped(self):
+        self.add_log('정상종료')
 
     # 프로그래스바 세팅
     def set_progress(self, start_value, end_value):
@@ -364,6 +374,23 @@ class MainWindow(QWidget):
         ctypes.windll.user32.FlashWindow(int(self.winId()), True)
 
         msg.exec_()  # 메시지 박스 표시
+
+
+    def show_message_box(self, title, message):
+        """메시지 박스를 띄우고 응답을 LoginWorker에 전달"""
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+        response = msg_box.exec_()
+
+        if response == QMessageBox.Ok:
+            self.on_demand_worker.msg_response_signal.emit(True)  # 로그인 재시도 요청
+        else:
+            self.on_demand_worker.msg_response_signal.emit(False)  # 로그인 중단 요청
+
 
     # url list 업데이트
     def update_list(self, url_list):

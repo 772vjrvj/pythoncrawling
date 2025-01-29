@@ -6,7 +6,8 @@ class ProgressThread(QThread):
     # 진행 상태 변경 시 UI 업데이트를 위한 신호 정의
     progress_signal = pyqtSignal(int)
     log_signal = pyqtSignal(str)
-
+    finally_finished_signal = pyqtSignal(str)
+    
     def __init__(self, task_queue):
         super().__init__()
         self.task_queue = task_queue  # 작업 대기열
@@ -49,6 +50,14 @@ class ProgressThread(QThread):
                     break
 
     def stop(self):
-        """스레드 실행 중단"""
-        self.running = False
-        self.task_queue.put(None)  # 큐에 종료 신호 추가
+        if not self.running:
+            return  # 이미 중단된 경우 중복 실행 방지
+
+        self.running = False  # 실행 상태 변경
+
+        if self.task_queue is not None:
+            self.task_queue.put(None)  # 종료 신호 추가
+
+        self.quit()  # 이벤트 루프 종료 요청
+        self.wait()  # 스레드가 완전히 종료될 때까지 대기
+        self.finally_finished_signal.emit('프로그레스 바 종료 및 자원 해제')
