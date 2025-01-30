@@ -13,3 +13,35 @@ pyinstaller --onefile --noconsole main.py
 
 
 pip install pandas PyQt5 psutil
+
+
+
+
+            "/program.tving.com/catchon/",
+            "/program.tving.com/ocn/",
+            "/program.tving.com/ocnthrills/",
+            "/program.tving.com/ogn/",
+            "/program.tving.com/olive/",
+            "/program.tving.com/ongamenet/",
+            "/program.tving.com/onstyle/",
+            "/program.tving.com/lifestyler/",
+            "/program.tving.com/Program/",
+            "/program.tving.com/program/",
+            "/program.tving.com/Rss/",
+            "/program.tving.com/rss/",
+            "/program.tving.com/xtm/",
+            "/program.tving.com/xtvn/",
+            "/program.tving.com/Board/",
+            "/program.tving.com/chcgv/",
+            "/program.tving.com/cj_concert/",
+            "/program.tving.com/Content/",
+            "/program.tving.com/kcontv/",
+            "/program.tving.com/mnet/",
+            "/program.tving.com/superaction/",
+            "/program.tving.com/funbakery/",
+            "/program.tving.com/tooniverse/",
+            "/program.tving.com/dims/",
+            "/program.tving.com/tvndrama/",
+            "/program.tving.com/tvnshow/",
+            "/program.tving.com/tvnsports/",
+

@@ -142,101 +142,154 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
     # 데이터 요청 분기 처리
     def _fetch_place_info(self, url, result):
-        # CASE1
-        if "/player/" in url:
+        error_urls = [
+            "/m.tving.com/app/",
+            "/m.tving.com/event/",
+            "/api.tving.com/",
+            "/ocn.tving.com/",
+            "/otvn.tving.com/",
+            "/mall.tving.com/goods/",
+            "/event.tving.com/",
+            "/olive.tving.com/",
+            "/ocnseries.tving.com/",
+            # "/program.tving.com/catchon/",
+            # "/program.tving.com/ocn/",
+            # "/program.tving.com/ocnthrills/",
+            # "/program.tving.com/ogn/",
+            # "/program.tving.com/olive/",
+            # "/program.tving.com/ongamenet/",
+            # "/program.tving.com/onstyle/",
+            # "/program.tving.com/lifestyler/",
+            # "/program.tving.com/Program/",
+            # "/program.tving.com/program/",
+            # "/program.tving.com/Rss/",
+            # "/program.tving.com/rss/",
+            # "/program.tving.com/xtm/",
+            # "/program.tving.com/xtvn/",
+            # "/program.tving.com/Board/",
+            # "/program.tving.com/chcgv/",
+            # "/program.tving.com/cj_concert/",
+            # "/program.tving.com/Content/",
+            # "/program.tving.com/kcontv/",
+            # "/program.tving.com/mnet/",
+            # "/program.tving.com/superaction/",
+            # "/program.tving.com/funbakery/",
+            # "/program.tving.com/tooniverse/",
+            # "/program.tving.com/dims/",
+            # "/program.tving.com/tvndrama/",
+            # "/program.tving.com/tvnshow/",
+            # "/program.tving.com/tvnsports/",
+            "/tvn.tving.com/Error",
+            "/tvn.tving.com/tvn",
+            # "/tvn.tving.com/tvn/program",
+            # "/tvn.tving.com/tvn/Schedule",
+            # "/tvn.tving.com/tvn/schedule",
+            # "/tvn.tving.com/tvn/VOD/",
+            # "/tvn.tving.com/tvn/event",
+            # "/tvn.tving.com/tvn/vod/",
+            "/www.tving.com/tv/player/",
+            "/www.tving.com/list/theme/",
+            "/www.tving.com/theme/",
+            "/www.tving.com/kbo/contents/20"
+        ]
+
+        # 예외 케이스 점검
+        if any(error_url in url for error_url in error_urls):
+            result.update({'success': "X", 'error': "O", 'message': "404 Error"})
+
+        elif any(x in url for x in ["/program.tving.com/","/program.m.tving.com/"]):
+            if any(x in url for x in ["/program.tving.com/tvnstory/","/program.tving.com/tvn/", "/program.tving.com/otvn/", "/program.m.tving.com/tvn/"]):
+                title, episode = self._extract_title_episode(url)
+                result['episode_seq'] = episode
+                new_url = f'https://tvn.cjenm.com/ko/{title}'
+                self._api_tving_cjenm(new_url, result)
+            else:
+                result.update({'success': "X", 'error': "O", 'message': "404 Error"})
+        elif any(x in url for x in ["/program.tving.com/tvnstory/","/program.tving.com/tvn/", "/program.tving.com/otvn/", "/program.m.tving.com/tvn/"]):
+            title, episode = self._extract_title_episode(url)
+            result['episode_seq'] = episode
+            new_url = f'https://tvn.cjenm.com/ko/{title}'
+            self._api_tving_cjenm(new_url, result)
+        elif "/program.tving.com/zhtv/" in url:
+            title, episode = self._extract_title_episode(url)
+            result['episode_seq'] = episode
+            new_url = f'https://zhtv.cjenm.com/ko/{title}'
+            self._api_tving_cjenm(new_url, result)
+        elif "/kbo/contents/" in url:
+            new_url = url
+            self._api_tving_contents(new_url, result)
+        elif "/player/" in url:
             contents_id = ''
             # 첫 번째 '/player/' 이후의 값을 가져옴
             match = re.search(r'/player/(.+)', url)
             if match:
                 contents_id = match.group(1)  # '/player/' 뒤의 값 반환
-
             if '/' in contents_id:
                 # '/'로 나누고 첫 번째 부분 가져오기
                 contents_id = contents_id.split('/')[0]
                 # '.#' 제거
                 contents_id = contents_id.replace('.', '').replace('#', '')
-
             new_url = f"https://www.tving.com/player/{contents_id}"
             self._api_tving_player(new_url, result)
-
-        # CASE2
-        elif "/program/" in url:
+        elif any(x in url for x in ["/program/", "/contents/"]):
             contents_id = ''
             # 첫 번째 '/program/' 이후의 값을 가져옴
             match = re.search(r'/program/(.+)', url)
             if match:
                 contents_id = match.group(1)  # '/player/' 뒤의 값 반환
-
             if '/' in contents_id:
                 # '/'로 나누고 첫 번째 부분 가져오기
                 contents_id = contents_id.split('/')[0]
                 # '.#' 제거
                 contents_id = contents_id.replace('.', '').replace('#', '')
-
             new_url = f"http://www.tving.com/contents/{contents_id}"
             self._api_tving_contents(new_url, result)
 
-        elif "/api.tving.com/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/event.tving.com/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/ocn.tving.com/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/ocnseries.tving.com/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/otvn.tving.com/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/catchon/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/ocn/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/ogn/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/olive/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/olive/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/ongamenet/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/onstyle/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/Program/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
-        elif "/program.tving.com/Rss/" in url:
-            result['success'] = "X"
-            result['error'] = "O"
-            result['message'] = "404 Error"
 
+    def _extract_title_episode(self, url):
+        pattern = r"https?://program(?:\.m)?\.tving\.com/\w+/([^/]+)(?:/([^/]+))?"
+        match = re.search(pattern, url)
+        if match:
+            title = match.group(1)
+            episode = match.group(2) if match.group(2) and match.group(2).isdigit() else None
+            return title, episode
+        return '', ''
 
+    # tving api contents
+    def _api_tving_cjenm(self, new_url, result):
+        result['url'] = new_url
 
-        # 봐야함
-        # program.tving.com/otvn
+        try:
+            # HTML 요청
+            response = requests.get(new_url)
+            response.raise_for_status()  # HTTP 에러 확인
+
+            # BeautifulSoup로 HTML 파싱
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # <script> 태그에서 JSON 데이터 추출
+
+            script_tags = soup.find_all("script", type="application/json")
+            script_tag = None
+            for tag in script_tags:
+                if tag.get("id") == "__NEXT_DATA__":
+                    script_tag = tag
+                    break
+
+            if not script_tag or not script_tag.string:
+                result['message'] = "JSON script tag not found"
+
+            # JSON 파싱
+            json_data = json.loads(script_tag.string)
+
+            self._data_set_json_info(json_data, result)
+
+        except requests.exceptions.RequestException as e:
+            result['message'] = str(e)
+        except json.JSONDecodeError:
+            result['message'] = "Failed to parse JSON"
+        except Exception as e:
+            result['message'] = str(e)
 
     # tving api player
     def _api_tving_player(self, new_url, result):
@@ -334,11 +387,17 @@ class ApiRequestTvingSetLoadWorker(QThread):
 
             content = pageProps.get("streamData", {}).get("body", {}).get("content", {})
 
+            menu_tit_tag_cnts = pageProps.get("pageInfo", {}).get("pageInfo", {}).get("menuTitTagCnts", {})
+
             content_info         = pageProps.get("contentInfo", {})
             content_info_message = content_info.get("message", {})
             content_info_content = content_info.get("content", {})
 
-            if content:
+            if "/kbo/contents/" in result['url']:
+                result['title']             = pageProps.get("metaProps", {}).get("title", {})
+            elif menu_tit_tag_cnts:
+                result['title']             = menu_tit_tag_cnts
+            elif content:
                 info = content.get("info", {})
                 schedule = info.get("schedule", {})
                 if schedule:
@@ -558,7 +617,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 if self.driver.service.process:
                     self.driver.service.process.wait()  # 프로세스가 완전히 종료될 때까지 대기 (선택적)
             except Exception as e:
-                print(f"Selenium 종료 중 예외 발생: {e}")
+                self.log_signal.emit(f"Selenium 종료 중 예외 발생: {e}")
 
         self.quit()  # QThread 이벤트 루프 종료 요청
         self.wait()  # QThread가 완전히 종료될 때까지 대기
