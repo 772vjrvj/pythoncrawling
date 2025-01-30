@@ -196,7 +196,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
         # 예외 케이스 점검
         if any(error_url in url for error_url in error_urls):
             result.update({'success': "X", 'error': "O", 'message': "404 Error"})
-
         elif any(x in url for x in ["/program.tving.com/","/program.m.tving.com/"]):
             if any(x in url for x in ["/program.tving.com/tvnstory/","/program.tving.com/tvn/", "/program.tving.com/otvn/", "/program.m.tving.com/tvn/"]):
                 title, episode = self._extract_title_episode(url)
