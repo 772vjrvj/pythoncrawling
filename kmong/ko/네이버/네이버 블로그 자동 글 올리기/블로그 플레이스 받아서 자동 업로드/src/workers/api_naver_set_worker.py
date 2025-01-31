@@ -403,7 +403,6 @@ class ApiNaverSetLoadWorker(QThread):
                 'method': 'GET',
                 'scheme': 'https',
                 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                'accept-encoding': 'gzip, deflate, br, zstd',
                 'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
                 'priority': 'u=0, i',
                 'sec-ch-ua': '"Not/A)Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"',
@@ -419,10 +418,11 @@ class ApiNaverSetLoadWorker(QThread):
             }
 
             response = requests.get(url, headers=headers, cookies=self.cookie)
-            response.encoding = 'utf-8'
 
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
+                response.encoding = response.apparent_encoding  # 자동 감지된 인코딩을 적용
+                html_content = response.content.decode('utf-8', errors='ignore')  # UTF-8로 직접 디코딩
+                soup = BeautifulSoup(html_content, 'html.parser')
                 script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
 
                 if script_tag:
