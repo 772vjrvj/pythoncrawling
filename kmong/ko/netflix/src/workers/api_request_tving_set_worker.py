@@ -230,10 +230,23 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 contents_id = contents_id.replace('.', '').replace('#', '')
             new_url = f"https://www.tving.com/player/{contents_id}"
             self._api_tving_player(new_url, result)
-        elif any(x in url for x in ["/program/", "/contents/"]):
+        elif "/program/" in url:
             contents_id = ''
             # 첫 번째 '/program/' 이후의 값을 가져옴
             match = re.search(r'/program/(.+)', url)
+            if match:
+                contents_id = match.group(1)  # '/program/' 뒤의 값 반환
+            if '/' in contents_id:
+                # '/'로 나누고 첫 번째 부분 가져오기
+                contents_id = contents_id.split('/')[0]
+                # '.#' 제거
+                contents_id = contents_id.replace('.', '').replace('#', '')
+            new_url = f"http://www.tving.com/contents/{contents_id}"
+            self._api_tving_contents(new_url, result)
+        elif "/contents/" in url:
+            contents_id = ''
+            # 첫 번째 '/program/' 이후의 값을 가져옴
+            match = re.search(r'/contents/(.+)', url)
             if match:
                 contents_id = match.group(1)  # '/player/' 뒤의 값 반환
             if '/' in contents_id:
@@ -243,6 +256,7 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 contents_id = contents_id.replace('.', '').replace('#', '')
             new_url = f"http://www.tving.com/contents/{contents_id}"
             self._api_tving_contents(new_url, result)
+
 
 
     def _extract_title_episode(self, url):
