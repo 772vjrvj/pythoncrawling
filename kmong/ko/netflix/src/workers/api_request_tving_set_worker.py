@@ -196,6 +196,11 @@ class ApiRequestTvingSetLoadWorker(QThread):
         # 예외 케이스 점검
         if any(error_url in url for error_url in error_urls):
             result.update({'success': "X", 'error': "O", 'message': "404 Error"})
+        elif "/program.tving.com/zhtv/" in url:
+            title, episode = self._extract_title_episode(url)
+            result['episode_seq'] = episode
+            new_url = f'https://zhtv.cjenm.com/ko/{title}'
+            self._api_tving_cjenm(new_url, result)
         elif any(x in url for x in ["/program.tving.com/","/program.m.tving.com/"]):
             if any(x in url for x in ["/program.tving.com/tvnstory/","/program.tving.com/tvn/", "/program.tving.com/otvn/", "/program.m.tving.com/tvn/"]):
                 title, episode = self._extract_title_episode(url)
@@ -204,16 +209,6 @@ class ApiRequestTvingSetLoadWorker(QThread):
                 self._api_tving_cjenm(new_url, result)
             else:
                 result.update({'success': "X", 'error': "O", 'message': "404 Error"})
-        elif any(x in url for x in ["/program.tving.com/tvnstory/","/program.tving.com/tvn/", "/program.tving.com/otvn/", "/program.m.tving.com/tvn/"]):
-            title, episode = self._extract_title_episode(url)
-            result['episode_seq'] = episode
-            new_url = f'https://tvn.cjenm.com/ko/{title}'
-            self._api_tving_cjenm(new_url, result)
-        elif "/program.tving.com/zhtv/" in url:
-            title, episode = self._extract_title_episode(url)
-            result['episode_seq'] = episode
-            new_url = f'https://zhtv.cjenm.com/ko/{title}'
-            self._api_tving_cjenm(new_url, result)
         elif "/kbo/contents/" in url:
             new_url = url
             self._api_tving_contents(new_url, result)
