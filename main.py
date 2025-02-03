@@ -24,7 +24,7 @@ from datetime import datetime
 import calendar
 
 
-
+base_price = 0
 unit = '개'
 stnd_cnt = '1'
 email_list = []
@@ -151,8 +151,8 @@ def process_product_list(driver, ul_class, name, qty, naver_temp_list):
         print(f"Error in processing product list: {e}")
 
 
-def scrape_naver(driver, name, naver_url):
-    global unit, stnd_cnt
+def scrape_naver(driver, name, naver_url, open_market_list):
+    global unit, stnd_cnt, base_price
     try:
         if not naver_url:
             return []
@@ -160,6 +160,80 @@ def scrape_naver(driver, name, naver_url):
         print(naver_url)
         naver_temp_list = []
         time.sleep(3)
+
+
+
+        # 기준 가격 세팅
+        # 테이블 찾기
+        table = driver.find_element(By.CLASS_NAME, "productByMall_list_seller__yNhgM")
+
+        # tbody 내부의 모든 tr 가져오기
+        trs = table.find_element(By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")
+
+        # 결과 저장용 리스트
+        results = []
+        base_result = {}
+
+        # tr 루프 돌면서 데이터 추출
+        for tr in trs:
+            try:
+                # 첫 번째 td 내부의 div 안에 a 태그 찾기
+                a_tag = tr.find_element(By.CSS_SELECTOR, "td.productByMall_mall_area__4i3v_ div.productByMall_text_over__mA2mG a.productByMall_mall__SIa50.linkAnchor._nlog_click._nlog_impression_element")
+
+                # href 및 text 가져오기
+                href = a_tag.get_attribute("href")
+                text = a_tag.text.strip()
+
+                # 만약 text 값이 비어있다면 a 태그 내 img 태그의 alt 값 가져오기
+                if not text:
+                    try:
+                        img_tag = a_tag.find_element(By.TAG_NAME, "img")
+                        text = img_tag.get_attribute("alt").strip()
+                    except Exception:
+                        text = ""
+
+                # 두 번째 td에서 가격 추출 (a 태그 내부 text)
+                try:
+                    price_tag = tr.find_element(By.CSS_SELECTOR, "td:nth-of-type(2) a strong")
+                    price_text = price_tag.text.strip().replace(",", "")  # 콤마 제거
+                    price = int(price_text) if price_text.isdigit() else 0  # 정수 변환, 숫자가 아닐 경우 0
+                except Exception:
+                    price = 0  # 가격이 없을 경우 기본값 0 설정
+
+                # 결과 저장
+                results.append({"href": href, "text": text, "price": price})
+
+            except Exception as e:
+                print(f"Error processing row: {e}")
+
+        # 결과 출력
+        for result in results:
+
+            text = result['text']
+            print(f'text : {text}')
+            if text in open_market_list:
+                base_price = result['price']
+                base_result = result
+                break
+
+            href = result['href']
+            if href:
+                print(f'href : {href}')
+                driver.get(href)
+                time.sleep(3)  # 리디렉션이 있을 수 있으므로 대기
+                final_url = driver.current_url  # 최종 URL 가져오기
+                contains_naver = "naver.com" in final_url.lower()
+
+                if contains_naver:
+                    base_price = result['price']
+                    base_result = result
+                    break
+
+        print(f'기준상품 : {base_result}')
+
+
+
+        driver.get(naver_url)
 
 
         # 상품구성: 1개, 2개, 3개 등 옵션 처리
@@ -172,10 +246,16 @@ def scrape_naver(driver, name, naver_url):
             "stdOpt_standard_option_area__kh9jP"
         )
 
-        # 두 번째 요소 선택
-        if len(target_elements) > 1:
-            second_element = target_elements[1]
-            scroll_area = second_element.find_element(By.CLASS_NAME, "stdOpt_scroll_area__yTJwJ")
+
+        # 첫번 번째 요소 선택
+        if len(target_elements) > 0:
+            count_element = None
+            if len(target_elements) == 1:
+                count_element = target_elements[0]
+            elif len(target_elements) == 2:
+                count_element = target_elements[1]
+
+            scroll_area = count_element.find_element(By.CLASS_NAME, "stdOpt_scroll_area__yTJwJ")
 
             buttons = scroll_area.find_elements(By.TAG_NAME, "button")
 
@@ -207,15 +287,20 @@ def scrape_naver(driver, name, naver_url):
                 driver.execute_script("window.scrollTo(0, 0);")
 
 
-                if qlist[p] != f'{stnd_cnt}{unit}' and delivery_option == 0:
+                if qlist[p] != f'{stnd_cnt}{unit}':
                     delivery_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="배송비포함 필터"]')
-                    if delivery_elements:
+
+                    if delivery_elements[0].text == 'on':
                         delivery_elements[0].click()  # 배송비포함 클릭
                         time.sleep(0.5)
                         delivery_option = 1
-                    else:
-                        print("카드할인가 정렬 옵션을 찾을 수 없습니다. 중지합니다.")
-                        return []
+
+                    card_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="카드할인가 정렬"]')
+                    if card_elements[0].text == 'off':
+                        card_elements[0].click()  # 배송비포함 클릭
+                        time.sleep(0.5)
+                        card_option = 1
+
 
                 if not ul_class:
                     continue
@@ -306,6 +391,8 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
             driver.execute_script("window.scrollTo(0, 0);")
             driver.find_elements(By.CSS_SELECTOR, '.cardSaleChkbox')[0].click()  # 카드할인가 클릭
             time.sleep(1)
+
+
 
             html = driver.page_source
             soup = BeautifulSoup(html, 'html.parser')
@@ -433,24 +520,6 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
         xpath_list = ['//*[@for="' + e.get_attribute('id') + '"]' for e in radio_opts] # 라디오옵션을 감싸고 있는 label
         time.sleep(1)
 
-        # 카드 할인 토글 클릭
-        try:
-            # 두 개의 클래스를 가진 label 요소를 바로 찾습니다.
-            label = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'label.model__cb--card.inp-switch')) # 카드할인 토글 (배송비 포함 옆에)
-            )
-
-            # 카드할인 토글 요소가 화면에 보이도록 스크롤
-            driver.execute_script("arguments[0].scrollIntoView(true);", label)
-            time.sleep(1)  # 스크롤 후 잠시 대기
-
-            # JavaScript로 강제로 클릭
-            driver.execute_script("arguments[0].click();", label)
-            print("카드할인 클릭")
-
-        except Exception as e:
-            print(f"Error clicking the label with JavaScript: {e}")
-
 
         # 수량옵션이 없는경우 1개로 처리하기 위한 세팅
         if not radio_opts:
@@ -479,6 +548,10 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
 
         for eei, e in enumerate(radio_opts):
 
+            #- 에누리 1개 / 배송비 포함 O / 카드할인 X
+            #- 에누리 N개 배송비포함 X / 카드할인 O
+
+
             time.sleep(0.5)
             driver.execute_script("window.scrollTo(0, 0);") # SCroll 맨 위로
 
@@ -495,6 +568,11 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
                     continue
 
                 elem.click()  # 갯수 클릭
+                num = extract_number(how_many, unit)
+                enuri_click(driver, num)
+
+            else:
+                enuri_click(driver, 1)
 
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") # SCroll 맨 아래로
@@ -584,6 +662,108 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
         return []
 
 
+def extract_number(how_many, unit):
+    return int(re.sub(f'{unit}$', '', how_many).strip())
+
+
+# - 에누리 1개 / 배송비 포함 O / 카드할인 X
+# - 에누리 N개 배송비포함 X / 카드할인 O
+
+def enuri_click(driver, num):
+
+
+    if num == 1:
+
+        # 카드 할인 토글 클릭
+        try:
+            # 두 개의 클래스를 가진 label 요소를 바로 찾습니다.
+            card_label = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'label.model__cb--card.inp-switch')) # 카드할인 토글 (배송비 포함 옆에)
+            )
+
+            # class 속성 가져오기
+            card_label_classes = card_label.get_attribute("class")
+
+            # is--on 클래스 포함 여부 확인
+            if "is--on" in card_label_classes.split():
+
+                # 카드할인 토글 요소가 화면에 보이도록 스크롤
+                driver.execute_script("arguments[0].scrollIntoView(true);", card_label)
+
+                # JavaScript로 강제로 클릭
+                driver.execute_script("arguments[0].click();", card_label)
+                print("카드할인 클릭")
+
+
+            # 두 개의 클래스를 가진 label 요소를 바로 찾습니다.
+            deli_label = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'label.model__cb--delifee.inp-switch')) # 배송비포함 토글 (배송비 포함 옆에)
+            )
+
+            # class 속성 가져오기
+            deli_label_classes = deli_label.get_attribute("class")
+
+            # is--on 클래스 포함 여부 확인
+            if "is--on" not in deli_label_classes.split():
+
+                # 배송비포함 토글 요소가 화면에 보이도록 스크롤
+                driver.execute_script("arguments[0].scrollIntoView(true);", deli_label)
+
+                # JavaScript로 강제로 클릭
+                driver.execute_script("arguments[0].click();", deli_label)
+                print("배송비포함 클릭")
+
+        except Exception as e:
+            print(f"Error clicking the label with JavaScript: {e}")
+
+    else:
+
+        # 카드 할인 토글 클릭
+        try:
+
+            # 요소 찾기
+            card_label = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'label.model__cb--card.inp-switch'))
+            )
+
+            # class 속성 가져오기
+            card_label_classes = card_label.get_attribute("class")
+
+            # is--on 클래스 포함 여부 확인
+            if "is--on" not in card_label_classes.split():
+
+                # 카드할인 토글 요소가 화면에 보이도록 스크롤
+                driver.execute_script("arguments[0].scrollIntoView(true);", card_label)
+
+                # JavaScript로 강제로 클릭
+                driver.execute_script("arguments[0].click();", card_label)
+                print("카드할인 클릭")
+
+
+            # 두 개의 클래스를 가진 label 요소를 바로 찾습니다.
+            deli_label = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'label.model__cb--delifee.inp-switch')) # 배송비포함 토글 (배송비 포함 옆에)
+            )
+
+            # class 속성 가져오기
+            deli_label_classes = deli_label.get_attribute("class")
+
+            # is--on 클래스 포함 여부 확인
+            if "is--on" in deli_label_classes.split():
+
+                # 배송비포함 토글 요소가 화면에 보이도록 스크롤
+                driver.execute_script("arguments[0].scrollIntoView(true);", deli_label)
+
+                # JavaScript로 강제로 클릭
+                driver.execute_script("arguments[0].click();", deli_label)
+                print("배송비포함 클릭")
+
+        except Exception as e:
+            print(f"Error clicking the label with JavaScript: {e}")
+
+
+
+
 # 숫자를 추출할 때 빈 문자열을 처리하기 위한 함수
 def extract_numeric_price(price_str):
     """ 가격 문자열에서 숫자만 추출하는 함수, '원' 앞에 있는 숫자만 추출 """
@@ -620,20 +800,26 @@ def convert_to_float(value, default=1.0):
 
 # 행별로 데이터를 처리하고 엑셀에 업데이트하는 함수
 def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name, open_market_list, producdt_count):
+    global base_price
     try:
+
         except_list = ws[f'A{row_index}'].value.split(',') if ws[f'A{row_index}'].value else []
 
-        # 기준가격(네이버) 계산
+
+        # 기준가격(네이버) 계산 (네이버인 것중 첫번째의 가격을 갯수로 나눈 것)
+        # 사용안함 2024-02-01
         # 이 코드에서는 next()를 사용하여 조건에 맞는 첫 번째 항목을 찾아 filtered_naver에 저장하고, 값이 존재하면 계산하여 ws에 저장합니다.
-        filtered_naver = next((entry for entry in merge_list if entry[1] == '네이버' and entry[3]), None)
-        if filtered_naver:
-            naver_price = filtered_naver[6] / convert_to_float(filtered_naver[2])  # 숫자로 변환, 실패 시 기본값 사용
-            ws[f'G{row_index}'] = int(naver_price * int(stnd_cnt))  # 기준가격(네이버) 셀
+        # filtered_naver = next((entry for entry in merge_list if entry[1] == '네이버' and entry[3]), None)
+        # if filtered_naver:
+        #     naver_price = filtered_naver[6] / convert_to_float(filtered_naver[2])  # 숫자로 변환, 실패 시 기본값 사용
+        #     ws[f'G{row_index}'] = int(naver_price * int(stnd_cnt))  # 기준가격(네이버) 셀
+
+
+        # 기준가격(네이버) 계산 실제 사이트의 가격
+        ws[f'G{row_index}'] = base_price
 
         # except_list에 포함된 mall_name 제외 수집 제외몰 사용 X
         # merge_list = [entry for entry in merge_list if entry[3] not in except_list]
-        # 자사몰로 변경
-        merge_list = [entry for entry in merge_list if entry[3] in open_market_list]
 
         # 5% 할인을 적용할 상점 이름과 비교
         for entry in merge_list:
@@ -828,6 +1014,15 @@ def email_setting(ws, index, email_data):
         process_seller(index, row_object, seller, email_data, '판매처1', '상품명1', '가격1')
 
 
+    # 중복 제거 (excel_row 기준)
+    unique_rows = {}
+    for item in email_list:
+        if item["excel_row"] not in unique_rows:
+            unique_rows[item["excel_row"]] = item
+
+    # 결과 리스트로 변환
+    email_list = list(unique_rows.values())
+
     # 전송 조건 확인
     if len(email_list) >= email_data['전송기준수']:
         print('전송가능한 데이터 수가 전송 기준수 보다 큽니다. 전송 시도 하겠습니다.')
@@ -969,11 +1164,13 @@ def check_previous_month_add(today, start_date_of_previous_month, input_date):
 
 
 def get_month_review_cnt(driver, naver_url, email_data):
+    if not naver_url:
+        return 0
     driver.get(naver_url)
     time.sleep(3)
 
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
+    time.sleep(2)
     month_review_cnt = 0
 
     try:
@@ -991,11 +1188,16 @@ def get_month_review_cnt(driver, naver_url, email_data):
 
     while True:
         for page_num in range(1, 11):  # 한 번에 최대 10페이지까지 탐색
+            print(f'page_num : {page_num}')
             try:
-                page_button = driver.find_element(By.CSS_SELECTOR, f'a[data-shp-contents-id="{group_page + page_num}"]')
-                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", page_button)
-                page_button.click()
-                time.sleep(2)
+                if page_num != 1:
+                    page_num_value = group_page + page_num
+                    page_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, f'//div[@id="section_review"]//a[@data-shp-contents-id="{page_num_value}"]'))
+                    )
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", page_button)
+                    page_button.click()
+                    time.sleep(2)
 
                 review_items = driver.find_elements(By.CSS_SELECTOR, '.reviewItems_list_review__q726A li')
 
@@ -1081,7 +1283,7 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name, start_row, end
 
                 # 1. 네이버 크롤링 처리
                 print("============================== 네이버 시작 ==============================")
-                naver_result = scrape_naver(driver, name, naver_url)
+                naver_result = scrape_naver(driver, name, naver_url, open_market_list)
                 sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
 
                 if email_data['리뷰']:
@@ -1162,10 +1364,11 @@ if __name__ == "__main__":
     end_row = 100    # 실제 row수보다 작거나 같게 설정
 
     # repeat가 False면 1회 반복 후 종료 True면 무한반복
-    repeat = False
+    repeat = True
 
     # 자사몰인 경우만 메일 발송 및 엑셀에 넣기
     # 수집 제외몰은 사용하지 않음
+    # 자사몰은 처음 네이버에서 기준 가격할때만 사용
     open_market_list = ['옥션', # auction
                         '지마켓', #gmarket
                         'G마켓', #gmarket
@@ -1191,24 +1394,26 @@ if __name__ == "__main__":
                         '삼성닷컴', #samsung
                         '신세계라이브쇼핑', #shinsegaetvshopping
                         '하프클럽', #halfclub
-                        '패션플러스' #fashionplus
+                        '패션플러스', #fashionplus
+                        'LFmall',
+                        '현대Hmall'
                         ]
 
     # 이메일 설정
     email_data = {
         '수수료율': 1, #(단위 %)
         '배송비': 1,        #(단위 원)
-        '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
-        # '판매처': [], #(명확히 입력)
+        # '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
+        '판매처': [], #(명확히 입력)
         '마진율시작': 1,        #(단위 %)
         '마진율끝': 100,        #(단위 %)
         '전송기준수': 2,     #(단위 개 매진률수 이상이 되면 메일 발송)
         '발신자이메일': '772vjrvj@naver.com',
-        '발신자비밀번호': '',
+        '발신자비밀번호': 'Ksh#8818510',
         '수신자이메일': ['goodbye772@naver.com', '772vjrvj@naver.com'],
         '제목': '특정 마진률 이상이면 메일 전송',
         '내용': '', # 엑셀행/ 상품명 / 네or다or에-N개-판매처 / 마진% / URL(네or다or에) 이 형식으로 바뀔것임 초기값은 공백
-        '리뷰수': 10, # 0이면 off / 0이상 이면 on
+        '리뷰수': 5, # 0이면 off / 0이상 이면 on
         '리뷰': True # True / False (on / off)
     }
 
@@ -1271,3 +1476,18 @@ if __name__ == "__main__":
 # 2025-01-27 ver_8
 # 자사몰 추가
 # 기타 오류 수정
+
+
+# 2025-02-03 ver_9
+# 리플 수정
+# 배송비포함/카드할인버튼 이슈
+# 빨간색 표시 수정
+# 중복전송 수정
+# 기준가격 수정
+# 자사몰 수정
+# 네이버 복수
+
+
+# 2025-02-03 ver_10
+# 리플 딜레이 시간 추가
+# 배송비포함/카드할인버튼 이슈 추가 수정
