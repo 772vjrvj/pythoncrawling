@@ -78,7 +78,6 @@ def updatePlaceCookie(name, cookies_dict, refresh_token, bearer_token):
     except json.JSONDecodeError:
         print("JSON 파싱 오류: 서버 응답이 올바른 JSON 형식이 아닙니다.", response.text)
 
-
 # 새로고침 함수
 def reload():
     global driver, global_naver_keyword_cookies, bearer_token, refresh_token
@@ -115,6 +114,7 @@ def reload():
         print("경고: 지정된 키가 없습니다.")
 
         # 주기적인 쿠키 업데이트
+
 def periodic_cookie_update():
     while not stop_thread.is_set():
         try:
@@ -174,7 +174,7 @@ def naver_login():
                 bearer_token = f'Bearer {account_data.get("bearer")}'
                 refresh_token = account_data.get("refreshToken")
                 updatePlaceCookie(name, global_naver_keyword_cookies, refresh_token, bearer_token)
-                time.sleep(600)
+                time.sleep(10)
                 update_thread = threading.Thread(target=periodic_cookie_update, daemon=True)
                 update_thread.start()
             else:
