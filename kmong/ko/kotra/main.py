@@ -25,25 +25,42 @@ def fetch_product_details(goods_sn):
     url = f"https://buykorea.org/ec/prd/selectGoodsDetail.do?goodsSn={goods_sn}"
     driver = setup_driver()
     driver.get(url)
-    time.sleep(3)
+    time.sleep(2)
 
     soup = BeautifulSoup(driver.page_source, "html.parser")
     driver.quit()
 
     list_location = " > ".join([li.text.strip() for li in soup.select(".list-location li a")])
-    title = soup.select_one(".detail-right .goods-info .bk-title .title-sub").text.strip()
-    price = soup.select_one(".detail-right .goods-info .goods-price").text.strip()
+
+    title = soup.select_one(".detail-right .goods-info .bk-title .title-sub")
+    price = soup.select_one(".detail-right .goods-info .goods-price")
+    goods_overview = soup.select_one(".detail-right .goods-info .goods-overview-area")
+    quantity = soup.select_one(".detail-right .goods-info .quantity-area dd")
+    company_name = soup.select_one(".goods-companyName .text")
+    detail_product = soup.select_one("#tab-detail-product .product-detail")
+
+    title = title.get_text(strip=True) if title else ""
+    price = price.get_text(strip=True) if price else ""
     name = f"{title}\n{price}"
-    goods_overview = soup.select_one(".detail-right .goods-info .goods-overview-area").text.strip()
-    quantity = soup.select_one(".detail-right .goods-info .quantity-area dd").text.strip()
-    company_name = soup.select_one(".goods-companyName .text").text.strip()
+    goods_overview = goods_overview.get_text(strip=True) if goods_overview else ""
+    quantity = quantity.get_text(strip=True) if quantity else ""
+    company_name = company_name.get_text(strip=True) if company_name else ""
+    detail_product = detail_product.get_text(strip=True) if detail_product else ""
 
     base_url = "https://buykorea.org"  # 크롤링하는 사이트의 기본 URL
-    img_list = [urljoin(base_url, img["src"]) for img in soup.select(".detail-left .swiper-gallery-thumbs .swiper-wrapper img") if "src" in img.attrs]
+    # img_list = [urljoin(base_url, img["src"]) for img in soup.select(".detail-left .swiper-gallery-thumbs .swiper-wrapper img") if "src" in img.attrs]
 
-    detail_product = soup.select_one("#tab-detail-product .product-detail").text.strip()
-    detail_img_list = [img["src"] for img in soup.select("#tab-detail-product .product-detail img")]
+    img_list = [
+        urljoin(base_url, img["src"])
+        for img in soup.select(".detail-left .swiper-gallery-thumbs .swiper-wrapper img")
+        if img.has_attr("src") and img["src"].startswith(("http", "/"))
+    ]
 
+    detail_img_list = [
+        urljoin(base_url, img["src"])
+        for img in soup.select("#tab-detail-product .product-detail img")
+        if img.has_attr("src") and img["src"].startswith(("http", "/"))
+    ]
     keywords = [tag.text.strip() for tag in soup.select("#dv-goodsDtl-keyword-list .text")]
 
     goodsinfo_list = [
@@ -76,6 +93,7 @@ def save_images(img_urls, base_path, pid):
     os.makedirs(base_path, exist_ok=True)
     for idx, img_url in enumerate(img_urls, start=1):
         img_path = os.path.join(base_path, f"{pid}_{idx}.jpg")
+        print(f"img_path: {img_path}")
         img_data = requests.get(img_url).content
         with open(img_path, "wb") as img_file:
             img_file.write(img_data)
@@ -140,7 +158,6 @@ def main(start_index = 0, end_index = None):
 
             product_data = fetch_product_details(goods_sn)
 
-
             category_path = os.path.join("Product Categories", os.sep.join(product_data["list_location"].split(" > ")[2:]))
 
             safe_title = product_data["title"].replace("/", "-")
@@ -156,6 +173,7 @@ def main(start_index = 0, end_index = None):
 
             # ✅ `product_data` 내용을 기존 `product` 객체에 추가
             product.update(product_data)
+            print(f'idx : {idx}, goods_sn : {goods_sn} 성공')
 
         # ✅ CSV 파일 업데이트
         update_csv(csv_path, product_list)
