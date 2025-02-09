@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from urllib.parse import urljoin
 
 
 def setup_driver():
@@ -37,7 +38,8 @@ def fetch_product_details(goods_sn):
     quantity = soup.select_one(".detail-right .goods-info .quantity-area dd").text.strip()
     company_name = soup.select_one(".goods-companyName .text").text.strip()
 
-    img_list = [img["src"] for img in soup.select(".detail-left .swiper-gallery-thumbs .swiper-wrapper img")]
+    base_url = "https://buykorea.org"  # 크롤링하는 사이트의 기본 URL
+    img_list = [urljoin(base_url, img["src"]) for img in soup.select(".detail-left .swiper-gallery-thumbs .swiper-wrapper img") if "src" in img.attrs]
 
     detail_product = soup.select_one("#tab-detail-product .product-detail").text.strip()
     detail_img_list = [img["src"] for img in soup.select("#tab-detail-product .product-detail img")]
@@ -133,19 +135,23 @@ def main(start_index = 0, end_index = None):
             reader = csv.DictReader(file)
             product_list = [row for row in reader]  # 객체 리스트로 변환
 
-        for product in product_list:
+        for idx, product in enumerate(product_list):
             goods_sn = product["goodsSn"]  # goodsSn 값 가져오기
 
             product_data = fetch_product_details(goods_sn)
+
+
             category_path = os.path.join("Product Categories", os.sep.join(product_data["list_location"].split(" > ")[2:]))
-            product_img_path = os.path.join(category_path, product_data["title"], "product_img")
-            product_detail_path = os.path.join(category_path, product_data["title"], "detail_img")
+
+            safe_title = product_data["title"].replace("/", "-")
+            product_img_path = os.path.join(category_path, safe_title, "product_img")
+            product_detail_path = os.path.join(category_path, safe_title, "detail_img")
 
             save_images(product_data["img_list"], product_img_path, product_data["PID"])
             save_images(product_data["detail_img_list"], product_detail_path, product_data["PID"])
 
             for goodsinfo in product_data["goodsinfo_list"]:
-                product_downloads_path = os.path.join(category_path, product_data["title"], "catalog_downloads")
+                product_downloads_path = os.path.join(category_path, safe_title, "catalog_downloads")
                 download_product_data(product_data["PID"], goodsinfo['goodsinfocd'], goodsinfo['goodsinfosn'], product_downloads_path)
 
             # ✅ `product_data` 내용을 기존 `product` 객체에 추가
@@ -157,7 +163,7 @@ def main(start_index = 0, end_index = None):
 
 
 if __name__ == "__main__":
-    start_index = 0  # 시작 인덱스
-    end_index = None  # 종료 인덱스 (None이면 끝까지)
+    start_index = 17  # 시작 인덱스
+    end_index = 18  # 종료 인덱스 (None이면 끝까지)
 
     main(start_index, end_index)
