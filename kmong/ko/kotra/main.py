@@ -45,7 +45,24 @@ def fetch_product_details(goods_sn):
     goods_overview = goods_overview.get_text(strip=True) if goods_overview else ""
     quantity = quantity.get_text(strip=True) if quantity else ""
     company_name = company_name.get_text(strip=True) if company_name else ""
-    detail_product = detail_product.get_text(strip=True) if detail_product else ""
+
+    result = ""
+    # .product-detail 내부의 모든 요소를 순서대로 순회
+    for element in detail_product.children:
+        if element.name == 'p':  # <p> 태그 처리
+            text = element.get_text(strip=True)
+            if text == "\xa0":  # <p>&nbsp;</p>는 줄바꿈 역할
+                result += "\n"
+            elif text:
+                result += text + "\n"  # 일반 <p> 태그
+
+        elif element.name == 'ul':  # <ul> 태그 처리
+            for li in element.find_all('li'):
+                text = li.get_text(strip=True)
+                if text:
+                    result += text + "\n"  # <li> 요소는 한 줄씩 추가
+
+    detail_product = result
 
     base_url = "https://buykorea.org"  # 크롤링하는 사이트의 기본 URL
     # img_list = [urljoin(base_url, img["src"]) for img in soup.select(".detail-left .swiper-gallery-thumbs .swiper-wrapper img") if "src" in img.attrs]
@@ -140,6 +157,13 @@ def update_csv(csv_path, product_list):
     os.replace(temp_path, csv_path)  # 기존 파일을 새로운 파일로 덮어쓰기
     print(f"✅ CSV 업데이트 완료: {csv_path}")
 
+def sanitize_filename(filename):
+    # Windows에서 사용할 수 없는 문자 목록
+    invalid_chars = r'\/:*?"<>|'
+    for char in invalid_chars:
+        filename = filename.replace(char, "_")  # 허용되지 않는 문자를 _로 변경
+    return filename
+
 
 def main(start_index = 0, end_index = None):
     ctgrycd_path = "ctgrycd"  # 실행경로의 ctgrycd 폴더
@@ -160,16 +184,16 @@ def main(start_index = 0, end_index = None):
 
             category_path = os.path.join("Product Categories", os.sep.join(product_data["list_location"].split(" > ")[2:]))
 
-            safe_title = product_data["title"].replace("/", "-")
+            safe_title = sanitize_filename(product_data["title"])
             product_img_path = os.path.join(category_path, safe_title, "product_img")
             product_detail_path = os.path.join(category_path, safe_title, "detail_img")
 
-            save_images(product_data["img_list"], product_img_path, product_data["PID"])
-            save_images(product_data["detail_img_list"], product_detail_path, product_data["PID"])
-
-            for goodsinfo in product_data["goodsinfo_list"]:
-                product_downloads_path = os.path.join(category_path, safe_title, "catalog_downloads")
-                download_product_data(product_data["PID"], goodsinfo['goodsinfocd'], goodsinfo['goodsinfosn'], product_downloads_path)
+            # save_images(product_data["img_list"], product_img_path, product_data["PID"])
+            # save_images(product_data["detail_img_list"], product_detail_path, product_data["PID"])
+            #
+            # for goodsinfo in product_data["goodsinfo_list"]:
+            #     product_downloads_path = os.path.join(category_path, safe_title, "catalog_downloads")
+            #     download_product_data(product_data["PID"], goodsinfo['goodsinfocd'], goodsinfo['goodsinfosn'], product_downloads_path)
 
             # ✅ `product_data` 내용을 기존 `product` 객체에 추가
             product.update(product_data)
@@ -181,7 +205,7 @@ def main(start_index = 0, end_index = None):
 
 
 if __name__ == "__main__":
-    start_index = 17  # 시작 인덱스
-    end_index = 18  # 종료 인덱스 (None이면 끝까지)
+    start_index = 0  # 시작 인덱스
+    end_index = 1  # 종료 인덱스 (None이면 끝까지)
 
     main(start_index, end_index)
