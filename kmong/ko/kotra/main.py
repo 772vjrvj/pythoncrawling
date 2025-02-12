@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urljoin
+import unicodedata
 
 
 def setup_driver():
@@ -51,7 +52,7 @@ def fetch_product_details(goods_sn):
     for element in detail_product.children:
         if element.name == 'p':  # <p> 태그 처리
             text = element.get_text(strip=True)
-            if text == "\xa0":  # <p>&nbsp;</p>는 줄바꿈 역할
+            if not text or text.isspace()or text ==" ":
                 result += "\n"
             elif text:
                 result += text + "\n"  # 일반 <p> 태그
@@ -158,11 +159,16 @@ def update_csv(csv_path, product_list):
     print(f"✅ CSV 업데이트 완료: {csv_path}")
 
 def sanitize_filename(filename):
-    # Windows에서 사용할 수 없는 문자 목록
-    invalid_chars = r'\/:*?"<>|'
+    """ Windows에서 사용할 수 없는 특수문자를 _ 로 변경 """
+    filename = unicodedata.normalize("NFKD", filename)  # Unicode 정규화
+
+    # Windows에서 허용되지 않는 문자 목록 (<>:"/\|?*)
+    invalid_chars = r'<>:"/\\|?*'
     for char in invalid_chars:
-        filename = filename.replace(char, "_")  # 허용되지 않는 문자를 _로 변경
-    return filename
+        filename = filename.replace(char, "_")  # 특수문자만 "_"로 변경
+
+    return filename.strip()  # 앞뒤 공백 제거
+
 
 
 def main(start_index = 0, end_index = None):
@@ -182,20 +188,23 @@ def main(start_index = 0, end_index = None):
 
             product_data = fetch_product_details(goods_sn)
 
-            category_path = os.path.join("Product Categories", os.sep.join(product_data["list_location"].split(" > ")[2:]))
+            category_path = os.path.join(
+                "Product Categories",
+                *[sanitize_filename(part) for part in product_data["list_location"].split(" > ")[2:]]
+            )
 
             safe_title = sanitize_filename(product_data["title"])
             product_img_path = os.path.join(category_path, safe_title, "product_img")
             product_detail_path = os.path.join(category_path, safe_title, "detail_img")
 
-            # save_images(product_data["img_list"], product_img_path, product_data["PID"])
-            # save_images(product_data["detail_img_list"], product_detail_path, product_data["PID"])
-            #
-            # for goodsinfo in product_data["goodsinfo_list"]:
-            #     product_downloads_path = os.path.join(category_path, safe_title, "catalog_downloads")
-            #     download_product_data(product_data["PID"], goodsinfo['goodsinfocd'], goodsinfo['goodsinfosn'], product_downloads_path)
+            save_images(product_data["img_list"], product_img_path, product_data["PID"])
+            save_images(product_data["detail_img_list"], product_detail_path, product_data["PID"])
 
-            # ✅ `product_data` 내용을 기존 `product` 객체에 추가
+            for goodsinfo in product_data["goodsinfo_list"]:
+                product_downloads_path = os.path.join(category_path, safe_title, "catalog_downloads")
+                download_product_data(product_data["PID"], goodsinfo['goodsinfocd'], goodsinfo['goodsinfosn'], product_downloads_path)
+
+            #✅ `product_data` 내용을 기존 `product` 객체에 추가
             product.update(product_data)
             print(f'idx : {idx}, goods_sn : {goods_sn} 성공')
 
