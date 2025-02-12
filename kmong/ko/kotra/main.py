@@ -9,6 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urljoin
+import urllib.parse
+
 import unicodedata
 
 
@@ -107,12 +109,23 @@ def fetch_product_details(goods_sn):
         "goodsinfo_list": goodsinfo_list
     }
 
+def get_fixed_url(url):
+    """ URL에서 공백과 잘못된 인코딩을 정리 """
+    url = urllib.parse.unquote(url)  # URL 디코딩
+    url = url.replace(" ", "")  # 공백 제거
+    return url
+
+
 def save_images(img_urls, base_path, pid):
     os.makedirs(base_path, exist_ok=True)
     for idx, img_url in enumerate(img_urls, start=1):
         img_path = os.path.join(base_path, f"{pid}_{idx}.jpg")
         print(f"img_path: {img_path}")
-        img_data = requests.get(img_url).content
+        print(f"img_url: {img_url}")
+        fixed_url = get_fixed_url(img_url)  # URL 정리
+
+
+        img_data = requests.get(fixed_url).content
         with open(img_path, "wb") as img_file:
             img_file.write(img_data)
     print(f"이미지 저장 완료: {base_path}")
