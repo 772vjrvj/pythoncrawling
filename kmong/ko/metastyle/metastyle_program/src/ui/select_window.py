@@ -64,10 +64,10 @@ class SelectWindow(QWidget):
         site_button_second.clicked.connect(lambda: self.select_site("ZALANDO"))
 
 
-        # NEW3
-        site_button_third = QPushButton("NEW3", self)
+        # OLDNAVY
+        site_button_third = QPushButton("OLDNAVY", self)
         site_button_third.setStyleSheet("""
-            background-color: #cccccc;
+            background-color: #000080;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -76,7 +76,7 @@ class SelectWindow(QWidget):
         site_button_third.setFixedHeight(40)
         site_button_third.setFixedWidth(300)  # 버튼 너비 설정
         site_button_third.setCursor(Qt.PointingHandCursor)
-        site_button_third.clicked.connect(lambda: self.select_site(""))
+        site_button_third.clicked.connect(lambda: self.select_site("OLDNAVY"))
 
 
         # NEW4
@@ -100,8 +100,6 @@ class SelectWindow(QWidget):
         layout.addWidget(site_button_forth)
 
         self.center_window()
-
-
 
 
 
@@ -131,6 +129,9 @@ class SelectWindow(QWidget):
             elif site == "ZALANDO":
                 color = "#D2451E"
                 check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
+            elif site == "OLDNAVY":
+                color = "#000080"
+                check_list = ["Now Trending!", "Activewear", "Women", "Men", "Girls", "Boys", "Toddler", "Baby", "Maternity"]
             else:
                 color = ""
                 check_list = []

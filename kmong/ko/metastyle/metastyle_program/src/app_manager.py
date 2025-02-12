@@ -5,7 +5,6 @@ class AppManager:
         self.main_window = None
 
     def go_to_login(self):
-
         if not self.login_window:
             from src.ui.login_window import LoginWindow
             self.login_window = LoginWindow(self)

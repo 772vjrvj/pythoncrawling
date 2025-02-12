@@ -11,6 +11,7 @@ from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.singleton import GlobalState
 from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
 from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
+from src.workers.api_oldnavy_set_worker import ApiOldnavySetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -305,6 +306,8 @@ class MainWindow(QWidget):
                     self.on_demand_worker = ApiMytheresaSetLoadWorker(self.select_check_list)
                 elif self.site == 'ZALANDO':
                     self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
+                elif self.site == 'OLDNAVY':
+                    self.on_demand_worker = ApiOldnavySetLoadWorker(self.select_check_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.stop)
