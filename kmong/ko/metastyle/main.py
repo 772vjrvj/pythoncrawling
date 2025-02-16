@@ -40,8 +40,9 @@ def get_cc_list(cid, pageNumber):
     except Exception as e:
         return {"error": f"Parsing error: {e}"}
 
-
+# data.totalColors
+# data.pageNumberTotal
 
 # 사용 예시
-cc_list = get_cc_list("3028309", "2")
+cc_list = get_cc_list("1185228", "1")
 print(cc_list)

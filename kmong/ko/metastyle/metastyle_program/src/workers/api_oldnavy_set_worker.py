@@ -5,6 +5,7 @@ import time
 from io import BytesIO
 import json
 import re
+import sqlite3
 
 import pandas as pd
 import requests
@@ -17,10 +18,28 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+from src.dao.oldnavy.category_list_dao import CategoryListDAO
+from src.dao.oldnavy.product_info_dao import ProductInfoDAO
+from src.dao.oldnavy.main_dao import MainDAO
+
+from src.model.oldnavy.main_model import MainModel
+from src.model.oldnavy.category_list_model import CategoryListModel
+from src.model.oldnavy.product_info_model import ProductInfoModel
+
 from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
 from src.utils.number_utils import divide_and_truncate_per
 from requests.exceptions import RequestException, Timeout, TooManyRedirects
 from urllib.parse import urlparse
+
+from src.db.database import Database
+from src.db.oldnavy_db import OldNavyDB  # OldNavy 테이블 생성 클래스
+from src.dao.oldnavy.main_dao import MainDAO    # Main 테이블 DAO
+
+
+
+
+from src.model.oldnavy.category_list_model import CategoryListModel
+
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -28,7 +47,7 @@ image_main_directory = 'zalando_images'
 company_name = 'zalando'
 site_name = 'ZALANDO'
 excel_filename = ''
-baseUrl = "https://en.zalando.de"
+baseUrl = "https://oldnavy.gap.com/"
 
 
 # API
@@ -44,98 +63,185 @@ class ApiOldnavySetLoadWorker(QThread):
         self.baseUrl = baseUrl
         self.sess = requests.Session()
         self.checked_list = checked_list
+        self.checked_model_list = []
         self.running = True  # 실행 상태 플래그 추가
         self.driver = None
+        self.db_path = "database.db"
+
+        # 데이터베이스 설정
+        self.db = Database("database.db")  # 공통 DB 인스턴스 생성
+        self.oldnavy_db = OldNavyDB(self.db)  # 테이블 생성 클래스
+        self.main_dao = MainDAO(self.db)  # MAIN DAO 객체
+        self.product_info_dao = ProductInfoDAO(self.db)  # MAIN DAO 객체
+        self.category_list_dao = CategoryListDAO(self.db)  # MAIN DAO 객체
+
+        self.main_model = None
+
 
 
     # 프로그램 실행
     def run(self):
         global image_main_directory, company_name, site_name, excel_filename, baseUrl
 
-        self.log_signal.emit("크롤링 시작")
-        current_cnt = 0
-        current_page = 0
-        before_pro_value = 0
-        result_list = []
+        self.oldnavy_db.create_tables()
+        self.log_signal.emit("✅ OldNavy 테이블이 성공적으로 생성되었습니다.")
+        latest_main = self.main_dao.find_latest_main_entry()
 
-        if self.checked_list:
-            self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
-            self.login()
-            self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
-            current_time = get_current_yyyymmddhhmmss()
-            excel_filename = f"{company_name}_{current_time}.xlsx"
+        # 조건 확인
+        if latest_main and latest_main.completed_yn == 'N':
+            self.log_signal.emit(f"🟡 진행 중인 최신 데이터 발견: {latest_main}")
 
-            self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
-            check_obj_list = self.total_cnt_cal()
-            total_cnt = sum(int(obj['total_item_cnt']) for obj in check_obj_list)
-            total_pages = sum(int(obj['total_page_cnt']) for obj in check_obj_list)
+        else:
+            self.log_signal.emit("✅ 최신 데이터가 없습니다.")
+            self.log_signal.emit("크롤링 시작")
 
-            self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
-            self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
-            self.log_signal.emit(f"전체 페이지수 {total_pages} 개")
-            for index, check_obj in enumerate(check_obj_list, start=1):
-                if not self.running:  # 실행 상태 확인
-                    self.log_signal.emit("크롤링이 중지되었습니다.")
+            current_cnt = 0
+            current_page = 0
+            before_pro_value = 0
+            result_list = []
+
+            if self.checked_list:
+                self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
+                self.login()
+                self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
+                current_time = get_current_formatted_datetime()
+
+                self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
+                check_obj_list = self.total_cnt_cal()
+                total_cnt = sum(int(obj['total_product_cnt']) for obj in check_obj_list)
+                total_pages = sum(int(obj['total_page_cnt']) for obj in check_obj_list)
+
+                self.log_signal.emit(f"전체 항목수 {len(check_obj_list)}개")
+                self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
+                self.log_signal.emit(f"전체 페이지수 {total_pages} 개")
+
+                # main DB insert
+                self.insert_main_model(check_obj_list, total_cnt, total_pages, current_time)
+
+                # category_list DB insert
+                self.insert_category_list_models(check_obj_list, current_time)
+
+                # product_info DB insert
+                self.insert_product_models_main()
+
+
+            self.progress_signal.emit(before_pro_value, 1000000)
+            self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
+            self.log_signal.emit("=============== 크롤링 종료")
+            self.progress_end_signal.emit()
+
+
+    def insert_main_model(self, check_obj_list, total_cnt, total_pages, current_time):
+        # insert_main_entry 메서드 호출하여 데이터 삽입
+        new_entry = MainModel(
+            no=None,  # Auto Increment 필드
+            now_category=check_obj_list[0].name,
+            now_page_no=0,
+            now_product_no=0,
+            total_page_cnt=total_cnt,
+            total_product_cnt=total_pages,
+            completed_yn='N',
+            update_date=current_time,
+            reg_date=current_time,
+            deleted_yn='N'
+        )
+        self.main_model = self.main_dao.insert_main_entry(new_entry)
+        self.log_signal.emit(f"Inserted inserted_main_entry: {self.main_model}")
+
+
+    def insert_category_list_models(self, check_obj_list, current_time):
+        for index, check_obj in enumerate(check_obj_list, start=1):
+            if not self.running:  # 실행 상태 확인
+                self.log_signal.emit("크롤링이 중지되었습니다.")
+                break
+
+            name = check_obj['name']
+            start_page = int(check_obj['start_page'])
+            end_page = int(check_obj['end_page'])
+            cid = self.get_cid(name)
+            total_page_cnt = int(check_obj['total_page_cnt'])
+            total_product_cnt = int(check_obj['total_product_cnt'])
+
+            category = CategoryListModel(
+                no=None,  # Auto Increment
+                pno=self.main_model.no,
+                cid=cid,
+                category=name,
+                input_start_page=start_page,
+                input_end_page=end_page,
+                real_start_page=start_page,
+                real_end_page=total_page_cnt if end_page >= total_page_cnt else end_page,
+                total_page_cnt=total_page_cnt,
+                total_product_cnt=total_product_cnt,
+                now_page_no=0,
+                now_product_no=0,
+                completed_yn='N',
+                update_date=current_time,
+                reg_date=current_time,
+                deleted_yn='N'
+            )
+            inserted_category_entry = self.category_list_dao.insert_category(category)
+            self.checked_model_list.append(inserted_category_entry)
+
+
+    def insert_product_models_main(self):
+        for index, checked_model in enumerate(self.checked_model_list, start=1):
+            if not self.running:  # 실행 상태 확인
+                self.log_signal.emit("크롤링이 중지되었습니다.")
+                break
+
+            all_detail_list = {}
+            for indx, page in enumerate(range(int(checked_model['real_start_page']) - 1, int(checked_model['real_end_page'])), start=1):
+                if not self.running:
                     break
-                item = check_obj['name']
-                start_page = int(check_obj['start_page'])
-                end_page = int(check_obj['end_page'])
-                main_url, partition = self.get_url_info(item)
-                for indx, page in enumerate(range(start_page, end_page + 1), start=1):
-                    if not self.running:  # 실행 상태 확인
-                        break
-                    page_url = f"{main_url}{partition}p={page}"
-                    main_html = self.main_request(page_url, 5)
-                    if main_html:
-                        products, totalPages = self.process_data(main_html)
-                        for idx, detail_url in enumerate(products, start=1):
-                            if not self.running:  # 실행 상태 확인
-                                break
-                            current_cnt += 1
-                            now_per = divide_and_truncate_per(current_cnt, total_cnt)
-                            self.log_signal.emit(f'{site_name}({now_per}%)  {item}({index}/{len(check_obj_list)})  TotalPage({current_page}/{total_pages})  TotalProduct({current_cnt}/{total_cnt})')
-                            detail_html = self.sub_request(detail_url)
-                            if detail_html:
-                                images, brand_name, product_name, detail = self.get_detail_data(detail_html)
-                                for ix, image_url in enumerate(images, start=1):
-                                    if not self.running:
-                                        break
-                                    self.log_signal.emit(f'{item}  Page({page}/{end_page})[{indx}/{total_pages}]  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
-                                    obj = {
-                                        'site_name': site_name,
-                                        'category': item,
-                                        'brand_name': brand_name,
-                                        'product_name': product_name,
-                                        'image_name': '',
-                                        'image_success': 'O',
-                                        'page': page,
-                                        'page_index': idx,
-                                        'detail': detail,
-                                        'images': images,
-                                        'main_url': main_url,
-                                        'detail_url': detail_url,
-                                        'excel_save': 'O',
-                                        'error_message': '',
-                                        'reg_date': ''
-                                    }
+                detail_list = self.get_api_request(checked_model['cid'], page)
+                for pid in detail_list:
+                    if pid not in all_detail_list:
+                        all_detail_list[pid] = {
+                            "page_no": page,
+                            "pid": pid,
+                            "product_no": None
+                        }
+            all_detail_list = list(all_detail_list.values())  # 리스트 변환
+            inserted_products = self.insert_product_models(checked_model, all_detail_list)
 
-                                    # 이미지 다운로드
-                                    # self.download_image(image_url, site_name, category, product_name, obj)
-                                    # 구글 업로드
-                                    self.google_cloud_upload(site_name, item, product_name, image_url, obj)
-                                    obj['reg_date'] = get_current_formatted_datetime()
-                                    self.save_to_excel_one_by_one([obj], excel_filename, obj)  # 엑셀 파일 경로를 지정
-                                    self.log_signal.emit(f'data : {obj}')
-                                    result_list.append(obj)
-                                    time.sleep(1)
-                                pro_value = (current_cnt / total_cnt) * 1000000
-                                self.progress_signal.emit(before_pro_value, pro_value)
-                                before_pro_value = pro_value
 
-        self.progress_signal.emit(before_pro_value, 1000000)
-        self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
-        self.log_signal.emit("=============== 크롤링 종료")
-        self.progress_end_signal.emit()
+
+
+
+
+
+
+
+
+    def insert_product_models(self, checked_model, all_detail_list):
+
+        # CID 목록을 기반으로 ProductInfoModel 리스트 생성 (나머지 필드는 공백)
+        product_models = [
+            ProductInfoModel(
+                no=None,         # Auto Increment
+                pno=checked_model['no'],           # 기본값
+                cid=checked_model['cid'],         # CID 유지
+                category=checked_model['name'],     # 공백
+                pid=detail['pid'],
+                product="",
+                description="",
+                page_no=detail['page'],
+                product_no=detail_idx + 1,
+                img_list="",
+                success_yn="N",  # 기본값
+                main_url=f"https://api.gap.com/commerce/search/products/v2/cc?cid{checked_model['cid']}",
+                detail_url=f"https://oldnavy.gap.com/browse/product.do?cid{checked_model['cid']}&pid{detail['pid']}",
+                error_message="",
+                reg_date="0000-00-00",  # 기본값
+                deleted_yn="N"  # 기본값
+            )
+            for detail_idx, detail in all_detail_list
+        ]
+
+        inserted_products = self.product_info_dao.insert_all(product_models)
+        return inserted_products
+
 
 
     # 프로그램 중단
@@ -146,125 +252,148 @@ class ApiOldnavySetLoadWorker(QThread):
 
     # 로그인 쿠키가져오기
     def login(self):
-        """
-        Selenium 웹 드라이버를 설정하고 반환하는 함수입니다.
-        """
-        chrome_options = Options()
+        webdriver_options = webdriver.ChromeOptions()
+
+        # 이 옵션은 Chrome이 자동화 도구(예: Selenium)에 의해 제어되고 있다는 것을 감지하지 않도록 만듭니다.
+        # AutomationControlled 기능을 비활성화하여 webdriver가 브라우저를 자동으로 제어하는 것을 숨깁니다.
+        # 이는 일부 웹사이트에서 자동화 도구가 감지되는 것을 방지하는 데 유용합니다.
         ###### 자동 제어 감지 방지 #####
-        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        webdriver_options.add_argument('--disable-blink-features=AutomationControlled')
 
+        # Chrome 브라우저를 실행할 때 자동으로 브라우저를 최대화 상태로 시작합니다.
+        # 이 옵션은 사용자가 브라우저를 처음 실행할 때 크기가 자동으로 최대로 설정되도록 합니다.
         ##### 화면 최대 #####
-        chrome_options.add_argument("--start-maximized")
+        webdriver_options.add_argument("--start-maximized")
 
+        # headless 모드로 Chrome을 실행합니다.
+        # 이는 화면을 표시하지 않고 백그라운드에서 브라우저를 실행하게 됩니다.
+        # 브라우저 UI 없이 작업을 수행할 때 사용하며, 서버 환경에서 유용합니다.
         ##### 화면이 안보이게 함 #####
-        # chrome_options.add_argument("--headless")
+        webdriver_options.add_argument("--headless")
 
+        #이 설정은 Chrome의 자동화 기능을 비활성화하는 데 사용됩니다.
+        #기본적으로 Chrome은 자동화가 활성화된 경우 브라우저의 콘솔에 경고 메시지를 표시합니다.
+        #이 옵션을 설정하면 이러한 경고 메시지가 나타나지 않도록 할 수 있습니다.
         ##### 자동 경고 제거 #####
-        chrome_options.add_experimental_option('useAutomationExtension', False)
+        webdriver_options.add_experimental_option('useAutomationExtension', False)
 
+        # 이 옵션은 브라우저의 로깅을 비활성화합니다.
+        # enable-logging을 제외시키면, Chrome의 로깅 기능이 활성화되지 않아 불필요한 로그 메시지가 출력되지 않도록 할 수 있습니다.
         ##### 로깅 비활성화 #####
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        webdriver_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        ##### 자동화 탐지 방지 설정 #####
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-
-        ##### 자동으로 최신 크롬 드라이버를 다운로드하여 설치하는 역할 #####
-
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        ##### CDP 명령으로 자동화 감지 방지 #####
-        self.driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': '''
-                Object.defineProperty(navigator, 'webdriver', {
-                  get: () => undefined
-                })
-            '''
-        })
-
-    def main_request(self, url, wait_time):
-
-        try:
-            # 웹페이지 요청
-            self.driver.get(url)
-
-            # 페이지 로딩 대기 (적절한 대기 시간 필요)
-            time.sleep(wait_time)
-
-            # 페이지 소스 가져오기
-            html = self.driver.page_source
-
-            # 상태 코드 확인 (브라우저에서 처리하므로 확인할 수 없음, 대신 로딩이 완료되었는지 확인)
-            if html:
-                return html
-            else:
-                self.log_signal.emit(f"Failed to retrieve page content for {url}")
-                self.driver.quit()
-                return None
-
-        except Exception as e:
-            self.log_signal.emit(f"Request failed: {e}")
-            self.driver.quit()
-            return None
+        # 이 옵션은 enable-automation 스위치를 제외시킵니다.
+        # enable-automation 스위치가 활성화되면,
+        # 자동화 도구를 사용 중임을 알리는 메시지가 브라우저에 표시됩니다.
+        # 이를 제외하면 자동화 도구의 사용이 감지되지 않습니다.
+        ##### 자동화 도구 사용 감지 제거 #####
+        webdriver_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        self.driver = webdriver.Chrome(options=webdriver_options)
+        self.driver.set_page_load_timeout(120)
+        self.driver.get(self.baseUrl)
+        cookies = self.driver.get_cookies()
+        for cookie in cookies:
+            self.sess.cookies.set(cookie['name'], cookie['value'])
+        self.driver.quit()
 
 
-    # 페이지 데이터 가져오기
-    def get_api_request(self, category, slug, page):
+    def main_request(self, cid, pageNumber):
 
-        main_url_api = "https://api.mytheresa.com/api"
+        url = "https://api.gap.com/commerce/search/products/v2/cc"
 
         headers = {
-            "authority": "api.mytheresa.com",
-            "method": "POST",
-            "path": "/api",
-            "scheme": "https",
             "accept": "*/*",
             "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "en",
-            "content-type": "application/json",
-            "origin": "https://www.mytheresa.com",
-            "referer": "https://www.mytheresa.com/",
-            "sec-ch-ua": '"Microsoft Edge";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-fetch-dest": "empty",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "origin": "https://oldnavy.gap.com",
+            "referer": "https://oldnavy.gap.com/",
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "same-site",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
-            "x-country": "US",
-            "x-geo": "KR",
-            "x-nsu": "false",
-            "x-region": "BY",
-            "x-section": f"{category}",
-            "x-store": "US",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+            "x-client-application-name": "Browse"
         }
 
-        payload = {
-            "operationName": "XProductListingPageQuery",
-            "variables": {
-                "categories": [],
-                "colors": [],
-                "designers": [],
-                "fta": None,
-                "page": page,
-                "patterns": [],
-                "reductionRange": [],
-                "saleStatus": None,
-                "size": 60,
-                "sizesHarmonized": [],
-                "slug": f"{slug}",
-                "sort": None
-            },
-            "query": "query XProductListingPageQuery($categories: [String], $colors: [String], $designers: [String], $fta: Boolean, $page: Int, $patterns: [String], $reductionRange: [String], $saleStatus: SaleStatusEnum, $size: Int, $sizesHarmonized: [String], $slug: String, $sort: String) {\n  xProductListingPage(categories: $categories, colors: $colors, designers: $designers, fta: $fta, page: $page, patterns: $patterns, reductionRange: $reductionRange, saleStatus: $saleStatus, size: $size, sizesHarmonized: $sizesHarmonized, slug: $slug, sort: $sort) {\n    id\n    alternateUrls {\n      language\n      store\n      url\n      __typename\n    }\n    breadcrumb {\n      id\n      name\n      slug\n      __typename\n    }\n    combinedDepartmentGroupAndCategoryErpID\n    department\n    designerErpId\n    displayName\n    facets {\n      categories {\n        name\n        options {\n          id\n          name\n          slug\n          children {\n            id\n            name\n            slug\n            children {\n              id\n              name\n              slug\n              __typename\n            }\n            __typename\n          }\n          __typename\n        }\n        activeValue\n        __typename\n      }\n      designers {\n        name\n        options {\n          value\n          slug\n          __typename\n        }\n        activeValue\n        __typename\n      }\n      colors {\n        name\n        options {\n          value\n          __typename\n        }\n        activeValue\n        __typename\n      }\n      fta {\n        activeValue\n        name\n        options {\n          value\n          __typename\n        }\n        visibility\n        __typename\n      }\n      patterns {\n        name\n        options {\n          value\n          __typename\n        }\n        activeValue\n        __typename\n      }\n      reductionRange {\n        activeValue\n        name\n        options {\n          value\n          __typename\n        }\n        unit\n        visibility\n        __typename\n      }\n      saleStatus {\n        activeValue\n        name\n        options {\n          value\n          __typename\n        }\n        visibility\n        __typename\n      }\n      sizesHarmonized {\n        name\n        options {\n          value\n          __typename\n        }\n        activeValue\n        __typename\n      }\n      __typename\n    }\n    isMonetisationExcluded\n    isSalePage\n    pagination {\n      ...paginationData\n      __typename\n    }\n    products {\n      ...productData\n      __typename\n    }\n    sort {\n      currentParam\n      params\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment paginationData on XPagination {\n  currentPage\n  itemsPerPage\n  totalItems\n  totalPages\n  __typename\n}\n\nfragment priceData on XSharedPrice {\n  currencyCode\n  currencySymbol\n  discount\n  discountEur\n  extraDiscount\n  finalDuties\n  hint\n  includesVAT\n  isPriceModifiedByRegionalRules\n  original\n  originalDuties\n  originalDutiesEur\n  originalEur\n  percentage\n  regionalRulesModifications {\n    priceColor\n    __typename\n  }\n  regular\n  vatPercentage\n  __typename\n}\n\nfragment productData on XSharedProduct {\n  color\n  combinedCategoryErpID\n  combinedCategoryName\n  department\n  description\n  designer\n  designerErpId\n  designerInfo {\n    designerId\n    displayName\n    slug\n    __typename\n  }\n  displayImages\n  enabled\n  features\n  fta\n  hasMultipleSizes\n  hasSizeChart\n  hasStock\n  isComingSoon\n  isInWishlist\n  isPurchasable\n  isSizeRelevant\n  labelObjects {\n    id\n    label\n    __typename\n  }\n  labels\n  mainPrice\n  mainWaregroup\n  name\n  price {\n    ...priceData\n    __typename\n  }\n  priceDescription\n  promotionLabels {\n    label\n    type\n    __typename\n  }\n  seasonCode\n  sellerOrigin\n  sets\n  sizeAndFit\n  sizesOnStock\n  sizeTag\n  sizeType\n  sku\n  slug\n  variants {\n    allVariants {\n      availability {\n        hasStock\n        lastStockQuantityHint\n        __typename\n      }\n      isInWishlist\n      size\n      sizeHarmonized\n      sku\n      __typename\n    }\n    availability {\n      hasStock\n      lastStockQuantityHint\n      __typename\n    }\n    isInWishlist\n    price {\n      currencyCode\n      currencySymbol\n      discount\n      discountEur\n      extraDiscount\n      includesVAT\n      isPriceModifiedByRegionalRules\n      original\n      originalEur\n      percentage\n      regionalRulesModifications {\n        priceColor\n        __typename\n      }\n      vatPercentage\n      __typename\n    }\n    size\n    sizeHarmonized\n    sku\n    __typename\n  }\n  __typename\n}\n"
+        params = {
+            "brand": "on",
+            "market": "us",
+            "cid": cid,
+            "locale": "en_US",
+            "pageSize": "300",
+            "ignoreInventory": "false",
+            "includeMarketingFlagsDetails": "true",
+            "enableDynamicFacets": "true",
+            "enableSwatchSort": "true",
+            "sortSwatchesBy": "bestsellers",
+            "pageNumber": pageNumber,
+            "vendor": "Certona",
         }
 
         try:
-            # POST 요청 보내기
-            res = self.sess.post(main_url_api, headers=headers, json=payload)
+            res = self.sess.get(url, params=params, headers=headers, timeout=10)
 
             # 응답 상태 확인
             if res.status_code == 200:
                 try:
                     response_json = res.json()  # JSON 응답 파싱
-                    return response_json
+                    return {
+                        "total_page_cnt": response_json.pageNumberTotal,
+                        "total_product_cnt": response_json.totalColors
+                    }
+                except ValueError as e:
+                    # JSON 파싱 실패
+                    self.log_signal.emit(f"JSON 파싱 에러: {e}")
+                    return None
+            else:
+                # 상태 코드가 200이 아닌 경우
+                self.log_signal.emit(f"HTTP 요청 실패: 상태 코드 {res.status_code}, 내용: {res.text}")
+                return None
+
+        except Exception as e:
+            # 네트워크 에러 또는 기타 예외 처리
+            self.log_signal.emit(f"요청 중 에러 발생: {e}")
+            return None
+
+
+    # 페이지 데이터 가져오기
+    def get_api_request(self, cid, pageNumber):
+
+        url = "https://api.gap.com/commerce/search/products/v2/cc"
+
+        headers = {
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "origin": "https://oldnavy.gap.com",
+            "referer": "https://oldnavy.gap.com/",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+            "x-client-application-name": "Browse"
+        }
+
+        params = {
+            "brand": "on",
+            "market": "us",
+            "cid": cid,
+            "locale": "en_US",
+            "pageSize": "300",
+            "ignoreInventory": "false",
+            "includeMarketingFlagsDetails": "true",
+            "enableDynamicFacets": "true",
+            "enableSwatchSort": "true",
+            "sortSwatchesBy": "bestsellers",
+            "pageNumber": pageNumber,
+            "vendor": "Certona",
+        }
+
+        try:
+            res = self.sess.get(url, params=params, headers=headers, timeout=10)
+
+            # 응답 상태 확인
+            if res.status_code == 200:
+                try:
+                    response_json = res.json()  # JSON 응답 파싱
+                    return [category.get("ccList", []) for category in response_json.get("categories", [])]
                 except ValueError as e:
                     # JSON 파싱 실패
                     self.log_signal.emit(f"JSON 파싱 에러: {e}")
@@ -334,32 +463,30 @@ class ApiOldnavySetLoadWorker(QThread):
 
 
     # URL 가져오기
-    def get_url_info(self, item):
-        global baseUrl
-
-        main_url = ''
-        partition = ''
-
+    def get_cid(self, item):
+        cid = ""
         if item:
-            name = item.lower()
+            name = item
 
-            if name == 'men':
-                main_url = f"{baseUrl}/mens-clothing"
-                partition = '/?'
-            elif name == 'women':
-                main_url = f"{baseUrl}/womens-clothing"
-                partition = '/?'
-            elif name == 'boys':
-                main_url = f"{baseUrl}/kids/?gender=25"
-                partition = '&'
-            elif name == 'girls':
-                main_url = f"{baseUrl}/kids/?gender=26"
-                partition = '&'
-            elif name == 'baby':
-                main_url = f"{baseUrl}/kids/?gender=4"
-                partition = '&'
-
-        return main_url, partition
+            if name == 'Now Trending!':
+                cid = "3028309"
+            elif name == 'Activewear':
+                cid = "3028158"
+            elif name == 'Women':
+                cid = "1185233"
+            elif name == 'Men':
+                cid = "1031099"
+            elif name == 'Girls':
+                cid = "1185229"
+            elif name == 'Boys':
+                cid = "1185232"
+            elif name == 'Toddler':
+                cid = "1185224"
+            elif name == 'Baby':
+                cid = "1185226"
+            elif name == 'Maternity':
+                cid = "1185228"
+        return cid
 
 
     # 카테고리별 전체 개수
@@ -432,42 +559,17 @@ class ApiOldnavySetLoadWorker(QThread):
         check_obj_list = []
         for index, checked_obj in enumerate(self.checked_list, start=1):
             name = checked_obj['name']
-            start_page = checked_obj['start_page']
-            end_page = checked_obj['end_page']
 
-            main_url, partition = self.get_url_info(name)
-            main_html = self.main_request(main_url, 3)
-            total_items_cnt, total_page = self.process_total_data(main_html)
+            cid = self.get_cid(name)
+            cnt_result = self.main_request(cid, 0)
 
-            last_page_cnt = total_items_cnt % 84
-
-            if not end_page:
-                end_page = total_page
-
-            if not start_page:
-                start_page = 1
-
-            if end_page >= total_page:
-                end_page = total_page
-                if start_page >= end_page:
-                    start_page = end_page
-                    total_items_cnt = last_page_cnt
-                elif start_page != 1:
-                    total_items_cnt = ((end_page - start_page) * 84) + last_page_cnt
-            if end_page < total_page:
-                if start_page >= end_page:
-                    start_page = end_page
-                    total_items_cnt = 84
-                else:
-                    total_items_cnt = (end_page - start_page + 1) * 84
-
-            checked_obj['start_page'] = start_page
-            checked_obj['end_page'] = end_page
-            checked_obj['total_page_cnt'] = end_page - start_page + 1
-            checked_obj['total_item_cnt'] = total_items_cnt
-            checked_obj['item'] = name.lower()
+            checked_obj['cid'] = cid
+            checked_obj['total_page_cnt'] = cnt_result['total_page_cnt']
+            checked_obj['total_product_cnt'] = cnt_result['total_product_cnt']
 
             check_obj_list.append(checked_obj)
+
+            time.sleep(1)
 
         return check_obj_list
 
