@@ -1,48 +1,21 @@
-import requests
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
 
-def get_cc_list(cid, pageNumber):
-    url = "https://api.gap.com/commerce/search/products/v2/cc"
-    params = {
-        "brand": "on",
-        "market": "us",
-        "cid": cid,
-        "locale": "en_US",
-        "pageSize": "300",
-        "ignoreInventory": "false",
-        "includeMarketingFlagsDetails": "true",
-        "enableDynamicFacets": "true",
-        "enableSwatchSort": "true",
-        "sortSwatchesBy": "bestsellers",
-        "pageNumber": pageNumber,
-        "vendor": "Certona",
-    }
-    headers = {
-        "accept": "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "origin": "https://oldnavy.gap.com",
-        "referer": "https://oldnavy.gap.com/",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-site",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
-        "x-client-application-name": "Browse"
-    }
+# Google Drive API 인증
+SCOPES = ["https://www.googleapis.com/auth/drive"]
+SERVICE_ACCOUNT_FILE = "credentials.json"  # 서비스 계정 JSON 파일
 
-    try:
-        res = requests.get(url, params=params, headers=headers, timeout=10)
-        res.raise_for_status()
-        data = res.json()
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES
+)
+drive_service = build("drive", "v3", credentials=creds)
 
-        return [category.get("ccList", []) for category in data.get("categories", [])]
+# ✅ 폴더 ID
+FOLDER_ID = "0ADz3hcOEyJ4lUk9PVA"
 
-    except requests.exceptions.RequestException as e:
-        return {"error": f"Request failed: {e}"}
-    except Exception as e:
-        return {"error": f"Parsing error: {e}"}
-
-# data.totalColors
-# data.pageNumberTotal
-
-# 사용 예시
-cc_list = get_cc_list("1185228", "1")
-print(cc_list)
+# ✅ 폴더 정보 가져오기 테스트
+try:
+    folder = drive_service.files().get(fileId=FOLDER_ID, fields="id, name").execute()
+    print(f"✅ 폴더 접근 가능! 폴더명: {folder['name']}")
+except Exception as e:
+    print(f"❌ 폴더 접근 실패: {e}")

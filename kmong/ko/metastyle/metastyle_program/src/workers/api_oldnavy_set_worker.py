@@ -43,9 +43,9 @@ from src.model.oldnavy.category_list_model import CategoryListModel
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-image_main_directory = 'zalando_images'
-company_name = 'zalando'
-site_name = 'ZALANDO'
+image_main_directory = 'oldnavy_images'
+company_name = 'oldnavy'
+site_name = 'OLDVNAVY'
 excel_filename = ''
 baseUrl = "https://oldnavy.gap.com/"
 
@@ -63,7 +63,7 @@ class ApiOldnavySetLoadWorker(QThread):
         self.baseUrl = baseUrl
         self.sess = requests.Session()
         self.checked_list = checked_list
-        self.checked_model_list = []
+
         self.running = True  # 실행 상태 플래그 추가
         self.driver = None
         self.db_path = "database.db"
@@ -75,7 +75,9 @@ class ApiOldnavySetLoadWorker(QThread):
         self.product_info_dao = ProductInfoDAO(self.db)  # MAIN DAO 객체
         self.category_list_dao = CategoryListDAO(self.db)  # MAIN DAO 객체
 
+        self.checked_model_list = []
         self.main_model = None
+        self.product_info_list = []
 
 
 
@@ -122,7 +124,7 @@ class ApiOldnavySetLoadWorker(QThread):
                 self.insert_category_list_models(check_obj_list, current_time)
 
                 # product_info DB insert
-                self.insert_product_models_main()
+                self.insert_product_info_models_main()
 
 
             self.progress_signal.emit(before_pro_value, 1000000)
@@ -184,7 +186,7 @@ class ApiOldnavySetLoadWorker(QThread):
             self.checked_model_list.append(inserted_category_entry)
 
 
-    def insert_product_models_main(self):
+    def insert_product_info_models_main(self):
         for index, checked_model in enumerate(self.checked_model_list, start=1):
             if not self.running:  # 실행 상태 확인
                 self.log_signal.emit("크롤링이 중지되었습니다.")
@@ -203,18 +205,68 @@ class ApiOldnavySetLoadWorker(QThread):
                             "product_no": None
                         }
             all_detail_list = list(all_detail_list.values())  # 리스트 변환
-            inserted_products = self.insert_product_models(checked_model, all_detail_list)
+            self.product_info_list = self.insert_product_info_models(checked_model, all_detail_list)
+            self.get_product_info_list()
+
+
+    def get_product_info_list(self):
+
+        for index, product in self.product_info_list:
+            obj = self.get_api_product_info(product.pid, product.cid)
+            product.product = obj['product']
+            product.description = obj['description']
+            product.img_list = obj['img_list']
+
+
+            for ix, image_url in enumerate(product.img_list, start=1):
+                if not self.running:
+                    break
+
+                self.google_cloud_upload(product.category, image_url, product)
+                product['reg_date'] = get_current_formatted_datetime()
+                time.sleep(1)
+
+            product['success_yn'] = "N" if product.error_message else "Y"
+
+
+
+
+    def get_api_product_info(self, pid, cid):
+        url = "https://oldnavy.gap.com/browse/product.do"
+        params = {"pid": pid, "cid": cid, "pcid": cid, "ctype": "Listing"}
+        headers = {
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+        }
+
+        try:
+            res = self.sess.get(url, params=params, headers=headers, timeout=10)
+            res.raise_for_status()
+            soup = BeautifulSoup(res.text, "html.parser")
+
+            obj = {
+                "product": soup.find("h1", class_="sitewide-1t5lfed").get_text(strip=True) if soup.find("h1", class_="sitewide-1t5lfed") else "",
+                "description": "\n".join(li.get_text(strip=True) for li in soup.select(".drawer-trigger-container .sitewide-jxz45b:nth-of-type(2) .product-information-item__list li")) or "",
+                "img_list": [
+                    (src if src.startswith("http") else f"https://oldnavy.gap.com/{src.lstrip('/')}")
+                    for src in [img["src"] for img in soup.select(".brick__product-image-wrapper img") if "src" in img.attrs]
+                ]
+            }
+            return obj
+
+        except requests.exceptions.RequestException as e:
+            return {"error": f"Request failed: {e}"}
+        except Exception as e:
+            return {"error": f"Parsing error: {e}"}
 
 
 
 
 
 
-
-
-
-
-    def insert_product_models(self, checked_model, all_detail_list):
+    def insert_product_info_models(self, checked_model, all_detail_list):
 
         # CID 목록을 기반으로 ProductInfoModel 리스트 생성 (나머지 필드는 공백)
         product_models = [
@@ -233,7 +285,7 @@ class ApiOldnavySetLoadWorker(QThread):
                 main_url=f"https://api.gap.com/commerce/search/products/v2/cc?cid{checked_model['cid']}",
                 detail_url=f"https://oldnavy.gap.com/browse/product.do?cid{checked_model['cid']}&pid{detail['pid']}",
                 error_message="",
-                reg_date="0000-00-00",  # 기본값
+                reg_date="",  # 기본값
                 deleted_yn="N"  # 기본값
             )
             for detail_idx, detail in all_detail_list
@@ -677,7 +729,8 @@ class ApiOldnavySetLoadWorker(QThread):
 
 
     # 구글 클라우드 업로드
-    def google_cloud_upload(self, site_name, category, product_name, image_url, obj):
+    def google_cloud_upload(self, category, image_url, obj):
+        global site_name
         try:
             # 프로그램 실행 경로 기준으로 파일 경로 설정
             base_path = os.getcwd()
@@ -728,32 +781,26 @@ class ApiOldnavySetLoadWorker(QThread):
             # 이미지 업로드 확인
             if blob.exists():  # 업로드 확인
                 self.log_signal.emit(f"success {image_url} -> {bucket_name}/{blob_name}.")
-                obj['image_name'] = f"{category}_{image_name}"
+                # obj['image_name'] = f"{category}_{image_name}"
             else:
                 obj['error_message'] = f"Image upload failed for {image_url}. Check the destination bucket."
-                obj['image_success'] = 'X'
                 self.log_signal.emit(f"Image upload failed for {image_url}. Check the destination bucket.")
 
         except requests.RequestException as e:
             self.log_signal.emit(f"Error downloading image from {image_url}: {str(e)}")
             obj['error_message'] = f"Error downloading image from {image_url}: {str(e)}"
-            obj['image_success'] = 'X'
         except json.JSONDecodeError:
             self.log_signal.emit("Error reading or parsing user.json. Check its content.")
             obj['error_message'] = "Error reading or parsing user.json. Check its content."
-            obj['image_success'] = 'X'
         except FileNotFoundError as e:
             self.log_signal.emit(f"File not found: {str(e)}")
             obj['error_message'] = f"File not found: {str(e)}"
-            obj['image_success'] = 'X'
         except ValueError as e:
             self.log_signal.emit(str(e))
             obj['error_message'] = f"{str(e)}"
-            obj['image_success'] = 'X'
         except Exception as e:
             self.log_signal.emit(f"An unexpected error occurred: {str(e)}")
             obj['error_message'] = f"An unexpected error occurred: {str(e)}"
-            obj['image_success'] = 'X'
 
 
         # 해당 경로에 있는 모든 이미지 목록 출력 (site_name/category/product_name/ 경로)
