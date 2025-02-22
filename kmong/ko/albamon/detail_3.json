@@ -1,0 +1,634 @@
+{
+  "props": {
+    "pageProps": {
+      "id": 107967948,
+      "fetchError": null,
+      "data": {
+        "viewData": {
+          "recruitNo": 107967948,
+          "tempIdx": 0,
+          "postStatus": {
+            "key": "OPEN",
+            "value": "1",
+            "description": "게재중인 공고"
+          },
+          "recruitStatus": 3,
+          "recruitStatusExtra": 0,
+          "deleted": false,
+          "closeStat": false,
+          "closingDateTime": "2025-03-11 00:00:00",
+          "deadlineDate": "상시모집",
+          "closingDateTerm": "",
+          "closingDateTermNum": -1,
+          "allTime": true,
+          "registDateTime": "2025-02-19 00:24:30",
+          "firstRegistDateTime": "2025-02-19 00:23:26",
+          "modifyDateTime": "2025-02-20 21:25:03",
+          "firstPostDateTime": "2025-02-19 00:25:00",
+          "recruitTitle": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+          "recruitCompanyName": "김억삼포차",
+          "recruitMemberCount": "0",
+          "numberOfApplicants": "0명(인원미정)",
+          "recruitViewCount": 0,
+          "easyGiStat": 0,
+          "simpleRecruitStatus": false,
+          "simpleRecruitContents": "",
+          "productPaidStatus": {
+            "key": "PAID",
+            "value": 1,
+            "description": "유료"
+          },
+          "photoType": "G",
+          "useCompanyPhoto": false,
+          "recruitImages": {
+            "photoType": {
+              "key": "RECRUIT_PHOTO",
+              "value": 1,
+              "description": "공고사진"
+            },
+            "photos": [
+            ],
+            "videos": null
+          },
+          "area": {
+            "value": "I000",
+            "description": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층"
+          },
+          "workingAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
+          "publishAreaDongCode": "",
+          "latitude": 37.55084991455078,
+          "longitude": 126.9222412109375,
+          "addressLatitude": 304966,
+          "addressLongitude": 550390,
+          "autoMatchExceptionId": false,
+          "subwayAutoMatch": true,
+          "universityAutoMatch": true,
+          "station": [
+            {
+              "line": "6호선",
+              "description": "상수",
+              "walking": "도보 6분",
+              "subwayCode": "106",
+              "stationCode": "10625",
+              "lineIcon": "icon_metro_line6",
+              "stationExitNumber": "",
+              "stationExitDescription": "",
+              "stationDistanceCode": 104,
+              "stationDistanceWalkingMinute": 6
+            },
+            {
+              "line": "2호선",
+              "description": "합정",
+              "walking": "도보 10분",
+              "subwayCode": "102",
+              "stationCode": "10235",
+              "lineIcon": "icon_metro_line2",
+              "stationExitNumber": "",
+              "stationExitDescription": "",
+              "stationDistanceCode": 107,
+              "stationDistanceWalkingMinute": 10
+            },
+            {
+              "line": "2호선",
+              "description": "홍대입구",
+              "walking": "도보 10분",
+              "subwayCode": "102",
+              "stationCode": "10236",
+              "lineIcon": "icon_metro_line2",
+              "stationExitNumber": "",
+              "stationExitDescription": "",
+              "stationDistanceCode": 107,
+              "stationDistanceWalkingMinute": 10
+            }
+          ],
+          "universities": [
+            {
+              "universityCode": "I660",
+              "universityName": "홍익대학교(서울캠퍼스)",
+              "universityStreetCode": "104",
+              "walkingMinute": 6,
+              "value": "홍익대학교(서울캠퍼스)",
+              "description": "도보6분"
+            },
+            {
+              "universityCode": "I260",
+              "universityName": "서강대학교",
+              "universityStreetCode": "119",
+              "walkingMinute": 28,
+              "value": "서강대학교",
+              "description": "도보28분"
+            },
+            {
+              "universityCode": "I480",
+              "universityName": "연세대학교(신촌캠퍼스)",
+              "universityStreetCode": "120",
+              "walkingMinute": 30,
+              "value": "연세대학교(신촌캠퍼스)",
+              "description": "도보30분"
+            }
+          ],
+          "part": [
+            {
+              "value": "1123",
+              "description": "주방보조·설거지"
+            },
+            {
+              "value": "1010",
+              "description": "일반음식점"
+            },
+            {
+              "value": "1121",
+              "description": "서빙"
+            }
+          ],
+          "jobFieldInputStatus": true,
+          "jobField": "홀, 주방",
+          "employmentType": [
+            {"key": "FULL_TIME",
+              "value": 2,
+              "description": "정규직"
+            },
+            {
+              "key": "CONTRACT_WORK",
+              "value": 3,
+              "description": "계약직"
+            }
+          ],
+          "gender": {
+            "value": "0",
+            "description": "성별무관"
+          },
+          "ageDescription": "연령무관",
+          "startAge": 0,
+          "endAge": 0,
+          "ageTheme": "00",
+          "ageYouthAvailable": false,
+          "oldAge": false,
+          "workPeriod": {
+            "value": "48",
+            "description": "1년이상"
+          },
+          "workTermTopDescription": "장기",
+          "workTermStartDate": null,
+          "workTermEndDate": null,
+          "workTermDescription": null,
+          "workTermConsult": true,
+          "workDays": {
+            "value": "50",
+            "description": "요일협의"
+          },
+          "workWeek": null,
+          "workWeekEtc": "주5일 평일 2일 휴무",
+          "workHour": {
+            "value": "40",
+            "description": ""
+          },
+          "workTimeDetail": "18:00~06:00(익일)",
+          "workStartTime": "18:00",
+          "workEndTime": "06:00",
+          "workTimeOption": null,
+          "workTimeConsult": false,
+          "workTimeOpt": "",
+          "educationLevels": [
+            {
+              "value": "0",
+              "description": "학력무관"
+            }
+          ],
+          "educationRequirementUniversityStudent": false,
+          "salaryType": {
+            "key": "MONTHLY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "salaryDescription": "월급",
+          "salary": 3000000,
+          "payEtcInfo": [
+            "협의가능",
+            "수습기간있음"
+          ],
+          "salaryConsult": true,
+          "extraSalary": "300~급여협의",
+          "holidaySalaryStatus": 0,
+          "salaryFranchise": null,
+          "salaryCalculatorSalaryType": "4",
+          "salaryCalculatorWorkDay": 0,
+          "salaryCalculatorRealWorkTime": "12.0",
+          "salaryCalculatorWorkTime": 12,
+          "applyType": [
+            "ONLINE_APPLY",
+            "SMS_APPLY"
+          ],
+          "applyOnlineStatus": true,
+          "applyEmailStatus": false,
+          "applyHomepageStatus": false,
+          "applySmsStatus": true,
+          "applySmsForm": "이름/성별/주방 직원, 홀 직원/면접가능날짜",
+          "applyEasySmsStatus": true,
+          "applyTellStatus": false,
+          "applyVisitStatus": false,
+          "applyEtcPossibleStatus": false,
+          "applyPossibleStatue": true,
+          "passCorpFormFlag": false,
+          "applyFormFile": null,
+          "smsApplyDescription": "이름/성별/주방 직원, 홀 직원/면접가능날짜",
+          "myApplyType": null,
+          "myEtcApplyType": null,
+          "applyStatisticsDisplayStatus": true,
+          "preferences": "",
+          "preferenceCondition": "",
+          "additionalPreferenceCondition": "0010100000",
+          "beginnerAvailableStatus": true,
+          "possibleWorkWithFriend": false,
+          "trainee": false,
+          "welfareBenefits": [
+            {
+              "value": "10",
+              "description": "국민연금"
+            },
+            {
+              "value": "20",
+              "description": "고용보험"
+            },
+            {
+              "value": "30",
+              "description": "산재보험"
+            },
+            {
+              "value": "40",
+              "description": "건강보험"
+            },
+            {
+              "value": "140",
+              "description": "휴일근로수당"
+            },
+            {
+              "value": "300",
+              "description": "연장근로수당"
+            },
+            {
+              "value": "120",
+              "description": "우수사원 표창/포상"
+            },
+            {
+              "value": "200",
+              "description": "조식 제공"
+            },
+            {
+              "value": "210",
+              "description": "중식 제공"
+            },
+            {
+              "value": "220",
+              "description": "석식 제공"
+            }
+          ],
+          "passQuestionCount": 0,
+          "previousQuestion": null,
+          "preQuestionRegistStatus": 0,
+          "minimumWage": 10030,
+          "payPolicy": {
+            "resultCode": 1,
+            "resultMessage": "",
+            "isViolation": false
+          },
+          "authenticationTags": [
+            {
+              "value": "1",
+              "description": "근로계약서 작성 약속"
+            },
+            {
+              "value": "1",
+              "description": "기업인증 완료여부"
+            },
+            {"value": "1",
+              "description": "성희롱예방교육 수료여부"
+            }
+          ],
+          "sexualHarassmentPreventionEducationStatus": true,
+          "certificationMarkStatus": true,
+          "laborContractWriteStatus": 1,
+          "unfitRecruitCheck": 0,
+          "logisticsCompanyStatus": false,
+          "logisticsCompanyName": null,
+          "carBuyGuide": false,
+          "consignor": false,
+          "companyId": "d1qfR322-h_GMm6vZLJj8A==",
+          "franchiseCode": 0,
+          "memberNo": 0,
+          "corpCode": 0,
+          "companyName": "김억삼포차",
+          "brandKeyword": null,
+          "businessItem": null,
+          "companyAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
+          "companyHomepage": null,
+          "logoPath": "",
+          "companyLogo": null,
+          "favoriteCorporationTotalCount": 0,
+          "myFavoriteCorporationTotalCount": 0,
+          "recruiterKey": "wUrPKuattSmXfpt5jvgzVYWAWgRgVp34GrCqF4p++sH9KYIasn5a5iUP7axf6Dpe/y6qcl9r6zk2daF+BOXYdWnBBJ3dKORIUodhAi7z0GJ2FwEHL7r2Z6zDzaH+ZR/TDYlwNCiS1/URmOT7Imn6hP0s6kmDeyoY73nt9RjmMf0ukE8lIm5xlUhQ7c+xjR53Hx/+7NnekKrst3n7LJj7T/lnm3k0SrBT6qmhKJrCgUmCNGTqINyRy+5M8KLwDy3IKmlmsEZ7Nllq8Mdw6tueeyPthT6J6qlh4GcMXYLOHoqLEuzUB5WgXj+1xd7TuXUT",
+          "recruiter": "김한상",
+          "managerContactPrivateStatus": false,
+          "managerContactExtraPrivateStatus": false,
+          "phoneNumber": null,
+          "managerEmail": null,
+          "managerEmailPrivateStatus": false,
+          "managerFax": "",
+          "recruitUrl": "",
+          "safeNumberStatus": null,
+          "nonMembersPassword": null,
+          "userIpAddress": null,
+          "albamonAppNo": 0,
+          "mobileDate": "2025-02-19 00:24:30",
+          "amAppDt": "2025-02-20 21:24:30",
+          "pcSortDate": "2025-02-20 21:24:30",
+          "jobkoreaRecruit": false,
+          "jobKoreaRecruitNo": null,
+          "jobKoreaGno": null,
+          "jobKoreaRecruitPay": null,
+          "scrap": false,
+          "crawlingBlock": false,
+          "shareKey": "66f75cc",
+          "optionTotalStat": 1,
+          "mealOfferState": "0",
+          "hasReport": false,
+          "overRecruitKeyword": false,
+          "hasOptionHistory": false,
+          "hasKeywordHistory": false,
+          "existNotPaidOption": false,
+          "existNotPaidKeyword": false,
+          "existReservedService": false,
+          "prepaymentCheck": false,
+          "publishEndDate": null,
+          "rightRecruitPromiseState": 0,
+          "goodJobState": "0",
+          "roadViewStatus": "0",
+          "contractStatus": "0",
+          "employContractWriteState": 0,
+          "optionSkinStatus": "0",
+          "optionMapPlusStatus": "0",
+          "optionMapPointStatus": "0",
+          "specUpExposureTypeCode": 0,
+          "workAddressSearchRegistStatus": 12,
+          "referenceRecruitNo": null,
+          "grandLogoName": "",
+          "bannerLogoName": "",
+          "themeAlbaType": null,
+          "companyLogoUseStatus": false,
+          "recruitLogoImagePath": "",
+          "companyLogoFileName": null,
+          "headlineImageName": null,
+          "preferenceLicense": "",
+          "recessMinute": 0,
+          "employContractWritePromiseStatus": 1,
+          "jobTypeNameGaTag": [
+            "주방보조·설거지",
+            "일반음식점",
+            "서빙"
+          ],
+          "workTermGaTag": "48",
+          "publishAreaGaTag": "서울 전체",
+          "employmentTypeGaTag": [
+            "계약직",
+            "정규직"
+          ],
+          "preview": false,
+          "applicantCount": null,
+          "publishAreaCode": "I000",
+          "albamonZ": false,
+          "albamonZApply": false,
+          "reviewSummary": null,
+          "productAreaGaTag": "",
+          "fromRecommendType": null,
+          "naverRecruitInfo": {
+            "@context": "http://schema.org",
+            "@type": "JobPosting",
+            "title": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+            "datePosted": "2025-02-19",
+            "validThrough": "2025-03-11",
+            "employmentType": [
+              "FULL_TIME",
+              "CONTRACTOR"
+            ],
+            "experienceRequirements": "신입",
+            "jobLocation": [
+              {
+                "@type": "Place",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "잔다리로 8 (서교동, 화진빌딩) 1,2층",
+                  "addressLocality": "마포구",
+                  "addressRegion": "서울",
+                  "addressCountry": "대한민국"
+                }
+              }
+            ],
+            "description": "김억삼포차에서 채용을 진행합니다. \n 업직종:주방보조·설거지,일반음식점,서빙 \n 근무기간:1년이상 \n 복리후생:국민연금,고용보험,산재보험,건강보험,휴일근로수당,연장근로수당,우수사원 표창/포상,조식 제공,중식 제공,석식 제공",
+            "baseSalary": {
+              "@type": "MonetaryAmount",
+              "currency": "KRW",
+              "value": {
+                "@type": "QuantitativeValue",
+                "value": 3000000,
+                "unitText": "MONTH"
+              }
+            },
+            "workHours": "풀타임",
+            "hiringOrganization": {
+              "@type": "Organization",
+              "name": "김억삼포차"
+            }
+          },
+          "showPopularRecruitTicker": false,
+          "isChatResponseRateHighRecruit": false,
+          "applyNo": null,
+          "isChatResponseSetting": false,
+          "content": "\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e채용 정보\u003cbr\u003e\u003cbr\u003e홀직원 / 주4일 230만원\u003cbr\u003e홀직원 / 주5일 270만원\u003cbr\u003e홀직원 / 주6일 310만원\u003cbr\u003e\u003cbr\u003e\u0026nbsp;\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e주방직원 / 주4일 260만원 (수습기간 1~3개월)\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e주방직원 / 주5일 300만원 (수습기간 1~3개월)\u003cbr\u003e주방직원 / 주6일 340만원 (수습기간 1~3개월)\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e※주방 경우 만들어보고싶은 음식.\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e자기개발에 도움될수있도록\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;발주목록에 추가하여 만들수 있는 기회 제공\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;열정이 있다면 좋은 기회라고 생각합니다\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e※격주로 5일,6일 번갈아가면서 근무 가능합니다\u003cbr\u003e\u003cbr\u003e[적응 기간에 따라 수습기간 단축 가능합니다]\u003cbr\u003e[급여 더 원할경우 추가근무 가능]\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e-근무시간 : 평일 오후 7시~새벽5시\u003cbr\u003e금,토 : 오후 6시~새벽6시.\u003cbr\u003e공휴일 전날,당일 오후 6시~새벽5시\u003cbr\u003e\u003cbr\u003e(오픈조는 평일 1시간 일찍출퇴근,\u003cbr\u003e주말 1, 2시간 일찍 출퇴근\u003cbr\u003e번갈아가면서 오픈조 수행 )\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e출근후, 퇴근전 식사제공 / 근무중 휴게시간 미포함 별도로 30분 휴게시간 부여\u003cbr\u003e※휴게시간은 지켜드립니다.\u003cbr\u003e\u003cbr\u003e-복지 : 4대보험, 명절보너스, 포상보너스.생일보너스 등등\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e[승진]\u003cbr\u003e\u003cbr\u003e-매니져 : 통상 1-2년 후엔 홀 또는 주방을 책임지는 매니져가 되시고, 그에 따라 급여가 20-40만원 상승됩니다. 아울러 매니져가 되시면(되지 않더라도 입사 2년이 지나면) 창업 투자의 기회도 얻을 수 있습니다.\u003cbr\u003e\u003cbr\u003e-팀장 : 통상 매니져를 1-2년간 하시면 한 매장을 맡아서 운영하실 수 있는 팀장이 되시고, 그에 따라 급여가 30-50만원 상승됩니다.\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e지원은 010-9342-4730 번호로\u003cbr\u003e예)주방직원/23살/ 주 5일 면접지원\u003cbr\u003e보내주시면 면접 스케줄 조율후 면접 진행가능 하십니다 !\u003cbr\u003e\u003cbr\u003e연락 기다리겠습니다!\u003c/p\u003e"
+        },
+        "companyData": {
+          "companyId": "d1qfR322-h_GMm6vZLJj8A==",
+          "companyName": "김억삼포차",
+          "modifyDate": "2025-02-19",
+          "companyLogoUrl": "https://contents.albamon.kr/monimg/corp/noimg_logo.gif",
+          "representativeName": "김형우",
+          "businessItem": "일반음식점",
+          "phoneNumber": "",
+          "companyEmail": "",
+          "zipCode": "04041",
+          "address": "서울 마포구 잔다리로 8 (서교동, 화진빌딩)",
+          "detailAddress": "1,2층",
+          "fullAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
+          "addressLatitude": 37.55090904774048,
+          "addressLongitude": 126.92224103095461,
+          "jobTypeName": "음식료·외식·프랜차이즈",
+          "faxNumber": null,
+          "companyHomepage": null,
+          "establishDate": "2019-04-13",
+          "employeeCount": 20,
+          "companyTypeDescription": {
+            "key": "SMALL_COMPANY",
+            "value": 1,
+            "description": "중소기업 (300명 이하)"
+          },
+          "listedCompanyTypeDescription": {
+            "key": "UNLISTED",
+            "value": 0,
+            "description": "비상장"
+          },
+          "capitalAmount": "",
+          "salesAmount": null,
+          "businessSummary": null,
+          "businessHistory": null,
+          "interestCompanyInfo": {
+            "interested": false,
+            "myRecruit": false,
+            "interestedTotalCount": 15
+          },
+          "franchiseCodeSignUp": false,
+          "associationName": "",
+          "associationAddressGroupName": "",
+          "isChatResponseRateHighRecruit": false
+        },
+        "companyHistories": {
+          "employmentContractCount": 0,
+          "usingService": false,
+          "favoriteUserCount": 0,
+          "foundationYears": 6,
+          "companyCertificationDate": "2023-05-08",
+          "companyCertificationState": true,
+          "recruitingCount": 24,
+          "applyReadState": true,
+          "receiveNoticePushState": true,
+          "hasNationalPensionState": false,
+          "hasEmploymentInsuranceState": false,
+          "hasIndustrialAccidentInsuranceState": false,
+          "hasNationalPension2State": false,
+          "hasHealthInsuranceState": false,
+          "amUseState": true,
+          "amJoinYM": "2019-04",
+          "ecWritePrmsState": true,
+          "payslipCompleteCount": 0,
+          "sharasPrvntEduCompleteState": true,
+          "isChatResponseRateHighCompany": false,
+          "chatResponseRateCompanyCount": 0
+        },
+        "crawlerBlocked": false,
+        "naverRecruitInfo": {
+          "@context": "http://schema.org",
+          "@type": "JobPosting",
+          "title": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+          "datePosted": "2025-02-19",
+          "validThrough": "2025-03-11",
+          "employmentType": [
+            "FULL_TIME",
+            "CONTRACTOR"
+          ],
+          "experienceRequirements": "신입",
+          "jobLocation": [
+            {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "잔다리로 8 (서교동, 화진빌딩) 1,2층",
+                "addressLocality": "마포구",
+                "addressRegion": "서울",
+                "addressCountry": "대한민국"
+              }
+            }
+          ],
+          "description": "김억삼포차에서 채용을 진행합니다. \n 업직종:주방보조·설거지,일반음식점,서빙 \n 근무기간:1년이상 \n 복리후생:국민연금,고용보험,산재보험,건강보험,휴일근로수당,연장근로수당,우수사원 표창/포상,조식 제공,중식 제공,석식 제공",
+          "baseSalary": {
+            "@type": "MonetaryAmount",
+            "currency": "KRW",
+            "value": {
+              "@type": "QuantitativeValue",
+              "value": 3000000,
+              "unitText": "MONTH"
+            }
+          },
+          "workHours": "풀타임",
+          "hiringOrganization": {
+            "@type": "Organization",
+            "name": "김억삼포차"
+          }
+        }
+      },
+      "applyNo": "",
+      "extraParameter": "",
+      "smartRecommendationCode": "",
+      "guerrillaBoothUrl": "",
+      "applyClickYn": "n",
+      "campaignPeriod": false,
+      "pageViewData": {
+        "dimension28": "일반",
+        "dimension39": "107967948",
+        "dimension40": "주방보조·설거지,일반음식점,서빙",
+        "dimension41": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+        "dimension42": "서울 전체",
+        "dimension43": "계약직,정규직",
+        "dimension44": "1년이상",
+        "dimension56": "유료(상품)"
+      },
+      "extraLayoutProps": {
+        "headerType": "ANY"
+      },
+      "productCode": "",
+      "breadcrumbList": {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "아르바이트",
+            "item": "https://www.albamon.com/jobs/home"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "채용 공고",
+            "item": "https://www.albamon.com/jobs/detail/107967948"
+          }
+        ]
+      }
+    },
+    "session": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+    },
+    "pageViewData": {
+      "title": "홈\u003e채용정보\u003e채용정보조회",
+      "dimension4": "PC",
+      "dimension7": "U",
+      "dimension8": "U",
+      "dimension21": "U",
+      "dimension22": "N",
+      "dimension52": "1740057333.865",
+      "dimension28": "일반",
+      "dimension39": "107967948",
+      "dimension40": "주방보조·설거지,일반음식점,서빙",
+      "dimension41": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+      "dimension42": "서울 전체",
+      "dimension43": "계약직,정규직",
+      "dimension44": "1년이상",
+      "dimension56": "유료(상품)"
+    }
+  },
+  "page": "/jobs/detail/[id]",
+  "query": {
+    "logpath": "7",
+    "productCount": "1",
+    "id": "107967948"
+  },
+  "buildId": "QgwedfI-CaIb9pnXUpOjn",
+  "isFallback": false,
+  "dynamicIds": [
+    3692,
+    45486,
+    25936
+  ],
+  "customServer": true,
+  "gip": true,
+  "appGip": true,
+  "scriptLoader": [
+  ]
+}

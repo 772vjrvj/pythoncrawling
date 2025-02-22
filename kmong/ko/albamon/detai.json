@@ -1,0 +1,44 @@
+{
+  "companyId": "4aytqkCAfWz-hdmAhsbQWg==",
+  "companyName": "㈜일도그룹",
+  "modifyDate": "2025-01-31",
+  "companyLogoUrl": "https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2024\\12\\23\\JK_CO_fsmzzo24122311462891.jpg",
+  "representativeName": "박주영",
+  "businessItem": "부동산 분양 및 PM사업",
+  "phoneNumber": "",
+  "companyEmail": "",
+  "zipCode": "06134",
+  "address": "서울 강남구 테헤란로7길 7 (역삼동)",
+  "detailAddress": "12층",
+  "fullAddress": "서울 강남구 테헤란로7길 7 (역삼동) 12층",
+  "addressLatitude": 37.49962932507628,
+  "addressLongitude": 127.03041546267532,
+  "jobTypeName": "부동산·중개·임대",
+  "faxNumber": null,
+  "companyHomepage": "http://www.illdogr.com",
+  "establishDate": "2022-01-18",
+  "employeeCount": 90,
+  "companyTypeDescription": {
+    "key": "SMALL_COMPANY",
+    "value": 1,
+    "description": "중소기업 (300명 이하)"
+  },
+  "listedCompanyTypeDescription": {
+    "key": "UNLISTED",
+    "value": 0,
+    "description": "비상장"
+  },
+  "capitalAmount": "",
+  "salesAmount": "3,000억",
+  "businessSummary": null,
+  "businessHistory": null,
+  "interestCompanyInfo": {
+    "interested": false,
+    "myRecruit": false,
+    "interestedTotalCount": 66
+  },
+  "franchiseCodeSignUp": false,
+  "associationName": "",
+  "associationAddressGroupName": "",
+  "isChatResponseRateHighRecruit": false
+}

@@ -110,16 +110,24 @@ class ApiOldnavySetLoadWorker(QThread):
         csv_filename = os.path.join(os.getcwd(), f"{checked_model['name']}_{get_current_yyyymmddhhmmss()}.csv")
 
         # CSV 파일 초기 생성
-        columns = ["name", "product", "product_no", "description", "image_url", "image_name", "success", "reg_date", "page", "error"]
+        columns = ["name", "product", "product_id" , "product_no", "description", "image_no", "image_url", "image_name", "success", "reg_date", "page", "error"]
         df = pd.DataFrame(columns=columns)
         df.to_csv(csv_filename, index=False)
 
         for index, product in enumerate(self.product_info_list):
+
+            if not product:  # product가 None인지 확인
+                print(f"경고: index {index}의 product가 None입니다. 건너뜁니다.")
+                continue
+
             time.sleep(1)
             obj = self.get_api_product_info(product.get('pid'), product.get('cid'))
+
+
             product['product'] = obj.get('product')
             product['description'] = obj.get('description')
             product['img_list'] = obj.get('img_list')
+            product['product_id'] = product.get('pid')
             product['product_no'] = index + 1
 
             # images 폴더 생성
@@ -132,6 +140,7 @@ class ApiOldnavySetLoadWorker(QThread):
 
                 obj_copy = product.copy()  # 객체 복사
                 obj_copy['name'] = checked_model['name']
+                obj_copy['image_no'] = ix + 1
                 obj_copy['image_url'] = image_url
                 obj_copy['success'] = 'N'
                 obj_copy['reg_date'] = get_current_formatted_datetime()  # 시간 추가
@@ -158,11 +167,13 @@ class ApiOldnavySetLoadWorker(QThread):
                     obj_copy['success'] = 'N'  # 실패하면 N 유지
                     obj_copy['error'] = e
 
+                result_list.append(obj_copy)
+
             self.current_cnt = self.current_cnt + 1
             pro_value = (self.current_cnt / self.total_cnt) * 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
             self.before_pro_value = pro_value
-            result_list.append(obj_copy)
+
             self.log_signal.emit(f'{checked_model["name"]} TotalPage({self.current_page}/{self.total_pages})  TotalProduct({self.current_cnt}/{self.total_cnt}) Product({index+1}/{len(self.product_info_list)})')
 
             # 5개마다 CSV에 저장
@@ -204,9 +215,11 @@ class ApiOldnavySetLoadWorker(QThread):
             return obj
 
         except requests.exceptions.RequestException as e:
-            return {"error": f"Request failed: {e}"}
+            self.log_signal.emit(f"Request failed: {e}")
+            return None
         except Exception as e:
-            return {"error": f"Parsing error: {e}"}
+            self.log_signal.emit(f"Parsing error: {e}")
+            return None
 
 
 
