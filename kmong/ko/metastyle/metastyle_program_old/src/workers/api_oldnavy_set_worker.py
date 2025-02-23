@@ -75,6 +75,10 @@ class ApiOldnavySetLoadWorker(QThread):
                     break
 
                 all_detail_list = {}
+
+                self.current_cnt = (int(checked_model['start_page']) - 1) * 300
+                self.current_page = int(checked_model['start_page'])
+
                 for indx, page in enumerate(range(int(checked_model['start_page']) - 1, int(checked_model['end_page'])), start=1):
                     self.current_page = self.current_page + 1
                     time.sleep(1)
@@ -88,7 +92,7 @@ class ApiOldnavySetLoadWorker(QThread):
                         pid = pid_dic.get("ccId")
                         if pid not in all_detail_list:
                             all_detail_list[pid] = {
-                                "page": page,
+                                "page": page + 1,
                                 "pid": pid,
                             }
 
@@ -98,6 +102,8 @@ class ApiOldnavySetLoadWorker(QThread):
                 self.get_product_info_list(checked_model)
 
         self.progress_signal.emit(self.before_pro_value, 1000000)
+        self.log_signal.emit("=============== 크롤링 종료중...")
+        time.sleep(5)
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
 
@@ -123,64 +129,65 @@ class ApiOldnavySetLoadWorker(QThread):
             time.sleep(1)
             obj = self.get_api_product_info(product.get('pid'), product.get('cid'))
 
+            if obj:
 
-            product['product'] = obj.get('product')
-            product['description'] = obj.get('description')
-            product['img_list'] = obj.get('img_list')
-            product['product_id'] = product.get('pid')
-            product['product_no'] = index + 1
+                product['product'] = obj.get('product')
+                product['description'] = obj.get('description')
+                product['img_list'] = obj.get('img_list')
+                product['product_id'] = product.get('pid')
+                product['product_no'] = index + 1
 
-            # images 폴더 생성
-            images_dir = os.path.join(os.getcwd(), 'images')
-            os.makedirs(images_dir, exist_ok=True)
+                # images 폴더 생성
+                images_dir = os.path.join(os.getcwd(), 'images')
+                os.makedirs(images_dir, exist_ok=True)
 
-            for ix, image_url in enumerate(product.get('img_list'), start=1):
-                if not self.running:
-                    break
+                for ix, image_url in enumerate(product.get('img_list'), start=1):
+                    if not self.running:
+                        break
 
-                obj_copy = product.copy()  # 객체 복사
-                obj_copy['name'] = checked_model['name']
-                obj_copy['image_no'] = ix + 1
-                obj_copy['image_url'] = image_url
-                obj_copy['success'] = 'N'
-                obj_copy['reg_date'] = get_current_formatted_datetime()  # 시간 추가
+                    obj_copy = product.copy()  # 객체 복사
+                    obj_copy['name'] = checked_model['name']
+                    obj_copy['image_no'] = ix + 1
+                    obj_copy['image_url'] = image_url
+                    obj_copy['success'] = 'N'
+                    obj_copy['reg_date'] = get_current_formatted_datetime()  # 시간 추가
 
-                try:
-                    # 이미지 다운로드
-                    response = requests.get(image_url, stream=True)
-                    response.raise_for_status()
+                    try:
+                        # 이미지 다운로드
+                        response = requests.get(image_url, stream=True)
+                        response.raise_for_status()
 
-                    # 이미지 저장 경로
-                    img_filename = f"{product.get('pid')}_{ix}.jpg"
-                    img_path = os.path.join(images_dir, img_filename)
+                        # 이미지 저장 경로
+                        img_filename = f"{product.get('pid')}_{ix}.jpg"
+                        img_path = os.path.join(images_dir, img_filename)
 
-                    # 이미지 저장
-                    with open(img_path, 'wb') as file:
-                        for chunk in response.iter_content(1024):
-                            file.write(chunk)
+                        # 이미지 저장
+                        with open(img_path, 'wb') as file:
+                            for chunk in response.iter_content(1024):
+                                file.write(chunk)
 
-                    obj_copy['success'] = 'Y'  # 성공하면 Y
-                    obj_copy['image_name'] = img_filename
-                    self.log_signal.emit(f"성공 {obj_copy}")
-                except Exception as e:
-                    print(f"이미지 다운로드 실패: {image_url}, 오류: {e}")
-                    obj_copy['success'] = 'N'  # 실패하면 N 유지
-                    obj_copy['error'] = e
+                        obj_copy['success'] = 'Y'  # 성공하면 Y
+                        obj_copy['image_name'] = img_filename
+                        self.log_signal.emit(f"성공 {obj_copy}")
+                    except Exception as e:
+                        print(f"이미지 다운로드 실패: {image_url}, 오류: {e}")
+                        obj_copy['success'] = 'N'  # 실패하면 N 유지
+                        obj_copy['error'] = e
 
-                result_list.append(obj_copy)
+                    result_list.append(obj_copy)
 
-            self.current_cnt = self.current_cnt + 1
-            pro_value = (self.current_cnt / self.total_cnt) * 1000000
-            self.progress_signal.emit(self.before_pro_value, pro_value)
-            self.before_pro_value = pro_value
+                self.current_cnt = self.current_cnt + 1
+                pro_value = (self.current_cnt / self.total_cnt) * 1000000
+                self.progress_signal.emit(self.before_pro_value, pro_value)
+                self.before_pro_value = pro_value
 
-            self.log_signal.emit(f'{checked_model["name"]} TotalPage({self.current_page}/{self.total_pages})  TotalProduct({self.current_cnt}/{self.total_cnt}) Product({index+1}/{len(self.product_info_list)})')
+                self.log_signal.emit(f'{checked_model["name"]} TotalPage({self.current_page}/{self.total_pages})  TotalProduct({self.current_cnt}/{self.total_cnt}) Product({index+1}/{len(self.product_info_list)})')
 
-            # 5개마다 CSV에 저장
-            if index % 5 == 0 and index > 0:
-                df = pd.DataFrame(result_list, columns=columns)
-                df.to_csv(csv_filename, mode='a', header=False, index=False)
-                result_list.clear()  # 저장 후 리스트 초기화
+                # 5개마다 CSV에 저장
+                if index % 5 == 0 and index > 0:
+                    df = pd.DataFrame(result_list, columns=columns)
+                    df.to_csv(csv_filename, mode='a', header=False, index=False)
+                    result_list.clear()  # 저장 후 리스트 초기화
 
         # 남은 데이터 저장
         if result_list:

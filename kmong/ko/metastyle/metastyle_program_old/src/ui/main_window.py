@@ -341,6 +341,8 @@ class MainWindow(QWidget):
             self.on_demand_worker.deleteLater()
             self.on_demand_worker = None  # worker 객체 초기화
 
+        self.show_message("크롤링이 완료되었습니다.", 'info')
+
     # 프로그래스 큐 데이터 담기
     def set_progress(self, start_value, end_value):
         if self.task_queue:

@@ -1,0 +1,964 @@
+
+{
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": [
+  {
+  "trigger": "click",
+  "type": "url",
+  "value": "https://kream.co.kr/my/selling/70965732",
+  "parameters": null
+  }
+  ],
+  "id": "",
+  "group_id": "",
+  "display_type": "product_list_info_action",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": {
+  "left": 16.0,
+  "top": 16.0,
+  "right": 16.0,
+  "bottom": 16.0
+  },
+  "margin": null,
+  "gap": null,
+  "grid": null,
+  "size": null,
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "image_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": "",
+  "group_id": "",
+  "display_type": "thumbnail",
+  "default_variation": {
+  "status": null,
+  "background_color": "#f4f4f4",
+  "background_color_tablet": null,
+  "background_color_pc": null,
+  "border": null
+  },
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "background_color": "#f4f4f4",
+  "background_color_tablet": null,
+  "background_color_pc": null,
+  "border": null
+  }
+  ],
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": null,
+  "grid": null,
+  "size": null,
+  "shape": {
+  "type": "rectangle",
+  "corner_radius": {
+  "top_left": 10.0,
+  "top_right": 10.0,
+  "bottom_left": 10.0,
+  "bottom_right": 10.0
+  }
+  }
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "image_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": "",
+  "group_id": "",
+  "display_type": "image_body",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": null,
+  "grid": null,
+  "size": {
+  "width": 72.0,
+  "width_type": "fixed",
+  "height": 72.0,
+  "height_type": "fixed"
+  },
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "image_element": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "url": "https://kream-phinf.pstatic.net/MjAyNDA3MzFfNjIg/MDAxNzIyMzk2NzkyOTcz.dW5i_2GiMu98yT8qQDbqguanamaqqbY-wSYK13Nvbicg.cdXzDvm_1kX5TupQ533tqFfDG9l-0u_XJoK00xdEYZAg.PNG/a_3a2df4c7335b4a15ab657464c3e4e0b3.png",
+  "image_key": null,
+  "color": null,
+  "content_mode": null,
+  "aspect_ratio": null,
+  "pinch_zoom": null
+  }
+  ],
+  "default_variation": {
+  "status": null,
+  "url": "https://kream-phinf.pstatic.net/MjAyNDA3MzFfNjIg/MDAxNzIyMzk2NzkyOTcz.dW5i_2GiMu98yT8qQDbqguanamaqqbY-wSYK13Nvbicg.cdXzDvm_1kX5TupQ533tqFfDG9l-0u_XJoK00xdEYZAg.PNG/a_3a2df4c7335b4a15ab657464c3e4e0b3.png",
+  "image_key": null,
+  "color": null,
+  "content_mode": null,
+  "aspect_ratio": null,
+  "pinch_zoom": null
+  }
+  },
+  "type": "ImageBodySDItem"
+  },
+  "top_left_item": null,
+  "top_right_item": null,
+  "bottom_left_item": null,
+  "bottom_right_item": null
+  },
+  "text_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": "",
+  "group_id": "",
+  "display_type": "layout_list_vertical",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 0.0,
+  "vertical": 4.0
+  },
+  "grid": null,
+  "size": null,
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "items": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": null,
+  "group_id": "",
+  "display_type": "text_body",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 2.0,
+  "vertical": 0.0
+  },
+  "grid": null,
+  "size": null,
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "text_element": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "New Balance 2002 Black",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": 2,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  },
+  {
+  "status": {
+  "enabled": true,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "New Balance 2002 Black",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": 2,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "New Balance 2002 Black",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": 2,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "New Balance 2002 Black",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": 2,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  }
+  ],
+  "default_variation": {
+  "status": null,
+  "text": "New Balance 2002 Black",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": 2,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  }
+  },
+  "left_item": null,
+  "right_item": null,
+  "type": "TextBodySDItem"
+  }
+  ]
+  },
+  "option_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": "",
+  "group_id": "",
+  "display_type": "text_table_options",
+  "default_variation": null,
+  "variations": null,
+  "layout": null,
+  "layout_tablet": null,
+  "layout_pc": null,
+  "option1_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": null,
+  "group_id": "",
+  "display_type": "text_body",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 3.0,
+  "vertical": 0.0
+  },
+  "grid": null,
+  "size": null,
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "text_element": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "270",
+  "text_color": "#222222",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": 1,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  },
+  {
+  "status": {
+  "enabled": true,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "270",
+  "text_color": "#222222",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": 1,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "270",
+  "text_color": "#222222",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": 1,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "270",
+  "text_color": "#222222",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": 1,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  }
+  ],
+  "default_variation": {
+  "status": null,
+  "text": "270",
+  "text_color": "#222222",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": 1,
+  "line_break_mode": "by_truncating_tail",
+  "alignment": "left"
+  }
+  },
+  "left_item": null,
+  "right_item": null
+  },
+  "option2_item": null,
+  "option3_item": null
+  },
+  "caption_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": null,
+  "group_id": "",
+  "display_type": "text_body",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 2.0,
+  "vertical": 0.0
+  },
+  "grid": null,
+  "size": null,
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "text_element": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "-",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": true,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "-",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "-",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "-",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  }
+  ],
+  "default_variation": {
+  "status": null,
+  "text": "-",
+  "text_color": "#222222",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  }
+  },
+  "left_item": null,
+  "right_item": null
+  },
+  "label_item": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": "",
+  "group_id": "",
+  "display_type": "layout_list_vertical",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 0.0,
+  "vertical": 2.0
+  },
+  "grid": null,
+  "size": null,
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "items": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": null,
+  "group_id": "",
+  "display_type": "text_body",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 2.0,
+  "vertical": 0.0
+  },
+  "grid": null,
+  "size": {
+  "width": null,
+  "width_type": "fill",
+  "height": null,
+  "height_type": null
+  },
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "text_element": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "취소완료",
+  "text_color": "#F15746",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": true,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "취소완료",
+  "text_color": "#F15746",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "취소완료",
+  "text_color": "#F15746",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "취소완료",
+  "text_color": "#F15746",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  }
+  ],
+  "default_variation": {
+  "status": null,
+  "text": "취소완료",
+  "text_color": "#F15746",
+  "text_size": 13.0,
+  "text_size_tablet": 13.0,
+  "text_size_pc": 13.0,
+  "text_lookups": [
+  {
+  "key": "",
+  "text": "",
+  "type": "text",
+  "is_bold": false,
+  "is_semibold": true,
+  "is_italic": false,
+  "is_strikethrough": false,
+  "is_underline": false,
+  "adjustment": 0.0,
+  "actions": []
+  }
+  ],
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  }
+  },
+  "left_item": null,
+  "right_item": null,
+  "type": "TextBodySDItem"
+  },
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "id": null,
+  "group_id": "",
+  "display_type": "text_body",
+  "default_variation": null,
+  "variations": null,
+  "layout": {
+  "padding": null,
+  "margin": null,
+  "gap": {
+  "horizontal": 2.0,
+  "vertical": 0.0
+  },
+  "grid": null,
+  "size": {
+  "width": null,
+  "width_type": "fill",
+  "height": null,
+  "height_type": null
+  },
+  "shape": null
+  },
+  "layout_tablet": null,
+  "layout_pc": null,
+  "text_element": {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "actions": null,
+  "variations": [
+  {
+  "status": {
+  "enabled": true,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "반송처리",
+  "text_color": "#0000006F",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": true,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "반송처리",
+  "text_color": "#0000006F",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": true,
+  "expanded": false
+  },
+  "text": "반송처리",
+  "text_color": "#0000006F",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  },
+  {
+  "status": {
+  "enabled": false,
+  "selected": false,
+  "expanded": false
+  },
+  "text": "반송처리",
+  "text_color": "#0000006F",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  }
+  ],
+  "default_variation": {
+  "status": null,
+  "text": "반송처리",
+  "text_color": "#0000006F",
+  "text_size": 12.0,
+  "text_size_tablet": 12.0,
+  "text_size_pc": 12.0,
+  "text_lookups": null,
+  "text_type": "text",
+  "number_of_lines": null,
+  "line_break_mode": null,
+  "alignment": "right"
+  }
+  },
+  "left_item": null,
+  "right_item": null,
+  "type": "TextBodySDItem"
+  }
+  ]
+  },
+  "action_image_item": null,
+  "type": "ProductListInfoActionSDItem"
+}
