@@ -81,7 +81,7 @@ class ApiOldnavySetLoadWorker(QThread):
 
                 for indx, page in enumerate(range(int(checked_model['start_page']) - 1, int(checked_model['end_page'])), start=1):
                     self.current_page = self.current_page + 1
-                    time.sleep(1)
+                    time.sleep(0.5)
                     self.log_signal.emit(f'{checked_model["name"]}({index}/{len(self.checked_list)})  TotalPage({self.current_page}/{self.total_pages})')
                     if not self.running:
                         break
@@ -150,23 +150,24 @@ class ApiOldnavySetLoadWorker(QThread):
                     obj_copy['image_no'] = ix + 1
                     obj_copy['image_url'] = image_url
                     obj_copy['success'] = 'N'
+                    obj_copy['image_yn'] = 'N'
                     obj_copy['reg_date'] = get_current_formatted_datetime()  # 시간 추가
 
                     try:
                         # 이미지 다운로드
-                        response = requests.get(image_url, stream=True)
-                        response.raise_for_status()
+                        # response = requests.get(image_url, stream=True)
+                        # response.raise_for_status()
 
                         # 이미지 저장 경로
                         img_filename = f"{product.get('pid')}_{ix}.jpg"
-                        img_path = os.path.join(images_dir, img_filename)
+                        # img_path = os.path.join(images_dir, img_filename)
 
                         # 이미지 저장
-                        with open(img_path, 'wb') as file:
-                            for chunk in response.iter_content(1024):
-                                file.write(chunk)
+                        # with open(img_path, 'wb') as file:
+                            # for chunk in response.iter_content(1024):
+                                # file.write(chunk)
 
-                        obj_copy['success'] = 'Y'  # 성공하면 Y
+                        # obj_copy['success'] = 'Y'  # 성공하면 Y
                         obj_copy['image_name'] = img_filename
                         self.log_signal.emit(f"성공 {obj_copy}")
                     except Exception as e:
@@ -450,7 +451,7 @@ class ApiOldnavySetLoadWorker(QThread):
 
             check_obj_list.append(checked_obj)
 
-            time.sleep(1)
+            time.sleep(0.5)
 
         return check_obj_list
 

@@ -1,20 +1,20 @@
 {
-  "id": 73728582,
+  "id": 79187592,
   "is_instant": false,
-  "price": 40000.0,
-  "product_id": 120522,
-  "option": "270(US 9)",
+  "price": 63000.0,
+  "product_id": 270425,
+  "option": "260",
   "product_option": {
-    "id": 2879547,
-    "product_id": 120522,
-    "key": "270(US 9)",
-    "name": "270(US 9)",
-    "name_display": "270(US 9)",
-    "display_order": 6
+    "id": 3687830,
+    "product_id": 270425,
+    "key": "260",
+    "name": "260",
+    "name_display": "260",
+    "display_order": 9
   },
   "expires_in": 180,
-  "expires_at": "2025-07-12T15:48:19Z",
-  "date_created": "2025-01-13T15:48:19Z",
+  "expires_at": "2025-08-05T22:39:56Z",
+  "date_created": "2025-02-06T22:39:56Z",
   "status": "canceled",
   "status_display": "취소",
   "status_display_item": {
@@ -26,22 +26,15 @@
     "type": "text",
     "number_of_lines": null
   },
-  "reason": "misdelivery",
+  "reason": "authentication_failed",
   "reason_text": null,
   "notice_text": null,
-  "shipping_memo": {
-    "id": 60813656,
-    "user_id": 6240675,
-    "is_default": false,
-    "shipping_memo_type": 0,
-    "date_created": "2025-01-13T10:11:47Z",
-    "description": "요청사항 없음"
-  },
+  "shipping_memo": null,
   "price_breakdown": {
-    "price": 40000.0,
+    "price": 63000.0,
     "processing_fee": {
-      "value": -7000.0,
-      "original_value": -7000.0,
+      "value": -8000.0,
+      "original_value": -8000.0,
       "reason": null,
       "hidden": false
     },
@@ -51,336 +44,586 @@
       "reason": null,
       "hidden": false
     },
-    "total_payout": 33000.0,
+    "total_payout": 55000.0,
     "penalty_percentage": 15.0,
     "already_bid": false,
-    "processing_fee_tooltip_message": "기본 5,000원 + 등급 3.6% (VAT 별도)"
+    "processing_fee_tooltip_message": "기본 5,000원 + 등급 3.7% (VAT 별도)"
   },
   "product": {
     "release": {
-      "id": 120522,
-      "name": "Crocs Classic Lined Clog White Grey",
-      "translated_name": "크록스 클래식 라인드 클로그 화이트 그레이",
+      "id": 270425,
+      "name": "Nike Cortez White Black",
+      "translated_name": "나이키 코르테즈 화이트 블랙",
       "category": "sneakers",
       "image_urls": [
-        "https://kream-phinf.pstatic.net/MjAyMzA0MjZfMjQ3/MDAxNjgyNDk4MTcyMjk4.GSbN_0uY552OEnSDrVzWOm_0Gc1uP3JBfZDqqIHLvJwg.7LPlIV1Qh-6ucxg8b856UTXHw6RZ9n7iV8mAheGPfJAg.PNG/a_5240de2db94f4116b63bbd5079e855ac.png"
+        "https://kream-phinf.pstatic.net/MjAyNDAzMjdfMjMx/MDAxNzExNTIwMzEyMzky.LgLJqCK_YKTziYvHXOZlwVx1t1Jzp5yY3VbKtERmJ_cg.Mfc8j5KO10dBx_02T4jHpgghmwnRziGNF1m0ml74-5Qg.PNG/a_e7dd1187d1e4483bba0d88b429176d87.png"
       ],
-      "original_price": 74900,
-      "original_price_currency": "KRW",
-      "local_price": null,
+      "original_price": 90,
+      "original_price_currency": "USD",
+      "local_price": 129100,
       "local_price_currency": "KRW",
-      "original_price_with_currency": "74,900원",
-      "local_price_with_currency": null,
-      "style_code": "203591-10M",
-      "colorway": "White/Grey",
+      "original_price_with_currency": "$90",
+      "local_price_with_currency": "129,100원",
+      "style_code": "DM4044-105",
+      "colorway": "White/Black",
       "date_released": null,
       "gender": "men",
-      "bgcolor": "#f4f4f4",
+      "bgcolor": "#ebf0f5",
       "is_active": true,
       "is_tradable": true,
       "is_for_adult": false,
-      "shop_category_id": 37,
-      "shop_category_name": "신발 > 샌들/슬리퍼",
+      "shop_category_id": 1,
+      "shop_category_name": "신발 > 스니커즈",
       "is_displayable": true,
       "is_official": false,
       "is_single_price": true
     },
     "market": {
-      "market_price": 45000.0,
-      "last_sale_price": 45000.0,
-      "lowest_ask": 44000.0,
-      "highest_bid": 36000.0,
-      "total_sales": 33,
-      "change_value": 0.0,
-      "change_percentage": 0.0,
-      "pricepremium": -29900.0,
-      "pricepremium_percentage": -39.9199,
-      "has_immediate_delivery_item": false,
+      "market_price": 69000.0,
+      "last_sale_price": 69000.0,
+      "lowest_ask": 66000.0,
+      "highest_bid": 64000.0,
+      "total_sales": 387,
+      "change_value": 6000.0,
+      "change_percentage": 9.52381,
+      "pricepremium": -60100.0,
+      "pricepremium_percentage": -46.5531,
+      "has_immediate_delivery_item": true,
       "inventory_service_available": false
     },
     "brand": {
-      "name": "Crocs",
-      "logo": "https://kream-phinf.pstatic.net/MjAyMzA5MTRfMjE2/MDAxNjk0NzAyODY5MDE0.0uOBvc7VgJCUrbziKsgBEQXQ7hnQ-BIuVXqJx0Q7opsg.qkBpSJydOTWO_3961kAFucEVTImAQwU-uuIqpBDrVWYg.JPEG/a_a4ae44ca70a744afa9b2dd9a14fc960f.jpg",
+      "name": "Nike",
+      "logo": "https://kream-phinf.pstatic.net/MjAyMzA5MTVfMjMx/MDAxNjk0NzAzODM2MzY1.4vFht2O8GUtXh5-MkN4ol0myhzVOHKw0GVaypjOLFIUg.sqWg90eLy1YOSHvYcxcjVe-cW-PYkipq_u5oz-Bfq18g.JPEG/a_a5c0e4c782fe4950a7a55eb5d6627886.jpg",
       "type": "brand",
-      "id": 64,
+      "id": 4,
       "meta": {
-        "bgcolor": ""
+        "bgcolor": "#ebf0f5"
       },
       "business_name": ""
     },
     "options": [
-      "220(US 3)",
-      "230(US 4)",
-      "240(US 5)",
-      "250(US 6)",
-      "260(US 7)",
-      "265(US 8)",
-      "270(US 9)",
-      "280(US 10)",
-      "290(US 11)",
-      "300(US 12)",
-      "310(US 13)"
+      "225",
+      "230",
+      "235(US 4.5)",
+      "235(US 5)",
+      "240(US 5.5)",
+      "240(US 6)",
+      "245",
+      "250",
+      "255",
+      "260",
+      "265",
+      "270",
+      "275",
+      "280",
+      "285",
+      "290",
+      "295",
+      "300",
+      "305",
+      "310",
+      "320"
     ],
     "product_options": [
       {
-        "id": 2879541,
-        "product_id": 120522,
-        "key": "220(US 3)",
-        "name": "220(US 3)",
-        "name_display": "220(US 3)",
+        "id": 3687821,
+        "product_id": 270425,
+        "key": "225",
+        "name": "225",
+        "name_display": "225",
         "display_order": 0
       },
       {
-        "id": 2879542,
-        "product_id": 120522,
-        "key": "230(US 4)",
-        "name": "230(US 4)",
-        "name_display": "230(US 4)",
+        "id": 3687822,
+        "product_id": 270425,
+        "key": "230",
+        "name": "230",
+        "name_display": "230",
         "display_order": 1
       },
       {
-        "id": 2879543,
-        "product_id": 120522,
-        "key": "240(US 5)",
-        "name": "240(US 5)",
-        "name_display": "240(US 5)",
+        "id": 3687823,
+        "product_id": 270425,
+        "key": "235(US 4.5)",
+        "name": "235(US 4.5)",
+        "name_display": "235(US 4.5)",
         "display_order": 2
       },
       {
-        "id": 2879544,
-        "product_id": 120522,
-        "key": "250(US 6)",
-        "name": "250(US 6)",
-        "name_display": "250(US 6)",
+        "id": 3687824,
+        "product_id": 270425,
+        "key": "235(US 5)",
+        "name": "235(US 5)",
+        "name_display": "235(US 5)",
         "display_order": 3
       },
       {
-        "id": 2879545,
-        "product_id": 120522,
-        "key": "260(US 7)",
-        "name": "260(US 7)",
-        "name_display": "260(US 7)",
+        "id": 3687825,
+        "product_id": 270425,
+        "key": "240(US 5.5)",
+        "name": "240(US 5.5)",
+        "name_display": "240(US 5.5)",
         "display_order": 4
       },
       {
-        "id": 2879546,
-        "product_id": 120522,
-        "key": "265(US 8)",
-        "name": "265(US 8)",
-        "name_display": "265(US 8)",
+        "id": 3687826,
+        "product_id": 270425,
+        "key": "240(US 6)",
+        "name": "240(US 6)",
+        "name_display": "240(US 6)",
         "display_order": 5
       },
       {
-        "id": 2879547,
-        "product_id": 120522,
-        "key": "270(US 9)",
-        "name": "270(US 9)",
-        "name_display": "270(US 9)",
+        "id": 3687827,
+        "product_id": 270425,
+        "key": "245",
+        "name": "245",
+        "name_display": "245",
         "display_order": 6
       },
       {
-        "id": 2879548,
-        "product_id": 120522,
-        "key": "280(US 10)",
-        "name": "280(US 10)",
-        "name_display": "280(US 10)",
+        "id": 3687828,
+        "product_id": 270425,
+        "key": "250",
+        "name": "250",
+        "name_display": "250",
         "display_order": 7
       },
       {
-        "id": 2879549,
-        "product_id": 120522,
-        "key": "290(US 11)",
-        "name": "290(US 11)",
-        "name_display": "290(US 11)",
+        "id": 3687829,
+        "product_id": 270425,
+        "key": "255",
+        "name": "255",
+        "name_display": "255",
         "display_order": 8
       },
       {
-        "id": 2879550,
-        "product_id": 120522,
-        "key": "300(US 12)",
-        "name": "300(US 12)",
-        "name_display": "300(US 12)",
+        "id": 3687830,
+        "product_id": 270425,
+        "key": "260",
+        "name": "260",
+        "name_display": "260",
         "display_order": 9
       },
       {
-        "id": 2879551,
-        "product_id": 120522,
-        "key": "310(US 13)",
-        "name": "310(US 13)",
-        "name_display": "310(US 13)",
+        "id": 3687831,
+        "product_id": 270425,
+        "key": "265",
+        "name": "265",
+        "name_display": "265",
         "display_order": 10
+      },
+      {
+        "id": 3687832,
+        "product_id": 270425,
+        "key": "270",
+        "name": "270",
+        "name_display": "270",
+        "display_order": 11
+      },
+      {
+        "id": 3687833,
+        "product_id": 270425,
+        "key": "275",
+        "name": "275",
+        "name_display": "275",
+        "display_order": 12
+      },
+      {
+        "id": 3687834,
+        "product_id": 270425,
+        "key": "280",
+        "name": "280",
+        "name_display": "280",
+        "display_order": 13
+      },
+      {
+        "id": 3687835,
+        "product_id": 270425,
+        "key": "285",
+        "name": "285",
+        "name_display": "285",
+        "display_order": 14
+      },
+      {
+        "id": 3687836,
+        "product_id": 270425,
+        "key": "290",
+        "name": "290",
+        "name_display": "290",
+        "display_order": 15
+      },
+      {
+        "id": 3687837,
+        "product_id": 270425,
+        "key": "295",
+        "name": "295",
+        "name_display": "295",
+        "display_order": 16
+      },
+      {
+        "id": 3687838,
+        "product_id": 270425,
+        "key": "300",
+        "name": "300",
+        "name_display": "300",
+        "display_order": 17
+      },
+      {
+        "id": 3687839,
+        "product_id": 270425,
+        "key": "305",
+        "name": "305",
+        "name_display": "305",
+        "display_order": 18
+      },
+      {
+        "id": 3687840,
+        "product_id": 270425,
+        "key": "310",
+        "name": "310",
+        "name_display": "310",
+        "display_order": 19
+      },
+      {
+        "id": 3687841,
+        "product_id": 270425,
+        "key": "320",
+        "name": "320",
+        "name_display": "320",
+        "display_order": 20
       }
     ],
     "sales_options": [
       {
-        "option": "220(US 3)",
+        "option": "225",
         "product_option": {
-          "id": 2879541,
-          "product_id": 120522,
-          "key": "220(US 3)",
-          "name": "220(US 3)",
-          "name_display": "220(US 3)",
+          "id": 3687821,
+          "product_id": 270425,
+          "key": "225",
+          "name": "225",
+          "name_display": "225",
           "display_order": 0
         },
-        "lowest_ask": 55000.0,
-        "highest_bid": null,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 55000.0
-      },
-      {
-        "option": "230(US 4)",
-        "product_option": {
-          "id": 2879542,
-          "product_id": 120522,
-          "key": "230(US 4)",
-          "name": "230(US 4)",
-          "name_display": "230(US 4)",
-          "display_order": 1
-        },
-        "lowest_ask": 36000.0,
-        "highest_bid": null,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 36000.0
-      },
-      {
-        "option": "240(US 5)",
-        "product_option": {
-          "id": 2879543,
-          "product_id": 120522,
-          "key": "240(US 5)",
-          "name": "240(US 5)",
-          "name_display": "240(US 5)",
-          "display_order": 2
-        },
-        "lowest_ask": 40000.0,
-        "highest_bid": null,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 40000.0
-      },
-      {
-        "option": "250(US 6)",
-        "product_option": {
-          "id": 2879544,
-          "product_id": 120522,
-          "key": "250(US 6)",
-          "name": "250(US 6)",
-          "name_display": "250(US 6)",
-          "display_order": 3
-        },
-        "lowest_ask": 44000.0,
-        "highest_bid": null,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 44000.0
-      },
-      {
-        "option": "260(US 7)",
-        "product_option": {
-          "id": 2879545,
-          "product_id": 120522,
-          "key": "260(US 7)",
-          "name": "260(US 7)",
-          "name_display": "260(US 7)",
-          "display_order": 4
-        },
-        "lowest_ask": 44000.0,
-        "highest_bid": null,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 44000.0
-      },
-      {
-        "option": "265(US 8)",
-        "product_option": {
-          "id": 2879546,
-          "product_id": 120522,
-          "key": "265(US 8)",
-          "name": "265(US 8)",
-          "name_display": "265(US 8)",
-          "display_order": 5
-        },
-        "lowest_ask": 44000.0,
-        "highest_bid": 25000.0,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 44000.0
-      },
-      {
-        "option": "270(US 9)",
-        "product_option": {
-          "id": 2879547,
-          "product_id": 120522,
-          "key": "270(US 9)",
-          "name": "270(US 9)",
-          "name_display": "270(US 9)",
-          "display_order": 6
-        },
-        "lowest_ask": 44000.0,
-        "highest_bid": 36000.0,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 44000.0
-      },
-      {
-        "option": "280(US 10)",
-        "product_option": {
-          "id": 2879548,
-          "product_id": 120522,
-          "key": "280(US 10)",
-          "name": "280(US 10)",
-          "name_display": "280(US 10)",
-          "display_order": 7
-        },
-        "lowest_ask": 44000.0,
-        "highest_bid": 32000.0,
-        "lowest_95": null,
-        "lowest_100": null,
-        "lowest_normal": 44000.0
-      },
-      {
-        "option": "290(US 11)",
-        "product_option": {
-          "id": 2879549,
-          "product_id": 120522,
-          "key": "290(US 11)",
-          "name": "290(US 11)",
-          "name_display": "290(US 11)",
-          "display_order": 8
-        },
         "lowest_ask": null,
-        "highest_bid": 25000.0,
+        "highest_bid": 53000.0,
         "lowest_95": null,
         "lowest_100": null,
         "lowest_normal": null
       },
       {
-        "option": "300(US 12)",
+        "option": "230",
         "product_option": {
-          "id": 2879550,
-          "product_id": 120522,
-          "key": "300(US 12)",
-          "name": "300(US 12)",
-          "name_display": "300(US 12)",
+          "id": 3687822,
+          "product_id": 270425,
+          "key": "230",
+          "name": "230",
+          "name_display": "230",
+          "display_order": 1
+        },
+        "lowest_ask": null,
+        "highest_bid": 65000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "235(US 4.5)",
+        "product_option": {
+          "id": 3687823,
+          "product_id": 270425,
+          "key": "235(US 4.5)",
+          "name": "235(US 4.5)",
+          "name_display": "235(US 4.5)",
+          "display_order": 2
+        },
+        "lowest_ask": null,
+        "highest_bid": 55000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "235(US 5)",
+        "product_option": {
+          "id": 3687824,
+          "product_id": 270425,
+          "key": "235(US 5)",
+          "name": "235(US 5)",
+          "name_display": "235(US 5)",
+          "display_order": 3
+        },
+        "lowest_ask": null,
+        "highest_bid": 51000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "240(US 5.5)",
+        "product_option": {
+          "id": 3687825,
+          "product_id": 270425,
+          "key": "240(US 5.5)",
+          "name": "240(US 5.5)",
+          "name_display": "240(US 5.5)",
+          "display_order": 4
+        },
+        "lowest_ask": null,
+        "highest_bid": 70000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "240(US 6)",
+        "product_option": {
+          "id": 3687826,
+          "product_id": 270425,
+          "key": "240(US 6)",
+          "name": "240(US 6)",
+          "name_display": "240(US 6)",
+          "display_order": 5
+        },
+        "lowest_ask": 133000.0,
+        "highest_bid": 66000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 133000.0
+      },
+      {
+        "option": "245",
+        "product_option": {
+          "id": 3687827,
+          "product_id": 270425,
+          "key": "245",
+          "name": "245",
+          "name_display": "245",
+          "display_order": 6
+        },
+        "lowest_ask": 134000.0,
+        "highest_bid": 85000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 134000.0
+      },
+      {
+        "option": "250",
+        "product_option": {
+          "id": 3687828,
+          "product_id": 270425,
+          "key": "250",
+          "name": "250",
+          "name_display": "250",
+          "display_order": 7
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 62000.0,
+        "lowest_95": null,
+        "lowest_100": 72000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "255",
+        "product_option": {
+          "id": 3687829,
+          "product_id": 270425,
+          "key": "255",
+          "name": "255",
+          "name_display": "255",
+          "display_order": 8
+        },
+        "lowest_ask": 63000.0,
+        "highest_bid": 63000.0,
+        "lowest_95": 63000.0,
+        "lowest_100": 73000.0,
+        "lowest_normal": 69000.0
+      },
+      {
+        "option": "260",
+        "product_option": {
+          "id": 3687830,
+          "product_id": 270425,
+          "key": "260",
+          "name": "260",
+          "name_display": "260",
           "display_order": 9
         },
-        "lowest_ask": 46000.0,
+        "lowest_ask": 66000.0,
+        "highest_bid": 64000.0,
+        "lowest_95": 69000.0,
+        "lowest_100": 73000.0,
+        "lowest_normal": 66000.0
+      },
+      {
+        "option": "265",
+        "product_option": {
+          "id": 3687831,
+          "product_id": 270425,
+          "key": "265",
+          "name": "265",
+          "name_display": "265",
+          "display_order": 10
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 62000.0,
+        "lowest_95": 68000.0,
+        "lowest_100": 73000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "270",
+        "product_option": {
+          "id": 3687832,
+          "product_id": 270425,
+          "key": "270",
+          "name": "270",
+          "name_display": "270",
+          "display_order": 11
+        },
+        "lowest_ask": 66000.0,
+        "highest_bid": 61000.0,
+        "lowest_95": 66000.0,
+        "lowest_100": 80000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "275",
+        "product_option": {
+          "id": 3687833,
+          "product_id": 270425,
+          "key": "275",
+          "name": "275",
+          "name_display": "275",
+          "display_order": 12
+        },
+        "lowest_ask": 68000.0,
+        "highest_bid": 63000.0,
+        "lowest_95": 68000.0,
+        "lowest_100": 74000.0,
+        "lowest_normal": 69000.0
+      },
+      {
+        "option": "280",
+        "product_option": {
+          "id": 3687834,
+          "product_id": 270425,
+          "key": "280",
+          "name": "280",
+          "name_display": "280",
+          "display_order": 13
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 61000.0,
+        "lowest_95": 73000.0,
+        "lowest_100": 72000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "285",
+        "product_option": {
+          "id": 3687835,
+          "product_id": 270425,
+          "key": "285",
+          "name": "285",
+          "name_display": "285",
+          "display_order": 14
+        },
+        "lowest_ask": 66000.0,
+        "highest_bid": 61000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 66000.0
+      },
+      {
+        "option": "290",
+        "product_option": {
+          "id": 3687836,
+          "product_id": 270425,
+          "key": "290",
+          "name": "290",
+          "name_display": "290",
+          "display_order": 15
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 46000.0,
+        "lowest_95": 71000.0,
+        "lowest_100": 100000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "295",
+        "product_option": {
+          "id": 3687837,
+          "product_id": 270425,
+          "key": "295",
+          "name": "295",
+          "name_display": "295",
+          "display_order": 16
+        },
+        "lowest_ask": 135000.0,
+        "highest_bid": 30000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 135000.0
+      },
+      {
+        "option": "300",
+        "product_option": {
+          "id": 3687838,
+          "product_id": 270425,
+          "key": "300",
+          "name": "300",
+          "name_display": "300",
+          "display_order": 17
+        },
+        "lowest_ask": 134000.0,
+        "highest_bid": 88000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 134000.0
+      },
+      {
+        "option": "305",
+        "product_option": {
+          "id": 3687839,
+          "product_id": 270425,
+          "key": "305",
+          "name": "305",
+          "name_display": "305",
+          "display_order": 18
+        },
+        "lowest_ask": null,
         "highest_bid": null,
         "lowest_95": null,
         "lowest_100": null,
-        "lowest_normal": 46000.0
+        "lowest_normal": null
       },
       {
-        "option": "310(US 13)",
+        "option": "310",
         "product_option": {
-          "id": 2879551,
-          "product_id": 120522,
-          "key": "310(US 13)",
-          "name": "310(US 13)",
-          "name_display": "310(US 13)",
-          "display_order": 10
+          "id": 3687840,
+          "product_id": 270425,
+          "key": "310",
+          "name": "310",
+          "name_display": "310",
+          "display_order": 19
+        },
+        "lowest_ask": null,
+        "highest_bid": null,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "320",
+        "product_option": {
+          "id": 3687841,
+          "product_id": 270425,
+          "key": "320",
+          "name": "320",
+          "name_display": "320",
+          "display_order": 20
         },
         "lowest_ask": null,
         "highest_bid": null,
@@ -393,18 +636,27 @@
     "additional_info": {
       "is_wishable": true,
       "is_sharable": true,
-      "share_url": "https://kream.co.kr/products/120522",
+      "share_url": "https://kream.co.kr/products/270425",
       "is_haveable": true,
       "is_event_applicable": true,
       "is_product_banner_applicable": true,
-      "allowed_transactions": [
-        "bid",
-        "buy",
-        "ask",
-        "sell"
-      ],
       "delivery_method": {
         "items": [
+          {
+            "badge_url": "https://kream-phinf.pstatic.net/MjAyNDEyMjBfNDcg/MDAxNzM0NjgyNTU2Mjk4.hSFl7hk_PfciPRmgvRZGUhrPKIvL9AXHISIrzooji2wg.Akin6sAFjbLFDRcJy4kzVt9OWpG-GdDARjIy3WIlLzEg.PNG/a_0ad2a17717e040138dd831ae3b247abf.png",
+            "badge_title": "빠른배송",
+            "title": "5,000원",
+            "subtitle": null,
+            "description_button": null,
+            "description": "지금 결제 시 내일 2/25(화) 도착 예정",
+            "description_lookups": [],
+            "info_url": "https://kream.co.kr/about/inventory?type=stocked",
+            "targets": [
+              "buy_95",
+              "buy_100"
+            ],
+            "value": "immediate"
+          },
           {
             "badge_url": "https://kream-phinf.pstatic.net/MjAyMTExMjlfMTQ4/MDAxNjM4MTc4MjI5NTk3.2phJLPtRvFqViNfhZu06HzNRiUBlT4cmZR4_Ukqsyesg.ikrfWOrL7WXCVO0Rqy5kMvOn3B2YpjLUj6RuJqosPX0g.PNG/a_8b54cbca40e945f4abf1ee24bdd031f7.png",
             "badge_title": "일반배송",
@@ -455,7 +707,6 @@
           }
         ]
       },
-      "final_sale_description": null,
       "buy_final_confirm_text": "개인간 거래인 경우, 단순변심 또는 실수에 따른 ;tl_0;",
       "buy_final_confirm_text_lookups": [
         {
@@ -473,7 +724,7 @@
           "type": "text"
         }
       ],
-      "option_title": "사이즈",
+      "option_title": "옵션",
       "option_info_header": null,
       "picker_buttons": [
         {
@@ -508,31 +759,23 @@
       "is_cartable": true
     }
   },
-  "order_id": "ask-73728582",
-  "oid": "A-SN73728582",
+  "order_id": "ask-79187592",
+  "oid": "A-SN79187592",
   "transaction": {
-    "id": 29690273,
-    "date_created": "2025-01-16T15:26:21Z",
+    "id": 30234033,
+    "date_created": "2025-02-06T22:39:56Z",
     "status": "canceled"
   },
-  "penalty": {
-    "ask_id": 73728582,
-    "percentage": 10.0,
-    "amount": 4000.0,
-    "status": "succeeded",
-    "is_waiver_used": false,
-    "date_created": "2025-01-23T15:30:55Z",
-    "date_charged": "2025-01-23T15:30:58Z"
-  },
-  "date_paid": "2025-01-23T15:30:58Z",
-  "date_updated": "2025-01-23T15:30:58Z",
-  "request_key": "7d1f7318-de0a-4d19-9eee-c5b00678abd2",
+  "penalty": null,
+  "date_paid": "2025-02-13T02:42:26Z",
+  "date_updated": "2025-02-13T02:42:26Z",
+  "request_key": null,
   "date_buyer_refuse": null,
   "return_tracking": null,
   "is_keep_on_deferred": true,
   "tracking": {
-    "id": 24897518,
-    "ask_id": 73728582,
+    "id": 25295664,
+    "ask_id": 79187592,
     "logistics_company_id": 1,
     "logistics_company": {
       "id": 1,
@@ -549,11 +792,11 @@
       "goodsflow_available": true,
       "goodsflow_need_contract_customer_number": false
     },
-    "tracking_code": "689623216293",
-    "date_created": "2025-01-17T10:22:45Z",
+    "tracking_code": "689960278230",
+    "date_created": "2025-02-07T10:32:57Z",
     "date_showroom_in": null
   },
-  "date_shipment_available": "2025-01-19T15:42:32Z",
+  "date_shipment_available": "2025-02-09T22:56:31Z",
   "shipping_address": {
     "name": "채정숙",
     "address1": "서울 마포구 포은로2나길 15 (합정동)",
@@ -591,58 +834,73 @@
   "histories": [
     {
       "status": "canceled",
-      "reason": "misdelivery",
+      "reason": "authentication_failed",
       "note": "",
-      "date_created": "2025-01-23T15:30:58Z"
+      "date_created": "2025-02-13T02:42:26Z"
     },
     {
       "status": "failed",
-      "reason": "misdelivery",
+      "reason": "authentication_failed",
       "note": "",
-      "date_created": "2025-01-23T15:30:47Z"
+      "date_created": "2025-02-13T02:42:24Z"
+    },
+    {
+      "status": "deferred",
+      "note": "",
+      "date_created": "2025-02-13T01:59:25Z"
+    },
+    {
+      "status": "authenticating",
+      "note": "",
+      "date_created": "2025-02-13T01:37:53Z"
+    },
+    {
+      "status": "in_warehouse",
+      "note": "",
+      "date_created": "2025-02-12T05:10:21Z"
+    },
+    {
+      "status": "warehouse_scanned",
+      "note": "",
+      "date_created": "2025-02-12T05:04:06Z"
     },
     {
       "status": "shipped",
       "note": "",
-      "date_created": "2025-01-17T10:22:45Z"
+      "date_created": "2025-02-07T10:32:57Z"
     },
     {
       "status": "shipment_required",
       "note": "",
-      "date_created": "2025-01-16T15:42:32Z"
+      "date_created": "2025-02-06T22:56:31Z"
     },
     {
-      "status": "live",
+      "status": "staged",
       "note": "",
-      "date_created": "2025-01-13T15:48:19Z"
-    },
-    {
-      "status": "live",
-      "note": "",
-      "date_created": "2025-01-13T12:43:30Z"
-    },
-    {
-      "status": "live",
-      "note": "",
-      "date_created": "2025-01-13T11:07:30Z"
-    },
-    {
-      "status": "live",
-      "note": "",
-      "date_created": "2025-01-13T10:11:47Z"
+      "date_created": "2025-02-06T22:39:57Z"
     }
   ],
   "product_authentication": {
-    "images": [],
-    "image_urls": [],
-    "id": 27547235,
-    "display_order_id": "Ask-73728582",
-    "reasons": [
-      "기타: 기타"
+    "images": [
+      {
+        "image_id": 152594844,
+        "url": "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg",
+        "secure_url": "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg",
+        "tag": "authentication_deferred",
+        "display_order": 0
+      }
     ],
-    "date_notified": "2025-01-16T15:26:21Z",
-    "user_response": "none",
-    "date_user_response_expires": null
+    "image_urls": [
+      "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg"
+    ],
+    "id": 28167572,
+    "display_order_id": "Ask-79187592",
+    "reasons": [
+      "패키지 및 구성품-패키지: 박스(BOX) 손상-길이 총합 ≥12.0cm"
+    ],
+    "date_notified": "2025-02-06T22:39:56Z",
+    "user_response": "purchase_denied",
+    "date_user_response_expires": "2025-02-14T01:59:25Z"
   },
   "payout_deferred": false,
   "shipment_tracking_editable": false,
@@ -662,7 +920,7 @@
     "owner_name": "채**"
   },
   "transaction_type": "ask",
-  "image_url": "https://kream-phinf.pstatic.net/MjAyMzA0MjZfMjQ3/MDAxNjgyNDk4MTcyMjk4.GSbN_0uY552OEnSDrVzWOm_0Gc1uP3JBfZDqqIHLvJwg.7LPlIV1Qh-6ucxg8b856UTXHw6RZ9n7iV8mAheGPfJAg.PNG/a_5240de2db94f4116b63bbd5079e855ac.png",
+  "image_url": "https://kream-phinf.pstatic.net/MjAyNDAzMjdfMjMx/MDAxNzExNTIwMzEyMzky.LgLJqCK_YKTziYvHXOZlwVx1t1Jzp5yY3VbKtERmJ_cg.Mfc8j5KO10dBx_02T4jHpgghmwnRziGNF1m0ml74-5Qg.PNG/a_e7dd1187d1e4483bba0d88b429176d87.png",
   "center_address": {
     "name": "KREAM(크림) 앞",
     "phone": "1588-7813",
@@ -694,7 +952,7 @@
     ],
     "notice": {
       "title": {
-        "text": "판매 금액의 10.0%가 페널티로 부과되었습니다.",
+        "text": "검수 보류 상품이 구매 거부되어 ‘95점 합격’ 처리 후 창고로 이동될 예정입니다. 창고보관 된 후 판매입찰이 가능합니다.",
         "lookups": [],
         "action_type": null,
         "action_value": null,
@@ -705,24 +963,24 @@
       "background_color": "#333333"
     },
     "product": {
-      "id": 120522,
-      "image_url": "https://kream-phinf.pstatic.net/MjAyMzA0MjZfMjQ3/MDAxNjgyNDk4MTcyMjk4.GSbN_0uY552OEnSDrVzWOm_0Gc1uP3JBfZDqqIHLvJwg.7LPlIV1Qh-6ucxg8b856UTXHw6RZ9n7iV8mAheGPfJAg.PNG/a_5240de2db94f4116b63bbd5079e855ac.png",
-      "image_background_color": "#f4f4f4",
-      "title": "Crocs Classic Lined Clog White Grey",
-      "description": "203591-10M",
-      "option": "270(US 9)",
+      "id": 270425,
+      "image_url": "https://kream-phinf.pstatic.net/MjAyNDAzMjdfMjMx/MDAxNzExNTIwMzEyMzky.LgLJqCK_YKTziYvHXOZlwVx1t1Jzp5yY3VbKtERmJ_cg.Mfc8j5KO10dBx_02T4jHpgghmwnRziGNF1m0ml74-5Qg.PNG/a_e7dd1187d1e4483bba0d88b429176d87.png",
+      "image_background_color": "#ebf0f5",
+      "title": "Nike Cortez White Black",
+      "description": "DM4044-105",
+      "option": "260",
       "product_option": {
-        "id": 2879547,
-        "product_id": 120522,
-        "key": "270(US 9)",
-        "name": "270(US 9)",
-        "name_display": "270(US 9)",
-        "display_order": 6
+        "id": 3687830,
+        "product_id": 270425,
+        "key": "260",
+        "name": "260",
+        "name_display": "260",
+        "display_order": 9
       },
       "tag": null,
       "image_tag": null,
       "is_for_adult": false,
-      "subtitle": "크록스 클래식 라인드 클로그 화이트 그레이",
+      "subtitle": "나이키 코르테즈 화이트 블랙",
       "option_description": null,
       "is_immediate_delivery": null
     },
@@ -761,6 +1019,19 @@
       {
         "bar_color": "#F15746",
         "title": {
+          "text": "입고완료",
+          "lookups": [],
+          "action_type": null,
+          "action_value": null,
+          "color": "#222222",
+          "type": "text",
+          "number_of_lines": null
+        },
+        "description": null
+      },
+      {
+        "bar_color": "#F15746",
+        "title": {
           "text": "거래실패",
           "lookups": [],
           "action_type": null,
@@ -770,7 +1041,7 @@
           "number_of_lines": null
         },
         "description": {
-          "text": "미입고",
+          "text": "",
           "lookups": [],
           "action_type": null,
           "action_value": null,
@@ -778,19 +1049,6 @@
           "type": "text",
           "number_of_lines": null
         }
-      },
-      {
-        "bar_color": "#F15746",
-        "title": {
-          "text": "",
-          "lookups": [],
-          "action_type": null,
-          "action_value": null,
-          "color": "#222222",
-          "type": "text",
-          "number_of_lines": null
-        },
-        "description": null
       },
       {
         "bar_color": "#F15746",
@@ -818,7 +1076,15 @@
           "type": "text",
           "number_of_lines": null
         },
-        "description": null
+        "description": {
+          "text": "95점 합격",
+          "lookups": [],
+          "action_type": "url",
+          "action_value": "https://kream.co.kr/my/inventory?tab=in_stock&status=sold&id=82542183",
+          "color": "#222222CC",
+          "type": "text",
+          "number_of_lines": null
+        }
       }
     ]
   },
@@ -843,7 +1109,7 @@
             "lookups": [
               {
                 "key": ";tl_0;",
-                "text": "33,000원",
+                "text": "55,000원",
                 "is_italic": false,
                 "is_semibold": false,
                 "is_bold": true,
@@ -902,7 +1168,7 @@
             "lookups": [
               {
                 "key": ";tl_0;",
-                "text": "40,000원",
+                "text": "63,000원",
                 "is_italic": false,
                 "is_semibold": false,
                 "is_bold": true,
@@ -965,7 +1231,7 @@
             "number_of_lines": null
           },
           "description": {
-            "text": "-7,000원",
+            "text": "-8,000원",
             "lookups": [],
             "action_type": null,
             "action_value": null,
@@ -985,7 +1251,7 @@
             "border_color": null,
             "background_color": null,
             "action_type": "toast",
-            "action_value": "기본 5,000원 + 등급 3.6% (VAT 별도)",
+            "action_value": "기본 5,000원 + 등급 3.7% (VAT 별도)",
             "status": "active",
             "icon_url": "https://kream-phinf.pstatic.net/MjAyMzA5MTFfNyAg/MDAxNjk0NDI1NjMxMDQx.UXiqLrRyMLVdXtH4ELlALu60xlYYmuHb2GFEFwFxH4og.DUDWr28XgyzqpXazozgWdrtz4zD9mWTfhVlOn9syraUg.PNG/a_f6a56805bfce4534a9b6090b852bdd6a.png",
             "image_key": null
@@ -1039,69 +1305,7 @@
             "number_of_lines": null
           },
           "description": {
-            "text": "2025-01-16T15:26:21Z",
-            "lookups": [],
-            "action_type": null,
-            "action_value": null,
-            "color": "#222222",
-            "type": "datetime",
-            "number_of_lines": null
-          },
-          "accessory_title": null,
-          "subtitle": null,
-          "display_type": "title_description",
-          "image_urls": null,
-          "action_button": null,
-          "image": null
-        },
-        {
-          "title": null,
-          "description": null,
-          "accessory_title": null,
-          "subtitle": null,
-          "display_type": "separator",
-          "image_urls": null,
-          "action_button": null,
-          "image": null
-        },
-        {
-          "title": {
-            "text": "페널티",
-            "lookups": [],
-            "action_type": null,
-            "action_value": null,
-            "color": "#F15746",
-            "type": "text",
-            "number_of_lines": null
-          },
-          "description": {
-            "text": "4,000원",
-            "lookups": [],
-            "action_type": null,
-            "action_value": null,
-            "color": "#F15746",
-            "type": "text",
-            "number_of_lines": null
-          },
-          "accessory_title": null,
-          "subtitle": null,
-          "display_type": "title_description",
-          "image_urls": null,
-          "action_button": null,
-          "image": null
-        },
-        {
-          "title": {
-            "text": "페널티 결제일",
-            "lookups": [],
-            "action_type": null,
-            "action_value": null,
-            "color": "#222222",
-            "type": "text",
-            "number_of_lines": null
-          },
-          "description": {
-            "text": "2025-01-23T15:30:58Z",
+            "text": "2025-02-06T22:39:56Z",
             "lookups": [],
             "action_type": null,
             "action_value": null,
@@ -1208,6 +1412,76 @@
       "action_button": null,
       "section_type": "legacy",
       "key": "delivery_note"
+    },
+    {
+      "title": "불합격/페널티 사유",
+      "subtitle": null,
+      "style": "plain",
+      "items": [
+        {
+          "title": {
+            "text": "기타: 기타",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "info_bullet_title",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "verification_failure"
+    },
+    {
+      "title": "95점 합격 사유",
+      "subtitle": null,
+      "style": "plain",
+      "items": [
+        {
+          "title": {
+            "text": "패키지 및 구성품-패키지: 박스(BOX) 손상-길이 총합 ≥12.0cm",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "info_bullet_title",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        },
+        {
+          "title": null,
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "image_collection",
+          "image_urls": [
+            "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg"
+          ],
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "verification_failure"
     }
   ],
   "footer": {

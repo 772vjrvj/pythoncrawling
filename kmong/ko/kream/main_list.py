@@ -14,7 +14,7 @@ headers = {
     "referer": "https://kream.co.kr/my/selling?tab=finished",
     "sec-ch-ua": '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
     "sec-ch-ua-mobile": "?0",
-    "authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0MDMxMDA1OCwianRpIjoiMTg3Zjk1YjgtY2M5Yy00ZWZkLWI3MGQtNTYwOGY2NDgwNTljIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5Ijo2MjQwNjc1LCJuYmYiOjE3NDAzMTAwNTgsImNzcmYiOiJmZTA4ZjUyMi0zYzVlLTQ5ZDAtOThiYy00ZmMwMjc1ZTJmZTMiLCJleHAiOjE3NDAzMTcyNTgsInVjIjp7InNhZmUiOnRydWV9LCJ1ZCI6Ii5lSnhGanN0T3d6QVVSSF9seXF0V3FoMF9FeWRaSVJZZ2xiSWhVcGVSRTktQzFiU08zRUI1aUg4bkVVaG9kbWRtTlBORl9FUXFJcmswbEVzcVZTTkVKWXRLV2FhTjVsS1NEZkg0Rm5wc3A0OFI1LWdWdTM4V19DLXBEMzFYS3NNOUxZVzNWTHZDMGxJYlQ3SFVvclM2ejVYTjUxckNVNXl3ZGQ2blpWVllKblRCaEpKTXFzVl92V0JxM1RPZWwxTzctQm1Hd1dXR2NWanR3OW5INndVZUd4Q2M4UnBta09zYTNuTzlocHR4SEhDUDNUWk1tVkVGVXptc3R2Zk43bUVEUXpnaTNHRl9qR3U0ZlVueGhKbFFpdkZGOE9RT0xvV19Ddm4tQWZtYVNzay5nOHNKNnF2ZnVQM0ZRYXNfTm5VcHBJLU1MNW8ifQ.Cj2huuqtjBFTzB7gpLkcwnG31r9YJWdYZnqP10lBPQg',
+    "authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNzQwNDA3MTYyLCJqdGkiOiJkYThlNWU3ZS1lOTJjLTQ4ZDQtODY3My1mODUwOGU2ZGU3MzAiLCJ0eXBlIjoiYWNjZXNzIiwiaWRlbnRpdHkiOjYyNDA2NzUsIm5iZiI6MTc0MDQwNzE2MiwiY3NyZiI6ImQ1Y2Q0YjNjLWNkZTItNDFkNy1hNDNlLWI3NjFjYjBmZDdjZCIsImV4cCI6MTc0MDQxNDM2MiwidWMiOnsic2FmZSI6dHJ1ZX0sInVkIjoiLmVKeEZqa3RMdzBBVWhmX0taVll0ZENienpNMWpKUzRVYXQwWTZESk1NcmM2TkcxQ0dxMFBfTzhtS01qWmZlY2N6dmxpWVdJRjAxSTdMalhYdGxLMjBHa2h0VURVdWN2WWhnVjZpeTNWMDhkQWNfUkt6VC1MNFplVWlHZ2IxMXFPVGhLM2hNaWJfT0I1RnRBb2JVMnVVTTYxa1U3OVJMVVBZVnhXVlNhVVJhR01GdHFrc185Nm9iSDJ6M1JlVHUzNno5aDFQbkZDd21vZno2R19YdUN4QWlXRkxHRUdxUzNoUGJWcnVCbUdqdmJVYk9PVU9JUENwTERhM2xlN2h3MTA4VWh3Ui0yeFg4UHR5OWlmS0ZIR0NMa0ludnpCal9HdndyNV9BTmFqU3BnLlNtMjFfNEl0am5Jc0kwNDBEaEVMMnhBb1lQayJ9.MGHRDNsh0b-U7_Lh23tnYPUWT8TzuvITBKOf-Sljp7c',
     "sec-ch-ua-platform": '"Windows"',
     "sec-fetch-dest": "empty",
     "sec-fetch-mode": "cors",
@@ -34,9 +34,12 @@ extracted_ids = []
 def fetch_data(cursor):
     # status=expired
     # status=canceled
+    tab="finished"
+    status="canceled"
+    request_key="a513410c-91b9-484c-8275-97e99a9eb2d2"
 
 
-    url = f"https://api.kream.co.kr/api/o/asks/?cursor={cursor}&tab=finished&status=expired&request_key=731e4f47-dab0-4219-b161-b221fafcc1d3"
+    url = f"https://api.kream.co.kr/api/o/asks/?cursor={cursor}&tab={tab}&status={status}&request_key={request_key}"
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -55,7 +58,7 @@ def fetch_data(cursor):
         print(f"Cursor {cursor}: 요청 실패 (HTTP {response.status_code})")
 
 def main():
-    for cursor in range(1, 20):  # 1부터 52까지 반복
+    for cursor in range(1, 30):  # 1부터 52까지 반복
         fetch_data(cursor)
         time.sleep(1)  # 1초 대기
     print(extracted_ids)
