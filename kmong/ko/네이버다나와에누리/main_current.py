@@ -161,7 +161,14 @@ def scrape_naver(driver, name, naver_url, open_market_list):
         naver_temp_list = []
         time.sleep(3)
 
-
+        # 판매중단 확인
+        try:
+            status_element = driver.find_element(By.CSS_SELECTOR, "h3.noPrice_status__lBnHb")
+            if status_element.text.strip() == "판매중단":
+                return []  # '판매중단'이면 빈 리스트 반환
+        except NoSuchElementException:
+            # 해당 요소가 없는 경우 별도 처리(여기서는 그냥 pass)
+            pass
 
         # 기준 가격 세팅
         # 테이블 찾기
@@ -291,7 +298,11 @@ def scrape_naver(driver, name, naver_url, open_market_list):
                     delivery_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="배송비포함 필터"]')
 
                     if delivery_elements[0].text == 'on':
-                        delivery_elements[0].click()  # 배송비포함 클릭
+                        # delivery_elements[0].click()  # 배송비포함 클릭
+
+                        delivery_element = delivery_elements[0]
+                        driver.execute_script("arguments[0].click();", delivery_element)
+
                         time.sleep(0.5)
                         delivery_option = 1
 
@@ -1286,7 +1297,7 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name, start_row, end
                 naver_result = scrape_naver(driver, name, naver_url, open_market_list)
                 sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
 
-                if email_data['리뷰']:
+                if naver_result and email_data['리뷰']:
                     global_month_review_cnt = get_month_review_cnt(driver, naver_url, email_data)
                     print(f'리뷰수 : {global_month_review_cnt}')
                     if global_month_review_cnt > email_data['리뷰수']:
@@ -1364,7 +1375,7 @@ if __name__ == "__main__":
     end_row = 100    # 실제 row수보다 작거나 같게 설정
 
     # repeat가 False면 1회 반복 후 종료 True면 무한반복
-    repeat = True
+    repeat = False
 
     # 자사몰인 경우만 메일 발송 및 엑셀에 넣기
     # 수집 제외몰은 사용하지 않음
@@ -1491,3 +1502,8 @@ if __name__ == "__main__":
 # 2025-02-03 ver_10
 # 리플 딜레이 시간 추가
 # 배송비포함/카드할인버튼 이슈 추가 수정
+
+
+# 2025-02-24 ver_11
+# 상품없음 수정
+# 리다이렉트 수정

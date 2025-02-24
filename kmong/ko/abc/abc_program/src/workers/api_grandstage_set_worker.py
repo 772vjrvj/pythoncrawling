@@ -291,7 +291,9 @@ class ApiGrandstageSetLoadWorker(QThread):
             product_list = []
             if links and len(links) > 0:
                 product_list = [link.get('href') for link in links if link.get('href')]
-            input_tag = soup.find('input', id="GROUP_COUNT_CHNNL_NO_10001")
+            # input_tag = soup.find('input', id="GROUP_COUNT_CHNNL_NO_10001")
+            # 수정 2024-02-24
+            input_tag = soup.find('input', id="GROUP_COUNT_CHNNL_NO_10002") or soup.find('input', id="GROUP_COUNT_CHNNL_NO_10001")
             if input_tag:
                 value = input_tag.get('value')  # value 값 반환
                 total_cnt = int(value)
