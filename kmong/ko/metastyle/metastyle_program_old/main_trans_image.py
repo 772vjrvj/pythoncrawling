@@ -1,39 +1,44 @@
 import os
-import shutil
 import pandas as pd
+import shutil
 
-def move_images(csv_filename, destination_folder):
-    # CSV 파일 읽기
-    df = pd.read_csv(csv_filename)
+# CSV 파일 경로
+csv_path = r"D:\GitHub\pythoncrawling\kmong\ko\metastyle\metastyle_program_old\images 2\Men.csv"
 
-    # 대상 폴더 생성
-    os.makedirs(destination_folder, exist_ok=True)
+# 소스 및 대상 디렉토리 경로
+src_dir = r"D:\GitHub\pythoncrawling\kmong\ko\metastyle\metastyle_program_old\images 2\Men_1"
+dst_dir = r"D:\GitHub\pythoncrawling\kmong\ko\metastyle\metastyle_program_old\images 2\Men"
 
-    # 이미지 파일이 있는 폴더 경로
-    source_folder = "images"
+# CSV 파일 읽기
+df = pd.read_csv(csv_path)
 
-    # image_name 컬럼에서 파일명 리스트 추출
-    df['trans_yn'] = 'N'  # 이동 전 기본값 설정
+# 'image_yn' 컬럼을 초기화 (빈 문자열로 초기화)
+df['image_yn'] = ""
 
-    # 이미지 이동
-    for index, row in df.iterrows():
-        image_name = row['image_name']
-        source_path = os.path.join(source_folder, image_name)
-        destination_path = os.path.join(destination_folder, image_name)
+# 대상 디렉토리가 존재하지 않으면 생성
+if not os.path.exists(dst_dir):
+    os.makedirs(dst_dir)
 
-        # 파일이 존재하면 이동
-        if os.path.exists(source_path):
-            shutil.move(source_path, destination_path)
-            df.at[index, 'trans_yn'] = 'Y'
-            print(f"Moved: {source_path} -> {destination_path}")
+# 각 이미지 파일 처리
+for idx, row in df.iterrows():
+    image_name = row['image_name']
+    src_path = os.path.join(src_dir, image_name)
+    dst_path = os.path.join(dst_dir, image_name)
+
+    try:
+        # 소스 파일이 존재하면 이동 처리
+        if os.path.exists(src_path):
+            shutil.move(src_path, dst_path)
+            df.at[idx, 'image_yn'] = "Y"
+            print(f"Moved: {src_path} -> {dst_path}")
         else:
-            print(f"Not found: {source_path}")
+            df.at[idx, 'image_yn'] = "N"
+            print(f"File not found: {src_path}")
+    except Exception as e:
+        # 예외 발생 시 실패로 처리
+        df.at[idx, 'image_yn'] = "N"
+        print(f"Error moving {src_path}: {e}")
 
-    # 변경된 데이터 저장
-    df.to_csv(csv_filename, index=False)
-
-# Boys.csv 작업
-move_images("Boys.csv", "Boys")
-
-# Toddler.csv 작업
-move_images("Toddler.csv", "Toddler")
+# 변경된 내용을 CSV 파일에 저장 (덮어쓰기)
+df.to_csv(csv_path, index=False)
+print("CSV 파일 업데이트 완료!")

@@ -210,13 +210,14 @@ class ApiOldnavySetLoadWorker(QThread):
             res = self.sess.get(url, params=params, headers=headers, timeout=10)
             res.raise_for_status()
             soup = BeautifulSoup(res.text, "html.parser")
-
             obj = {
                 "product": soup.find("h1", class_="sitewide-1t5lfed").get_text(strip=True) if soup.find("h1", class_="sitewide-1t5lfed") else "",
                 "description": "\n".join(li.get_text(strip=True) for li in soup.select(".drawer-trigger-container .sitewide-jxz45b:nth-of-type(2) .product-information-item__list li")) or "",
                 "img_list": [
-                    (src if src.startswith("http") else f"https://oldnavy.gap.com/{src.lstrip('/')}")
-                    for src in [img["src"] for img in soup.select(".slick-slider.sitewide-zuynlm.slick-initialized img") if "src" in img.attrs]
+                    (img["src"] if img["src"].startswith("http") else f"https://oldnavy.gap.com/{img['src'].lstrip('/')}")
+                    for div in soup.find_all("div", class_="brick__product-image-wrapper")
+                    for img in div.find_all("img")
+                    if img.get("src")
                 ]
             }
             return obj

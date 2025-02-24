@@ -22,3 +22,5 @@ pyinstaller --noconsole --icon=crawling.ico main.py
 
 엑셀 한 시트에 들어갈수 있는
 since it exceeds Excel's limit of 65,530 URLS per worksheet.
+
+
