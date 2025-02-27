@@ -1,0 +1,6 @@
+https://chsjjj.shop.blogpay.co.kr/controller/main?sIncludeSm=1
+
+chsjjj
+9k3j3651
+
+카테고리, 상품명, 상품코드, 대표가격, 옵션항목, 옵션별추가금액, 썸네일배너주소(url), 상세페이지(전체 소스화되어도 상관없음)
