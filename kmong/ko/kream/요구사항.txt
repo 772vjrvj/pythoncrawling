@@ -41,3 +41,6 @@ dbeldbei@naver.com cjs7625290#
 
 
 
+pyinstaller --onefile --noconsole --icon=crawling.ico main.py
+
+pyinstaller --onefile main.py

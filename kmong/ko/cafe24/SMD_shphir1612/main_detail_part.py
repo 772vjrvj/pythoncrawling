@@ -2,12 +2,15 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import concurrent.futures
+import os
+from glob import glob
 
 # 엑셀 파일 읽기
 df = pd.read_excel("product_data.xlsx")
 
 # 기본 URL 및 헤더 설정 (쿠키 제외)
 BASE_URL = "https://saphir1612.cafe24.com"
+
 HEADERS = {
     "authority": "saphir1612.cafe24.com",
     "method": "GET",
@@ -27,6 +30,10 @@ HEADERS = {
     "upgrade-insecure-requests": "1",
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
 }
+
+# CSV 저장 디렉토리
+CSV_DIR = "csv_output"
+os.makedirs(CSV_DIR, exist_ok=True)
 
 def fetch_memo_data(product):
     """각 product_no를 이용해 웹페이지에서 메모 데이터를 가져오는 함수"""
@@ -65,7 +72,6 @@ def fetch_memo_data(product):
         memo_data["memo_content"] = tds[3].text.strip()  # 4번째 td 값
 
         result.append(memo_data)
-    print(result)
 
     return result
 
@@ -73,20 +79,46 @@ def scrape_memo_data():
     """멀티쓰레드로 모든 product_no에 대해 메모 데이터를 가져옴"""
     products = df.to_dict(orient="records")  # DataFrame을 객체 리스트로 변환
     all_memo_data = []
+    batch_size = 100  # CSV로 저장할 묶음 크기
+    batch_count = 0
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         results = list(executor.map(fetch_memo_data, products))
 
     for result in results:
         all_memo_data.extend(result)
+        # 100개씩 저장
+        if len(all_memo_data) >= batch_size:
+            batch_df = pd.DataFrame(all_memo_data[:batch_size])
+            csv_filename = os.path.join(CSV_DIR, f"memo_data_batch_{batch_count}.csv")
+            batch_df.to_csv(csv_filename, index=False, encoding="utf-8-sig")
+            print(f"Saved {csv_filename}")
 
-    return all_memo_data
+            # 저장한 데이터 삭제
+            all_memo_data = all_memo_data[batch_size:]
+            batch_count += 1
+
+    # 남은 데이터 저장
+    if all_memo_data:
+        csv_filename = os.path.join(CSV_DIR, f"memo_data_batch_{batch_count}.csv")
+        batch_df = pd.DataFrame(all_memo_data)
+        batch_df.to_csv(csv_filename, index=False, encoding="utf-8-sig")
+        print(f"Saved {csv_filename}")
+
+def merge_csv_to_excel():
+    """CSV 파일들을 하나의 XLSX 파일로 변환"""
+    csv_files = glob(os.path.join(CSV_DIR, "*.csv"))
+    all_data = []
+
+    for file in csv_files:
+        df = pd.read_csv(file)
+        all_data.append(df)
+
+    if all_data:
+        final_df = pd.concat(all_data, ignore_index=True)
+        final_df.to_excel("memo_data.xlsx", index=False)
+        print("Excel file 'memo_data.xlsx' has been saved.")
 
 if __name__ == "__main__":
-    memo_data_list = scrape_memo_data()
-
-    # 리스트를 DataFrame으로 변환 후 엑셀로 저장
-    memo_df = pd.DataFrame(memo_data_list)
-    memo_df.to_excel("memo_data.xlsx", index=False)
-
-    print("Excel file 'memo_data.xlsx' has been saved.")
+    scrape_memo_data()
+    merge_csv_to_excel()

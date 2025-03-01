@@ -25,7 +25,7 @@ class ProgressThread(QThread):
                 start_value, end_value = task
                 diff_value = end_value - start_value  # 진행할 단계 수
                 inter_time = 40 # 1초를 40조각으로 잘라서 진행
-                parts = 3  # 걸리는 시간
+                parts = 1  # 걸리는 시간
 
                 div_value = diff_value / (parts * inter_time)  # 각 단계에 걸리는 시간 (초)
                 millsecond = int(1000 / inter_time)  # 밀리초 간격

@@ -304,13 +304,10 @@ class MainWindow(QWidget):
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
                 if self.site == 'albamon':
                     self.on_demand_worker = ApiAlbamonSetLoadWorker(self.select_check_list)
-                elif self.site == 'ZALANDO':
-                    self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
-                elif self.site == 'OLDNAVY':
-                    self.on_demand_worker = ApiMytheresaSetLoadWorker(self.select_check_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.stop)
+                self.on_demand_worker.msg_signal.connect(self.show_message)
                 self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
@@ -328,19 +325,16 @@ class MainWindow(QWidget):
     # 프로그램 중지
     def stop(self):
         # 프로그래스 중지
-        if self.progress_thread is not None:  # 스레드가 있으면 중단
+        if self.on_demand_worker is not None:
+            self.on_demand_worker.stop()
+            self.on_demand_worker = None
+
+        # 크롤링 중지
+        if self.progress_thread is not None:
             self.progress_thread.stop()
-            self.progress_thread.wait()
-            self.progress_thread.deleteLater()
             self.progress_thread = None
             self.task_queue = None
-        # 크롤링 중지
-        if self.on_demand_worker is not None:
-            self.on_demand_worker.stop()  # 중지
-            self.on_demand_worker.wait()  # 완료될 때까지 대기
-            self.on_demand_worker.deleteLater()
-            self.on_demand_worker = None  # worker 객체 초기화
-        self.show_message("크롤링 종료", 'info')
+        self.show_message("크롤링 종료", 'info', None)
 
     # 프로그래스 큐 데이터 담기
     def set_progress(self, start_value, end_value):
@@ -358,18 +352,28 @@ class MainWindow(QWidget):
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
     # 경고 alert창
-    def show_message(self, message, type):
-        # QMessageBox 생성
-        msg = QMessageBox(self)
-        if type == 'warn':
-            msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
-            msg.setWindowTitle("경고")  # 창 제목 설정
-        elif type == 'info':
-            msg.setIcon(QMessageBox.Information)  # 경고 아이콘 설정
-            msg.setWindowTitle("확인")  # 창 제목 설정
-        msg.setText(message)  # 메시지 내용 설정
-        msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
-        msg.exec_()  # 메시지 박스 표시
+    def show_message(self, message, type, event):
+        """메시지 박스를 띄우고 OK 버튼이 눌리면 event.set() 호출"""
+        try:
+            msg = QMessageBox(self)
+            if type == 'warn':
+                msg.setIcon(QMessageBox.Warning)
+                msg.setWindowTitle("경고")
+            elif type == 'info':
+                msg.setIcon(QMessageBox.Information)
+                msg.setWindowTitle("확인")
+
+            msg.setText(message)
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()  # 사용자가 OK를 누를 때까지 대기
+
+            # OK 버튼을 누르면 event 해제
+            if event:
+                event.set()
+        except Exception as e:
+            self.add_log(f"⚠️ 메시지 박스 오류 발생: {e}")
+            if event:
+                event.set()  # 예외 발생 시에도 이벤트 해제 (무한 대기 방지)
 
     # url 세팅
     def set_url_list(self, url_list):

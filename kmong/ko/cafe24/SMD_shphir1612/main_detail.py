@@ -89,4 +89,5 @@ if __name__ == "__main__":
     memo_df = pd.DataFrame(memo_data_list)
     memo_df.to_excel("memo_data.xlsx", index=False)
 
+
     print("Excel file 'memo_data.xlsx' has been saved.")
