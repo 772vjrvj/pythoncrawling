@@ -40,6 +40,7 @@ def click_close_button(driver):
     except Exception as e:
         print(f"Error: {e}")
 
+
 def load_storage(driver, storage_file):
     if os.path.exists(storage_file + "_local_storage.json"):
         with open(storage_file + "_local_storage.json", "r") as file:
@@ -52,6 +53,7 @@ def load_storage(driver, storage_file):
     else:
         print(f"Warning: {storage_file}_local_storage.json not found.")
         return False
+
 
 def login(driver, id, pw):
     try:

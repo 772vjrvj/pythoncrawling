@@ -75,7 +75,8 @@ class RegisterPopup(QDialog):
     # 전역 url 업데이트
     # 사실은 slot signal로 데이터만 보내고 처리는 부모에서 하는게 맞음 이러면 응집도가 너무 높아짐
     # 일단은 그냥 둠
-    def update_url_label(self, url):
+    def \
+            update_url_label(self, url):
         # URL을 레이블에 표시
         row_position = self.parent.table.rowCount()  # 현재 테이블의 마지막 행 위치를 얻음
         self.parent.table.insertRow(row_position)  # 새로운 행을 추가
