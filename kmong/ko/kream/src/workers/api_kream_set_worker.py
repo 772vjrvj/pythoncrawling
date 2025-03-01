@@ -78,7 +78,7 @@ class ApiKreamSetLoadWorker(QThread):
                             self.log_signal.emit(f"❌ 404 에러 또는 더 이상 데이터가 없습니다. (cursor={cursor})")
                             break
                         all_extracted_ids.extend(extracted_ids)  # 결과 합치기
-                        self.log_signal.emit(f'목록 {cursor} : {all_extracted_ids}')
+                        self.log_signal.emit(f'목록 {cursor} : {extracted_ids}')
                         cursor += 1  # cursor 증가
                         time.sleep(random.uniform(0.5, 1))
 
