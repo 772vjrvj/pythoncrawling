@@ -1,0 +1,25 @@
+안녕하세요, JK님
+아래 순서대로 이미지 수집 요청드립니다.
+
+1차 요구사항 정의서만 구글 드라이브에 업로드가 필요하여, 프로그램 먼저 개발해주시면 원격 PC에서 수집 후 업로드 진행하겠습니다.
+1차 작업 먼저 진행부탁드리며, 수집 가능한 일정 확인 부탁드립니다. 2차 작업에 대한 요구사항 정의서 관련해서도 최종 업데이트하여 전달드리겠습니다.
+
+1차 수집 요청
+크롤링 요구사항 정의서(사이트 1개): https://docs.google.com/presentation/d/1wG7x8G75lksPE4Z7-nkeXK9kIYVrIWpS/edit?usp=sharing&ouid=114356819459536932520&rtpof=true&sd=true
+이미지 수집 경로(구글 드라이브): https://drive.google.com/drive/folders/1krV6kZZCBZ2jP5JgAhYdiq_o650p9kzD
+2차 수집 요청
+크롤링 사이트 리스트(사이트 7개): https://docs.google.com/spreadsheets/d/1GlSYT_3YRmCPH24cjkZVj8g0gRNEJKwd/edit?usp=sharing&ouid=114356819459536932520&rtpof=true&sd=true
+이미지 수집 경로(구글 클라우드 버킷)
+ {
+type: "service_account",
+project_id: "styleai-373423",
+private_key_id: "95d9cfc2477214d4d8b0f97e9a80c46fa445ca8e",
+private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDQWyfpZH92XHmg\nz5GwknXlv8I8H63LuP/vOLRwLeXvtDc+9hLED5UJXRZRma8aps0MHl9J0ce8NQZI\nczBgVpAY8tzDm3qCZQEdmcaxin7nks5HbYLYPAe2EYDcYjEEv1/gS4emJ6rbCyrl\n/3GWwWCwZHgzXGpkjjdbU8edwOETHX6w5qoUy0rLunJOC9Kl19/4NPY+dH1AqOLK\nb4vAK1Zm0oVmoONr5Q0DPRLdkQvMD51pDnXvEvpol338mK0KxdxDH1Aw4mD4rtxR\nyWcHzkdh7yelqQbRMfnEd1DxTI3jf8cYtzkbcMo7TRIxOy9xlmwM7nvFbRJ/ino1\nuO7mmubLAgMBAAECggEAAKkGyWLKmVHulbf2J7Emho/dhrwwG3bGcnwM0Q08kG+C\nFZwIpMEzO7nyro87E3SNSm6ybL3qyF61xoenFJ6xYvtXwTw86tCGfGLzELJW2UBu\nOAP8TTd8dlyDTsDky6ziwtiiQ6LV1i+9gYDZTA4uJGbVfDrgEZzlDX8ZDFSw/jMy\nFFE12ZVx+oO9+6DjMRXeB52YzIoEdlngFa3/wa0sWSsl9AsX79VT4ryYBvoJ/0Jk\nNCC1McAXlqYJ2On0Tj+LOLYdFOhY6+9mln51dVtYAQMn1EZaliYKa+PZVr0E+FGX\n8thfsiULvLccmcsGD1dZZPmYsYhVl8h7qtedIflAGQKBgQDvkoFgPDoUWPEWBscc\nBoVrgOLUasL8PSCGhvBPWoMthnde03PiYnuiSChGfWIBSpMEXUP0Baul5GmnOjjK\nhXb/GSFXFh8flqFgGednAo7abdwC3WiR4oS+G5oaJgI1tk62P1z/UBdrTCQmwip3\nK0Cou+pZP2FgwvfL+3lRK8t9VwKBgQDepKz2cBsuf4ZK1SansjNR/le77UCO7IJd\nQ9aWGA1TMiGVzomcyVS7h3+CYiXocfbZYG8lFOgQwz6tgt1FPqlZ4HUq6/ANK6+6\nbyCfa7Xg41VmVmt4E/thApDIkpleN26A7vVegy739AZzmNoTq8f/Pe8EnOl+n/oj\nfc62JS+FrQKBgHS1w69VR9oXxkM7xA4kIyVPIbHn3NuzD8BZxoJyDsvD4S1iB+d2\noNJbIrvMY01Lvjl3Eh60EH39u3bLR1VqFaGK5ZIeZcUmxbEijXfCaEODF5aRtFq1\npoNSwQ0SDSuLh+cDEVQT+YS9EDONjdCGUrag7TbTSKYx9TP7a4uesUB7AoGAa7ET\nyJApVbBxcLjxXaQglsSEA26bD4bu99XccfVoXJmfDSs9/QyVY7ACyTpYQ7r8P+EZ\nYcJfDdyi8KKgDOJmYAbmJcDB+FztPyyJhxM+gmzz3fBnQ0nHCgGHrrzaWmxNkygC\nn5ism1r50+hXc7RfpOJ8Pqr3djxDbe9okUojVnECgYBjdRN1+qRbdrU8bu/Zo2fq\n+htC17tYHWkdtAL9Wh0xb1MWEwfxkDZd+6bxMH1EMnLeTmvgy4WLFmMgCSDhrw5G\nqDYu54kg6vpFVoJtFsvrwNUAejTYKU28E3oG1TnItmiFTyDhzqx4nYf7E/C0zCSP\nbnxrbLJysJDQTC4zLeIXMg==\n-----END PRIVATE KEY-----\n",
+client_email: "ai-designer-ml-external@styleai-373423.iam.gserviceaccount.com",
+client_id: "109056047252156067480",
+auth_uri: "https://accounts.google.com/o/oauth2/auth",
+token_uri: "https://oauth2.googleapis.com/token",
+auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/ai-designer-ml-external%40styleai-373423.iam.gserviceaccount.com",
+universe_domain: "googleapis.com"
+}
