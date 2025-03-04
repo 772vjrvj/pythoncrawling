@@ -7,8 +7,8 @@ from docx import Document
 import multiprocessing
 
 # 원본 폴더와 저장할 폴더 경로
-source_folder = r"D:\GIT\pythoncrawling\kmong\ko\prism_research\prism_data_report_전체"
-target_folder = r"D:\GIT\pythoncrawling\kmong\ko\prism_research\prism_data_report_전체_마이닝"
+source_folder = r"D:\GIT\pythoncrawling\kmong\ko\prism_research\prism_data_report_전체_1"
+target_folder = r"D:\GIT\pythoncrawling\kmong\ko\prism_research\prism_data_report_전체_마이닝_1"
 
 # hwp5txt.exe의 경로 (가상환경 내)
 hwp5txt_path = r"D:\GIT\pythoncrawling\venv\Scripts\hwp5txt.exe"
@@ -70,6 +70,11 @@ def process_file(file_path):
     """ 개별 파일을 처리하는 함수 (병렬 실행) """
     file_name, file_ext = os.path.splitext(os.path.basename(file_path))
     txt_output_path = os.path.join(target_folder, f"{file_name}.txt")
+
+    # 이미 변환된 파일이 있으면 스킵
+    if os.path.exists(txt_output_path):
+        print(f"⏩ 스킵: {file_path} (이미 변환됨)")
+        return
 
     extracted_text = ""
 
