@@ -1,6 +1,5 @@
 알바몬 사이트에서 특정 사업체의 DB 모집
 
-
 검색 키워드 : 서울 / 업종 - 무관 / 근무기관 - 무관 / 상세조건 - 정직원
 
 위 검색키워드로 검색해서 나온 업체 리스트를 엑셀로 수집
@@ -26,5 +25,7 @@
 사업체명, 업종, 대표자명, 채용담당자명, 휴대폰 번호, 기업주소, 근무지 주소, 근무조건, 업직종
 
 
-
 https://www.albamon.com/jobs/area?page=1&areas=I000&employmentTypes=FULL_TIME
+
+
+pyinstaller --onefile --noconsole --icon=crawling.ico main.py

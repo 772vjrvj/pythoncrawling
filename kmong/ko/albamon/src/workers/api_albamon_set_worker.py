@@ -131,7 +131,8 @@ class ApiAlbamonSetLoadWorker(QThread):
 
                 detail_data = self.get_api_request(data['recruitNo'])
                 obj['채용담당자명'] = detail_data.get('viewData',{}).get('recruiter','')
-                obj['사업체명'] = detail_data.get('viewData',{}).get('recruitCompanyName','')
+                # obj['사업체명'] = detail_data.get('viewData',{}).get('recruitCompanyName','')
+                obj['사업체명'] = detail_data.get('companyData',{}).get('companyName','')
                 obj['업종'] = detail_data.get('companyData',{}).get('jobTypeName','')
                 obj['대표자명'] = detail_data.get('companyData',{}).get('representativeName','')
                 obj['기업주소'] = detail_data.get('companyData',{}).get('fullAddress','')
