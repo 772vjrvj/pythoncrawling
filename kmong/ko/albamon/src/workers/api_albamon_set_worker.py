@@ -107,7 +107,7 @@ class ApiAlbamonSetLoadWorker(QThread):
 
                 # 서울 강서구 마곡동
                 workplace_area = data.get("workplaceArea", "").strip()
-                area_parts = workplace_area.split()
+                area_parts = workplace_area.split() if workplace_area else []
 
                 obj = {
                     "NO": data.get('recruitNo', ''),
@@ -126,16 +126,23 @@ class ApiAlbamonSetLoadWorker(QThread):
                     "업직종": data.get('parts', ''),
                     "지역1": area_parts[0] if len(area_parts) > 0 else "",
                     "지역2": area_parts[1] if len(area_parts) > 1 else "",
-                    "지역3": area_parts[2] if len(area_parts) > 2 else ""
+                    "지역3": area_parts[2] if len(area_parts) > 2 else "",
+                    "사업체명": "",
+                    "업종": "",
+                    "대표자명": "",
+                    "기업주소": "",
                 }
 
-                detail_data = self.get_api_request(data['recruitNo'])
-                obj['채용담당자명'] = detail_data.get('viewData',{}).get('recruiter','')
-                # obj['사업체명'] = detail_data.get('viewData',{}).get('recruitCompanyName','')
-                obj['사업체명'] = detail_data.get('companyData',{}).get('companyName','')
-                obj['업종'] = detail_data.get('companyData',{}).get('jobTypeName','')
-                obj['대표자명'] = detail_data.get('companyData',{}).get('representativeName','')
-                obj['기업주소'] = detail_data.get('companyData',{}).get('fullAddress','')
+                detail_data = self.get_api_request(data.get('recruitNo', ''))
+
+                if detail_data:
+                    obj['채용담당자명'] = detail_data.get('viewData', {}).get('recruiter', '')
+                    obj['등록일'] = detail_data.get('viewData', {}).get('pcSortDate', '')
+                    # obj['사업체명'] = detail_data.get('viewData',{}).get('recruitCompanyName','')
+                    obj['사업체명'] = detail_data.get('companyData', {}).get('companyName', '')
+                    obj['업종'] = detail_data.get('companyData', {}).get('jobTypeName', '')
+                    obj['대표자명'] = detail_data.get('companyData', {}).get('representativeName', '')
+                    obj['기업주소'] = detail_data.get('companyData', {}).get('fullAddress', '')
 
                 self.log_signal.emit(f"현재 채용 정보 : {obj}")
 
@@ -392,6 +399,7 @@ class ApiAlbamonSetLoadWorker(QThread):
                 return None
 
         except Exception as e:
+            print(f'error : {e}')
             # 네트워크 에러 또는 기타 예외 처리
             self.log_signal.emit(f"요청 중 에러 발생: {e}")
             return None

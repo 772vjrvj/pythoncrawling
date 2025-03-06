@@ -80,7 +80,7 @@ class ApiKreamSetLoadWorker(QThread):
                         all_extracted_ids.extend(extracted_ids)  # 결과 합치기
                         self.log_signal.emit(f'목록 {cursor} : {extracted_ids}')
                         cursor += 1  # cursor 증가
-                        time.sleep(random.uniform(0.5, 1))
+                        time.sleep(random.uniform(2, 3))
 
                     for idx, product_id in enumerate(all_extracted_ids, start=1):
                         if not self.running:  # 실행 상태 확인
@@ -103,7 +103,7 @@ class ApiKreamSetLoadWorker(QThread):
                         self.before_pro_value = pro_value
 
                         self.result_list.append(product_data)
-                        time.sleep(random.uniform(1, 2))
+                        time.sleep(random.uniform(2, 3))
 
                     self._logout(user)
                     self._remain_data_set()
@@ -208,14 +208,14 @@ class ApiKreamSetLoadWorker(QThread):
 
         tab="finished"
         status="canceled"
-        request_key=""
-        url = f"https://api.kream.co.kr/api/o/asks/?cursor={cursor}&tab={tab}&status={status}&request_key={request_key}"
+        url = f"https://api.kream.co.kr/api/o/asks/?cursor={cursor}&tab={tab}&status={status}"
 
         url_pattern = re.compile(r"https://kream\.co\.kr/my/selling/(\d+)")
 
         headers = {
             "authority": "api.kream.co.kr",
             "method": "GET",
+            "path": f"/api/o/asks/?cursor={cursor}&tab={tab}&status={status}",
             "scheme": "https",
             "accept": "application/json, text/plain, */*",
             "accept-encoding": "gzip, deflate, br, zstd",
@@ -239,7 +239,7 @@ class ApiKreamSetLoadWorker(QThread):
         extracted_ids = []
 
         try:
-            response = requests.get(url, headers=headers, cookies=self.cookies)
+            response = requests.get(url, headers=headers)
             response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
 
             # 응답 JSON 파싱 및 출력
@@ -255,6 +255,7 @@ class ApiKreamSetLoadWorker(QThread):
                                         extracted_ids.append(match.group(1))  # 숫자 부분만 저장
             return extracted_ids
         except requests.exceptions.RequestException as e:
+            self.log_signal.emit(f"에러 발생 {e}")
             return []
 
 
@@ -518,7 +519,7 @@ class ApiKreamSetLoadWorker(QThread):
             "x-kream-web-request-secret": "kream-djscjsghdkd"
         }
 
-        response = requests.get(url, headers=headers, cookies=self.cookies)
+        response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
             data = response.json()

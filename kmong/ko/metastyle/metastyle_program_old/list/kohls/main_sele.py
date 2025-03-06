@@ -1,204 +1,134 @@
-import requests
-import json
-from typing import List, Dict
 import time
-
-import os
-import os
-import ssl
-import time
-
-import pandas as pd
-import requests
-from PyQt5.QtCore import QThread, pyqtSignal
-from bs4 import BeautifulSoup
-from selenium import webdriver
-
-from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
-
-ssl._create_default_https_context = ssl._create_unverified_context
-import json
-import os
-import random
 import re
-import ssl
-import time
-from datetime import datetime
-
-import pandas as pd
-import psutil
-import requests
-from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop
-from PyQt5.QtWidgets import QMessageBox
-from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import StaleElementReferenceException
 from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
 
-ssl._create_default_https_context = ssl._create_unverified_context
+def setup_driver():
+    options = Options()
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--start-maximized")
+    options.add_experimental_option('excludeSwitches', ['enable-automation'])
+    options.add_experimental_option('useAutomationExtension', False)
 
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    return driver
 
-baseUrl = "https://www.kohls.com/catalog/womens-shirts-blouses-tops-clothing.jsp"
+def get_total_count(driver, url):
+    driver.get(url)
+    time.sleep(3)
+    count_element = driver.find_element(By.CSS_SELECTOR, "span.result_count")
+    total_cnt = int(re.sub(r'[^0-9]', '', count_element.text)) if count_element else 0
+    return total_cnt
 
-sess = requests.Session()
+def get_product_details(driver, product_url):
+    driver.get(product_url)
+    time.sleep(3)
 
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    product_details = {}
 
+    product_details['product_title'] = soup.select_one("h1.product-title").get_text(strip=True) if soup.select_one("h1.product-title") else ""
 
-def _close_chrome_processes():
-    """모든 Chrome 프로세스를 종료합니다."""
-    for proc in psutil.process_iter(['pid', 'name']):
-        try:
-            if 'chrome' in proc.info['name'].lower():
-                proc.kill()  # Chrome 프로세스를 종료
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
+    product_details['product_sub_title'] = soup.select_one("div.sub-product-title a").get_text(strip=True) if soup.select_one("div.sub-product-title a") else ""
 
+    features_section = soup.find("p", string="FEATURES")
+    product_details['product_features'] = [li.get_text(strip=True) for li in features_section.find_next("ul").find_all("li")] if features_section else []
 
-def _setup_driver():
-    try:
-        _close_chrome_processes()
+    fabric_care_section = soup.find("p", string="FABRIC & CARE")
+    product_details['product_fabric_care'] = [li.get_text(strip=True) for li in fabric_care_section.find_next("ul").find_all("li")] if fabric_care_section else []
 
-        chrome_options = Options()
-        user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
-        profile = "Default"
-
-        chrome_options.add_argument(f"user-data-dir={user_data_dir}")
-        chrome_options.add_argument(f"profile-directory={profile}")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-software-rasterizer")
-        chrome_options.add_argument("--start-maximized")
-        # chrome_options.add_argument("--headless")  # Headless 모드 추가
-
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        chrome_options.add_argument(f'user-agent={user_agent}')
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-
-        download_dir = os.path.abspath("downloads")
-        os.makedirs(download_dir, exist_ok=True)
-
-        chrome_options.add_experimental_option('prefs', {
-            "download.default_directory": download_dir,
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": True
-        })
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-        script = '''
-                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-                window.navigator.chrome = { runtime: {} };
-                Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
-            '''
-        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
-
-        return driver
-    except WebDriverException as e:
-        print(f"Error setting up the WebDriver: {e}")
-        return None
-
-
-
-
-
-def fetch_products(page: int) -> Dict:
-
-    # API 요청을 위한 URL 및 기본 파라미터
-
-
-
-    headers = {
-        "authority": "www.kohls.com",
-        "method": "GET",
-        "scheme": "https",
-        "accept": "application/json, text/javascript, */*; q=0.01",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "referer": "https://www.kohls.com/catalog/womens-shirts-blouses-tops-clothing.jsp",
-        "sec-ch-ua": '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
-        "x-requested-with": "XMLHttpRequest"
-    }
-
-    # 요청 파라미터 템플릿
-    payload = {
-        "CN": "Gender:Womens Product:Shirts & Blouses Category:Tops Department:Clothing",
-        "cc": "wms-TN3.0-S-shirtsblouses",
-        "kls_sbp": "05864698454350754950882754362888169186",
-        "spa": "1",
-        "PPP": "48",
-        "WS": 0,  # WS 값 변경
-        "S": "1",
-        "ajax": "true",
-        "gNav": "false"
-    }
-
-    """
-    특정 WS 값을 사용하여 요청을 보내고 데이터를 가져옴.
-    :param ws_value: 변경할 WS 값 (0, 48, 96, ...)
-    :return: JSON 데이터에서 'totalRecordsCount'와 'products' 리스트를 반환
-    """
-    payload["WS"] = page * 48
-
-    response = sess.get(baseUrl, params=payload, headers=headers, timeout=10)
-
-    if response.status_code == 200:
-        data = response.json()
-        return {
-            "totalRecordsCount": data.get("totalRecordsCount", 0),
-            "products": data.get("products", [])
-        }
+    # 첫 번째 이미지 가져오기 (srcset에서 가장 큰 해상도 URL 추출)
+    main_image_element = soup.select_one(".pdp-large-hero-image img")
+    if main_image_element and "srcset" in main_image_element.attrs:
+        product_details['product_img_1'] = main_image_element["srcset"].split(",")[0].split(" ")[0]
     else:
-        print(f"Failed to fetch data for WS={page}. Status Code: {response.status_code}")
-        return {"totalRecordsCount": 0, "products": []}
+        product_details['product_img_1'] = main_image_element["src"] if main_image_element else ""
 
+    # 대체 이미지 가져오기 (video 클래스 제외)
+    product_details['product_img_2'] = ""
+    product_details['product_img_3'] = ""
+    product_details['product_img_4'] = ""
+
+    image_elements = soup.select(".pdp-large-alt-images .large-alt-image:not(.video) img")
+    for idx, img in enumerate(image_elements[:3]):
+        product_details[f'product_img_{idx + 2}'] = img["src"]
+
+    return product_details
+
+def get_products_from_page(driver, url):
+    driver.get(url)
+    time.sleep(3)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    product_list = []
+    product_elements = soup.select("#productsContainer > li")
+
+    for product in product_elements:
+        try:
+            product_id = product.get("data-id", "")
+            product_element_id = product.get("id", "")
+
+            if not product_element_id or "scroll_id_" not in product_element_id:
+                continue
+
+            product_name_tag = product.select_one(".products-container-right .prod_nameBlock p")
+            product_name = product_name_tag.get_text(strip=True) if product_name_tag else ""
+
+            product_link_element = product.select_one(".prod_img_block > a")
+            product_url = product_link_element["href"] if product_link_element else ""
+            if product_url and not product_url.startswith("https://www.kohls.com"):
+                product_url = "https://www.kohls.com" + product_url
+
+            product_details = get_product_details(driver, product_url)
+
+            product_data = {
+                "product_id": product_id,
+                "product_name": product_name,
+                "product_url": product_url,
+                **product_details
+            }
+
+            product_list.append(product_data)
+            print(product_data)
+            time.sleep(3)
+            break
+        except Exception as e:
+            print(f"Error processing product: {e}")
+            continue
+
+    return product_list
 
 def main():
+    base_url = "https://www.kohls.com/catalog/womens-shirts-blouses-tops-clothing.jsp?CN=Gender:Womens+Product:Shirts%20%26%20Blouses+Category:Tops+Department:Clothing"
 
-    # driver = _setup_driver()
-    # driver.get(baseUrl)
-    # cookies = driver.get_cookies()
-    # for cookie in cookies:
-    #     sess.cookies.set(cookie['name'], cookie['value'])
-    # driver.quit()
+    driver = setup_driver()
+    total_cnt = get_total_count(driver, base_url)
+    total_pages = (total_cnt // 48) + (1 if total_cnt % 48 > 0 else 0)
 
+    products = []
+    for page in range(total_pages):
+        ws_value = page * 48
+        page_url = f"{base_url}&WS={ws_value}"
+        print(f"Scraping page {page + 1} - {page_url}")
 
+        page_products = get_products_from_page(driver, page_url)
+        if not page_products:
+            break
 
-    """
-    메인 실행 함수
-    - WS 값을 0, 48, 96씩 증가시키면서 데이터 가져오기
-    - totalRecordsCount 저장
-    - products 리스트 수집
-    """
-    all_products: List[Dict] = []
-    total_records = 0
+        products.extend(page_products)
 
-    for ws in range(0, 47):  # 1부터 47까지 반복
-        result = fetch_products(ws)
-        if ws == 0:
-            total_records = result["totalRecordsCount"]
-        all_products.extend(result["products"])
-        time.sleep(2)
+    driver.quit()
 
-    print(f"Total Records Count: {total_records}")
-    print(f"Total Products Collected: {len(all_products)}")
-
-    # 결과 출력 (일부만 표시)
-    for product in all_products[:5]:  # 처음 5개만 출력
-        print(json.dumps(product, indent=4, ensure_ascii=False))
-
+    for product in products:
+        print(product)
+        time.sleep(3)
 
 if __name__ == "__main__":
     main()

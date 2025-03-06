@@ -1,11 +1,11 @@
 {
   "props": {
     "pageProps": {
-      "id": 107967948,
+      "id": 108238888,
       "fetchError": null,
       "data": {
         "viewData": {
-          "recruitNo": 107967948,
+          "recruitNo": 108238888,
           "tempIdx": 0,
           "postStatus": {
             "key": "OPEN",
@@ -16,19 +16,19 @@
           "recruitStatusExtra": 0,
           "deleted": false,
           "closeStat": false,
-          "closingDateTime": "2025-03-11 00:00:00",
+          "closingDateTime": "2025-03-25 00:00:00",
           "deadlineDate": "상시모집",
           "closingDateTerm": "",
           "closingDateTermNum": -1,
           "allTime": true,
-          "registDateTime": "2025-02-19 00:24:30",
-          "firstRegistDateTime": "2025-02-19 00:23:26",
-          "modifyDateTime": "2025-02-20 21:25:03",
-          "firstPostDateTime": "2025-02-19 00:25:00",
-          "recruitTitle": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
-          "recruitCompanyName": "김억삼포차",
-          "recruitMemberCount": "0",
-          "numberOfApplicants": "0명(인원미정)",
+          "registDateTime": "2025-03-05 09:50:58",
+          "firstRegistDateTime": "2025-03-05 09:49:28",
+          "modifyDateTime": "2025-03-06 21:51:03",
+          "firstPostDateTime": "2025-03-05 09:51:00",
+          "recruitTitle": "휘트니스센터 팀장급 정규직 직원 모집합니다 /06~15시",
+          "recruitCompanyName": "㈜센트리얼 옥수점",
+          "recruitMemberCount": "1",
+          "numberOfApplicants": "1명",
           "recruitViewCount": 0,
           "easyGiStat": 0,
           "simpleRecruitStatus": false,
@@ -38,113 +38,147 @@
             "value": 1,
             "description": "유료"
           },
-          "photoType": "G",
+          "photoType": "C",
           "useCompanyPhoto": false,
           "recruitImages": {
             "photoType": {
-              "key": "RECRUIT_PHOTO",
-              "value": 1,
-              "description": "공고사진"
+              "key": "COMPANY_PHOTO",
+              "value": 2,
+              "description": "기업사진"
             },
             "photos": [
+              {
+                "imageUrl": "https://coimg.jobkorea.co.kr/Company/Visual_Co/images/2019/10/JK_CO_centrealos_1.jpg",
+                "imageTitle": "2019-10-31",
+                "imageRegistDate": "2019-10-31T07:49:29",
+                "imageSequenceNumber": {
+                  "key": "FIRST",
+                  "value": 1,
+                  "description": "첫번째 이미지"
+                }
+              },
+              {
+                "imageUrl": "https://coimg.jobkorea.co.kr/Company/Visual_Co/images/2019/10/JK_CO_centrealos_2.jpg",
+                "imageTitle": "2019-10-31",
+                "imageRegistDate": "2019-10-31T07:49:35",
+                "imageSequenceNumber": {
+                  "key": "SECOND",
+                  "value": 2,
+                  "description": "두번째 이미지"
+                }
+              },
+              {
+                "imageUrl": "https://coimg.jobkorea.co.kr/Company/Visual_Co/images/2019/10/JK_CO_centrealos_3.jpg",
+                "imageTitle": "2019-10-31",
+                "imageRegistDate": "2019-10-31T07:49:39",
+                "imageSequenceNumber": {
+                  "key": "THIRD",
+                  "value": 3,
+                  "description": "세번째 이미지"
+                }
+              },
+              {
+                "imageUrl": "https://coimg.jobkorea.co.kr/Company/Visual_Co/images/2019/10/JK_CO_centrealos_4.jpg",
+                "imageTitle": "2019-10-31",
+                "imageRegistDate": "2019-10-31T07:49:43",
+                "imageSequenceNumber": {
+                  "key": "FOURTH",
+                  "value": 4,
+                  "description": "네번째 이미지"
+                }
+              }
             ],
-            "videos": null
+            "videos": [
+            ]
           },
           "area": {
-            "value": "I000",
-            "description": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층"
+            "value": "I230",
+            "description": "서울 성동구 독서당로40길 39 (옥수동, 옥수 어울림) 어울림더리버상가 B1 센트리얼휘트니스 옥수점"
           },
-          "workingAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
-          "publishAreaDongCode": "",
-          "latitude": 37.55084991455078,
-          "longitude": 126.9222412109375,
-          "addressLatitude": 304966,
-          "addressLongitude": 550390,
+          "workingAddress": "서울 성동구 독서당로40길 39 (옥수동, 옥수 어울림) 어울림더리버상가 B1 센트리얼휘트니스 옥수점",
+          "publishAreaDongCode": "I2300650",
+          "latitude": 37.541683197021484,
+          "longitude": 127.01798248291016,
+          "addressLatitude": 313414,
+          "addressLongitude": 549280,
           "autoMatchExceptionId": false,
           "subwayAutoMatch": true,
           "universityAutoMatch": true,
           "station": [
             {
+              "line": "3호선",
+              "description": "옥수",
+              "walking": "도보 1분",
+              "subwayCode": "103",
+              "stationCode": "70105",
+              "lineIcon": "icon_metro_line3",
+              "stationExitNumber": "",
+              "stationExitDescription": "",
+              "stationDistanceCode": 101,
+              "stationDistanceWalkingMinute": 1
+            },
+            {
+              "line": "3호선",
+              "description": "금호",
+              "walking": "도보 12분",
+              "subwayCode": "103",
+              "stationCode": "10325",
+              "lineIcon": "icon_metro_line3",
+              "stationExitNumber": "",
+              "stationExitDescription": "",
+              "stationDistanceCode": 108,
+              "stationDistanceWalkingMinute": 12
+            },
+            {
               "line": "6호선",
-              "description": "상수",
-              "walking": "도보 6분",
+              "description": "버티고개",
+              "walking": "도보 19분",
               "subwayCode": "106",
-              "stationCode": "10625",
+              "stationCode": "10616",
               "lineIcon": "icon_metro_line6",
               "stationExitNumber": "",
               "stationExitDescription": "",
-              "stationDistanceCode": 104,
-              "stationDistanceWalkingMinute": 6
-            },
-            {
-              "line": "2호선",
-              "description": "합정",
-              "walking": "도보 10분",
-              "subwayCode": "102",
-              "stationCode": "10235",
-              "lineIcon": "icon_metro_line2",
-              "stationExitNumber": "",
-              "stationExitDescription": "",
-              "stationDistanceCode": 107,
-              "stationDistanceWalkingMinute": 10
-            },
-            {
-              "line": "2호선",
-              "description": "홍대입구",
-              "walking": "도보 10분",
-              "subwayCode": "102",
-              "stationCode": "10236",
-              "lineIcon": "icon_metro_line2",
-              "stationExitNumber": "",
-              "stationExitDescription": "",
-              "stationDistanceCode": 107,
-              "stationDistanceWalkingMinute": 10
+              "stationDistanceCode": 113,
+              "stationDistanceWalkingMinute": 19
             }
           ],
           "universities": [
             {
-              "universityCode": "I660",
-              "universityName": "홍익대학교(서울캠퍼스)",
-              "universityStreetCode": "104",
-              "walkingMinute": 6,
-              "value": "홍익대학교(서울캠퍼스)",
-              "description": "도보6분"
-            },
-            {
-              "universityCode": "I260",
-              "universityName": "서강대학교",
-              "universityStreetCode": "119",
-              "walkingMinute": 28,
-              "value": "서강대학교",
-              "description": "도보28분"
-            },
-            {
-              "universityCode": "I480",
-              "universityName": "연세대학교(신촌캠퍼스)",
+              "universityCode": "I380",
+              "universityName": "한국폴리텍Ⅰ(서울정수)",
               "universityStreetCode": "120",
               "walkingMinute": 30,
-              "value": "연세대학교(신촌캠퍼스)",
+              "value": "한국폴리텍Ⅰ(서울정수)",
+              "description": "도보30분"
+            },
+            {
+              "universityCode": "I160",
+              "universityName": "동국대학교(서울캠퍼스)",
+              "universityStreetCode": "120",
+              "walkingMinute": 30,
+              "value": "동국대학교(서울캠퍼스)",
               "description": "도보30분"
             }
           ],
           "part": [
             {
-              "value": "1123",
-              "description": "주방보조·설거지"
+              "value": "2121",
+              "description": "매장관리·판매"
             },
             {
-              "value": "1010",
-              "description": "일반음식점"
+              "value": "2135",
+              "description": "피트니스·스포츠"
             },
             {
-              "value": "1121",
-              "description": "서빙"
+              "value": "6010",
+              "description": "사무보조"
             }
           ],
-          "jobFieldInputStatus": true,
-          "jobField": "홀, 주방",
+          "jobFieldInputStatus": false,
+          "jobField": null,
           "employmentType": [
-            {"key": "FULL_TIME",
+            {
+              "key": "FULL_TIME",
               "value": 2,
               "description": "정규직"
             },
@@ -165,8 +199,8 @@
           "ageYouthAvailable": false,
           "oldAge": false,
           "workPeriod": {
-            "value": "48",
-            "description": "1년이상"
+            "value": "45",
+            "description": "6개월~1년"
           },
           "workTermTopDescription": "장기",
           "workTermStartDate": null,
@@ -174,25 +208,28 @@
           "workTermDescription": null,
           "workTermConsult": true,
           "workDays": {
-            "value": "50",
-            "description": "요일협의"
+            "value": "70",
+            "description": "주5일"
           },
-          "workWeek": null,
-          "workWeekEtc": "주5일 평일 2일 휴무",
+          "workWeek": {
+            "value": "mon,tue,wed,thu,fri",
+            "description": "월, 화, 수, 목, 금"
+          },
+          "workWeekEtc": "",
           "workHour": {
             "value": "40",
             "description": ""
           },
-          "workTimeDetail": "18:00~06:00(익일)",
-          "workStartTime": "18:00",
-          "workEndTime": "06:00",
-          "workTimeOption": null,
+          "workTimeDetail": "06:00~15:00",
+          "workStartTime": "06:00",
+          "workEndTime": "15:00",
+          "workTimeOption": "휴게시간 60분",
           "workTimeConsult": false,
           "workTimeOpt": "",
           "educationLevels": [
             {
-              "value": "0",
-              "description": "학력무관"
+              "value": "40",
+              "description": "대학(2,3년제) 졸업 이상"
             }
           ],
           "educationRequirementUniversityStudent": false,
@@ -202,87 +239,44 @@
             "description": "월급"
           },
           "salaryDescription": "월급",
-          "salary": 3000000,
+          "salary": 2100000,
           "payEtcInfo": [
-            "협의가능",
-            "수습기간있음"
+            "협의가능"
           ],
           "salaryConsult": true,
-          "extraSalary": "300~급여협의",
+          "extraSalary": "+@ 인센티브 지급제",
           "holidaySalaryStatus": 0,
           "salaryFranchise": null,
           "salaryCalculatorSalaryType": "4",
-          "salaryCalculatorWorkDay": 0,
-          "salaryCalculatorRealWorkTime": "12.0",
-          "salaryCalculatorWorkTime": 12,
+          "salaryCalculatorWorkDay": 5,
+          "salaryCalculatorRealWorkTime": "9.0",
+          "salaryCalculatorWorkTime": 8,
           "applyType": [
-            "ONLINE_APPLY",
-            "SMS_APPLY"
+            "ONLINE_APPLY"
           ],
           "applyOnlineStatus": true,
           "applyEmailStatus": false,
           "applyHomepageStatus": false,
-          "applySmsStatus": true,
-          "applySmsForm": "이름/성별/주방 직원, 홀 직원/면접가능날짜",
-          "applyEasySmsStatus": true,
+          "applySmsStatus": false,
+          "applySmsForm": null,
+          "applyEasySmsStatus": false,
           "applyTellStatus": false,
           "applyVisitStatus": false,
           "applyEtcPossibleStatus": false,
           "applyPossibleStatue": true,
           "passCorpFormFlag": false,
           "applyFormFile": null,
-          "smsApplyDescription": "이름/성별/주방 직원, 홀 직원/면접가능날짜",
+          "smsApplyDescription": "",
           "myApplyType": null,
           "myEtcApplyType": null,
           "applyStatisticsDisplayStatus": true,
-          "preferences": "",
-          "preferenceCondition": "",
-          "additionalPreferenceCondition": "0010100000",
+          "preferences": "영어 가능, 운전 가능, 인근 거주 우대",
+          "preferenceCondition": "12,36",
+          "additionalPreferenceCondition": "0110000000",
           "beginnerAvailableStatus": true,
           "possibleWorkWithFriend": false,
           "trainee": false,
-          "welfareBenefits": [
-            {
-              "value": "10",
-              "description": "국민연금"
-            },
-            {
-              "value": "20",
-              "description": "고용보험"
-            },
-            {
-              "value": "30",
-              "description": "산재보험"
-            },
-            {
-              "value": "40",
-              "description": "건강보험"
-            },
-            {
-              "value": "140",
-              "description": "휴일근로수당"
-            },
-            {
-              "value": "300",
-              "description": "연장근로수당"
-            },
-            {
-              "value": "120",
-              "description": "우수사원 표창/포상"
-            },
-            {
-              "value": "200",
-              "description": "조식 제공"
-            },
-            {
-              "value": "210",
-              "description": "중식 제공"
-            },
-            {
-              "value": "220",
-              "description": "석식 제공"
-            }
-          ],
+          "welfareBenefits": null,
           "passQuestionCount": 0,
           "previousQuestion": null,
           "preQuestionRegistStatus": 0,
@@ -295,60 +289,53 @@
           "authenticationTags": [
             {
               "value": "1",
-              "description": "근로계약서 작성 약속"
-            },
-            {
-              "value": "1",
               "description": "기업인증 완료여부"
-            },
-            {"value": "1",
-              "description": "성희롱예방교육 수료여부"
             }
           ],
-          "sexualHarassmentPreventionEducationStatus": true,
+          "sexualHarassmentPreventionEducationStatus": false,
           "certificationMarkStatus": true,
-          "laborContractWriteStatus": 1,
+          "laborContractWriteStatus": 3,
           "unfitRecruitCheck": 0,
           "logisticsCompanyStatus": false,
           "logisticsCompanyName": null,
           "carBuyGuide": false,
           "consignor": false,
-          "companyId": "d1qfR322-h_GMm6vZLJj8A==",
+          "companyId": "HVYgmef8NBiXjHGca8tVAg==",
           "franchiseCode": 0,
           "memberNo": 0,
           "corpCode": 0,
-          "companyName": "김억삼포차",
+          "companyName": "(주)센트리얼 옥수점",
           "brandKeyword": null,
           "businessItem": null,
-          "companyAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
+          "companyAddress": "서울 성동구 독서당로40길 39 (옥수동, 옥수 어울림) 어울림더리버상가 B1 센트리얼휘트니스 옥수점",
           "companyHomepage": null,
-          "logoPath": "",
+          "logoPath": "https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2017\\12\\29\\2j7v5j0lRx_0K2i2c2o6pgkY0I0_-2.jpg?hash=r",
           "companyLogo": null,
           "favoriteCorporationTotalCount": 0,
           "myFavoriteCorporationTotalCount": 0,
-          "recruiterKey": "wUrPKuattSmXfpt5jvgzVYWAWgRgVp34GrCqF4p++sH9KYIasn5a5iUP7axf6Dpe/y6qcl9r6zk2daF+BOXYdWnBBJ3dKORIUodhAi7z0GJ2FwEHL7r2Z6zDzaH+ZR/TDYlwNCiS1/URmOT7Imn6hP0s6kmDeyoY73nt9RjmMf0ukE8lIm5xlUhQ7c+xjR53Hx/+7NnekKrst3n7LJj7T/lnm3k0SrBT6qmhKJrCgUmCNGTqINyRy+5M8KLwDy3IKmlmsEZ7Nllq8Mdw6tueeyPthT6J6qlh4GcMXYLOHoqLEuzUB5WgXj+1xd7TuXUT",
-          "recruiter": "김한상",
+          "recruiterKey": "XA9bQlToSdx2LadnPFZXMLDz+a/ulOTm4njA0FErSPxA3R6o+sjRfV8Z6iSGZq3qCpPJMM0bG1BMLVWnQJg7i3UhJ2mwScrwVupK5+VjzbRcxb0qShzj6/ig2VWs4DQiRCeFqhzO2PUGmf+iP+IJofW02X0Hc4d3f7C1z4OE5HnJVdXJN20BrhhdQegJpD5A9NU79/YMZNBSgGEvhgxd4UBFDS7TSx6754M6mQtYsR4J5VuHDVf3bka3WiM1Vl08WNaevMbvaGI7uX5bGMoy0qawV45MO525iNU76dvbu3903K9QcBIqbP1Q79aGGW4jVDkjcslL84srI1SMLEgu1A",
+          "recruiter": "매니저",
           "managerContactPrivateStatus": false,
           "managerContactExtraPrivateStatus": false,
           "phoneNumber": null,
           "managerEmail": null,
           "managerEmailPrivateStatus": false,
-          "managerFax": "",
+          "managerFax": "0222936777",
           "recruitUrl": "",
           "safeNumberStatus": null,
           "nonMembersPassword": null,
           "userIpAddress": null,
           "albamonAppNo": 0,
-          "mobileDate": "2025-02-19 00:24:30",
-          "amAppDt": "2025-02-20 21:24:30",
-          "pcSortDate": "2025-02-20 21:24:30",
+          "mobileDate": "2025-03-05 09:50:58",
+          "amAppDt": "2025-03-06 21:50:58",
+          "pcSortDate": "2025-03-06 21:50:58",
           "jobkoreaRecruit": false,
           "jobKoreaRecruitNo": null,
           "jobKoreaGno": null,
           "jobKoreaRecruitPay": null,
           "scrap": false,
           "crawlingBlock": false,
-          "shareKey": "66f75cc",
+          "shareKey": "6739828",
           "optionTotalStat": 1,
           "mealOfferState": "0",
           "hasReport": false,
@@ -374,27 +361,27 @@
           "grandLogoName": "",
           "bannerLogoName": "",
           "themeAlbaType": null,
-          "companyLogoUseStatus": false,
+          "companyLogoUseStatus": true,
           "recruitLogoImagePath": "",
           "companyLogoFileName": null,
           "headlineImageName": null,
           "preferenceLicense": "",
-          "recessMinute": 0,
-          "employContractWritePromiseStatus": 1,
+          "recessMinute": 60,
+          "employContractWritePromiseStatus": 0,
           "jobTypeNameGaTag": [
-            "주방보조·설거지",
-            "일반음식점",
-            "서빙"
+            "매장관리·판매",
+            "피트니스·스포츠",
+            "사무보조"
           ],
-          "workTermGaTag": "48",
-          "publishAreaGaTag": "서울 전체",
+          "workTermGaTag": "45",
+          "publishAreaGaTag": "서울 종로구 종로3가",
           "employmentTypeGaTag": [
             "계약직",
             "정규직"
           ],
           "preview": false,
           "applicantCount": null,
-          "publishAreaCode": "I000",
+          "publishAreaCode": "I230",
           "albamonZ": false,
           "albamonZApply": false,
           "reviewSummary": null,
@@ -403,9 +390,9 @@
           "naverRecruitInfo": {
             "@context": "http://schema.org",
             "@type": "JobPosting",
-            "title": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
-            "datePosted": "2025-02-19",
-            "validThrough": "2025-03-11",
+            "title": "휘트니스센터 팀장급 정규직 직원 모집합니다 /06~15시",
+            "datePosted": "2025-03-05",
+            "validThrough": "2025-03-25",
             "employmentType": [
               "FULL_TIME",
               "CONTRACTOR"
@@ -416,55 +403,57 @@
                 "@type": "Place",
                 "address": {
                   "@type": "PostalAddress",
-                  "streetAddress": "잔다리로 8 (서교동, 화진빌딩) 1,2층",
-                  "addressLocality": "마포구",
+                  "streetAddress": "독서당로40길 39 (옥수동, 옥수 어울림) 어울림더리버상가 B1 센트리얼휘트니스 옥수점",
+                  "addressLocality": "성동구",
                   "addressRegion": "서울",
                   "addressCountry": "대한민국"
                 }
               }
             ],
-            "description": "김억삼포차에서 채용을 진행합니다. \n 업직종:주방보조·설거지,일반음식점,서빙 \n 근무기간:1년이상 \n 복리후생:국민연금,고용보험,산재보험,건강보험,휴일근로수당,연장근로수당,우수사원 표창/포상,조식 제공,중식 제공,석식 제공",
+            "description": "(주)센트리얼 옥수점에서 채용을 진행합니다. \n 업직종:매장관리·판매,피트니스·스포츠,사무보조 \n 근무기간:6개월~1년 \n 우대조건:영어가능,운전가능,인근거주우대",
             "baseSalary": {
               "@type": "MonetaryAmount",
               "currency": "KRW",
               "value": {
                 "@type": "QuantitativeValue",
-                "value": 3000000,
+                "value": 2100000,
                 "unitText": "MONTH"
               }
             },
             "workHours": "풀타임",
+            "educationRequirements": "초대졸",
             "hiringOrganization": {
               "@type": "Organization",
-              "name": "김억삼포차"
+              "name": "㈜센트리얼 옥수점",
+              "logo": "https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2017\\12\\29\\2j7v5j0lRx_0K2i2c2o6pgkY0I0_-2.jpg?hash=r"
             }
           },
           "showPopularRecruitTicker": false,
           "isChatResponseRateHighRecruit": false,
           "applyNo": null,
           "isChatResponseSetting": false,
-          "content": "\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e채용 정보\u003cbr\u003e\u003cbr\u003e홀직원 / 주4일 230만원\u003cbr\u003e홀직원 / 주5일 270만원\u003cbr\u003e홀직원 / 주6일 310만원\u003cbr\u003e\u003cbr\u003e\u0026nbsp;\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e주방직원 / 주4일 260만원 (수습기간 1~3개월)\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e주방직원 / 주5일 300만원 (수습기간 1~3개월)\u003cbr\u003e주방직원 / 주6일 340만원 (수습기간 1~3개월)\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e※주방 경우 만들어보고싶은 음식.\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e자기개발에 도움될수있도록\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;발주목록에 추가하여 만들수 있는 기회 제공\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;열정이 있다면 좋은 기회라고 생각합니다\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e\u0026nbsp;\u003c/p\u003e\u003cp style=\"-webkit-text-stroke-width:0px;color:rgb(23, 23, 23);font-family:\u0026quot;Pretendard Variable\u0026quot;, -apple-system, BlinkMacSystemFont, \u0026quot;Apple SD Gothic Neo\u0026quot;, \u0026quot;Malgun Gothic\u0026quot;, \u0026quot;맑은 고딕\u0026quot;, arial, sans-serif;font-size:16px;font-style:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-weight:400;letter-spacing:normal;margin:0px;orphans:2;padding:0px;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;\"\u003e※격주로 5일,6일 번갈아가면서 근무 가능합니다\u003cbr\u003e\u003cbr\u003e[적응 기간에 따라 수습기간 단축 가능합니다]\u003cbr\u003e[급여 더 원할경우 추가근무 가능]\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e-근무시간 : 평일 오후 7시~새벽5시\u003cbr\u003e금,토 : 오후 6시~새벽6시.\u003cbr\u003e공휴일 전날,당일 오후 6시~새벽5시\u003cbr\u003e\u003cbr\u003e(오픈조는 평일 1시간 일찍출퇴근,\u003cbr\u003e주말 1, 2시간 일찍 출퇴근\u003cbr\u003e번갈아가면서 오픈조 수행 )\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e출근후, 퇴근전 식사제공 / 근무중 휴게시간 미포함 별도로 30분 휴게시간 부여\u003cbr\u003e※휴게시간은 지켜드립니다.\u003cbr\u003e\u003cbr\u003e-복지 : 4대보험, 명절보너스, 포상보너스.생일보너스 등등\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e[승진]\u003cbr\u003e\u003cbr\u003e-매니져 : 통상 1-2년 후엔 홀 또는 주방을 책임지는 매니져가 되시고, 그에 따라 급여가 20-40만원 상승됩니다. 아울러 매니져가 되시면(되지 않더라도 입사 2년이 지나면) 창업 투자의 기회도 얻을 수 있습니다.\u003cbr\u003e\u003cbr\u003e-팀장 : 통상 매니져를 1-2년간 하시면 한 매장을 맡아서 운영하실 수 있는 팀장이 되시고, 그에 따라 급여가 30-50만원 상승됩니다.\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e지원은 010-9342-4730 번호로\u003cbr\u003e예)주방직원/23살/ 주 5일 면접지원\u003cbr\u003e보내주시면 면접 스케줄 조율후 면접 진행가능 하십니다 !\u003cbr\u003e\u003cbr\u003e연락 기다리겠습니다!\u003c/p\u003e"
+          "content": "\u003cdiv class=\"regDetailView regDetailView_v2\"\u003e\u003cdiv class=\"tempArea tempType_72\"\u003e\u003cdiv class=\"tempColor_14\"\u003e\u003cdiv class=\"tempTop\" name=\"GIView_Contents_v\" data-description=\"false\"\u003e\u003cp class=\"bLogo\"\u003e\u003cimg src=\"https://contents.albamon.kr/monimg/msa/assets/images/recruit/template/albamon_logo.svg\" alt=\"알바몬\"\u003e\u003c/p\u003e\u003cdiv class=\"visual\" id=\"GIView_ContentsType\"\u003e\u003cp\u003e\u003cspan class=\"dLogo_v2\"\u003e\u003cimg src=\"https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2017/12/29/JK_CO_centrealos.jpg\" alt=\"㈜센트리얼 옥수점\"\u003e\u003c/span\u003e\u003c/p\u003e\u003cdiv class=\"dTit\"\u003e\u003cp\u003e\u003cspan style=\"background-color:hsl(0,0%,0%);\"\u003e휘트니스센터 팀장급\u0026nbsp;\u003c/span\u003e\u003cbr\u003e\u003cspan style=\"background-color:hsl(0,0%,0%);\"\u003e정규직 직원 모집합니다.\u003c/span\u003e\u003c/p\u003e\u003c/div\u003e\u003cp class=\"dPic\"\u003e\u003cimg src=\"https://contents.albamon.kr/monimg/msa/assets/images/recruit/template/top-image/view/72.png\"\u003e\u003c/p\u003e\u003c/div\u003e\u003cdiv class=\"addDescription\"\u003e\u003cp\u003e저희 센트리얼 휘트니스는 헬스/필라테스/GX/골프가 모두 가능한 대형 휘트니스 센터입니다.\u0026nbsp;\u003cbr\u003e경력이 없어도 쉽게 적응하실 수 있는 업무이며, 철저하게 업무 분장이 되어 있어 연장 및 야근 없습니다.\u003cbr\u003e또한, 운동을 좋아하시거나, 배우고 싶으신 분들에게 좋은 기회가 될 수 있으니 주저말고 지원해주세요!!\u0026nbsp;\u003cbr\u003e외부홍보 일절 없으며, 회원 및 매장관리만 철저하게 해주시면 됩니다.\u003cbr\u003e\u0026nbsp;\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e\u003cdiv class=\"tempSec tempRecruit\" name=\"GIView_Contents_v\"\u003e\u003cdiv class=\"sTempTit\" id=\"GIView_ContentsType\"\u003e\u003cspan class=\"tIcon\"\u003e\u003c/span\u003e모집부문\u003c/div\u003e\u003cdiv class=\"txtWp\"\u003e\u003ctable class=\"tempTbl\"\u003e\u003ccaption class=\"skip\"\u003e모집 부문\u003c/caption\u003e\u003ccolgroup\u003e\u003ccol style=\"width:30%;\"\u003e\u003ccol\u003e\u003c/colgroup\u003e\u003cthead\u003e\u003ctr\u003e\u003cth scope=\"col\"\u003e\u003cp\u003e모집분야\u003c/p\u003e\u003c/th\u003e\u003cth scope=\"col\"\u003e\u003cp\u003e담당업무 및 자격요건\u003c/p\u003e\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003cp\u003e정규직\u003c/p\u003e\u003c/td\u003e\u003ctd\u003e\u003cp\u003e평일 06:00 ~ 15:00 (휴게시간 60분)\u003cbr\u003e성별 : 여자/여자탈의실 관리 있어 여자만 가능\u003cbr\u003e급여 2,100,000원+@(평균 50만원정도)\u003c/p\u003e\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e\u003c/div\u003e\u003c/div\u003e\u003cdiv class=\"tempSec tempWork\" name=\"GIView_Contents_v\"\u003e\u003cdiv class=\"sTempTit\" id=\"GIView_ContentsType\"\u003e\u003cspan class=\"tIcon\"\u003e\u003c/span\u003e근무조건\u003c/div\u003e\u003cdiv class=\"txtWp\"\u003e\u003cp\u003e1. 모집분야 : \u0026nbsp;\u003cbr\u003e[평일 오픈 팀장]\u003c/p\u003e\u003cp\u003e\u0026nbsp; 1) 근무요일 : 주5일( 월~금/토일휴무)\u003cbr\u003e\u0026nbsp; 2) 근무시간 : \u0026nbsp;14:00 ~ 23:00 (휴게시간 60분)\u003cbr\u003e\u0026nbsp; 3) 급여 : 2,100,000원+ @(평균50만원정도)\u003cbr\u003e\u0026nbsp;\u003c/p\u003e\u003cp\u003e2. 자격요건 : 경력 무관\u0026nbsp;\u003cbr\u003e\u0026nbsp; - 직무역량 : 고객지향성, 서비스마인드\u0026nbsp;\u003cbr\u003e\u0026nbsp; - 주요업무 : 매장 및 회원관리, 매장 마감정리\u003cbr\u003e\u0026nbsp; - 우대 : 호텔 및 서비스 관련학과 졸업자, 판매경력자, 휘트니스 경력자, 근거리 거주자\u003c/p\u003e\u003cp\u003e\u0026nbsp;\u003c/p\u003e\u003cp\u003e3. 복지혜택\u003cbr\u003e\u0026nbsp; 1)근무일 전,후 시설 무료이용\u003cbr\u003e\u0026nbsp; 2)카페테리아 무료이용\u003cbr\u003e\u0026nbsp; 3)필라테스 아카데미 수료과정 직원할인\u003cbr\u003e\u0026nbsp; 4)제휴사 할인혜택\u003cbr\u003e\u0026nbsp; 5)4대보험가입선택\u003c/p\u003e\u003cp\u003e\u0026nbsp;\u003c/p\u003e\u003cp\u003e4. 전형절차 : 서류전형 - 면접전형 - 채용확정\u0026nbsp;\u003cbr\u003e\u0026nbsp;1) 각 전형별 합격자에 한해 유선으로 연락함 \u0026nbsp;\u003cbr\u003e\u0026nbsp;2) 지원 시 지원분야와 근무시간을 필히 기재해주세요.\u003c/p\u003e\u003cp\u003e\u0026nbsp;\u003c/p\u003e\u003cp\u003e5. 지원방법\u0026nbsp;\u003cbr\u003e\u0026nbsp;1) 온라인 지원 또는 e-mail 접수 (이력서,자기소개서)\u003cbr\u003e\u0026nbsp;2) 지원 후 문자로 연락주시면 빠른 확인 가능합니다..\u0026nbsp;\u003cbr\u003e\u0026nbsp;3) e-mail : os@centreal.co.kr\u003c/p\u003e\u003cp\u003e\u0026nbsp; \u0026nbsp;***이력서에 사진첨부 필수***\u0026nbsp;\u003c/p\u003e\u003cp\u003e\u0026nbsp;\u003c/p\u003e\u003cp\u003e6. 응시자 유의사항\u0026nbsp;\u003cbr\u003e\u0026nbsp;1) 입사지원서 기재 내용이 허위 사실로 판명될 경우 합격이 취소됩니다.\u0026nbsp;\u003cbr\u003e\u0026nbsp;2) 제출된 서류는 일체 반환하지 않습니다.\u0026nbsp;\u003cbr\u003e\u0026nbsp;3) 접수기간 중이라도 면접 진행 후 채용이 마감될 수 있으며, 즉시 출근 가능자 우대합니다\u0026nbsp;\u003cbr\u003e\u0026nbsp;4) 문의 : 매니저 \u0026nbsp;010-8705-4945\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e\u003c/div\u003e\u003cp class=\"bLogo\"\u003e\u003cimg src=\"https://contents.albamon.kr/monimg/msa/assets/images/recruit/template/albamon_logo.svg\" alt=\"알바몬\"\u003e\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e"
         },
         "companyData": {
-          "companyId": "d1qfR322-h_GMm6vZLJj8A==",
-          "companyName": "김억삼포차",
-          "modifyDate": "2025-02-19",
-          "companyLogoUrl": "https://contents.albamon.kr/monimg/corp/noimg_logo.gif",
-          "representativeName": "김형우",
-          "businessItem": "일반음식점",
+          "companyId": "HVYgmef8NBiXjHGca8tVAg==",
+          "companyName": "㈜센트리얼 옥수점",
+          "modifyDate": "2025-03-05",
+          "companyLogoUrl": "https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2017\\12\\29\\JK_CO_centrealos.jpg",
+          "representativeName": "한상엽, 한상훈",
+          "businessItem": "휘트니스 / 필라테스 / 헬스 / GX / 스피닝 / 아카데미",
           "phoneNumber": "",
           "companyEmail": "",
-          "zipCode": "04041",
-          "address": "서울 마포구 잔다리로 8 (서교동, 화진빌딩)",
-          "detailAddress": "1,2층",
-          "fullAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
-          "addressLatitude": 37.55090904774048,
-          "addressLongitude": 126.92224103095461,
-          "jobTypeName": "음식료·외식·프랜차이즈",
-          "faxNumber": null,
-          "companyHomepage": null,
-          "establishDate": "2019-04-13",
-          "employeeCount": 20,
+          "zipCode": "04739",
+          "address": "서울 성동구 독서당로40길 39 (옥수동, 옥수 어울림)",
+          "detailAddress": "어울림더리버상가 B1 센트리얼휘트니스 옥수점",
+          "fullAddress": "서울 성동구 독서당로40길 39 (옥수동, 옥수 어울림) 어울림더리버상가 B1 센트리얼휘트니스 옥수점",
+          "addressLatitude": 37.54168442723888,
+          "addressLongitude": 127.01798227852098,
+          "jobTypeName": "스포츠·여가·레저",
+          "faxNumber": "0222936777",
+          "companyHomepage": "http://www.centreal.co.kr",
+          "establishDate": "2017-08-11",
+          "employeeCount": 30,
           "companyTypeDescription": {
             "key": "SMALL_COMPANY",
             "value": 1,
@@ -477,12 +466,12 @@
           },
           "capitalAmount": "",
           "salesAmount": null,
-          "businessSummary": null,
-          "businessHistory": null,
+          "businessSummary": "센트리얼은 2000년대 초반 우후죽순생겨났다 기억속으로 사라져 간 수 많은 휘트니스 센터들과 차별화된 문화를 향유할 수 있는 감각적인 종합 엔터테인먼트 공간입니다. 단순히 무미건조하게 운동만을 위해 기계적으로 찾았던 피트니스의 개념을 탈피하고자 센트리얼은 시작부터 끊임없이 혁신적인 사고를 기반으로 적극적인 투자를아끼지 않고 있습니다. 무엇보다 이제는 가족이 된 수많은 셀럽과 수준 높은 고객들이 저희의 가장 큰 자산이라 할 수 있습니다. \r\n\r\nCUSTOMER SATISFACTION IS TOP PRIORITY!\r\n\r\n센트리얼의 모든 가치의 시작과 끝은 고객들을 위해 존재 합니다.아울러 센트리얼은 제2의 혁신적인 도약을 위해 특별한 4가지를 고객분들께 드리고자 합니다 \r\n\r\n01. 단순히 체력단련을 위한 기계적인 트레이닝을 너머선 체계적인 건강관리 와 함께 즐거움을 줄 수있는 입체적이고 다양한 운동 프로그램을 리뉴얼 했습니다. \r\n\r\n02. 심신이 지친 고객 분들에 달콤한 여유와 안락한 휴식을 제공하도록 과학적인 설계를 통해 라운지 공간을 마련 했습니다. \r\n\r\n03. 다양한 여가, 문화생활의 제휴 혜택을 제공할 예정 입니다.고객 분들의 삶의 질을 한단계 높일 수 있도록 외식,공연,의료 등 여러 분야에서 다양한 할인을 준비했습니다. \r\n\r\n04. 국내 최고수준의 능력을 지닌 전문 스텝들의 체계적인 관리를 받으실 수 있습니다. \r\n\r\nPERSISTENT RESEARCH AND DEVELOPMENT",
+          "businessHistory": "CENTREAL HISTORY\r\n\r\n2017 08. 센트리얼휘트니스/필라테스 옥수점 오픈\r\n\r\n2017 01. 센트리얼 아카데미 Level 2 런칭\r\n05. 센트리얼 필라테스 대치점 오픈\r\n(전문 필라테스 / 요가 관리센터)\r\n07.순천향대학교 서울병원 업무협약(MOU) 체결\r\n산부인과 전문의 최규연 교수 센트리얼필라테스 자문위원 위촉\r\n08.머슬마니아 공식후원사 지정\r\n센트리얼 머슬포즈 아카데미 런칭\r\n센트리얼 피트니스 옥수점 오픈\r\n10.센트리얼 필라테스 잠실새내점 오픈\r\n(전문 필라테스 / 요가 관리센터) 2015 11. 센트리얼 필라테스 반포지점 오픈 (기구 전문 필라테스 / 요가관리센터)\r\n10. 필라테스 지도자 교육기관 센트리얼아카데미 오픈\r\n7. 센트리얼 필라테스 선릉점 오픈\r\n(전문 필라테스 / 요가 관리센터) \r\n6.블랙애로우(Black Arrow) 업무협약(MOU)을 체결\r\n5. 코리아뉴스타임즈 업무협약(MOU)을 체결\r\n2015 팀버라인 10K RUN 후원\r\n고양 홀트학교후원\r\n서울의료봉사재단 업무협약(MOU)을 체결 \r\n4. 미래의료재단 미래치과의원 업무협약(MOU)을 체결\r\n국민건강보험공단 공식 미래의료재단 미래치과 금연클리닉 지정업체 선정\r\n3. 태풍엔터테인먼트 MOU 협약\r\n2. 고려대 기술지주회사 자회사 스포츠과학연구소 포티움 MOU 협약\r\n고려대 기술지주회사 자회사 스포츠과학연구소 포티움 자문위원 위촉 2013 12. 글로벌 사이버대학교산학 협약 2011 06.센트리얼 휘트니스 강남 본점 설립 \r\n10.센트리얼 이수지점 오픈\r\n(구 퍼플짐-센트리얼 휘트니스로 상호명 변경) \r\n2004 05. 웰빙 라이프 휘트니스 노원지점 설립 \r\n\r\n\r\n2016 09. 강남본점 리뉴얼 오픈\r\n(7:1필라테스 설치, 골프타석 리뉴얼 외) 2014 12. 센트리얼 필라테스 강남구청점 오픈\r\n(전문 필라테스 / 요가 관리센터) \r\n09. 미래의료재단 산학협약\r\n05. 센트리얼 필라테스 방배 지점 오픈 (전문 필라테스 / 요가관리센터)\r\n소비자만족 1위 업체 선정 (한국 경제)\r\n04.결혼정보회사 “바로연” 산학협약\r\n03.미스코리아 조직위원회 산학협약\r\n한국모델협회 공식브랜드 선정\r\n02. 화이트 메디컬그룹, 결혼정보회사 노블레스 수현 산학협약\r\nMr.K 치과경영연구소 산학협약\r\n2012 05.센트리얼 필라테스 사당 지점 오픈\r\n(전문 필라테스 / 요가 관리센터) \r\n2009 09. 퍼플짐 휘트니스 이수 지점 설립",
           "interestCompanyInfo": {
             "interested": false,
             "myRecruit": false,
-            "interestedTotalCount": 15
+            "interestedTotalCount": 36
           },
           "franchiseCodeSignUp": false,
           "associationName": "",
@@ -493,22 +482,22 @@
           "employmentContractCount": 0,
           "usingService": false,
           "favoriteUserCount": 0,
-          "foundationYears": 6,
-          "companyCertificationDate": "2023-05-08",
+          "foundationYears": 8,
+          "companyCertificationDate": "2023-03-31",
           "companyCertificationState": true,
-          "recruitingCount": 24,
-          "applyReadState": true,
-          "receiveNoticePushState": true,
+          "recruitingCount": 51,
+          "applyReadState": false,
+          "receiveNoticePushState": false,
           "hasNationalPensionState": false,
-          "hasEmploymentInsuranceState": false,
-          "hasIndustrialAccidentInsuranceState": false,
-          "hasNationalPension2State": false,
-          "hasHealthInsuranceState": false,
+          "hasEmploymentInsuranceState": true,
+          "hasIndustrialAccidentInsuranceState": true,
+          "hasNationalPension2State": true,
+          "hasHealthInsuranceState": true,
           "amUseState": true,
-          "amJoinYM": "2019-04",
-          "ecWritePrmsState": true,
+          "amJoinYM": "2017-12",
+          "ecWritePrmsState": false,
           "payslipCompleteCount": 0,
-          "sharasPrvntEduCompleteState": true,
+          "sharasPrvntEduCompleteState": false,
           "isChatResponseRateHighCompany": false,
           "chatResponseRateCompanyCount": 0
         },
@@ -516,9 +505,9 @@
         "naverRecruitInfo": {
           "@context": "http://schema.org",
           "@type": "JobPosting",
-          "title": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
-          "datePosted": "2025-02-19",
-          "validThrough": "2025-03-11",
+          "title": "휘트니스센터 팀장급 정규직 직원 모집합니다 /06~15시",
+          "datePosted": "2025-03-05",
+          "validThrough": "2025-03-25",
           "employmentType": [
             "FULL_TIME",
             "CONTRACTOR"
@@ -529,27 +518,29 @@
               "@type": "Place",
               "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "잔다리로 8 (서교동, 화진빌딩) 1,2층",
-                "addressLocality": "마포구",
+                "streetAddress": "독서당로40길 39 (옥수동, 옥수 어울림) 어울림더리버상가 B1 센트리얼휘트니스 옥수점",
+                "addressLocality": "성동구",
                 "addressRegion": "서울",
                 "addressCountry": "대한민국"
               }
             }
           ],
-          "description": "김억삼포차에서 채용을 진행합니다. \n 업직종:주방보조·설거지,일반음식점,서빙 \n 근무기간:1년이상 \n 복리후생:국민연금,고용보험,산재보험,건강보험,휴일근로수당,연장근로수당,우수사원 표창/포상,조식 제공,중식 제공,석식 제공",
+          "description": "(주)센트리얼 옥수점에서 채용을 진행합니다. \n 업직종:매장관리·판매,피트니스·스포츠,사무보조 \n 근무기간:6개월~1년 \n 우대조건:영어가능,운전가능,인근거주우대",
           "baseSalary": {
             "@type": "MonetaryAmount",
             "currency": "KRW",
             "value": {
               "@type": "QuantitativeValue",
-              "value": 3000000,
+              "value": 2100000,
               "unitText": "MONTH"
             }
           },
           "workHours": "풀타임",
+          "educationRequirements": "초대졸",
           "hiringOrganization": {
             "@type": "Organization",
-            "name": "김억삼포차"
+            "name": "㈜센트리얼 옥수점",
+            "logo": "https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2017\\12\\29\\2j7v5j0lRx_0K2i2c2o6pgkY0I0_-2.jpg?hash=r"
           }
         }
       },
@@ -561,12 +552,12 @@
       "campaignPeriod": false,
       "pageViewData": {
         "dimension28": "일반",
-        "dimension39": "107967948",
-        "dimension40": "주방보조·설거지,일반음식점,서빙",
-        "dimension41": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
-        "dimension42": "서울 전체",
+        "dimension39": "108238888",
+        "dimension40": "매장관리·판매,피트니스·스포츠,사무보조",
+        "dimension41": "휘트니스센터 팀장급 정규직 직원 모집합니다 /06~15시",
+        "dimension42": "서울 종로구 종로3가",
         "dimension43": "계약직,정규직",
-        "dimension44": "1년이상",
+        "dimension44": "6개월~1년",
         "dimension56": "유료(상품)"
       },
       "extraLayoutProps": {
@@ -587,7 +578,7 @@
             "@type": "ListItem",
             "position": 2,
             "name": "채용 공고",
-            "item": "https://www.albamon.com/jobs/detail/107967948"
+            "item": "https://www.albamon.com/jobs/detail/108238888"
           }
         ]
       }
@@ -602,14 +593,14 @@
       "dimension8": "U",
       "dimension21": "U",
       "dimension22": "N",
-      "dimension52": "1740057333.865",
+      "dimension52": "1741266266.405",
       "dimension28": "일반",
-      "dimension39": "107967948",
-      "dimension40": "주방보조·설거지,일반음식점,서빙",
-      "dimension41": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
-      "dimension42": "서울 전체",
+      "dimension39": "108238888",
+      "dimension40": "매장관리·판매,피트니스·스포츠,사무보조",
+      "dimension41": "휘트니스센터 팀장급 정규직 직원 모집합니다 /06~15시",
+      "dimension42": "서울 종로구 종로3가",
       "dimension43": "계약직,정규직",
-      "dimension44": "1년이상",
+      "dimension44": "6개월~1년",
       "dimension56": "유료(상품)"
     }
   },
@@ -617,9 +608,9 @@
   "query": {
     "logpath": "7",
     "productCount": "1",
-    "id": "107967948"
+    "id": "108238888"
   },
-  "buildId": "QgwedfI-CaIb9pnXUpOjn",
+  "buildId": "FJdrrVrSru8tB2i8aLLz_",
   "isFallback": false,
   "dynamicIds": [
     3692,
