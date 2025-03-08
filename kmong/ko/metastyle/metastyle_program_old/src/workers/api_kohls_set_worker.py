@@ -123,7 +123,7 @@ class ApiKohlsSetLoadWorker(QThread):
     def download_images(self, product):
         if product['img_success'] == 'N':
             product_id = product['product_id']
-            category_path = os.path.join(image_folder, site_name, product['category_name'].replace("’", "").replace("/", "_").strip())
+            category_path = os.path.join(image_folder, site_name, product['category_name'].replace("’", "").replace(" / ", "_").strip())
             os.makedirs(category_path, exist_ok=True)
 
             img_urls = [product['product_img_1'], product['product_img_2'], product['product_img_3'], product['product_img_4']]
