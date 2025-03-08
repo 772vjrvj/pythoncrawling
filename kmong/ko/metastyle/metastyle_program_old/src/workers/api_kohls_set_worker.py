@@ -2,6 +2,8 @@ import os
 import re
 import ssl
 import time
+from datetime import datetime
+import json
 
 import pandas as pd
 import psutil
@@ -14,7 +16,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support import expected_conditions as EC
 
 from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
 
@@ -27,7 +28,7 @@ site_name = 'KOHLS'
 excel_filename = ''
 baseUrl = "https://www.kohls.com/"
 db_folder = 'DB'
-file_path = os.path.join(db_folder, f'{site_name}.csv')
+file_path = os.path.join(db_folder, site_name)
 
 # API
 class ApiKohlsSetLoadWorker(QThread):
@@ -58,20 +59,18 @@ class ApiKohlsSetLoadWorker(QThread):
         self.before_pro_value = 0
 
         self.columns = [
+            'category_name', 'category_url',
             'product_id', 'product_name', 'product_url', 'product_title',
             'product_sub_title', 'product_features', 'product_fabric_care',
             'product_img_1', 'product_img_2', 'product_img_3', 'product_img_4',
-            'data_success', 'img_success', 'img_path', 'success', 'error'
+            'data_success', 'img_success', 'img_path', 'success', 'error', 'reg_date',
         ]
-
 
     # 프로그램 실행
     def run(self):
-        global image_main_directory, company_name, site_name, excel_filename, baseUrl
+        global image_main_directory, company_name, site_name, excel_filename, baseUrl, file_path
 
         self.log_signal.emit("크롤링 시작")
-
-        self.csv_product_list = self.load_products()
 
         if self.checked_list:
             self.log_signal.emit("크롤링 사이트 드라이버 세팅중입니다. 잠시만 기다려주세요.")
@@ -79,11 +78,11 @@ class ApiKohlsSetLoadWorker(QThread):
             self.log_signal.emit("크롤링 사이트 드라이버 세팅에 성공했습니다.")
 
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
-            check_obj_list = self.total_cnt_cal()
-            self.total_cnt = sum(int(obj['total_product_cnt']) for obj in check_obj_list)
-            self.total_pages = sum(int(obj['total_page_cnt']) for obj in check_obj_list)
+            self.total_cnt_cal()
+            self.total_cnt = sum(int(obj['total_product_cnt']) for obj in self.checked_list)
+            self.total_pages = sum(int(obj['total_page_cnt']) for obj in self.checked_list)
 
-            self.log_signal.emit(f"전체 항목수 {len(check_obj_list)}개")
+            self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {self.total_cnt} 개")
             self.log_signal.emit(f"전체 페이지수 {self.total_pages} 개")
 
@@ -91,6 +90,9 @@ class ApiKohlsSetLoadWorker(QThread):
                 if not self.running:  # 실행 상태 확인
                     self.log_signal.emit("크롤링이 중지되었습니다.")
                     break
+
+                file_path = checked_model['file_path']
+                self.csv_product_list = self.load_products(file_path)
 
                 self.current_cnt = (int(checked_model['start_page']) - 1) * 48
                 self.current_page = int(checked_model['start_page'])
@@ -105,12 +107,10 @@ class ApiKohlsSetLoadWorker(QThread):
                     
                     ws_value = page * 48
                     page_url = f"{base_url}&WS={ws_value}"
-                    self.get_products_from_page(page_url, checked_model)
-
+                    rs = self.get_products_from_page(page_url, checked_model)
+                    if not rs:
+                        break
                     self.current_page = self.current_page + 1
-
-
-
 
         self.progress_signal.emit(self.before_pro_value, 1000000)
         self.log_signal.emit("=============== 크롤링 종료중...")
@@ -121,44 +121,62 @@ class ApiKohlsSetLoadWorker(QThread):
 
     # 이미지 다운로드 함수
     def download_images(self, product):
-        product_id = product['product_id']
-        category_path = os.path.join(image_folder, site_name, product['category_name'].replace("'", "").replace(" ", "").replace("/", "_").strip())
-        os.makedirs(category_path, exist_ok=True)
+        if product['img_success'] == 'N':
+            product_id = product['product_id']
+            category_path = os.path.join(image_folder, site_name, product['category_name'].replace("’", "").replace("/", "_").strip())
+            os.makedirs(category_path, exist_ok=True)
 
-        img_urls = [product['product_img_1'], product['product_img_2'], product['product_img_3'], product['product_img_4']]
-        img_paths = []
+            img_urls = [product['product_img_1'], product['product_img_2'], product['product_img_3'], product['product_img_4']]
+            img_paths = []
 
-        for idx, img_url in enumerate(img_urls, start=1):
-            if img_url:
-                img_filename = f"{product_id}_{idx}.jpg"
-                img_filepath = os.path.join(category_path, img_filename)
+            for idx, img_url in enumerate(img_urls, start=1):
+                if img_url:
+                    img_filename = f"{product_id}_{idx}.jpg"
+                    img_filepath = os.path.join(category_path, img_filename)
 
-                try:
-                    response = requests.get(img_url, stream=True)
-                    if response.status_code == 200:
-                        with open(img_filepath, 'wb') as f:
-                            for chunk in response.iter_content(1024):
-                                f.write(chunk)
-                        img_paths.append(img_filepath)
-                    else:
-                        self.log_signal.emit(f"이미지 다운로드 실패: {img_url}")
-                except Exception as e:
-                    self.log_signal.emit(f"이미지 다운로드 오류: {e}")
+                    try:
+                        response = requests.get(img_url, stream=True)
+                        if response.status_code == 200:
+                            with open(img_filepath, 'wb') as f:
+                                for chunk in response.iter_content(1024):
+                                    f.write(chunk)
+                            img_paths.append(img_filepath)
+                        else:
+                            self.log_signal.emit(f"이미지 다운로드 실패: {img_url}")
+                    except Exception as e:
+                        self.log_signal.emit(f"이미지 다운로드 오류: {e}")
 
-        product['img_path'] = img_paths
-        if len(img_paths) == 4:
-            product['img_success'] = 'Y'
+            product['img_path'] = img_paths
+            if len(img_paths) >= 1:
+                product['img_success'] = 'Y'
 
         return product
 
 
     # CSV에 새로운 행 추가하는 함수
     def append_to_csv(self, new_rows):
-        df = pd.DataFrame(new_rows, columns=self.columns)  # 명시적으로 컬럼 순서 지정
-        if not os.path.exists(file_path):
-            df.to_csv(file_path, index=False, mode='w', encoding='utf-8-sig')
+        # CSV 파일이 존재하면 로드, 존재하지 않으면 빈 DataFrame 생성
+        if os.path.exists(file_path):
+            df = pd.read_csv(file_path, encoding='utf-8-sig')
         else:
-            df.to_csv(file_path, index=False, mode='a', header=False, encoding='utf-8-sig')
+            df = pd.DataFrame(columns=self.columns)
+
+        # new_rows를 DataFrame으로 변환
+        new_df = pd.DataFrame(new_rows)  # 객체 배열을 DataFrame으로 변환
+
+        for _, row in new_df.iterrows():  # 각 행을 순회하며 업데이트 또는 추가
+            product_id = row["product_id"]
+
+            if product_id in df["product_id"].values:
+                # product_id가 존재하면 해당 행 업데이트
+                df.loc[df["product_id"] == product_id, :] = row
+            else:
+                # 존재하지 않으면 새로운 행 추가
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+
+        # 최종 결과를 CSV 파일에 저장 (덮어쓰기)
+        df.to_csv(file_path, index=False, encoding="utf-8-sig")
+
 
     # 프로그램 중단
     def stop(self):
@@ -278,6 +296,9 @@ class ApiKohlsSetLoadWorker(QThread):
         check_obj_list = []
         for index, checked_obj in enumerate(self.checked_list, start=1):
             name = checked_obj['name']
+
+            checked_obj['file_path'] = f'{file_path}_{name.replace("’", "").replace(" / ", "_").strip()}.csv'
+
             url = self.get_url(name)
 
             total_cnt = self.get_total_count(url)
@@ -290,8 +311,6 @@ class ApiKohlsSetLoadWorker(QThread):
             time.sleep(0.5)
 
         self.log_signal.emit(f"check_obj_list : {check_obj_list}")
-
-        return check_obj_list
 
 
     def get_product_details(self, product_url):
@@ -322,32 +341,26 @@ class ApiKohlsSetLoadWorker(QThread):
         except Exception as e:
             self.log_signal.emit(f"See More 버튼 클릭 실패: {e}")
 
-        # 🔹 FEATURES 목록 추출
+        # FEATURES 섹션 탐색 및 데이터 추출
         product_features = []
-        features_section = soup.find("p", text="FEATURES")
-        if features_section:
-            ul = features_section.find_next_sibling("ul")
-            if ul:
-                product_features = [li.text.strip() for li in ul.find_all("li")]
 
-        if not product_features:
-            features_section = soup.find("p", text="PRODUCT FEATURES")
+        features_sections = [
+            "FEATURES",
+            "PRODUCT FEATURES",
+            "SHORTS FEATURES",
+            "TECHNOLOGIES & FEATURES"
+        ]
+
+        for section_name in features_sections:
+            features_section = soup.find("p", text=section_name)
             if features_section:
                 ul = features_section.find_next_sibling("ul")
                 if ul:
                     product_features = [li.text.strip() for li in ul.find_all("li")]
+                    break  # 첫 번째로 찾은 항목을 저장하고 루프 종료
 
-        product_details['product_features'] = product_features
-
-        # 🔹 FABRIC & CARE 목록 추출
-        fabric_care = []
-        fabric_care_section = soup.find("p", text="FABRIC & CARE")
-        if fabric_care_section:
-            ul = fabric_care_section.find_next_sibling("ul")
-            if ul:
-                fabric_care = [li.text.strip() for li in ul.find_all("li")]
-
-        product_details['product_fabric_care'] = fabric_care
+        # product_features를 JSON 직렬화하여 저장
+        product_details['product_features'] = json.dumps(product_features, ensure_ascii=False) if product_features else "[]"
 
         # 🔹 대표 이미지 (고해상도 srcset에서 첫 번째 이미지 가져오기)
         product_details['product_img_1'] = ""
@@ -449,7 +462,7 @@ class ApiKohlsSetLoadWorker(QThread):
         return product_details
 
 
-    def load_products(self):
+    def load_products(self, file_path):
         if not os.path.exists(file_path):
             self.log_signal.emit(f"파일이 존재하지 않습니다: {file_path}")
             return []
@@ -463,8 +476,8 @@ class ApiKohlsSetLoadWorker(QThread):
                 'product_url': row.get('product_url', ''),
                 'product_title': row.get('product_title', ''),
                 'product_sub_title': row.get('product_sub_title', ''),
-                'product_features': row.get('product_features', '').split('|'),  # 리스트 형태로 변환
-                'product_fabric_care': row.get('product_fabric_care', '').split('|'),  # 리스트 형태로 변환
+                'product_features': row.get('product_features', []),  # 리스트 형태로 변환
+                'product_fabric_care': row.get('product_fabric_care', []),  # 리스트 형태로 변환
                 'product_img_1': row.get('product_img_1', ''),
                 'product_img_2': row.get('product_img_2', ''),
                 'product_img_3': row.get('product_img_3', ''),
@@ -481,10 +494,28 @@ class ApiKohlsSetLoadWorker(QThread):
 
 
     def skip_products(self, new_product_id):
+
+        if 'c' in new_product_id:
+            return True
+
         for product in self.csv_product_list:
             if product['product_id'] == new_product_id:
-                return product['data_success'] == 'Y'
+                self.log_signal.emit(f'{product['product_id']} 스킵!!!')
+                return product['success'] == 'Y'
         return False  # 기본적으로 N으로 간주
+
+
+    def get_old_data(self, new_product_id):
+        for product in self.csv_product_list:
+            if product['product_id'] == new_product_id and product['data_success'] == 'Y':
+                return product
+        return None
+
+    def get_old_img(self, new_product_id):
+        for product in self.csv_product_list:
+            if product['product_id'] == new_product_id and product['img_success'] == 'Y':
+                return product
+        return None
 
 
     def get_products_from_page(self, url, checked_model):
@@ -499,6 +530,13 @@ class ApiKohlsSetLoadWorker(QThread):
         page_source = self.driver.page_source
         soup = BeautifulSoup(page_source, 'html.parser')
 
+        find_match_txt = soup.select_one("h1.findMatchTxt")
+
+        last_txt = find_match_txt.text.strip() if find_match_txt else ""
+
+        if last_txt:
+            return False
+
         # 🔹 상품 목록 가져오기
         product_elements = soup.select("#productsContainer > li")
 
@@ -508,6 +546,7 @@ class ApiKohlsSetLoadWorker(QThread):
                 # 🔹 제품 ID 가져오기
                 product_id = product.get("data-id")
                 product_element_id = product.get("id")
+                self.log_signal.emit(product_element_id)
 
                 skip = self.skip_products(product_id)
 
@@ -525,31 +564,54 @@ class ApiKohlsSetLoadWorker(QThread):
                 if product_url and not product_url.startswith("https://www.kohls.com"):
                     product_url = "https://www.kohls.com" + product_url
 
-                # 🔹 제품 상세 정보 가져오기
-                product_details = self.get_product_details(product_url)
+                product_data = self.get_old_data(product_id)
 
-                product_data = {
-                    "category_name": checked_model['name'],
-                    "category_url": checked_model['url'],
-                    "product_id": product_id,
-                    "product_name": product_name,
-                    "product_url": product_url,
-                    **product_details
-                }
+                if not product_data:
 
-                if all([
-                    product_data['product_id'],
-                    product_data['product_name'],
-                    product_data['product_url'],
-                    product_data['product_sub_title'],
-                    product_data['product_features'],
-                    product_data['product_img_1']
-                ]):
-                    product_data['data_success'] = 'Y'
+                    # 🔹 제품 상세 정보 가져오기
+                    product_details = self.get_product_details(product_url)
 
-                updated_product = self.download_images(product_data)
-                self.append_to_csv([updated_product])
-                self.log_signal.emit(f'{updated_product}')
+                    product_data = {
+                        "category_name": checked_model['name'],
+                        "category_url": checked_model['url'],
+                        "product_id": product_id,
+                        "product_name": product_name,
+                        "img_success": "N",
+                        "data_success": "N",
+                        "success": "N",
+                        "product_url": product_url,
+                        **product_details
+                    }
+
+                    if all([
+                        product_data['product_id'],
+                        product_data['product_name'],
+                        product_data['product_url'],
+                        product_data['product_sub_title'],
+                        product_data['product_features'],
+                        product_data['product_img_1']
+                    ]):
+                        product_data['data_success'] = 'Y'
+
+                product_img_data = self.get_old_img(product_id)
+
+                if not product_img_data:
+                    product_data = self.download_images(product_data)
+                else:
+                    product_data['product_img_1'] = product_img_data['product_img_1']
+                    product_data['product_img_2'] = product_img_data['product_img_2']
+                    product_data['product_img_3'] = product_img_data['product_img_3']
+                    product_data['product_img_4'] = product_img_data['product_img_4']
+                    product_data['img_path']      = product_img_data['img_path']
+                    product_data['img_success']   = product_img_data['img_success']
+
+
+                if product_data['data_success'] == 'Y' and product_data['img_success'] == 'Y':
+                    product_data['success'] = 'Y'
+                    product_data['reg_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+                self.append_to_csv([product_data])
+                self.log_signal.emit(f'{product_data}')
                 self.product_list.append(product_data)
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
@@ -561,6 +623,7 @@ class ApiKohlsSetLoadWorker(QThread):
                 self.log_signal.emit(f"Error processing product: {e}")
                 continue
 
+        return True
 
     def scroll_to_bottom(self):
         """ 페이지의 끝까지 스크롤하여 모든 제품을 로딩 """
@@ -594,100 +657,3 @@ class ApiKohlsSetLoadWorker(QThread):
             elif name == 'Men / Mes’s Bottoms / Shorts':
                 url = "https://www.kohls.com/catalog/mens-shorts-bottoms-clothing.jsp?CN=Gender:Mens+Product:Shorts+Category:Bottoms+Department:Clothing&cc=mens-TN3.0-S-shorts&kls_sbp=05864698454350754950882754362888169186"
         return url
-
-
-
-
-
-
-
-    def get_product_info_list(self, checked_model):
-        result_list = []
-
-        # CSV 파일 경로 설정
-        csv_filename = os.path.join(os.getcwd(), f"{checked_model['name']}_{get_current_yyyymmddhhmmss()}.csv")
-
-        # CSV 파일 초기 생성
-        columns = ["name", "product", "product_id" , "product_no", "description", "image_no", "image_url", "image_name", "success", "reg_date", "page", "error"]
-        df = pd.DataFrame(columns=columns)
-        df.to_csv(csv_filename, index=False)
-
-        for index, product in enumerate(self.product_info_list):
-
-            if not product:  # product가 None인지 확인
-                print(f"경고: index {index}의 product가 None입니다. 건너뜁니다.")
-                continue
-
-            time.sleep(1)
-            obj = self.get_api_product_info(product.get('pid'), product.get('cid'))
-
-            if obj:
-
-                product['product'] = obj.get('product')
-                product['description'] = obj.get('description')
-                product['img_list'] = obj.get('img_list')
-                product['product_id'] = product.get('pid')
-                product['product_no'] = index + 1
-
-                # images 폴더 생성
-                images_dir = os.path.join(os.getcwd(), 'images')
-                os.makedirs(images_dir, exist_ok=True)
-
-                for ix, image_url in enumerate(product.get('img_list'), start=1):
-                    if not self.running:
-                        break
-
-                    obj_copy = product.copy()  # 객체 복사
-                    obj_copy['name'] = checked_model['name']
-                    obj_copy['image_no'] = ix + 1
-                    obj_copy['image_url'] = image_url
-                    obj_copy['success'] = 'N'
-                    obj_copy['image_yn'] = 'N'
-                    obj_copy['reg_date'] = get_current_formatted_datetime()  # 시간 추가
-
-                    try:
-                        # 이미지 다운로드
-                        # response = requests.get(image_url, stream=True)
-                        # response.raise_for_status()
-
-                        # 이미지 저장 경로
-                        img_filename = f"{product.get('pid')}_{ix}.jpg"
-                        # img_path = os.path.join(images_dir, img_filename)
-
-                        # 이미지 저장
-                        # with open(img_path, 'wb') as file:
-                            # for chunk in response.iter_content(1024):
-                                # file.write(chunk)
-
-                        # obj_copy['success'] = 'Y'  # 성공하면 Y
-                        obj_copy['image_name'] = img_filename
-                        self.log_signal.emit(f"성공 {obj_copy}")
-                    except Exception as e:
-                        print(f"이미지 다운로드 실패: {image_url}, 오류: {e}")
-                        obj_copy['success'] = 'N'  # 실패하면 N 유지
-                        obj_copy['error'] = e
-
-                    result_list.append(obj_copy)
-
-                self.current_cnt = self.current_cnt + 1
-                pro_value = (self.current_cnt / self.total_cnt) * 1000000
-                self.progress_signal.emit(self.before_pro_value, pro_value)
-                self.before_pro_value = pro_value
-
-                self.log_signal.emit(f'{checked_model["name"]} TotalPage({self.current_page}/{self.total_pages})  TotalProduct({self.current_cnt}/{self.total_cnt}) Product({index+1}/{len(self.product_info_list)})')
-
-                # 5개마다 CSV에 저장
-                if index % 5 == 0 and index > 0:
-                    df = pd.DataFrame(result_list, columns=columns)
-                    df.to_csv(csv_filename, mode='a', header=False, index=False)
-                    result_list.clear()  # 저장 후 리스트 초기화
-
-        # 남은 데이터 저장
-        if result_list:
-            df = pd.DataFrame(result_list, columns=columns)
-            df.to_csv(csv_filename, mode='a', header=False, index=False)
-
-
-
-
-
