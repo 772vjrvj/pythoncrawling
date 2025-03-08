@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLa
 from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.singleton import GlobalState
+from src.workers.api_kohls_set_worker import ApiKohlsSetLoadWorker
 from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
 from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
 from src.workers.api_oldnavy_set_worker import ApiOldnavySetLoadWorker
@@ -93,7 +94,6 @@ class MainWindow(QWidget):
         current_stylesheet = widget.styleSheet()
         new_stylesheet = f"{current_stylesheet}{prop}: {value};"
         widget.setStyleSheet(new_stylesheet)
-
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):
@@ -308,6 +308,8 @@ class MainWindow(QWidget):
                     self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
                 elif self.site == 'OLDNAVY':
                     self.on_demand_worker = ApiOldnavySetLoadWorker(self.select_check_list)
+                elif self.site == 'KOHLS':
+                    self.on_demand_worker = ApiKohlsSetLoadWorker(self.select_check_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.stop)

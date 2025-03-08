@@ -80,9 +80,9 @@ class SelectWindow(QWidget):
 
 
         # NEW4
-        site_button_forth = QPushButton("NEW4", self)
+        site_button_forth = QPushButton("KOHLS", self)
         site_button_forth.setStyleSheet("""
-            background-color: #cccccc;
+            background-color: #860035;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -91,7 +91,7 @@ class SelectWindow(QWidget):
         site_button_forth.setFixedHeight(40)
         site_button_forth.setFixedWidth(300)  # 버튼 너비 설정
         site_button_forth.setCursor(Qt.PointingHandCursor)
-        site_button_forth.clicked.connect(lambda: self.select_site(""))
+        site_button_forth.clicked.connect(lambda: self.select_site("KOHLS"))
 
         # 레이아웃에 요소 추가
         layout.addWidget(site_button_first)
@@ -125,13 +125,38 @@ class SelectWindow(QWidget):
 
             if site == "MYTHERESA":
                 color = "#000"
-                check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
+                check_list = ["Women",
+                              "Men",
+                              "Girls",
+                              "Boys",
+                              "Baby"]
             elif site == "ZALANDO":
                 color = "#D2451E"
-                check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
+                check_list = ["Women",
+                              "Men",
+                              "Girls",
+                              "Boys",
+                              "Baby"]
             elif site == "OLDNAVY":
                 color = "#000080"
-                check_list = ["Now Trending!", "Activewear", "Women", "Men", "Girls", "Boys", "Toddler", "Baby", "Maternity"]
+                check_list = ["Now Trending!",
+                              "Activewear",
+                              "Women",
+                              "Men",
+                              "Girls",
+                              "Boys",
+                              "Toddler",
+                              "Baby",
+                              "Maternity"]
+            elif site == "KOHLS":
+                color = "#860035"
+                check_list = ["Women / Bottoms / Pants",
+                              "Women / Bottoms / Skirts & Skorts",
+                              "Women / Bottoms / Shorts",
+                              "Women / Dresses & Jumpsuits",
+                              "Men / Mes’s Tops / Button-Down Shirts",
+                              "Men / Mes’s Bottoms / Casual Pants",
+                              "Men / Mes’s Bottoms / Shorts"]
             else:
                 color = ""
                 check_list = []
