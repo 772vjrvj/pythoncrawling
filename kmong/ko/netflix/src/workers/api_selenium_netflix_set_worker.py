@@ -193,7 +193,8 @@ class ApiNetflixSetLoadWorker(QThread):
             "authority": "www.netflix.com",
             "method": "GET",
             "path": f"/nq/website/memberapi/release/metadata?movieid={last_number}",
-            "scheme": "https",
+            "scheme"
+            : "https",
             "accept": "*/*",
             "accept-encoding": "gzip, deflate, br, zstd",
             "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",

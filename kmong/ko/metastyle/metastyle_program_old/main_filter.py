@@ -8,8 +8,8 @@ from bs4 import BeautifulSoup
 from webdriver_manager.chrome import ChromeDriverManager
 
 # 입력 및 출력 CSV 경로
-input_csv_path = "DB/KOHLS_Women_Bottoms_Skirts_Processed_1.csv"
-output_csv_path = "DB/KOHLS_Women_Bottoms_Skirts_Processed.csv"
+input_csv_path = "DB/KOHLS_Men_Mess Bottoms_Shorts.csv"
+output_csv_path = "DB/KOHLS_Men_Mess Bottoms_Shorts_Processed.csv"
 
 # Selenium WebDriver 설정
 chrome_options = Options()
@@ -32,13 +32,16 @@ with open(input_csv_path, newline='', encoding='utf-8') as csvfile:
         time.sleep(2)
         product_url = row.get("product_url", "").strip()
         product_fabric_care = row.get("product_fabric_care", "").strip()
+        product_id = row.get("product_id", "").strip()
 
+        print(f"==============================")
         if not product_fabric_care == "[]":
             print(f"생략X index: {index}")
             product_list.append(row)
             continue  # URL이 없으면 스킵
         else:
             print(f"진행O index: {index}")
+            print(f"product_id: {product_id}")
             print(f"크롤링 중: {product_url}")
             # Selenium으로 페이지 열기
             driver.get(product_url)
