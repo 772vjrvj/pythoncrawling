@@ -359,8 +359,18 @@ class ApiKohlsSetLoadWorker(QThread):
                     product_features = [li.text.strip() for li in ul.find_all("li")]
                     break  # 첫 번째로 찾은 항목을 저장하고 루프 종료
 
+
+        fabric_care_section = soup.find("p", text="FABRIC & CARE")
+        fabric_care = []
+        if fabric_care_section:
+            ul = fabric_care_section.find_next_sibling("ul")
+            if ul:
+                fabric_care = [li.text.strip() for li in ul.find_all("li")]
+
+
         # product_features를 JSON 직렬화하여 저장
         product_details['product_features'] = json.dumps(product_features, ensure_ascii=False) if product_features else "[]"
+        product_details['product_fabric_care'] = json.dumps(product_features, ensure_ascii=False) if fabric_care else "[]"
 
         # 🔹 대표 이미지 (고해상도 srcset에서 첫 번째 이미지 가져오기)
         product_details['product_img_1'] = ""
