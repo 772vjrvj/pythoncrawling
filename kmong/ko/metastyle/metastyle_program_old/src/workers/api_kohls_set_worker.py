@@ -332,15 +332,6 @@ class ApiKohlsSetLoadWorker(QThread):
         product_sub_title_tag = soup.select_one("div.sub-product-title a")
         product_details['product_sub_title'] = product_sub_title_tag.text.strip() if product_sub_title_tag else ""
 
-        # 🔹 See More 버튼 클릭 (셀레니움 사용)
-        try:
-            see_more_button = self.driver.find_element(By.CSS_SELECTOR, ".seemoreParentDiv button")
-            self.driver.execute_script("arguments[0].click();", see_more_button)
-            time.sleep(2)  # 페이지 갱신 대기 후 다시 BeautifulSoup으로 파싱
-            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-        except Exception as e:
-            self.log_signal.emit(f"See More 버튼 클릭 실패: {e}")
-
         # FEATURES 섹션 탐색 및 데이터 추출
         product_features = []
 
