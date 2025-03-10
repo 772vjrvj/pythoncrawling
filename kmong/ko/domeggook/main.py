@@ -1,10 +1,11 @@
 import time
-
 import requests
 from bs4 import BeautifulSoup
 import re
 import random
-
+from datetime import datetime
+import pandas as pd
+import os
 
 def fetch_item_ids(sw, pg):
     url = f"https://domeggook.com/main/item/itemList.php?sfc=id&sf=id&sw={sw}&sz=100&pg={pg}"
@@ -40,7 +41,8 @@ def fetch_item_ids(sw, pg):
     ol_tags = soup.find_all("ol", class_="lItemList")
     if ol_tags:
         last_ol_tag = ol_tags[-1]  # 마지막 ol 태그 선택
-        li_tags = last_ol_tag.find_all("li")
+        li_tags = last_ol_tag.find_all("li", recursive=False)
+        print(f'li_tags len : {len(li_tags)}')
 
         for li in li_tags:
             # li 내부의 a 태그 class="thumb" 찾기
@@ -93,11 +95,19 @@ def fetch_item_cnt(sw):
         b_tag = lcnt_div.find("b")  # <b> 태그 직접 찾기
         if b_tag:
             total_cnt = int(b_tag.text.replace(",", ""))  # 콤마 제거 후 정수 변환
-            total_page = (total_cnt // 100) + (1 if total_cnt % 100 > 0 else 0)  # 페이지 계산
-
+            total_page = (total_cnt // 52) + (1 if total_cnt % 52 > 0 else 0)  # 페이지 계산
 
     return total_cnt, total_page
 
+
+def get_current_formatted_datetime():
+    # 현재 날짜와 시간 가져오기
+    now = datetime.now()
+
+    # 날짜와 시간을 'YYYY.MM.DD HH:MM:SS' 형식으로 포맷팅
+    formatted_datetime = now.strftime("%Y.%m.%d %H:%M:%S")
+
+    return formatted_datetime
 
 
 def fetch_product_details(product_id):
@@ -128,7 +138,11 @@ def fetch_product_details(product_id):
     soup = BeautifulSoup(response.text, "html.parser")
 
     product_data = {
-        'URL': url
+        'URL': url,
+        '판매자명': '',
+        '상품번호': '',
+        '재고수량': '',
+        '수집일': get_current_formatted_datetime()
     }
 
     # ✅ 판매자명 추출
@@ -168,33 +182,78 @@ def fetch_product_details(product_id):
     return product_data
 
 
-
-
-
-
 if __name__ == "__main__":
 
-    total_cnt, total_page = fetch_item_cnt("huigone7589")
-    print(f'total_cnt : {total_cnt}')
-    print(f'total_page : {total_page}')
-    all_item_list = []
-    # 테스트 실행
-    for i in range(1, total_page + 1):
-        print(f'index {i}')
-        item_list = fetch_item_ids("huigone7589", i)
-        print(f'item_list : {item_list}')
-        all_item_list.extend(item_list)
-        print(f'all len : {len(all_item_list)}')
-        time.sleep(random.uniform(2, 3))
+    ids = ["huigone7589"]
 
-    print(f'all list : {all_item_list}')
-    result_list = []
+    for id in ids:
 
-    for product_id in all_item_list:
-        obj = fetch_product_details(product_id)
-        print(f'obj : {obj}')
-        result_list.append(obj)
-        print(f'obj list : {result_list}')
-        time.sleep(random.uniform(2, 3))
+        # 엑셀 파일 id로 읽어서 객체 리스트 old_result_list 담기
+        now_result_list = []
+        new_result_list = []
+        old_result_list = []
+        file_name = f"{id}.xlsx"
 
-    print(f'{result_list}')
+        # 엑셀 파일이 존재하면 읽어서 old_result_list에 담기
+        if os.path.exists(file_name):
+            df = pd.read_excel(file_name, engine='openpyxl')
+            old_result_list = df.to_dict(orient='records')  # DataFrame을 리스트[dict] 형태로 변환
+
+        print(f'id : {id}')
+        total_cnt, total_page = fetch_item_cnt(id)
+        print(f'total_cnt : {total_cnt}')
+        print(f'total_page : {total_page}')
+
+        all_item_set = set()  # 기존 리스트를 집합(set)으로 변환
+        for i in range(1, total_page + 1):
+            print(f'index {i}')
+            item_list = fetch_item_ids(id, i)
+            print(f'item_list : {item_list}')
+            all_item_set.update(item_list)  # 중복을 방지하면서 추가
+            time.sleep(random.uniform(2, 3))
+
+        all_item_list = list(all_item_set)  # 다시 리스트로 변환
+        print(f'all list : {all_item_list}')
+        print(f'all list len: {len(all_item_list)}')
+
+        for product_id in all_item_list:
+            obj = fetch_product_details(product_id)
+            print(f'obj : {obj}')
+            now_result_list.append(obj)
+            print(f'obj list : {now_result_list}')
+
+            # obj 복사하여 new_obj 생성
+            new_obj = obj.copy()
+            new_obj['판매량'] = 0
+            new_obj['이전수집일'] = ''
+            new_obj['이전재고수량'] = 0
+
+            # old_result_list에서 같은 상품번호를 가진 객체 찾기
+            old_obj = next((item for item in old_result_list if item['상품번호'] == obj['상품번호']), None)
+
+            if old_obj:
+                # old_obj의 재고수량과 obj의 재고수량 차이 계산 (old_obj가 항상 크거나 같음)
+                old_stock = int(old_obj['재고수량']) if old_obj['재고수량'] else 0
+                current_stock = int(obj['재고수량']) if obj['재고수량'] else 0
+                sales_volume = old_stock - current_stock  # 판매량 계산
+
+                # new_obj에 추가 정보 설정
+                new_obj['판매량'] = sales_volume
+                new_obj['이전수집일'] = old_obj['수집일']
+                new_obj['이전재고수량'] = old_stock
+
+            # new_result_list에 추가
+            new_result_list.append(new_obj)
+
+            time.sleep(random.uniform(2, 3))
+
+        # 저장할 파일명 (id.xlsx)
+        file_name = f"{id}.xlsx"
+
+        # 데이터프레임 생성
+        df = pd.DataFrame(new_result_list, columns=['URL', '판매자명', '상품번호', '판매량', '재고수량', '수집일', '이전재고수량', '이전수집일'])
+
+        # 엑셀 파일로 저장 (파일이 있으면 덮어쓰기)
+        df.to_excel(file_name, index=False, engine='openpyxl')
+
+        print(f"엑셀 파일 저장 완료: {file_name}")
