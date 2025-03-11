@@ -231,6 +231,13 @@ class ApiOldnavySetLoadWorker(QThread):
             return None
 
 
+    def sanitize_filename(self, text):
+        """파일명에서 특수 문자 제거 및 '_'로 변환"""
+        if text:
+            return re.sub(r'[\\/:*?"<>|]', '_', text)  # 파일명에서 사용할 수 없는 문자 변환
+        return text  # 값이 없을 경우 기본값 설정
+
+
     def get_product_info_list(self, checked_model):
         global site_name
         result_list = []
@@ -277,9 +284,9 @@ class ApiOldnavySetLoadWorker(QThread):
                     response = requests.get(obj.get('image_url'), stream=True)
                     response.raise_for_status()
 
-                    # 이미지 저장 경로
-
-                    img_filename = f"{obj.get('product')}_{product.get('pid')}.jpg"
+                    # 이미지 저장 경로 처리
+                    product_name = self.sanitize_filename(obj.get('product'))  # 특수 문자 제거된 파일명
+                    img_filename = f"{product_name}_{product.get('pid')}.jpg"
                     img_path = os.path.join(images_dir, img_filename)
 
                     # 이미지 저장
