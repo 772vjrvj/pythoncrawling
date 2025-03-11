@@ -25,5 +25,11 @@ client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/ai-desi
 universe_domain: "googleapis.com"
 }
 
+https://shop.mango.com/us/en/c/women/new-now_56b5c5ed
+https://www.zara.com/us/en/woman-new-in-l1180.html?v1=2546081
+https://bananarepublic.gap.com/browse/women/new-arrivals?cid=48422&nav=meganav%3AWomen%3ADiscover%3ANew%20Arrivals
+https://www.farfetch.com/kr/sets/new-in-this-week-eu-women.aspx
 
-
+https://www2.hm.com/en_us/women/new-arrivals/view-all.html
+https://www.stories.com/en_usd/whats-new/all.html
+https://www.aritzia.com/intl/en/clothing

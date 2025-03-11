@@ -139,7 +139,13 @@ class SelectWindow(QWidget):
                               "Baby"]
             elif site == "OLDNAVY":
                 color = "#000080"
-                check_list = ["Now Trending!",
+                check_list = ["Women / Women’s Tops / Shirts & Blouses",
+                              "Women / Women’s Tops / Button-down Shirts",
+                              "Women / Women’s Bottoms / Pants",
+                              "Women / Women’s Bottoms / Shorts",
+                              "Women / Women’s Bottoms / Skirts",
+                              "Women / Shop Women’s Categories / Dresses & Jumpsuits",
+                              "Now Trending!",
                               "Activewear",
                               "Women",
                               "Men",
@@ -156,7 +162,9 @@ class SelectWindow(QWidget):
                               "Women / Dresses & Jumpsuits",
                               "Men / Mes’s Tops / Button-Down Shirts",
                               "Men / Mes’s Bottoms / Casual Pants",
-                              "Men / Mes’s Bottoms / Shorts"]
+                              "Men / Mes’s Bottoms / Shorts",
+                              "Women / Tops / Shirts & Blouses"
+                              ]
             else:
                 color = ""
                 check_list = []

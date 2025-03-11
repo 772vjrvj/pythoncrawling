@@ -657,4 +657,6 @@ class ApiKohlsSetLoadWorker(QThread):
                 url = "https://www.kohls.com/catalog/mens-casual-pants-bottoms-clothing.jsp?CN=Gender:Mens+Occasion:Casual+Product:Pants+Category:Bottoms+Department:Clothing&cc=mens-TN3.0-S-casualpants&kls_sbp=05864698454350754950882754362888169186"
             elif name == 'Men / Mes’s Bottoms / Shorts':
                 url = "https://www.kohls.com/catalog/mens-shorts-bottoms-clothing.jsp?CN=Gender:Mens+Product:Shorts+Category:Bottoms+Department:Clothing&cc=mens-TN3.0-S-shorts&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Women / Tops / Shirts & Blouses':
+                url = "https://www.kohls.com/catalog/womens-dresses-clothing.jsp?CN=Gender:Womens+Category:Dresses+Department:Clothing&cc=wms-TN2.0-S-dressesjumpsuits&kls_sbp=85563838204133220120821598781245714728"
         return url
