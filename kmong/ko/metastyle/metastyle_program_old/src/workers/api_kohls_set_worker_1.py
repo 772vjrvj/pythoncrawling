@@ -46,6 +46,7 @@ class ApiKohlsSetLoadWorker(QThread):
 
         self.running = True  # 실행 상태 플래그 추가
         self.driver = None
+
         self.checked_model_list = []
         self.main_model = None
         self.product_info_list = []
@@ -56,11 +57,13 @@ class ApiKohlsSetLoadWorker(QThread):
         self.current_page = 0
         self.current_cnt = 0
         self.before_pro_value = 0
+
         self.columns = [
             'category_name', 'category_url',
             'product_id', 'product_name', 'product_url', 'product_title',
-            'brand_type', 'product_features', 'product_fabric_care',
-            'product_img', 'data_success', 'img_success', 'img_path', 'success', 'error', 'reg_date',
+            'product_sub_title', 'product_features', 'product_fabric_care',
+            'product_img_1', 'product_img_2', 'product_img_3', 'product_img_4',
+            'data_success', 'img_success', 'img_path', 'success', 'error', 'reg_date',
         ]
 
     # 프로그램 실행
@@ -115,6 +118,7 @@ class ApiKohlsSetLoadWorker(QThread):
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
 
+
     # 이미지 다운로드 함수
     def download_images(self, product):
         if product['img_success'] == 'N':
@@ -122,30 +126,32 @@ class ApiKohlsSetLoadWorker(QThread):
             category_path = os.path.join(image_folder, site_name, product['category_name'].replace("’", "").replace(" / ", "_").strip())
             os.makedirs(category_path, exist_ok=True)
 
-            img_url = product['product_img']
+            img_urls = [product['product_img_1'], product['product_img_2'], product['product_img_3'], product['product_img_4']]
             img_paths = []
 
-            if img_url:
-                img_filename = f"{product_id}.jpg"
-                img_filepath = os.path.join(category_path, img_filename)
+            for idx, img_url in enumerate(img_urls, start=1):
+                if img_url:
+                    img_filename = f"{product_id}_{idx}.jpg"
+                    img_filepath = os.path.join(category_path, img_filename)
 
-                try:
-                    response = requests.get(img_url, stream=True)
-                    if response.status_code == 200:
-                        with open(img_filepath, 'wb') as f:
-                            for chunk in response.iter_content(1024):
-                                f.write(chunk)
-                        img_paths.append(img_filepath)
-                    else:
-                        self.log_signal.emit(f"이미지 다운로드 실패: {img_url}")
-                except Exception as e:
-                    self.log_signal.emit(f"이미지 다운로드 오류: {e}")
+                    try:
+                        response = requests.get(img_url, stream=True)
+                        if response.status_code == 200:
+                            with open(img_filepath, 'wb') as f:
+                                for chunk in response.iter_content(1024):
+                                    f.write(chunk)
+                            img_paths.append(img_filepath)
+                        else:
+                            self.log_signal.emit(f"이미지 다운로드 실패: {img_url}")
+                    except Exception as e:
+                        self.log_signal.emit(f"이미지 다운로드 오류: {e}")
 
             product['img_path'] = img_paths
             if len(img_paths) >= 1:
                 product['img_success'] = 'Y'
 
         return product
+
 
     # CSV에 새로운 행 추가하는 함수
     def append_to_csv(self, new_rows):
@@ -170,6 +176,7 @@ class ApiKohlsSetLoadWorker(QThread):
 
         # 최종 결과를 CSV 파일에 저장 (덮어쓰기)
         df.to_csv(file_path, index=False, encoding="utf-8-sig")
+
 
     # 프로그램 중단
     def stop(self):
@@ -322,20 +329,59 @@ class ApiKohlsSetLoadWorker(QThread):
         product_details['product_title'] = product_title_tag.text.strip() if product_title_tag else ""
 
         # 🔹 서브 제품명 추출
-        brand_type_tag = soup.select_one("div.sub-product-title a")
-        product_details['brand_type'] = brand_type_tag.text.strip() if brand_type_tag else ""
+        product_sub_title_tag = soup.select_one("div.sub-product-title a")
+        product_details['product_sub_title'] = product_sub_title_tag.text.strip() if product_sub_title_tag else ""
+
+        # FEATURES 섹션 탐색 및 데이터 추출
+        product_features = []
+
+        features_sections = [
+            "FEATURES",
+            "PRODUCT FEATURES",
+            "SHORTS FEATURES",
+            "TECHNOLOGIES & FEATURES"
+        ]
+
+        for section_name in features_sections:
+            features_section = soup.find("p", text=section_name)
+            if features_section:
+                ul = features_section.find_next_sibling("ul")
+                if ul:
+                    product_features = [li.text.strip() for li in ul.find_all("li")]
+                    break  # 첫 번째로 찾은 항목을 저장하고 루프 종료
+
+
+        fabric_care_section = soup.find("p", text="FABRIC & CARE")
+        fabric_care = []
+        if fabric_care_section:
+            ul = fabric_care_section.find_next_sibling("ul")
+            if ul:
+                fabric_care = [li.text.strip() for li in ul.find_all("li")]
+
+
+        # product_features를 JSON 직렬화하여 저장
+        product_details['product_features'] = json.dumps(product_features, ensure_ascii=False) if product_features else "[]"
+        product_details['product_fabric_care'] = json.dumps(product_features, ensure_ascii=False) if fabric_care else "[]"
 
         # 🔹 대표 이미지 (고해상도 srcset에서 첫 번째 이미지 가져오기)
-        product_details['product_img'] = ""
+        product_details['product_img_1'] = ""
+        product_details['product_img_2'] = ""
+        product_details['product_img_3'] = ""
+        product_details['product_img_4'] = ""
 
         main_image = soup.select_one(".pdp-large-hero-image img")
         if main_image:
             srcset = main_image.get("srcset")
             if srcset:
                 first_img = srcset.split(",")[0].strip().split(" ")[0]  # 첫 번째 이미지 URL 추출
-                base_url = first_img.split("?")[0]  # URL에서 ? 앞부분만 추출
-                updated_img = f"{base_url}?wid=1500&hei=1500&op_sharpen=1&qlt=60"  # 새로운 파라미터 추가
-                product_details['product_img'] = updated_img
+                product_details['product_img_1'] = first_img
+            else:
+                product_details['product_img_1'] = main_image.get("src", "")
+
+        # 🔹 추가 이미지 (최대 3개)
+        image_elements = soup.select(".pdp-large-alt-images .large-alt-image:not(.video) img")
+        for idx, img in enumerate(image_elements[:3]):
+            product_details[f'product_img_{idx + 2}'] = img.get("src", "")
 
         return product_details
 
@@ -358,11 +404,11 @@ class ApiKohlsSetLoadWorker(QThread):
 
         # 🔹 서브 제품명 추출
         try:
-            product_details['brand_type'] = self.driver.find_element(
+            product_details['product_sub_title'] = self.driver.find_element(
                 By.CSS_SELECTOR, "div.sub-product-title a"
             ).text.strip()
         except:
-            product_details['brand_type'] = ""
+            product_details['product_sub_title'] = ""
 
         try:
             see_more_button = self.driver.find_element(By.CSS_SELECTOR, ".seemoreParentDiv button")
@@ -393,14 +439,26 @@ class ApiKohlsSetLoadWorker(QThread):
             if srcset:
                 # srcset을 리스트로 변환 후 첫 번째 이미지 선택
                 first_img = srcset.split(",")[0].strip().split(" ")[0]  # 첫 번째 이미지의 URL만 추출
-                product_details['product_img'] = first_img
+                product_details['product_img_1'] = first_img
             else:
                 # srcset이 없으면 일반 src 사용
-                product_details['product_img'] = main_image.get_attribute("src")
+                product_details['product_img_1'] = main_image.get_attribute("src")
 
         except Exception as e:
             self.log_signal.emit(f"대표 이미지 가져오기 실패: {e}")
-            product_details['product_img'] = ""
+            product_details['product_img_1'] = ""
+
+        # 🔹 추가 이미지 (최대 3개)
+        product_details['product_img_2'] = ""
+        product_details['product_img_3'] = ""
+        product_details['product_img_4'] = ""
+
+        try:
+            image_elements = self.driver.find_elements(By.CSS_SELECTOR, ".pdp-large-alt-images .large-alt-image:not(.video) img")
+            for idx, img in enumerate(image_elements[:3]):
+                product_details[f'product_img_{idx + 2}'] = img.get_attribute("src")
+        except:
+            pass
 
         return product_details
 
@@ -418,10 +476,13 @@ class ApiKohlsSetLoadWorker(QThread):
                 'product_name': row.get('product_name', ''),
                 'product_url': row.get('product_url', ''),
                 'product_title': row.get('product_title', ''),
-                'brand_type': row.get('brand_type', ''),
+                'product_sub_title': row.get('product_sub_title', ''),
                 'product_features': row.get('product_features', []),  # 리스트 형태로 변환
                 'product_fabric_care': row.get('product_fabric_care', []),  # 리스트 형태로 변환
-                'product_img': row.get('product_img', ''),
+                'product_img_1': row.get('product_img_1', ''),
+                'product_img_2': row.get('product_img_2', ''),
+                'product_img_3': row.get('product_img_3', ''),
+                'product_img_4': row.get('product_img_4', ''),
                 'data_success': row.get('data_success', 'N'),  # 성공 여부 추가
                 'img_success': row.get('img_success', 'N'),  # 성공 여부 추가
                 'img_path': row.get('img_path', []),  # 성공 여부 추가
@@ -450,7 +511,6 @@ class ApiKohlsSetLoadWorker(QThread):
             if product['product_id'] == new_product_id and product['data_success'] == 'Y':
                 return product
         return None
-
 
     def get_old_img(self, new_product_id):
         for product in self.csv_product_list:
@@ -513,7 +573,6 @@ class ApiKohlsSetLoadWorker(QThread):
                     product_details = self.get_product_details(product_url)
 
                     product_data = {
-                        "website": site_name,
                         "category_name": checked_model['name'],
                         "category_url": checked_model['url'],
                         "product_id": product_id,
@@ -529,8 +588,9 @@ class ApiKohlsSetLoadWorker(QThread):
                         product_data['product_id'],
                         product_data['product_name'],
                         product_data['product_url'],
-                        product_data['brand_type'],
-                        product_data['product_img']
+                        product_data['product_sub_title'],
+                        product_data['product_features'],
+                        product_data['product_img_1']
                     ]):
                         product_data['data_success'] = 'Y'
 
@@ -539,7 +599,10 @@ class ApiKohlsSetLoadWorker(QThread):
                 if not product_img_data:
                     product_data = self.download_images(product_data)
                 else:
-                    product_data['product_img'] = product_img_data['product_img']
+                    product_data['product_img_1'] = product_img_data['product_img_1']
+                    product_data['product_img_2'] = product_img_data['product_img_2']
+                    product_data['product_img_3'] = product_img_data['product_img_3']
+                    product_data['product_img_4'] = product_img_data['product_img_4']
                     product_data['img_path']      = product_img_data['img_path']
                     product_data['img_success']   = product_img_data['img_success']
 
@@ -563,7 +626,6 @@ class ApiKohlsSetLoadWorker(QThread):
 
         return True
 
-
     def scroll_to_bottom(self):
         """ 페이지의 끝까지 스크롤하여 모든 제품을 로딩 """
         last_height = self.driver.execute_script("return document.body.scrollHeight")
@@ -581,14 +643,20 @@ class ApiKohlsSetLoadWorker(QThread):
     def get_url(self, name):
         url = ""
         if name:
-            if name == 'Women / Nine West':
-                url = "https://www.kohls.com/catalog/womens-nine-west-clothing.jsp?CN=Gender:Womens+Brand:Nine%20West+Department:Clothing&S=1&PPP=48&spa=1&kls_sbp=42214899207256641171081526745488601963&pfm=browse%20refine"
-            elif name == 'Women / Sonoma':
-                url = "https://www.kohls.com/catalog/womens-sonoma-goods-for-life-clothing.jsp?CN=Gender:Womens+Brand:Sonoma%20Goods%20For%20Life+Department:Clothing&S=1&PPP=48&spa=1&pfm=browse%20refine&kls_sbp=42214899207256641171081526745488601963"
-            elif name == 'Women / Croft':
-                url = "https://www.kohls.com/catalog/womens-croft-barrow-clothing.jsp?CN=Gender:Womens+Brand:Croft%20%26%20Barrow+Department:Clothing&S=1&PPP=48&spa=1&kls_sbp=42214899207256641171081526745488601963&pfm="
-            elif name == 'Women / LC':
-                url = "https://www.kohls.com/catalog/womens-lc-lauren-conrad-clothing.jsp?CN=Gender:Womens+Brand:LC%20Lauren%20Conrad+Department:Clothing&S=1&PPP=48&spa=1&kls_sbp=42214899207256641171081526745488601963&pfm="
-            elif name == 'Women / SVVW':
-                url = "https://www.kohls.com/catalog/womens-simply-vera-vera-wang-clothing.jsp?CN=Gender:Womens+Brand:Simply%20Vera%20Vera%20Wang+Department:Clothing&S=1&PPP=48&spa=1&kls_sbp=42214899207256641171081526745488601963&pfm="
+            if name == 'Women / Bottoms / Pants':
+                url = "https://www.kohls.com/catalog/womens-pants-bottoms-clothing.jsp?CN=Gender:Womens+Product:Pants+Category:Bottoms+Department:Clothing&cc=wms-TN3.0-S-pants&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Women / Bottoms / Skirts & Skorts':
+                url = "https://www.kohls.com/catalog/womens-skirts-skorts-bottoms-clothing.jsp?CN=Gender:Womens+Product:Skirts%20%26%20Skorts+Category:Bottoms+Department:Clothing&cc=wms-TN3.0-S-skirtsskorts&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Women / Bottoms / Shorts':
+                url = "https://www.kohls.com/catalog/womens-shorts-bottoms-clothing.jsp?CN=Gender:Womens+Product:Shorts+Category:Bottoms+Department:Clothing&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Women / Dresses & Jumpsuits':
+                url = "https://www.kohls.com/catalog/womens-dresses-clothing.jsp?CN=Gender:Womens+Category:Dresses+Department:Clothing&cc=wms-TN2.0-S-dressesjumpsuits&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Men / Mes’s Tops / Button-Down Shirts':
+                url = "https://www.kohls.com/catalog/mens-button-down-shirts-tops-clothing.jsp?CN=Gender:Mens+Silhouette:Button-Down%20Shirts+Category:Tops+Department:Clothing&cc=mens-TN3.0-S-buttondownshirts&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Men / Mes’s Bottoms / Casual Pants':
+                url = "https://www.kohls.com/catalog/mens-casual-pants-bottoms-clothing.jsp?CN=Gender:Mens+Occasion:Casual+Product:Pants+Category:Bottoms+Department:Clothing&cc=mens-TN3.0-S-casualpants&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Men / Mes’s Bottoms / Shorts':
+                url = "https://www.kohls.com/catalog/mens-shorts-bottoms-clothing.jsp?CN=Gender:Mens+Product:Shorts+Category:Bottoms+Department:Clothing&cc=mens-TN3.0-S-shorts&kls_sbp=05864698454350754950882754362888169186"
+            elif name == 'Women / Tops / Shirts & Blouses':
+                url = "https://www.kohls.com/catalog/womens-dresses-clothing.jsp?CN=Gender:Womens+Category:Dresses+Department:Clothing&cc=wms-TN2.0-S-dressesjumpsuits&kls_sbp=85563838204133220120821598781245714728"
         return url

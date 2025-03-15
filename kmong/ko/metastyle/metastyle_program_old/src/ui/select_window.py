@@ -156,14 +156,20 @@ class SelectWindow(QWidget):
                               "Maternity"]
             elif site == "KOHLS":
                 color = "#860035"
-                check_list = ["Women / Bottoms / Pants",
-                              "Women / Bottoms / Skirts & Skorts",
-                              "Women / Bottoms / Shorts",
-                              "Women / Dresses & Jumpsuits",
-                              "Men / Mes’s Tops / Button-Down Shirts",
-                              "Men / Mes’s Bottoms / Casual Pants",
-                              "Men / Mes’s Bottoms / Shorts",
-                              "Women / Tops / Shirts & Blouses"
+                # check_list = ["Women / Bottoms / Pants",
+                #               "Women / Bottoms / Skirts & Skorts",
+                #               "Women / Bottoms / Shorts",
+                #               "Women / Dresses & Jumpsuits",
+                #               "Men / Mes’s Tops / Button-Down Shirts",
+                #               "Men / Mes’s Bottoms / Casual Pants",
+                #               "Men / Mes’s Bottoms / Shorts",
+                #               "Women / Tops / Shirts & Blouses"
+                #               ]
+                check_list = ["Women / Nine West",
+                              "Women / Sonoma",
+                              "Women / Croft",
+                              "Women / LC",
+                              "Women / SVVW"
                               ]
             else:
                 color = ""

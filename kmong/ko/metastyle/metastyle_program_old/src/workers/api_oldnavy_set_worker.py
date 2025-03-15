@@ -250,7 +250,7 @@ class ApiOldnavySetLoadWorker(QThread):
         csv_filename = os.path.join(os.getcwd(), f"{main_name}_{get_current_yyyymmddhhmmss()}.csv")
 
         # CSV 파일 초기 생성
-        columns = ["name", "product", "product_id" , "product_no", "Materials & Care", "image_url", "image_name", "success", "reg_date", "page", "error"]
+        columns = ["name", "product", "product_id" ,"product_url" ,"product_no", "Materials & Care", "image_url", "image_name", "success", "reg_date", "page", "error"]
         df = pd.DataFrame(columns=columns)
         df.to_csv(csv_filename, index=False, encoding='utf-8-sig')
 
@@ -270,6 +270,7 @@ class ApiOldnavySetLoadWorker(QThread):
                 product['image_url'] = obj.get('image_url')
                 product['product_id'] = product.get('pid')
                 product['product_no'] = index + 1
+                product['product_url'] = f"https://oldnavy.gap.com/browse/product.do?pid={product.get('pid')}"
 
                 # images 폴더 생성
                 images_dir = os.path.join(os.getcwd(), 'images', site_name, main_name)
