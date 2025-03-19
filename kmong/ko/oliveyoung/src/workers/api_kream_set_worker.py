@@ -69,18 +69,8 @@ class ApiKreamSetLoadWorker(QThread):
 
                 if login:
                     self.log_signal.emit("크롤링 시작")
-                    cursor = 1
-                    all_extracted_ids = []
 
-                    while True:
-                        extracted_ids = self._get_sold_out_list(cursor)
-                        if not extracted_ids:  # 빈 배열이 반환되면 종료
-                            self.log_signal.emit(f"❌ 404 에러 또는 더 이상 데이터가 없습니다. (cursor={cursor})")
-                            break
-                        all_extracted_ids.extend(extracted_ids)  # 결과 합치기
-                        self.log_signal.emit(f'목록 {cursor} : {extracted_ids}')
-                        cursor += 1  # cursor 증가
-                        time.sleep(random.uniform(2, 3))
+                    all_extracted_ids = self._get_sold_out_list()
 
                     for idx, product_id in enumerate(all_extracted_ids, start=1):
                         if not self.running:  # 실행 상태 확인
@@ -103,7 +93,7 @@ class ApiKreamSetLoadWorker(QThread):
                         self.before_pro_value = pro_value
 
                         self.result_list.append(product_data)
-                        time.sleep(random.uniform(2, 3))
+                        time.sleep(random.uniform(3, 4))
 
                     self._logout(user)
                     self._remain_data_set()
@@ -204,7 +194,54 @@ class ApiKreamSetLoadWorker(QThread):
             self.access_token = None  # 실패 시 None으로 설정
 
 
-    def _get_sold_out_list(self, cursor):
+    def _get_sold_out_list(self):
+        detail_url = "https://kream.co.kr/my/selling?tab=finished&status=canceled"
+        self.driver.get(detail_url)
+
+        product_ids = []
+
+        try:
+            last_height = self.driver.execute_script("return document.body.scrollHeight")
+            consecutive_no_change = 0  # 변화 없는 횟수 카운트
+
+            while True:
+                # 스크롤을 끝까지 내림
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(2)  # 로딩 대기
+
+                # **살짝 위로 이동** (500px 위로 올림)
+                self.driver.execute_script("window.scrollBy(0, -500);")
+                time.sleep(2)  # 다시 데이터 로딩 대기
+
+                # **다시 끝까지 스크롤**
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(2)
+
+                new_height = self.driver.execute_script("return document.body.scrollHeight")
+
+                if new_height == last_height:
+                    consecutive_no_change += 1
+                    if consecutive_no_change >= 3:  # 3회 연속 변화 없으면 종료
+                        break
+                else:
+                    consecutive_no_change = 0  # 변화가 있으면 카운트 초기화
+
+                last_height = new_height
+
+            # 제품 ID 추출
+            product_elements = self.driver.find_elements(By.CLASS_NAME, "product_list_info_action")
+            for elem in product_elements:
+                href = elem.get_attribute("href")
+                if href and "/my/selling/" in href:
+                    product_id = href.split("/")[-1]
+                    product_ids.append(product_id)
+
+        except Exception as e:
+            self.log_signal.emit(f"Error: {e}")
+
+        return product_ids
+
+    def get_sold_out_list(self, cursor):
 
         tab="finished"
         status="canceled"
@@ -264,7 +301,7 @@ class ApiKreamSetLoadWorker(QThread):
         chrome_options = Options()  # 크롬 옵션 설정
 
         # 헤드리스 모드로 실행
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
 
         # GPU 비활성화
         chrome_options.add_argument("--disable-gpu")
@@ -494,7 +531,7 @@ class ApiKreamSetLoadWorker(QThread):
         return fail_reason, success_reason
 
     # API 요청 및 데이터 파싱 함수
-    def fetch_product_data(self, product_id):
+    def _fetch_product_data(self, product_id):
         url = f"https://api.kream.co.kr/api/m/asks/{product_id}"
         headers = {
             "authority": "api.kream.co.kr",
@@ -559,6 +596,109 @@ class ApiKreamSetLoadWorker(QThread):
         else:
             print(f"Failed to fetch data for product {product_id}, status code: {response.status_code}")
             return {}
+
+    # API 요청 및 데이터 파싱 함수
+    def fetch_product_data(self, product_id):
+
+        detail_url = f"https://kream.co.kr/my/selling/{product_id}"
+
+        self.driver.get(detail_url)
+
+        time.sleep(3)
+
+        product_data = {
+            "PRODUCT_NO": product_id,
+
+            "주문번호": "",
+            "영문명": "",
+            "한글명": "",
+            "모델번호": "",
+            "사이즈": "",
+            "진행상황": "",
+            "즉시 판매가": "",
+            "거래 일시": "",
+            "페널티": "",
+            "페널티 결제일": "",
+            "페널티 결제 정보": "",
+            "발송 정보": "",
+            "불합격/페널티 사유": "",
+            "95점 합격 사유": "",
+        }
+
+        try:
+            # 주문번호
+            order_number_element = self.driver.find_element(By.CLASS_NAME, "text-header-checkout")
+            order_text = order_number_element.find_element(By.TAG_NAME, "p").text.replace("주문번호 ", "")
+            product_data["주문번호"] = order_text
+
+            # 영문명
+            product_data["영문명"] = self.driver.find_element(By.CLASS_NAME, "product_title").text
+
+            # 한글명
+            product_data["한글명"] = self.driver.find_element(By.CLASS_NAME, "product_subtitle").text
+
+            # 모델번호
+            product_data["모델번호"] = self.driver.find_element(By.CLASS_NAME, "product_description").text
+
+            # 사이즈
+            product_data["사이즈"] = self.driver.find_element(By.CLASS_NAME, "product_option--name").text
+
+            # 진행상황
+            product_data["진행상황"] = self.driver.find_element(By.CLASS_NAME, "progress_item_description").text
+
+            # 가격 및 거래 일시, 페널티 등
+            price_info_elements = self.driver.find_elements(By.CLASS_NAME, "display_line.line.title_description")
+            include_list = ["즉시 판매가", "거래 일시", "페널티", "페널티 결제일"]
+            for elem in price_info_elements:
+                title_element = elem.find_element(By.CLASS_NAME, "text-lookup.line_title.display_paragraph")
+                title = title_element.text.strip()
+
+                if title not in include_list:  # include_list에 없는 항목은 건너뜀
+                    continue
+
+                try:
+                    value = elem.find_element(By.CLASS_NAME, "text-lookup.bold").text.strip()
+                except:
+                    value = elem.find_element(By.CLASS_NAME, "text-lookup.line_description.display_paragraph").text.strip()
+
+                product_data[title] = value
+
+
+            # 페널티 결제 정보 (카드 정보)
+            # 페널티 결제 정보 (카드 정보, 두 번째 값 사용 및 마지막 번호 처리)
+            try:
+                card_name = self.driver.find_elements(By.CLASS_NAME, "card_name")[1].text.strip()
+                last_num = self.driver.find_elements(By.CLASS_NAME, "last_num")[1].text.strip()
+                if len(last_num) == 3:
+                    last_num += "•"
+                product_data["페널티 결제 정보"] = f"{card_name}카드 ••••-••••-••••-{last_num}"
+            except:
+                product_data["페널티 결제 정보"] = ""
+
+            # 발송 정보
+            try:
+                shipping_info = self.driver.find_elements(By.CLASS_NAME, "btn_shipping")[0].text
+                tracking_number = shipping_info.split(" ")[-1]  # 마지막 부분이 송장번호
+                product_data["발송 정보"] = tracking_number
+            except:
+                product_data["발송 정보"] = ""
+
+            try:
+                # 불합격/페널티 사유 & 95점 합격 사유 처리
+                failure_item = self.driver.find_element(By.CLASS_NAME, "display_item.plain.verification_failure")
+                title_wrap = failure_item.find_element(By.CLASS_NAME, "title_wrap")
+                title = title_wrap.find_element(By.CLASS_NAME, "title").text.strip()
+                value = failure_item.find_element(By.CLASS_NAME, "text-lookup.line_title.display_paragraph").text.strip()
+                product_data[title] = value
+            except:
+                product_data["불합격/페널티 사유"] = ""
+                product_data["95점 합격 사유"] = ""
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        return product_data
+
 
     # [공통] csv 남은 데이터 처리
     def _remain_data_set(self):

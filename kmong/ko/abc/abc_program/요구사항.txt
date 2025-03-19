@@ -38,3 +38,7 @@ https://abcmart.a-rt.com/product/brand/page/main?brandNo=000072&page=1
 
 pyinstaller --noconsole --icon=crawling.ico main.py
 
+
+조던
+
+https://grandstage.a-rt.com/product/brand/page/main?brandNo=090050&page=1

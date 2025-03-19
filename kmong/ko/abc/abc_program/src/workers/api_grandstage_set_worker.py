@@ -179,7 +179,7 @@ class ApiGrandstageSetLoadWorker(QThread):
             brand_en_name = json_data.get("brand", {}).get("brandEnName", "")
             brand_name = json_data.get("brand", {}).get("brandName", "")
             style_info = ""
-            if "NIKE" == brand_en_name:
+            if brand_en_name in ("NIKE", "JORDAN"):
                 style_info = f"{json_data.get('styleInfo')}-{json_data.get('prdtColorInfo')}"
             else:
                 style_info = json_data.get("styleInfo")

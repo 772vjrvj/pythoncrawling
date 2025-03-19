@@ -35,9 +35,9 @@ class SelectWindow(QWidget):
         layout.setSpacing(20)  # 위젯 간 간격 설정
 
         # KREAM
-        site_button_first = QPushButton("도매꾹", self)
+        site_button_first = QPushButton("KREAM", self)
         site_button_first.setStyleSheet("""
-            background-color: #66C000;
+            background-color: black;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -46,7 +46,7 @@ class SelectWindow(QWidget):
         site_button_first.setFixedHeight(40)
         site_button_first.setFixedWidth(300)  # 버튼 너비 설정
         site_button_first.setCursor(Qt.PointingHandCursor)
-        site_button_first.clicked.connect(lambda: self.select_site("도매꾹"))
+        site_button_first.clicked.connect(lambda: self.select_site("KREAM"))
 
         layout.addWidget(site_button_first)
 
@@ -65,8 +65,8 @@ class SelectWindow(QWidget):
     # 메인 화면 실행
     def select_site(self, site):
         color = ""
-        if site == "도매꾹":
-            color = "#66C000"
+        if site == "KREAM":
+            color = "black"
         state = GlobalState()
         state.set("site", site)
         state.set("color", color)

@@ -17,6 +17,3 @@ def get_current_formatted_datetime():
     formatted_datetime = now.strftime("%Y.%m.%d %H:%M:%S")
 
     return formatted_datetime
-
-def get_today_date():
-    return datetime.now().strftime("%Y/%m/%d")

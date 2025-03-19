@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLab
 from src.ui.all_register_popup import AllRegisterPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.singleton import GlobalState
-from src.workers.api_domeggook_set_worker import ApiDomeggookSetLoadWorker
+from src.workers.api_kream_set_worker import ApiKreamSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -21,7 +21,7 @@ class MainWindow(QWidget):
     def __init__(self, app_manager):
         super().__init__()
         self.header_layout = None
-        self.id_list_button = None
+        self.user_list_button = None
         self.site_list_button = None
         self.collect_button = None
         self.log_reset_button = None
@@ -32,7 +32,7 @@ class MainWindow(QWidget):
         self.excel_popup = None
         self.progress_bar = None
         self.log_window = None
-        self.id_list = []
+        self.user_list = []
         self.app_manager = app_manager
         self.site = None
         self.color = None
@@ -140,18 +140,18 @@ class MainWindow(QWidget):
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
         # 브랜드 URL 등록
-        self.id_list_button = QPushButton("ID등록")
-        self.id_list_button.setStyleSheet("""
+        self.user_list_button = QPushButton("USER등록")
+        self.user_list_button.setStyleSheet("""
                     background-color: black;
                     color: white;
                     border-radius: 15%;
                     font-size: 16px;
                     padding: 10px;
                 """)
-        self.id_list_button.setFixedWidth(100)  # 고정된 너비
-        self.id_list_button.setFixedHeight(40)  # 고정된 높이
-        self.id_list_button.setCursor(Qt.PointingHandCursor)
-        self.id_list_button.clicked.connect(self.open_all_register_popup)
+        self.user_list_button.setFixedWidth(100)  # 고정된 너비
+        self.user_list_button.setFixedHeight(40)  # 고정된 높이
+        self.user_list_button.setCursor(Qt.PointingHandCursor)
+        self.user_list_button.clicked.connect(self.open_all_register_popup)
 
         self.site_list_button = QPushButton("사이트목록")
         self.site_list_button.setStyleSheet("""
@@ -209,7 +209,7 @@ class MainWindow(QWidget):
         self.collect_button.clicked.connect(self.start_on_demand_worker)
 
         # 왼쪽 버튼 레이아웃
-        left_button_layout.addWidget(self.id_list_button)
+        left_button_layout.addWidget(self.user_list_button)
         left_button_layout.addWidget(self.site_list_button)
         left_button_layout.addWidget(self.log_reset_button)
         left_button_layout.addWidget(self.program_reset_button)
@@ -267,7 +267,7 @@ class MainWindow(QWidget):
 
     # 프로그램 시작 중지
     def start_on_demand_worker(self):
-        if self.id_list is None:
+        if self.user_list is None:
             self.show_message("유저 목록이 없습니다.", 'warn')
             return
         if self.collect_button.text() == "시작":
@@ -287,8 +287,8 @@ class MainWindow(QWidget):
             self.progress_thread.finally_finished_signal.connect(self.finally_finished)
             self.progress_thread.start()
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
-                if self.site == '도매꾹':
-                    self.on_demand_worker = ApiDomeggookSetLoadWorker(self.id_list)
+                if self.site == 'KREAM':
+                    self.on_demand_worker = ApiKreamSetLoadWorker(self.user_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)
@@ -386,10 +386,10 @@ class MainWindow(QWidget):
 
 
     # url list 업데이트
-    def update_list(self, id_list):
-        self.id_list = id_list
-        self.add_log(f'ID 목록 갯수 : {len(self.id_list)}')
-        for user in self.id_list:
+    def update_list(self, user_list):
+        self.user_list = [{'ID': user[0], 'PASSWORD': user[1]} for user in user_list]
+        self.add_log(f'ID 목록 갯수 : {len(self.user_list)}')
+        for user in self.user_list:
             self.add_log(user)
 
     # 전체 등록 팝업

@@ -1,0 +1,1538 @@
+{
+  "id": 79187592,
+  "is_instant": false,
+  "price": 63000.0,
+  "product_id": 270425,
+  "option": "260",
+  "product_option": {
+    "id": 3687830,
+    "product_id": 270425,
+    "key": "260",
+    "name": "260",
+    "name_display": "260",
+    "display_order": 9
+  },
+  "expires_in": 180,
+  "expires_at": "2025-08-05T22:39:56Z",
+  "date_created": "2025-02-06T22:39:56Z",
+  "status": "canceled",
+  "status_display": "취소",
+  "status_display_item": {
+    "text": "취소",
+    "lookups": [],
+    "action_type": null,
+    "action_value": null,
+    "color": "#F15746",
+    "type": "text",
+    "number_of_lines": null
+  },
+  "reason": "authentication_failed",
+  "reason_text": null,
+  "notice_text": null,
+  "shipping_memo": null,
+  "price_breakdown": {
+    "price": 63000.0,
+    "processing_fee": {
+      "value": -8000.0,
+      "original_value": -8000.0,
+      "reason": null,
+      "hidden": false
+    },
+    "authentication_fee": {
+      "value": 0.0,
+      "original_value": -10000.0,
+      "reason": null,
+      "hidden": false
+    },
+    "total_payout": 55000.0,
+    "penalty_percentage": 15.0,
+    "already_bid": false,
+    "processing_fee_tooltip_message": "기본 5,000원 + 등급 3.7% (VAT 별도)"
+  },
+  "product": {
+    "release": {
+      "id": 270425,
+      "name": "Nike Cortez White Black",
+      "translated_name": "나이키 코르테즈 화이트 블랙",
+      "category": "sneakers",
+      "image_urls": [
+        "https://kream-phinf.pstatic.net/MjAyNDAzMjdfMjMx/MDAxNzExNTIwMzEyMzky.LgLJqCK_YKTziYvHXOZlwVx1t1Jzp5yY3VbKtERmJ_cg.Mfc8j5KO10dBx_02T4jHpgghmwnRziGNF1m0ml74-5Qg.PNG/a_e7dd1187d1e4483bba0d88b429176d87.png"
+      ],
+      "original_price": 90,
+      "original_price_currency": "USD",
+      "local_price": 129100,
+      "local_price_currency": "KRW",
+      "original_price_with_currency": "$90",
+      "local_price_with_currency": "129,100원",
+      "style_code": "DM4044-105",
+      "colorway": "White/Black",
+      "date_released": null,
+      "gender": "men",
+      "bgcolor": "#ebf0f5",
+      "is_active": true,
+      "is_tradable": true,
+      "is_for_adult": false,
+      "shop_category_id": 1,
+      "shop_category_name": "신발 > 스니커즈",
+      "is_displayable": true,
+      "is_official": false,
+      "is_single_price": true
+    },
+    "market": {
+      "market_price": 69000.0,
+      "last_sale_price": 69000.0,
+      "lowest_ask": 66000.0,
+      "highest_bid": 64000.0,
+      "total_sales": 387,
+      "change_value": 6000.0,
+      "change_percentage": 9.52381,
+      "pricepremium": -60100.0,
+      "pricepremium_percentage": -46.5531,
+      "has_immediate_delivery_item": true,
+      "inventory_service_available": false
+    },
+    "brand": {
+      "name": "Nike",
+      "logo": "https://kream-phinf.pstatic.net/MjAyMzA5MTVfMjMx/MDAxNjk0NzAzODM2MzY1.4vFht2O8GUtXh5-MkN4ol0myhzVOHKw0GVaypjOLFIUg.sqWg90eLy1YOSHvYcxcjVe-cW-PYkipq_u5oz-Bfq18g.JPEG/a_a5c0e4c782fe4950a7a55eb5d6627886.jpg",
+      "type": "brand",
+      "id": 4,
+      "meta": {
+        "bgcolor": "#ebf0f5"
+      },
+      "business_name": ""
+    },
+    "options": [
+      "225",
+      "230",
+      "235(US 4.5)",
+      "235(US 5)",
+      "240(US 5.5)",
+      "240(US 6)",
+      "245",
+      "250",
+      "255",
+      "260",
+      "265",
+      "270",
+      "275",
+      "280",
+      "285",
+      "290",
+      "295",
+      "300",
+      "305",
+      "310",
+      "320"
+    ],
+    "product_options": [
+      {
+        "id": 3687821,
+        "product_id": 270425,
+        "key": "225",
+        "name": "225",
+        "name_display": "225",
+        "display_order": 0
+      },
+      {
+        "id": 3687822,
+        "product_id": 270425,
+        "key": "230",
+        "name": "230",
+        "name_display": "230",
+        "display_order": 1
+      },
+      {
+        "id": 3687823,
+        "product_id": 270425,
+        "key": "235(US 4.5)",
+        "name": "235(US 4.5)",
+        "name_display": "235(US 4.5)",
+        "display_order": 2
+      },
+      {
+        "id": 3687824,
+        "product_id": 270425,
+        "key": "235(US 5)",
+        "name": "235(US 5)",
+        "name_display": "235(US 5)",
+        "display_order": 3
+      },
+      {
+        "id": 3687825,
+        "product_id": 270425,
+        "key": "240(US 5.5)",
+        "name": "240(US 5.5)",
+        "name_display": "240(US 5.5)",
+        "display_order": 4
+      },
+      {
+        "id": 3687826,
+        "product_id": 270425,
+        "key": "240(US 6)",
+        "name": "240(US 6)",
+        "name_display": "240(US 6)",
+        "display_order": 5
+      },
+      {
+        "id": 3687827,
+        "product_id": 270425,
+        "key": "245",
+        "name": "245",
+        "name_display": "245",
+        "display_order": 6
+      },
+      {
+        "id": 3687828,
+        "product_id": 270425,
+        "key": "250",
+        "name": "250",
+        "name_display": "250",
+        "display_order": 7
+      },
+      {
+        "id": 3687829,
+        "product_id": 270425,
+        "key": "255",
+        "name": "255",
+        "name_display": "255",
+        "display_order": 8
+      },
+      {
+        "id": 3687830,
+        "product_id": 270425,
+        "key": "260",
+        "name": "260",
+        "name_display": "260",
+        "display_order": 9
+      },
+      {
+        "id": 3687831,
+        "product_id": 270425,
+        "key": "265",
+        "name": "265",
+        "name_display": "265",
+        "display_order": 10
+      },
+      {
+        "id": 3687832,
+        "product_id": 270425,
+        "key": "270",
+        "name": "270",
+        "name_display": "270",
+        "display_order": 11
+      },
+      {
+        "id": 3687833,
+        "product_id": 270425,
+        "key": "275",
+        "name": "275",
+        "name_display": "275",
+        "display_order": 12
+      },
+      {
+        "id": 3687834,
+        "product_id": 270425,
+        "key": "280",
+        "name": "280",
+        "name_display": "280",
+        "display_order": 13
+      },
+      {
+        "id": 3687835,
+        "product_id": 270425,
+        "key": "285",
+        "name": "285",
+        "name_display": "285",
+        "display_order": 14
+      },
+      {
+        "id": 3687836,
+        "product_id": 270425,
+        "key": "290",
+        "name": "290",
+        "name_display": "290",
+        "display_order": 15
+      },
+      {
+        "id": 3687837,
+        "product_id": 270425,
+        "key": "295",
+        "name": "295",
+        "name_display": "295",
+        "display_order": 16
+      },
+      {
+        "id": 3687838,
+        "product_id": 270425,
+        "key": "300",
+        "name": "300",
+        "name_display": "300",
+        "display_order": 17
+      },
+      {
+        "id": 3687839,
+        "product_id": 270425,
+        "key": "305",
+        "name": "305",
+        "name_display": "305",
+        "display_order": 18
+      },
+      {
+        "id": 3687840,
+        "product_id": 270425,
+        "key": "310",
+        "name": "310",
+        "name_display": "310",
+        "display_order": 19
+      },
+      {
+        "id": 3687841,
+        "product_id": 270425,
+        "key": "320",
+        "name": "320",
+        "name_display": "320",
+        "display_order": 20
+      }
+    ],
+    "sales_options": [
+      {
+        "option": "225",
+        "product_option": {
+          "id": 3687821,
+          "product_id": 270425,
+          "key": "225",
+          "name": "225",
+          "name_display": "225",
+          "display_order": 0
+        },
+        "lowest_ask": null,
+        "highest_bid": 53000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "230",
+        "product_option": {
+          "id": 3687822,
+          "product_id": 270425,
+          "key": "230",
+          "name": "230",
+          "name_display": "230",
+          "display_order": 1
+        },
+        "lowest_ask": null,
+        "highest_bid": 65000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "235(US 4.5)",
+        "product_option": {
+          "id": 3687823,
+          "product_id": 270425,
+          "key": "235(US 4.5)",
+          "name": "235(US 4.5)",
+          "name_display": "235(US 4.5)",
+          "display_order": 2
+        },
+        "lowest_ask": null,
+        "highest_bid": 55000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "235(US 5)",
+        "product_option": {
+          "id": 3687824,
+          "product_id": 270425,
+          "key": "235(US 5)",
+          "name": "235(US 5)",
+          "name_display": "235(US 5)",
+          "display_order": 3
+        },
+        "lowest_ask": null,
+        "highest_bid": 51000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "240(US 5.5)",
+        "product_option": {
+          "id": 3687825,
+          "product_id": 270425,
+          "key": "240(US 5.5)",
+          "name": "240(US 5.5)",
+          "name_display": "240(US 5.5)",
+          "display_order": 4
+        },
+        "lowest_ask": null,
+        "highest_bid": 70000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "240(US 6)",
+        "product_option": {
+          "id": 3687826,
+          "product_id": 270425,
+          "key": "240(US 6)",
+          "name": "240(US 6)",
+          "name_display": "240(US 6)",
+          "display_order": 5
+        },
+        "lowest_ask": 133000.0,
+        "highest_bid": 66000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 133000.0
+      },
+      {
+        "option": "245",
+        "product_option": {
+          "id": 3687827,
+          "product_id": 270425,
+          "key": "245",
+          "name": "245",
+          "name_display": "245",
+          "display_order": 6
+        },
+        "lowest_ask": 134000.0,
+        "highest_bid": 85000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 134000.0
+      },
+      {
+        "option": "250",
+        "product_option": {
+          "id": 3687828,
+          "product_id": 270425,
+          "key": "250",
+          "name": "250",
+          "name_display": "250",
+          "display_order": 7
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 62000.0,
+        "lowest_95": null,
+        "lowest_100": 72000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "255",
+        "product_option": {
+          "id": 3687829,
+          "product_id": 270425,
+          "key": "255",
+          "name": "255",
+          "name_display": "255",
+          "display_order": 8
+        },
+        "lowest_ask": 63000.0,
+        "highest_bid": 63000.0,
+        "lowest_95": 63000.0,
+        "lowest_100": 73000.0,
+        "lowest_normal": 69000.0
+      },
+      {
+        "option": "260",
+        "product_option": {
+          "id": 3687830,
+          "product_id": 270425,
+          "key": "260",
+          "name": "260",
+          "name_display": "260",
+          "display_order": 9
+        },
+        "lowest_ask": 66000.0,
+        "highest_bid": 64000.0,
+        "lowest_95": 69000.0,
+        "lowest_100": 73000.0,
+        "lowest_normal": 66000.0
+      },
+      {
+        "option": "265",
+        "product_option": {
+          "id": 3687831,
+          "product_id": 270425,
+          "key": "265",
+          "name": "265",
+          "name_display": "265",
+          "display_order": 10
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 62000.0,
+        "lowest_95": 68000.0,
+        "lowest_100": 73000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "270",
+        "product_option": {
+          "id": 3687832,
+          "product_id": 270425,
+          "key": "270",
+          "name": "270",
+          "name_display": "270",
+          "display_order": 11
+        },
+        "lowest_ask": 66000.0,
+        "highest_bid": 61000.0,
+        "lowest_95": 66000.0,
+        "lowest_100": 80000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "275",
+        "product_option": {
+          "id": 3687833,
+          "product_id": 270425,
+          "key": "275",
+          "name": "275",
+          "name_display": "275",
+          "display_order": 12
+        },
+        "lowest_ask": 68000.0,
+        "highest_bid": 63000.0,
+        "lowest_95": 68000.0,
+        "lowest_100": 74000.0,
+        "lowest_normal": 69000.0
+      },
+      {
+        "option": "280",
+        "product_option": {
+          "id": 3687834,
+          "product_id": 270425,
+          "key": "280",
+          "name": "280",
+          "name_display": "280",
+          "display_order": 13
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 61000.0,
+        "lowest_95": 73000.0,
+        "lowest_100": 72000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "285",
+        "product_option": {
+          "id": 3687835,
+          "product_id": 270425,
+          "key": "285",
+          "name": "285",
+          "name_display": "285",
+          "display_order": 14
+        },
+        "lowest_ask": 66000.0,
+        "highest_bid": 61000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 66000.0
+      },
+      {
+        "option": "290",
+        "product_option": {
+          "id": 3687836,
+          "product_id": 270425,
+          "key": "290",
+          "name": "290",
+          "name_display": "290",
+          "display_order": 15
+        },
+        "lowest_ask": 67000.0,
+        "highest_bid": 46000.0,
+        "lowest_95": 71000.0,
+        "lowest_100": 100000.0,
+        "lowest_normal": 67000.0
+      },
+      {
+        "option": "295",
+        "product_option": {
+          "id": 3687837,
+          "product_id": 270425,
+          "key": "295",
+          "name": "295",
+          "name_display": "295",
+          "display_order": 16
+        },
+        "lowest_ask": 135000.0,
+        "highest_bid": 30000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 135000.0
+      },
+      {
+        "option": "300",
+        "product_option": {
+          "id": 3687838,
+          "product_id": 270425,
+          "key": "300",
+          "name": "300",
+          "name_display": "300",
+          "display_order": 17
+        },
+        "lowest_ask": 134000.0,
+        "highest_bid": 88000.0,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": 134000.0
+      },
+      {
+        "option": "305",
+        "product_option": {
+          "id": 3687839,
+          "product_id": 270425,
+          "key": "305",
+          "name": "305",
+          "name_display": "305",
+          "display_order": 18
+        },
+        "lowest_ask": null,
+        "highest_bid": null,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "310",
+        "product_option": {
+          "id": 3687840,
+          "product_id": 270425,
+          "key": "310",
+          "name": "310",
+          "name_display": "310",
+          "display_order": 19
+        },
+        "lowest_ask": null,
+        "highest_bid": null,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      },
+      {
+        "option": "320",
+        "product_option": {
+          "id": 3687841,
+          "product_id": 270425,
+          "key": "320",
+          "name": "320",
+          "name_display": "320",
+          "display_order": 20
+        },
+        "lowest_ask": null,
+        "highest_bid": null,
+        "lowest_95": null,
+        "lowest_100": null,
+        "lowest_normal": null
+      }
+    ],
+    "event": null,
+    "additional_info": {
+      "is_wishable": true,
+      "is_sharable": true,
+      "share_url": "https://kream.co.kr/products/270425",
+      "is_haveable": true,
+      "is_event_applicable": true,
+      "is_product_banner_applicable": true,
+      "delivery_method": {
+        "items": [
+          {
+            "badge_url": "https://kream-phinf.pstatic.net/MjAyNDEyMjBfNDcg/MDAxNzM0NjgyNTU2Mjk4.hSFl7hk_PfciPRmgvRZGUhrPKIvL9AXHISIrzooji2wg.Akin6sAFjbLFDRcJy4kzVt9OWpG-GdDARjIy3WIlLzEg.PNG/a_0ad2a17717e040138dd831ae3b247abf.png",
+            "badge_title": "빠른배송",
+            "title": "5,000원",
+            "subtitle": null,
+            "description_button": null,
+            "description": "지금 결제 시 내일 2/25(화) 도착 예정",
+            "description_lookups": [],
+            "info_url": "https://kream.co.kr/about/inventory?type=stocked",
+            "targets": [
+              "buy_95",
+              "buy_100"
+            ],
+            "value": "immediate"
+          },
+          {
+            "badge_url": "https://kream-phinf.pstatic.net/MjAyMTExMjlfMTQ4/MDAxNjM4MTc4MjI5NTk3.2phJLPtRvFqViNfhZu06HzNRiUBlT4cmZR4_Ukqsyesg.ikrfWOrL7WXCVO0Rqy5kMvOn3B2YpjLUj6RuJqosPX0g.PNG/a_8b54cbca40e945f4abf1ee24bdd031f7.png",
+            "badge_title": "일반배송",
+            "title": "3,000원",
+            "subtitle": null,
+            "description_button": null,
+            "description": "검수 후 배송 ・ 5-7일 내 도착 예정",
+            "description_lookups": [],
+            "info_url": null,
+            "targets": [
+              "bid",
+              "buy"
+            ],
+            "value": "normal"
+          },
+          {
+            "badge_url": "https://kream-phinf.pstatic.net/MjAyMTExMjlfMTQ4/MDAxNjM4MTc4MjI5NTk3.2phJLPtRvFqViNfhZu06HzNRiUBlT4cmZR4_Ukqsyesg.ikrfWOrL7WXCVO0Rqy5kMvOn3B2YpjLUj6RuJqosPX0g.PNG/a_8b54cbca40e945f4abf1ee24bdd031f7.png",
+            "badge_title": "택배발송",
+            "title": "선불",
+            "subtitle": null,
+            "description_button": null,
+            "description": "착불 발송 시 정산금액에서 차감",
+            "description_lookups": [],
+            "info_url": null,
+            "targets": [
+              "ask",
+              "sell",
+              "inventory_ask"
+            ],
+            "value": "normal"
+          },
+          {
+            "badge_url": "https://kream-phinf.pstatic.net/MjAyMTExMjFfMjE5/MDAxNjM3NDczODM5MTg0.K9c0FOdeJAbdW_bXJhclA3yN45iwcP4kpqkaspFLEJAg.TeEwjmB0EDj7ll3uQVR4GRw5IRVCpQ8-iiibQEMf-KYg.PNG/a_f82951f1984b404db30b9c4fca4bd695.png",
+            "badge_title": "창고보관",
+            "title": "첫 30일 무료",
+            "subtitle": null,
+            "description_button": null,
+            "description": "배송 없이 창고에 보관 ・ 빠르게 판매 가능",
+            "description_lookups": [],
+            "info_url": "https://kream.co.kr/about/inventory?type=keep",
+            "targets": [
+              "bid",
+              "buy",
+              "buy_95",
+              "buy_100"
+            ],
+            "value": "keep"
+          }
+        ]
+      },
+      "buy_final_confirm_text": "개인간 거래인 경우, 단순변심 또는 실수에 따른 ;tl_0;",
+      "buy_final_confirm_text_lookups": [
+        {
+          "key": ";tl_0;",
+          "text": "구매 결정 후 취소는 불가능합니다.",
+          "is_italic": false,
+          "is_semibold": false,
+          "is_bold": true,
+          "is_strikethrough": false,
+          "is_underline": false,
+          "action_type": null,
+          "action_value": null,
+          "adjustment": 0,
+          "color": null,
+          "type": "text"
+        }
+      ],
+      "option_title": "옵션",
+      "option_info_header": null,
+      "picker_buttons": [
+        {
+          "target": "buy_100",
+          "text": "빠른배송(1-2일소요)"
+        },
+        {
+          "target": "buy_95",
+          "text": "빠른배송(1-2일소요)"
+        },
+        {
+          "target": "inventory_ask",
+          "text": "선불발송"
+        },
+        {
+          "target": "ask",
+          "text": "선불발송"
+        },
+        {
+          "target": "sell",
+          "text": "선불발송"
+        },
+        {
+          "target": "buy",
+          "text": "일반배송(5-7일소요)"
+        },
+        {
+          "target": "bid",
+          "text": "일반배송(5-7일소요)"
+        }
+      ],
+      "is_cartable": true
+    }
+  },
+  "order_id": "ask-79187592",
+  "oid": "A-SN79187592",
+  "transaction": {
+    "id": 30234033,
+    "date_created": "2025-02-06T22:39:56Z",
+    "status": "canceled"
+  },
+  "penalty": null,
+  "date_paid": "2025-02-13T02:42:26Z",
+  "date_updated": "2025-02-13T02:42:26Z",
+  "request_key": null,
+  "date_buyer_refuse": null,
+  "return_tracking": null,
+  "is_keep_on_deferred": true,
+  "tracking": {
+    "id": 25295664,
+    "ask_id": 79187592,
+    "logistics_company_id": 1,
+    "logistics_company": {
+      "id": 1,
+      "name": "CJ대한통운",
+      "display_order": 1,
+      "tracking_url": "https://m.search.naver.com/search.naver?sm=mtb_etc&where=m&query=CJ대한통운",
+      "input_validation": {
+        "min": 8,
+        "max": 30,
+        "character_sets": [
+          "decimal_digits"
+        ]
+      },
+      "goodsflow_available": true,
+      "goodsflow_need_contract_customer_number": false
+    },
+    "tracking_code": "689960278230",
+    "date_created": "2025-02-07T10:32:57Z",
+    "date_showroom_in": null
+  },
+  "date_shipment_available": "2025-02-09T22:56:31Z",
+  "shipping_address": {
+    "name": "채정숙",
+    "address1": "서울 마포구 포은로2나길 15 (합정동)",
+    "address2": "4층",
+    "city": "",
+    "country": "KR",
+    "postal_code": "04021",
+    "id": 6777397,
+    "user_id": 6240675,
+    "is_default": true,
+    "alias": "",
+    "phone": "+8201025803802",
+    "date_created": "2023-12-06T08:00:37Z"
+  },
+  "payment": {
+    "id": 25445617,
+    "user_id": 6240675,
+    "is_removed": false,
+    "is_default": true,
+    "is_unusable": false,
+    "date_created": "2025-01-23T23:59:28Z",
+    "card_full_name": "현대카드",
+    "card_name": "현대카드",
+    "card_no": "************930*",
+    "card_last4": "930*",
+    "service": "iamport",
+    "method": "iamport_rebill",
+    "pg": "tosspayments",
+    "pg_display_title": "현대카드 ••••-••••-••••-930*",
+    "pg_provider": "tosspayments",
+    "billing_address": null,
+    "billing_key": "",
+    "expires_at": null
+  },
+  "histories": [
+    {
+      "status": "canceled",
+      "reason": "authentication_failed",
+      "note": "",
+      "date_created": "2025-02-13T02:42:26Z"
+    },
+    {
+      "status": "failed",
+      "reason": "authentication_failed",
+      "note": "",
+      "date_created": "2025-02-13T02:42:24Z"
+    },
+    {
+      "status": "deferred",
+      "note": "",
+      "date_created": "2025-02-13T01:59:25Z"
+    },
+    {
+      "status": "authenticating",
+      "note": "",
+      "date_created": "2025-02-13T01:37:53Z"
+    },
+    {
+      "status": "in_warehouse",
+      "note": "",
+      "date_created": "2025-02-12T05:10:21Z"
+    },
+    {
+      "status": "warehouse_scanned",
+      "note": "",
+      "date_created": "2025-02-12T05:04:06Z"
+    },
+    {
+      "status": "shipped",
+      "note": "",
+      "date_created": "2025-02-07T10:32:57Z"
+    },
+    {
+      "status": "shipment_required",
+      "note": "",
+      "date_created": "2025-02-06T22:56:31Z"
+    },
+    {
+      "status": "staged",
+      "note": "",
+      "date_created": "2025-02-06T22:39:57Z"
+    }
+  ],
+  "product_authentication": {
+    "images": [
+      {
+        "image_id": 152594844,
+        "url": "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg",
+        "secure_url": "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg",
+        "tag": "authentication_deferred",
+        "display_order": 0
+      }
+    ],
+    "image_urls": [
+      "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg"
+    ],
+    "id": 28167572,
+    "display_order_id": "Ask-79187592",
+    "reasons": [
+      "패키지 및 구성품-패키지: 박스(BOX) 손상-길이 총합 ≥12.0cm"
+    ],
+    "date_notified": "2025-02-06T22:39:56Z",
+    "user_response": "purchase_denied",
+    "date_user_response_expires": "2025-02-14T01:59:25Z"
+  },
+  "payout_deferred": false,
+  "shipment_tracking_editable": false,
+  "receipt": {
+    "status": "inapplicable",
+    "config": null
+  },
+  "payout_account": {
+    "id": 994465,
+    "bank": {
+      "id": 4,
+      "name": "우리은행",
+      "standard_code": 20,
+      "agency_type": "bank"
+    },
+    "account": "1002*********",
+    "owner_name": "채**"
+  },
+  "transaction_type": "ask",
+  "image_url": "https://kream-phinf.pstatic.net/MjAyNDAzMjdfMjMx/MDAxNzExNTIwMzEyMzky.LgLJqCK_YKTziYvHXOZlwVx1t1Jzp5yY3VbKtERmJ_cg.Mfc8j5KO10dBx_02T4jHpgghmwnRziGNF1m0ml74-5Qg.PNG/a_e7dd1187d1e4483bba0d88b429176d87.png",
+  "center_address": {
+    "name": "KREAM(크림) 앞",
+    "phone": "1588-7813",
+    "address1": "서울 송파구 송파대로 55",
+    "address2": "(장지동, 서울복합물류) D동 4층 01 DOCK",
+    "postal_code": "05842",
+    "address": "(05842) 서울 송파구 송파대로 55 (장지동, 서울복합물류) D동 4층 01 DOCK"
+  },
+  "header": {
+    "navigation_title": "종료된 거래",
+    "navigation_menu": [
+      {
+        "title": "더보기",
+        "image_url": "https://kream-phinf.pstatic.net/MjAyMzA2MjFfNzMg/MDAxNjg3MzUxMTQxMDk5._X8ITUGTSzqIhQitbG9KEl_aNAZIvERaeBnWZ4kd4b0g.oC0IhncZ1jN15hqLP3khlX5o0ov4RhzM4sW9d3ayFCIg.PNG/a_067df32d884c4361a6674c79902d5c66.png0",
+        "action_type": "named_action",
+        "action_value": "select_item",
+        "items": [
+          {
+            "title": "문의하기",
+            "action_type": "named_action",
+            "action_value": "inquiry",
+            "actions": null,
+            "item_display_type": "normal",
+            "action_parameters": null
+          }
+        ],
+        "actions": null
+      }
+    ],
+    "notice": {
+      "title": {
+        "text": "검수 보류 상품이 구매 거부되어 ‘95점 합격’ 처리 후 창고로 이동될 예정입니다. 창고보관 된 후 판매입찰이 가능합니다.",
+        "lookups": [],
+        "action_type": null,
+        "action_value": null,
+        "color": "#FFFFFF",
+        "type": "text",
+        "number_of_lines": null
+      },
+      "background_color": "#333333"
+    },
+    "product": {
+      "id": 270425,
+      "image_url": "https://kream-phinf.pstatic.net/MjAyNDAzMjdfMjMx/MDAxNzExNTIwMzEyMzky.LgLJqCK_YKTziYvHXOZlwVx1t1Jzp5yY3VbKtERmJ_cg.Mfc8j5KO10dBx_02T4jHpgghmwnRziGNF1m0ml74-5Qg.PNG/a_e7dd1187d1e4483bba0d88b429176d87.png",
+      "image_background_color": "#ebf0f5",
+      "title": "Nike Cortez White Black",
+      "description": "DM4044-105",
+      "option": "260",
+      "product_option": {
+        "id": 3687830,
+        "product_id": 270425,
+        "key": "260",
+        "name": "260",
+        "name_display": "260",
+        "display_order": 9
+      },
+      "tag": null,
+      "image_tag": null,
+      "is_for_adult": false,
+      "subtitle": "나이키 코르테즈 화이트 블랙",
+      "option_description": null,
+      "is_immediate_delivery": null
+    },
+    "buttons": [
+      {
+        "title": "상품 상세",
+        "lookups": null,
+        "display_type": "light_gray_bordered",
+        "title_color": "#222222",
+        "border_color": "#EBEBEB",
+        "background_color": "#FFFFFF",
+        "action_type": "named_action",
+        "action_value": "product_detail",
+        "status": "active",
+        "image_key": null
+      }
+    ]
+  },
+  "progress": {
+    "title": "진행 상황",
+    "background_color": "#F2F9F6",
+    "items": [
+      {
+        "bar_color": "#F15746",
+        "title": {
+          "text": "발송완료",
+          "lookups": [],
+          "action_type": null,
+          "action_value": null,
+          "color": "#222222",
+          "type": "text",
+          "number_of_lines": null
+        },
+        "description": null
+      },
+      {
+        "bar_color": "#F15746",
+        "title": {
+          "text": "입고완료",
+          "lookups": [],
+          "action_type": null,
+          "action_value": null,
+          "color": "#222222",
+          "type": "text",
+          "number_of_lines": null
+        },
+        "description": null
+      },
+      {
+        "bar_color": "#F15746",
+        "title": {
+          "text": "거래실패",
+          "lookups": [],
+          "action_type": null,
+          "action_value": null,
+          "color": "#F15746",
+          "type": "text",
+          "number_of_lines": null
+        },
+        "description": {
+          "text": "",
+          "lookups": [],
+          "action_type": null,
+          "action_value": null,
+          "color": "#22222280",
+          "type": "text",
+          "number_of_lines": null
+        }
+      },
+      {
+        "bar_color": "#F15746",
+        "title": {
+          "text": ";tl_0;",
+          "lookups": [
+            {
+              "key": ";tl_0;",
+              "text": "취소완료",
+              "is_italic": false,
+              "is_semibold": false,
+              "is_bold": true,
+              "is_strikethrough": false,
+              "is_underline": false,
+              "action_type": null,
+              "action_value": null,
+              "adjustment": 0,
+              "color": null,
+              "type": "text"
+            }
+          ],
+          "action_type": null,
+          "action_value": null,
+          "color": "#F15746",
+          "type": "text",
+          "number_of_lines": null
+        },
+        "description": {
+          "text": "95점 합격",
+          "lookups": [],
+          "action_type": "url",
+          "action_value": "https://kream.co.kr/my/inventory?tab=in_stock&status=sold&id=82542183",
+          "color": "#222222CC",
+          "type": "text",
+          "number_of_lines": null
+        }
+      }
+    ]
+  },
+  "items": [
+    {
+      "title": null,
+      "subtitle": null,
+      "style": "empty_header",
+      "items": [
+        {
+          "title": {
+            "text": "정산금액",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": {
+            "text": ";tl_0;",
+            "lookups": [
+              {
+                "key": ";tl_0;",
+                "text": "55,000원",
+                "is_italic": false,
+                "is_semibold": false,
+                "is_bold": true,
+                "is_strikethrough": true,
+                "is_underline": false,
+                "action_type": null,
+                "action_value": null,
+                "adjustment": 0,
+                "color": null,
+                "type": "text"
+              }
+            ],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "heavy_text",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FAFAFA",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "price",
+      "variations": [
+        {
+          "device_target": "pc",
+          "string_value": "판매 정산 내역",
+          "type": "title"
+        }
+      ]
+    },
+    {
+      "title": null,
+      "subtitle": null,
+      "style": "empty_header",
+      "items": [
+        {
+          "title": {
+            "text": "즉시 판매가",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": {
+            "text": ";tl_0;",
+            "lookups": [
+              {
+                "key": ";tl_0;",
+                "text": "63,000원",
+                "is_italic": false,
+                "is_semibold": false,
+                "is_bold": true,
+                "is_strikethrough": false,
+                "is_underline": false,
+                "action_type": null,
+                "action_value": null,
+                "adjustment": 0,
+                "color": null,
+                "type": "text"
+              }
+            ],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "title_description",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        },
+        {
+          "title": {
+            "text": "검수비",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#22222280",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": {
+            "text": "무료",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "title_description",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        },
+        {
+          "title": {
+            "text": "수수료",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#22222280",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": {
+            "text": "-8,000원",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "title_description",
+          "image_urls": null,
+          "action_button": {
+            "title": "",
+            "lookups": null,
+            "display_type": "icon",
+            "title_color": null,
+            "border_color": null,
+            "background_color": null,
+            "action_type": "toast",
+            "action_value": "기본 5,000원 + 등급 3.7% (VAT 별도)",
+            "status": "active",
+            "icon_url": "https://kream-phinf.pstatic.net/MjAyMzA5MTFfNyAg/MDAxNjk0NDI1NjMxMDQx.UXiqLrRyMLVdXtH4ELlALu60xlYYmuHb2GFEFwFxH4og.DUDWr28XgyzqpXazozgWdrtz4zD9mWTfhVlOn9syraUg.PNG/a_f6a56805bfce4534a9b6090b852bdd6a.png",
+            "image_key": null
+          },
+          "image": null
+        },
+        {
+          "title": {
+            "text": "배송비",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#22222280",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": {
+            "text": "선불 · 판매자 부담",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "title_description",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        },
+        {
+          "title": null,
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "separator",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        },
+        {
+          "title": {
+            "text": "거래 일시",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": {
+            "text": "2025-02-06T22:39:56Z",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "datetime",
+            "number_of_lines": null
+          },
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "title_description",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "price_breakdown"
+    },
+    {
+      "title": "발송 정보",
+      "subtitle": null,
+      "style": "plain",
+      "items": [],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "legacy",
+      "key": "shipment_info"
+    },
+    {
+      "title": "판매 정산 계좌",
+      "subtitle": null,
+      "style": "plain",
+      "items": [],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "legacy",
+      "key": "payout_account"
+    },
+    {
+      "title": "페널티 결제 정보",
+      "subtitle": null,
+      "style": "plain",
+      "items": [],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "legacy",
+      "key": "penalty_payment"
+    },
+    {
+      "title": "검수 보류 시 창고보관",
+      "subtitle": {
+        "text": "입고완료 상태까지 창고보관 신청 변경 가능",
+        "lookups": [],
+        "action_type": null,
+        "action_value": null,
+        "color": "#22222280",
+        "type": "text",
+        "number_of_lines": null
+      },
+      "style": "plain",
+      "items": [
+        {
+          "title": {
+            "text": "신청",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "title_left_aligned_description",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "keep_on_deferred"
+    },
+    {
+      "title": "반송 주소",
+      "subtitle": null,
+      "style": "plain",
+      "items": [],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "legacy",
+      "key": "return_address"
+    },
+    {
+      "title": "배송 요청사항",
+      "subtitle": null,
+      "style": "plain",
+      "items": [],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "legacy",
+      "key": "delivery_note"
+    },
+    {
+      "title": "불합격/페널티 사유",
+      "subtitle": null,
+      "style": "plain",
+      "items": [
+        {
+          "title": {
+            "text": "기타: 기타",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "info_bullet_title",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "verification_failure"
+    },
+    {
+      "title": "95점 합격 사유",
+      "subtitle": null,
+      "style": "plain",
+      "items": [
+        {
+          "title": {
+            "text": "패키지 및 구성품-패키지: 박스(BOX) 손상-길이 총합 ≥12.0cm",
+            "lookups": [],
+            "action_type": null,
+            "action_value": null,
+            "color": "#222222",
+            "type": "text",
+            "number_of_lines": null
+          },
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "info_bullet_title",
+          "image_urls": null,
+          "action_button": null,
+          "image": null
+        },
+        {
+          "title": null,
+          "description": null,
+          "accessory_title": null,
+          "subtitle": null,
+          "display_type": "image_collection",
+          "image_urls": [
+            "https://kream-phinf.pstatic.net/MjAyNTAyMTNfOTUg/MDAxNzM5NDEwNzc3NTc2.FD56_D79QRlHA5OUbPwUc7I2esAtHkZUWwNH4sXAYi4g.uHNg4-z9wXPhs0DGyKnYwaLgxxu_2vW2ayNv3B-e3p0g.JPEG/a_60cbad00c2624635841d5b0e4ab0bc1b.jpeg"
+          ],
+          "action_button": null,
+          "image": null
+        }
+      ],
+      "background_color": "#FFFFFF",
+      "action_button": null,
+      "section_type": "display_section",
+      "key": "verification_failure"
+    }
+  ],
+  "footer": {
+    "buttons": []
+  },
+  "keep_on_deferred_modal": {
+    "title": "검수 보류 시 창고보관",
+    "descriptions": [
+      {
+        "text": "[검수 보류] 상태에서 구매자가 상품을 구매하지 않은 경우, 검수 불합격으로 반송 받지 않고 ‘95점 합격’ 처리되어 창고에 보관할 수 있습니다.",
+        "lookups": [],
+        "action_type": null,
+        "action_value": null,
+        "color": "#222222CC",
+        "type": "text",
+        "number_of_lines": null
+      },
+      {
+        "text": ";tl_0;\n・ 창고 이용료는 30일 단위로 3,000원/건 결제 (첫 30일 무료)\n・ 회수 시 배송비 5,000원/건 결제\n・ 무료 기간 중 회수 시, 창고 이용료 + 회수 배송비 결제",
+        "lookups": [
+          {
+            "key": ";tl_0;",
+            "text": "창고보관 비용 안내",
+            "is_italic": false,
+            "is_semibold": false,
+            "is_bold": true,
+            "is_strikethrough": false,
+            "is_underline": false,
+            "action_type": null,
+            "action_value": null,
+            "adjustment": 0,
+            "color": "#22222280",
+            "type": "text"
+          }
+        ],
+        "action_type": null,
+        "action_value": null,
+        "color": "#22222280",
+        "type": "text",
+        "number_of_lines": null
+      },
+      {
+        "text": "검수 보류 사유 및 사진은 창고에 보관된 이후,\n[보관 판매 내역 > 보관 중] 에서 확인 가능합니다.",
+        "lookups": [],
+        "action_type": null,
+        "action_value": null,
+        "color": "#222222CC",
+        "type": "text",
+        "number_of_lines": null
+      }
+    ],
+    "selected": true
+  }
+}
