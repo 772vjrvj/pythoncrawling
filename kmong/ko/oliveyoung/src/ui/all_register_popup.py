@@ -15,15 +15,15 @@ class AllRegisterPopup(QDialog):
         self.setWindowTitle("엑셀 파일 드래그 앤 드롭")
         self.setGeometry(200, 200, 800, 600)  # 팝업 창 크기 설정
         self.setStyleSheet("background-color: white;")
-        self.user_list = []
+        self.url_list = []
         self.layout = QVBoxLayout(self)
         self.drag_drop_label = ExcelDragDropLabel()
         self.drag_drop_label.fileDropped.connect(self.load_excel)  # 시그널 연결
         self.layout.addWidget(self.drag_drop_label)
         self.table_widget = QTableWidget()
         self.table_widget.setRowCount(0)
-        self.table_widget.setColumnCount(2)  # 컬럼 수를 2개로 설정
-        self.table_widget.setHorizontalHeaderLabels(["ID", "PASSWORD"])  # 컬럼 헤더 이름 설정
+        self.table_widget.setColumnCount(1)  # 컬럼 수를 1개로 설정
+        self.table_widget.setHorizontalHeaderLabels(["URL"])  # 컬럼 헤더 이름 설정
         self.table_widget.horizontalHeader().setStretchLastSection(True)
         self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         scroll_area = QScrollArea()
@@ -59,31 +59,27 @@ class AllRegisterPopup(QDialog):
                     df = pd.read_excel(file)  # 엑셀 파일 읽기
                 combined_data.append(df)
             combined_df = pd.concat(combined_data, ignore_index=True)
-            self.user_list.clear()
+            self.url_list.clear()
 
             # combined_df.iloc[:, 0]: 데이터프레임의 첫 번째 컬럼만 선택.
             # .dropna(): NaN 값을 제거.
             # .astype(str).tolist(): 데이터를 문자열로 변환하고 Python 리스트로 변환.
-            id_list = combined_df.iloc[:, 0].dropna().astype(str).tolist()
-            password_list = combined_df.iloc[:, 1].dropna().astype(str).tolist()
-
-            self.user_list = list(zip(id_list, password_list))  # ID와 PASSWORD를 튜플로 묶음
+            self.url_list.extend(combined_df.iloc[:, 0].dropna().astype(str).tolist())  # 첫 번째 컬럼 값 추출
 
             # 테이블 위젯 초기화
-            self.table_widget.setRowCount(len(self.user_list))
-            self.table_widget.setColumnCount(2)  # ID, PASSWORD 컬럼 설정
-            self.table_widget.setHorizontalHeaderLabels(["ID", "PASSWORD"])
+            self.table_widget.setRowCount(len(self.url_list))
+            self.table_widget.setColumnCount(1)  # URL만 표시
+            self.table_widget.setHorizontalHeaderLabels(["URL"])
 
             # 데이터 로드
-            for row_idx, (id_value, password_value) in enumerate(self.user_list):
-                id_item = QTableWidgetItem(id_value)
-                id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)  # 읽기 전용 설정
+            for row_idx, url in enumerate(self.url_list):
+                # 수정해서 쓰려면 이렇게
+                # self.table_widget.setItem(row_idx, 0, QTableWidgetItem(url))
 
-                password_item = QTableWidgetItem(password_value)
-                password_item.setFlags(password_item.flags() & ~Qt.ItemIsEditable)  # 읽기 전용 설정
-
-                self.table_widget.setItem(row_idx, 0, id_item)
-                self.table_widget.setItem(row_idx, 1, password_item)
+                # ReadOnly로
+                item = QTableWidgetItem(url)
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # 셀을 읽기 전용으로 설정
+                self.table_widget.setItem(row_idx, 0, item)
 
 
             # 상태 업데이트
@@ -101,5 +97,5 @@ class AllRegisterPopup(QDialog):
 
     # 확인버튼
     def on_confirm(self):
-        self.updateList.emit(self.user_list)
+        self.updateList.emit(self.url_list)
         self.accept()

@@ -1,71 +1,14 @@
-import requests
-import json
+from PyQt5.QtWidgets import QApplication
+from src.app_manager import AppManager
+from src.utils.singleton import GlobalState
 
-def get_reviews(goods_no, page_idx):
-    """Olive Young 상품 리뷰를 가져오는 함수"""
-    url = "https://www.oliveyoung.co.kr/store/goods/getGdasNewListJson.do"
-    headers = {
-        "authority": "www.oliveyoung.co.kr",
-        "method": "GET",
-        "scheme": "https",
-        "accept": "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        "referer": f"https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo={goods_no}",
-        "sec-ch-ua": '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-        "x-requested-with": "XMLHttpRequest"
-    }
+import sys
 
-    params = {
-        "goodsNo": goods_no,
-        "gdasSort": "05",
-        "itemNo": "all_search",
-        "pageIdx": str(page_idx),
-        "colData": "",
-        "keywordGdasSeqs": "",
-        "type": "",
-        "point": "",
-        "hashTag": "",
-        "optionValue": "",
-        "cTypeLength": "0"
-    }
-
-    response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Error {response.status_code}: 요청 실패")
-        return None
-
-def print_reviews(reviews):
-    """리뷰 리스트를 출력하는 함수"""
-    if not reviews or "gdasList" not in reviews:
-        print("리뷰 데이터가 없습니다.")
-        return
-
-    for review in reviews["gdasList"]:
-        print(f"리뷰 ID: {review['gdasSeq']}")
-        print(f"상품 번호: {review['goodsNo']}")
-        print(f"회원 닉네임: {review['mbrNickNm']}")
-        print(f"평점: {review['gdasScrVal']}/10")
-        print(f"리뷰 내용: {review['gdasCont']}")
-        print(f"리뷰 등록 날짜: {review['dispRegDate']}")
-        print("-" * 50)
-
-def main():
-    """메인 실행 함수"""
-    goods_no = "A000000182989"
-    page_idx = 2
-
-    reviews = get_reviews(goods_no, page_idx)
-    print_reviews(reviews)
-
+# 메인함수
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    state = GlobalState()
+    state.initialize()
+    app_manager = AppManager()
+    app_manager.go_to_login()
+    sys.exit(app.exec_())
