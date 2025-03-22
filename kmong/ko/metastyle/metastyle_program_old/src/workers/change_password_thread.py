@@ -1,6 +1,6 @@
 import requests  # HTTP 요청 처리
 from PyQt5.QtCore import QThread, pyqtSignal  # PyQt 쓰레드 및 시그널
-from src.utils.config import server_url  # 서버 URL 및 설정 정보
+from src.utils.config import SERVER_URL  # 서버 URL 및 설정 정보
 
 
 # 비밀번호 변경 API 요청을 처리하는 스레드 클래스
@@ -30,7 +30,7 @@ class ChangePasswordThread(QThread):
 
     # 비밀번호 변경 함수
     def change_password(self, session, username, current_password, new_password):
-        url = f"{server_url}/auth/change-password"
+        url = f"{SERVER_URL}/auth/change-password"
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json"

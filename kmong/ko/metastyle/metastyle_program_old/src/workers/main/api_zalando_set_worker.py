@@ -4,6 +4,7 @@ import ssl
 import time
 from io import BytesIO
 import json
+import re
 
 import pandas as pd
 import requests
@@ -12,24 +13,30 @@ from bs4 import BeautifulSoup
 from google.cloud import storage
 from google.oauth2 import service_account
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
-from src.utils.time_utils import get_current_yyyymmddhhmmss, get_current_formatted_datetime
-from src.utils.number_utils import divide_and_truncate_per
+from src.utils.utils_time import get_current_yyyymmddhhmmss, get_current_formatted_datetime
+from src.utils.utils_number import divide_and_truncate_per
+from requests.exceptions import RequestException, Timeout, TooManyRedirects
+from urllib.parse import urlparse
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-image_main_directory = 'metastyle_images'
-company_name = 'metastyle'
-site_name = 'MYTHERESA'
+image_main_directory = 'zalando_images'
+company_name = 'zalando'
+site_name = 'ZALANDO'
 excel_filename = ''
-baseUrl = "https://www.mytheresa.com"
+baseUrl = "https://en.zalando.de"
 
 
 # API
-class ApiMytheresaSetLoadWorker(QThread):
+class ApiZalandoSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
+
 
     # 초기화
     def __init__(self, checked_list):
@@ -37,14 +44,19 @@ class ApiMytheresaSetLoadWorker(QThread):
         self.baseUrl = baseUrl
         self.sess = requests.Session()
         self.checked_list = checked_list
-        self.log_signal.emit(f"checked_list : {checked_list}")
         self.running = True  # 실행 상태 플래그 추가
+        self.driver = None
+
 
     # 프로그램 실행
     def run(self):
         global image_main_directory, company_name, site_name, excel_filename, baseUrl
-        result_list = []
+
         self.log_signal.emit("크롤링 시작")
+        current_cnt = 0
+        current_page = 0
+        before_pro_value = 0
+        result_list = []
 
         if self.checked_list:
             self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
@@ -52,9 +64,6 @@ class ApiMytheresaSetLoadWorker(QThread):
             self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
             current_time = get_current_yyyymmddhhmmss()
             excel_filename = f"{company_name}_{current_time}.xlsx"
-            current_cnt = 0
-            current_page = 0
-            before_pro_value = 0
 
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             check_obj_list = self.total_cnt_cal()
@@ -64,7 +73,6 @@ class ApiMytheresaSetLoadWorker(QThread):
             self.log_signal.emit(f"전체 항목수 {len(self.checked_list)}개")
             self.log_signal.emit(f"전체 상품수 {total_cnt} 개")
             self.log_signal.emit(f"전체 페이지수 {total_pages} 개")
-
             for index, check_obj in enumerate(check_obj_list, start=1):
                 if not self.running:  # 실행 상태 확인
                     self.log_signal.emit("크롤링이 중지되었습니다.")
@@ -72,29 +80,25 @@ class ApiMytheresaSetLoadWorker(QThread):
                 item = check_obj['name']
                 start_page = int(check_obj['start_page'])
                 end_page = int(check_obj['end_page'])
-                category, slug, main_url = self.get_url_info(item)
+                main_url, partition = self.get_url_info(item)
                 for indx, page in enumerate(range(start_page, end_page + 1), start=1):
                     if not self.running:  # 실행 상태 확인
                         break
-                    current_page = current_page + 1
-                    response_json = self.get_api_request(category, slug, page)
-                    if isinstance(response_json, dict):
-                        data = response_json.get('data', {}).get('xProductListingPage', {})
-                        products = data.get('products', [])
-                        if not products:
-                            self.log_signal.emit(f"No more data for category {category} at page {page}")
-                            break
-                        for idx, product in enumerate(products, start=1):
+                    page_url = f"{main_url}{partition}p={page}"
+                    main_html = self.main_request(page_url, 5)
+                    if main_html:
+                        products, totalPages = self.process_data(main_html)
+                        for idx, detail_url in enumerate(products, start=1):
                             if not self.running:  # 실행 상태 확인
                                 break
                             current_cnt += 1
                             now_per = divide_and_truncate_per(current_cnt, total_cnt)
                             self.log_signal.emit(f'{site_name}({now_per}%)  {item}({index}/{len(check_obj_list)})  TotalPage({current_page}/{total_pages})  TotalProduct({current_cnt}/{total_cnt})')
-                            detail_url = f'{main_url}{product.get("slug")}'
-                            images, brand_name, product_name, detail = self.get_detail_data(detail_url)
-                            if images:
+                            detail_html = self.sub_request(detail_url)
+                            if detail_html:
+                                images, brand_name, product_name, detail = self.get_detail_data(detail_html)
                                 for ix, image_url in enumerate(images, start=1):
-                                    if not self.running:  # 실행 상태 확인
+                                    if not self.running:
                                         break
                                     self.log_signal.emit(f'{item}  Page({page}/{end_page})[{indx}/{total_pages}]  Product({idx}/{len(products)})  Image({ix}/{len(images)})')
                                     obj = {
@@ -124,68 +128,83 @@ class ApiMytheresaSetLoadWorker(QThread):
                                     self.log_signal.emit(f'data : {obj}')
                                     result_list.append(obj)
                                     time.sleep(1)
-                            pro_value = (current_cnt / total_cnt) * 1000000
-                            self.progress_signal.emit(before_pro_value, pro_value)
-                            before_pro_value = pro_value
+                                pro_value = (current_cnt / total_cnt) * 1000000
+                                self.progress_signal.emit(before_pro_value, pro_value)
+                                before_pro_value = pro_value
 
         self.progress_signal.emit(before_pro_value, 1000000)
         self.log_signal.emit(f"=============== 처리 데이터 수 : {len(result_list)}")
         self.log_signal.emit("=============== 크롤링 종료")
         self.progress_end_signal.emit()
 
+
     # 프로그램 중단
     def stop(self):
+        """스레드 중지를 요청하는 메서드"""
         self.running = False
+
 
     # 로그인 쿠키가져오기
     def login(self):
-        webdriver_options = webdriver.ChromeOptions()
-
-        # 이 옵션은 Chrome이 자동화 도구(예: Selenium)에 의해 제어되고 있다는 것을 감지하지 않도록 만듭니다.
-        # AutomationControlled 기능을 비활성화하여 webdriver가 브라우저를 자동으로 제어하는 것을 숨깁니다.
-        # 이는 일부 웹사이트에서 자동화 도구가 감지되는 것을 방지하는 데 유용합니다.
+        """
+        Selenium 웹 드라이버를 설정하고 반환하는 함수입니다.
+        """
+        chrome_options = Options()
         ###### 자동 제어 감지 방지 #####
-        webdriver_options.add_argument('--disable-blink-features=AutomationControlled')
+        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
 
-        # Chrome 브라우저를 실행할 때 자동으로 브라우저를 최대화 상태로 시작합니다.
-        # 이 옵션은 사용자가 브라우저를 처음 실행할 때 크기가 자동으로 최대로 설정되도록 합니다.
         ##### 화면 최대 #####
-        webdriver_options.add_argument("--start-maximized")
+        chrome_options.add_argument("--start-maximized")
 
-        # headless 모드로 Chrome을 실행합니다.
-        # 이는 화면을 표시하지 않고 백그라운드에서 브라우저를 실행하게 됩니다.
-        # 브라우저 UI 없이 작업을 수행할 때 사용하며, 서버 환경에서 유용합니다.
         ##### 화면이 안보이게 함 #####
-        webdriver_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
 
-        #이 설정은 Chrome의 자동화 기능을 비활성화하는 데 사용됩니다.
-        #기본적으로 Chrome은 자동화가 활성화된 경우 브라우저의 콘솔에 경고 메시지를 표시합니다.
-        #이 옵션을 설정하면 이러한 경고 메시지가 나타나지 않도록 할 수 있습니다.
         ##### 자동 경고 제거 #####
-        webdriver_options.add_experimental_option('useAutomationExtension', False)
+        chrome_options.add_experimental_option('useAutomationExtension', False)
 
-        # 이 옵션은 브라우저의 로깅을 비활성화합니다.
-        # enable-logging을 제외시키면, Chrome의 로깅 기능이 활성화되지 않아 불필요한 로그 메시지가 출력되지 않도록 할 수 있습니다.
         ##### 로깅 비활성화 #####
-        webdriver_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        # 이 옵션은 enable-automation 스위치를 제외시킵니다.
-        # enable-automation 스위치가 활성화되면,
-        # 자동화 도구를 사용 중임을 알리는 메시지가 브라우저에 표시됩니다.
-        # 이를 제외하면 자동화 도구의 사용이 감지되지 않습니다.
-        ##### 자동화 도구 사용 감지 제거 #####
-        webdriver_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        self.driver = webdriver.Chrome(options=webdriver_options)
-        self.driver.set_page_load_timeout(120)
-        self.driver.get(self.baseUrl)
-        cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            self.sess.cookies.set(cookie['name'], cookie['value'])
-        self.version = self.driver.capabilities["browserVersion"]
-        self.headers = {
-            "User-Agent": f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{self.version}"
-        }
-        self.driver.quit()
+        ##### 자동화 탐지 방지 설정 #####
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+
+        ##### 자동으로 최신 크롬 드라이버를 다운로드하여 설치하는 역할 #####
+
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        ##### CDP 명령으로 자동화 감지 방지 #####
+        self.driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(navigator, 'webdriver', {
+                  get: () => undefined
+                })
+            '''
+        })
+
+    def main_request(self, url, wait_time):
+
+        try:
+            # 웹페이지 요청
+            self.driver.get(url)
+
+            # 페이지 로딩 대기 (적절한 대기 시간 필요)
+            time.sleep(wait_time)
+
+            # 페이지 소스 가져오기
+            html = self.driver.page_source
+
+            # 상태 코드 확인 (브라우저에서 처리하므로 확인할 수 없음, 대신 로딩이 완료되었는지 확인)
+            if html:
+                return html
+            else:
+                self.log_signal.emit(f"Failed to retrieve page content for {url}")
+                self.driver.quit()
+                return None
+
+        except Exception as e:
+            self.log_signal.emit(f"Request failed: {e}")
+            self.driver.quit()
+            return None
+
 
     # 페이지 데이터 가져오기
     def get_api_request(self, category, slug, page):
@@ -260,116 +279,167 @@ class ApiMytheresaSetLoadWorker(QThread):
             self.log_signal.emit(f"요청 중 에러 발생: {e}")
             return None
 
+
     # 상세보기 데이터 가져오기
-    def get_detail_data(self, url):
-
-        images = ""
-        brand_name = ""
-        product_name = ""
-        detail = ""
-
+    def get_detail_data(self, html):
+        images = []
+        brand_name = ''
+        product_name = ''
+        detail = []
         try:
-            response = requests.get(url)
-            response.encoding = 'utf-8'
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(html, 'html.parser')
 
-            # 'product__gallery__carousel' 클래스를 가진 div 안에서 'swiper-slide' 클래스를 가진 div를 찾기
-            carousel_div = soup.find('div', class_='product__gallery__carousel') if soup else None
+            # 이미지 다운로드 [시작] ====================
+            img_list = soup.find_all('li', class_='LiPgRT DlJ4rT S3xARh') if soup else []
 
-            if not carousel_div:
-                self.log_signal.emit("carousel_div not found")
-                return []
+            if len(img_list) < 1:
+                self.log_signal.emit("Image list not found")
 
-            swiper_slides = carousel_div.find_all('div', class_='swiper-slide')
+            images = set()
+            for index, view in enumerate(img_list):
+                img = view.find('img')
 
-            # 'swiper-slide' 안의 img 태그의 src를 배열에 담기
-            images = set()  # set을 사용하여 중복 제거
-            if swiper_slides:
-                for slide in swiper_slides:
-                    img_tag = slide.find('img')
-                    if img_tag and img_tag.get('src'):  # img 태그가 존재하고 src 속성이 있을 경우
-                        images.add(img_tag['src'])  # set에 추가 (중복 자동 제거)
+                if img:
+                    img_url = img['src'] if 'src' in img.attrs else ''
+                    images.add(img_url)
 
-                # 중복 제거된 img_sources 리스트로 변환
-                images = list(images)
-                images = images[:3]
+            images = list(images)
+            images = images[:2]
 
-            product_tag = soup.find('div', class_='product__area__branding__name')
+            product_tag = soup.find('span', class_='EKabf7 R_QwOV')
             product_name = product_tag.get_text(strip=True) if product_tag else ''
 
-            brand_tag = soup.find('a', class_='product__area__branding__designer__link')
+            brand_tag = soup.find('span', class_='OBkCPz Z82GLX m3OCL3 HlZ_Tf _5Yd-hZ')
             brand_name = brand_tag.get_text(strip=True) if brand_tag else ''
 
-            accordion_body_content = soup.find('div', class_='accordion__body__content')
+            # <div> 태그 중 'data-testid' 속성이 'pdp-accordion-details'인 요소 찾기
+            accordion_details = soup.find('div', {'data-testid': 'pdp-accordion-details'})
 
-            # ul 안의 li들에서 텍스트를 배열에 담기
-            detail = []
-            ul_tag = accordion_body_content.find('ul') if accordion_body_content else None
-            if ul_tag:
-                li_tags = ul_tag.find_all('li')  # li 태그들 찾기
-                for li in li_tags:
-                    detail.append(li.get_text(strip=True))  # li 안의 텍스트를 가져와서 배열에 담기
+            # <dl> 태그 안의 모든 <div>를 찾아서 텍스트 추출
+            dl_items = accordion_details.find_all('div', class_='qMOFyE') if accordion_details else []
 
+            # 텍스트를 담을 배열 초기화
+
+            # <dl> 안의 모든 <div>에서 <dt>와 <dd> 텍스트를 결합하여 배열에 담기
+            for item in dl_items:
+                dt = item.find('dt')  # <dt> 요소
+                dd = item.find('dd')  # <dd> 요소
+                if dt and dd:
+                    # dt와 dd의 텍스트를 결합하여 하나의 문자열로 만들고, 이를 배열에 추가
+                    detail.append(f'{dt.get_text(strip=True)} {dd.get_text(strip=True)}')
         except Exception as e:
-            self.log_signal.emit(f"Error : {e}")
+            self.log_signal.emit(f"Error in process_detail_data: {e}")
         finally:
             return images, brand_name, product_name, detail
+
 
     # URL 가져오기
     def get_url_info(self, item):
         global baseUrl
-        category = ''
-        slug = ''
+
         main_url = ''
+        partition = ''
 
         if item:
             name = item.lower()
 
             if name == 'men':
-                category = 'men'
-                slug = '/clothing'
-                main_url = f"{baseUrl}/us/en/men"
+                main_url = f"{baseUrl}/mens-clothing"
+                partition = '/?'
             elif name == 'women':
-                category = 'women'
-                slug = '/clothing'
-                main_url = f"{baseUrl}/us/en/women"
+                main_url = f"{baseUrl}/womens-clothing"
+                partition = '/?'
             elif name == 'boys':
-                category = 'kids'
-                slug = '/boys/clothing'
-                main_url = f"{baseUrl}/us/en/kids"
+                main_url = f"{baseUrl}/kids/?gender=25"
+                partition = '&'
             elif name == 'girls':
-                category = 'kids'
-                slug = '/girls/clothing'
-                main_url = f"{baseUrl}/us/en/kids"
+                main_url = f"{baseUrl}/kids/?gender=26"
+                partition = '&'
             elif name == 'baby':
-                category = 'kids'
-                slug = '/baby/baby-clothing'
-                main_url = f"{baseUrl}/us/en/kids"
+                main_url = f"{baseUrl}/kids/?gender=4"
+                partition = '&'
 
-        return category, slug, main_url
+        return main_url, partition
+
+
+    # 카테고리별 전체 개수
+    def process_total_data(self, html):
+        total_cnt = 0
+        total_page = 0
+        try:
+            soup = BeautifulSoup(html, 'html.parser')
+
+            product_count_tag = soup.find('span', class_='voFjEy _2kjxJ6 m3OCL3 Yb63TQ lystZ1 m3OCL3') if soup else None
+
+            if product_count_tag:
+                total_cnt = re.sub(r'\D', '', product_count_tag.text)  # 숫자만 추출
+
+
+            total_page_element = soup.find('span', class_='voFjEy _2kjxJ6 m3OCL3 HlZ_Tf jheIXc Gj7Swn') if soup else None
+
+            # 숫자 추출
+            if total_page_element:
+                # "Page 2 of 428"에서 마지막 숫자 추출
+                match = re.search(r'\b\d[\d,]*$', total_page_element.text.strip())
+                if match:
+                    # 콤마 제거
+                    total_page = match.group().replace(',', '')
+
+        except Exception as e:
+            self.log_signal.emit(f"Error : {e}")
+        finally:
+            return int(total_cnt), int(total_page)
+
+
+    # 상세리스트 가져오기
+    def process_data(self, html):
+        data_list = []
+        total_page = 0
+        try:
+            soup = BeautifulSoup(html, 'html.parser')
+            board_list = soup.find_all('div', class_='_5qdMrS _75qWlu iOzucJ') if soup else None
+
+            if not board_list:
+                self.log_signal.emit("Board list not found")
+                return []
+
+            if len(board_list) > 0:
+
+                for index, view in enumerate(board_list):
+                    a_tag = view.find('a', class_='_LM tCiGa7 ZkIJC- JT3_zV CKDt_l CKDt_l LyRfpJ')
+
+                    if a_tag:
+                        href_text = a_tag['href'] if 'href' in a_tag.attrs else ''
+                        data_list.append(href_text)
+
+            total_page_element = soup.find('span', class_='voFjEy _2kjxJ6 m3OCL3 HlZ_Tf jheIXc Gj7Swn') if soup else None
+
+            # 숫자 추출
+            if total_page_element:
+                # "Page 2 of 428"에서 마지막 숫자 추출
+                match = re.search(r'\b\d[\d,]*$', total_page_element.text.strip())
+                if match:
+                    # 콤마 제거
+                    total_page = match.group().replace(',', '')
+        except Exception as e:
+            self.log_signal.emit(f"Error : {e}")
+        finally:
+            return data_list, total_page
+
 
     # 전체 갯수 조회
     def total_cnt_cal(self):
         check_obj_list = []
-
         for index, checked_obj in enumerate(self.checked_list, start=1):
             name = checked_obj['name']
             start_page = checked_obj['start_page']
             end_page = checked_obj['end_page']
 
-            category, slug, main_url = self.get_url_info(name)
-            response_json = self.get_api_request(category, slug, 1)
+            main_url, partition = self.get_url_info(name)
+            main_html = self.main_request(main_url, 3)
+            total_items_cnt, total_page = self.process_total_data(main_html)
 
-            total_items_cnt = 0
-            total_page = 0
-            last_page_cnt = 0
-
-            if isinstance(response_json, dict):
-                data = response_json.get('data', {}).get('xProductListingPage', {})
-                pagination = data.get('pagination', {})
-                total_items_cnt = pagination.get('totalItems')
-                total_page = pagination.get('totalPages')
-                last_page_cnt = total_items_cnt % 60
+            last_page_cnt = total_items_cnt % 84
 
             if not end_page:
                 end_page = total_page
@@ -383,22 +453,83 @@ class ApiMytheresaSetLoadWorker(QThread):
                     start_page = end_page
                     total_items_cnt = last_page_cnt
                 elif start_page != 1:
-                    total_items_cnt = ((end_page - start_page) * 60) + last_page_cnt
+                    total_items_cnt = ((end_page - start_page) * 84) + last_page_cnt
             if end_page < total_page:
                 if start_page >= end_page:
                     start_page = end_page
-                    total_items_cnt = 60
+                    total_items_cnt = 84
                 else:
-                    total_items_cnt = (end_page - start_page + 1) * 60
+                    total_items_cnt = (end_page - start_page + 1) * 84
 
             checked_obj['start_page'] = start_page
             checked_obj['end_page'] = end_page
             checked_obj['total_page_cnt'] = end_page - start_page + 1
             checked_obj['total_item_cnt'] = total_items_cnt
             checked_obj['item'] = name.lower()
+
             check_obj_list.append(checked_obj)
 
         return check_obj_list
+
+
+
+    def sub_request(self, url, timeout=30):
+
+        # HTTP 요청 헤더 설정
+        headers = {
+            'method': 'GET',
+            'scheme': 'https',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'accept-encoding': 'gzip, deflate, br, zstd',
+            'accept-language': 'ko,en;q=0.9,en-US;q=0.8',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0',
+        }
+
+        try:
+
+            # POST 요청을 보내고 응답 받기
+            # response = requests.get(url, headers=headers, params=payload, timeout=timeout)
+            response = requests.get(url, headers=headers, timeout=timeout)
+
+            # 응답의 인코딩을 UTF-8로 설정
+            response.encoding = 'utf-8'
+
+            # HTTP 상태 코드가 200이 아닌 경우 예외 처리
+            response.raise_for_status()
+
+            # 상태 코드가 200인 경우 응답 JSON 반환
+            if response.status_code == 200:
+                return response.text  # JSON 형식으로 응답 반환
+            else:
+                # 상태 코드가 200이 아닌 경우 로그 기록
+                self.log_signal.emit(f"Unexpected status code: {response.status_code}")
+                return None
+
+        # 타임아웃 오류 처리
+        except Timeout:
+            self.log_signal.emit("Request timed out")
+            return None
+
+        # 너무 많은 리다이렉트 발생 시 처리
+        except TooManyRedirects:
+            self.log_signal.emit("Too many redirects")
+            return None
+
+        # 네트워크 연결 오류 처리
+        except ConnectionError:
+            self.log_signal.emit("Network connection error")
+            return None
+
+        # 기타 모든 예외 처리
+        except RequestException as e:
+            self.log_signal.emit(f"Request failed: {e}")
+            return None
+
+        # 예상치 못한 예외 처리
+        except Exception as e:
+            self.log_signal.emit(f"Unexpected exception: {e}")
+            return None
+
 
     # 엑셀 한껀씩 저장
     def save_to_excel_one_by_one(self, results, file_name, obj, sheet_name='Sheet1'):
@@ -424,6 +555,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                     # 엑셀 파일에 덧붙이기 (index는 제외)
                     with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
                         df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
+
                     self.log_signal.emit('엑셀 추가 성공')
 
                 else:
@@ -432,6 +564,7 @@ class ApiMytheresaSetLoadWorker(QThread):
                     with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
                         df.to_excel(writer, sheet_name=sheet_name, index=False)
                         self.log_signal.emit('엑셀 추가 성공')
+
                 obj['excel_save'] = 'O'
 
         except Exception as e:
@@ -471,8 +604,11 @@ class ApiMytheresaSetLoadWorker(QThread):
             # 이미지 데이터를 메모리에서 처리
             image_data = BytesIO(response.content)
 
-            # 이미지 이름 변경: URL에서 'media/...' 부분을 'media_'로 변경
-            image_name = image_url.split("media/")[-1].replace("/", "_")  # 'media/...'를 'media_...'로 변경
+            # URL 파싱
+            parsed_url = urlparse(image_url)
+
+            # path의 마지막 부분 추출
+            image_name = parsed_url.path.split('/')[-1]
 
             # 업로드할 경로 설정: site_name/category/product_name/media_...
             # blob_name = f"test_program_20250117/{site_name}/{category}_{image_name}"
@@ -524,6 +660,7 @@ class ApiMytheresaSetLoadWorker(QThread):
         #     self.log_signal.emit(f"업로드 완료: {blob_name}")
         # else:
         #     self.log_signal.emit(f"업로드 실패: {blob_name}이 존재하지 않습니다.")
+
 
     # 이미지 로컬 다운로드
     def download_image(self, image_url, site_name, category, product_name, obj):

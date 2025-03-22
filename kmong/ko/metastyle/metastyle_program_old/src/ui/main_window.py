@@ -7,12 +7,9 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLa
                              QTextEdit, QProgressBar)
 
 from src.ui.check_popup import CheckPopup
-from src.utils.config import server_url  # 서버 URL 및 설정 정보
+from src.utils.config import SERVER_URL
 from src.utils.singleton import GlobalState
-from src.workers.api_kohls_set_worker import ApiKohlsSetLoadWorker
-from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
-from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
-from src.workers.api_oldnavy_set_worker import ApiOldnavySetLoadWorker
+from src.workers.worker_factory import WORKER_CLASS_MAP
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
@@ -61,7 +58,7 @@ class MainWindow(QWidget):
     # 로그인 확인 체크
     def api_worker_set(self):
         if self.api_worker is None:  # 스레드가 있으면 중단
-            self.api_worker = CheckWorker(self.cookies, server_url)
+            self.api_worker = CheckWorker(self.cookies, SERVER_URL)
             self.api_worker.api_failure.connect(self.handle_api_failure)
             self.api_worker.log_signal.connect(self.add_log)
             self.api_worker.start()
@@ -155,75 +152,12 @@ class MainWindow(QWidget):
         left_button_layout = QHBoxLayout()
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
-        # 항목선택
-        self.check_list_button = QPushButton("항목선택")
-        self.check_list_button.setStyleSheet("""
-            background-color: #7d7c7c;
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.check_list_button.setFixedWidth(100)  # 고정된 너비
-        self.check_list_button.setFixedHeight(40)  # 고정된 높이
-        self.check_list_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
-        self.check_list_button.clicked.connect(self.open_check_popup)
-
-        # 사이트목록
-        self.site_list_button = QPushButton("사이트목록")
-        self.site_list_button.setStyleSheet("""
-            background-color: #7d7c7c;
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.site_list_button.setFixedWidth(100)  # 고정된 너비
-        self.site_list_button.setFixedHeight(40)  # 고정된 높이
-        self.site_list_button.setCursor(Qt.PointingHandCursor)  # 마우스 올렸을 때 손가락 커서 설정
-        self.site_list_button.clicked.connect(self.go_site_list)
-
-        # 선택수집
-        self.log_reset_button = QPushButton("로그리셋")
-        self.log_reset_button.setStyleSheet(f"""
-            background-color: {self.color};
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.log_reset_button.setFixedWidth(100)  # 고정된 너비
-        self.log_reset_button.setFixedHeight(40)  # 고정된 높이
-        self.log_reset_button.setCursor(Qt.PointingHandCursor)
-        self.log_reset_button.clicked.connect(self.log_reset)
-
-        # 선택수집
-        self.program_reset_button = QPushButton("초기화")
-        self.program_reset_button.setStyleSheet(f"""
-            background-color: {self.color};
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.program_reset_button.setFixedWidth(100)  # 고정된 너비
-        self.program_reset_button.setFixedHeight(40)  # 고정된 높이
-        self.program_reset_button.setCursor(Qt.PointingHandCursor)
-        self.program_reset_button.clicked.connect(self.program_reset)
-
-        # 선택수집
-        self.collect_button = QPushButton("시작")
-        self.collect_button.setStyleSheet(f"""
-            background-color: {self.color};
-            color: white;
-            border-radius: 15%;
-            font-size: 16px;
-            padding: 10px;
-        """)
-        self.collect_button.setFixedWidth(100)  # 고정된 너비
-        self.collect_button.setFixedHeight(40)  # 고정된 높이
-        self.collect_button.setCursor(Qt.PointingHandCursor)
-        self.collect_button.clicked.connect(self.start_on_demand_worker)
+        # 버튼 생성
+        self.check_list_button    = self.create_button("항목선택", "#7d7c7c", self.open_check_popup)
+        self.site_list_button     = self.create_button("사이트목록", "#7d7c7c", self.go_site_list)
+        self.log_reset_button     = self.create_button("로그리셋", self.color, self.log_reset)
+        self.program_reset_button = self.create_button("초기화", self.color, self.program_reset)
+        self.collect_button       = self.create_button("시작", self.color, self.start_on_demand_worker)
 
         # 왼쪽 버튼 레이아웃
         left_button_layout.addWidget(self.check_list_button)
@@ -273,6 +207,22 @@ class MainWindow(QWidget):
         # 레이아웃 설정
         self.setLayout(main_layout)
         self.center_window()
+    
+    # 버튼 만들기
+    def create_button(self, text, color, callback):
+        button = QPushButton(text)
+        button.setStyleSheet(f"""
+            background-color: {color};
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        button.setFixedWidth(100)
+        button.setFixedHeight(40)
+        button.setCursor(Qt.PointingHandCursor)
+        button.clicked.connect(callback)
+        return button
 
     # 로그
     def add_log(self, message):
@@ -302,14 +252,16 @@ class MainWindow(QWidget):
             self.progress_thread.start()
 
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
-                if self.site == 'MYTHERESA':
-                    self.on_demand_worker = ApiMytheresaSetLoadWorker(self.select_check_list)
-                elif self.site == 'ZALANDO':
-                    self.on_demand_worker = ApiZalandoSetLoadWorker(self.select_check_list)
-                elif self.site == 'OLDNAVY':
-                    self.on_demand_worker = ApiOldnavySetLoadWorker(self.select_check_list)
-                elif self.site == 'KOHLS':
-                    self.on_demand_worker = ApiKohlsSetLoadWorker(self.select_check_list)
+                worker_class = WORKER_CLASS_MAP.get(self.site)
+                if worker_class:
+                    self.on_demand_worker = worker_class(self.select_check_list)
+                    self.on_demand_worker.log_signal.connect(self.add_log)
+                    self.on_demand_worker.progress_signal.connect(self.set_progress)
+                    self.on_demand_worker.progress_end_signal.connect(self.stop)
+                    self.on_demand_worker.start()
+                else:
+                    self.add_log(f"[오류] '{self.site}'에 해당하는 워커가 없습니다.")
+
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.stop)

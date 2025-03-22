@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from src.utils.singleton import GlobalState
+from src.utils.config import SITE_CONFIGS
 
 # 로그인 창
 class SelectWindow(QWidget):
@@ -34,72 +35,30 @@ class SelectWindow(QWidget):
         layout.setContentsMargins(20, 20, 20, 20)  # 레이아웃의 외부 마진을 설정
         layout.setSpacing(20)  # 위젯 간 간격 설정
 
-        # MYTHERESA
-        site_button_first = QPushButton("MYTHERESA", self)
-        site_button_first.setStyleSheet("""
-            background-color: #000;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        site_button_first.setFixedHeight(40)
-        site_button_first.setFixedWidth(300)  # 버튼 너비 설정
-        site_button_first.setCursor(Qt.PointingHandCursor)
-        site_button_first.clicked.connect(lambda: self.select_site("MYTHERESA"))
+        # 버튼 정보 리스트
+        sites = [(site_name, config["color"]) for site_name, config in SITE_CONFIGS.items()]
 
-
-        # ZALANDO
-        site_button_second = QPushButton("ZALANDO", self)
-        site_button_second.setStyleSheet("""
-            background-color: #D2451E;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        site_button_second.setFixedHeight(40)
-        site_button_second.setFixedWidth(300)  # 버튼 너비 설정
-        site_button_second.setCursor(Qt.PointingHandCursor)
-        site_button_second.clicked.connect(lambda: self.select_site("ZALANDO"))
-
-
-        # OLDNAVY
-        site_button_third = QPushButton("OLDNAVY", self)
-        site_button_third.setStyleSheet("""
-            background-color: #000080;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        site_button_third.setFixedHeight(40)
-        site_button_third.setFixedWidth(300)  # 버튼 너비 설정
-        site_button_third.setCursor(Qt.PointingHandCursor)
-        site_button_third.clicked.connect(lambda: self.select_site("OLDNAVY"))
-
-
-        # NEW4
-        site_button_forth = QPushButton("KOHLS", self)
-        site_button_forth.setStyleSheet("""
-            background-color: #860035;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        site_button_forth.setFixedHeight(40)
-        site_button_forth.setFixedWidth(300)  # 버튼 너비 설정
-        site_button_forth.setCursor(Qt.PointingHandCursor)
-        site_button_forth.clicked.connect(lambda: self.select_site("KOHLS"))
-
-        # 레이아웃에 요소 추가
-        layout.addWidget(site_button_first)
-        layout.addWidget(site_button_second)
-        layout.addWidget(site_button_third)
-        layout.addWidget(site_button_forth)
+        for name, color in sites:
+            button = self.create_site_button(name, color)
+            layout.addWidget(button)
 
         self.center_window()
+
+
+    def create_site_button(self, name, color):
+        button = QPushButton(name, self)
+        button.setStyleSheet(f"""
+            background-color: {color};
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        button.setFixedHeight(40)
+        button.setFixedWidth(300)
+        button.setCursor(Qt.PointingHandCursor)
+        button.clicked.connect(lambda: self.select_site(name))
+        return button
 
 
 
@@ -117,69 +76,21 @@ class SelectWindow(QWidget):
 
     # 메인 화면 실행
     def select_site(self, site):
-
         if site == "":
             self.show_message("접속실패", "해당 사이트는 준비중 입니다...")
-            return None
-        else:
+            return
 
-            if site == "MYTHERESA":
-                color = "#000"
-                check_list = ["Women",
-                              "Men",
-                              "Girls",
-                              "Boys",
-                              "Baby"]
-            elif site == "ZALANDO":
-                color = "#D2451E"
-                check_list = ["Women",
-                              "Men",
-                              "Girls",
-                              "Boys",
-                              "Baby"]
-            elif site == "OLDNAVY":
-                color = "#000080"
-                check_list = ["Women / Women’s Tops / Shirts & Blouses",
-                              "Women / Women’s Tops / Button-down Shirts",
-                              "Women / Women’s Bottoms / Pants",
-                              "Women / Women’s Bottoms / Shorts",
-                              "Women / Women’s Bottoms / Skirts",
-                              "Women / Shop Women’s Categories / Dresses & Jumpsuits",
-                              "Now Trending!",
-                              "Activewear",
-                              "Women",
-                              "Men",
-                              "Girls",
-                              "Boys",
-                              "Toddler",
-                              "Baby",
-                              "Maternity"]
-            elif site == "KOHLS":
-                color = "#860035"
-                # check_list = ["Women / Bottoms / Pants",
-                #               "Women / Bottoms / Skirts & Skorts",
-                #               "Women / Bottoms / Shorts",
-                #               "Women / Dresses & Jumpsuits",
-                #               "Men / Mes’s Tops / Button-Down Shirts",
-                #               "Men / Mes’s Bottoms / Casual Pants",
-                #               "Men / Mes’s Bottoms / Shorts",
-                #               "Women / Tops / Shirts & Blouses"
-                #               ]
-                check_list = ["Women / Nine West",
-                              "Women / Sonoma",
-                              "Women / Croft",
-                              "Women / LC",
-                              "Women / SVVW"
-                              ]
-            else:
-                color = ""
-                check_list = []
+        config = SITE_CONFIGS.get(site)
 
-            state = GlobalState()
-            state.set("site", site)
-            state.set("color", color)
-            state.set("check_list", check_list)
+        if not config:
+            self.show_message("접속실패", "해당 사이트 정보가 없습니다.")
+            return
 
-            # 로그인 성공 시 메인 화면을 새롭게 생성
-            self.close()  # 로그인 화면 종료
-            self.app_manager.go_to_main()
+        # 상태 설정
+        state = GlobalState()
+        state.set("site", site)
+        state.set("color", config.get("color", "#000"))
+        state.set("check_list", list(config.get("check_list", {}).keys()))
+        # 화면 전환
+        self.close()
+        self.app_manager.go_to_main()

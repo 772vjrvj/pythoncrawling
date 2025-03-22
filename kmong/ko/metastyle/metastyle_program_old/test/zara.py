@@ -68,39 +68,46 @@ while True:
     last_height = new_height
 
 # 모든 상품 li 태그 가져오기
-product_list = driver.find_elements(By.XPATH, "//li[contains(@class, 'product-grid-product')]")
+# product_list = driver.find_elements(By.XPATH, "//li[contains(@class, 'product-grid-product')]")
+product_list = driver.find_elements(By.CSS_SELECTOR, "li.product-grid-product")
+
 
 # 결과 저장 리스트
 product_links = []
 
 for product in product_list:
     try:
-        # 1. 데이터 없는 경우: info-wrapper가 없으면 건너뛰기
+        # 1. info-wrapper가 없으면 건너뛰기
         try:
             info_wrapper = product.find_element(By.CSS_SELECTOR, "div.product-grid-product__data > div.product-grid-product__info-wrapper")
         except NoSuchElementException:
-            continue  # info-wrapper 없으면 넘어감
+            continue
 
-        # 2. 텍스트가 "LOOK"이면 건너뛰기
+        # 2. "LOOK"인 경우 건너뛰기
         try:
             name_tag = info_wrapper.find_element(By.CSS_SELECTOR, "a.product-grid-product-info__name")
             product_name = name_tag.text.strip()
             if product_name == "LOOK":
                 continue
         except NoSuchElementException:
-            continue  # name_tag 없으면 넘어감
+            continue
 
-        # 3. 링크 수집
+        # 3. 링크 및 상품 ID 수집
         try:
             link_tag = product.find_element(By.CSS_SELECTOR, "div.product-grid-product__figure a.product-grid-product__link")
             href = link_tag.get_attribute("href")
-            if href:
-                product_links.append(href)
+            product_id = product.get_attribute("data-productid")
+            if href and product_id:
+                product_links.append({
+                    "url": href,
+                    "product_id": product_id
+                })
         except NoSuchElementException:
-            continue  # 링크 못 찾으면 넘어감
+            continue
 
     except Exception as e:
         print(f"상품 처리 중 오류 발생: {e}")
+
 
 # 결과 출력
 print(len(product_links))
@@ -111,8 +118,11 @@ print(product_links)
 # 상세 정보 저장 리스트
 product_details = []
 
-for url in product_links:
+for product in product_links:
     try:
+        url = product["url"]
+        product_id = product["product_id"]
+
         driver.get(url)
         time.sleep(1)  # 페이지 로딩 대기
 
@@ -163,17 +173,17 @@ for url in product_links:
 
         # 객체로 저장
         product_details.append({
+            "product_id": product_id,
             "url": url,
             "src": img_src,
             "name": name,
             "price": price,
             "content": content
         })
-        print(f"[완료] {name}")
+        print(f"[완료] {product_id} - {name}")
 
     except Exception as e:
         print(f"[오류] {url} 처리 중 문제 발생: {e}")
-
 
 
 

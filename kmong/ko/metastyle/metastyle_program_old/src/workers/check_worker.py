@@ -1,5 +1,4 @@
 from PyQt5.QtCore import QThread, pyqtSignal
-from src.utils.config import server_url
 import requests
 
 class CheckWorker(QThread):
@@ -13,7 +12,7 @@ class CheckWorker(QThread):
         self.running = True
 
     def run(self):
-        url = f"{server_url}/session/check-me"
+        url = f"{self.server_url}/session/check-me"
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json"

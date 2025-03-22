@@ -1,7 +1,7 @@
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 
-from src.utils.config import server_url
+from src.utils.config import SERVER_URL
 
 
 # 로그인 API 요청을 처리하는 스레드 클래스
@@ -27,7 +27,7 @@ class LoginThread(QThread):
     # 서버 로그인 함수 (네이버와 다른 서버 구분)
     def login_to_server(self, username, password, session):
         global global_server_cookies
-        url = f"{server_url}/auth/login"
+        url = f"{SERVER_URL}/auth/login"
         payload = {
             "username": username,
             "password": password
