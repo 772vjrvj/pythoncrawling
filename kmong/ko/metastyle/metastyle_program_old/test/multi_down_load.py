@@ -6,7 +6,7 @@ from queue import Queue
 
 # CSV 파일 경로
 csv_file = "Women_20250224230007.csv"
-output_dir = "images"  # 이미지 저장 디렉토리
+output_dir = "../images"  # 이미지 저장 디렉토리
 
 # 저장 폴더가 없으면 생성
 os.makedirs(output_dir, exist_ok=True)

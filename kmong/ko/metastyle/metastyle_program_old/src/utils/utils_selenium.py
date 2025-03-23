@@ -28,8 +28,7 @@ class SeleniumDriverManager:
         # 이는 화면을 표시하지 않고 백그라운드에서 브라우저를 실행하게 됩니다.
         # 브라우저 UI 없이 작업을 수행할 때 사용하며, 서버 환경에서 유용합니다.
         ##### 화면이 안보이게 함 #####
-        if self.headless:
-            webdriver_options.add_argument("--headless")
+        # webdriver_options.add_argument("--headless")
 
         # 이 설정은 Chrome의 자동화 기능을 비활성화하는 데 사용됩니다.
         # 기본적으로 Chrome은 자동화가 활성화된 경우 브라우저의 콘솔에 경고 메시지를 표시합니다.

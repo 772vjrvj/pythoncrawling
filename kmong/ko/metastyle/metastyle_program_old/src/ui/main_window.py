@@ -261,11 +261,6 @@ class MainWindow(QWidget):
                     self.on_demand_worker.start()
                 else:
                     self.add_log(f"[오류] '{self.site}'에 해당하는 워커가 없습니다.")
-
-                self.on_demand_worker.log_signal.connect(self.add_log)
-                self.on_demand_worker.progress_signal.connect(self.set_progress)
-                self.on_demand_worker.progress_end_signal.connect(self.stop)
-                self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
             self.collect_button.setStyleSheet(f"""
