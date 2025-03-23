@@ -51,6 +51,12 @@ class SeleniumDriverManager:
         ##### 자동화 도구 사용 감지 제거 #####
         webdriver_options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
+        ##### 브라우저 위치 및 크기 설정 #####
+        # 예: 해상도 1920x1080 기준으로 왼쪽 끝에 위치, 너비는 960, 높이는 1080
+        webdriver_options.add_argument("--window-position=0,0")        # 브라우저를 좌측 상단에 위치
+        webdriver_options.add_argument("--window-size=960,1080")       # 전체 모니터의 절반 너비, 최대 높이
+
+
         return webdriver_options
 
     def start_driver(self, url, timeout=120):

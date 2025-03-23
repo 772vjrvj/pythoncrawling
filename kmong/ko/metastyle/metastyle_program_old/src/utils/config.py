@@ -45,7 +45,17 @@ SITE_CONFIGS = {
         "color": "#000",
         "base_url": "https://www.zara.com/us/en",
         "check_list": {
-            "WOMEN _ THE NEW": "/woman-new-in-l1180.html",
+            "WOMEN _ THE NEW": "/woman-new-in-l1180.html?v1=2546081",
+        },
+        "brand_type": "Competitive Brand",
+        "country": "US"
+    },
+    "MANGO": {
+        "name": "MANGO",
+        "color": "#000",
+        "base_url": "https://shop.mango.com/us/en",
+        "check_list": {
+            "WOMEN _ NEW NOW": "/c/women/new-now_56b5c5ed",
         },
         "brand_type": "Competitive Brand",
         "country": "US"

@@ -108,9 +108,9 @@ class GoogleUploader:
                 self.log(f"[삭제 실패] {self.bucket_name}/{prefix_path} - 삭제할 파일이 없습니다.")
                 return
 
-            for blob in blobs:
+            for index, blob in enumerate(blobs, start=1):
                 blob.delete()
-                self.log(f"[삭제 완료] {blob.name}")
+                self.log(f"[{index}] [삭제 완료] {blob.name}")
 
         except Exception as e:
             self.log(f"[삭제 오류] {prefix_path} - {str(e)}")
