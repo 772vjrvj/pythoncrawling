@@ -37,48 +37,63 @@ def scrape_mango():
     driver = setup_driver()
     driver.get("https://shop.mango.com/us/en/c/women/new-now_56b5c5ed")
     time.sleep(5)
+    product_links = []
+    # Sticky_viewItem__7OMDF 클래스를 가진 요소 찾기 (3개 중 3번째 요소 클릭)
+    view_items = driver.find_elements(By.CLASS_NAME, "Sticky_viewItem__7OMDF")
+    if len(view_items) >= 3:
+        view_items[2].click()
+        time.sleep(3)
 
-    try:
-        # Sticky_viewItem__7OMDF 클래스를 가진 요소 찾기 (3개 중 3번째 요소 클릭)
-        view_items = driver.find_elements(By.CLASS_NAME, "Sticky_viewItem__7OMDF")
-        if len(view_items) >= 3:
-            view_items[2].click()
-            time.sleep(3)
+    # 스크롤을 끝까지 내리기
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        driver.find_element(By.TAG_NAME, "body").send_keys(Keys.END)
+        time.sleep(3)
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
 
-        # 스크롤을 끝까지 내리기
-        last_height = driver.execute_script("return document.body.scrollHeight")
-        while True:
-            driver.find_element(By.TAG_NAME, "body").send_keys(Keys.END)
-            time.sleep(2)
-            new_height = driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
+    # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
+    time.sleep(5)
 
-        # 상품 링크 수집
-        product_links = []
-        grid_container = driver.find_element(By.CLASS_NAME, "Grid_grid__fLhp5.Grid_overview___rpEH")
-        items = grid_container.find_elements(By.TAG_NAME, "li")
+    # 상품 링크 수집
 
-        for item in items:
-            a_tag = item.find_element(By.TAG_NAME, "a")
-            href = a_tag.get_attribute("href")
-            if href:
-                product_links.append(href)
+    grid_container = driver.find_element(By.CLASS_NAME, "Grid_grid__fLhp5.Grid_overview___rpEH")
+    items = grid_container.find_elements(By.TAG_NAME, "li")
 
-        print("총 수집된 상품 링크 개수:", len(product_links))
-        return product_links
+    for item in items:
+        try:
+            data_slot = item.get_attribute("data-slot")
+            print(f"\n[data-slot: {data_slot}]")
 
-    except Exception as e:
-        print("에러 발생:", e)
-        driver.quit()
-        return []
+            # 안전한 방식
+            a_tags = item.find_elements(By.TAG_NAME, "a")
+            if a_tags:
+                href = a_tags[0].get_attribute("href")
+                if href:
+                    product_links.append(href)
+                    print(f"링크: {href}")
+            else:
+                print(f"[경고] a 태그 없음 - data-slot: {data_slot}")
+
+        except Exception as e:
+            print(f"상품 링크 추출 중 오류 발생: {e}")
+            print("li 전체 HTML:", item.get_attribute("outerHTML"))
+            continue
+
+
+    print(f"총 수집된 상품 링크 개수:{len(product_links)}")
+
+    return product_links
+
 
 
 def scrape_product_details(url):
     global driver
-    """개별 상품 페이지 크롤링 (Selenium만 사용)"""
+    driver = setup_driver()  # 여기서 새로 열기
     driver.get(url)
+    """개별 상품 페이지 크롤링 (Selenium만 사용)"""
     time.sleep(5)  # 페이지 로딩 대기
 
     product_data = {

@@ -1,6 +1,9 @@
 from selenium import webdriver
 import requests
 import ssl
+import time
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -61,6 +64,20 @@ class SeleniumDriverManager:
             self.session.cookies.set(cookie['name'], cookie['value'])
 
         return self.driver
+
+    def selenium_scroll_keys_end(self, inter_time):
+
+        last_height = self.driver.execute_script("return document.body.scrollHeight")
+
+        while True:
+            self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.END)  # 페이지 끝까지 스크롤
+            time.sleep(inter_time)  # 로딩 대기
+
+            new_height = self.driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:  # 새로운 데이터가 없으면 종료
+                break
+            last_height = new_height
+
 
     def get_session(self):
         return self.session

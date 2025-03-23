@@ -4,7 +4,6 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -66,11 +65,11 @@ class ApiZaraSetLoadWorker(QThread):
                     break
 
                 name = check_obj['name']
+
                 obj = {
                     "brand": self.name,
-                    "category_full": name,
+                    "category_full": name
                 }
-
                 # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
@@ -86,7 +85,7 @@ class ApiZaraSetLoadWorker(QThread):
 
                 time.sleep(3)
                 self.selenium_init_button_click()
-                self.selenium_scroll()
+                driver_manager.selenium_scroll_keys_end(2)
                 self.selenium_get_product_list()
                 self.selenium_get_product_detail_list(name)
 
@@ -143,23 +142,10 @@ class ApiZaraSetLoadWorker(QThread):
         except Exception as e:
             self.log_func(f"3 버튼 클릭 실패: {e}")
 
-    # 스크롤 내리기 (데이터가 늘어날 때까지)
-    def selenium_scroll(self):
-
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
-
-        while True:
-            self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.END)  # 페이지 끝까지 스크롤
-            time.sleep(2)  # 로딩 대기
-
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:  # 새로운 데이터가 없으면 종료
-                break
-            last_height = new_height
 
     # 제품 목록 가져오기
     def selenium_get_product_list(self):
-        self.log_func('상품목록 수집시작...')
+        self.log_func('상품목록 수집시작... 1분 이상 소요 됩니다. 잠시만 기다려주세요')
         product_list = self.driver.find_elements(By.CSS_SELECTOR, "li.product-grid-product")
         # 결과 저장 리스트
 
@@ -209,8 +195,17 @@ class ApiZaraSetLoadWorker(QThread):
 
         # 기존 csv 파일에서 기존 데이터 로드
         loaded_objs = self.csv_appender.load_rows()
-        uploaded_ids = {str(obj["product_id"]) for obj in loaded_objs if obj.get("success") == "Y"}
 
+        success_uploaded_ids = set()
+        fail_uploaded_ids = set()
+
+        for obj in loaded_objs:
+            pid = str(obj["product_id"])
+            result = obj.get("success")
+            if result == "Y":
+                success_uploaded_ids.add(pid)
+            elif result == "N":
+                fail_uploaded_ids.add(pid)
 
         for no, product in enumerate(self.product_list, start=1):
             if not self.running:  # 실행 상태 확인
@@ -219,6 +214,7 @@ class ApiZaraSetLoadWorker(QThread):
             error = ""
             url = product["url"]
             product_id = product["product_id"]
+            csv_type = "추가" # 추가는 I, 덮어 쓰기는 U
 
             # 버킷에 이미 업로드된 항목이면 스킵
             if product_id in self.blob_product_ids:
@@ -226,10 +222,14 @@ class ApiZaraSetLoadWorker(QThread):
                 continue
 
             # ✅ csv에 이미 업로드된 항목이면 스킵
-            if product_id in uploaded_ids:
+            if product_id in success_uploaded_ids:
                 self.log_func(f"[SKIP] csv파일에 이미 성공적으로 처리된 product_id: {product_id}")
                 continue
 
+            # ✅ csv에 이미 업로드된 항목이면 스킵
+            if product_id in fail_uploaded_ids:
+                self.log_func(f"실패로 처리됐으므로 update필요 product_id: {product_id}")
+                csv_type = "수정"
 
             self.driver.get(url)
             time.sleep(2)  # 페이지 로딩 대기
@@ -313,13 +313,12 @@ class ApiZaraSetLoadWorker(QThread):
             }
 
             self.google_uploader.upload(obj)
+            self.csv_appender.append_row(obj)
 
             if obj['error']:
                 obj['success'] = "N"
 
-            self.csv_appender.append_row(obj)
-
-            self.log_func(f"no : {no}, product_id : {product_id} : {obj}")
+            self.log_func(f"product_id({csv_type}) => {product_id}({no}) : {obj}")
             product_details.append(obj)
 
             pro_value = (no / len(self.product_list)) * 1000000

@@ -54,12 +54,10 @@ class GoogleUploader:
             blob.upload_from_file(image_data, content_type=mime_type)
 
             if blob.exists():
-                self.log(f'success {image_url} -> {self.bucket_name}/{blob_name}.')
+                self.log(f'구글 업로드 성공 {image_url} -> {self.bucket_name}/{blob_name}.')
                 obj['image_path'] = f"{self.bucket_name}/{blob_name}"
                 obj['project_id'] = self.project_id
                 obj['bucket'] = self.bucket_name
-            else:
-                raise RuntimeError(f"Upload failed for {image_url}")
 
         except Exception as e:
             self.log(f"[업로드 실패] {image_url} - {str(e)}")
@@ -116,6 +114,24 @@ class GoogleUploader:
 
         except Exception as e:
             self.log(f"[삭제 오류] {prefix_path} - {str(e)}")
+
+
+    def delete_image(self, obj):
+        """GCS에서 특정 이미지 1개 삭제"""
+        try:
+            # 전체 blob 경로 구성
+            blob_name = f"{obj.get('brand', '')}/{obj.get('category_full', '')}/{obj.get('image_name', '')}"
+            blob = self.bucket.blob(blob_name)
+
+            if blob.exists():
+                blob.delete()
+                self.log(f"[삭제 완료] {blob_name}")
+            else:
+                self.log(f"[삭제 실패] {blob_name} - 존재하지 않는 이미지입니다.")
+
+        except Exception as e:
+            self.log(f"[삭제 오류] {blob_name} - {str(e)}")
+
 
 
     def download_all_in_folder(self, obj, save_dir="downloads"):
