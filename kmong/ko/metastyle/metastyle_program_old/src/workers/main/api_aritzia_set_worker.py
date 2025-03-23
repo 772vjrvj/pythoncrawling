@@ -2,10 +2,7 @@ import time
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from src.utils.config import SITE_CONFIGS
 from src.utils.utils_excel_appender import CsvAppender
@@ -16,7 +13,7 @@ from src.utils.utils_time import get_current_formatted_datetime
 
 
 # API
-class ApiZaraSetLoadWorker(QThread):
+class ApiAritziaSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
@@ -24,7 +21,7 @@ class ApiZaraSetLoadWorker(QThread):
     # 초기화
     def __init__(self, checked_list):
         super().__init__()
-        self.name = "ZARA"
+        self.name = "ARITZIA"
         self.sess = None
         self.checked_list = checked_list
         self.running = True  # 실행 상태 플래그 추가
@@ -66,12 +63,11 @@ class ApiZaraSetLoadWorker(QThread):
 
                 name = check_obj['name']
 
-
                 obj = {
                     "website": self.name,
                     "category_full": name
                 }
-                self.google_uploader.delete(obj)
+                # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
 
@@ -81,9 +77,9 @@ class ApiZaraSetLoadWorker(QThread):
                 csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
                 self.csv_appender = CsvAppender(csv_path, self.log_func)
 
-                time.sleep(5)
+                time.sleep(3)
                 self.selenium_init_button_click()
-                driver_manager.selenium_scroll_keys_end(3)
+                driver_manager.selenium_scroll_smooth(0.1, 100, 3)
                 # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
                 time.sleep(5)
                 self.selenium_get_product_list()
@@ -108,83 +104,44 @@ class ApiZaraSetLoadWorker(QThread):
     # 셀레니움 초기 버튼 클릭
     def selenium_init_button_click(self):
         # 쿠키 수락 버튼 클릭
-        try:
-            accept_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
-            )
-            accept_button.click()
-            time.sleep(1)
-            self.log_func("쿠키 수락 버튼 클릭 완료")
-        except Exception as e:
-            self.log_func(f"쿠키 수락 버튼 클릭 중 오류 발생: {e}", )
-
-        # 국가 유지 버튼 클릭
-        try:
-
-            stay_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-qa-action='stay-in-store']"))
-            )
-            stay_button.click()
-            time.sleep(1)
-            self.log_func("국가 유지 버튼 클릭 완료")
-        except Exception as e:
-            self.log_func(f"국가 유지 버튼 클릭 중 오류 발생: {e}", )
-
         # "3" 버튼 클릭
         try:
-            buttons = self.driver.find_elements(By.CSS_SELECTOR, "button.view-option-selector-button")
-            for button in buttons:
-                span = button.find_element(By.CSS_SELECTOR, "span.view-option-selector-button__option")
-                if span.text.strip() == "3":
-                    ActionChains(self.driver).move_to_element(button).click().perform()
-                    time.sleep(2)
-                    break  # 클릭했으면 반복 중단
+            # Sticky_viewItem__7OMDF 클래스를 가진 요소 찾기 (3개 중 3번째 요소 클릭)
+            view_items = self.driver.find_elements(By.CLASS_NAME, "Sticky_viewItem__7OMDF")
+            if len(view_items) >= 3:
+                view_items[2].click()
+                time.sleep(3)
+
         except Exception as e:
             self.log_func(f"3 버튼 클릭 실패: {e}")
+
 
     # 제품 목록 가져오기
     def selenium_get_product_list(self):
         self.log_func('상품목록 수집시작... 1분 이상 소요 됩니다. 잠시만 기다려주세요')
-        product_list = self.driver.find_elements(By.CSS_SELECTOR, "li.product-grid-product")
+        product_list = self.driver.find_elements(By.CLASS_NAME, "div._13qupa29")
         self.log_func(f'추출 목록 수: {len(product_list)}')
-        # 결과 저장 리스트
-
         for product in product_list:
-            if not self.running:  # 실행 상태 확인
-                self.log_func("크롤링이 중지되었습니다.")
-                break
-
             try:
-                # 1. info-wrapper가 없으면 건너뛰기
-                try:
-                    info_wrapper = product.find_element(By.CSS_SELECTOR, "div.product-grid-product__data > div.product-grid-product__info-wrapper")
-                except NoSuchElementException:
-                    continue
+                product_id = product.get_attribute("data-mpid")
+                # 안전한 방식
+                a_tag = product.find_element(By.TAG_NAME, "a")
+                if a_tag:
+                    href = a_tag.get_attribute("href")
+                    if not href.startswith("http"):
+                        href = self.base_url + href
 
-                # 2. "LOOK"인 경우 건너뛰기
-                try:
-                    name_tag = info_wrapper.find_element(By.CSS_SELECTOR, "a.product-grid-product-info__name")
-                    product_name = name_tag.text.strip()
-                    if product_name == "LOOK":
-                        continue
-                except NoSuchElementException:
-                    continue
-
-                # 3. 링크 및 상품 ID 수집
-                try:
-                    link_tag = product.find_element(By.CSS_SELECTOR, "div.product-grid-product__figure a.product-grid-product__link")
-                    href = link_tag.get_attribute("href")
-                    product_id = product.get_attribute("data-productid")
-                    if href and product_id:
+                    if href:
                         self.product_list.append({
                             "url": href,
                             "product_id": str(product_id)
                         })
-                except NoSuchElementException:
-                    continue
+                else:
+                    self.log_func(f"[경고] a 태그 없음 - product_id: {product_id}")
 
             except Exception as e:
                 self.log_func(f"상품 처리 중 오류 발생: {e}")
+
         self.log_func('상품목록 수집완료...')
 
     # 상세목록
@@ -234,52 +191,41 @@ class ApiZaraSetLoadWorker(QThread):
             self.driver.get(url)
             time.sleep(2)  # 페이지 로딩 대기
 
-            # 1. 지역 선택 버튼 클릭 (있다면)
+            # 첫번째 이미지 가져오기
             try:
-                stay_btn = WebDriverWait(self.driver, 3).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-qa-action='stay-in-store']"))
-                )
-                stay_btn.click()
-                self.log_func("지역 선택 버튼 클릭")
-                time.sleep(1)
-            except Exception as e:
-                error = f"국가 유지 버튼 클릭 중 오류 발생: {e}"
-                self.log_func(error)
+                img_tag = self.driver.find_element(By.TAG_NAME, "img")
+                img_src = img_tag.get_attribute('src')
+                if not img_src:
+                    img_src = ""
+                    error = "이미지 srcset 속성이 비어있습니다."
 
-            # 2. product-detail-view__main-content 영역
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.product-detail-view__main-content"))
-            )
-
-            # 이미지 src 추출
-            try:
-                img_tags = self.driver.find_elements(By.CSS_SELECTOR,
-                                                     "img.media-image__image.media__wrapper--media")
-                img_src = img_tags[0].get_attribute("src")
             except NoSuchElementException as e:
-                error = f'이미지 src 추출 실패 : {e}'
                 img_src = ""
+                error = f'이미지 src 추출 실패 : {e}'
 
-            # 제품명
+            # 제품명 class=""
             try:
-                product_name = self.driver.find_element(By.CSS_SELECTOR,
-                                           "div.product-detail-view__main-info .product-detail-info__header-name").text.strip()
+                name_element = self.driver.find_element(By.CLASS_NAME, "h1.s1b82p51s.s1b82p52g.s1b82p53g.s1b82p52s.s1b82p54o.s1b82p591.s1b82p55g.s1b82p1a4.s1b82p56k.d1hqjy0.d1hqjy3")
+                product_name = name_element.text.strip()
             except NoSuchElementException as e:
                 error = f'제품명 추출 실패 : {e}'
                 product_name = ""
 
             # 가격
+            price = ""
             try:
-                price = self.driver.find_element(By.CSS_SELECTOR,
-                                            "div.product-detail-view__main-info .money-amount__main").text.strip()
+                element  = self.driver.find_element(By.CSS_SELECTOR, "p.s1b82p51s.s1b82p52g.s1b82p53g.s1b82p52s.s1b82p54o.s1b82p57t.s1b82p55g.d1hqjy0.d1hqjy3")
+                if element:
+                    price = element.text.strip()
             except NoSuchElementException as e:
                 error = f'가격 추출 실패 : {e}'
                 price = ""
 
             # 설명
             try:
-                content = self.driver.find_element(By.CSS_SELECTOR,
-                                              "div.product-detail-view__main-info .expandable-text__inner-content").text.strip()
+                description_element = self.driver.find_element(By.CSS_SELECTOR, "div.s1b82p51s.s1b82p52g.s1b82p53g.s1b82p52s.s1b82p54o.s1b82p591.s1b82p55g.d1hqjy0.d1hqjy2")
+                paragraphs = description_element.find_elements(By.TAG_NAME, "p")
+                content = paragraphs.text.strip()
             except NoSuchElementException:
                 content = ""
 

@@ -51,7 +51,7 @@ class ApiMangoSetLoadWorker(QThread):
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = driver_manager.start_driver(self.base_url)
+            self.driver = driver_manager.start_driver(self.base_url, 1200, None)
             self.sess = driver_manager.get_session()
 
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
@@ -64,7 +64,7 @@ class ApiMangoSetLoadWorker(QThread):
                 name = check_obj['name']
 
                 obj = {
-                    "brand": self.name,
+                    "website": self.name,
                     "category_full": name
                 }
                 # self.google_uploader.delete(obj)
@@ -74,11 +74,8 @@ class ApiMangoSetLoadWorker(QThread):
                 site_url = config.get('check_list', {}).get(name, "")
                 self.driver.get(f"{config.get("base_url")}{site_url}")
 
-                if index == 1:
-                    csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
-                    self.csv_appender = CsvAppender(csv_path, self.log_func)
-                else:
-                    self.csv_appender.set_file_path(name)
+                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
+                self.csv_appender = CsvAppender(csv_path, self.log_func)
 
                 time.sleep(3)
                 self.selenium_init_button_click()

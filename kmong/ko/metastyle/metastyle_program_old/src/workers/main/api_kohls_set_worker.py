@@ -276,6 +276,9 @@ class ApiKohlsSetLoadWorker(QThread):
         self.driver = webdriver.Chrome(options=webdriver_options)
         self.driver.get(self.baseUrl)
 
+
+
+
     # 전체 갯수 가져오기
     def get_total_count(self, url):
         self.driver.get(url)

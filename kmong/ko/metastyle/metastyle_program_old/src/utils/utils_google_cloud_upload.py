@@ -45,7 +45,7 @@ class GoogleUploader:
             image_data = BytesIO(response.content)
 
             # 3. 경로 및 MIME 설정
-            blob_name = f"{obj['brand']}/{obj['category_full']}/{obj['image_name']}"
+            blob_name = f"{obj['website']}/{obj['category_full']}/{obj['image_name']}"
             mime_type, _ = mimetypes.guess_type(image_url)
             mime_type = mime_type or "application/octet-stream"
 
@@ -78,16 +78,16 @@ class GoogleUploader:
 
         blob_product_ids = []
         """업로드 경로에 이미지가 실제 존재하는지 확인하고 로그"""
-        prefix_path = f"{obj.get('brand', '')}/{obj.get('category_full', '')}/"  # 슬래시 꼭 필요
+        prefix_path = f"{obj.get('website', '')}/{obj.get('category_full', '')}/"  # 슬래시 꼭 필요
 
         try:
             blobs = list(self.bucket.list_blobs(prefix=prefix_path))
 
             if blobs:
-                for blob in blobs:
-                    # self.log(f" - {blob.name}")
+                for index, blob in enumerate(blobs, start=1):
+                    self.log(f"{index} - {blob.name}")
                     product_id = self.get_product_id(blob.name)
-                    # self.log(f"{product_id}")
+                    self.log(f"{index} - {product_id}")
                     blob_product_ids.append(product_id)
             else:
                 self.log(f"{prefix_path}에 목록이 없습니다.")
@@ -101,7 +101,7 @@ class GoogleUploader:
         prefix_path = ""
         """GCS에서 폴더 내 이미지들 전체 삭제"""
         try:
-            prefix_path = f"{obj.get('brand', '')}/{obj.get('category_full', '')}/"  # 슬래시 꼭 필요
+            prefix_path = f"{obj.get('website', '')}/{obj.get('category_full', '')}/"  # 슬래시 꼭 필요
             blobs = list(self.bucket.list_blobs(prefix=prefix_path))
 
             if not blobs:
