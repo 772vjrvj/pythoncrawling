@@ -14,6 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 # 전역 변수로 드라이버 선언
 driver = None
 main_start_time = ""

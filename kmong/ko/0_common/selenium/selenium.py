@@ -40,6 +40,11 @@ def setup_driver():
         '''
     })
 
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+
     # 브라우저 위치와 크기 설정
     # driver.set_window_position(0, 0)  # 왼쪽 위 (0, 0) 위치로 이동
     # driver.set_window_size(1200, 900)  # 크기를 500x800으로 설정
