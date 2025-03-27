@@ -1,89 +1,75 @@
 import requests
 import logging
-import warnings
-from requests.exceptions import RequestException, Timeout, TooManyRedirects
-from urllib3.exceptions import InsecureRequestWarning
+from requests.exceptions import (
+    Timeout, TooManyRedirects, ConnectionError,
+    HTTPError, URLRequired, SSLError, RequestException
+)
 
+def request_api(
+        method: str,
+        url: str,
+        headers: dict = None,
+        params: dict = None,
+        data: dict = None,
+        json: dict = None,
+        timeout: int = 30,
+        verify: bool = True
+):
+    """
+    HTTP 요청을 수행하고 상태 코드, 응답 타입을 자동 처리하여 결과만 반환하는 함수
 
-def reviews_request(page, timeout=30):
-
-    # HTTP 요청 헤더 설정
-    headers = {
-
-    }
-
-    # 요청할 URL 설정
-    url = "https://smartstore.naver.com/i/v1/contents/reviews/query-pages"
-
-    # 요청할 페이로드 설정
-    payload = {
-        "checkoutMerchantNo": 511111508,  # 상점 번호
-        "originProductNo": 5590313137,  # 제품 번호
-        "page": page,  # 요청할 페이지 번호
-        "pageSize": 20,  # 한 페이지에 담을 리뷰 수
-        "reviewSearchSortType": "REVIEW_RANKING"  # 리뷰 정렬 기준 (랭킹 순)
-    }
-    proxies = {
-        "http": "http://27.77.79.174:8080",  # HTTP 프록시
-        "https": "https://27.77.79.174:8080"  # HTTPS 프록시
-    }
-
+    :return:
+        - JSON 응답일 경우: dict
+        - HTML 응답일 경우: str (html)
+        - 기타 텍스트 응답일 경우: str
+        - 실패 시: None
+    """
     try:
+        response = requests.request(
+            method=method.upper(),
+            url=url,
+            headers=headers,
+            params=params,
+            data=data,
+            json=json,
+            timeout=timeout,
+            verify=verify
+        )
 
-        # POST 요청을 보내고 응답 받기
-        # response = requests.post(url, headers=headers, json=payload, timeout=timeout, proxies=proxies)
-        response = requests.post(url, headers=headers, data=payload, verify=True, timeout=timeout)
-
-        # 응답의 인코딩을 UTF-8로 설정
         response.encoding = 'utf-8'
+        response.raise_for_status()  # 4xx, 5xx 응답 시 예외 발생
 
-        # HTTP 상태 코드가 200이 아닌 경우 예외 처리
-        response.raise_for_status()
-
-        # 상태 코드가 200인 경우 응답 JSON 반환
-        if response.status_code == 200:
-            return response.json()  # JSON 형식으로 응답 반환
-        else:
-            # 상태 코드가 200이 아닌 경우 로그 기록
+        # 상태 코드 체크
+        if response.status_code != 200:
             logging.error(f"Unexpected status code: {response.status_code}")
             return None
 
-    # 타임아웃 오류 처리
+        # Content-Type 판별
+        content_type = response.headers.get('Content-Type', '')
+
+        if 'application/json' in content_type:
+            return response.json()
+        elif 'text/html' in content_type or 'application/xhtml+xml' in content_type:
+            return response.text
+        else:
+            return response.text  # 기타 텍스트 형식
+
+    # 예외 처리
     except Timeout:
         logging.error("Request timed out")
-        return None
-
-    # 너무 많은 리다이렉트 발생 시 처리
     except TooManyRedirects:
         logging.error("Too many redirects")
-        return None
-
-    # 네트워크 연결 오류 처리
     except ConnectionError:
         logging.error("Network connection error")
-        return None
-
-    # HTTP 응답 코드가 4xx 또는 5xx일 경우 처리
     except HTTPError as e:
         logging.error(f"HTTP error occurred: {e}")
-        return None
-
-    # URL이 유효하지 않거나 제공되지 않았을 경우 처리
     except URLRequired:
         logging.error("A valid URL is required")
-        return None
-
-    # SSL 인증서 오류 처리
     except SSLError:
         logging.error("SSL certificate verification failed")
-        return None
-
-    # 기타 모든 예외 처리
     except RequestException as e:
         logging.error(f"Request failed: {e}")
-        return None
-
-    # 예상치 못한 예외 처리
     except Exception as e:
         logging.error(f"Unexpected exception: {e}")
-        return None
+
+    return None
