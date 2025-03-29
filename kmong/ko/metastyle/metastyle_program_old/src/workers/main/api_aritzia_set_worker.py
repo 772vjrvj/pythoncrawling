@@ -34,6 +34,7 @@ class ApiAritziaSetLoadWorker(QThread):
         self.before_pro_value = 0
         self.csv_appender = None
         self.google_uploader = None
+        self.driver_manager = None
 
         # 프로그램 실행
 
@@ -43,7 +44,7 @@ class ApiAritziaSetLoadWorker(QThread):
             self.log_func("크롤링 시작")
             self.log_func(f"checked_list : {self.checked_list}")
 
-            driver_manager = SeleniumDriverManager(headless=True)
+            self.driver_manager = SeleniumDriverManager(headless=True)
 
             # 2. 원하는 URL로 드라이버 실행
             config = SITE_CONFIGS.get(self.name)
@@ -51,8 +52,8 @@ class ApiAritziaSetLoadWorker(QThread):
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = driver_manager.start_driver(self.base_url, 1200, None)
-            self.sess = driver_manager.get_session()
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, None)
+            self.sess = self.driver_manager.get_session()
 
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
 
@@ -69,6 +70,7 @@ class ApiAritziaSetLoadWorker(QThread):
                 }
                 # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
+                self.log_func(f"=============== self.blob_product_ids : {self.blob_product_ids}")
                 # self.google_uploader.download_all_in_folder(obj)
 
                 site_url = config.get('check_list', {}).get(name, "")
@@ -79,12 +81,13 @@ class ApiAritziaSetLoadWorker(QThread):
 
                 time.sleep(3)
                 self.selenium_init_button_click()
-                driver_manager.selenium_scroll_smooth(0.1, 100, 3)
+                self.driver_manager.selenium_scroll_smooth_ratio(0.05, 0.002, 3)
                 # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
                 time.sleep(5)
                 self.selenium_get_product_list()
                 self.selenium_get_product_detail_list(name)
 
+            self.csv_appender.merge_all_csv_from_directory()
             self.progress_signal.emit(self.before_pro_value, 1000000)
             self.log_func("=============== 크롤링 종료중...")
             time.sleep(5)
@@ -119,7 +122,7 @@ class ApiAritziaSetLoadWorker(QThread):
     # 제품 목록 가져오기
     def selenium_get_product_list(self):
         self.log_func('상품목록 수집시작... 1분 이상 소요 됩니다. 잠시만 기다려주세요')
-        product_list = self.driver.find_elements(By.CLASS_NAME, "div._13qupa29")
+        product_list = self.driver.find_elements(By.CLASS_NAME, "_13qupa29")
         self.log_func(f'추출 목록 수: {len(product_list)}')
         for product in product_list:
             try:
@@ -205,7 +208,7 @@ class ApiAritziaSetLoadWorker(QThread):
 
             # 제품명 class=""
             try:
-                name_element = self.driver.find_element(By.CLASS_NAME, "h1.s1b82p51s.s1b82p52g.s1b82p53g.s1b82p52s.s1b82p54o.s1b82p591.s1b82p55g.s1b82p1a4.s1b82p56k.d1hqjy0.d1hqjy3")
+                name_element = self.driver.find_element(By.CSS_SELECTOR, '[data-testid="product-name-text"]')
                 product_name = name_element.text.strip()
             except NoSuchElementException as e:
                 error = f'제품명 추출 실패 : {e}'
@@ -214,18 +217,23 @@ class ApiAritziaSetLoadWorker(QThread):
             # 가격
             price = ""
             try:
-                element  = self.driver.find_element(By.CSS_SELECTOR, "p.s1b82p51s.s1b82p52g.s1b82p53g.s1b82p52s.s1b82p54o.s1b82p57t.s1b82p55g.d1hqjy0.d1hqjy3")
+                element = self.driver.find_element(By.CSS_SELECTOR, '[data-testid="product-list-price-text"]')
                 if element:
                     price = element.text.strip()
             except NoSuchElementException as e:
                 error = f'가격 추출 실패 : {e}'
                 price = ""
 
-            # 설명
+            # 제품 설명
+            content = ""
             try:
-                description_element = self.driver.find_element(By.CSS_SELECTOR, "div.s1b82p51s.s1b82p52g.s1b82p53g.s1b82p52s.s1b82p54o.s1b82p591.s1b82p55g.d1hqjy0.d1hqjy2")
-                paragraphs = description_element.find_elements(By.TAG_NAME, "p")
-                content = paragraphs.text.strip()
+                container = self.driver.find_element(By.CSS_SELECTOR, '[data-testid="product-description"]')
+                inner_ps = container.find_elements(By.TAG_NAME, "p")
+
+                if len(inner_ps) >= 2:
+                    # 두 번째 div 안에서 p 태그 찾기
+                    paragraph = inner_ps[1]
+                    content = paragraph.text.strip()
             except NoSuchElementException:
                 content = ""
 
@@ -259,7 +267,8 @@ class ApiAritziaSetLoadWorker(QThread):
                 "bucket": ""
             }
 
-            self.google_uploader.upload(obj)
+            image_content = self.driver_manager.download_image_content(obj)
+            self.google_uploader.upload_content(obj, image_content)
             self.csv_appender.append_row(obj)
 
             if obj['error']:

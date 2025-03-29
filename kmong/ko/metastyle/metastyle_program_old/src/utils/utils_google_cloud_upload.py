@@ -28,6 +28,38 @@ class GoogleUploader:
         self.client = storage.Client(credentials=credentials, project=self.project_id)
         self.bucket = self.client.bucket(self.bucket_name)
 
+
+    def upload_content(self, obj, content: bytes):
+        if not content:
+            return None
+
+        image_url = obj.get('image_url', 'unknown')
+
+        try:
+            image_data = BytesIO(content)
+
+            blob_name = f"{obj['website']}/{obj['category_full']}/{obj['image_name']}"
+            mime_type = obj.get("image_content_type")  # 이미 저장해뒀다면 우선 사용
+            if not mime_type:
+                mime_type, _ = mimetypes.guess_type(image_url)
+                mime_type = mime_type or "application/octet-stream"
+
+            blob = self.bucket.blob(blob_name)
+            blob.upload_from_file(image_data, content_type=mime_type)
+
+            if blob.exists():
+                self.log(f'✅ 구글 업로드 성공: {image_url} → {self.bucket_name}/{blob_name}')
+                obj['image_path'] = f"{self.bucket_name}/{blob_name}"
+                obj['project_id'] = self.project_id
+                obj['bucket'] = self.bucket_name
+                obj['image_yn'] = 'Y'
+
+        except Exception as e:
+            self.log(f"[업로드 실패] {image_url} - {str(e)}")
+            obj['error'] = str(e)
+            obj['image_yn'] = 'N'
+
+
     def upload(self, obj):
         image_url = obj['image_url']
         try:
@@ -120,7 +152,7 @@ class GoogleUploader:
         """GCS에서 특정 이미지 1개 삭제"""
         try:
             # 전체 blob 경로 구성
-            blob_name = f"{obj.get('brand', '')}/{obj.get('category_full', '')}/{obj.get('image_name', '')}"
+            blob_name = f"{obj.get('website', '')}/{obj.get('category_full', '')}/{obj.get('image_name', '')}"
             blob = self.bucket.blob(blob_name)
 
             if blob.exists():
@@ -138,7 +170,7 @@ class GoogleUploader:
         """GCS에서 폴더 내 모든 이미지 로컬에 저장"""
         prefix_path = ""
         try:
-            prefix_path = f"{obj.get('brand', '')}/{obj.get('category_full', '')}/"  # 꼭 / 로 끝나야 함
+            prefix_path = f"{obj.get('website', '')}/{obj.get('category_full', '')}/"  # 꼭 / 로 끝나야 함
 
             # 로컬 저장 폴더 생성
             local_folder = os.path.join(save_dir, obj.get('brand', ''), obj.get('category_full', ''))

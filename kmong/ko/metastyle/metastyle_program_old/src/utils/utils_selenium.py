@@ -10,6 +10,7 @@ import os
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import psutil
+import base64
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -197,6 +198,41 @@ class SeleniumDriverManager:
                 break
             last_height = new_height
 
+    def selenium_scroll_smooth_ratio(self, inter_time=0.1, step_ratio=0.02, delay=None):
+        """
+        전체 문서 높이에 비례하여 스크롤 step을 계산하여 부드럽게 스크롤합니다.
+        :param inter_time: 스크롤 간 sleep 시간
+        :param step_ratio: 전체 높이에 대한 스크롤 비율 (ex: 0.02 = 2%)
+        :param delay: 마지막 지점에서 기다리는 시간
+        """
+
+        # window.scrollY	현재 스크롤 위치 (페이지 상단에서 얼마나 내렸는지)
+        # window.innerHeight	현재 보이는 화면 높이 (뷰포트)
+        # document.body.scrollHeight	전체 문서의 총 세로 길이
+        # scrollY (4200) + innerHeight (800) = scrollHeight (5000)
+
+        while True:
+            initial_scroll_height = self.driver.execute_script("return document.body.scrollHeight")
+            step = max(int(initial_scroll_height * step_ratio), 1)
+
+            while True:
+                current_scroll = self.driver.execute_script("return window.scrollY")
+                window_height = self.driver.execute_script("return window.innerHeight")
+
+                # ✅ 정확한 종료 조건
+                if current_scroll + window_height >= initial_scroll_height:
+                    break
+
+                self.driver.execute_script(f"window.scrollBy(0, {step});")
+                time.sleep(inter_time)
+
+            time.sleep(delay)
+            break
+
+            updated_scroll_height = self.driver.execute_script("return document.body.scrollHeight")
+            if updated_scroll_height == initial_scroll_height:
+                break
+
     def selenium_scroll_smooth(self, inter_time=0.1, step=100, delay=None):
         """
         빠르고 부드럽게 스크롤합니다. 일정 간격(step)으로 scrollBy를 반복해서 자연스럽게 스크롤합니다.
@@ -223,6 +259,48 @@ class SeleniumDriverManager:
                 break
             last_height = new_height_after
 
+
+    def download_image_content(self, obj):
+        image_url = obj['image_url']
+        try:
+            # 👉 f_auto → f_jpg 강제 교체 (선택)
+            if "f_auto" in image_url:
+                image_url = image_url.replace("f_auto", "f_jpg")
+                obj['image_url_modified'] = image_url  # 추적용
+
+            self.driver.get(image_url)
+            self.driver.implicitly_wait(5)
+
+            # ✅ <img> 태그 찾기
+            img = self.driver.find_element(By.TAG_NAME, "img")
+
+            # ✅ canvas에 그림을 그리고 base64로 추출
+            script = """
+                var img = arguments[0];
+                var canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                return canvas.toDataURL('image/jpeg');
+            """
+            data_url = self.driver.execute_script(script, img)
+
+            if not data_url.startswith("data:image"):
+                obj['error'] = "이미지 추출 실패"
+                obj['image_yn'] = 'N'
+                return None
+
+            # ✅ base64 디코딩
+            header, encoded = data_url.split(",", 1)
+            binary_data = base64.b64decode(encoded)
+
+            return binary_data
+
+        except Exception as e:
+            obj['error'] = str(e)
+            obj['image_yn'] = 'N'
+            return None
 
 
     def get_session(self):

@@ -78,3 +78,31 @@ class CsvAppender:
         # 새 파일이 없다면 빈 CSV 생성
         if not os.path.exists(self.file_path):
             pd.DataFrame().to_csv(self.file_path, index=False, encoding='utf-8-sig')
+
+
+    def merge_all_csv_from_directory(self, root_dir=None, output_filename="metastyle_all.csv"):
+        """DB 폴더 내 모든 CSV 파일을 병합하여 metastyle_all.csv 로 저장"""
+        if root_dir is None:
+            root_dir = os.path.dirname(self.file_path)
+
+        output_path = os.path.join("DB", output_filename)
+        all_dataframes = []
+
+        for root, _, files in os.walk(root_dir):
+            for file in files:
+                if file.endswith('.csv') and file != output_filename:
+                    file_path = os.path.join(root, file)
+                    try:
+                        df = pd.read_csv(file_path, encoding='utf-8-sig')
+                        all_dataframes.append(df)
+                        self.log_func(f"✅ 읽음: {file_path}")
+                    except Exception as e:
+                        self.log_func(f"❌ 실패: {file_path} - {e}")
+
+        if not all_dataframes:
+            self.log_func("⚠️ 병합할 CSV가 없습니다.")
+            return
+
+        merged_df = pd.concat(all_dataframes, ignore_index=True)
+        merged_df.to_csv(output_path, index=False, encoding='utf-8-sig')
+        self.log_func(f"✅ 병합 완료: {output_path} (총 {len(merged_df)} rows)")

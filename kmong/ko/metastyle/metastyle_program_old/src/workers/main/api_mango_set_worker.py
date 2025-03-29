@@ -218,7 +218,7 @@ class ApiMangoSetLoadWorker(QThread):
             # 가격
             price = ""
             try:
-                elements  = self.driver.find_elements(By.CSS_SELECTOR, "div.SinglePrice_center__mfcM3.texts_bodyM__lR_K7")
+                elements  = self.driver.find_elements(By.CSS_SELECTOR, "span.SinglePrice_center__mfcM3.texts_bodyM__lR_K7")
                 if elements:
                     price = elements[0].text.strip()
             except NoSuchElementException as e:
