@@ -22,12 +22,12 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             time.sleep(2)
             li_elements = []
             try:
-                ul_elements = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'ul[data-elid="product-grid"]'))
+                ul_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'ul[data-elid="product-grid"]'))
                 )
-                if ul_elements:
+                if ul_element:
                     # 바로 첫번째 자식 li들만
-                    li_elements = ul_elements[0].find_elements(By.CSS_SELECTOR, ":scope > li")
+                    li_elements = ul_element.find_elements(By.CSS_SELECTOR, ":scope > li")
             except NoSuchElementException:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break
@@ -35,7 +35,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break
 
-            for li in li_elements:
+            for index, li in enumerate(li_elements, start=1):
                 if not self.running:
                     self.log_func("크롤링이 중지되었습니다.")
                     break
@@ -60,10 +60,13 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                             "product_id": product_id,
                             "url": href
                         })
+                        self.log_func(f"product_id : {product_id} / index : {index}")
                 except NoSuchElementException:
                     self.log_func("li 안에 필요한 태그를 찾을 수 없습니다.")
+                    continue
                 except Exception as e:
                     self.log_func(f"예기치 못한 오류 발생: {e}")
+                    continue
 
             page += 1
         self.log_func('상품목록 수집완료...')
@@ -89,7 +92,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             else:
                 self.log_func("li 태그가 존재하지 않습니다.")
         except Exception as e:
-            self.log_func(f"이미지 추출 실패: {e}")
+            self.log_func(f"이미지 추출 실패")
 
         try:
             h1 = self.driver.find_element(By.CSS_SELECTOR, 'h1.fa226d.af6753.d582fb')
@@ -98,16 +101,16 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             else:
                 self.log_func("제품명 태그가 존재하지 않습니다.")
         except Exception as e:
-            self.log_func(f"제품명 추출 실패: {e}")
+            self.log_func(f"제품명 추출 실패")
 
         try:
-            span = self.driver.find_element(By.CSS_SELECTOR, 'span.edbe20.ac3d9e.d9ca8b')
+            span = self.driver.find_element(By.CSS_SELECTOR, 'span.edbe20.ac3d9e.c8e3aa')
             if span:
                 price = span.text.strip() or ""
             else:
                 self.log_func("가격 태그가 존재하지 않습니다.")
         except Exception as e:
-            self.log_func(f"가격 추출 실패: {e}")
+            self.log_func(f"가격 추출 실패")
 
         categories = name.split(" _ ")
 

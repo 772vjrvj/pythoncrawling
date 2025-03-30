@@ -1,281 +1,163 @@
 import time
-
-from PyQt5.QtCore import QThread, pyqtSignal
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
+from src.workers.main.api_base_worker import BaseApiWorker
 from selenium.webdriver.common.by import By
-
-from src.utils.config import SITE_CONFIGS
-from src.utils.utils_excel_appender import CsvAppender
-from src.utils.utils_file import FilePathBuilder
-from src.utils.utils_google_cloud_upload import GoogleUploader
-from src.utils.utils_selenium import SeleniumDriverManager
-from src.utils.utils_time import get_current_formatted_datetime
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 # API
-class ApiStoresSetLoadWorker(QThread):
-    log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
-    progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
-    progress_end_signal = pyqtSignal()   # 종료 시그널
-
-    # 초기화
+class ApiStoresSetLoadWorker(BaseApiWorker):
     def __init__(self, checked_list):
-        super().__init__()
-        self.name = "&OTHER STORIES"
-        self.sess = None
-        self.checked_list = checked_list
-        self.running = True  # 실행 상태 플래그 추가
-        self.driver = None
-        self.base_url = ""
-        self.brand_type = ""
-        self.country = ""
-        self.product_list = []
-        self.blob_product_ids = []
-        self.before_pro_value = 0
-        self.csv_appender = None
-        self.google_uploader = None
-
-        # 프로그램 실행
-
-    # 실행
-    def run(self):
-        if self.checked_list:
-            self.log_func("크롤링 시작")
-            self.log_func(f"checked_list : {self.checked_list}")
-
-            driver_manager = SeleniumDriverManager(headless=True)
-
-            # 2. 원하는 URL로 드라이버 실행
-            config = SITE_CONFIGS.get(self.name)
-            self.base_url = config.get("base_url")
-            self.brand_type = config.get("brand_type")
-            self.country = config.get("country")
-
-            self.driver = driver_manager.start_driver(self.base_url, 1200, "U")
-            self.sess = driver_manager.get_session()
-
-            self.google_uploader = GoogleUploader(self.log_func, self.sess)
-
-            for index, check_obj in enumerate(self.checked_list, start=1):
-                if not self.running:  # 실행 상태 확인
-                    self.log_func("크롤링이 중지되었습니다.")
-                    break
-
-                name = check_obj['name']
-
-                obj = {
-                    "website": self.name,
-                    "category_full": name
-                }
-                # self.google_uploader.delete(obj)
-                self.blob_product_ids = self.google_uploader.verify_upload(obj)
-                # self.google_uploader.download_all_in_folder(obj)
-
-                site_url = config.get('check_list', {}).get(name, "")
-                main_url = f"{config.get("base_url")}{site_url}"
-                self.driver.get(main_url)
-
-                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
-                self.csv_appender = CsvAppender(csv_path, self.log_func)
-
-                self.selenium_get_product_list(main_url, driver_manager)
-                self.selenium_get_product_detail_list(name)
-
-            self.progress_signal.emit(self.before_pro_value, 1000000)
-            self.log_func("=============== 크롤링 종료중...")
-            time.sleep(5)
-            self.log_func("=============== 크롤링 종료")
-            self.progress_end_signal.emit()
-        else:
-            self.log_func("선택된 항목이 없습니다.")
-
-    # 로그
-    def log_func(self, msg):
-        self.log_signal.emit(msg)
-
-    # 프로그램 중단
-    def stop(self):
-        self.running = False
+        super().__init__("&OTHER STORIES", checked_list)
 
 
-    # 제품 목록 가져오기
-    def selenium_get_product_list(self, product_url, driver_manager):
+    def selenium_get_product_list(self, main_url: str):
         page = 1
         while True:
-            url = f'{product_url}?page={page}'
+            url = f'{main_url}?page={page}'
             self.driver.get(url)
             time.sleep(2)
             current_url = self.driver.current_url  # 현재 페이지의 실제 URL 가져오기
             if 'page=' not in current_url:
                 self.log_func("❌ page 파라미터 없음. 반복 중단.")
                 break
-            driver_manager.selenium_scroll_smooth(0.1, 100, None)
+            self.log_func(f"현제 page: {page}")
+            self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
             time.sleep(2)
+            div_elements = []
             try:
-                # 1. UL 태그 찾기
-                products_element = self.driver.find_element(By.ID, 'reloadProducts')
-                # 2. LI 태그들 가져오기
-                div_elements = products_element.find_elements(By.CSS_SELECTOR, "div.o-product.producttile-wrapper")
+
+                products_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'reloadProducts'))
+                )
+                if products_element:
+                    div_elements = products_element.find_elements(By.CSS_SELECTOR, "div.o-product.producttile-wrapper")
             except NoSuchElementException:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break  # 상품이 없으면 종료
+            except TimeoutException:
+                self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
+                break
 
-            for div in div_elements:
+            for index, div in enumerate(div_elements, start=1):
                 try:
-                    # 3. article 태그 안의 data-articlecode 추출
+
                     product_id = div.get_attribute("data-product-id")
+                    if product_id is None:
+                        continue
 
-                    # 4. article 안 첫 번째 a 태그의 href 추출
                     a_tag = div.find_element(By.TAG_NAME, "a")
-                    url = a_tag.get_attribute("href")
+                    if a_tag is None:
+                        continue
 
-                    # 결과 저장
-                    self.product_list.append({
-                        "product_id": product_id,
-                        "url": url
-                    })
+                    href = a_tag.get_attribute("href")
+                    if not href:
+                        continue
+                    else:
+                        self.product_list.append({
+                            "product_id": product_id,
+                            "url": href
+                        })
+                    self.log_func(f"product_id : {product_id} / index : {index}")
                 except NoSuchElementException:
-                    self.log_func("li안에 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")
-                    break
+                    self.log_func("div안에 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")
+                    continue
+                except Exception as e:
+                    self.log_func(f"예기치 못한 오류 발생: {e}")
+                    continue
+
             page += 1  # 다음 페이지로 이동
         self.log_func('상품목록 수집완료...')
 
     # 상세목록
-    def selenium_get_product_detail_list(self, name):
+    def extract_product_detail(self, product_id: str, url: str, name: str, no: int) -> dict:
+        self.driver.get(url)
+        time.sleep(2)  # 페이지 로딩 대기
 
-        # 상세 정보 저장 리스트
-        product_details = []
+        error = ""
+        img_src = ""
+        product_name = ""
+        price = ""
+        content = ""
 
-        # 기존 csv 파일에서 기존 데이터 로드
-        loaded_objs = self.csv_appender.load_rows()
+        # 첫번째 이미지 가져오기
+        try:
+            picture = self.driver.find_element(By.CSS_SELECTOR, 'picture.a-picture')
+            img = picture.find_element(By.CSS_SELECTOR, 'img.a-image') if picture else None
 
-        success_uploaded_ids = set()
-        fail_uploaded_ids = set()
+            # 우선순위: data-zoom-src → src
+            img_src = img.get_attribute('data-zoom-src') or img.get_attribute('src') if img else None
 
-        for obj in loaded_objs:
-            pid = str(obj["product_id"])
-            result = obj.get("success")
-            if result == "Y":
-                success_uploaded_ids.add(pid)
-            elif result == "N":
-                fail_uploaded_ids.add(pid)
+            # '//'로 시작하는 경우 https: 붙이기
+            if img_src and img_src.startswith('//'):
+                img_src = 'https:' + img_src
+            self.log_func(f"✅ 이미지 주소: {img_src}")
+        except Exception as e:
+            self.log_func("❌ 이미지 가져오기 실패:")
 
-        for no, product in enumerate(self.product_list, start=1):
-            if not self.running:  # 실행 상태 확인
-                self.log_func("크롤링이 중지되었습니다.")
-                break
-            error = ""
-            url = product["url"]
-            product_id = product["product_id"]
-            csv_type = "추가" # 추가는 I, 덮어 쓰기는 U
+        # 제품명
+        try:
+            h1 = self.driver.find_element(By.CSS_SELECTOR, 'h1.a-heading-1.q-mega.product-name')
+            if h1:
+                product_name = h1.text.strip() or ""
+            else:
+                self.log_func("제품명 태그가 존재하지 않습니다.")
+        except NoSuchElementException as e:
+            error = f'제품명 추출 실패 : {e}'
+            product_name = ""
 
-            # 버킷에 이미 업로드된 항목이면 스킵
-            if product_id in self.blob_product_ids:
-                self.log_func(f"[SKIP] 버킷에 이미 성공적으로 처리된 product_id: {product_id}")
-                continue
+        # 가격
+        try:
+            span = self.driver.find_element(By.CSS_SELECTOR, 'div.m-product-price')
+            if span:
+                price = span.text.strip() or ""
+            else:
+                self.log_func("가격 태그가 존재하지 않습니다.")
+            
+        except NoSuchElementException as e:
+            error = f'가격 추출 실패 : {e}'
+            price = ""
 
-            # ✅ csv에 이미 업로드된 항목이면 스킵
-            if product_id in success_uploaded_ids:
-                self.log_func(f"[SKIP] csv파일에 이미 성공적으로 처리된 product_id: {product_id}")
-                continue
+        # 설명
+        try:
+            # 1. div id="product-description" 찾기
+            desc_div = self.driver.find_element(By.ID, "product-description")
 
-            # ✅ csv에 이미 업로드된 항목이면 스킵
-            if product_id in fail_uploaded_ids:
-                self.log_func(f"실패로 처리됐으므로 update필요 product_id: {product_id}")
-                csv_type = "수정"
+            # 2. div 안의 첫 번째 <p> 태그 찾기
+            first_p = desc_div.find_elements(By.TAG_NAME, "p")[0] if desc_div else None
 
-            self.driver.get(url)
-            time.sleep(2)  # 페이지 로딩 대기
+            # 3. 텍스트 추출
+            content = first_p.text.strip() if first_p else ""
+        except NoSuchElementException:
+            self.log_func("설명이 존재하지 않습니다.")
 
-            # 첫번째 이미지 가져오기
-            try:
-                picture = self.driver.find_element(By.CSS_SELECTOR, 'picture.a-picture')
-                img = picture.find_element(By.CSS_SELECTOR, 'img.a-image')
+        categories = name.split(" _ ")
 
-                # 우선순위: data-zoom-src → src
-                img_src = img.get_attribute('data-zoom-src') or img.get_attribute('src')
-
-                # '//'로 시작하는 경우 https: 붙이기
-                if img_src and img_src.startswith('//'):
-                    img_src = 'https:' + img_src
-
-                self.log_func(f"✅ 이미지 주소: {img_src}")
-
-            except Exception as e:
-                img_src = ""
-                self.log_func("❌ 이미지 가져오기 실패:")
-
-            # 제품명
-            try:
-                h1 = self.driver.find_element(By.CSS_SELECTOR, 'h1.a-heading-1.q-mega.product-name')
-                product_name = h1.text.strip()
-            except NoSuchElementException as e:
-                error = f'제품명 추출 실패 : {e}'
-                product_name = ""
-
-            # 가격
-            try:
-                span = self.driver.find_element(By.CSS_SELECTOR, 'div.m-product-price')
-                price = span.text.strip()
-            except NoSuchElementException as e:
-                error = f'가격 추출 실패 : {e}'
-                price = ""
-
-            # 설명
-
-            try:
-                # 1. div id="product-description" 찾기
-                desc_div = self.driver.find_element(By.ID, "product-description")
-
-                # 2. div 안의 첫 번째 <p> 태그 찾기
-                first_p = desc_div.find_elements(By.TAG_NAME, "p")[0]
-
-                # 3. 텍스트 추출
-                content = first_p.text.strip()
-            except NoSuchElementException:
-                content = ""
-
-
-            categories = name.split(" _ ")
-
-            obj = {
-                "website": self.name,
-                "brand_type": self.brand_type,
-                "category": categories[0],
-                "category_sub": categories[1],
-                "url": self.base_url,
-                "category_full": name,
-                "country": self.country,
-                "brand": self.name,
-                "product_url": url,
-                "product": product_name,
-                "product_id": product_id,
-                "product_no": no,
-                "description": content,
-                "price": price,
-                "image_no": '1',
-                "image_url": img_src,
-                "image_name": f'{product_id}_1.jpg',
-                "success": "Y",
-                "reg_date": get_current_formatted_datetime(),
-                "page": "",
-                "error": error,
-                "image_yn": "Y",
-                "image_path": "",
-                "project_id": "",
-                "bucket": ""
-            }
-
-            self.google_uploader.upload(obj)
-            self.csv_appender.append_row(obj)
-
-            if obj['error']:
-                obj['success'] = "N"
-
-            self.log_func(f"product_id({csv_type}) => {product_id}({no}) : {obj}")
-            product_details.append(obj)
-
-            pro_value = (no / len(self.product_list)) * 1000000
-            self.progress_signal.emit(self.before_pro_value, pro_value)
-            self.before_pro_value = pro_value
-            self.log_func(f'{name} : TotalProduct({no}/{len(self.product_list)})')
+        return {
+            "website": self.name,
+            "brand_type": self.brand_type,
+            "category": categories[0],
+            "category_sub": categories[1],
+            "url": self.base_url,
+            "category_full": name,
+            "country": self.country,
+            "brand": self.name,
+            "product_url": url,
+            "product": product_name,
+            "product_id": product_id,
+            "product_no": no,
+            "description": content,
+            "price": price,
+            "image_no": '1',
+            "image_url": img_src,
+            "image_name": f'{product_id}_1.jpg',
+            "success": "Y",
+            "reg_date": "",
+            "page": "",
+            "error": error,
+            "image_yn": "Y",
+            "image_path": "",
+            "project_id": "",
+            "bucket": ""
+        }

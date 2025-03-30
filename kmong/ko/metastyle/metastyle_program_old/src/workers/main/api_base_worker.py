@@ -46,7 +46,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
             self.base_url = config.get("base_url")
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
-            self.driver = self.driver_manager.start_driver(self.base_url, 1200, False)
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, True)
             self.sess = self.driver_manager.get_session()
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
 
