@@ -124,13 +124,16 @@ class ApiStoresSetLoadWorker(BaseApiWorker):
             # 1. div id="product-description" 찾기
             desc_div = self.driver.find_element(By.ID, "product-description")
 
-            # 2. div 안의 첫 번째 <p> 태그 찾기
-            first_p = desc_div.find_elements(By.TAG_NAME, "p")[0] if desc_div else None
+            # 2. div 안의 모든 <p> 태그 찾기
+            p_tags = desc_div.find_elements(By.TAG_NAME, "p")
 
-            # 3. 텍스트 추출
+            # 3. 첫 번째 <p> 태그의 텍스트 추출
+            first_p = p_tags[0] if p_tags else None
             content = first_p.text.strip() if first_p else ""
         except NoSuchElementException:
             self.log_func("설명이 존재하지 않습니다.")
+        except Exception as e:
+            self.log_func("❌ 설명 가져오기 실패:")
 
         categories = name.split(" _ ")
 
