@@ -88,8 +88,7 @@ class ApiAritziaSetLoadWorker(QThread):
                 time.sleep(5)
                 self.selenium_init_button_click()
 
-                # self.driver_manager.selenium_scroll_smooth(0.2, 200, 6)
-                self.driver_manager.selenium_scroll_smooth(1, 300, 6)
+                self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
                 # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
                 time.sleep(2)
                 self.selenium_get_product_list()
