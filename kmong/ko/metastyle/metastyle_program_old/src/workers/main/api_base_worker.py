@@ -1,5 +1,5 @@
 import time
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from PyQt5.QtCore import QThread, pyqtSignal
 from src.utils.config import SITE_CONFIGS
 from src.utils.utils_excel_appender import CsvAppender
@@ -9,7 +9,12 @@ from src.utils.utils_selenium import SeleniumDriverManager
 from src.utils.utils_time import get_current_formatted_datetime
 
 
-class BaseApiWorker(QThread, ABC):
+# PyQt5 QThread와 ABCMeta의 메타클래스 병합
+class QThreadABCMeta(type(QThread), ABCMeta):
+    pass
+
+# 병합된 메타클래스를 사용하는 추상 클래스 정의
+class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
     log_signal = pyqtSignal(str)
     progress_signal = pyqtSignal(float, float)
     progress_end_signal = pyqtSignal()
