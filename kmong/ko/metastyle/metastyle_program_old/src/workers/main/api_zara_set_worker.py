@@ -54,7 +54,7 @@ class ApiZaraSetLoadWorker(QThread):
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = driver_manager.start_driver(self.base_url, 1200, None)
+            self.driver = driver_manager.start_driver(self.base_url, 1200, True)
             self.sess = driver_manager.get_session()
 
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
@@ -71,7 +71,7 @@ class ApiZaraSetLoadWorker(QThread):
                     "website": self.name,
                     "category_full": name
                 }
-                self.google_uploader.delete(obj)
+                # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
 
@@ -92,6 +92,7 @@ class ApiZaraSetLoadWorker(QThread):
                 self.selenium_get_product_list()
                 self.selenium_get_product_detail_list(name)
 
+            self.csv_appender.merge_all_csv_from_directory()
             self.progress_signal.emit(self.before_pro_value, 1000000)
             self.log_func("=============== 크롤링 종료중...")
             time.sleep(5)

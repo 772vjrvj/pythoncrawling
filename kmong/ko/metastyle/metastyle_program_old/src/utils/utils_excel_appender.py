@@ -80,14 +80,23 @@ class CsvAppender:
             pd.DataFrame().to_csv(self.file_path, index=False, encoding='utf-8-sig')
 
 
-    def merge_all_csv_from_directory(self, root_dir=None, output_filename="metastyle_all.csv"):
-        """DB 폴더 내 모든 CSV 파일을 병합하여 metastyle_all.csv 로 저장"""
-        if root_dir is None:
-            root_dir = os.path.dirname(self.file_path)
+    def merge_all_csv_from_directory(self, root_dir="DB", output_filename="metastyle_all.csv"):
+        """DB 폴더 내 기존 metastyle_all.csv 삭제 후, 모든 CSV 파일 병합하여 metastyle_all.csv로 저장"""
 
-        output_path = os.path.join("DB", output_filename)
+        output_path = os.path.join(root_dir, output_filename)
+
+        # 1. 기존 metastyle_all.csv 파일이 존재하면 삭제
+        if os.path.exists(output_path):
+            try:
+                os.remove(output_path)
+                self.log_func(f"🗑️ 기존 파일 삭제: {output_path}")
+            except Exception as e:
+                self.log_func(f"❌ 삭제 실패: {output_path} - {e}")
+                return  # 삭제 실패 시 병합 진행하지 않음
+
         all_dataframes = []
 
+        # 2. CSV 병합 수행
         for root, _, files in os.walk(root_dir):
             for file in files:
                 if file.endswith('.csv') and file != output_filename:
@@ -103,6 +112,7 @@ class CsvAppender:
             self.log_func("⚠️ 병합할 CSV가 없습니다.")
             return
 
+        # 3. 병합 후 저장
         merged_df = pd.concat(all_dataframes, ignore_index=True)
         merged_df.to_csv(output_path, index=False, encoding='utf-8-sig')
         self.log_func(f"✅ 병합 완료: {output_path} (총 {len(merged_df)} rows)")

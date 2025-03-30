@@ -85,6 +85,7 @@ class ApiFarfetchSetLoadWorker(QThread):
                 self.selenium_get_product_list(main_url)
                 self.selenium_get_product_detail_list(name)
 
+            self.csv_appender.merge_all_csv_from_directory()
             self.progress_signal.emit(self.before_pro_value, 1000000)
             self.log_func("=============== 크롤링 종료중...")
             time.sleep(5)
