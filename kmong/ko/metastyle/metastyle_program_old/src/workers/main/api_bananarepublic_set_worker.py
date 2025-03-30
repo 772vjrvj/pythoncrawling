@@ -11,6 +11,10 @@ from src.utils.utils_google_cloud_upload import GoogleUploader
 from src.utils.utils_selenium import SeleniumDriverManager
 from src.utils.utils_time import get_current_formatted_datetime
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 # API
 class ApiBananarepublicSetLoadWorker(QThread):
@@ -34,6 +38,8 @@ class ApiBananarepublicSetLoadWorker(QThread):
         self.before_pro_value = 0
         self.csv_appender = None
         self.google_uploader = None
+        self.driver_manager = None
+
 
         # 프로그램 실행
 
@@ -43,7 +49,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
             self.log_func("크롤링 시작")
             self.log_func(f"checked_list : {self.checked_list}")
 
-            driver_manager = SeleniumDriverManager(headless=True)
+            self.driver_manager = SeleniumDriverManager(headless=True)
 
             # 2. 원하는 URL로 드라이버 실행
             config = SITE_CONFIGS.get(self.name)
@@ -51,8 +57,8 @@ class ApiBananarepublicSetLoadWorker(QThread):
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = driver_manager.start_driver(self.base_url, 1200, None)
-            self.sess = driver_manager.get_session()
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, None)
+            self.sess = self.driver_manager.get_session()
 
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
 
@@ -78,7 +84,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
                 csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
                 self.csv_appender = CsvAppender(csv_path, self.log_func)
 
-                self.selenium_get_product_list(main_url, driver_manager)
+                self.selenium_get_product_list(main_url)
                 self.selenium_get_product_detail_list(name)
 
             self.progress_signal.emit(self.before_pro_value, 1000000)
@@ -97,20 +103,61 @@ class ApiBananarepublicSetLoadWorker(QThread):
     def stop(self):
         self.running = False
 
+    # 셀레니움 초기 버튼 클릭
+    def selenium_init_button_click(self):
+        try:
+            # SVG 아이콘이 나타날 때까지 대기 (최대 10초)
+            svg_icon = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'svg[data-testid="large-grid-icon"]'))
+            )
+
+            # 클릭 가능한 상태인지 확인 후 클릭
+            svg_icon.click()
+        except Exception as e:
+            self.log_func(f"3 버튼 클릭 실패")
+
 
     # 제품 목록 가져오기
-    def selenium_get_product_list(self, product_url, driver_manager):
+    def selenium_get_product_list(self, product_url):
         page = 0
         while True:
-            url = f'{product_url}#pageId={page}'
-            self.driver.get(url)
+            if page == 0:
+                url = f'{product_url}#pageId={page}' #은 spa방식이라 get(url)로 이동 안됌
+                self.driver.get(url)
+            else:
+                try:
+                    # 스크롤 많이 했을 수 있으니 다시 버튼 위치로 스크롤 조정
+                    next_button = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Next Page"]'))
+                    )
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)  # 가운데로 가져오기
+                    WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Next Page"]')))
+                    time.sleep(0.3)
+                    next_button.click()
+                    self.log_func("다음 페이지 버튼 클릭 성공")
+                except TimeoutException:
+                    self.log_func("다음 페이지 버튼을 찾을 수 없습니다. 마지막 페이지일 수 있습니다.")
+                    break
+                except Exception as e:
+                    self.log_func(f"다음 페이지 버튼 클릭 중 예외 발생: {str(e)}")
+                    break
+
             time.sleep(2)
-            driver_manager.selenium_scroll_smooth(0.1, 100, None)
+            self.selenium_init_button_click()
+            time.sleep(1)
+            self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
             time.sleep(2)
+            # 1. UL 태그 찾기 class="cat_product-image sitewide-15ltmfs"
             try:
-                # 1. UL 태그 찾기 class="cat_product-image sitewide-15ltmfs"
-                div_elements = self.driver.find_elements(By.CSS_SELECTOR, 'div.cat_product-image.sitewide-15ltmfs')
-            except NoSuchElementException:
+                # 최대 10초 동안 div 요소들이 로드되기를 기다림
+                div_elements = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.cat_product-image'))
+                )
+            except TimeoutException:
+                self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
+                break  # 상품이 없으면 종료
+
+            if not div_elements:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break  # 상품이 없으면 종료
 

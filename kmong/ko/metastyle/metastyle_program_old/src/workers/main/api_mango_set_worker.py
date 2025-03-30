@@ -43,7 +43,7 @@ class ApiMangoSetLoadWorker(QThread):
             self.log_func("크롤링 시작")
             self.log_func(f"checked_list : {self.checked_list}")
 
-            driver_manager = SeleniumDriverManager(headless=True)
+            self.driver_manager = SeleniumDriverManager(headless=True)
 
             # 2. 원하는 URL로 드라이버 실행
             config = SITE_CONFIGS.get(self.name)
@@ -51,8 +51,8 @@ class ApiMangoSetLoadWorker(QThread):
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = driver_manager.start_driver(self.base_url, 1200, None)
-            self.sess = driver_manager.get_session()
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, None)
+            self.sess = self.driver_manager.get_session()
 
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
 
@@ -67,7 +67,7 @@ class ApiMangoSetLoadWorker(QThread):
                     "website": self.name,
                     "category_full": name
                 }
-                self.google_uploader.delete(obj)
+                # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
 
@@ -79,7 +79,7 @@ class ApiMangoSetLoadWorker(QThread):
 
                 time.sleep(3)
                 self.selenium_init_button_click()
-                driver_manager.selenium_scroll_smooth(0.5, 100, 6)
+                self.driver_manager.selenium_scroll_smooth(0.5, 100, 6)
                 # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
                 time.sleep(5)
                 self.selenium_get_product_list()

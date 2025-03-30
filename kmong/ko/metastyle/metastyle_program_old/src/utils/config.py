@@ -110,7 +110,7 @@ SITE_CONFIGS = {
         "color": "#000",
         "base_url": "https://bananarepublic.gap.com",
         "check_list": {
-            "WOMEN _ New Arrivals": "/browse/women/new-arrivals?cid=48422&nav=meganav%3AWomen%3ADiscover%3ANew%20Arrivals#",
+            "WOMEN _ New Arrivals": "/browse/women/new-arrivals?cid=48422&nav=meganav%3AWomen%3ADiscover%3ANew%20Arrivals",
         },
         "brand_type": "Competitive Brand",
         "country": "US"
