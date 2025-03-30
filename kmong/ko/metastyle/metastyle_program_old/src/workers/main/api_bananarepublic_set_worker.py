@@ -39,6 +39,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
         self.csv_appender = None
         self.google_uploader = None
         self.driver_manager = None
+        self.seen_keys = set()
 
 
         # 프로그램 실행
@@ -163,23 +164,27 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             for div in div_elements:
                 try:
-
                     full_id = div.get_attribute("id")
                     product_id = ""
-                    if full_id.startswith("product"):
-                        product_id = full_id[len("product"):]  # "product" 다음 문자부터 추출
+                    if full_id and full_id.startswith("product"):
+                        product_id = full_id[len("product"):]
 
-                    # 4. article 안 첫 번째 a 태그의 href 추출
                     a_tag = div.find_element(By.TAG_NAME, "a")
                     url = a_tag.get_attribute("href")
 
-                    # 결과 저장
+                    key = (product_id, url)
+                    if not product_id or not url or key in self.seen_keys:
+                        continue  # 중복이면 건너뜀
+
                     self.product_list.append({
                         "product_id": product_id,
                         "url": url
                     })
+                    self.seen_keys.add(key)
+
                 except NoSuchElementException:
                     self.log_func("li안에 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")
+
             page += 1  # 다음 페이지로 이동
         self.log_func('상품목록 수집완료...')
 
