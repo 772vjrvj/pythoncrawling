@@ -1,16 +1,17 @@
-from selenium import webdriver
-import requests
+import base64
+import os
 import ssl
 import time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+
+import psutil
+import requests
+from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
-import os
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
-import psutil
-import base64
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -198,7 +199,8 @@ class SeleniumDriverManager:
                 break
             last_height = new_height
 
-    def selenium_scroll_smooth_ratio(self, inter_time=0.1, step_ratio=0.02, delay=None):
+
+    def selenium_scroll_smooth(self, inter_time=0.1, step=50, delay=None):
         """
         전체 문서 높이에 비례하여 스크롤 step을 계산하여 부드럽게 스크롤합니다.
         :param inter_time: 스크롤 간 sleep 시간
@@ -211,53 +213,33 @@ class SeleniumDriverManager:
         # document.body.scrollHeight	전체 문서의 총 세로 길이
         # scrollY (4200) + innerHeight (800) = scrollHeight (5000)
 
+        # 1. scrollTo(x, y) 절대적(Absolute) 위치로 이동합니다. 페이지 상단에서부터의 위치를 기준으로 이동합니다.
+        # 2. scrollBy(x, y) 상대적(Relative) 위치로 이동합니다. 현재 스크롤 위치를 기준으로 추가로 이동합니다
+
         while True:
             initial_scroll_height = self.driver.execute_script("return document.body.scrollHeight")
-            step = max(int(initial_scroll_height * step_ratio), 1)
 
             while True:
                 current_scroll = self.driver.execute_script("return window.scrollY")
                 window_height = self.driver.execute_script("return window.innerHeight")
+                total_height = self.driver.execute_script("return document.body.scrollHeight")
 
-                # ✅ 정확한 종료 조건
-                if current_scroll + window_height >= initial_scroll_height:
+                if total_height != initial_scroll_height and current_scroll >= total_height * 4/5:
+                    step = 300
+                    inter_time = 1
+
+                if current_scroll + window_height >= total_height:
                     break
 
                 self.driver.execute_script(f"window.scrollBy(0, {step});")
                 time.sleep(inter_time)
 
             time.sleep(delay)
-            break
 
             updated_scroll_height = self.driver.execute_script("return document.body.scrollHeight")
             if updated_scroll_height == initial_scroll_height:
+                print(f'완료2')
                 break
-
-    def selenium_scroll_smooth(self, inter_time=0.1, step=100, delay=None):
-        """
-        빠르고 부드럽게 스크롤합니다. 일정 간격(step)으로 scrollBy를 반복해서 자연스럽게 스크롤합니다.
-        :param delay:
-        :param inter_time: 스크롤 간 대기 시간 (작게 설정해야 부드러움)
-        :param step: 한 번에 스크롤할 픽셀 수 (작게 설정해야 부드러움)
-        """
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
-
-        while True:
-            current_position = 0
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
-
-            while current_position < new_height:
-                self.driver.execute_script(f"window.scrollBy(0, {step});")
-                current_position += step
-                time.sleep(inter_time)
-            if delay:
-                time.sleep(delay)
-
-            # 새 컨텐츠 로드 후 높이 비교
-            new_height_after = self.driver.execute_script("return document.body.scrollHeight")
-            if new_height_after == last_height:
-                break
-            last_height = new_height_after
 
 
     def download_image_content(self, obj):

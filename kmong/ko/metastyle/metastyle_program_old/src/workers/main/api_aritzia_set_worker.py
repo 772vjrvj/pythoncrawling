@@ -52,7 +52,7 @@ class ApiAritziaSetLoadWorker(QThread):
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = self.driver_manager.start_driver(self.base_url, 1200, None)
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, "Y")
             self.sess = self.driver_manager.get_session()
 
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
@@ -74,16 +74,24 @@ class ApiAritziaSetLoadWorker(QThread):
                 # self.google_uploader.download_all_in_folder(obj)
 
                 site_url = config.get('check_list', {}).get(name, "")
-                self.driver.get(f"{config.get("base_url")}{site_url}")
+                # self.driver.get(f"{config.get("base_url")}{site_url}")
+                self.driver.get(f"{config.get("base_url")}{site_url}?lastViewed=1000")
+                # 이 경우는 selenium_scroll_smooth 을
+                # inter_time : 1, step : 300
+                # 로 진행
+                # 그 외는
+                # inter_time : 0.2, step : 200
 
                 csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
                 self.csv_appender = CsvAppender(csv_path, self.log_func)
 
-                time.sleep(3)
-                self.selenium_init_button_click()
-                self.driver_manager.selenium_scroll_smooth_ratio(0.05, 0.002, 3)
-                # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
                 time.sleep(5)
+                self.selenium_init_button_click()
+
+                # self.driver_manager.selenium_scroll_smooth(0.2, 200, 6)
+                self.driver_manager.selenium_scroll_smooth(1, 300, 6)
+                # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
+                time.sleep(2)
                 self.selenium_get_product_list()
                 self.selenium_get_product_detail_list(name)
 
@@ -168,6 +176,7 @@ class ApiAritziaSetLoadWorker(QThread):
                 fail_uploaded_ids.add(pid)
 
         for no, product in enumerate(self.product_list, start=1):
+            self.log_func(f"================ no : {no}")
             if not self.running:  # 실행 상태 확인
                 self.log_func("크롤링이 중지되었습니다.")
                 break

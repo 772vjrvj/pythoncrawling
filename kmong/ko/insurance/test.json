@@ -1,0 +1,21 @@
+{
+  'companyCode': '401',
+  'companyName': '하나생명보험',
+  'category': [
+    '개인',
+    '보장'
+  ],
+  'productNameOriginal': '(무)CEO정기보험',
+  'productName': '(무)CEO정기보험',
+  'productNameSafe': '(무)CEO정기보험',
+  'version': 1,
+  'isForSale': True,
+  'saleStartDate': '2025-02-10',
+  'saleEndDate': '',
+  'planFileUrl': 'https://www.hanalife.co.kr/home/download2.do?fileName=PROD/(무)CEO정기보험_상품요약서.pdf&downFileName=(무)CEO정기보험_상품요약서.pdf',
+  'policyFileUrl': 'https://www.hanalife.co.kr/home/download2.do?fileName=PROD/(무)CEO 정기보험_사업방법서.pdf&downFileName=(무)CEO정기보험_사업방법서.pdf',
+  'summaryFileUrl': 'https://www.hanalife.co.kr/home/download2.do?fileName=PROD/(무)CEO정기보험_계약자용약관_v2.pdf&downFileName=(무)CEO정기보험_계약자용약관.pdf',
+  'planFilePath': '401/(무)CEO정기보험/v1-plan.pdf',
+  'policyFilePath': '401/(무)CEO정기보험/v1-policy.pdf',
+  'summaryFilePath': '401/(무)CEO정기보험/v1-summary.pdf'
+}

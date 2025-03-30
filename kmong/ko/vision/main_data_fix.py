@@ -309,7 +309,7 @@ if __name__ == "__main__":
     print(f"{get_current_time()} 순위 보정 프로그램 정상 시작 완료!!!")
 
     # 매일 04:00에 test() 실행
-    schedule.every().day.at("04:00").do(naver_cralwing)
+    schedule.every().day.at("04:15").do(naver_cralwing)
 
     # 1초마다 실행시간이 도래 했는지 확인
     while True:
