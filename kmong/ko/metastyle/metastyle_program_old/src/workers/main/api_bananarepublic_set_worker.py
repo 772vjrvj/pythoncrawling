@@ -237,7 +237,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             # 첫번째 이미지 가져오기
             try:
-                div = self.driver.find_element(By.CSS_SELECTOR, 'div.sitewide-1is119p')
+                div = self.driver.find_element(By.CSS_SELECTOR, 'div[data-testid="grid"]')
                 img = div.find_element(By.TAG_NAME, 'img')
                 img_src = img.get_attribute('src')
             except NoSuchElementException as e:
@@ -246,7 +246,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             # 제품명
             try:
-                h1 = self.driver.find_element(By.CSS_SELECTOR, 'h1.sitewide-4wrr8w')
+                h1 = self.driver.find_element(By.TAG_NAME, 'h1')
                 product_name = h1.text.strip()
             except NoSuchElementException as e:
                 error = f'제품명 추출 실패 : {e}'
@@ -254,8 +254,12 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             # 가격
             try:
-                span = self.driver.find_element(By.CSS_SELECTOR, 'span.product-price__regular.sitewide-sux55d')
-                price = span.text.strip()
+                # 1. div.amount-price 요소 찾기
+                div = self.driver.find_element(By.CSS_SELECTOR, 'div.amount-price')
+                # 2. 그 안에 있는 span 요소 찾기
+                span = div.find_element(By.TAG_NAME, 'span')
+                # 3. 텍스트 가져오기
+                price = span.text.strip()  # 예: "$120.00"
             except NoSuchElementException as e:
                 error = f'가격 추출 실패 : {e}'
                 price = ""
