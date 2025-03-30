@@ -215,7 +215,7 @@ class SeleniumDriverManager:
 
         # 1. scrollTo(x, y) 절대적(Absolute) 위치로 이동합니다. 페이지 상단에서부터의 위치를 기준으로 이동합니다.
         # 2. scrollBy(x, y) 상대적(Relative) 위치로 이동합니다. 현재 스크롤 위치를 기준으로 추가로 이동합니다
-
+        diff = 2
         while True:
             initial_scroll_height = self.driver.execute_script("return document.body.scrollHeight")
 
@@ -224,7 +224,7 @@ class SeleniumDriverManager:
                 window_height = self.driver.execute_script("return window.innerHeight")
                 total_height = self.driver.execute_script("return document.body.scrollHeight")
 
-                if current_scroll + window_height >= total_height:
+                if current_scroll + window_height >= total_height - diff:
                     break
 
                 self.driver.execute_script(f"window.scrollBy(0, {step});")
