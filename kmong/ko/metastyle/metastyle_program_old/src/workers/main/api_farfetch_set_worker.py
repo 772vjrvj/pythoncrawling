@@ -276,6 +276,9 @@ class ApiFarfetchSetLoadWorker(QThread):
             except NoSuchElementException as e:
                 img_src = ""
                 error = f'이미지 src 추출 실패 : {e}'
+            except Exception:
+                self.log_func(f"이미지 src 추출 실패")
+                content = ""
 
             # 제품명
             try:
@@ -283,6 +286,9 @@ class ApiFarfetchSetLoadWorker(QThread):
             except NoSuchElementException as e:
                 error = f'제품명 추출 실패 : {e}'
                 product_name = ""
+            except Exception:
+                self.log_func(f"제품명 없음")
+                content = ""
 
             # 가격
             try:
@@ -290,6 +296,9 @@ class ApiFarfetchSetLoadWorker(QThread):
             except NoSuchElementException as e:
                 error = f'가격 추출 실패 : {e}'
                 price = ""
+            except Exception:
+                self.log_func(f"가격 없음")
+                content = ""
 
             # 설명
             try:
@@ -298,12 +307,18 @@ class ApiFarfetchSetLoadWorker(QThread):
                 content = [li.text.strip() for li in desc_items]
             except NoSuchElementException:
                 content = ""
+            except Exception:
+                self.log_func(f"설명 없음")
+                content = ""
 
             # brand
             try:
                 brand = self.driver.find_element(By.CSS_SELECTOR, '.ltr-183yg4m-Body-Heading-HeadingBold.e1h8dali1').text.strip()
             except NoSuchElementException:
                 brand = ""
+            except Exception:
+                self.log_func(f"brand 없음")
+                content = ""
 
             categories = name.split(" _ ")
 
