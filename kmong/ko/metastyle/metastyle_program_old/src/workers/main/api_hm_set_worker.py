@@ -22,11 +22,11 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             time.sleep(2)
             li_elements = []
             try:
-                ul_element = WebDriverWait(self.driver, 10).until(
+                ul_elements = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'ul[data-elid="product-grid"]'))
                 )
-                if ul_element:
-                    li_elements = ul_element.find_elements(By.TAG_NAME, "li")
+                if ul_elements:
+                    li_elements = ul_elements[0].find_elements(By.TAG_NAME, "li")
             except NoSuchElementException:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break
