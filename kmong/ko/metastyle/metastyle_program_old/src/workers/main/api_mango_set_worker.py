@@ -75,7 +75,10 @@ class ApiMangoSetLoadWorker(QThread):
                 self.driver.get(f"{config.get("base_url")}{site_url}")
 
                 csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
-                self.csv_appender = CsvAppender(csv_path, self.log_func)
+                if index == 1:
+                    self.csv_appender = CsvAppender(csv_path, self.log_func)
+                else:
+                    self.csv_appender.set_file_path(name)
 
                 time.sleep(3)
                 self.selenium_init_button_click()

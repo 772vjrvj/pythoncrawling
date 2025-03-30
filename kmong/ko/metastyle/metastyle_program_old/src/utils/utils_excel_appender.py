@@ -8,8 +8,8 @@ class CsvAppender:
         self.log_func  = log_func
 
         # 파일이 없으면 빈 CSV 생성
-        if not os.path.exists(file_path):
-            pd.DataFrame().to_csv(file_path, index=False, encoding='utf-8-sig')
+        if not os.path.exists(self.file_path):
+            pd.DataFrame().to_csv(self.file_path, index=False, encoding='utf-8-sig')
 
 
     # 0    1      <- index 0번 행의 product_id는 1이다

@@ -74,6 +74,12 @@ class ApiAritziaSetLoadWorker(QThread):
                 self.log_func(f"=============== self.blob_product_ids : {self.blob_product_ids}")
                 # self.google_uploader.download_all_in_folder(obj)
 
+                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
+                if index == 1:
+                    self.csv_appender = CsvAppender(csv_path, self.log_func)
+                else:
+                    self.csv_appender.set_file_path(name)
+
                 site_url = config.get('check_list', {}).get(name, "")
                 # self.driver.get(f"{config.get("base_url")}{site_url}")
                 self.driver.get(f"{config.get("base_url")}{site_url}?lastViewed=1000")
@@ -83,8 +89,6 @@ class ApiAritziaSetLoadWorker(QThread):
                 # 그 외는
                 # inter_time : 0.2, step : 200
 
-                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
-                self.csv_appender = CsvAppender(csv_path, self.log_func)
 
                 time.sleep(5)
                 self.selenium_init_button_click()

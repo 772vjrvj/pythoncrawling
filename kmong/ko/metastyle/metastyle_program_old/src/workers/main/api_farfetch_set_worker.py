@@ -37,6 +37,7 @@ class ApiFarfetchSetLoadWorker(QThread):
         self.before_pro_value = 0
         self.csv_appender = None
         self.google_uploader = None
+        self.seen_keys = set()
 
         # 프로그램 실행
 
@@ -45,30 +46,27 @@ class ApiFarfetchSetLoadWorker(QThread):
         if self.checked_list:
             self.log_func("크롤링 시작")
             self.log_func(f"checked_list : {self.checked_list}")
-
-            driver_manager = SeleniumDriverManager(headless=True)
-
-            # 2. 원하는 URL로 드라이버 실행
+            self.driver_manager = SeleniumDriverManager(headless=True)
             config = SITE_CONFIGS.get(self.name)
             self.base_url = config.get("base_url")
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
 
-            self.driver = driver_manager.start_driver(self.base_url, 1200, True)
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, True)
+            self.sess = self.driver_manager.get_session()
+            self.google_uploader = GoogleUploader(self.log_func, self.sess)
+
+            # farfetch 추가 시작 ======
             self.refresh_if_429()
             self.click_close_button()
             self.selenium_set_region()
-            self.sess = driver_manager.get_session()
-
-            self.google_uploader = GoogleUploader(self.log_func, self.sess)
+            # farfetch 추가 종료 ======
 
             for index, check_obj in enumerate(self.checked_list, start=1):
-                if not self.running:  # 실행 상태 확인
+                if not self.running:
                     self.log_func("크롤링이 중지되었습니다.")
                     break
-
                 name = check_obj['name']
-
                 obj = {
                     "website": self.name,
                     "category_full": name
@@ -76,20 +74,15 @@ class ApiFarfetchSetLoadWorker(QThread):
                 # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
-
+                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
                 if index == 1:
-                    csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
                     self.csv_appender = CsvAppender(csv_path, self.log_func)
                 else:
-                    self.csv_appender.set_file_path(name)
-
-                time.sleep(3)
-                # self.selenium_set_region()
-
+                    self.csv_appender.set_file_path(csv_path)
                 site_url = config.get('check_list', {}).get(name, "")
-                product_url = f"{config.get("base_url")}{site_url}"
+                main_url = f"{config.get("base_url")}{site_url}"
 
-                self.selenium_get_product_list(product_url, driver_manager)
+                self.selenium_get_product_list(main_url)
                 self.selenium_get_product_detail_list(name)
 
             self.progress_signal.emit(self.before_pro_value, 1000000)
@@ -174,7 +167,7 @@ class ApiFarfetchSetLoadWorker(QThread):
             self.log_func(f"❌ 지역 화면 없음", )
 
     # 제품 목록 가져오기
-    def selenium_get_product_list(self, product_url, driver_manager):
+    def selenium_get_product_list(self, product_url):
         page = 1
         while True:
             if product_url.endswith("items.aspx"):
@@ -184,7 +177,7 @@ class ApiFarfetchSetLoadWorker(QThread):
             self.driver.get(url)
             time.sleep(3)  # 페이지 로딩 대기
             self.refresh_if_429()
-            driver_manager.selenium_scroll_smooth(0.1, 100, None)
+            self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
             time.sleep(3)
             try:
                 product_list = WebDriverWait(self.driver, 10).until(
@@ -196,23 +189,26 @@ class ApiFarfetchSetLoadWorker(QThread):
             time.sleep(3)
             for product in product_list:
                 try:
-                    # **a 태그 찾기 (li 태그 내부의 첫 번째 a 태그)**
-                    a_tag = WebDriverWait(product, 5).until(
-                        EC.presence_of_element_located((By.TAG_NAME, "a"))
-                    )
-                    href = a_tag.get_attribute("href")
+                    a_tag = product.find_element(By.TAG_NAME, "a")
+                    if a_tag:
+                        href = a_tag.get_attribute("href")
+                        if href:
+                            if not href.startswith(self.base_url):
+                                href = self.base_url + href
 
-                    if not href.startswith(self.base_url):
-                        href = self.base_url + href
+                            # 정규식을 사용하여 product_id 추출 (숫자만 찾기)
+                            product_id_match = re.search(r"item-(\d+)", href)
+                            product_id = product_id_match.group(1) if product_id_match else ""
 
-                    # 정규식을 사용하여 product_id 추출 (숫자만 찾기)
-                    product_id_match = re.search(r"item-(\d+)", href)
-                    product_id = product_id_match.group(1) if product_id_match else ""
+                            key = (product_id, href)
+                            if not product_id or not href or key in self.seen_keys:
+                                continue  # 중복이면 건너뜀
 
-                    self.product_list.append({
-                        "url": href,
-                        "product_id": product_id
-                    })
+                            self.product_list.append({
+                                "product_id": product_id,
+                                "url": href
+                            })
+                            self.seen_keys.add(key)
 
                 except (NoSuchElementException, TimeoutException):
                     self.log_func("⚠️ a 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")

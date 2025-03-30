@@ -49,27 +49,20 @@ class ApiBananarepublicSetLoadWorker(QThread):
         if self.checked_list:
             self.log_func("크롤링 시작")
             self.log_func(f"checked_list : {self.checked_list}")
-
             self.driver_manager = SeleniumDriverManager(headless=True)
-
-            # 2. 원하는 URL로 드라이버 실행
             config = SITE_CONFIGS.get(self.name)
             self.base_url = config.get("base_url")
             self.brand_type = config.get("brand_type")
             self.country = config.get("country")
-
-            self.driver = self.driver_manager.start_driver(self.base_url, 1200, None)
+            self.driver = self.driver_manager.start_driver(self.base_url, 1200, False)
             self.sess = self.driver_manager.get_session()
-
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
 
             for index, check_obj in enumerate(self.checked_list, start=1):
-                if not self.running:  # 실행 상태 확인
+                if not self.running:
                     self.log_func("크롤링이 중지되었습니다.")
                     break
-
                 name = check_obj['name']
-
                 obj = {
                     "website": self.name,
                     "category_full": name
@@ -78,13 +71,15 @@ class ApiBananarepublicSetLoadWorker(QThread):
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
 
+                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
+                if index == 1:
+                    self.csv_appender = CsvAppender(csv_path, self.log_func)
+                else:
+                    self.csv_appender.set_file_path(csv_path)
                 site_url = config.get('check_list', {}).get(name, "")
                 main_url = f"{config.get("base_url")}{site_url}"
+
                 self.driver.get(main_url)
-
-                csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)
-                self.csv_appender = CsvAppender(csv_path, self.log_func)
-
                 self.selenium_get_product_list(main_url)
                 self.selenium_get_product_detail_list(name)
 
@@ -173,10 +168,9 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
                     if a_tag:
                         href = a_tag.get_attribute("href")
-                        if not href.startswith("http"):
-                            href = self.base_url + href
-
                         if href:
+                            if not href.startswith("http"):
+                                href = self.base_url + href
                             key = (product_id, href)
                             if not product_id or not href or key in self.seen_keys:
                                 continue  # 중복이면 건너뜀
