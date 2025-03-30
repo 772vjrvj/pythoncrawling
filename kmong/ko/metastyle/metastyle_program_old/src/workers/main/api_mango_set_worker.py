@@ -67,7 +67,7 @@ class ApiMangoSetLoadWorker(QThread):
                     "website": self.name,
                     "category_full": name
                 }
-                # self.google_uploader.delete(obj)
+                self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
 
@@ -79,7 +79,7 @@ class ApiMangoSetLoadWorker(QThread):
 
                 time.sleep(3)
                 self.selenium_init_button_click()
-                driver_manager.selenium_scroll_keys_end(3)
+                driver_manager.selenium_scroll_smooth(0.5, 100, 6)
                 # 💡 스크롤 완료 후 렌더링 대기 (a 태그 같은 요소가 로딩될 시간)
                 time.sleep(5)
                 self.selenium_get_product_list()

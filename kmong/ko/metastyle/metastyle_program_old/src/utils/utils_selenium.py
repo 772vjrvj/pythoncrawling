@@ -200,7 +200,7 @@ class SeleniumDriverManager:
             last_height = new_height
 
 
-    def selenium_scroll_smooth(self, inter_time=0.1, step=50, delay=None):
+    def selenium_scroll_smooth(self, inter_time=0.5, step=100, delay=6):
         """
         전체 문서 높이에 비례하여 스크롤 step을 계산하여 부드럽게 스크롤합니다.
         :param inter_time: 스크롤 간 sleep 시간
@@ -223,10 +223,6 @@ class SeleniumDriverManager:
                 current_scroll = self.driver.execute_script("return window.scrollY")
                 window_height = self.driver.execute_script("return window.innerHeight")
                 total_height = self.driver.execute_script("return document.body.scrollHeight")
-
-                if total_height != initial_scroll_height and current_scroll >= total_height * 4/5:
-                    step = 300
-                    inter_time = 1
 
                 if current_scroll + window_height >= total_height:
                     break
