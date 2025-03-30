@@ -170,17 +170,23 @@ class ApiBananarepublicSetLoadWorker(QThread):
                         product_id = full_id[len("product"):]
 
                     a_tag = div.find_element(By.TAG_NAME, "a")
-                    url = a_tag.get_attribute("href")
 
-                    key = (product_id, url)
-                    if not product_id or not url or key in self.seen_keys:
-                        continue  # 중복이면 건너뜀
+                    if a_tag:
+                        href = a_tag.get_attribute("href")
+                        if not href.startswith("http"):
+                            href = self.base_url + href
 
-                    self.product_list.append({
-                        "product_id": product_id,
-                        "url": url
-                    })
-                    self.seen_keys.add(key)
+                        if href:
+                            key = (product_id, href)
+                            if not product_id or not href or key in self.seen_keys:
+                                continue  # 중복이면 건너뜀
+
+                            self.product_list.append({
+                                "product_id": product_id,
+                                "url": href
+                            })
+                            self.seen_keys.add(key)
+
 
                 except NoSuchElementException:
                     self.log_func("li안에 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")

@@ -35,6 +35,7 @@ class ApiAritziaSetLoadWorker(QThread):
         self.csv_appender = None
         self.google_uploader = None
         self.driver_manager = None
+        self.seen_keys = set()
 
         # 프로그램 실행
 
@@ -129,11 +130,11 @@ class ApiAritziaSetLoadWorker(QThread):
     # 제품 목록 가져오기
     def selenium_get_product_list(self):
         self.log_func('상품목록 수집시작... 1분 이상 소요 됩니다. 잠시만 기다려주세요')
-        product_list = self.driver.find_elements(By.CLASS_NAME, "_13qupa29")
+        product_list = self.driver.find_elements(By.CSS_SELECTOR, '[data-testid="plp-product-tile-12"]')
         self.log_func(f'추출 목록 수: {len(product_list)}')
         for product in product_list:
             try:
-                product_id = product.get_attribute("data-mpid")
+                product_id = str(product.get_attribute("data-mpid"))
                 # 안전한 방식
                 a_tag = product.find_element(By.TAG_NAME, "a")
                 if a_tag:
@@ -142,10 +143,17 @@ class ApiAritziaSetLoadWorker(QThread):
                         href = self.base_url + href
 
                     if href:
+                        key = (product_id, href)
+                        if not product_id or not href or key in self.seen_keys:
+                            continue  # 중복이면 건너뜀
+
                         self.product_list.append({
                             "url": href,
-                            "product_id": str(product_id)
+                            "product_id": product_id
                         })
+                        self.seen_keys.add(key)
+
+
                 else:
                     self.log_func(f"[경고] a 태그 없음 - product_id: {product_id}")
 
