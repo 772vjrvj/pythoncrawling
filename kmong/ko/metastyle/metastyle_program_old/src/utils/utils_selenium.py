@@ -234,7 +234,6 @@ class SeleniumDriverManager:
 
             updated_scroll_height = self.driver.execute_script("return document.body.scrollHeight")
             if updated_scroll_height == initial_scroll_height:
-                print(f'완료2')
                 break
 
 
