@@ -18,7 +18,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             url = f'{main_url}?page={page}'
             self.driver.get(url)
             time.sleep(2)
-            self.driver_manager.selenium_scroll_smooth(1, 200, 6)
+            self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
             time.sleep(2)
             li_elements = []
             try:
