@@ -1,7 +1,10 @@
 import time
 
 from PyQt5.QtCore import QThread, pyqtSignal
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from src.utils.config import SITE_CONFIGS
 from src.utils.utils_excel_appender import CsvAppender
@@ -10,13 +13,9 @@ from src.utils.utils_google_cloud_upload import GoogleUploader
 from src.utils.utils_selenium import SeleniumDriverManager
 from src.utils.utils_time import get_current_formatted_datetime
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
 
 # API
-class ApiBananarepublicSetLoadWorker(QThread):
+class ApiHmSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
@@ -25,7 +24,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
     # 초기화
     def __init__(self, checked_list):
         super().__init__()
-        self.name = "BANANAREPUBLIC"
+        self.name = "H&M"
         self.sess = None
         self.checked_list = checked_list
         self.running = True  # 실행 상태 플래그 추가
@@ -40,7 +39,6 @@ class ApiBananarepublicSetLoadWorker(QThread):
         self.google_uploader = None
         self.driver_manager = None
         self.seen_keys = set()
-
 
     # 실행
     def run(self):
@@ -57,7 +55,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
             self.google_uploader = GoogleUploader(self.log_func, self.sess)
 
             for index, check_obj in enumerate(self.checked_list, start=1):
-                if not self.running:
+                if not self.running:  # 실행 상태 확인
                     self.log_func("크롤링이 중지되었습니다.")
                     break
                 name = check_obj['name']
@@ -96,92 +94,39 @@ class ApiBananarepublicSetLoadWorker(QThread):
     def stop(self):
         self.running = False
 
-    # 셀레니움 초기 버튼 클릭
-    def selenium_init_button_click(self):
-        try:
-            # SVG 아이콘이 나타날 때까지 대기 (최대 10초)
-            svg_icon = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'svg[data-testid="large-grid-icon"]'))
-            )
-
-            # 클릭 가능한 상태인지 확인 후 클릭
-            svg_icon.click()
-        except Exception as e:
-            self.log_func(f"3 버튼 클릭 실패")
-
-
     # 제품 목록 가져오기
     def selenium_get_product_list(self, product_url):
-        page = 0
+        page = 1
         while True:
-            if page == 0:
-                url = f'{product_url}#pageId={page}' #은 spa방식이라 get(url)로 이동 안됌
-                self.driver.get(url)
-            else:
-                try:
-                    # 스크롤 많이 했을 수 있으니 다시 버튼 위치로 스크롤 조정
-                    next_button = WebDriverWait(self.driver, 5).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Next Page"]'))
-                    )
-                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)  # 가운데로 가져오기
-                    WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Next Page"]')))
-                    time.sleep(0.3)
-                    next_button.click()
-                    self.log_func("다음 페이지 버튼 클릭 성공")
-                except TimeoutException:
-                    self.log_func("다음 페이지 버튼을 찾을 수 없습니다. 마지막 페이지일 수 있습니다.")
-                    break
-                except Exception as e:
-                    self.log_func(f"다음 페이지 버튼 클릭 중 예외 발생: {str(e)}")
-                    break
-
+            url = f'{product_url}?page={page}'
+            self.driver.get(url)
             time.sleep(2)
-            self.selenium_init_button_click()
-            time.sleep(1)
             self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
             time.sleep(2)
-            # 1. UL 태그 찾기 class="cat_product-image sitewide-15ltmfs"
             try:
-                # 최대 10초 동안 div 요소들이 로드되기를 기다림
-                div_elements = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.cat_product-image'))
+                ul_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'ul[data-elid="product-grid"]'))
                 )
-            except TimeoutException:
+                li_elements = ul_element.find_elements(By.TAG_NAME, "li")
+            except NoSuchElementException:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break  # 상품이 없으면 종료
 
-            if not div_elements:
-                self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
-                break  # 상품이 없으면 종료
-
-            for div in div_elements:
+            for li in li_elements:
                 try:
-                    full_id = div.get_attribute("id")
-                    product_id = ""
-                    if full_id and full_id.startswith("product"):
-                        product_id = full_id[len("product"):]
-
-                    a_tag = div.find_element(By.TAG_NAME, "a")
-
+                    article = li.find_element(By.TAG_NAME, "article")
+                    product_id = article.get_attribute("data-articlecode")
+                    a_tag = article.find_element(By.TAG_NAME, "a")
                     if a_tag:
                         href = a_tag.get_attribute("href")
                         if href:
-                            if not href.startswith("http"):
-                                href = self.base_url + href
-                            key = (product_id, href)
-                            if not product_id or not href or key in self.seen_keys:
-                                continue  # 중복이면 건너뜀
-
+                            # 결과 저장
                             self.product_list.append({
                                 "product_id": product_id,
                                 "url": href
                             })
-                            self.seen_keys.add(key)
-
-
                 except NoSuchElementException:
                     self.log_func("li안에 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")
-
             page += 1  # 다음 페이지로 이동
         self.log_func('상품목록 수집완료...')
 
@@ -234,8 +179,9 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             # 첫번째 이미지 가져오기
             try:
-                div = self.driver.find_element(By.CSS_SELECTOR, 'div[data-testid="grid"]')
-                img = div.find_element(By.TAG_NAME, 'img')
+                ul = self.driver.find_element(By.CSS_SELECTOR, 'ul[data-testid="grid-gallery"]')
+                first_li = ul.find_elements(By.TAG_NAME, 'li')[0]
+                img = first_li.find_element(By.TAG_NAME, 'img')
                 img_src = img.get_attribute('src')
             except NoSuchElementException as e:
                 img_src = ""
@@ -243,7 +189,7 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             # 제품명
             try:
-                h1 = self.driver.find_element(By.TAG_NAME, 'h1')
+                h1 = self.driver.find_element(By.CSS_SELECTOR, 'h1.fa226d.af6753.d582fb')
                 product_name = h1.text.strip()
             except NoSuchElementException as e:
                 error = f'제품명 추출 실패 : {e}'
@@ -251,12 +197,8 @@ class ApiBananarepublicSetLoadWorker(QThread):
 
             # 가격
             try:
-                # 1. div.amount-price 요소 찾기
-                div = self.driver.find_element(By.CSS_SELECTOR, 'div.amount-price')
-                # 2. 그 안에 있는 span 요소 찾기
-                span = div.find_element(By.TAG_NAME, 'span')
-                # 3. 텍스트 가져오기
-                price = span.text.strip()  # 예: "$120.00"
+                span = self.driver.find_element(By.CSS_SELECTOR, 'span.edbe20.ac3d9e.d9ca8b')
+                price = span.text.strip()
             except NoSuchElementException as e:
                 error = f'가격 추출 실패 : {e}'
                 price = ""
