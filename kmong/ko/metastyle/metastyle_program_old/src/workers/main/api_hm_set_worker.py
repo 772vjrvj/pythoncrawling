@@ -18,7 +18,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             url = f'{main_url}?page={page}'
             self.driver.get(url)
             time.sleep(2)
-            self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
+            self.driver_manager.selenium_scroll_smooth(1, 200, 6)
             time.sleep(2)
             li_elements = []
             try:
@@ -26,7 +26,8 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'ul[data-elid="product-grid"]'))
                 )
                 if ul_elements:
-                    li_elements = ul_elements[0].find_elements(By.TAG_NAME, "li")
+                    # 바로 첫번째 자식 li들만
+                    li_elements = ul_elements[0].find_elements(By.CSS_SELECTOR, ":scope > li")
             except NoSuchElementException:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
                 break
