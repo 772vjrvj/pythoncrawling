@@ -60,7 +60,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
                     "website": self.name,
                     "category_full": name
                 }
-                self.google_uploader.delete(obj)
+                # self.google_uploader.delete(obj)
                 self.blob_product_ids = self.google_uploader.verify_upload(obj)
                 # self.google_uploader.download_all_in_folder(obj)
                 csv_path = FilePathBuilder.build_csv_path("DB", self.name, name)

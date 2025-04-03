@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 # API
-class ApiStoresSetLoadWorker(BaseApiWorker):
+class ApiNaverMapSetLoadWorker(BaseApiWorker):
     def __init__(self, checked_list):
         super().__init__("&OTHER STORIES", checked_list)
 
@@ -94,8 +94,7 @@ class ApiStoresSetLoadWorker(BaseApiWorker):
                 img_src = 'https:' + img_src
             self.log_func(f"✅ 이미지 주소: {img_src}")
         except Exception as e:
-            error = f'가격 추출 실패 : {e}'
-            self.log_func("❌ 이미지 가져오기 실패")
+            self.log_func("❌ 이미지 가져오기 실패:")
 
         # 제품명
         try:
@@ -104,9 +103,9 @@ class ApiStoresSetLoadWorker(BaseApiWorker):
                 product_name = h1.text.strip() or ""
             else:
                 self.log_func("제품명 태그가 존재하지 않습니다.")
-        except Exception as e:
+        except NoSuchElementException as e:
             error = f'제품명 추출 실패 : {e}'
-            self.log_func("❌ 제품명 추출 실패")
+            product_name = ""
 
         # 가격
         try:
@@ -115,9 +114,10 @@ class ApiStoresSetLoadWorker(BaseApiWorker):
                 price = span.text.strip() or ""
             else:
                 self.log_func("가격 태그가 존재하지 않습니다.")
-        except Exception as e:
+            
+        except NoSuchElementException as e:
             error = f'가격 추출 실패 : {e}'
-            self.log_func("❌ 가격 추출 실패")
+            price = ""
 
         # 설명
         try:
@@ -130,8 +130,9 @@ class ApiStoresSetLoadWorker(BaseApiWorker):
             # 3. 첫 번째 <p> 태그의 텍스트 추출
             first_p = p_tags[0] if p_tags else None
             content = first_p.text.strip() if first_p else ""
+        except NoSuchElementException:
+            self.log_func("설명이 존재하지 않습니다.")
         except Exception as e:
-            error = f'설명 가져오기 실패 : {e}'
             self.log_func("❌ 설명 가져오기 실패:")
 
         categories = name.split(" _ ")

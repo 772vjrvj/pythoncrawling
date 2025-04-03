@@ -288,10 +288,20 @@ def naver_cralwing():
 
                 current_rank = scroll_slowly_to_bottom(driver, obj)
                 obj['currentRank'] = current_rank
+                obj['recentRank'] = current_rank
                 obj['rankChkDt'] = get_current_time()
-                if int(obj.get("highestRank")) >= int(current_rank):
-                    obj['highestRank'] = current_rank
-                    obj['highestDt'] = get_current_time()
+
+                if obj['correctYn'] == 'N':
+                    # 보정이 안된 데이터인데 현재 순위가 다르면 보정
+                    if int(obj.get("currentRank")) != int(current_rank):
+                        obj['correctYn'] = 'Y'
+                        obj['highestRank'] = current_rank
+                        obj['initialRank'] = current_rank
+                        obj['highestDt'] = get_current_time()
+                else:
+                    if int(obj.get("highestRank")) >= int(current_rank):
+                        obj['highestRank'] = current_rank
+                        obj['highestDt'] = get_current_time()
 
             except Exception as e:
                 print(f"{get_current_time()} ⚠ [ERROR] 키워드 '{keyword}' 검색 중 오류 발생: {e}")
