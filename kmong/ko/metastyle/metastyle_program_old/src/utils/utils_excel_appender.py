@@ -52,6 +52,46 @@ class CsvAppender:
         except Exception as e:
             row["error"] = str(e)
 
+
+    def append_rows_to_metastyle_all(self, rows: list[dict], root_dir="DB", filename="metastyle_all.csv", id_column="product_id"):
+        """
+        metastyle_all.csv 파일에 여러 row를 추가하거나 업데이트
+        :param rows: 딕셔너리 리스트 (각각 한 줄)
+        :param root_dir: 저장 폴더 (기본 DB)
+        :param filename: 대상 파일 이름 (기본 metastyle_all.csv)
+        :param id_column: ID 컬럼명 (기본 product_id)
+        """
+        target_path = os.path.join(root_dir, filename)
+
+        # 파일이 없다면 빈 CSV 생성
+        if not os.path.exists(target_path):
+            os.makedirs(root_dir, exist_ok=True)
+            pd.DataFrame().to_csv(target_path, index=False, encoding='utf-8-sig')
+            self.log_func(f"📄 파일 생성: {target_path}")
+
+        try:
+            try:
+                df = pd.read_csv(target_path, encoding='utf-8-sig', dtype={id_column: str})
+            except (FileNotFoundError, EmptyDataError):
+                df = pd.DataFrame()
+
+            for row in rows:
+                row_id = str(row.get(id_column))
+                row[id_column] = row_id
+                row_df = pd.DataFrame([row])
+                df = self._sync_columns(df, row_df)
+                df[id_column] = df[id_column].astype(str)
+
+                if id_column in df.columns and row_id in df[id_column].values:
+                    df.loc[df[id_column] == row_id, row_df.columns] = row_df.values
+                else:
+                    df = pd.concat([df, row_df], ignore_index=True)
+
+            df.to_csv(target_path, index=False, encoding='utf-8-sig')
+            self.log_func(f"✅ {len(rows)}건 저장 완료: {target_path}")
+        except Exception as e:
+            self.log_func(f"❌ metastyle_all.csv 저장 실패: {e}")
+
     def _sync_columns(self, df, row_df):
         """row_df에만 있는 컬럼이 있다면 df에도 추가"""
         for col in row_df.columns:
@@ -116,3 +156,39 @@ class CsvAppender:
         merged_df = pd.concat(all_dataframes, ignore_index=True)
         merged_df.to_csv(output_path, index=False, encoding='utf-8-sig')
         self.log_func(f"✅ 병합 완료: {output_path} (총 {len(merged_df)} rows)")
+
+
+    def get_latest_reg_date(self, root_dir="DB", filename="metastyle_all.csv") -> str:
+        """
+        DB/metastyle_all.csv 에서 reg_date 중 가장 최근 값을 문자열로 반환
+        :return: 가장 최근 reg_date (예: '2025.03.30 04:56:58'), 없으면 빈 문자열
+        """
+
+        target_path = os.path.join(root_dir, filename)
+
+        if not os.path.exists(target_path):
+            self.log_func(f"⚠️ 파일이 존재하지 않습니다: {target_path}")
+            return ""
+
+        try:
+            df = pd.read_csv(target_path, encoding='utf-8-sig')
+
+            if 'reg_date' not in df.columns or df.empty:
+                self.log_func("⚠️ reg_date 컬럼이 없거나 데이터가 없습니다.")
+                return ""
+
+            # 문자열 -> datetime 형식으로 변환
+            df['reg_date'] = pd.to_datetime(df['reg_date'], format='%Y.%m.%d %H:%M:%S', errors='coerce')
+
+            # 유효한 날짜만 필터링
+            valid_dates = df['reg_date'].dropna()
+            if valid_dates.empty:
+                self.log_func("⚠️ 유효한 reg_date 값이 없습니다.")
+                return ""
+
+            latest = valid_dates.max()
+            return latest.strftime('%Y.%m.%d %H:%M:%S')
+
+        except Exception as e:
+            self.log_func(f"❌ reg_date 추출 실패: {e}")
+            return ""

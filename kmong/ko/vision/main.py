@@ -251,8 +251,7 @@ def naver_cralwing():
         # 2. 현재 순위 가져오기
         obj_list = get_current_rank()
 
-        for obj in obj_list:
-
+        for index, obj in enumerate(obj_list, start=1):
             if obj.get("crawlYn") == 'N':
                 continue
 
@@ -287,8 +286,8 @@ def naver_cralwing():
                 time.sleep(3)  # 검색 결과 대기 (필요 시 더 조절)
 
                 current_rank = scroll_slowly_to_bottom(driver, obj)
-                obj['currentRank'] = current_rank
-                obj['recentRank'] = current_rank
+                #obj['currentRank'] = current_rank
+                obj['recentRank'] = obj['currentRank']
                 obj['rankChkDt'] = get_current_time()
 
                 if obj['correctYn'] == 'N':
@@ -298,15 +297,19 @@ def naver_cralwing():
                         obj['highestRank'] = current_rank
                         obj['initialRank'] = current_rank
                         obj['highestDt'] = get_current_time()
+                        print(f'들어옴 : {obj}')
                 else:
                     if int(obj.get("highestRank")) >= int(current_rank):
                         obj['highestRank'] = current_rank
                         obj['highestDt'] = get_current_time()
 
+                obj['currentRank'] =current_rank
+
             except Exception as e:
                 print(f"{get_current_time()} ⚠ [ERROR] 키워드 '{keyword}' 검색 중 오류 발생: {e}")
 
         update_obj_list(obj_list)
+        driver.quit()
 
     except Exception as e:
         print(f"{get_current_time()} ⚠ [ERROR] 크롤링 중 오류 발생: {e}")
@@ -319,9 +322,9 @@ if __name__ == "__main__":
     print(f"{get_current_time()} 순위 보정 프로그램 정상 시작 완료!!!")
 
     # 매일 04:00에 test() 실행
-    schedule.every().day.at("04:16").do(naver_cralwing)
+    #schedule.every().day.at("04:00").do(naver_cralwing)
 
     # 1초마다 실행시간이 도래 했는지 확인
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    #while True:
+        #schedule.run_pending()
+        #time.sleep(1)
