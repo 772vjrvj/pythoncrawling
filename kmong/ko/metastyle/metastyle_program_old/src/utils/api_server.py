@@ -72,10 +72,10 @@ class ApiServer:
                 try:
                     return response.json()
                 except ValueError:
-                    self.log("⚠️ JSON 파싱 실패")
+                    self.log(f"{response.text}")
                     return None
             else:
-                return response.text
+                return None
 
         except Timeout:
             self.log("⏱️ 요청 타임아웃 발생")

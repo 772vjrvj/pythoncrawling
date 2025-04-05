@@ -8,6 +8,9 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
     def __init__(self, checked_list):
         super().__init__("ARITZIA", checked_list)
 
+    def init_set(self):
+        self.log_func("초기화 시작")
+
     # 제품 목록 가져오기
     def selenium_get_product_list(self, main_url: str):
 
@@ -20,7 +23,7 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
                 view_items[2].click()
                 time.sleep(3)
         except Exception as e:
-            self.log_func(f"3 버튼 클릭 실패: {e}")
+            self.handle_selenium_exception("3 버튼 클릭", e)
         
         # 스크롤
         self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
@@ -49,7 +52,8 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
                 else:
                     self.log_func(f"[경고] a 태그 없음 - product_id: {product_id}")
             except Exception as e:
-                self.log_func(f"상품 처리 중 오류 발생: {e}")
+                self.handle_selenium_exception("상품 처리", e)
+
         self.log_func('상품목록 수집완료...')
 
     # 상세목록
@@ -57,28 +61,24 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
         self.driver.get(url)
         time.sleep(2)  # 페이지 로딩 대기
 
-        error = ""
         img_src = ""
         product_name = ""
         price = ""
         content = ""
 
-        # 첫번째 이미지 가져오기
+        # 이미지 src
         try:
             img_tag = self.driver.find_element(By.TAG_NAME, "img")
             img_src = img_tag.get_attribute('src')
-            if not img_src:
-                img_src = ""
-                error = "이미지 srcset 속성이 비어있습니다."
         except Exception as e:
-            error = f'이미지 src 추출 실패 : {e}'
+            self.handle_selenium_exception("이미지 src", e)
 
-        # 제품명 class=""
+        # 제품명
         try:
             name_element = self.driver.find_element(By.CSS_SELECTOR, '[data-testid="product-name-text"]')
             product_name = name_element.text.strip()
         except Exception as e:
-            error = f'제품명 추출 실패 : {e}'
+            self.handle_selenium_exception("제품명", e)
 
         # 가격
         try:
@@ -86,8 +86,7 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
             if element:
                 price = element.text.strip()
         except Exception as e:
-            error = f'가격 추출 실패 : {e}'
-            self.log_func("가격 추출 실패")
+            self.handle_selenium_exception("가격", e)
 
         # 제품 설명
         try:
@@ -99,8 +98,7 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
                 paragraph = inner_ps[1]
                 content = paragraph.text.strip()
         except Exception as e:
-            error = f'제품 설명 가져오기 실패 : {e}'
-            self.log_func("❌ 제품 설명 가져오기 실패")
+            self.handle_selenium_exception("설명", e)
 
         categories = name.split(" _ ")
 
@@ -125,7 +123,7 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
             "success"       : "Y",
             "regDate"       : "",
             "page"          : "",
-            "error"         : error,
+            "error"         : "",
             "imageYn"       : "Y",
             "imagePath"     : "",
             "projectId"     : "",

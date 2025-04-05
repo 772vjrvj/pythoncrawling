@@ -11,10 +11,14 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
     def __init__(self, checked_list):
         super().__init__("BANANAREPUBLIC", checked_list)
 
+    def init_set(self):
+        self.log_func("초기화 시작")
+
     # 제품 목록 가져오기
     def selenium_get_product_list(self, product_url):
         page = 0
         while True:
+            self.log_func(f"현재 페이지 {page}")
             if page == 0:
                 url = f'{product_url}#pageId={page}' #은 spa방식이라 get(url)로 이동 안됌
                 self.driver.get(url)
@@ -29,14 +33,11 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
                     time.sleep(0.3)
                     next_button.click()
                     self.log_func("다음 페이지 버튼 클릭 성공")
-                except TimeoutException:
-                    self.log_func("다음 페이지 버튼을 찾을 수 없습니다. 마지막 페이지일 수 있습니다.")
-                    break
                 except Exception as e:
-                    self.log_func(f"다음 페이지 버튼 클릭 중 예외 발생: {str(e)}")
+                    self.handle_selenium_exception("다음 페이지 버튼 클릭", e)
                     break
 
-            time.sleep(2)
+            time.sleep(3)
             try:
                 # SVG 아이콘이 나타날 때까지 대기 (최대 10초)
                 svg_icon = WebDriverWait(self.driver, 10).until(
@@ -46,7 +47,7 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
                 # 클릭 가능한 상태인지 확인 후 클릭
                 svg_icon.click()
             except Exception as e:
-                self.log_func(f"3 버튼 클릭 실패")
+                self.handle_selenium_exception("3 버튼 클릭", e)
 
             time.sleep(1)
             self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
@@ -57,13 +58,13 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
                 div_elements = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.cat_product-image'))
                 )
-            except TimeoutException:
-                self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
-                break  # 상품이 없으면 종료
+            except Exception as e:
+                self.handle_selenium_exception("div_elements", e)
+                break
 
             if not div_elements:
                 self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
-                break  # 상품이 없으면 종료
+                break
 
             for div in div_elements:
                 try:
@@ -88,10 +89,8 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
                                 "url": href
                             })
                             self.seen_keys.add(key)
-
-
-                except NoSuchElementException:
-                    self.log_func("li안에 태그를 찾을 수 없습니다. 다음 상품으로 넘어갑니다.")
+                except Exception as e:
+                    self.handle_selenium_exception("product_id", e)
 
             page += 1  # 다음 페이지로 이동
         self.log_func('상품목록 수집완료...')
@@ -102,28 +101,25 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
         self.driver.get(url)
         time.sleep(2)  # 페이지 로딩 대기
 
-        error = ""
         img_src = ""
         product_name = ""
         price = ""
         content = ""
 
-        # 첫번째 이미지 가져오기
+        # 이미지 src
         try:
             div = self.driver.find_element(By.CSS_SELECTOR, 'div[data-testid="grid"]')
             img = div.find_element(By.TAG_NAME, 'img')
             img_src = img.get_attribute('src')
         except Exception as e:
-            error = f'이미지 src 추출 실패 : {e}'
-            self.log_func("❌ 이미지 src 추출 실패")
+            self.handle_selenium_exception("이미지 src", e)
 
         # 제품명
         try:
             h1 = self.driver.find_element(By.TAG_NAME, 'h1')
             product_name = h1.text.strip()
         except Exception as e:
-            error = f'제품명 추출 실패 : {e}'
-            self.log_func("❌ 제품명 추출 실패")
+            self.handle_selenium_exception("제품명", e)
 
         # 가격
         try:
@@ -134,8 +130,7 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
             # 3. 텍스트 가져오기
             price = span.text.strip()  # 예: "$120.00"
         except Exception as e:
-            error = f'가격 추출 실패 : {e}'
-            self.log_func("❌ 가격 추출 실패")
+            self.handle_selenium_exception("가격", e)
 
         categories = name.split(" _ ")
 
@@ -160,7 +155,7 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
             "success"        : "Y",
             "regDate"        : "",
             "page"           : "",
-            "error"          : error,
+            "error"          : "",
             "imageYn"        : "Y",
             "imagePath"      : "",
             "projectId"      : "",

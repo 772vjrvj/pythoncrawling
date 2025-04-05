@@ -61,7 +61,7 @@ class GoogleUploader:
 
 
     def upload(self, obj):
-        image_url = obj['image_url']
+        image_url = obj['imageUrl']
         try:
             # 1. 헤더 설정
             headers = {
@@ -81,15 +81,23 @@ class GoogleUploader:
             mime_type, _ = mimetypes.guess_type(image_url)
             mime_type = mime_type or "application/octet-stream"
 
-            # 4. 업로드
+            # 4. 업로드 전 존재 여부 확인
             blob = self.bucket.blob(blob_name)
-            blob.upload_from_file(image_data, content_type=mime_type)
 
             if blob.exists():
-                self.log(f'구글 업로드 성공 {image_url} -> {self.bucket_name}/{blob_name}.')
+                self.log(f"⚠️ 이미 존재하는 이미지: {self.bucket_name}/{blob_name} → 업로드 생략")
                 obj['imagePath'] = f"{self.bucket_name}/{blob_name}"
                 obj['projectId'] = self.project_id
                 obj['bucket'] = self.bucket_name
+                obj['imageYn'] = 'Y'
+            else:
+                blob.upload_from_file(image_data, content_type=mime_type)
+                if blob.exists():
+                    self.log(f'✅ 구글 업로드 성공: {image_url} → {self.bucket_name}/{blob_name}')
+                    obj['imagePath'] = f"{self.bucket_name}/{blob_name}"
+                    obj['projectId'] = self.project_id
+                    obj['bucket'] = self.bucket_name
+                    obj['imageYn'] = 'Y'
 
         except Exception as e:
             self.log(f"[업로드 실패] {image_url} - {str(e)}")
@@ -107,7 +115,7 @@ class GoogleUploader:
 
 
     def verify_upload(self, obj):
-
+        self.log(f"구글 업로드 데이터 확인 시작")
         blob_product_ids = []
         """업로드 경로에 이미지가 실제 존재하는지 확인하고 로그"""
         prefix_path = f"{obj.get('website', '')}/{obj.get('categoryFull', '')}/"  # 슬래시 꼭 필요
@@ -123,6 +131,7 @@ class GoogleUploader:
                     blob_product_ids.append(product_id)
             else:
                 self.log(f"{prefix_path}에 목록이 없습니다.")
+            self.log(f"구글 업로드 데이터 확인 끝")
             return blob_product_ids
 
         except Exception as e:

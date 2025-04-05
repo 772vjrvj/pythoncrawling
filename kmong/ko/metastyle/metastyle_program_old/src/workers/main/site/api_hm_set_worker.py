@@ -9,8 +9,12 @@ from selenium.common.exceptions import TimeoutException
 class ApiHmSetLoadWorker(BaseApiWorker):
     def __init__(self, checked_list):
         super().__init__("H&M", checked_list)
-
-
+    
+    # 초기화
+    def init_set(self):
+        self.log_func("초기화 시작")
+    
+    # 목록
     def selenium_get_product_list(self, main_url: str):
         self.driver.get(main_url)
         page = 1
@@ -28,11 +32,10 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                 if ul_element:
                     # 바로 첫번째 자식 li들만
                     li_elements = ul_element.find_elements(By.CSS_SELECTOR, ":scope > li")
-            except NoSuchElementException:
-                self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
-                break
-            except TimeoutException:
-                self.log_func("ul 태그를 찾을 수 없습니다. 종료합니다.")
+            except Exception as e:
+                self.handle_selenium_exception("li_elements", e)
+
+            if not li_elements:
                 break
 
             for index, li in enumerate(li_elements, start=1):
@@ -61,27 +64,22 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                             "url": href
                         })
                         self.log_func(f"product_id : {product_id} / index : {index}")
-                except NoSuchElementException:
-                    self.log_func("li 안에 필요한 태그를 찾을 수 없습니다.")
-                    continue
                 except Exception as e:
-                    self.log_func(f"예기치 못한 오류 발생: {e}")
-                    continue
-
+                    self.handle_selenium_exception("product_id", e)
             page += 1
         self.log_func('상품목록 수집완료...')
 
-
+    # 상세내용 추출
     def extract_product_detail(self, product_id: str, url: str, name: str, no: int) -> dict:
         self.driver.get(url)
         time.sleep(2)
 
-        error = ""
         img_src = ""
         product_name = ""
         price = ""
         content = ""
 
+        # 이미지 src
         try:
             ul = self.driver.find_element(By.CSS_SELECTOR, 'ul[data-testid="grid-gallery"]')
             li_list = ul.find_elements(By.TAG_NAME, 'li') if ul else []
@@ -92,8 +90,9 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             else:
                 self.log_func("li 태그가 존재하지 않습니다.")
         except Exception as e:
-            self.log_func(f"이미지 추출 실패")
+            self.handle_selenium_exception("이미지 src", e)
 
+        # 제품명
         try:
             h1 = self.driver.find_element(By.CSS_SELECTOR, 'h1.fa226d.af6753.d582fb')
             if h1:
@@ -101,8 +100,9 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             else:
                 self.log_func("제품명 태그가 존재하지 않습니다.")
         except Exception as e:
-            self.log_func(f"제품명 추출 실패")
+            self.handle_selenium_exception("제품명", e)
 
+        # 가격
         try:
             span = self.driver.find_element(By.CSS_SELECTOR, 'span.edbe20.ac3d9e.c8e3aa')
             if span:
@@ -110,7 +110,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             else:
                 self.log_func("가격 태그가 존재하지 않습니다.")
         except Exception as e:
-            self.log_func(f"가격 추출 실패")
+            self.handle_selenium_exception("가격", e)
 
         categories = name.split(" _ ")
 
@@ -135,7 +135,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
             "success"       : "Y",
             "regDate"       : "",
             "page"          : "",
-            "error"         : error,
+            "error"         : "",
             "imageYn"       : "Y",
             "imagePath"     : "",
             "projectId"     : "",

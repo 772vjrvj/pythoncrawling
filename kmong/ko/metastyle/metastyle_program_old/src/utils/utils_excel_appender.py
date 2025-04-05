@@ -19,7 +19,7 @@ class CsvAppender:
     # 컬럼명     데이터 타입 (정수)
 
     # 데이터를 csv파일에 한줄씩 추가 (동일한 값이 있으면 update)
-    def append_row(self, row, id_column="product_id"):
+    def append_row(self, row, id_column="productId"):
         try:
             try:
                 df = pd.read_csv(self.file_path, encoding='utf-8-sig', dtype={id_column: str})
@@ -53,7 +53,45 @@ class CsvAppender:
             row["error"] = str(e)
 
 
-    def append_rows_to_metastyle_all(self, rows: list[dict], root_dir="DB", filename="metastyle_all.csv", id_column="product_id"):
+    def append_rows_to_metastyle_all(self, rows: list[dict], filename="metastyle_all.csv", id_column="productId"):
+        """
+        metastyle_all.csv 파일에 여러 row를 한 번에 추가/업데이트 (속도 개선)
+        """
+        target_path = os.path.join(self.file_path, filename)
+
+        # 파일이 없다면 빈 CSV 생성
+        if not os.path.exists(target_path):
+            os.makedirs(self.file_path, exist_ok=True)
+            pd.DataFrame().to_csv(target_path, index=False, encoding='utf-8-sig')
+            self.log_func(f"📄 파일 생성: {target_path}")
+
+        try:
+            try:
+                df_existing = pd.read_csv(target_path, encoding='utf-8-sig', dtype={id_column: str})
+            except (FileNotFoundError, pd.errors.EmptyDataError):
+                df_existing = pd.DataFrame()
+
+            # 신규 데이터프레임 생성
+            df_new = pd.DataFrame(rows)
+            df_new[id_column] = df_new[id_column].astype(str)
+
+            # 컬럼 싱크 맞추기
+            df_existing = self._sync_columns(df_existing, df_new)
+            df_new = self._sync_columns(df_new, df_existing)
+
+            # 기존 ID 기준으로 제거 후 병합
+            if id_column in df_existing.columns:
+                df_existing = df_existing[~df_existing[id_column].isin(df_new[id_column])]
+
+            df_merged = pd.concat([df_existing, df_new], ignore_index=True)
+
+            df_merged.to_csv(target_path, index=False, encoding='utf-8-sig')
+            self.log_func(f"✅ {len(rows)}건 병합 저장 완료: {target_path}")
+        except Exception as e:
+            self.log_func(f"❌ metastyle_all.csv 저장 실패: {e}")
+
+
+    def append_rows_to_metastyle_all_single(self, rows: list[dict],  filename="metastyle_all.csv", id_column="product_id"):
         """
         metastyle_all.csv 파일에 여러 row를 추가하거나 업데이트
         :param rows: 딕셔너리 리스트 (각각 한 줄)
@@ -61,11 +99,11 @@ class CsvAppender:
         :param filename: 대상 파일 이름 (기본 metastyle_all.csv)
         :param id_column: ID 컬럼명 (기본 product_id)
         """
-        target_path = os.path.join(root_dir, filename)
+        target_path = os.path.join(self.file_path, filename)
 
         # 파일이 없다면 빈 CSV 생성
         if not os.path.exists(target_path):
-            os.makedirs(root_dir, exist_ok=True)
+            os.makedirs(self.file_path, exist_ok=True)
             pd.DataFrame().to_csv(target_path, index=False, encoding='utf-8-sig')
             self.log_func(f"📄 파일 생성: {target_path}")
 
@@ -120,10 +158,10 @@ class CsvAppender:
             pd.DataFrame().to_csv(self.file_path, index=False, encoding='utf-8-sig')
 
 
-    def merge_all_csv_from_directory(self, root_dir="DB", output_filename="metastyle_all.csv"):
+    def merge_all_csv_from_directory(self, output_filename="metastyle_all.csv"):
         """DB 폴더 내 기존 metastyle_all.csv 삭제 후, 모든 CSV 파일 병합하여 metastyle_all.csv로 저장"""
 
-        output_path = os.path.join(root_dir, output_filename)
+        output_path = os.path.join(self.file_path, output_filename)
 
         # 1. 기존 metastyle_all.csv 파일이 존재하면 삭제
         if os.path.exists(output_path):
@@ -137,7 +175,7 @@ class CsvAppender:
         all_dataframes = []
 
         # 2. CSV 병합 수행 root_dir 안에 모든 파일들 가져온다.
-        for root, _, files in os.walk(root_dir):
+        for root, _, files in os.walk(self.file_path):
             for file in files:
                 if file.endswith('.csv') and file != output_filename:
                     file_path = os.path.join(root, file)
@@ -158,13 +196,13 @@ class CsvAppender:
         self.log_func(f"✅ 병합 완료: {output_path} (총 {len(merged_df)} rows)")
 
 
-    def get_latest_reg_date(self, root_dir="DB", filename="metastyle_all.csv") -> str:
+    def get_latest_reg_date(self, filename="metastyle_all.csv") -> str:
         """
         DB/metastyle_all.csv 에서 reg_date 중 가장 최근 값을 문자열로 반환
         :return: 가장 최근 reg_date (예: '2025.03.30 04:56:58'), 없으면 빈 문자열
         """
 
-        target_path = os.path.join(root_dir, filename)
+        target_path = os.path.join(self.file_path, filename)
 
         if not os.path.exists(target_path):
             self.log_func(f"⚠️ 파일이 존재하지 않습니다: {target_path}")
@@ -173,15 +211,15 @@ class CsvAppender:
         try:
             df = pd.read_csv(target_path, encoding='utf-8-sig')
 
-            if 'reg_date' not in df.columns or df.empty:
+            if 'regDate' not in df.columns or df.empty:
                 self.log_func("⚠️ reg_date 컬럼이 없거나 데이터가 없습니다.")
                 return ""
 
             # 문자열 -> datetime 형식으로 변환
-            df['reg_date'] = pd.to_datetime(df['reg_date'], format='%Y.%m.%d %H:%M:%S', errors='coerce')
+            df['regDate'] = pd.to_datetime(df['regDate'], format='%Y.%m.%d %H:%M:%S', errors='coerce')
 
             # 유효한 날짜만 필터링
-            valid_dates = df['reg_date'].dropna()
+            valid_dates = df['regDate'].dropna()
             if valid_dates.empty:
                 self.log_func("⚠️ 유효한 reg_date 값이 없습니다.")
                 return ""
