@@ -1,6 +1,5 @@
 from src.utils.singleton import GlobalState
 import requests
-import logging
 import time
 from typing import Any
 from requests.exceptions import (
@@ -10,24 +9,24 @@ from requests.exceptions import (
 
 class ApiServer:
 
-    DEFAULT_HEADERS = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate",
-        "accept-language": "ko,en;q=0.9,en-US;q=0.8",
-        "connection": "keep-alive",
-        "host": "vjrvj.cafe24.com",
-        "sec-gpc": "1",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0"
-    }
-
     def __init__(self, log_func):
         if not callable(log_func):
             raise ValueError("log_func must be callable.")
         self.log = log_func
         state = GlobalState()
         self.cookies = state.get("cookies")
-        self.base_url = "https://vjrvj.cafe24.com/product-info"
+        self.base_url = "http://vjrvj.cafe24.com/product-info"
+        self.session = requests.Session()
+
+        # 쿠키가 있으면 세션에 적용
+        if self.cookies:
+            for k, v in self.cookies.items():
+                self.session.cookies.set(k, v)
+
+        self.DEFAULT_HEADERS = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
 
     def request_api(self,
                     method: str,
@@ -42,22 +41,23 @@ class ApiServer:
         start_time = time.time()
         try:
             merged_headers = {**self.DEFAULT_HEADERS, **(headers or {})}
-            self.log(f"[API 요청] {method.upper()} {url}")
+            full_url = url if url.startswith("http") else f"{self.base_url.rstrip('/')}/{url.lstrip('/')}"
+
+            self.log(f"[API 요청] {method.upper()} {full_url}")
             if params:
                 self.log(f" - 쿼리 파라미터: {params}")
             if json:
                 self.log(f" - JSON 바디: {json}")
 
-            response = requests.request(
+            response = self.session.request(
                 method=method.upper(),
-                url=url,
+                url=full_url,
                 headers=merged_headers,
                 params=params,
                 data=data,
                 json=json,
                 timeout=timeout,
-                verify=verify,
-                cookies=self.cookies
+                verify=verify
             )
 
             duration = round(time.time() - start_time, 2)
@@ -95,35 +95,28 @@ class ApiServer:
             self.log(f"❗예기치 못한 예외: {e}")
 
         return None
-
     # ---------------------------------
     # ProductInfo 관련 CRUD API 호출
     # ---------------------------------
 
     def get_all_products(self):
-        url = f"{self.base_url}/select-all"
-        return self.request_api("GET", url)
+        return self.request_api("GET", "select-all")
 
     def get_product_by_key(self, product_key: str):
-        url = f"{self.base_url}/{product_key}"
-        return self.request_api("GET", url)
+        return self.request_api("GET", product_key)
 
     def add_products(self, product_list: list[dict]):
-        url = f"{self.base_url}/add"
-        return self.request_api("POST", url, json=product_list)
+        return self.request_api("POST", "add", json=product_list)
 
     def update_products(self, product_list: list[dict]):
-        url = f"{self.base_url}/update"
-        return self.request_api("PUT", url, json=product_list)
+        return self.request_api("PUT", "update", json=product_list)
 
     def delete_product(self, product_key: str):
-        url = f"{self.base_url}/{product_key}"
-        return self.request_api("DELETE", url)
+        return self.request_api("DELETE", product_key)
 
     def get_products_after_reg_date(self, reg_date: str):
         """
         특정 regDate(yyyy.MM.dd) 이후의 상품 목록 조회
         """
-        url = f"{self.base_url}/select-after"
         params = {"regDate": reg_date}
-        return self.request_api("GET", url, params=params)
+        return self.request_api("GET", "select-after", params=params)

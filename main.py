@@ -11,18 +11,17 @@ import pandas as pd
 
 
 DEFAULT_HEADERS = {
-    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-    "accept-encoding": "gzip, deflate",
-    "accept-language": "ko,en;q=0.9,en-US;q=0.8",
-    "connection": "keep-alive",
-    "host": "vjrvj.cafe24.com",
-    "sec-gpc": "1",
-    "upgrade-insecure-requests": "1",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0"
+    "Content-Type": "application/json",
+    "Accept": "application/json"
 }
 
-base_url = "https://vjrvj.cafe24.com/product-info"
 # base_url = "http://localhost:80/product-info"
+base_url = "http://vjrvj.cafe24.com/product-info"
+
+# 세션 객체 전역 생성
+session = requests.Session()
+# session.cookies.set("JSESSIONID", "3F6ED84016CBB050C1CF47C38F22C8C9")  # 여기에 로그인 후 받은 쿠키 세션 ID 입력
+
 
 def request_api(method: str,
                 url: str,
@@ -42,7 +41,7 @@ def request_api(method: str,
         if json:
             print(f" - JSON 바디: {json}")
 
-        response = requests.request(
+        response = session.request(
             method=method.upper(),
             url=url,
             headers=merged_headers,
@@ -50,7 +49,7 @@ def request_api(method: str,
             data=data,
             json=json,
             timeout=timeout,
-            verify=verify,
+            verify=verify
         )
 
         duration = round(time.time() - start_time, 2)
@@ -63,7 +62,7 @@ def request_api(method: str,
 
         if 'application/json' in content_type:
             try:
-                return response.json()
+                return response.text
             except ValueError:
                 print("⚠️ JSON 파싱 실패")
                 return None
@@ -89,9 +88,10 @@ def request_api(method: str,
 
     return None
 
-# ---------------------------------
-# ProductInfo 관련 CRUD API 호출
-# ---------------------------------
+
+# -------------------------------
+# Product API 함수
+# -------------------------------
 
 def get_all_products():
     url = f"{base_url}/select-all"
@@ -114,12 +114,10 @@ def delete_product(product_key: str):
     return request_api("DELETE", url)
 
 def get_products_after_reg_date(reg_date: str):
-    """
-    특정 regDate(yyyy.MM.dd) 이후의 상품 목록 조회
-    """
     url = f"{base_url}/select-after"
     params = {"regDate": reg_date}
     return request_api("GET", url, params=params)
+
 
 def load_csvs_from_mango(base_dir):
     """
@@ -128,7 +126,7 @@ def load_csvs_from_mango(base_dir):
     :param base_dir: DB 폴더 경로 (예: D:/.../DB)
     :return: list of dict (모든 CSV 병합 결과)
     """
-    mango_dir = os.path.join(base_dir, "MANGO")
+    mango_dir = os.path.join(base_dir, "&OTHER STORIES")
     all_rows = []
 
     if not os.path.exists(mango_dir):
@@ -193,13 +191,27 @@ def convert_to_camel_case(obj: dict) -> dict:
 
 if __name__ == "__main__":
 
+    # 1. 로그인 요청
+    login_url = "http://vjrvj.cafe24.com/auth/login"
+    payload = {
+        "username": "test3",  # 실제 사용자명
+        "password": "1234"  # 실제 비밀번호
+    }
+
+    response = session.post(login_url, json=payload)
+
+    if response.status_code == 200:
+        print("✅ 로그인 성공, 쿠키:", session.cookies.get_dict())
+    else:
+        print("❌ 로그인 실패:", response.status_code, response.text)
+
+
+
     base_path = r"D:\GIT\pythoncrawling\kmong\ko\metastyle\metastyle_program_old\DB"
     mango_data = load_csvs_from_mango(base_path)
 
     if mango_data:
         print(f"📦 총 {len(mango_data)}개의 row를 로드했습니다.")
-        print("🔍 첫 번째 원본 row:")
-        print(mango_data[0])
 
         formatted_data = []
         for raw in mango_data:
