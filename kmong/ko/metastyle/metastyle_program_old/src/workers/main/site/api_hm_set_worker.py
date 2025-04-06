@@ -67,6 +67,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                 except Exception as e:
                     self.handle_selenium_exception("product_id", e)
             page += 1
+        self.log_func(f'상품목록 {len(self.product_list)} : {self.product_list}')
         self.log_func('상품목록 수집완료...')
 
     # 상세내용 추출
