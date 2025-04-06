@@ -104,7 +104,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
 
         # 가격
         try:
-            span = self.driver.find_element(By.CSS_SELECTOR, 'span.edbe20.ac3d9e.c8e3aa')
+            span = self.driver.find_element(By.CSS_SELECTOR, 'span.edbe20.ac3d9e.d9ca8b')
             if span:
                 price = span.text.strip() or ""
             else:
