@@ -5,11 +5,11 @@ from google.oauth2 import service_account
 import re
 
 class GoogleUploader:
-    def __init__(self, log_func, sess):
+    def __init__(self, log_func):
         if not callable(log_func):
             raise ValueError("log_func must be callable.")
         self.log = log_func
-        self.sess = sess
+        self.sess = requests.Session()
 
         base_path = os.getcwd()
         self.service_account_path = os.path.join(base_path, "styleai-ai-designer-ml-external.json")
@@ -125,12 +125,14 @@ class GoogleUploader:
 
             if blobs:
                 for index, blob in enumerate(blobs, start=1):
-                    self.log(f"{index} - {blob.name}")
+                    # self.log(f"{index} - {blob.name}")
                     product_id = self.get_product_id(blob.name)
-                    self.log(f"{index} - {product_id}")
+                    # self.log(f"{index} - {product_id}")
                     blob_product_ids.append(product_id)
             else:
                 self.log(f"{prefix_path}에 목록이 없습니다.")
+
+            self.log(f"구글 업로드 데이터 수 ({prefix_path }) : {len(blob_product_ids)}")
             self.log(f"구글 업로드 데이터 확인 끝")
             return blob_product_ids
 

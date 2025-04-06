@@ -88,7 +88,7 @@ class CsvAppender:
             df_merged.to_csv(target_path, index=False, encoding='utf-8-sig')
             self.log_func(f"✅ {len(rows)}건 병합 저장 완료: {target_path}")
         except Exception as e:
-            self.log_func(f"❌ metastyle_all.csv 저장 실패: {e}")
+            self.log_func(f"❌ metastyle_all.csv 저장 실패")
 
 
     def append_rows_to_metastyle_all_single(self, rows: list[dict],  filename="metastyle_all.csv", id_column="product_id"):
@@ -138,11 +138,13 @@ class CsvAppender:
         return df
 
 
-    def load_rows(self):
+    def load_rows(self, filename="metastyle_all.csv"):
         """CSV 파일 내용을 객체(dict) 리스트로 반환"""
-        if os.path.exists(self.file_path) and os.path.getsize(self.file_path) > 0:
+        target_path = os.path.join(self.file_path, filename)
+
+        if os.path.exists(target_path) and os.path.getsize(target_path) > 0:
             try:
-                df = pd.read_csv(self.file_path, encoding='utf-8-sig')
+                df = pd.read_csv(target_path, encoding='utf-8-sig', keep_default_na=False,  na_values=[])
                 return df.to_dict(orient="records")
             except Exception as e:
                 self.log_func(f"CSV 읽기 실패: {e}")

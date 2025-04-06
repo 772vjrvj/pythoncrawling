@@ -48,7 +48,7 @@ class ApiMangoSetLoadWorker(BaseApiWorker):
                     if href:
                         self.product_list.append({
                             "url": href,
-                            "product_id": str(product_id)
+                            "productId": str(product_id)
                         })
                 else:
                     self.log_func(f"[경고] a 태그 없음 - data-slot: {data_slot}")

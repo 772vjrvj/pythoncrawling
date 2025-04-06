@@ -1,12 +1,8 @@
 import time
-
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException, WebDriverException, InvalidSelectorException
-
-
 from src.workers.main.api_base_worker import BaseApiWorker
 
 
@@ -123,7 +119,7 @@ class ApiZaraSetLoadWorker(BaseApiWorker):
                 if href and product_id:
                     self.product_list.append({
                         "url": href,
-                        "product_id": str(product_id)
+                        "productId": str(product_id)
                     })
             except Exception as e:
                 self.handle_selenium_exception("href 및 product_id", e)
@@ -134,7 +130,7 @@ class ApiZaraSetLoadWorker(BaseApiWorker):
     def extract_product_detail(self, product_id: str, url: str, name: str, no: int) -> dict:
         self.log_func(f'상품 상세 목록 product_id : {product_id}')
         self.driver.get(url)
-        time.sleep(2)  # 페이지 로딩 대기
+        time.sleep(3)  # 페이지 로딩 대기
 
         img_src = ""
         product_name = ""
@@ -143,12 +139,11 @@ class ApiZaraSetLoadWorker(BaseApiWorker):
 
         # 이미지 src
         try:
-            img_tags = self.driver.find_elements(By.CSS_SELECTOR,
-                                                "img.media-image__image.media__wrapper--media")
-            if img_tags:
-                img_src = img_tags[0].get_attribute("src")
+            button = self.driver.find_element(By.CSS_SELECTOR, "button.product-detail-image.product-detail-view__main-image")
+            img = button.find_element(By.CSS_SELECTOR, "img.media-image__image.media__wrapper--media")
+            img_src = img.get_attribute("src")
         except Exception as e:
-            self.handle_selenium_exception("이미지 src", e)
+            self.handle_selenium_exception("이미지 src 추출", e)
 
         # 제품명
         try:

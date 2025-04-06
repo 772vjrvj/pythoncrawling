@@ -46,11 +46,12 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
                             continue  # 중복이면 건너뜀
                         self.product_list.append({
                             "url": href,
-                            "product_id": product_id
+                            "productId": product_id
                         })
+
                         self.seen_keys.add(key)
                 else:
-                    self.log_func(f"[경고] a 태그 없음 - product_id: {product_id}")
+                    self.log_func(f"[경고] a 태그 없음 - productId: {product_id}")
             except Exception as e:
                 self.handle_selenium_exception("상품 처리", e)
 

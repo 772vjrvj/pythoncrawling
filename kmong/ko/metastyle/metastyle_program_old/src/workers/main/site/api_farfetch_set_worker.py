@@ -1,7 +1,6 @@
 import re
 import time
 
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -64,7 +63,7 @@ class ApiFarfetchSetLoadWorker(BaseApiWorker):
                                 continue  # 중복이면 건너뜀
 
                             self.product_list.append({
-                                "product_id": product_id,
+                                "productId": product_id,
                                 "url": href
                             })
                             self.seen_keys.add(key)

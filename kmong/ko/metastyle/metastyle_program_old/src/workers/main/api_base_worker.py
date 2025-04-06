@@ -50,59 +50,92 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         self.driver_manager = None
         self.seen_keys = set()
         self.server_api = None
+        self.config = SITE_CONFIGS.get(self.name)
 
     # 실행
     def run(self):
         if self.checked_list:
-            self.csv_appender = CsvAppender("DB", self.log_func)
-            self.server_api = ApiServer(log_func=self.log_func)
-            self.log_func("서버와 데이터 동기화를 시작합니다...")
-            latest_date = self.csv_appender.get_latest_reg_date("metastyle_all.csv")
-            if not latest_date:
-                latest_date = "1900.01.01 00:00:00"
-            self.detail_product_list = self.server_api.get_products_after_reg_date(latest_date)
-            self.csv_appender.append_rows_to_metastyle_all(self.detail_product_list)
-            self.log_func("서버와 데이터 동기화를 완료하였습니다!!!")
-            self.log_func("크롤링 시작")
-            self.log_func(f"checked_list : {self.checked_list}")
-            self.driver_manager = SeleniumDriverManager(headless=True)
-            config = SITE_CONFIGS.get(self.name)
-            self.base_url = config.get("base_url")
-            self.brand_type = config.get("brand_type")
-            self.country = config.get("country")
-            self.driver = self.driver_manager.start_driver(self.base_url, 1200, True)
-            self.sess = self.driver_manager.get_session()
-            self.google_uploader = GoogleUploader(self.log_func, self.sess)
-            self.init_set()
+            # 시작
+            self.base_init_set()
 
-            for index, check_obj in enumerate(self.checked_list, start=1):
-                if not self.running:
-                    self.log_func("크롤링이 중지되었습니다.")
-                    break
+            # 메인
+            self.main()
 
-                name = check_obj['name']
-                obj = {
-                    "website": self.name,
-                    "categoryFull": name
-                }
-                # self.google_uploader.delete(obj)
-                self.blob_product_ids = self.google_uploader.verify_upload(obj)
-                # self.google_uploader.download_all_in_folder(obj)
-                site_url = config.get('check_list', {}).get(name, "")
-                main_url = f"{self.base_url}{site_url}"
-                self.log_func(f"main_url : {main_url}")
-                self.selenium_get_product_list(main_url)
-                self.selenium_get_product_detail_list(name)
-                self.csv_appender.append_rows_to_metastyle_all(self.detail_product_list)
-                self.detail_product_list = []
-
-            self.progress_signal.emit(self.before_pro_value, 1000000)
-            self.log_func("=============== 크롤링 종료중...")
-            time.sleep(5)
-            self.log_func("=============== 크롤링 종료")
-            self.progress_end_signal.emit()
+            # 끝
+            self.progress_end()
         else:
             self.log_func("선택된 항목이 없습니다.")
+
+    # 메인
+    def main(self):
+        for index, check_obj in enumerate(self.checked_list, start=1):
+            # 삭제
+            self.delete_test()
+            return
+
+            if not self.running:
+                self.log_func("크롤링이 중지되었습니다.")
+                break
+
+            name = check_obj['name']
+            obj = {
+                "website": self.name,
+                "categoryFull": name
+            }
+            self.blob_product_ids = self.google_uploader.verify_upload(obj)
+            site_url = self.config.get('check_list', {}).get(name, "")
+            main_url = f"{self.base_url}{site_url}"
+            self.log_func(f"main_url : {main_url}")
+            self.selenium_get_product_list(main_url)
+            self.selenium_get_product_detail_list(name)
+            self.csv_appender.append_rows_to_metastyle_all(self.detail_product_list)
+            self.detail_product_list = []
+
+    # 초기 세팅 모은 함수
+    def base_init_set(self):
+
+        self.log_func("크롤링 시작 ========================================")
+        self.log_func(f"체크한 항목 : {self.checked_list}")
+
+        # 기본 정보 세팅
+        self.basic_set()
+
+        # 객체 드라이버 초기화
+        self.driver_set()
+
+        # 서버 데이터 동기화
+        self.server_sync()
+
+        # 사이트별 초기화
+        self.init_set()
+
+    # 드라이버 객체 세팅
+    def driver_set(self):
+        self.log_func("드라이버 세팅 ========================================")
+
+        # 엑셀 객체 초기화
+        self.csv_appender = CsvAppender("DB", self.log_func)
+        
+        # Web 서버 객체 초기화
+        self.server_api = ApiServer(log_func=self.log_func)
+        
+        # 셀레니움 초기화
+        self.driver_manager = SeleniumDriverManager(headless=True)
+        self.driver = self.driver_manager.start_driver(self.base_url, 1200, True)
+        
+        # 구글 업로더 초기화
+        self.google_uploader = GoogleUploader(self.log_func)
+    
+    # 서버 동기화
+    def server_sync(self):
+        self.log_func("서버와 데이터 동기화를 시작합니다...")
+        latest_date = self.csv_appender.get_latest_reg_date("metastyle_all.csv")
+        if not latest_date:
+            latest_date = "1900.01.01 00:00:00"
+        self.log_func("서버 요청중...")
+        self.detail_product_list = self.server_api.get_products_after_reg_date(latest_date)
+        self.csv_appender.append_rows_to_metastyle_all(self.detail_product_list)
+        self.log_func("서버와 데이터 동기화를 완료하였습니다!!!")
 
     # 로그
     def log_func(self, msg):
@@ -115,13 +148,28 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
     
     # 상세목록
     def selenium_get_product_detail_list(self, name):
+        loaded_objs = self.csv_appender.load_rows("metastyle_all.csv")
+
+        uploaded_ids = set()
+
+        for obj in loaded_objs:
+            if not self.running:
+                self.log_func("크롤링이 중지되었습니다.")
+                break
+            pid = str(obj["productId"])
+            uploaded_ids.add(pid)
+
         for no, product in enumerate(self.product_list, start=1):
             if not self.running:
                 self.log_func("크롤링이 중지되었습니다.")
                 break
 
-            product_id = product["product_id"]
+            product_id = product["productId"]
             url = product["url"]
+
+            if product_id in uploaded_ids:
+                self.log_func(f"[SKIP] 성공적으로 처리된 product_id: {product_id}")
+                continue
 
             obj = self.extract_product_detail(product_id, url, name, no)
             if not obj:
@@ -166,6 +214,20 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         else:
             self.log_func(f"❗ {context} - 알 수 없는 오류")
 
+    # 기본 변수 세팅
+    def basic_set(self):
+        self.base_url   = self.config.get("base_url")
+        self.brand_type = self.config.get("brand_type")
+        self.country    = self.config.get("country")
+
+    # 마무리
+    def progress_end(self):
+        self.progress_signal.emit(self.before_pro_value, 1000000)
+        self.log_func("=============== 크롤링 종료중...")
+        time.sleep(5)
+        self.log_func("=============== 크롤링 종료")
+        self.progress_end_signal.emit()
+
     # 초기 함수
     @abstractmethod
     def init_set(self):
@@ -182,3 +244,25 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         """각 사이트별 상품 상세 정보 추출"""
         pass
 
+    # 삭제 test용
+    def delete_test(self):
+        obj_list = self.csv_appender.load_rows()
+        delete_obj_list = []
+        for index_dt, obj in enumerate(obj_list):
+            print(f'index_dt : {index_dt}')
+            if obj.get('website') != "MANGO":
+                continue
+            delete_obj_list.append(obj)
+
+            # if obj.get('imageUrl') == "" or obj.get('imageUrl') == None or obj.get('imageUrl') == 'https://static.zara.net/stdstatic/6.63.1/images/transparent-background.png' or obj.get('imageUrl') == 'https://static.zara.net/stdstatic/6.59.2/images/transparent-background.png' :
+            #     print(f'삭제할 놈 obj : {obj}')
+            #     delete_obj_list.append(obj)
+            #
+            # if obj.get('productKey') == "ZARA_435257838" or obj.get('productKey') == "ZARA_434455281":
+            #     print(f'삭제할 놈 obj : {obj}')
+            #     delete_obj_list.append(obj)
+
+        for idxd, delete_obj in enumerate(delete_obj_list):
+            print(f'삭제시작 idx : {idxd}, delete_obj : {delete_obj}')
+            self.google_uploader.delete_image(delete_obj)
+            self.server_api.delete_product(delete_obj.get('productKey'))

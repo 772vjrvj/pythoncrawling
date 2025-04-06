@@ -60,7 +60,7 @@ class ApiHmSetLoadWorker(BaseApiWorker):
                         continue
                     else:
                         self.product_list.append({
-                            "product_id": product_id,
+                            "productId": product_id,
                             "url": href
                         })
                         self.log_func(f"product_id : {product_id} / index : {index}")

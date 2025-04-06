@@ -85,7 +85,7 @@ class ApiBananarepublicSetLoadWorker(BaseApiWorker):
                                 continue  # 중복이면 건너뜀
 
                             self.product_list.append({
-                                "product_id": product_id,
+                                "productId": product_id,
                                 "url": href
                             })
                             self.seen_keys.add(key)
