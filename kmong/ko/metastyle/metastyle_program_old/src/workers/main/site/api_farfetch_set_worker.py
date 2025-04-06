@@ -16,7 +16,7 @@ class ApiFarfetchSetLoadWorker(BaseApiWorker):
     # 초기 세팅
     def init_set(self):
         self.log_func("초기화 시작")
-        self.refresh_if_429()
+        # self.refresh_if_429()
         self.click_close_button()
         self.selenium_set_region()
 
@@ -30,7 +30,7 @@ class ApiFarfetchSetLoadWorker(BaseApiWorker):
                 url = f'{product_url}&page={page}'
             self.driver.get(url)
             time.sleep(3)  # 페이지 로딩 대기
-            self.refresh_if_429()
+            # self.refresh_if_429()
             self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
             time.sleep(3)
             product_list= []
@@ -76,7 +76,7 @@ class ApiFarfetchSetLoadWorker(BaseApiWorker):
     def extract_product_detail(self, product_id: str, url: str, name: str, no: int) -> dict:
 
         self.driver.get(url)
-        self.refresh_if_429()
+        # self.refresh_if_429()
         time.sleep(2)  # 페이지 로딩 대기
 
         img_src = ""
