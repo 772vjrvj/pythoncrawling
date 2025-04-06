@@ -69,7 +69,8 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
     # 메인
     def main(self):
         for index, check_obj in enumerate(self.checked_list, start=1):
-            # 삭제
+
+            # 삭제 test
             # self.delete_test()
             # return
 
@@ -82,10 +83,16 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
                 "website": self.name,
                 "categoryFull": name
             }
+            
+            # 목록 전체 삭제 test
+            # self.google_uploader.delete(obj)
+            # return
+
             self.blob_product_ids = self.google_uploader.verify_upload(obj)
             site_url = self.config.get('check_list', {}).get(name, "")
             main_url = f"{self.base_url}{site_url}"
             self.log_func(f"main_url : {main_url}")
+
             self.selenium_get_product_list(main_url)
             self.selenium_get_product_detail_list(name)
             self.csv_appender.append_rows_to_metastyle_all(self.detail_product_list)

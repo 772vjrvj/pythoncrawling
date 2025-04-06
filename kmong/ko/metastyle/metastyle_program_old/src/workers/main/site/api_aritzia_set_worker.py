@@ -13,6 +13,8 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
 
     # 제품 목록 가져오기
     def selenium_get_product_list(self, main_url: str):
+        self.driver.get(main_url)
+        time.sleep(2)
 
         # 쿠키 수락 버튼 클릭
         # "3" 버튼 클릭
@@ -29,7 +31,7 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
         self.driver_manager.selenium_scroll_smooth(0.5, 200, 6)
 
         self.log_func('상품목록 수집시작... 1분 이상 소요 됩니다. 잠시만 기다려주세요')
-        product_list = self.driver.find_elements(By.CSS_SELECTOR, '[data-testid="plp-product-tile-12"]')
+        product_list = self.driver.find_elements(By.CSS_SELECTOR, '[data-testid^="plp-product-tile-"]')
         self.log_func(f'추출 목록 수: {len(product_list)}')
         for product in product_list:
             try:
@@ -55,6 +57,8 @@ class ApiAritziaSetLoadWorker(BaseApiWorker):
             except Exception as e:
                 self.handle_selenium_exception("상품 처리", e)
 
+
+        self.log_func(f'self.product_list 갯수 : {len(self.product_list)} : {self.product_list}')
         self.log_func('상품목록 수집완료...')
 
     # 상세목록
