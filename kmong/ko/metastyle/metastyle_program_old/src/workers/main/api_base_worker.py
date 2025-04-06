@@ -129,9 +129,10 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         # 셀레니움 초기화
         self.driver_manager = SeleniumDriverManager(headless=True)
         self.driver = self.driver_manager.start_driver(self.base_url, 1200, True)
-        
+        self.sess = self.driver_manager.get_session()
+
         # 구글 업로더 초기화
-        self.google_uploader = GoogleUploader(self.log_func)
+        self.google_uploader = GoogleUploader(self.log_func, self.sess, self.driver)
     
     # 서버 동기화
     def server_sync(self):

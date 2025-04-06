@@ -1,15 +1,19 @@
-import os, json, requests, mimetypes
-from io import BytesIO
+import os, json, mimetypes
 from google.cloud import storage
 from google.oauth2 import service_account
 import re
+from io import BytesIO
+from PIL import ImageGrab
+import pyautogui
+import time
 
 class GoogleUploader:
-    def __init__(self, log_func):
+    def __init__(self, log_func, sess, driver):
         if not callable(log_func):
             raise ValueError("log_func must be callable.")
         self.log = log_func
-        self.sess = requests.Session()
+        self.sess = sess
+        self.driver = driver
 
         base_path = os.getcwd()
         self.service_account_path = os.path.join(base_path, "styleai-ai-designer-ml-external.json")
@@ -60,50 +64,102 @@ class GoogleUploader:
             obj['imageYn'] = 'N'
 
 
-    def upload(self, obj):
-        image_url = obj['imageUrl']
+    def upload_direct(self, obj):
         try:
-            # 1. 헤더 설정
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-                "Referer": "https://www.aritzia.com/"  # 이 referer는 중요할 수 있음
-            }
+            image_url = obj['imageUrl']
+            self.log(f"ARITZIA 이미지 처리 시작: {image_url}")
 
-            # 2. 세션 기반 요청 (self.sess가 있으면 사용)
-            response = self.sess.get(image_url, headers=headers)
+            # 1. 이미지 띄우기
+            self.driver.get(image_url)
+            self.log("브라우저에서 이미지 띄움")
 
-            response.raise_for_status()
-            image_data = BytesIO(response.content)
+            time.sleep(2)  # 이미지 로딩 대기
 
-            # 3. 경로 및 MIME 설정
-            blob_name = f"{obj['website']}/{obj['categoryFull']}/{obj['imageName']}"
-            mime_type, _ = mimetypes.guess_type(image_url)
-            mime_type = mime_type or "application/octet-stream"
+            # 2. 화면 중앙 클릭 (이미지 가운데로 마우스 이동)
 
-            # 4. 업로드 전 존재 여부 확인
-            blob = self.bucket.blob(blob_name)
+            screenWidth, screenHeight = pyautogui.size()
+            centerX, centerY = screenWidth // 2, screenHeight // 2
+            pyautogui.moveTo(centerX, centerY, duration=0.5)
+            pyautogui.rightClick()
+            time.sleep(0.5)
 
-            if blob.exists():
-                self.log(f"⚠️ 이미 존재하는 이미지: {self.bucket_name}/{blob_name} → 업로드 생략")
-                obj['imagePath'] = f"{self.bucket_name}/{blob_name}"
-                obj['projectId'] = self.project_id
-                obj['bucket'] = self.bucket_name
-                obj['imageYn'] = 'Y'
-            else:
-                blob.upload_from_file(image_data, content_type=mime_type)
+            # 3. 아래 방향키 2번 → 이미지 복사 → 엔터
+            for _ in range(3):  # 이미지 복사 메뉴가 3번째일 경우
+                pyautogui.press('down')
+                time.sleep(0.1)
+            pyautogui.press('enter')
+            self.log("이미지 복사 완료")
+
+            time.sleep(1)  # 복사 안정화 시간
+
+            # 4. 클립보드에서 이미지 추출
+
+            image = ImageGrab.grabclipboard()
+            if image is None:
+                self.log("❌ 클립보드에 이미지 없음")
+                obj['imageYn'] = 'N'
+                return
+
+            # 5. 메모리에 저장 후 업로드
+            image_bytes = BytesIO()
+            image.save(image_bytes, format='PNG')
+            image_bytes.seek(0)
+            obj['imageContentType'] = 'image/png'
+
+            self.upload_content(obj, image_bytes.read())
+
+        except Exception as e:
+            self.log(f"[ARITZIA 업로드 실패] {obj.get('imageUrl', '')} - {str(e)}")
+            obj['error'] = str(e)
+            obj['imageYn'] = 'N'
+
+
+    def upload(self, obj):
+        if obj['website'] in ['ARITZIA']:
+            self.upload_direct(obj)
+        else:
+            image_url = obj['imageUrl']
+            try:
+                # 1. 헤더 설정
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                    "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+                }
+
+                # 2. 세션 기반 요청 (self.sess가 있으면 사용)
+                response = self.sess.get(image_url, headers=headers)
+
+                response.raise_for_status()
+                image_data = BytesIO(response.content)
+
+                # 3. 경로 및 MIME 설정
+                blob_name = f"{obj['website']}/{obj['categoryFull']}/{obj['imageName']}"
+                mime_type, _ = mimetypes.guess_type(image_url)
+                mime_type = mime_type or "application/octet-stream"
+
+                # 4. 업로드 전 존재 여부 확인
+                blob = self.bucket.blob(blob_name)
+
                 if blob.exists():
-                    self.log(f'✅ 구글 업로드 성공: {image_url} → {self.bucket_name}/{blob_name}')
+                    self.log(f"⚠️ 이미 존재하는 이미지: {self.bucket_name}/{blob_name} → 업로드 생략")
                     obj['imagePath'] = f"{self.bucket_name}/{blob_name}"
                     obj['projectId'] = self.project_id
                     obj['bucket'] = self.bucket_name
                     obj['imageYn'] = 'Y'
+                else:
+                    blob.upload_from_file(image_data, content_type=mime_type)
+                    if blob.exists():
+                        self.log(f'✅ 구글 업로드 성공: {image_url} → {self.bucket_name}/{blob_name}')
+                        obj['imagePath'] = f"{self.bucket_name}/{blob_name}"
+                        obj['projectId'] = self.project_id
+                        obj['bucket'] = self.bucket_name
+                        obj['imageYn'] = 'Y'
 
-        except Exception as e:
-            self.log(f"[업로드 실패] {image_url} - {str(e)}")
-            obj['error'] = str(e)
-            obj['imageYn'] = 'N'
+            except Exception as e:
+                self.log(f"[업로드 실패] {image_url} - {str(e)}")
+                obj['error'] = str(e)
+                obj['imageYn'] = 'N'
 
 
     def get_product_id(self, path):
