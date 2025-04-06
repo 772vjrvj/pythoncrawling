@@ -70,8 +70,8 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
     def main(self):
         for index, check_obj in enumerate(self.checked_list, start=1):
             # 삭제
-            self.delete_test()
-            return
+            # self.delete_test()
+            # return
 
             if not self.running:
                 self.log_func("크롤링이 중지되었습니다.")
@@ -250,7 +250,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         delete_obj_list = []
         for index_dt, obj in enumerate(obj_list):
             print(f'index_dt : {index_dt}')
-            if obj.get('website') != "MANGO":
+            if obj.get('website') != "H&M":
                 continue
             delete_obj_list.append(obj)
 
@@ -264,5 +264,5 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
         for idxd, delete_obj in enumerate(delete_obj_list):
             print(f'삭제시작 idx : {idxd}, delete_obj : {delete_obj}')
-            self.google_uploader.delete_image(delete_obj)
+            # self.google_uploader.delete_image(delete_obj)
             self.server_api.delete_product(delete_obj.get('productKey'))
