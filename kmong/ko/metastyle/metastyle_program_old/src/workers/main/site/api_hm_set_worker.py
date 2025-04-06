@@ -1,10 +1,8 @@
 import time
-from selenium.common.exceptions import NoSuchElementException
 from src.workers.main.api_base_worker import BaseApiWorker
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 
 class ApiHmSetLoadWorker(BaseApiWorker):
     def __init__(self, checked_list):

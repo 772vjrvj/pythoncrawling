@@ -1,5 +1,6 @@
 import time
 import requests
+import schedule
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -7,11 +8,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-import schedule
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 from datetime import datetime
+from selenium.common.exceptions import WebDriverException
+import psutil
+import os
 
 
 # 현재 시간 반환 함수
@@ -44,6 +47,64 @@ def setup_driver():
     driver.set_window_position(0, 0)
     driver.set_window_size(1000, 1000)
     return driver
+
+    # 크롬 끄기
+def _close_chrome_processes():
+    """모든 Chrome 프로세스를 종료합니다."""
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            if 'chrome' in proc.info['name'].lower():
+                proc.kill()  # Chrome 프로세스를 종료
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
+
+def set_chrome_driver_user():
+    try:
+        _close_chrome_processes()
+
+        chrome_options = Options()
+        user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
+        profile = "Default"
+
+        chrome_options.add_argument(f"user-data-dir={user_data_dir}")
+        chrome_options.add_argument(f"profile-directory={profile}")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--start-maximized")
+        # chrome_options.add_argument("--headless")  # Headless 모드 추가
+
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        download_dir = os.path.abspath("downloads")
+        os.makedirs(download_dir, exist_ok=True)
+
+        chrome_options.add_experimental_option('prefs', {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        })
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+        script = '''
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            window.navigator.chrome = { runtime: {} };
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+        '''
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
+        return driver
+    except WebDriverException as e:
+        print(f'WebDriverException error {e}')
+        return None
 
 
 
@@ -167,15 +228,16 @@ def scroll_slowly_to_bottom(driver, obj):
                     if any(ad.text.strip() == '광고' for ad in ad_elements):
                         continue  # 광고면 건너뛰기
 
-                    # 세 가지 클래스 중 먼저 발견되는 것으로 이름 가져오기
-                    name_element = None
-                    for cls in ['span.TYaxT', 'span.YwYLL', 'span.t3s7S', 'span.CMy2_']:
-                        try:
-                            name_element = li.find_element(By.CSS_SELECTOR, cls)
-                            if name_element:
-                                break
-                        except:
-                            continue
+                    # 'span.TYaxT', 'span.YwYLL', 'span.t3s7S', 'span.CMy2_', 'span.O_Uah'
+                    try:
+                        bluelink_div = li.find_element(By.CLASS_NAME, 'place_bluelink')
+                        span_elements = bluelink_div.find_elements(By.TAG_NAME, 'span')
+                        if span_elements:
+                            name_element = span_elements[0]
+                        else:
+                            name_element = None
+                    except:
+                        name_element = None
 
                     if name_element:
                         business_name = name_element.text.strip()
@@ -242,7 +304,7 @@ def scroll_slowly_to_bottom(driver, obj):
 
 
 def naver_cralwing():
-    driver = setup_driver()
+    driver = set_chrome_driver_user()
     driver.get("https://map.naver.com")
     try:
 
@@ -251,7 +313,11 @@ def naver_cralwing():
         # 2. 현재 순위 가져오기
         obj_list = get_current_rank()
 
+        print(f'obj_list : {obj_list}')
+        print(f'obj_list len : {len(obj_list)}')
+
         for index, obj in enumerate(obj_list, start=1):
+            print(f'■ 현재 위치 {index}/{len(obj_list)}, 최초현재 순위 {obj['currentRank']} ========================')
             if obj.get("crawlYn") == 'N':
                 continue
 
@@ -318,13 +384,13 @@ def naver_cralwing():
 # 실행 (메인 루프)
 if __name__ == "__main__":
 
-    naver_cralwing()
+    # naver_cralwing()
     print(f"{get_current_time()} 순위 보정 프로그램 정상 시작 완료!!!")
 
     # 매일 04:00에 test() 실행
-    #schedule.every().day.at("04:00").do(naver_cralwing)
+    schedule.every().day.at("04:00").do(naver_cralwing)
 
     # 1초마다 실행시간이 도래 했는지 확인
-    #while True:
-        #schedule.run_pending()
-        #time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
