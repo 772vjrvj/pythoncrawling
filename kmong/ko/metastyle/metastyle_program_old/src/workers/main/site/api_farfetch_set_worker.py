@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from src.workers.main.api_base_worker import BaseApiWorker
+import json
 
 
 # API
@@ -45,7 +46,7 @@ class ApiFarfetchSetLoadWorker(BaseApiWorker):
                 break
 
             time.sleep(3)
-            for product in product_list:
+            for index, product in enumerate(product_list, start=1):
                 try:
                     a_tag = product.find_element(By.TAG_NAME, "a")
                     if a_tag:
@@ -110,7 +111,8 @@ class ApiFarfetchSetLoadWorker(BaseApiWorker):
         try:
             desc_block = self.driver.find_element(By.CSS_SELECTOR, 'div.ltr-fzg9du.e1yiqd0 ul._fdc1e5')
             desc_items = desc_block.find_elements(By.TAG_NAME, 'li')
-            content = [li.text.strip() for li in desc_items]
+            content_list = [li.text.strip() for li in desc_items]
+            content = json.dumps(content_list)  # '["beige", "cotton blend", "bouclé construction"]'
         except Exception as e:
             self.handle_selenium_exception("설명", e)
 
