@@ -88,6 +88,8 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
             # self.google_uploader.delete(obj)
             # return
 
+            #self.google_uploader.download_all_in_folder(obj)
+
             self.blob_product_ids = self.google_uploader.verify_upload(obj)
             site_url = self.config.get('check_list', {}).get(name, "")
             main_url = f"{self.base_url}{site_url}"
