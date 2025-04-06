@@ -150,7 +150,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
     # 로그
     def log_func(self, msg):
         self.log_signal.emit(msg)
-        print(msg) # 테스트 일때만
+        # print(msg) # 테스트 일때만
 
     # 정지
     def stop(self):

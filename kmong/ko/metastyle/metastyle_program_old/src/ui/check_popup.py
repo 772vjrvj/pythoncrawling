@@ -56,30 +56,30 @@ class CheckPopup(QDialog):
             row_layout.addWidget(checkbox)
 
             # "시작" 라벨과 입력 박스 추가
-            start_label = QLabel("시작")
-            start_label.setAlignment(Qt.AlignRight)  # 텍스트 우측 정렬
-            row_layout.addWidget(start_label)
-            start_input = QSpinBox()
-            start_input.setFixedWidth(80)
-            start_input.setRange(1, 100000)  # 범위 설정
-            start_input.setValue(1)  # 기본값
-            row_layout.addWidget(start_input)
+            # start_label = QLabel("시작")
+            # start_label.setAlignment(Qt.AlignRight)  # 텍스트 우측 정렬
+            # row_layout.addWidget(start_label)
+            # start_input = QSpinBox()
+            # start_input.setFixedWidth(80)
+            # start_input.setRange(1, 100000)  # 범위 설정
+            # start_input.setValue(1)  # 기본값
+            # row_layout.addWidget(start_input)
 
             # "종료" 라벨과 입력 박스 추가
-            end_label = QLabel("종료")
-            end_label.setAlignment(Qt.AlignRight)  # 텍스트 우측 정렬
-            row_layout.addWidget(end_label)
-            end_input = QSpinBox()
-            end_input.setFixedWidth(80)
-            end_input.setRange(1, 100000)  # 범위 설정
-            end_input.setValue(1000)  # 기본값
-            row_layout.addWidget(end_input)
+            # end_label = QLabel("종료")
+            # end_label.setAlignment(Qt.AlignRight)  # 텍스트 우측 정렬
+            # row_layout.addWidget(end_label)
+            # end_input = QSpinBox()
+            # end_input.setFixedWidth(80)
+            # end_input.setRange(1, 100000)  # 범위 설정
+            # end_input.setValue(1000)  # 기본값
+            # row_layout.addWidget(end_input)
 
             # 체크박스와 입력 박스 저장
             self.checkboxes.append({
                 "checkbox": checkbox,
-                "start_input": start_input,
-                "end_input": end_input,
+                # "start_input": start_input,
+                # "end_input": end_input,
             })
 
             # 메인 레이아웃에 가로 레이아웃 추가
@@ -124,32 +124,32 @@ class CheckPopup(QDialog):
 
         for item in self.checkboxes:
             checkbox = item["checkbox"]
-            start_input = item["start_input"]
-            end_input = item["end_input"]
+            # start_input = item["start_input"]
+            # end_input = item["end_input"]
 
             if checkbox.isChecked():
                 # 입력값 가져오기
-                try:
-                    start_page = int(start_input.text())
-                    end_page = int(end_input.text())
-                except ValueError:
-                    self.show_error_message(f"'{checkbox.text()}'의 시작값과 종료값은 숫자여야 합니다.")
-                    return
+                # try:
+                #     start_page = int(start_input.text())
+                #     end_page = int(end_input.text())
+                # except ValueError:
+                #     self.show_error_message(f"'{checkbox.text()}'의 시작값과 종료값은 숫자여야 합니다.")
+                #     return
 
                 # 유효성 검사
-                if start_page <= 0 or end_page <= 0:
-                    self.show_error_message(f"'{checkbox.text()}'의 시작값과 종료값은 양수여야 합니다.")
-                    return
-
-                if start_page > end_page:
-                    self.show_error_message(f"'{checkbox.text()}'의 시작값은 종료값보다 클 수 없습니다.")
-                    return
+                # if start_page <= 0 or end_page <= 0:
+                #     self.show_error_message(f"'{checkbox.text()}'의 시작값과 종료값은 양수여야 합니다.")
+                #     return
+                #
+                # if start_page > end_page:
+                #     self.show_error_message(f"'{checkbox.text()}'의 시작값은 종료값보다 클 수 없습니다.")
+                #     return
 
                 # 결과 리스트에 추가
                 self.select_check_list.append({
                     "name": checkbox.text(),
-                    "start_page": start_page,
-                    "end_page": end_page,
+                    # "start_page": start_page,
+                    # "end_page": end_page,
                 })
         # 시그널로 체크된 항목 전달
         self.check_list_signal.emit(self.select_check_list)
