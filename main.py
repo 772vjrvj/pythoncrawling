@@ -1,299 +1,101 @@
-import requests
-import logging
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import WebDriverException, NoSuchElementException
 import time
-from typing import Any
-from requests.exceptions import (
-    Timeout, TooManyRedirects, ConnectionError,
-    HTTPError, URLRequired, SSLError, RequestException
-)
-import os
 import pandas as pd
 
+# Excel 저장 경로
+excel_file_path = r'D:\GIT\크롤링\부동산\네이버\~2025.03.11_쌍촌동네이버(테스트).xlsx'
 
-DEFAULT_HEADERS = {
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}
+# 경로 유효성 검사
+try:
+    with open(excel_file_path, 'w'):
+        pass
+except Exception as e:
+    print("에러 발생:", e)
+    print("저장 경로가 올바르지 않습니다. 크롤링을 중단합니다.")
+    exit()
 
-# base_url = "http://localhost:80/product-info"
-base_url = "http://vjrvj.cafe24.com/product-info"
+# 드라이버 초기화 함수
+def initialize_driver():
+    return webdriver.Chrome()
 
-# 세션 객체 전역 생성
-session = requests.Session()
-# session.cookies.set("JSESSIONID", "3F6ED84016CBB050C1CF47C38F22C8C9")  # 여기에 로그인 후 받은 쿠키 세션 ID 입력
-
-
-def request_api(method: str,
-                url: str,
-                headers: dict = None,
-                params: dict = None,
-                data: dict = None,
-                json: Any = None,
-                timeout: int = 30,
-                verify: bool = True
-                ):
-    start_time = time.time()
+# 안전하게 텍스트 추출하는 함수
+def safe_find_text(driver, by, value):
     try:
-        merged_headers = {**DEFAULT_HEADERS, **(headers or {})}
-        print(f"[API 요청] {method.upper()} {url}")
-        if params:
-            print(f" - 쿼리 파라미터: {params}")
-        if json:
-            print(f" - JSON 바디: {json}")
+        return driver.find_element(by, value).text
+    except NoSuchElementException:
+        return ""
 
-        response = session.request(
-            method=method.upper(),
-            url=url,
-            headers=merged_headers,
-            params=params,
-            data=data,
-            json=json,
-            timeout=timeout,
-            verify=verify
-        )
+# 중복 텍스트 제외 필터
+제외문구 = ["양지공인중개사사무소", "피터팬의 좋은방구하기 제공", "부동산114 제공", "아실", "강호"]
 
-        duration = round(time.time() - start_time, 2)
-        print(f"[응답 수신 완료] 상태코드: {response.status_code}, 소요시간: {duration}s")
+# 드라이버 시작 및 페이지 접근
+driver = initialize_driver()
+driver.get("https://new.land.naver.com/offices?ms=35.1546,126.863,16&a=SG&b=B2&e=RETAIL&u=ONEFLOOR&ad=true")
+time.sleep(1)
 
-        response.encoding = 'utf-8'
-        response.raise_for_status()
+data_list = []
+wait = WebDriverWait(driver, 10)
 
-        content_type = response.headers.get('Content-Type', '')
+try:
+    for i in range(1, 99999):
+        if i == 20:
+            break
+        try:
+            매물_selector = f"#listContents1 > div > div > div:nth-child(1) > div:nth-child({i}) > div"
+            매물요소 = driver.find_elements(By.CSS_SELECTOR, 매물_selector)
 
-        if 'application/json' in content_type:
-            try:
-                return response.text
-            except ValueError:
-                print("⚠️ JSON 파싱 실패")
-                return None
-        else:
-            return response.text
+            if 매물요소:
+                매물요소[0].location_once_scrolled_into_view
+                clickable = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 매물_selector)))
+                time.sleep(2)
 
-    except Timeout:
-        print("⏱️ 요청 타임아웃 발생")
-    except TooManyRedirects:
-        print("🔁 리다이렉트 횟수 초과")
-    except SSLError:
-        print("🔒 SSL 인증 오류")
-    except ConnectionError:
-        print("📡 네트워크 연결 오류")
-    except HTTPError as e:
-        print(f"❌ HTTP 오류: {e}")
-    except URLRequired:
-        print("📎 URL이 필요합니다.")
-    except RequestException as e:
-        print(f"🚫 요청 실패: {e}")
-    except Exception as e:
-        print(f"❗예기치 못한 예외: {e}")
+                text = clickable.text
+                if not any(word in text for word in 제외문구):
+                    clickable.click()
+                    time.sleep(2)
 
-    return None
+                    등록일자 = safe_find_text(driver, By.CSS_SELECTOR,
+                                          "#ct > div.map_wrap > div.detail_panel > div > div.detail_contents_inner > div.detail_fixed > div.main_info_area > div.info_label_wrap.is-function > span.label.label--confirm > em.data")
 
+                    if "24.05.00." in 등록일자:
+                        print("등록일자에 특정 단어가 포함되어 크롤링을 중단합니다.")
+                        break
 
-# -------------------------------
-# Product API 함수
-# -------------------------------
+                    data = {
+                        '등록일자': 등록일자,
+                        '매물번호': safe_find_text(driver, By.XPATH, "//th[contains(text(), '매물번호')]/following-sibling::td"),
+                        '위치': safe_find_text(driver, By.XPATH, "//th[contains(text(), '소재지')]/following-sibling::td"),
+                        '업종': safe_find_text(driver, By.XPATH, "//th[contains(text(), '현재업종')]/following-sibling::td"),
+                        '층수': safe_find_text(driver, By.XPATH, "//th[contains(text(), '해당층')]/following-sibling::td"),
+                        '방향': safe_find_text(driver, By.XPATH, "//th[contains(text(), '방향')]/following-sibling::td"),
+                        '용도': safe_find_text(driver, By.XPATH, "//th[contains(text(), '건축물 용도')]/following-sibling::td"),
+                        '사용승인일': safe_find_text(driver, By.XPATH, "//th[contains(text(), '사용승인일')]/following-sibling::td"),
+                        '주차': safe_find_text(driver, By.XPATH, "//th[contains(text(), '총주차대수')]/following-sibling::td"),
+                        '매물특징': safe_find_text(driver, By.XPATH, "//th[contains(text(), '매물특징')]/following-sibling::td"),
+                        '면적': safe_find_text(driver, By.XPATH, "//th[contains(text(), '계약') or contains(text(), '전용면적')]/following-sibling::td"),
+                        '가격': safe_find_text(driver, By.XPATH, "//span[@class='price']")
+                    }
 
-def get_all_products():
-    url = f"{base_url}/select-all"
-    return request_api("GET", url)
+                    # 데이터 출력 (옵션)
+                    for key, value in data.items():
+                        print(f"{key}: {value}")
+                    print("-" * 50)
 
-def get_product_by_key(product_key: str):
-    url = f"{base_url}/{product_key}"
-    return request_api("GET", url)
+                    data_list.append(data)
 
-def add_products(product_list: list[dict]):
-    url = f"{base_url}/add"
-    return request_api("POST", url, json=product_list)
+        except Exception as e:
+            print(f"{i}번째 매물 처리 중 에러 발생:", e)
+            continue
 
-def update_products(product_list: list[dict]):
-    url = f"{base_url}/update"
-    return request_api("PUT", url, json=product_list)
+finally:
+    # 결과 저장
+    df = pd.DataFrame(data_list)
+    df.to_excel(excel_file_path, index=False)
+    print(f"\n총 {len(data_list)}건 저장 완료 → {excel_file_path}")
 
-def delete_product(product_key: str):
-    url = f"{base_url}/{product_key}"
-    return request_api("DELETE", url)
-
-def get_products_after_reg_date(reg_date: str):
-    url = f"{base_url}/select-after"
-    params = {"regDate": reg_date}
-    return request_api("GET", url, params=params)
-
-
-def load_csvs_from_mango(base_dir):
-    """
-    MANGO 폴더 안의 모든 CSV 파일을 읽어 객체 리스트로 반환합니다.
-
-    :param base_dir: DB 폴더 경로 (예: D:/.../DB)
-    :return: list of dict (모든 CSV 병합 결과)
-    """
-    mango_dir = os.path.join(base_dir, "&OTHER STORIES")
-    all_rows = []
-
-    if not os.path.exists(mango_dir):
-        print(f"❌ 디렉토리가 존재하지 않습니다: {mango_dir}")
-        return []
-
-    for file in os.listdir(mango_dir):
-        if file.endswith(".csv"):
-            file_path = os.path.join(mango_dir, file)
-            try:
-                # NaN -> "" 처리
-                df = pd.read_csv(file_path, encoding='utf-8-sig', dtype=str).fillna("")
-                records = df.to_dict(orient="records")
-                all_rows.extend(records)
-                print(f"✅ 불러옴: {file_path} ({len(records)} rows)")
-            except Exception as e:
-                print(f"❌ 실패: {file_path} - {e}")
-
-    print(f"📦 총 수집된 row 수: {len(all_rows)}")
-    return all_rows
-
-# ✅ 사용 예시
-if __name__ == "__main__":
-    base_path = r"D:\GIT\pythoncrawling\kmong\ko\metastyle\metastyle_program_old\dist\metastyle ver2\DB"
-    mango_data = load_csvs_from_mango(base_path)
-
-    # 결과 예시 출력
-    if mango_data:
-        print("🔍 첫 번째 row 예시:")
-        print(mango_data[0])
-
-
-def convert_to_camel_case(obj: dict) -> dict:
-    return {
-        "website": obj.get("website", ""),
-        "brandType": obj.get("brand_type", ""),
-        "category": obj.get("category", ""),
-        "categorySub": obj.get("category_sub", ""),
-        "url": obj.get("url", ""),
-        "categoryFull": obj.get("category_full", ""),
-        "country": obj.get("country", ""),
-        "brand": obj.get("brand", ""),
-        "productUrl": obj.get("product_url", ""),
-        "product": obj.get("product", ""),
-        "productId": obj.get("product_id", ""),
-        "productNo": obj.get("product_no", ""),
-        "description": obj.get("description", ""),
-        "price": obj.get("price", ""),
-        "imageNo": obj.get("image_no", ""),
-        "imageUrl": obj.get("image_url", ""),
-        "imageName": obj.get("image_name", ""),
-        "success": obj.get("success", ""),
-        "regDate": obj.get("reg_date", ""),
-        "page": obj.get("page", ""),
-        "error": obj.get("error", ""),
-        "imageYn": obj.get("image_yn", ""),
-        "imagePath": obj.get("image_path", ""),
-        "projectId": obj.get("project_id", ""),
-        "bucket": obj.get("bucket", "")
-    }
-
-
-if __name__ == "__main__":
-
-    # 1. 로그인 요청
-    login_url = "http://vjrvj.cafe24.com/auth/login"
-    payload = {
-        "username": "test3",  # 실제 사용자명
-        "password": "1234"  # 실제 비밀번호
-    }
-
-    response = session.post(login_url, json=payload)
-
-    if response.status_code == 200:
-        print("✅ 로그인 성공, 쿠키:", session.cookies.get_dict())
-    else:
-        print("❌ 로그인 실패:", response.status_code, response.text)
-
-
-
-    base_path = r"D:\GIT\pythoncrawling\kmong\ko\metastyle\metastyle_program_old\DB"
-    mango_data = load_csvs_from_mango(base_path)
-
-    if mango_data:
-        print(f"📦 총 {len(mango_data)}개의 row를 로드했습니다.")
-
-        formatted_data = []
-        for raw in mango_data:
-            item = convert_to_camel_case(raw)
-            item["productKey"] = f'{item.get("website", "").strip()}_{item.get("productId", "").strip()}'
-            formatted_data.append(item)
-
-        print("🚀 서버에 요청 시작...")
-        rs = add_products(formatted_data)
-        print("✅ 결과:", rs)
-    else:
-        print("❌ 데이터가 없습니다.")
-
-
-    # product_list = get_products_after_reg_date("2025.03.31 05:09:53")
-    # product_list = get_products_after_reg_date("2025.03.31 05:09:53")
-    # print(product_list)
-    # print(len(product_list))
-    # product_list = get_all_products()
-    # print(product_list)
-    # product = get_product_by_key("&OTHER STORIES_1267042003")
-    # print(product)
-    # product_list = [
-    #     {
-    #         "website": "&OTHER STORIES",
-    #         "brandType": "Competitive Brand",
-    #         "category": "WOMEN",
-    #         "categorySub": "All New Arrivals",
-    #         "url": "https://www.stories.com/en_usd",
-    #         "categoryFull": "WOMEN _ All New Arrivals",
-    #         "country": "US",
-    #         "brand": "&OTHER STORIES",
-    #         "productUrl": "https://www.stories.com/en_usd/clothing/dresses/maxi-dresses/product.satin-slip-midi-dress-black.1267042002.html",
-    #         "product": "Satin Slip Midi Dress",
-    #         "productId": 1267042002,
-    #         "productNo": 1,
-    #         "description": "Midi slip dress crafted in a glossy satin finish. Designed with thin spaghetti straps, a delicate cowl neck, and a fitted waist that falls into a gentle flare. Finished with a scooped back secured with a self-tie closure.",
-    #         "price": "$109",
-    #         "imageNo": 1,
-    #         "imageUrl": "https://lp.stories.com/app005prod?...ef9424a3e85e0ec358014d211b16cf446fb513ce.jpg...",
-    #         "imageName": "1267042002_1.jpg",
-    #         "success": "Y",
-    #         "regDate": "2025.03.31",
-    #         "page": "05:09:53",
-    #         "error": "",
-    #         "imageYn": "Y",
-    #         "imagePath": "ai-designer-ml-external/&OTHER STORIES/WOMEN _ All New Arrivals/1267042002_1.jpg",
-    #         "projectId": "styleai-373423",
-    #         "bucket": "ai-designer-ml-external",
-    #         "imageUrlModified": "",
-    #         "productKey": "&OTHER STORIES_1267042002"
-    #     },
-    #     {
-    #         "website": "&OTHER STORIES",
-    #         "brandType": "Competitive Brand",
-    #         "category": "WOMEN",
-    #         "categorySub": "All New Arrivals",
-    #         "url": "https://www.stories.com/en_usd",
-    #         "categoryFull": "WOMEN _ All New Arrivals",
-    #         "country": "US",
-    #         "brand": "&OTHER STORIES",
-    #         "productUrl": "https://www.stories.com/en_usd/clothing/skirts/mini-skirts/product.bubble-mini-skirt-black.1264190001.html",
-    #         "product": "Bubble Mini Skirt",
-    #         "productId": 1264190001,
-    #         "productNo": 2,
-    #         "description": "Mini skirt designed in a puffed bubble shape. Crafted from a lightweight poplin fabric. Featuring invisible side seam pockets and an elastic waist for an easy slip-on effect.",
-    #         "price": "$89",
-    #         "imageNo": 1,
-    #         "imageUrl": "https://lp.stories.com/app005prod?...60f25c2cb3309d089389368deb10e9655e6f5f64.jpg...",
-    #         "imageName": "1264190001_1.jpg",
-    #         "success": "Y",
-    #         "regDate": "2025.03.31",
-    #         "page": "05:09:58",
-    #         "error": "",
-    #         "imageYn": "Y",
-    #         "imagePath": "ai-designer-ml-external/&OTHER STORIES/WOMEN _ All New Arrivals/1264190001_1.jpg",
-    #         "projectId": "styleai-373423",
-    #         "bucket": "ai-designer-ml-external",
-    #         "imageUrlModified": "",
-    #         "productKey": "&OTHER STORIES_1264190001"
-    #     }
-    # ]
-    # add_products(product_list)
-
-
+    # 브라우저 종료
+    driver.quit()

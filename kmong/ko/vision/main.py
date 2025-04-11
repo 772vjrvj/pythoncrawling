@@ -49,6 +49,8 @@ def setup_driver():
     return driver
 
     # 크롬 끄기
+
+
 def _close_chrome_processes():
     """모든 Chrome 프로세스를 종료합니다."""
     for proc in psutil.process_iter(['pid', 'name']):
@@ -107,10 +109,8 @@ def set_chrome_driver_user():
         return None
 
 
-
 def get_current_time():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
 
 
 def update_obj_list(obj_list):
@@ -130,7 +130,6 @@ def update_obj_list(obj_list):
     else:
         print("업데이트 실패:", response.status_code)
         print("응답 데이터:", response.text)
-
 
 
 def get_current_rank():
@@ -155,19 +154,35 @@ def get_current_rank():
         print(f"{get_current_time()} ⚠ JSON 파싱 실패: {e}")
 
 
+def wait_for_iframe_and_switch(driver, timeout=60):
+    """iframe과 내부 요소가 모두 로드될 때까지 기다림"""
+    for i in range(timeout):
+        try:
+            iframe = driver.find_element(By.ID, "searchIframe")
+            driver.switch_to.frame(iframe)
+            WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div#_pcmap_list_scroll_container'))
+            )
+            return True
+        except:
+            time.sleep(1)
+    return False
+
 
 def scroll_slowly_to_bottom(driver, obj):
     try:
         driver.switch_to.default_content()
 
-        # 최초 iframe 진입 (한 번만!)
-        WebDriverWait(driver, 15).until(
-            EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe"))
-        )
+        if not wait_for_iframe_and_switch(driver):
+            print(f"{get_current_time()} ❌ iframe 로딩 실패 - '{obj.get('businessName', '')}'")
+            driver.switch_to.default_content()  # ✅ 다음 키워드를 위해 초기화
+            return obj['currentRank']
 
         scrollable_div_selector = 'div#_pcmap_list_scroll_container'
         target_name = obj.get('businessName', '').strip()
         business_names = []
+
+        page_num = 1  # <-- 초기값 설정
 
         while True:
             try:
@@ -179,6 +194,7 @@ def scroll_slowly_to_bottom(driver, obj):
                     no_result_div = driver.find_element(By.CLASS_NAME, "FYvSc")
                     if no_result_div.text == "조건에 맞는 업체가 없습니다.":
                         print("조건에 맞는 업체가 없습니다.")
+                        print(f"{get_current_time()} ✅ '{target_name}'의 위치: 999 번째")
                 except Exception:
                     pass
                 return 999
@@ -189,77 +205,37 @@ def scroll_slowly_to_bottom(driver, obj):
             prev_height = -1
             no_change_count = 0
 
+            # 페이지에 맞는 순위 계산
+            result = real_time_rank(driver, scrollable_div, business_names, target_name, page_num)
+            if result:
+                print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {business_names}")
+                return result  # 찾았으면 바로 종료
+
             # 스크롤 끝까지 내리기
             while True:
-                for _ in range(7):
-                    driver.execute_script("arguments[0].scrollTop += 150;", scrollable_div)
-                    time.sleep(0.3)
+                # 한 번에 끝까지 스크롤
+                driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight;", scrollable_div)
+                time.sleep(0.3)  # 약간의 대기 시간 (렌더링 여유)
 
-                time.sleep(1)
-
+                # 스크롤이 더 이상 내려가지 않는 경우 종료
                 current_scroll = driver.execute_script("return arguments[0].scrollTop;", scrollable_div)
                 max_scroll_height = driver.execute_script(
                     "return arguments[0].scrollHeight - arguments[0].clientHeight;", scrollable_div
                 )
-                if current_scroll >= max_scroll_height:
+                if current_scroll >= max_scroll_height - 5:
                     print(f"{get_current_time()} ✅ 스크롤이 끝까지 내려졌습니다.")
                     break
 
-                # if current_scroll >= max_scroll_height:
-                #     if prev_height == max_scroll_height:
-                #         no_change_count += 1
-                #     else:
-                #         no_change_count = 0
-                #
-                #     if no_change_count >= 3:
-                #         print(f"{get_current_time()} ✅ 스크롤이 끝까지 내려졌습니다.")
-                #         break
-                #
-                #     prev_height = max_scroll_height
-                # else:
-                #     prev_height = max_scroll_height
+            result = real_time_rank(driver, scrollable_div, business_names, target_name, page_num)
+            if result:
+                print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {business_names}")
+                return result  # 찾았으면 종료
 
-            # 현재 페이지에서 사업장 이름 추출
-            li_elements = scrollable_div.find_elements(By.CSS_SELECTOR, 'ul > li')
-            for li in li_elements:
-                try:
-                    # 광고 요소는 건너뛰기
-                    ad_elements = li.find_elements(By.CSS_SELECTOR, 'span.place_blind')
-                    if any(ad.text.strip() == '광고' for ad in ad_elements):
-                        continue  # 광고면 건너뛰기
-
-                    # 'span.TYaxT', 'span.YwYLL', 'span.t3s7S', 'span.CMy2_', 'span.O_Uah'
-                    try:
-                        bluelink_div = li.find_element(By.CLASS_NAME, 'place_bluelink')
-                        span_elements = bluelink_div.find_elements(By.TAG_NAME, 'span')
-                        if span_elements:
-                            name_element = span_elements[0]
-                        else:
-                            name_element = None
-                    except:
-                        name_element = None
-
-                    if name_element:
-                        business_name = name_element.text.strip()
-                        if business_name and business_name not in business_names:
-                            business_names.append(business_name)
-
-                except Exception as e:
-                    print(f"⚠️ 요소 처리 중 오류 발생: {e}")
-                    continue
 
             print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {business_names}")
 
-            # 타겟 이름이 있는지 확인
-            if target_name in business_names:
-                matched_index = business_names.index(target_name)
-                print(f"{get_current_time()} ✅ '{target_name}'의 위치: {matched_index + 1}번째")
-                driver.switch_to.default_content()
-                return matched_index + 1
-
             # 다음 페이지로 이동 가능한지 체크
             try:
-                # 현재 페이지 확인
                 pages = driver.find_elements(By.CSS_SELECTOR, "div.zRM9F > a.mBN2s")
                 current_page_index = -1
 
@@ -273,22 +249,21 @@ def scroll_slowly_to_bottom(driver, obj):
                     print(f"{get_current_time()} ⚠ 현재 페이지를 찾을 수 없습니다.")
                     break
 
-                # 다음 페이지가 존재하는지 확인
                 if current_page_index + 1 < len(pages):
                     next_page_button = pages[current_page_index + 1]
                     driver.execute_script("arguments[0].click();", next_page_button)
                     print(f"{get_current_time()} 📄 다음 페이지 ({current_page_index + 2})로 이동합니다.")
-                    time.sleep(3)  # 페이지 로딩 대기
+                    time.sleep(2)
+                    page_num += 1  # ✅ 페이지 수 증가
                 else:
-                    # 다음 페이지 그룹으로 이동 가능한지 체크 (마지막 '>' 버튼)
                     next_group_button = driver.find_element(By.CSS_SELECTOR,
                                                             "div.zRM9F > a.eUTV2[aria-disabled='false']:last-child")
                     driver.execute_script("arguments[0].click();", next_group_button)
                     print(f"{get_current_time()} 📄 다음 페이지 그룹으로 이동합니다.")
-                    time.sleep(3)  # 페이지 로딩 대기
+                    time.sleep(2)
+                    page_num += 1  # ✅ 그룹 이동 후에도 증가
 
             except Exception:
-                # 다음 페이지가 없으면 종료
                 print(f"{get_current_time()} ⛔️ 다음 페이지가 없습니다")
                 break
 
@@ -300,11 +275,48 @@ def scroll_slowly_to_bottom(driver, obj):
 
     except Exception as e:
         print(f"{get_current_time()} ⚠ [ERROR] 스크롤 중 오류: {e}")
+        return obj['currentRank']
 
+
+def real_time_rank(driver, scrollable_div, business_names, target_name, page):
+    li_elements = scrollable_div.find_elements(By.CSS_SELECTOR, 'ul > li')
+
+    # 페이지당 70개씩 가정
+    start_num = len(business_names) - ((page - 1) * 70)
+
+    for index, li in enumerate(li_elements[start_num:], start=start_num):
+        try:
+            ad_elements = li.find_elements(By.CSS_SELECTOR, 'span.place_blind')
+            if any(ad.text.strip() == '광고' for ad in ad_elements):
+                continue
+
+            # 'span.TYaxT', 'span.YwYLL', 'span.t3s7S', 'span.CMy2_', 'span.O_Uah'
+            try:
+                bluelink_div = li.find_element(By.CLASS_NAME, 'place_bluelink')
+                span_elements = bluelink_div.find_elements(By.TAG_NAME, 'span')
+                name_element = span_elements[0] if span_elements else None
+            except:
+                name_element = None
+
+            if name_element:
+                business_name = name_element.text.strip()
+                if business_name and business_name not in business_names:
+                    business_names.append(business_name)
+
+            if target_name in business_names:
+                matched_index = business_names.index(target_name)
+                print(f"{get_current_time()} ✅ '{target_name}'의 위치: {matched_index + 1}번째")
+                driver.switch_to.default_content()
+                return matched_index + 1
+
+        except Exception as e:
+            print(f"⚠️ 요소 처리 중 오류 발생: {e}")
+            continue
+    return None
 
 
 def naver_cralwing():
-    driver = set_chrome_driver_user()
+    driver = setup_driver()
     driver.get("https://map.naver.com")
     try:
 
@@ -323,6 +335,9 @@ def naver_cralwing():
 
             keyword = obj.get("keyword")
             print(f"{get_current_time()} 🔍 검색 키워드: {keyword}")
+
+            if keyword != '평택고덕조개구이맛집':
+                continue
 
             # 3. 검색창 찾기 및 키워드 입력
             try:
@@ -384,13 +399,13 @@ def naver_cralwing():
 # 실행 (메인 루프)
 if __name__ == "__main__":
 
-    # naver_cralwing()
+    naver_cralwing()
     print(f"{get_current_time()} 순위 보정 프로그램 정상 시작 완료!!!")
 
     # 매일 04:00에 test() 실행
-    schedule.every().day.at("04:00").do(naver_cralwing)
+    # schedule.every().day.at("04:00").do(naver_cralwing)
 
     # 1초마다 실행시간이 도래 했는지 확인
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)

@@ -19,6 +19,7 @@ import time
 from datetime import datetime, timedelta
 
 from src.utils.time_utils import get_today_date
+import math
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -219,6 +220,15 @@ class ApiDomeggookSetLoadWorker(QThread):
         return all_item_set
 
 
+    def safe_int(self,val):
+        try:
+            f = float(val)
+            if math.isnan(f):
+                return None
+            return int(f)
+        except (ValueError, TypeError):
+            return None
+
     def fetch_new_item_list(self, all_item_list, old_result_list):
         now_result_list = []
         for idx, product_id in enumerate(all_item_list, start=1):
@@ -231,10 +241,16 @@ class ApiDomeggookSetLoadWorker(QThread):
             self.log_signal.emit(f'상세보기 index : {idx}, 상품정보 : {new_obj}')
 
             # old_result_list에서 같은 상품번호를 가진 객체 찾기
-            old_obj = next(
-                (item for item in old_result_list if str(item['상품번호']) == str(new_obj['상품번호'])),
-                None
-            )
+            old_obj = None
+            target_no = self.safe_int(new_obj['상품번호'])
+
+            for item in old_result_list:
+                item_no = self.safe_int(item['상품번호'])
+
+                if item_no == target_no:
+                    old_obj = item
+                    break
+
             if old_obj:
                 # old_obj의 재고수량과 obj의 재고수량 차이 계산 (old_obj가 항상 크거나 같음)
                 old_stock = int(old_obj['재고수량']) if old_obj['재고수량'] else 0
@@ -263,7 +279,6 @@ class ApiDomeggookSetLoadWorker(QThread):
 
                 # new_result_list에 추가
                 now_result_list.append(new_obj)
-
 
             # 100개의 항목마다 임시로 엑셀 저장
             if idx % 10 == 0 and now_result_list:
