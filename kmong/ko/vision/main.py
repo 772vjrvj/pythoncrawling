@@ -1,39 +1,38 @@
+import os
 import time
+from datetime import datetime
+
+import psutil
 import requests
-import schedule
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import TimeoutException
-from datetime import datetime
-from selenium.common.exceptions import WebDriverException
-import psutil
-import os
-
 
 # 현재 시간 반환 함수
 
 # 전역 변수
-SELECT_URL = "https://주식회사비전.com/user/place/rest/select-currentrank"
-UPDATE_URL = "https://주식회사비전.com/user/place/rest/update-currentrank"
+# SELECT_URL = "https://주식회사비전.com/user/place/rest/select-currentrank"
+# UPDATE_URL = "https://주식회사비전.com/user/place/rest/update-currentrank"
 
-# UPDATE_URL = "http://localhost/user/place/rest/update-currentrank"
-# SELECT_URL = "http://localhost/user/place/rest/select-currentrank"
+UPDATE_URL = "http://localhost/user/place/rest/update-currentrank"
+SELECT_URL = "http://localhost/user/place/rest/select-currentrank"
 
 
 # 드라이버 설정
-def setup_driver():
+def setup_chrome_driver():
     chrome_options = Options()
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    # chrome_options.add_argument("--headless")  # 서버 실행 시 필요
+    chrome_options.add_argument("--headless")  # 서버 실행 시 필요
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     chrome_options.add_argument(f'user-agent={user_agent}')
@@ -56,7 +55,7 @@ def _close_chrome_processes():
     for proc in psutil.process_iter(['pid', 'name']):
         try:
             if 'chrome' in proc.info['name'].lower():
-                proc.kill()  # Chrome 프로세스를 종료
+                proc.kill()  # Chrome 프로세스를 종료O
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
 
@@ -134,16 +133,8 @@ def update_obj_list(obj_list):
 
 def get_current_rank():
     try:
-        params = {
-            'type': 'currentRank'
-        }
-        response = requests.get(SELECT_URL, params=params)
-
-        print(f"📡 상태 코드: {response.status_code}")
-        print(f"📄 응답 본문:\n{response.text}")
-
+        response = requests.get(SELECT_URL)
         response.raise_for_status()  # 에러 코드면 예외 발생
-
         data = response.json()
         print(f"{get_current_time()} ✅ 응답 수신 성공")
         return data
@@ -208,7 +199,7 @@ def scroll_slowly_to_bottom(driver, obj):
             # 페이지에 맞는 순위 계산
             result = real_time_rank(driver, scrollable_div, business_names, target_name, page_num)
             if result:
-                print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {business_names}")
+                print(f"{get_current_time()} 📌 현재까지 누적된 사업장 수: {len(business_names)}")
                 return result  # 찾았으면 바로 종료
 
             # 스크롤 끝까지 내리기
@@ -228,11 +219,11 @@ def scroll_slowly_to_bottom(driver, obj):
 
             result = real_time_rank(driver, scrollable_div, business_names, target_name, page_num)
             if result:
-                print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {business_names}")
+                print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {len(business_names)}")
                 return result  # 찾았으면 종료
 
 
-            print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {business_names}")
+            print(f"{get_current_time()} 📌 현재까지 누적된 사업장 목록: {len(business_names)}")
 
             # 다음 페이지로 이동 가능한지 체크
             try:
@@ -316,8 +307,8 @@ def real_time_rank(driver, scrollable_div, business_names, target_name, page):
 
 
 def naver_cralwing():
-    driver = setup_driver()
-    driver.get("https://map.naver.com")
+    chrome_driver = setup_chrome_driver()
+    chrome_driver.get("https://map.naver.com")
     try:
 
         time.sleep(2)  # 페이지 로딩 대기
@@ -325,7 +316,6 @@ def naver_cralwing():
         # 2. 현재 순위 가져오기
         obj_list = get_current_rank()
 
-        print(f'obj_list : {obj_list}')
         print(f'obj_list len : {len(obj_list)}')
 
         for index, obj in enumerate(obj_list, start=1):
@@ -334,17 +324,15 @@ def naver_cralwing():
                 continue
 
             keyword = obj.get("keyword")
-            print(f"{get_current_time()} 🔍 검색 키워드: {keyword}")
-
-            if keyword != '평택고덕조개구이맛집':
-                continue
+            businessName = obj.get("businessName")
+            print(f"{get_current_time()} 🔍 검색 키워드: {keyword}, 상호명: {businessName}")
 
             # 3. 검색창 찾기 및 키워드 입력
             try:
 
-                driver.switch_to.default_content()
+                chrome_driver.switch_to.default_content()
 
-                search_input = WebDriverWait(driver, 10).until(
+                search_input = WebDriverWait(chrome_driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "input_search"))
                 )
 
@@ -366,7 +354,7 @@ def naver_cralwing():
 
                 time.sleep(3)  # 검색 결과 대기 (필요 시 더 조절)
 
-                current_rank = scroll_slowly_to_bottom(driver, obj)
+                current_rank = scroll_slowly_to_bottom(chrome_driver, obj)
                 #obj['currentRank'] = current_rank
                 obj['recentRank'] = obj['currentRank']
                 obj['rankChkDt'] = get_current_time()
@@ -378,19 +366,21 @@ def naver_cralwing():
                         obj['highestRank'] = current_rank
                         obj['initialRank'] = current_rank
                         obj['highestDt'] = get_current_time()
-                        print(f'들어옴 : {obj}')
+                        print(f'보정됨')
                 else:
                     if int(obj.get("highestRank")) >= int(current_rank):
                         obj['highestRank'] = current_rank
                         obj['highestDt'] = get_current_time()
 
                 obj['currentRank'] =current_rank
+                print(obj)
+                print(f'■ 끝 현재 위치 {index}/{len(obj_list)}, 현재 순위 {obj['currentRank']} ========================\n\n')
 
             except Exception as e:
                 print(f"{get_current_time()} ⚠ [ERROR] 키워드 '{keyword}' 검색 중 오류 발생: {e}")
 
         update_obj_list(obj_list)
-        driver.quit()
+        chrome_driver.quit()
 
     except Exception as e:
         print(f"{get_current_time()} ⚠ [ERROR] 크롤링 중 오류 발생: {e}")

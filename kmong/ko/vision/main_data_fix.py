@@ -20,11 +20,11 @@ import os
 # 현재 시간 반환 함수
 
 # 전역 변수
-SELECT_URL = "https://주식회사비전.com/user/place/rest/select-currentrank"
-UPDATE_URL = "https://주식회사비전.com/user/place/rest/update-currentrank"
+# SELECT_URL = "https://주식회사비전.com/user/place/rest/select-currentrank"
+# UPDATE_URL = "https://주식회사비전.com/user/place/rest/update-currentrank"
 
-# UPDATE_URL = "http://localhost/user/place/rest/update-currentrank"
-# SELECT_URL = "http://localhost/user/place/rest/select-currentrank"
+UPDATE_URL = "http://localhost/user/place/rest/update-currentrank"
+SELECT_URL = "http://localhost/user/place/rest/select-currentrank"
 
 
 # 드라이버 설정
@@ -135,11 +135,7 @@ def update_obj_list(obj_list):
 
 def get_current_rank():
     try:
-        params = {
-            'type': 'currentRank'
-        }
-        response = requests.get(SELECT_URL, params=params)
-
+        response = requests.get(SELECT_URL)
         print(f"📡 상태 코드: {response.status_code}")
         print(f"📄 응답 본문:\n{response.text}")
 
@@ -304,7 +300,8 @@ def scroll_slowly_to_bottom(driver, obj):
 
 
 def naver_cralwing():
-    driver = set_chrome_driver_user()
+    # driver = set_chrome_driver_user()
+    driver = setup_driver()
     driver.get("https://map.naver.com")
     try:
 
@@ -317,12 +314,13 @@ def naver_cralwing():
         print(f'obj_list len : {len(obj_list)}')
 
         for index, obj in enumerate(obj_list, start=1):
-            print(f'■ 현재 위치 {index}/{len(obj_list)}, 최초현재 순위 {obj['currentRank']} ========================')
+            print(f'■ 시작 현재 위치 {index}/{len(obj_list)}, 최초현재 순위 {obj['currentRank']} ========================')
             if obj.get("crawlYn") == 'N':
                 continue
 
             keyword = obj.get("keyword")
-            print(f"{get_current_time()} 🔍 검색 키워드: {keyword}")
+            businessName = obj.get("businessName")
+            print(f"{get_current_time()} 🔍 검색 키워드: {keyword}, 상호명: {businessName}")
 
             # 3. 검색창 찾기 및 키워드 입력
             try:
@@ -363,13 +361,15 @@ def naver_cralwing():
                         obj['highestRank'] = current_rank
                         obj['initialRank'] = current_rank
                         obj['highestDt'] = get_current_time()
-                        print(f'들어옴 : {obj}')
+                        print(f'보정 데이터')
                 else:
                     if int(obj.get("highestRank")) >= int(current_rank):
                         obj['highestRank'] = current_rank
                         obj['highestDt'] = get_current_time()
 
                 obj['currentRank'] =current_rank
+                print(obj)
+                print(f'■ 끝 현재 위치 {index}/{len(obj_list)}, 최초현재 순위 {obj['currentRank']} ========================')
 
             except Exception as e:
                 print(f"{get_current_time()} ⚠ [ERROR] 키워드 '{keyword}' 검색 중 오류 발생: {e}")
@@ -384,11 +384,11 @@ def naver_cralwing():
 # 실행 (메인 루프)
 if __name__ == "__main__":
 
-    # naver_cralwing()
+    naver_cralwing()
     print(f"{get_current_time()} 순위 보정 프로그램 정상 시작 완료!!!")
 
     # 매일 04:00에 test() 실행
-    schedule.every().day.at("04:00").do(naver_cralwing)
+    # schedule.every().day.at("04:00").do(naver_cralwing)
 
     # 1초마다 실행시간이 도래 했는지 확인
     while True:
