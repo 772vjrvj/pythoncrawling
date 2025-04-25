@@ -404,8 +404,8 @@ def naver_cralwing(obj_list):
 
     print(f"{get_current_time()} 작업완료(처음 수): {len(obj_list)}")
     print(f"{get_current_time()} 작업완료(성공 수): {len(success_list)}")
-    print(f"{get_current_time()} 작업완료(같은 수): {len(eq_cnt)}")
-    print(f"{get_current_time()} 작업완료(다른 수): {len(df_cnt)}")
+    print(f"{get_current_time()} 작업완료(같은 수): {eq_cnt}")
+    print(f"{get_current_time()} 작업완료(다른 수): {df_cnt}")
     print(f"{get_current_time()} 작업완료(실패 수): {len(fail_list)}")
     update_obj_list(success_list)
     driver.quit()
