@@ -5,11 +5,9 @@ from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from src.workers.login_thread import LoginThread
 from src.ui.password_change_window import PasswordChangeWindow
 from src.utils.singleton import GlobalState
-import json
 
 import keyring
-
-SERVICE_NAME = "MyAppAutoLogin"
+from src.utils.config import server_name  # 서버 URL 및 설정 정보
 
 
 class LoginWindow(QWidget):
@@ -138,8 +136,8 @@ class LoginWindow(QWidget):
 
     def try_auto_login(self):
         try:
-            username = keyring.get_password(SERVICE_NAME, "username")
-            password = keyring.get_password(SERVICE_NAME, "password")
+            username = keyring.get_password(server_name, "username")
+            password = keyring.get_password(server_name, "password")
             if username and password:
                 self.id_input.setText(username)
                 self.password_input.setText(password)
@@ -191,13 +189,13 @@ class LoginWindow(QWidget):
         if self.auto_login_checkbox.isChecked():
             username = self.id_input.text()
             password = self.password_input.text()
-            keyring.set_password(SERVICE_NAME, "username", username)
-            keyring.set_password(SERVICE_NAME, "password", password)
+            keyring.set_password(server_name, "username", username)
+            keyring.set_password(server_name, "password", password)
         else:
             # 체크 해제된 경우 저장된 정보 제거
             try:
-                keyring.delete_password(SERVICE_NAME, "username")
-                keyring.delete_password(SERVICE_NAME, "password")
+                keyring.delete_password(server_name, "username")
+                keyring.delete_password(server_name, "password")
             except keyring.errors.PasswordDeleteError:
                 pass
 

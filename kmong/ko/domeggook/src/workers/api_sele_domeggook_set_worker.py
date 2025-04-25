@@ -3,19 +3,26 @@ import random
 import re
 import ssl
 import pandas as pd
+import psutil
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from src.utils.time_utils import get_today_date
-from src.utils.utils_selenium import SeleniumDriverManager
 import time
+from datetime import datetime, timedelta
+
+from src.utils.time_utils import get_today_date
 import math
 
 ssl._create_default_https_context = ssl._create_unverified_context
+
 
 # API
 class ApiDomeggookSetLoadWorker(QThread):
@@ -45,9 +52,6 @@ class ApiDomeggookSetLoadWorker(QThread):
         self.file_name = ""
         self.excel_file_name = ""
         self.db_folder = "DB"  # 파일이 위치한 DB 폴더
-        self.driver = None
-        self.driver_manager = None
-
 
         if len(self.id_list) <= 0:
             self.log_signal.emit(f'등록된 url이 없습니다.')
@@ -55,8 +59,6 @@ class ApiDomeggookSetLoadWorker(QThread):
     # 실행
     def run(self):
         if len(self.id_list) > 0:
-            self.driver_manager = SeleniumDriverManager(headless=True)
-            self.driver = self.driver_manager.start_driver(self.baseUrl, 1200, False)
 
             for idx, id in enumerate(self.id_list, start=1):
                 if not self.running:  # 실행 상태 확인
@@ -251,7 +253,6 @@ class ApiDomeggookSetLoadWorker(QThread):
                     break
 
             if old_obj:
-
                 # old_obj의 재고수량과 obj의 재고수량 차이 계산 (old_obj가 항상 크거나 같음)
                 old_stock = int(old_obj['재고수량']) if old_obj['재고수량'] else 0
                 current_stock = int(new_obj['재고수량']) if new_obj['재고수량'] else 0
@@ -296,7 +297,7 @@ class ApiDomeggookSetLoadWorker(QThread):
             self._save_to_csv_append(now_result_list)
 
 
-    def fetch_product_details_api(self, product_id):
+    def fetch_product_details(self, product_id):
         base_url = "https://domeggook.com/"
         headers = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -369,58 +370,6 @@ class ApiDomeggookSetLoadWorker(QThread):
             product_data["재고수량"] = 0
 
 
-
-        return product_data
-
-
-    def fetch_product_details(self, product_id):
-        url = f"https://domeggook.com/{product_id}"
-        self.driver.get(url)
-
-        wait = WebDriverWait(self.driver, 10)  # 최대 10초 대기
-        time.sleep(2)
-
-        product_data = {
-            'URL': url,
-            '판매자명': '',
-            '상품번호': '',
-            '상품명': '',
-            '재고수량': 0,
-        }
-
-        # ✅ 판매자명 추출
-        try:
-            seller_button = wait.until(EC.presence_of_element_located((By.ID, "lBtnShowSellerInfo")))
-            seller_name = seller_button.find_element(By.TAG_NAME, "b").text.strip()
-            product_data["판매자명"] = seller_name
-        except Exception:
-            self.log_signal.emit(f"⚠️ 판매자명 정보를 찾을 수 없습니다.")
-
-        # ✅ 상품번호 추출
-        try:
-            info_header = wait.until(EC.presence_of_element_located((By.ID, "lInfoHeader")))
-            match = re.search(r"상품번호\s*:\s*(\d+)", info_header.text)
-            if match:
-                product_data["상품번호"] = match.group(1)
-        except Exception:
-            self.log_signal.emit(f"⚠️ 상품번호 정보를 찾을 수 없습니다.")
-
-        # ✅ 상품명 추출
-        try:
-            product_name_tag = wait.until(EC.presence_of_element_located((By.ID, "lInfoItemTitle")))
-            product_data["상품명"] = product_name_tag.text.strip()
-        except Exception:
-            self.log_signal.emit(f"⚠️ 상품명을 찾을 수 없습니다.")
-
-        # ✅ 재고수량 추출
-        try:
-            stock_tr = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "tr.lInfoQty")))
-            stock_td = stock_tr.find_element(By.CLASS_NAME, "lInfoItemContent")
-            match = re.search(r"([\d,]+)", stock_td.text)
-            if match:
-                product_data["재고수량"] = int(match.group(1).replace(",", ""))
-        except Exception:
-            self.log_signal.emit(f"⚠️ 재고수량 정보를 찾을 수 없습니다.")
 
         return product_data
 

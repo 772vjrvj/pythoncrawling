@@ -144,7 +144,7 @@ def wait_for_iframe_and_switch(driver, timeout=5):
             driver.switch_to.frame(iframe)
             return True
         except Exception:
-            print(f"{get_current_time()} ❌ iframe 변경 에러 발생 (재시도 {i+1}/30)")
+            print(f"{get_current_time()} ❌ iframe 변경 에러 발생 (재시도 {i+1}/5)")
             time.sleep(1)
     return False
 
@@ -414,6 +414,7 @@ def naver_cralwing(obj_list):
 def naver_cralwing_all():
     global fail_list, success_list, eq_cnt, df_cnt
 
+    print(f"{get_current_time()} 1위 시작")
     obj_list = get_current_rank('one')
     naver_cralwing(obj_list)
     copy_fail_list = copy.deepcopy(fail_list)
@@ -423,7 +424,9 @@ def naver_cralwing_all():
     df_cnt = 0
     naver_cralwing(copy_fail_list)
     time.sleep(60)
+    print(f"{get_current_time()} 1위 끝")
 
+    print(f"{get_current_time()} 301위 시작")
     obj_list = get_current_rank('last')
     naver_cralwing(obj_list)
     copy_fail_list = copy.deepcopy(fail_list)
@@ -433,7 +436,9 @@ def naver_cralwing_all():
     df_cnt = 0
     naver_cralwing(copy_fail_list)
     time.sleep(60)
+    print(f"{get_current_time()} 301위 끝")
 
+    print(f"{get_current_time()} 999위 시작")
     obj_list = get_current_rank('none')
     naver_cralwing(obj_list)
     copy_fail_list = copy.deepcopy(fail_list)
@@ -443,7 +448,7 @@ def naver_cralwing_all():
     df_cnt = 0
     naver_cralwing(copy_fail_list)
     time.sleep(60)
-
+    print(f"{get_current_time()} 999위 끝")
 
 if __name__ == "__main__":
 
