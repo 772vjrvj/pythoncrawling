@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import time
+import shutil
 
 from src.utils.time_utils import get_today_date
 import math
@@ -80,12 +81,24 @@ class ApiSellingkokSetLoadWorker(QThread):
                         df = pd.read_csv(file_name, encoding='utf-8')
                         old_result_list = df.to_dict(orient='records')  # DataFrame을 리스트[dict] 형태로 변환
 
-                        # CSV 파일 삭제
+                        # DB_BAK 폴더가 없으면 생성
+                        backup_dir = "DB_BAK"
+                        os.makedirs(backup_dir, exist_ok=True)
+
+                        # 백업 경로 설정
+                        backup_file_path = os.path.join(backup_dir, os.path.basename(file_name))
+
+                        # 파일 복사 (덮어쓰기)
+                        shutil.copy2(file_name, backup_file_path)
+                        self.log_signal.emit(f"CSV 파일 백업 완료: {backup_file_path}")
+
+                        # 원본 CSV 파일 삭제
                         os.remove(file_name)
                         self.log_signal.emit(f"CSV 파일 삭제 완료: {file_name}")
 
                     except Exception as e:
-                        self.log_signal.emit(f"CSV 파일 읽기 또는 삭제 중 오류 발생: {e}")
+                        self.log_signal.emit(f"CSV 파일 읽기 또는 백업/삭제 중 오류 발생: {e}")
+
 
                 # 동일한 이름의 엑셀 파일(.xlsx)도 삭제
                 if os.path.exists(excel_file_name):
