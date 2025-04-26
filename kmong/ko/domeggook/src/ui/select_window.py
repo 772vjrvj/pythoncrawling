@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QDesktopWidget, QMessageBox
 from src.utils.singleton import GlobalState
+from datetime import datetime
 
 
 class SelectWindow(QWidget):
@@ -84,6 +85,15 @@ class SelectWindow(QWidget):
             color = "#66C000"
         elif site == "셀링콕":
             color = "#6D26A4"
+
+            # 날짜 체크
+            today = datetime.now().date()
+            deadline = datetime(2025, 4, 30).date()
+
+            if today > deadline:
+                self.show_message("알림", "사용 가능일이 지났습니다.")
+                return  # 더 이상 진행하지 않고 함수 종료
+
         state = GlobalState()
         state.set("site", site)
         state.set("color", color)
