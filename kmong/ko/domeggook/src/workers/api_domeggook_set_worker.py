@@ -96,22 +96,14 @@ class ApiDomeggookSetLoadWorker(QThread):
                         self.log_signal.emit(f"엑셀 파일 삭제 중 오류 발생: {e}")
 
 
-                # total_cnt, total_page = self.fetch_item_cnt(id)
-                # self.log_signal.emit(f'전체 수 : {total_cnt}')
-                # self.log_signal.emit(f'전체 페이지 : {total_page}')
+                total_cnt, total_page = self.fetch_item_cnt(id)
+                self.log_signal.emit(f'전체 수 : {total_cnt}')
+                self.log_signal.emit(f'전체 페이지 : {total_page}')
 
-                # all_item_set = self.fetch_item_list(id, total_page)
-                # all_item_list = list(all_item_set)  # 다시 리스트로 변환
-                # self.log_signal.emit(f'전체 리스트 수: {len(all_item_list)}')
-                all_item_list = [
-                                '48423911',
-                                '53692016',
-                                '46776955',
-                                '46677077',
-                                '50923002',
-                                '53691791',
-                                '46484774'
-                                ]
+                all_item_set = self.fetch_item_list(id, total_page)
+                all_item_list = list(all_item_set)  # 다시 리스트로 변환
+                self.log_signal.emit(f'전체 리스트 수: {len(all_item_list)}')
+                # all_item_list = ['48423911','53692016','46776955']
                 self.fetch_new_item_list(all_item_list, old_result_list)
 
                 self._remain_data_set()
@@ -235,15 +227,15 @@ class ApiDomeggookSetLoadWorker(QThread):
             return None
 
 
-    def fetch_new_item_list(self, all_item_list, old_result_list):
+    def fetch_new_item_list(self, new_item_list, old_result_list, seller_name):
         now_result_list = []
-        for idx, product_id in enumerate(all_item_list, start=1):
+        for idx, product_id in enumerate(new_item_list, start=1):
 
             if not self.running:  # 실행 상태 확인
                 self.log_signal.emit("크롤링이 중지되었습니다.")
                 break
 
-            new_obj = self.fetch_product_details(product_id)
+            new_obj = self.fetch_product_details(product_id, seller_name)
             self.log_signal.emit(f'상세보기 시작 index : {idx}, 상품정보 : {new_obj}')
 
             # old_result_list에서 같은 상품번호를 가진 객체 찾기
@@ -258,7 +250,6 @@ class ApiDomeggookSetLoadWorker(QThread):
                     break
 
             if old_obj:
-
                 # old_obj의 재고수량과 obj의 재고수량 차이 계산 (old_obj가 항상 크거나 같음)
                 old_stock = int(old_obj['재고수량']) if old_obj['재고수량'] else 0
                 current_stock = int(new_obj['재고수량']) if new_obj['재고수량'] else 0
@@ -270,6 +261,10 @@ class ApiDomeggookSetLoadWorker(QThread):
                 for col in all_sales_columns:
                     new_obj[col] = old_obj[col]  # 기존 판매량 데이터 유지
 
+                # 새로운 날짜의 판매량 추가
+                new_sales_col = f'판매량({get_today_date()})'
+                new_obj[new_sales_col] = sales_volume
+
                 # new_obj에 추가 정보 설정
                 new_obj[f'판매량({get_today_date()})'] = sales_volume
 
@@ -278,7 +273,7 @@ class ApiDomeggookSetLoadWorker(QThread):
 
             else:
                 # new_obj에 추가 정보 설정
-                new_obj[f'판매량({get_today_date()})'] = -1
+                new_obj[f'판매량({get_today_date()})'] = -1111111111
 
                 # new_result_list에 추가
                 now_result_list.append(new_obj)
@@ -291,15 +286,28 @@ class ApiDomeggookSetLoadWorker(QThread):
                 self.log_signal.emit(f"엑셀 {idx}개 까지 임시저장")
                 now_result_list = []  # 저장 후 초기화
 
-            pro_value = (idx / len(all_item_list)) * 1000000
+            pro_value = (idx / len(new_item_list)) * 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
             self.before_pro_value = pro_value
 
             time.sleep(random.uniform(2, 3))
 
+        # now_result_list에 없는 old 데이터 찾아서 처리
+        existing_product_nos = {self.safe_int(obj['상품번호']) for obj in now_result_list}
+
+        for old_obj in old_result_list:
+            old_no = self.safe_int(old_obj['상품번호'])
+
+            if old_no not in existing_product_nos:
+                # 오늘 날짜 판매량을 -999로 설정
+                missing_sales_col = f'판매량({get_today_date()})'
+                old_obj[missing_sales_col] = -9999999999
+
+                # now_result_list에 추가
+                now_result_list.append(old_obj)
+
         if now_result_list:
             self._save_to_csv_append(now_result_list)
-
 
     def fetch_product_details_api(self, product_id):
         base_url = "https://domeggook.com/"
@@ -440,7 +448,7 @@ class ApiDomeggookSetLoadWorker(QThread):
         return sales_columns
 
 
-    def _remain_data_set(self):
+    def _remain_data_set_text(self):
 
         # CSV 파일을 엑셀 파일로 변환
         try:
@@ -455,6 +463,40 @@ class ApiDomeggookSetLoadWorker(QThread):
 
             self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
 
+            self.log_signal.emit(f'종료 수 : {self.end_cnt}')
+
+            if self.end_cnt == len(self.id_list):
+                self.progress_end_signal.emit()
+            else:
+                self.log_signal.emit(f'다음 작업 준비중입니다. 잠시만 기다려주세요...')
+
+        except Exception as e:
+            self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+
+
+    def _remain_data_set(self):
+        try:
+            excel_file_name = self.file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+            self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {self.file_name} → {excel_file_name}")
+
+            # CSV 파일 읽기
+            df = pd.read_csv(self.file_name)
+
+            # 변환할 컬럼 찾기: '재고수량', '상품번호', '판매량'이 들어간 컬럼
+            int_columns = [col for col in df.columns if '재고수량' in col or '상품번호' in col or '판매량' in col]
+
+            # 해당 컬럼들 int로 변환 (오류 있으면 NaN -> 0 처리)
+            for col in int_columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+
+            # 엑셀 파일로 저장
+            df.to_excel(excel_file_name, index=False)
+
+            # 마지막 세팅
+            pro_value = 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+
+            self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
             self.log_signal.emit(f'종료 수 : {self.end_cnt}')
 
             if self.end_cnt == len(self.id_list):
