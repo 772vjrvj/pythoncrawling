@@ -104,7 +104,7 @@ class ApiDomeggookSetLoadWorker(QThread):
                 all_item_list = list(all_item_set)  # 다시 리스트로 변환
                 self.log_signal.emit(f'전체 리스트 수: {len(all_item_list)}')
                 # all_item_list = ['48423911','53692016','46776955']
-                self.fetch_new_item_list(all_item_list, old_result_list)
+                self.fetch_new_item_list(all_item_list, old_result_list, id)
 
                 self._remain_data_set()
 
