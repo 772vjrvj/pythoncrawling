@@ -235,7 +235,7 @@ class ApiDomeggookSetLoadWorker(QThread):
                 self.log_signal.emit("크롤링이 중지되었습니다.")
                 break
 
-            new_obj = self.fetch_product_details(product_id, seller_name)
+            new_obj = self.fetch_product_details(product_id)
             self.log_signal.emit(f'상세보기 시작 index : {idx}, 상품정보 : {new_obj}')
 
             # old_result_list에서 같은 상품번호를 가진 객체 찾기
