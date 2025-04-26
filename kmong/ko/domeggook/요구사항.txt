@@ -33,3 +33,10 @@ https://domeggook.com/main/item/itemList.php?sfc=id&sf=id&sw=huigone7589&sz=100&
 
 6.	판매량 데이터가 텍스트 형식으로 기록되는 문제
 엑셀로 저장 가능
+
+
+
+pyinstaller --noconsole --icon=crawling.ico main.py
+
+
+셀링콕

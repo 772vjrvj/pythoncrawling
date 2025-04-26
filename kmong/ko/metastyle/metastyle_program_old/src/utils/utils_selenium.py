@@ -140,6 +140,7 @@ class SeleniumDriverManager:
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
+
     def _get_chrome_options_user(self):
         try:
             self._close_chrome_processes()
@@ -282,6 +283,7 @@ class SeleniumDriverManager:
 
     def get_session(self):
         return self.session
+
 
     def quit(self):
         if self.driver:

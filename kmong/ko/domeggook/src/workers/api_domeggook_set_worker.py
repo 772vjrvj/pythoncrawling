@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from src.utils.time_utils import get_today_date
 from src.utils.utils_selenium import SeleniumDriverManager
 import time
@@ -97,14 +96,22 @@ class ApiDomeggookSetLoadWorker(QThread):
                         self.log_signal.emit(f"엑셀 파일 삭제 중 오류 발생: {e}")
 
 
-                total_cnt, total_page = self.fetch_item_cnt(id)
-                self.log_signal.emit(f'전체 수 : {total_cnt}')
-                self.log_signal.emit(f'전체 페이지 : {total_page}')
+                # total_cnt, total_page = self.fetch_item_cnt(id)
+                # self.log_signal.emit(f'전체 수 : {total_cnt}')
+                # self.log_signal.emit(f'전체 페이지 : {total_page}')
 
-                all_item_set = self.fetch_item_list(id, total_page)
-                all_item_list = list(all_item_set)  # 다시 리스트로 변환
-                self.log_signal.emit(f'전체 리스트 수: {len(all_item_list)}')
-
+                # all_item_set = self.fetch_item_list(id, total_page)
+                # all_item_list = list(all_item_set)  # 다시 리스트로 변환
+                # self.log_signal.emit(f'전체 리스트 수: {len(all_item_list)}')
+                all_item_list = [
+                                '48423911',
+                                '53692016',
+                                '46776955',
+                                '46677077',
+                                '50923002',
+                                '53691791',
+                                '46484774'
+                                ]
                 self.fetch_new_item_list(all_item_list, old_result_list)
 
                 self._remain_data_set()
@@ -237,7 +244,7 @@ class ApiDomeggookSetLoadWorker(QThread):
                 break
 
             new_obj = self.fetch_product_details(product_id)
-            self.log_signal.emit(f'상세보기 index : {idx}, 상품정보 : {new_obj}')
+            self.log_signal.emit(f'상세보기 시작 index : {idx}, 상품정보 : {new_obj}')
 
             # old_result_list에서 같은 상품번호를 가진 객체 찾기
             old_obj = None
@@ -263,10 +270,6 @@ class ApiDomeggookSetLoadWorker(QThread):
                 for col in all_sales_columns:
                     new_obj[col] = old_obj[col]  # 기존 판매량 데이터 유지
 
-                # 새로운 날짜의 판매량 추가
-                new_sales_col = f'판매량({get_today_date()})'
-                new_obj[new_sales_col] = sales_volume
-
                 # new_obj에 추가 정보 설정
                 new_obj[f'판매량({get_today_date()})'] = sales_volume
 
@@ -275,10 +278,12 @@ class ApiDomeggookSetLoadWorker(QThread):
 
             else:
                 # new_obj에 추가 정보 설정
-                new_obj[f'판매량({get_today_date()})'] = '최초'
+                new_obj[f'판매량({get_today_date()})'] = -1
 
                 # new_result_list에 추가
                 now_result_list.append(new_obj)
+
+            self.log_signal.emit(f'상세보기 끝 index : {idx}, 상품정보 : {new_obj}')
 
             # 100개의 항목마다 임시로 엑셀 저장
             if idx % 10 == 0 and now_result_list:

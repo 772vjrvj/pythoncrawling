@@ -10,6 +10,7 @@ from src.ui.all_register_popup import AllRegisterPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.singleton import GlobalState
 from src.workers.api_domeggook_set_worker import ApiDomeggookSetLoadWorker
+from src.workers.api_sellingkok_set_worker import ApiSellingkokSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
@@ -303,12 +304,13 @@ class MainWindow(QWidget):
             if self.on_demand_worker is None:  # worker가 없다면 새로 생성
                 if self.site == '도매꾹':
                     self.on_demand_worker = ApiDomeggookSetLoadWorker(self.id_list)
+                elif self.site == '셀링콕':
+                    self.on_demand_worker = ApiSellingkokSetLoadWorker(self.id_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)
                 self.on_demand_worker.finally_finished_signal.connect(self.finally_finished)
                 self.on_demand_worker.msg_signal.connect(self.show_message_box)  # 메시지 박스 표시
-
                 self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
