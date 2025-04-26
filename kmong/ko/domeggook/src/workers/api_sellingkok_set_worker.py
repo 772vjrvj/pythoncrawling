@@ -213,9 +213,9 @@ class ApiSellingkokSetLoadWorker(QThread):
             return None
 
 
-    def fetch_new_item_list(self, all_item_list, old_result_list, seller_name):
+    def fetch_new_item_list(self, new_item_list, old_result_list, seller_name):
         now_result_list = []
-        for idx, product_id in enumerate(all_item_list, start=1):
+        for idx, product_id in enumerate(new_item_list, start=1):
 
             if not self.running:  # 실행 상태 확인
                 self.log_signal.emit("크롤링이 중지되었습니다.")
@@ -259,7 +259,7 @@ class ApiSellingkokSetLoadWorker(QThread):
 
             else:
                 # new_obj에 추가 정보 설정
-                new_obj[f'판매량({get_today_date()})'] = -1
+                new_obj[f'판매량({get_today_date()})'] = -1111111111
 
                 # new_result_list에 추가
                 now_result_list.append(new_obj)
@@ -272,11 +272,25 @@ class ApiSellingkokSetLoadWorker(QThread):
                 self.log_signal.emit(f"엑셀 {idx}개 까지 임시저장")
                 now_result_list = []  # 저장 후 초기화
 
-            pro_value = (idx / len(all_item_list)) * 1000000
+            pro_value = (idx / len(new_item_list)) * 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
             self.before_pro_value = pro_value
 
             time.sleep(random.uniform(2, 3))
+
+        # now_result_list에 없는 old 데이터 찾아서 처리
+        existing_product_nos = {self.safe_int(obj['상품번호']) for obj in now_result_list}
+
+        for old_obj in old_result_list:
+            old_no = self.safe_int(old_obj['상품번호'])
+
+            if old_no not in existing_product_nos:
+                # 오늘 날짜 판매량을 -999로 설정
+                missing_sales_col = f'판매량({get_today_date()})'
+                old_obj[missing_sales_col] = -9999999999
+
+                # now_result_list에 추가
+                now_result_list.append(old_obj)
 
         if now_result_list:
             self._save_to_csv_append(now_result_list)
@@ -419,6 +433,7 @@ class ApiSellingkokSetLoadWorker(QThread):
 
         return product_data
 
+
     def get_all_sales_columns(self, old_obj):
         """ old_obj에서 모든 '판매량(yyyy/mm/dd)' 컬럼을 찾아 정렬 후 반환 """
         sales_pattern = re.compile(r"판매량\(\d{4}/\d{2}/\d{2}\)")  # 날짜 패턴
@@ -429,7 +444,7 @@ class ApiSellingkokSetLoadWorker(QThread):
         return sales_columns
 
 
-    def _remain_data_set(self):
+    def _remain_data_set_text(self):
 
         # CSV 파일을 엑셀 파일로 변환
         try:
@@ -444,6 +459,40 @@ class ApiSellingkokSetLoadWorker(QThread):
 
             self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
 
+            self.log_signal.emit(f'종료 수 : {self.end_cnt}')
+
+            if self.end_cnt == len(self.id_list):
+                self.progress_end_signal.emit()
+            else:
+                self.log_signal.emit(f'다음 작업 준비중입니다. 잠시만 기다려주세요...')
+
+        except Exception as e:
+            self.log_signal.emit(f"엑셀 파일 변환 실패: {e}")
+
+
+    def _remain_data_set(self):
+        try:
+            excel_file_name = self.file_name.replace('.csv', '.xlsx')  # 엑셀 파일 이름으로 변경
+            self.log_signal.emit(f"CSV 파일을 엑셀 파일로 변환 시작: {self.file_name} → {excel_file_name}")
+
+            # CSV 파일 읽기
+            df = pd.read_csv(self.file_name)
+
+            # 변환할 컬럼 찾기: '재고수량', '상품번호', '판매량'이 들어간 컬럼
+            int_columns = [col for col in df.columns if '재고수량' in col or '상품번호' in col or '판매량' in col]
+
+            # 해당 컬럼들 int로 변환 (오류 있으면 NaN -> 0 처리)
+            for col in int_columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+
+            # 엑셀 파일로 저장
+            df.to_excel(excel_file_name, index=False)
+
+            # 마지막 세팅
+            pro_value = 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+
+            self.log_signal.emit(f"엑셀 파일 변환 완료: {excel_file_name}")
             self.log_signal.emit(f'종료 수 : {self.end_cnt}')
 
             if self.end_cnt == len(self.id_list):
