@@ -163,7 +163,6 @@ class ApiSellingkokSetLoadWorker(QThread):
         return total_cnt, total_page  # 못 찾으면 0, 0 반환
 
 
-
     def fetch_item_ids(self, sw, pg):
         url = f"https://www.sellingkok.com/shop/search.php?&pt_it_cd={sw}&page={pg}"
 
@@ -200,6 +199,7 @@ class ApiSellingkokSetLoadWorker(QThread):
                 item_list.append(checkbox["value"])
 
         return item_list
+
 
     def fetch_item_list(self, id, total_page):
         all_item_set = set()  # 기존 리스트를 집합(set)으로 변환
@@ -521,21 +521,36 @@ class ApiSellingkokSetLoadWorker(QThread):
         self.log_signal.emit("CSV 저장 시작")
 
         try:
-            # 파일이 존재하는지 확인
-            if not os.path.exists(self.file_name):
-                # 파일이 없으면 새로 생성 및 저장
-                df = pd.DataFrame(results)
-                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
+            # 기본 컬럼 정의
+            required_columns = ['URL', '판매자명', '상품번호', '상품명', '재고수량']
 
+            # 모든 results를 순회하면서 추가적인 '판매량(yyyy/mm/dd)' 컬럼 찾기
+            sales_columns = set()
+            for r in results:
+                for k in r.keys():
+                    if k.startswith('판매량('):
+                        sales_columns.add(k)
+
+            # 최종 컬럼 리스트 작성 (판매량 컬럼은 날짜순으로 정렬)
+            all_columns = required_columns + sorted(sales_columns)
+
+            # uniform한 형태로 변환 (없으면 0으로 채움)
+            uniform_results = []
+            for r in results:
+                uniform_r = {col: r.get(col, 0) for col in all_columns}
+                uniform_results.append(uniform_r)
+
+            df = pd.DataFrame(uniform_results)
+
+            # 파일이 존재하는지 확인하고 저장
+            if not os.path.exists(self.file_name):
+                df.to_csv(self.file_name, index=False, encoding='utf-8-sig')
                 self.log_signal.emit(f"새 CSV 파일 생성 및 저장 완료: {self.file_name}")
             else:
-                # 파일이 있으면 append 모드로 데이터 추가
-                df = pd.DataFrame(results)
                 df.to_csv(self.file_name, mode='a', header=False, index=False, encoding='utf-8-sig')
                 self.log_signal.emit(f"기존 CSV 파일에 데이터 추가 완료: {self.file_name}")
 
         except Exception as e:
-            # 예기치 않은 오류 처리
             self.log_signal.emit(f"CSV 저장 실패: {e}")
 
     # [공통] 프로그램 중단
