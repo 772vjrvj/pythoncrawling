@@ -65,63 +65,62 @@ class ApiSellingkokSetLoadWorker(QThread):
 
                 self.end_cnt = idx
 
-                # 엑셀 파일 id로 읽어서 객체 리스트 old_result_list 담기
-                old_result_list = []
-
-                file_name = os.path.join(self.db_folder, f"{id}.csv")  # CSV 파일 경로
-                excel_file_name = os.path.join(self.db_folder, f"{id}.xlsx")  # 동일한 이름의 엑셀 파일 경로
+                # 파일 경로 설정
+                file_name = os.path.join(self.db_folder, f"{id}.csv")
+                excel_file_name = os.path.join(self.db_folder, f"{id}.xlsx")
 
                 self.file_name = file_name
                 self.excel_file_name = excel_file_name
 
-                # CSV 파일이 존재하면 읽어서 old_result_list에 저장 후 삭제
+                old_result_list = []
+
+                # 백업 폴더 준비
+                backup_dir = "DB_BAK"
+                os.makedirs(backup_dir, exist_ok=True)
+
+                # CSV 파일 백업 및 삭제
                 if os.path.exists(file_name):
                     try:
-                        # 파일 읽기
                         df = pd.read_csv(file_name, encoding='utf-8')
-                        old_result_list = df.to_dict(orient='records')  # DataFrame을 리스트[dict] 형태로 변환
+                        old_result_list = df.to_dict(orient='records')
 
-                        # DB_BAK 폴더가 없으면 생성
-                        backup_dir = "DB_BAK"
-                        os.makedirs(backup_dir, exist_ok=True)
-
-                        # 백업 경로 설정
                         backup_file_path = os.path.join(backup_dir, os.path.basename(file_name))
-
-                        # 파일 복사 (덮어쓰기)
                         shutil.copy2(file_name, backup_file_path)
                         self.log_signal.emit(f"CSV 파일 백업 완료: {backup_file_path}")
 
-                        # 원본 CSV 파일 삭제
                         os.remove(file_name)
                         self.log_signal.emit(f"CSV 파일 삭제 완료: {file_name}")
 
                     except Exception as e:
                         self.log_signal.emit(f"CSV 파일 읽기 또는 백업/삭제 중 오류 발생: {e}")
 
-
-                # 동일한 이름의 엑셀 파일(.xlsx)도 삭제
+                # XLSX 파일 백업 및 삭제
                 if os.path.exists(excel_file_name):
                     try:
+                        backup_excel_path = os.path.join(backup_dir, os.path.basename(excel_file_name))
+                        shutil.copy2(excel_file_name, backup_excel_path)
+                        self.log_signal.emit(f"엑셀 파일 백업 완료: {backup_excel_path}")
+
                         os.remove(excel_file_name)
                         self.log_signal.emit(f"엑셀 파일 삭제 완료: {excel_file_name}")
+
                     except Exception as e:
-                        self.log_signal.emit(f"엑셀 파일 삭제 중 오류 발생: {e}")
+                        self.log_signal.emit(f"엑셀 파일 백업/삭제 중 오류 발생: {e}")
 
-
+                # 크롤링 시작
                 total_cnt, total_page = self.fetch_item_cnt(id)
                 self.log_signal.emit(f'전체 수 : {total_cnt}')
                 self.log_signal.emit(f'전체 페이지 : {total_page}')
 
                 all_item_set = self.fetch_item_list(id, total_page)
-                all_item_list = list(all_item_set)  # 다시 리스트로 변환
+                all_item_list = list(all_item_set)
                 self.log_signal.emit(f'전체 리스트 수: {len(all_item_list)}')
 
                 self.fetch_new_item_list(all_item_list, old_result_list, id)
 
                 self._remain_data_set()
 
-        self.log_signal.emit(f'크롤링 종료')
+        self.log_signal.emit('크롤링 종료')
 
 
     def fetch_item_cnt(self, sw):
