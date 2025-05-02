@@ -131,10 +131,9 @@ def update_obj_list(obj_list):
     print(f"HTTP 상태 코드: {response.status_code}")
     if response.status_code == 200:
         print("성공적으로 업데이트되었습니다.")
-        print("응답 데이터:", response.text)
+        print(f"HTTP 상태 결과: {response.text}")
     else:
         print("업데이트 실패:", response.status_code)
-        print("응답 데이터:", response.text)
 
 # iframe 변경
 def wait_for_iframe_and_switch(driver, timeout=5):
