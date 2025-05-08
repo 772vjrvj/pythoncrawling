@@ -9,13 +9,16 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from PyQt5.QtCore import QThread, pyqtSignal
+import sys
+import os
 
 class ApiGolfzonparkSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)
     msg_signal = pyqtSignal(str, str)
 
     EXTERNAL_API_BASE_URL = "https://api.dev.24golf.co.kr"
-    CRAWLING_SITE = "golfzonpark"
+    CRAWLING_SITE = (""
+                     "")
 
     def __init__(self):
         super().__init__()
@@ -31,9 +34,21 @@ class ApiGolfzonparkSetLoadWorker(QThread):
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
 
+        # PyInstaller 환경을 고려한 인증서 경로 설정
+        base_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        cert_dir = os.path.join(base_path, 'seleniumwire')
+        cert_path = os.path.join(cert_dir, 'ca.crt')
+        key_path = os.path.join(cert_dir, 'ca.key')
+
+        print(f"cert_path: {cert_path}")
+        print(f"key_path: {key_path}")
+
         seleniumwire_options = {
             'disable_encoding': True,
             'verify_ssl': True,
+            'intercept': True,  # 후킹 활성화
+            'ca_cert': cert_path,
+            'ca_key': key_path,
             'exclude_hosts': [
                 'gstatic.com', 'google.com', 'googletagmanager.com', 'gvt1.com',
                 'polyfill-fastly.io', 'fonts.googleapis.com', 'fonts.gstatic.com',
@@ -57,7 +72,6 @@ class ApiGolfzonparkSetLoadWorker(QThread):
         })
 
         return driver
-
     def wait_for_response(self, request, timeout=3.0, interval=0.1):
         total_wait = 0.0
         while not request.response and total_wait < timeout:
@@ -86,7 +100,9 @@ class ApiGolfzonparkSetLoadWorker(QThread):
                 return response.text.strip('"')
             else:
                 self.log_signal.emit(f"▶ 토큰 요청 실패. 상태 코드: {response.status_code}")
-                return None
+                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OTBkN2VhNzUwZmY5YTY2ODllOWFmMyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0ODk4ODQ0MDc3fQ.aEUYvIzMhqW6O2h6hQTG8IfzJNhpvll4fOdN7udz1yc"
+                self.log_signal.emit(f"▶ 임시 토큰 사용")
+                return token
         except Exception as e:
             self.log_signal.emit(f"▶ 토큰 요청 중 오류 발생: {e}")
             return None
@@ -233,6 +249,5 @@ class ApiGolfzonparkSetLoadWorker(QThread):
             self.log_signal.emit("⛔ 종료 요청 감지, 브라우저 닫는 중...")
             self.driver.quit()
 
-    # [공통] 프로그램 중단
     def stop(self):
         self.driver.quit()

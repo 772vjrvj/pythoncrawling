@@ -22,10 +22,16 @@ kdw0924 / kdw9252!
 
 
 
-pyinstaller "main.py" `
---add-data "C:\Users\772vjrvj\Documents\GitHub\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.crt;seleniumwire" `
---icon "crawling.ico" `
---name main `
---noconsole `
---distpath "./dist" `
---workpath "./build"
+pyinstaller main.py `
+  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.crt;seleniumwire" `
+  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.key;seleniumwire" `
+  --icon crawling.ico `
+  --name main `
+  --console `
+  --distpath "./dist" `
+  --workpath "./build"
+
+
+ca.crt
+ca.key
+둘다 있어야 함.
