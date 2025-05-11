@@ -13,12 +13,13 @@ from src.utils.singleton import GlobalState
 from src.workers.api_abcmart_set_worker import ApiAbcmartSetLoadWorker
 from src.workers.api_grandstage_set_worker import ApiGrandstageSetLoadWorker
 from src.workers.api_onthespot_set_worker import ApiOnthespotSetLoadWorker
+from src.workers.api_okmall_set_worker import ApiOkmallSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
 
 
 class MainWindow(QWidget):
-    
+
     # 초기화
     def __init__(self, app_manager):
         super().__init__()
@@ -270,7 +271,7 @@ class MainWindow(QWidget):
     # 프로그램 시작 중지
     def start_on_demand_worker(self):
         if self.url_list is None:
-            self.show_message("브랜드 목록이 없습니다.", 'warn')
+            self.show_message("브랜드 목록이 없습니다.", 'warn', None)
             return
         if self.collect_button.text() == "시작":
             self.collect_button.setText("중지")
@@ -294,9 +295,12 @@ class MainWindow(QWidget):
                     self.on_demand_worker = ApiGrandstageSetLoadWorker(self.url_list)
                 elif self.site == 'On the spot':
                     self.on_demand_worker = ApiOnthespotSetLoadWorker(self.url_list)
+                elif self.site == 'OK mall':
+                    self.on_demand_worker = ApiOkmallSetLoadWorker(self.url_list)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)
+                self.on_demand_worker.msg_signal.connect(self.show_message)
                 self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
@@ -314,7 +318,7 @@ class MainWindow(QWidget):
     # 크롤링 완료
     def progress_end(self):
         self.stop()
-        self.show_message("크롤링이 완료되었습니다.", "info")
+        self.show_message("크롤링이 완료되었습니다.", "info", None)
 
     # 프로그램 중지
     def stop(self):
@@ -347,22 +351,34 @@ class MainWindow(QWidget):
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
     # 경고 alert창
-    def show_message(self, message, type):
-        # QMessageBox 생성
-        msg = QMessageBox(self)
-        if type == 'warn':
-            msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
-            msg.setWindowTitle("경고")  # 창 제목 설정
-        elif type == 'info':
-            msg.setIcon(QMessageBox.Information)  # 경고 아이콘 설정
-            msg.setWindowTitle("확인")  # 창 제목 설정
-        msg.setText(message)  # 메시지 내용 설정
-        msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
+    def show_message(self, message, type, event):
 
-        # 깜빡이게 설정
-        ctypes.windll.user32.FlashWindow(int(self.winId()), True)
+        """메시지 박스를 띄우고 OK 버튼이 눌리면 event.set() 호출"""
+        try:
+            # QMessageBox 생성
+            msg = QMessageBox(self)
+            if type == 'warn':
+                msg.setIcon(QMessageBox.Warning)  # 경고 아이콘 설정
+                msg.setWindowTitle("경고")  # 창 제목 설정
+            elif type == 'info':
+                msg.setIcon(QMessageBox.Information)  # 경고 아이콘 설정
+                msg.setWindowTitle("확인")  # 창 제목 설정
+            msg.setText(message)  # 메시지 내용 설정
+            msg.setStandardButtons(QMessageBox.Ok)  # 버튼 설정 (OK 버튼만 포함)
 
-        msg.exec_()  # 메시지 박스 표시
+            # 깜빡이게 설정
+            ctypes.windll.user32.FlashWindow(int(self.winId()), True)
+
+            msg.exec_()  # 메시지 박스 표시
+
+            # OK 버튼을 누르면 event 해제
+            if event:
+                event.set()
+        except Exception as e:
+            self.add_log(f"⚠️ 메시지 박스 오류 발생: {e}")
+            if event:
+                event.set()  # 예외 발생 시에도 이벤트 해제 (무한 대기 방지)
+
 
     # url list 업데이트
     def update_list(self, url_list):
@@ -379,7 +395,7 @@ class MainWindow(QWidget):
 
     # 로그 초기화
     def log_reset(self):
-        self.show_message("크롤링이 완료되었습니다.", "info")
+        self.show_message("크롤링이 완료되었습니다.", "info", None)
         self.log_window.clear()
 
     # 프로그램 리셋

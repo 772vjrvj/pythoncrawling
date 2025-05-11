@@ -34,7 +34,7 @@ class SelectWindow(QWidget):
         layout.setContentsMargins(20, 20, 20, 20)  # 레이아웃의 외부 마진을 설정
         layout.setSpacing(20)  # 위젯 간 간격 설정
 
-        # MYTHERESA
+        # ABC-MART
         site_button_first = QPushButton("ABC-MART", self)
         site_button_first.setStyleSheet("""
             background-color: #ee1c25;
@@ -48,7 +48,7 @@ class SelectWindow(QWidget):
         site_button_first.setCursor(Qt.PointingHandCursor)
         site_button_first.clicked.connect(lambda: self.select_site("ABC-MART"))
 
-        # ZALANDO
+        # GRAND STAGE
         site_button_second = QPushButton("GRAND STAGE", self)
         site_button_second.setStyleSheet("""
             background-color: #000;
@@ -62,7 +62,7 @@ class SelectWindow(QWidget):
         site_button_second.setCursor(Qt.PointingHandCursor)
         site_button_second.clicked.connect(lambda: self.select_site("GRAND STAGE"))
 
-        # NEW3
+        # On the spot
         site_button_third = QPushButton("On the spot", self)
         site_button_third.setStyleSheet("""
             background-color: #272B44;
@@ -76,9 +76,25 @@ class SelectWindow(QWidget):
         site_button_third.setCursor(Qt.PointingHandCursor)
         site_button_third.clicked.connect(lambda: self.select_site("On the spot"))
 
+        # On the spot
+        site_button_forth = QPushButton("OK mall", self)
+        site_button_forth.setStyleSheet("""
+            background-color: #000000;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 10px;
+        """)
+        site_button_forth.setFixedHeight(40)
+        site_button_forth.setFixedWidth(300)  # 버튼 너비 설정
+        site_button_forth.setCursor(Qt.PointingHandCursor)
+        site_button_forth.clicked.connect(lambda: self.select_site("OK mall"))
+
+
         layout.addWidget(site_button_first)
         layout.addWidget(site_button_second)
         layout.addWidget(site_button_third)
+        layout.addWidget(site_button_forth)
 
         self.center_window()
 
@@ -101,6 +117,8 @@ class SelectWindow(QWidget):
             color = "#000"
         elif site == "On the spot":
             color = "#272B44"
+        elif site == "OK mall":
+            color = "#000000"
         state = GlobalState()
         state.set("site", site)
         state.set("color", color)
