@@ -12,6 +12,8 @@ from src.utils.time_utils import get_current_yyyymmddhhmmss
 from urllib.parse import quote
 import threading
 import shutil
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -22,14 +24,17 @@ class ApiOkmallSetLoadWorker(QThread):
     progress_end_signal = pyqtSignal()   # 종료 시그널
     msg_signal = pyqtSignal(str, str, object)
 
-    def __init__(self, url_list):
+    def __init__(self, url_list, user):
         super().__init__()
         self.baseUrl = "https://www.okmall.com"
         self.baseUrl_login = "https://www.okmall.com/members/login"
         self.sess = requests.Session()
         self.url_list = url_list
+        self.user = user
+        self.driver = None
+        self.version = ""
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "onthespot"
+        self.company_name = "okmall"
         self.excel_filename = ""
         self.brand_obj_list = []
         self.product_obj_list = []
@@ -223,7 +228,6 @@ class ApiOkmallSetLoadWorker(QThread):
         if self.url_list:
             self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
             self.login()
-            self.wait_for_user_confirmation()
             self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
             current_time = get_current_yyyymmddhhmmss()
             self.excel_filename = f"{self.company_name}_{current_time}.xlsx"
@@ -388,31 +392,33 @@ class ApiOkmallSetLoadWorker(QThread):
         self.driver = webdriver.Chrome(options=webdriver_options)
         self.driver.set_page_load_timeout(120)
         self.driver.get(self.baseUrl_login)
-
-
-    def wait_for_user_confirmation(self):
-        """사용자가 확인(alert) 창에서 OK를 누를 때까지 대기"""
-        event = threading.Event()  # OK 버튼 누를 때까지 대기할 이벤트 객체
-
-        # 사용자에게 메시지 창 요청
-        self.msg_signal.emit("로그인 후 OK를 눌러주세요", "info", event)
-
-        # 사용자가 OK를 누를 때까지 대기
-        self.log_signal.emit("📢 사용자 입력 대기 중...")
-        event.wait()  # 사용자가 OK를 누르면 해제됨
-
-        # 사용자가 OK를 눌렀을 경우 실행
-        self.log_signal.emit("✅ 사용자가 로그인 버튼을 눌렀습니다. 다음 작업 진행 중...")
-        time.sleep(2)  # 예제용
-        self.log_signal.emit("🚀 작업 완료!")
-
-        self.driver.get(self.baseUrl)
-        time.sleep(2)  # 예제용
-
-        cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            self.sess.cookies.set(cookie['name'], cookie['value'])
-
         self.version = self.driver.capabilities["browserVersion"]
+
+        # 3초 대기
+        time.sleep(2)
+
+        try:
+            # ID 입력
+            id_input = self.driver.find_element(By.NAME, "txt_id")
+            id_input.clear()
+            id_input.send_keys(self.user.get("id", ""))
+
+            # PW 입력
+            pw_input = self.driver.find_element(By.NAME, "txt_pw")
+            pw_input.clear()
+            pw_input.send_keys(self.user.get("pw", ""))
+
+            # 로그인 버튼 클릭
+            login_button = self.driver.find_element(By.CSS_SELECTOR, "button.btn-login-default")
+            login_button.click()
+
+            time.sleep(3)
+
+            cookies = self.driver.get_cookies()
+            for cookie in cookies:
+                self.sess.cookies.set(cookie['name'], cookie['value'])
+
+        except Exception as e:
+            print(f"[❌ 로그인 자동 입력 오류] {e}")
 
 

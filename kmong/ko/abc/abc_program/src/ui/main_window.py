@@ -36,6 +36,7 @@ class MainWindow(QWidget):
         self.progress_bar = None
         self.log_window = None
         self.url_list = []
+        self.user = None
         self.app_manager = app_manager
         self.site = None
         self.color = None
@@ -143,7 +144,7 @@ class MainWindow(QWidget):
         left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
         # 브랜드 URL 등록
-        self.url_list_button = QPushButton("URL등록")
+        self.url_list_button = QPushButton("정보등록")
         self.url_list_button.setStyleSheet("""
                     background-color: black;
                     color: white;
@@ -296,7 +297,7 @@ class MainWindow(QWidget):
                 elif self.site == 'On the spot':
                     self.on_demand_worker = ApiOnthespotSetLoadWorker(self.url_list)
                 elif self.site == 'OK mall':
-                    self.on_demand_worker = ApiOkmallSetLoadWorker(self.url_list)
+                    self.on_demand_worker = ApiOkmallSetLoadWorker(self.url_list, self.user)
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)
@@ -387,10 +388,15 @@ class MainWindow(QWidget):
         for url in url_list:
             self.add_log(url)
 
+    def updateUser(self, user):
+        self.user = user
+        self.add_log(f'유저 : {self.user}')
+
     # 전체 등록 팝업
     def open_all_register_popup(self):
         self.excel_popup = AllRegisterPopup(parent=self)  # 부모 객체 전달
         self.excel_popup.updateList.connect(self.update_list)
+        self.excel_popup.updateUser.connect(self.updateUser)
         self.excel_popup.exec_()
 
     # 로그 초기화
