@@ -108,6 +108,10 @@ node_modules/
 *.svg
 *.csv
 *.xml
+*.pdf
+*.docx
+*.crt
+*.key
 
 tving_url/
 
