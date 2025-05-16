@@ -1,15 +1,14 @@
-from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
+from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtWidgets import (
     QLabel, QVBoxLayout, QFrame, QHBoxLayout, QSizePolicy, QWidget, QPushButton, QDesktopWidget, QDialog
 )
+import requests
 
 from src.ui.login_Info_dialog import LoginInfoDialog
 from src.ui.store_Info_dialog import StoreInfoDialog
-import requests
-
 from src.workers.api_golfzonpark_set_worker import ApiGolfzonparkSetLoadWorker
-
+from src.utils.log_util import log
 
 class LoginWindow(QWidget):
     # 초기화
@@ -258,7 +257,6 @@ class LoginWindow(QWidget):
         layout.addWidget(store_set_group)
         layout.addLayout(start_button_layout)
 
-
         self.center_window()
 
     # 화면 중앙배치
@@ -273,18 +271,18 @@ class LoginWindow(QWidget):
         if dialog.exec_() == QDialog.Accepted:
             user_id = dialog.id_input.text()
             password = dialog.pw_input.text()
-            print("✅ 로그인 정보 등록됨:", user_id, password)
+            log(f"✅ 로그인 정보 등록됨: {user_id}, {password}")
 
     def register_store_info(self):
         dialog = StoreInfoDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             store_id = dialog.store_input.text()
-            print("✅ 매장 정보 등록됨:", store_id)
+            log(f"✅ 매장 정보 등록됨: {store_id}")
 
 
 
     def start_action(self):
-        print("▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작")
+        log("매장 정보 가져오기 및 크롤링 쓰레드 시작")
 
         # 1. 매장 정보 화면에 표시
         self.fetch_store_info()
@@ -295,8 +293,8 @@ class LoginWindow(QWidget):
         password = settings.value("login/password", "")
         store_id = settings.value("store/id", "")
 
-        print(f"📤 전달할 로그인 정보: ID={user_id}, PW={password}")
-        print(f"📤 전달할 매장 ID: {store_id}")
+        log(f"📤 전달할 로그인 정보: ID={user_id}, PW={password}")
+        log(f"📤 전달할 매장 ID: {store_id}")
 
         # 3. 크롤링 쓰레드 생성 및 시작
         if self.on_demand_worker is None:
@@ -322,9 +320,9 @@ class LoginWindow(QWidget):
             self.store_info_main_label.setText(f"• 매장명 : {data.get('name', '-')}")
             self.store_info_local_label.setText(f"• 지   점 : {data.get('branch', '-')}")
 
-            print("✅ 매장 정보 불러오기 성공:", data)
+            log(f"✅ 매장 정보 불러오기 성공: {data}")
 
         except requests.RequestException as e:
-            print("❌ 매장 정보 불러오기 실패:", str(e))
+            log(f"❌ 매장 정보 불러오기 실패: {str(e)}")
 
 

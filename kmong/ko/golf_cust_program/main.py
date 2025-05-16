@@ -1,7 +1,5 @@
 from PyQt5.QtWidgets import QApplication
 from src.ui.login_window import LoginWindow
-
-
 import sys
 
 # 메인함수
