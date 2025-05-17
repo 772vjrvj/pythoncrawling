@@ -1,5 +1,6 @@
 import logging
 import sys
+import json
 
 # ▶ 전역 로거 인스턴스 생성
 logger = logging.getLogger("mylogger")  # 원하는 이름 지정
@@ -15,3 +16,6 @@ if not logger.handlers:
 # ▶ log 함수
 def log(msg: str):
     logger.info(msg)
+
+def log_json(req_json: json):
+    log(json.dumps(req_json, ensure_ascii=False, indent=2))

@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.utils.log_util import log
+from src.utils.log import log
 
 def get_current_yyyymmddhhmmss():
     # 현재 날짜와 시간 가져오기

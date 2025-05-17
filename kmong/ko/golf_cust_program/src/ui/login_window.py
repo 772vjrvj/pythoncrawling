@@ -8,7 +8,7 @@ import requests
 from src.ui.login_Info_dialog import LoginInfoDialog
 from src.ui.store_Info_dialog import StoreInfoDialog
 from src.workers.api_golfzonpark_set_worker import ApiGolfzonparkSetLoadWorker
-from src.utils.log_util import log
+from src.utils.log import log
 
 class LoginWindow(QWidget):
     # 초기화

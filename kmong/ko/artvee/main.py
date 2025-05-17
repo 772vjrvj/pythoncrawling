@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 import pandas as pd
@@ -320,7 +320,7 @@ def translatorFromExcel()->None:
     currentPath = os.getcwd().replace("\\","/")
     excelPath = f"{currentPath}/result/excel"
     fileList = os.listdir(path=excelPath)
-    translator = Translator()
+    translator = GoogleTranslator(source='auto', target='ko')
     for fileInfo in fileList:
         if fileInfo.find("~$") != -1:
             print("엑셀파일을 닫아주세요")
@@ -337,24 +337,24 @@ def translatorFromExcel()->None:
                 pieceInfo = df_excel.at[idx,"작품명"]
                 pieceFullInfo = df_excel.at[idx,"작품명풀네임"]
                 try:
-                    pieceInfoTrans = translator.translate(pieceInfo, dest="ko")
-                    pieceFullInfoTrans = translator.translate(pieceFullInfo, dest="ko")
+                    pieceInfoTrans = translator.translate(pieceInfo)
+                    pieceFullInfoTrans = translator.translate(pieceFullInfo)
                 except:
                     try:
                         time.sleep(20)
-                        pieceInfoTrans = translator.translate(pieceInfo, dest="ko")
-                        pieceFullInfoTrans = translator.translate(pieceFullInfo, dest="ko")
+                        pieceInfoTrans = translator.translate(pieceInfo)
+                        pieceFullInfoTrans = translator.translate(pieceFullInfo)
                     except:
                         time.sleep(60)
-                        pieceInfoTrans = translator.translate(pieceInfo, dest="ko")
-                        pieceFullInfoTrans = translator.translate(pieceFullInfo, dest="ko")
+                        pieceInfoTrans = translator.translate(pieceInfo)
+                        pieceFullInfoTrans = translator.translate(pieceFullInfo)
                 if idx !=0 and idx%1000==0:
                     with pd.ExcelWriter(f"{excelPath}/{fileInfo}",engine='openpyxl') as writer: #xlsxwriter
                         df_excel.to_excel(writer,sheet_name="1",index=False)
                         df_excel_data.to_excel(writer,sheet_name="2",index=False)
                 time.sleep(0.3)
-                df_excel.at[idx,"번역-1(괄호포함)"] = pieceFullInfoTrans.text
-                df_excel.at[idx,"번역-2(괄호 미포함)"] = pieceInfoTrans.text
+                df_excel.at[idx,"번역-1(괄호포함)"] = pieceFullInfoTrans
+                df_excel.at[idx,"번역-2(괄호 미포함)"] = pieceInfoTrans
             except:
                 traceback.print_exc()
                 print("페이지 번역 또는 저장 실패")

@@ -6,7 +6,7 @@ from seleniumwire import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from src.utils.log_util import log
+from src.utils.log import log
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
