@@ -5,10 +5,12 @@ from PyQt5.QtWidgets import (
 )
 import requests
 
+from src.api.token import get_golf_token
 from src.ui.login_Info_dialog import LoginInfoDialog
 from src.ui.store_Info_dialog import StoreInfoDialog
-from src.workers.api_golfzonpark_set_worker import ApiGolfzonparkSetLoadWorker
-from src.utils.log import log
+from src.workers.main_worker import MainWorker
+from src.utils.log import log, log_json
+
 
 class LoginWindow(QWidget):
     # 초기화
@@ -17,6 +19,7 @@ class LoginWindow(QWidget):
         self.on_demand_worker = None
         self.login_thread = None
         self.setWindowTitle("PandoGL")
+        self.token = ""
 
         # 동그란 파란색 원을 그린 아이콘 생성
         icon_pixmap = QPixmap(32, 32)  # 아이콘 크기 (64x64 픽셀)
@@ -265,22 +268,22 @@ class LoginWindow(QWidget):
         size = self.geometry()  # 현재 창 크기
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
-
+    # 로그인 등록
     def register_login_info(self):
         dialog = LoginInfoDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             user_id = dialog.id_input.text()
             password = dialog.pw_input.text()
-            log(f"✅ 로그인 정보 등록됨: {user_id}, {password}")
+            log(f"로그인 정보 등록됨: {user_id}, {password}")
 
+    # 매장 등록
     def register_store_info(self):
         dialog = StoreInfoDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             store_id = dialog.store_input.text()
-            log(f"✅ 매장 정보 등록됨: {store_id}")
+            log(f"매장 정보 등록됨: {store_id}")
 
-
-
+    # 시작
     def start_action(self):
         log("매장 정보 가져오기 및 크롤링 쓰레드 시작")
 
@@ -293,22 +296,24 @@ class LoginWindow(QWidget):
         password = settings.value("login/password", "")
         store_id = settings.value("store/id", "")
 
-        log(f"📤 전달할 로그인 정보: ID={user_id}, PW={password}")
-        log(f"📤 전달할 매장 ID: {store_id}")
+        log(f"전달할 로그인 정보: ID={user_id}, PW={password}")
+        log(f"전달할 매장 ID: {store_id}")
 
         # 3. 크롤링 쓰레드 생성 및 시작
         if self.on_demand_worker is None:
-            self.on_demand_worker = ApiGolfzonparkSetLoadWorker(user_id, password, store_id)
+            self.on_demand_worker = MainWorker(user_id, password, store_id, self.token)
             self.on_demand_worker.start()
 
+    # 매장 정보 api
     def fetch_store_info(self):
         settings = QSettings("MyCompany", "PandoGL")
         store_id = settings.value("store/id", "")
-        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OTBkN2VhNzUwZmY5YTY2ODllOWFmMyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0ODk4ODQ0MDc3fQ.aEUYvIzMhqW6O2h6hQTG8IfzJNhpvll4fOdN7udz1yc"
+
+        self.token = get_golf_token(store_id)
 
         url = f"https://api.dev.24golf.co.kr/stores/{store_id}"
         headers = {
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"Bearer {self.token}"
         }
 
         try:
@@ -320,7 +325,9 @@ class LoginWindow(QWidget):
             self.store_info_main_label.setText(f"• 매장명 : {data.get('name', '-')}")
             self.store_info_local_label.setText(f"• 지   점 : {data.get('branch', '-')}")
 
-            log(f"✅ 매장 정보 불러오기 성공: {data}")
+            log(f"매장 정보 불러오기 성공")
+            log(f"• 매장명 : {data.get('name', '-')}")
+            log(f"• 지  점 : {data.get('branch', '-')}")
 
         except requests.RequestException as e:
             log(f"❌ 매장 정보 불러오기 실패: {str(e)}")

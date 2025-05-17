@@ -6,7 +6,6 @@ from seleniumwire import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from src.utils.log import log
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -25,9 +24,6 @@ class SeleniumDriverManager:
         cert_dir = os.path.join(base_path, 'seleniumwire')
         cert_path = os.path.join(cert_dir, 'ca.crt')
         key_path = os.path.join(cert_dir, 'ca.key')
-
-        log(f"cert_path: {cert_path}")
-        log(f"key_path: {key_path}")
 
         seleniumwire_options = {
             'disable_encoding': True,

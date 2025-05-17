@@ -1,4 +1,4 @@
-from config import CRAWLING_SITE
+from src.utils.config import CRAWLING_SITE
 from src.utils.time import to_iso_format  # to_iso_format은 별도 유틸로 가정
 
 class PayloadBuilder:
@@ -11,8 +11,8 @@ class PayloadBuilder:
     @staticmethod
     def register_or_edit(req_json, external_id, machine_number, reserve_no=None) -> dict:
         payload = {
-            "externalId"    : external_id,
-            "roomId"        : machine_number,
+            "externalId"    : str(external_id),
+            "roomId"        : str(machine_number),
             "crawlingSite"  : CRAWLING_SITE,
             "name"          : req_json.get("bookingName"),
             "phone"         : req_json.get("cellNumber"),
@@ -32,10 +32,10 @@ class PayloadBuilder:
     @staticmethod
     def edit_move(req_json) -> dict:
         payload = {
-            "externalId": req_json.get("bookingNumber"),
-            "startDate": to_iso_format(req_json.get("bookingStartDt")),
-            "endDate": to_iso_format(req_json.get("bookingEndDt")),
-            "roomId": req_json.get("machineNumber"),
+            "externalId"  : str(req_json.get("bookingNumber")),
+            "roomId"      : str(req_json.get("machineNumber")),
+            "startDate"   : to_iso_format(req_json.get("bookingStartDt")),
+            "endDate"     : to_iso_format(req_json.get("bookingEndDt")),
             "crawlingSite": CRAWLING_SITE
         }
         return PayloadBuilder.compact(payload)
@@ -47,7 +47,7 @@ class PayloadBuilder:
             "reason": reason
         }
         if external_id:
-            payload["externalId"] = str(external_id)
+            payload["externalId"]      = str(external_id)
         if group_id:
             payload["externalGroupId"] = str(group_id)
         return PayloadBuilder.compact(payload)
