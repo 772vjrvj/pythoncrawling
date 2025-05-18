@@ -12,7 +12,7 @@ def send_to_external_api_action(token, store_id, action, payload):
     try:
         url = f"{EXTERNAL_API_BASE_URL}/stores/{store_id}/reservation/crawl"
         method = {"register": requests.post, "edit": requests.patch, "delete": requests.delete}.get(action)
-        log(url)
+        log(f"[{action}] : {url}")
         if method:
             response = method(url, headers=headers, json=payload)
 

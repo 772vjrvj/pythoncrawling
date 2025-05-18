@@ -18,12 +18,15 @@ class ReservationService:
         entities = PayloadBuilder.extract_entities(resp_json)
         reserve_no = req_json.get("reserveNo") or None
 
+        payload = None
         if reserve_no:
             payload = PayloadBuilder.delete("고객 취소", group_id=reserve_no)
         else:
-            external_id = req_json.get("bookingNumber")
-            payload = PayloadBuilder.delete("추가 수정시 기존 취소", external_id=external_id)
+            if entities:
+                external_id = req_json.get("bookingNumber")
+                payload = PayloadBuilder.delete("추가 수정시 기존 취소", external_id=external_id)
         send_to_external_api_action(self.token, self.store_id, "delete", payload)
+
 
         if entities:
             for entity in entities:
