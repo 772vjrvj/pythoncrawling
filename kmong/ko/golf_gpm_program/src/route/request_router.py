@@ -38,31 +38,55 @@ class RequestRouter:
 
     def request_set(self, request, action):
         response = wait_for_response(request)
-        if response and response.status_code == 200:
-            try:
-                req_json = parse_urlencoded_form(request.body.decode('utf-8', errors='replace'))
-                resp_json = json.loads(response.body.decode('utf-8', errors='replace'))
 
-                if resp_json.get("code") != "OK" and str(resp_json.get("status")) != "200":
-                    log(f"[{action}] : 응답 실패 {resp_json.get('status')}")
-                    return
+        # 요청 바디 파싱
+        try:
+            req_json = parse_urlencoded_form(request.body.decode('utf-8', errors='replace'))
+        except Exception as e:
+            log(f"[{action}] : 요청 바디 디코딩 실패 - {e}")
+            req_json = {}
 
-                if action == 'select':
-                    entities = resp_json.get("entitys", [])
-                    if isinstance(entities, list):
-                        self.cached_entities = entities
-                        # log(f"[{action}] : {len(entities)}건의 예약 데이터를 캐시에 저장했습니다.")
-                else:
-                    log(f"[{action}] : Request Body")
-                    log_json(req_json)
-                    log(f"[{action}] : Response Body")
-                    log_json(resp_json)
-                    self.dispatch_action(req_json, resp_json, action)
+        # 응답 유무 확인
+        if response is None:
+            log(f"[{action}] : 응답 없음 (response is None)")
+            return
 
-            except Exception as e:
-                log(f"[{action}] : 처리 오류 - {e}")
-        else:
-            log(f"[{action}] : 요청 실패 또는 응답 없음")
+        # 응답 바디 파싱
+        try:
+            resp_json = json.loads(response.body.decode('utf-8', errors='replace'))
+        except Exception as e:
+            log(f"[{action}] : 응답 바디 디코딩 실패 - {e}")
+            resp_json = {}
+
+        # 로그 출력 (select는 출력 생략)
+        if action != 'select':
+            log(f"[{action}] : Request Body")
+            log_json(req_json)
+            log(f"[{action}] : Response Body")
+            log_json(resp_json)
+
+        # 상태 코드 확인
+        if response.status_code != 200:
+            log(f"[{action}] : HTTP 응답 실패 (status code: {response.status_code})")
+            return
+
+        try:
+            # 응답 코드 및 상태 체크
+            if resp_json.get("code") != "OK" and str(resp_json.get("status")) != "200":
+                log(f"[{action}] : 응답 실패 (code: {resp_json.get('code')}, status: {resp_json.get('status')})")
+                return
+
+            # SELECT 요청인 경우 캐시 저장
+            if action == 'select':
+                entities = resp_json.get("entitys", [])
+                if isinstance(entities, list):
+                    self.cached_entities = entities
+                    # log(f"[{action}] : {len(entities)}건의 예약 데이터를 캐시에 저장했습니다.")
+            else:
+                self.dispatch_action(req_json, resp_json, action)
+
+        except Exception as e:
+            log(f"[{action}] : 처리 중 예외 발생 - {e}")
 
     def request_set_delete_mobile(self, request, action):
         response = wait_for_response(request)

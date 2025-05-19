@@ -4,7 +4,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-import re
 
 from deep_translator import GoogleTranslator
 from bs4 import BeautifulSoup
@@ -113,37 +112,15 @@ class ARTVEE:
             if soup.find("div",class_="entry-content") != None or str(soup).find("Sorry, we can't seem to find the page you're looking for") != -1:
                 break
             i += 1
-            abstractName = soup.find("h1",class_="entry-title").text.strip()
-            titlwrap = soup.find('div', class_='titlwrap')
-            artistDescription = ""
-            if titlwrap:
-                containers = titlwrap.find_all('div', class_='container')
-                for container in containers:
-                    p = container.find('p')
-                    if p:
-                        artistDescription = p.get_text(strip=True)
-                        break  # 첫 번째 <p> 텍스트만 원할 경우
-
+            artistName = soup.find("h1",class_="entry-title").text.strip()
+            abdate = soup.find("div", class_="abdate").text.strip().split(",")
+            country = abdate[0].strip()
+            artistDescription = soup.find("div",class_="term-description").text.strip()
             infoList = soup.find_all("div",class_="pbm")
 
             total = soup.find("p",class_="woocommerce-result-count").text.replace("items","").strip()
             for infoData in infoList:
-
-                brand_div = infoData.find('div', class_='woodmart-product-brands-links')
-                country = ""
-                artistName = ""
-                if brand_div:
-                    match = re.search(r'\(([^)]+)\)', brand_div.text)
-                    if match:
-                        content = match.group(1)  # 'Norwegian, 1911 - 1992'
-                        country = content.split(',')[0].strip()  # 'Norwegian'
-
-                    a_tag = brand_div.find('a')
-                    if a_tag:
-                        artistName = a_tag.get_text(strip=True)
-
-                div = infoData.find("div", class_="woodmart-product-cats")
-                field = div.text.strip() if div else ""
+                field = infoData.find("div",class_="woodmart-product-cats").text.strip()
                 data = infoData.find("div")
                 idData = data["data-id"].strip()
                 sizeData = json.loads(data["data-sk"])
@@ -178,7 +155,7 @@ class ARTVEE:
                 if title == "":
                     title = "("+pieceInfo.split("(")[1].split("(")[0].strip()
                 df_info = pd.DataFrame.from_dict([{
-                    "페이지":i-1,
+                    "페이지":i,
                     "ID":idData,
                     "작가명":artistName,
                     "작품명":title,
@@ -195,7 +172,7 @@ class ARTVEE:
                     "skdata":imgInfo
                 }])
                 print({
-                    "페이지":i-1,
+                    "페이지":i,
                     "ID":idData,
                     "작가명":artistName,
                     "작품명":title,
@@ -215,9 +192,9 @@ class ARTVEE:
                 totalCount+=1
 
         df_data_info =pd.DataFrame.from_dict([{
-            "페이지":i-1,
-            "작가명":abstractName,
-            "국가":"",
+            "페이지":i,
+            "작가명":artistName,
+            "국가":country,
             "수량":total,
             "작가내용":artistDescription
         }])

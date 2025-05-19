@@ -14,7 +14,7 @@ class PayloadBuilder:
             "externalId"    : str(external_id),
             "roomId"        : str(machine_number),
             "crawlingSite"  : CRAWLING_SITE,
-            "name"          : req_json.get("bookingName"),
+            "name"          : str(req_json.get("bookingName")),
             "phone"         : req_json.get("cellNumber"),
             "requests"      : req_json.get("bookingMemo"),
             "paymented"     : req_json.get("paymentYn", "N") == "Y",

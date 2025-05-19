@@ -4,7 +4,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-import re
 
 from deep_translator import GoogleTranslator
 from bs4 import BeautifulSoup
@@ -92,144 +91,12 @@ class ARTVEE:
             totalCount += 1
 
         return artistsUrlList
-    def extractExcelInfo(self,df:pd.DataFrame,df_data:pd.DataFrame,abstractUrl:str,abstractCount:str) -> list[pd.DataFrame]:
+    def extractArtistExcelInfo(self,df:pd.DataFrame,df_data:pd.DataFrame,artistUrl:str,artistcount:str,page:int,artistTotalCount:int) -> list[pd.DataFrame]:
         i = 1
         totalCount = 1
         totalImageInfoList:list[dict] = []
         while 1:
-
-            url = f"{abstractUrl}page/{i}?&per_page=70"
-            try:
-                res = requests.get(url,headers=self.headers)
-            except:
-                time.sleep(10)
-                print(f"사이트 오류로 인한 넘김 : {url}")
-                i+=1
-                continue
-            if res.status_code != 200:
-                break
-            time.sleep(random.uniform(0.45, 0.55))
-            soup = BeautifulSoup(res.content,"html.parser")
-            if soup.find("div",class_="entry-content") != None or str(soup).find("Sorry, we can't seem to find the page you're looking for") != -1:
-                break
-            i += 1
-            abstractName = soup.find("h1",class_="entry-title").text.strip()
-            titlwrap = soup.find('div', class_='titlwrap')
-            artistDescription = ""
-            if titlwrap:
-                containers = titlwrap.find_all('div', class_='container')
-                for container in containers:
-                    p = container.find('p')
-                    if p:
-                        artistDescription = p.get_text(strip=True)
-                        break  # 첫 번째 <p> 텍스트만 원할 경우
-
-            infoList = soup.find_all("div",class_="pbm")
-
-            total = soup.find("p",class_="woocommerce-result-count").text.replace("items","").strip()
-            for infoData in infoList:
-
-                brand_div = infoData.find('div', class_='woodmart-product-brands-links')
-                country = ""
-                artistName = ""
-                if brand_div:
-                    match = re.search(r'\(([^)]+)\)', brand_div.text)
-                    if match:
-                        content = match.group(1)  # 'Norwegian, 1911 - 1992'
-                        country = content.split(',')[0].strip()  # 'Norwegian'
-
-                    a_tag = brand_div.find('a')
-                    if a_tag:
-                        artistName = a_tag.get_text(strip=True)
-
-                div = infoData.find("div", class_="woodmart-product-cats")
-                field = div.text.strip() if div else ""
-                data = infoData.find("div")
-                idData = data["data-id"].strip()
-                sizeData = json.loads(data["data-sk"])
-                imgInfo = sizeData["sk"]
-                try:
-                    standard = sizeData["sdlimagesize"].split("px")[0].split("x")
-                    standardX = standard[0].strip()
-                    standardY = standard[1].strip()
-                except:
-                    standardX = "정보없음"
-                    standardY = "정보없음"
-                try:
-                    max = sizeData["hdlimagesize"].split("px")[0].split("x")
-                    maxX = max[0].strip()
-                    maxY = max[1].strip()
-                except:
-                    maxX = "정보없음"
-                    maxY = "정보없음"
-                pieceUrl = str(infoData.find("a")["href"])
-                pieceInfo = infoData.find("h3",class_="product-title").text.strip()
-                title = pieceInfo.split("(")[0].strip()
-                if len(pieceInfo.split("(")) == 1:
-                    birth = "없음"
-                elif len(pieceInfo.split("(")) == 2:
-                    birth = pieceInfo.split("(")[1].split(")")[0].strip()
-                elif len(pieceInfo.split("(")) == 3:
-                    birth = pieceInfo.split("(")[2].split(")")[0].strip()
-                try:
-                    int(birth)
-                except:
-                    birth = "없음"
-                if title == "":
-                    title = "("+pieceInfo.split("(")[1].split("(")[0].strip()
-                df_info = pd.DataFrame.from_dict([{
-                    "페이지":i-1,
-                    "ID":idData,
-                    "작가명":artistName,
-                    "작품명":title,
-                    "작품명풀네임":pieceInfo,
-                    "국가":country,
-                    "장르":field,
-                    "작품년도":birth,
-                    "수량":total,
-                    "Px-가로":standardX,
-                    "Px-세로":standardY,
-                    "MaxPx-가로":maxX,
-                    "MaxPx-세로":maxY,
-                    "url":pieceUrl,
-                    "skdata":imgInfo
-                }])
-                print({
-                    "페이지":i-1,
-                    "ID":idData,
-                    "작가명":artistName,
-                    "작품명":title,
-                    "작품명풀네임":pieceInfo,
-                    "국가":country,
-                    "장르":field,
-                    "작품년도":birth,
-                    "수량":total,
-                    "Px-가로":standardX,
-                    "Px-세로":standardY,
-                    "MaxPx-가로":maxX,
-                    "MaxPx-세로":maxY,
-                    "url":pieceUrl,
-                    "skdata":imgInfo
-                })
-                df = pd.concat([df,df_info])
-                totalCount+=1
-
-        df_data_info =pd.DataFrame.from_dict([{
-            "페이지":i-1,
-            "작가명":abstractName,
-            "국가":"",
-            "수량":total,
-            "작가내용":artistDescription
-        }])
-        df_data = pd.concat([df_data,df_data_info])
-        return [df,df_data,totalImageInfoList]
-
-    def extractAbstractExcelInfo(self,df:pd.DataFrame,df_data:pd.DataFrame,abstractUrl:str,page:int) -> list[pd.DataFrame]:
-        i = 1
-        totalCount = 1
-        totalImageInfoList:list[dict] = []
-        while 1:
-            url = f"{abstractUrl}page/{i}?&per_page=70"
+            url = f"{artistUrl}page/{i}?&per_page=70"
             try:
                 res = requests.get(url,headers=self.headers)
             except:
@@ -288,6 +155,8 @@ class ARTVEE:
                     title = "("+pieceInfo.split("(")[1].split("(")[0].strip()
                 df_info = pd.DataFrame.from_dict([{
                     "페이지":page,
+                    "작가순서":artistTotalCount,
+                    "그림순서":totalCount,
                     "ID":idData,
                     "작가명":artistName,
                     "작품명":title,
@@ -315,7 +184,6 @@ class ARTVEE:
         }])
         df_data = pd.concat([df_data,df_data_info])
         return [df,df_data,totalImageInfoList]
-
 
 def main()->None:
     currentPath = os.getcwd().replace("\\","/")
@@ -631,106 +499,9 @@ def sub_main()->None:
             df_excel_data.to_excel(writer,sheet_name="2",index=False)
 
 
-def abstract_main()->None:
-    currentPath = os.getcwd()  # 현재 작업 디렉터리
-    excelPath = f"{currentPath}/result"
-    file_path = os.path.join(excelPath, "artvee_abstract.xlsx")
-    if not os.path.exists(file_path):
-        print("artvee_abstract.xlsx 파일이 존재하지 않습니다.")
-        return None
-    # 파일이 존재하면 아래 작업을 진행
-    print("artvee_abstract.xlsx 파일이 존재합니다.")
-    currentPath = os.getcwd().replace("\\","/")
-    excelCheck = input("전체 엑셀 추출 하시겠습니까? 1.예 2. 아니오 : ").strip()
-    downloadCheck = input("1. 이미지 다운로드 / 2. 다운안된 이미지 재 다운로드 : ")
-    firstSheetColumn = ["페이지","ID","작가명","작품명","작품명풀네임","국가","장르","작품년도","수량","Px-가로","Px-세로","MaxPx-가로","MaxPx-세로","url","skdata","이미지 저장여부"]
-    secondSheetColumn = ["","페이지","작가명","국가","수량","작가내용"]
-    totalImageInfoList:list[dict] = []
-    artvee = ARTVEE()
-    headers=artvee.login()
-
-    # abstract:dict = artvee.getExcelAbstract(file_path)
-    # abstractUrl   = abstract["abstractUrl"]
-    # abstractCount = abstract["abstractCount"]
-
-    abstractUrl = "https://artvee.com/c/abstract/"
-    abstractCount = "0"
-
-    if excelCheck == "1":
-        print("Abstract 정보 엑셀 추출 시작!")
-        df = pd.DataFrame(columns=firstSheetColumn)
-        df_data = pd.DataFrame(columns=secondSheetColumn)
-        df_info = artvee.extractExcelInfo(df=df,df_data=df_data,abstractUrl=abstractUrl,abstractCount=abstractCount)
-        df = df_info[0].reset_index(drop=True)
-        df_data = df_info[1].reset_index(drop=True)
-        totalImageInfoList+=df_info[2]
-        if (df["작품명"].tolist()) != 0:
-            with pd.ExcelWriter(f"{currentPath}/result/excel/artvee_abstract.xlsx",engine='openpyxl') as writer: #xlsxwriter
-                df.to_excel(writer,sheet_name="1",index=False)
-                df_data.to_excel(writer,sheet_name="2",index=False)
-            print("전체 엑셀 추출 완료")
-    excelPath = f"{currentPath}/result/excel"
-    imagePath = f"{currentPath}/result/image"
-    fileList = os.listdir(path=excelPath)
-
-    for fileInfo in fileList:
-        if fileInfo.find("~$") != -1:
-            print("엑셀파일을 닫아주세요")
-            continue
-        try:
-            df_excel = pd.read_excel(f"{excelPath}/{fileInfo}",sheet_name="1")
-            df_excel_data = pd.read_excel(f"{excelPath}/{fileInfo}",sheet_name="2")
-        except:
-            print(f"{excelPath}/{fileInfo}는 엑셀 파일이 아닙니다.")
-            continue
-        print(f"{fileInfo} 이미지 추출중")
-        for idx, dataInfo in enumerate(tqdm(df_excel["skdata"])):
-            imageUrl = f"https://mdl.artvee.com/sdl/{dataInfo}sdl.jpg"
-            pageInfo = str(df_excel.at[idx,"페이지"])
-            nameInfo = df_excel.at[idx,"작가명"]
-            pieceInfo = df_excel.at[idx,"작품명"]
-            idInfo = df_excel.at[idx,"ID"]
-            imageIs = df_excel.at[idx,"이미지 저장여부"]
-            if downloadCheck =="2" and imageIs != "X":
-                continue
-            filename = f"{pageInfo}_{nameInfo}_{pieceInfo}_{idInfo}"
-            try:
-                imageInfo = requests.get(imageUrl,headers=headers,timeout=30)
-            except: # timeout으로 인한 넘김
-                print(f"{filename} 저장 실패")
-                df_excel.at[idx,"이미지 저장여부"] = "X"
-                time.sleep(5)
-                continue
-            if imageInfo.status_code == 200:
-                namePath = f"{imagePath}/{pageInfo}_{nameInfo}"
-                if os.path.exists(namePath) == False:
-                    os.makedirs(namePath)
-                try:
-                    f = open(f"{namePath}/{filename}.jpg",'wb')
-                    f.write(imageInfo.content)
-                    f.close()
-                    df_excel.at[idx,"이미지 저장여부"] = ""
-                except:
-                    print(f"{filename} 저장 실패")
-                    df_excel.at[idx,"이미지 저장여부"] = "X"
-                    time.sleep(5)
-            elif imageInfo.status_code == 404:
-                soup = BeautifulSoup(imageInfo.content,"xml")
-                errormsg = soup.find("Code").text
-                if errormsg.find("NoSuchKey") != -1:
-                    df_excel.at[idx,"이미지 저장여부"] = "없음"
-                    continue
-            else:
-                print(f"{filename} 저장 실패")
-                df_excel.at[idx,"이미지 저장여부"] = "X"
-                time.sleep(5)
-            time.sleep(0.5)
-        with pd.ExcelWriter(f"{excelPath}/{fileInfo}",engine='openpyxl') as writer: #xlsxwriter
-            df_excel.to_excel(writer,sheet_name="1",index=False)
-            df_excel_data.to_excel(writer,sheet_name="2",index=False)
 
 if __name__ == "__main__":
-    mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : / 4. artvee abstract 다운 : ")
+    mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : ")
     if mode == "1":
         try:
             main()
@@ -746,12 +517,6 @@ if __name__ == "__main__":
     elif mode == "3":
         try:
             sub_main()
-        except Exception as e:
-            print(f"{str(e)} 오류로 인한 종료")
-            traceback.print_exc()
-    elif mode == "4":
-        try:
-            abstract_main()
         except Exception as e:
             print(f"{str(e)} 오류로 인한 종료")
             traceback.print_exc()

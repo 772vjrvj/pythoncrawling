@@ -20,8 +20,6 @@ avatar
 https://glm.golfzon.com/games/status
 kdw0924 / kdw9252!
 
-
-
 pyinstaller main.py `
   --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.crt;seleniumwire" `
   --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.key;seleniumwire" `

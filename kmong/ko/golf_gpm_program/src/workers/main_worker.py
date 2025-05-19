@@ -5,6 +5,7 @@ from src.service.reservation_service import ReservationService
 from src.route.request_router import RequestRouter
 from src.utils.log import log
 import time
+from collections import deque
 
 class MainWorker(QThread):
     def __init__(self, user_id, password, store_id, token):
@@ -13,7 +14,7 @@ class MainWorker(QThread):
         self.user_id = user_id
         self.password = password
         self.store_id = store_id
-        self.processed_requests = set()
+        self.processed_requests = deque(maxlen=1000)  # ✅ 최근 1000개만 기억
         self.driver = None
         self.router = None
 
@@ -46,10 +47,8 @@ class MainWorker(QThread):
                 for request in list(self.driver.requests):
                     if request.id in self.processed_requests:
                         continue
-                    self.processed_requests.add(request.id)
+                    self.processed_requests.append(request.id)
                     self.router.handle(request)
-
-                self.driver.requests.clear()
                 time.sleep(0.5)
         except KeyboardInterrupt:
             log("종료 요청 감지, 브라우저 닫는 중...")
