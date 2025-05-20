@@ -10,6 +10,16 @@ os.makedirs(LOG_DIR, exist_ok=True)
 today_str = datetime.now().strftime('%Y-%m-%d')
 log_file_path = os.path.join(LOG_DIR, f"{today_str}.log")
 
+IS_DEV = os.getenv("ENV", "dev") == "dev"
+
+class ImmediateFlushHandler(logging.StreamHandler):
+    def emit(self, record):
+        try:
+            super().emit(record)
+            self.flush()
+        except Exception:
+            pass  # 콘솔이 없는 상황 고려 (운영 exe 등)
+
 logger = logging.getLogger("mylogger")
 logger.setLevel(logging.INFO)
 
@@ -17,14 +27,14 @@ if not logger.handlers:
     log_format = '[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)d ▶ %(message)s'
     formatter = logging.Formatter(log_format, datefmt='%Y.%m.%d %H:%M:%S')
 
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
+    if IS_DEV:
+        stream_handler = ImmediateFlushHandler(sys.stdout)
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
 
     file_handler = logging.FileHandler(log_file_path, encoding='utf-8')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
-
 
 def log(msg: str):
     logger.info(msg, stacklevel=2)

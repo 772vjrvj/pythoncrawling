@@ -1,0 +1,63 @@
+// 등록 request
+// https://lobby.golfzon.com/v1/glm-plus/bookings:standard
+// POST
+// payload
+// request
+{
+  "machineNos": [
+    2870
+  ],
+  "bookingStartAt": "2025-05-30 10:50:00",
+  "bookingEndAt": "2025-05-30 12:50:00",
+  "bookingPeople": 2,
+  "bookingPlayHole": 18,
+  "bookingName": "테스트",
+  "bookingMemo": "테스트입니다.",
+  "cellNumber": "01071410772",
+  "bookingChannel": "MANUAL",
+  "gameTime": 120
+}
+
+//response
+//응답 없음
+
+
+//----------------------------------------------------------------------
+
+
+// 수정 request
+// https://lobby.golfzon.com/v1/glm-plus/bookings:standard
+// PUT
+{
+  "bookingNo": 80064992,
+  "machineNos": [
+    2870,
+    8282
+  ],
+  "bookingStartAt": "2025-05-30 10:50:00",
+  "bookingEndAt": "2025-05-30 12:50:00",
+  "bookingPeople": 2,
+  "bookingPlayHole": 18,
+  "bookingName": "테스트",
+  "bookingMemo": "테스트입니다.",
+  "cellNumber": "01071410772",
+  "bookingChannel": "MANUAL",
+  "gameTime": 120
+}
+
+//response
+//응답 없음
+
+
+//----------------------------------------------------------------------
+
+
+//삭제
+//https://lobby.golfzon.com/v1/glm-plus/bookings:standard
+//DELETE
+{
+  "bookingNo":80065005
+}
+
+//response
+//응답 없음
