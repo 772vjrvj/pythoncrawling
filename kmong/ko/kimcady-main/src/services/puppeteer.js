@@ -149,7 +149,8 @@ const isOnDashboard = async (page) => {
 
 const launchBrowser = async () => {
   // 화면 크기 가져오기
-  const { width, height } = require('ko/kimcady-main/src/services/electron').screen.getPrimaryDisplay().workAreaSize;
+  const { screen } = require('./electron');
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   console.log(`[INFO] Detected screen size: ${width}x${height}`);
   
   // 실제 사용할 브라우저 창 크기 계산 (작업 표시줄 등을 고려하여 약간 줄임)
