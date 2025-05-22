@@ -1,28 +1,27 @@
 import os
+import shutil
 import ssl
 import time
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote, quote, unquote_to_bytes
+
 import pandas as pd
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from src.utils.number_utils import calculate_divmod, divide_and_truncate_per
-from src.utils.time_utils import get_current_yyyymmddhhmmss
-from urllib.parse import quote
-import threading
-import shutil
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from src.utils.number_utils import calculate_divmod, divide_and_truncate_per
+from src.utils.time_utils import get_current_yyyymmddhhmmss
+
 ssl._create_default_https_context = ssl._create_unverified_context
+import re
 
 # API
 class ApiOkmallSetLoadWorker(QThread):
     log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
     progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
     progress_end_signal = pyqtSignal()   # 종료 시그널
-    msg_signal = pyqtSignal(str, str, object)
 
     def __init__(self, url_list, user):
         super().__init__()
@@ -147,11 +146,23 @@ class ApiOkmallSetLoadWorker(QThread):
         except Exception as e:
             self.log_signal.emit(f'엑셀 에러 발생: {e}')
 
-    # url param 가져오기
+
     def get_query_params(self, url, name):
         parsed_url = urlparse(url)
-        query_params = parse_qs(parsed_url.query)
-        return query_params.get(name, [None])[0]
+        query = parsed_url.query
+
+        # brand= 뒤에 전체 값 추출
+        match = re.search(rf"{name}=([^&]+)", query)
+        if match:
+            encoded = match.group(1)  # ex: %C6%C4%C5%B8%B0%ED%B4%CF%BE%C6%28patagonia%29
+            try:
+                # 💡 핵심: unquote_to_bytes로 URL 인코딩 → 바이트 그대로 추출
+                raw_bytes = unquote_to_bytes(encoded)
+                return raw_bytes.decode('euc-kr')
+            except Exception as e:
+                self.log_signal.emit(f"[❌ EUC-KR 디코딩 실패] {e}")
+                return encoded
+        return None
 
     # 브랜드 api_data
     def product_api_data(self, url):
@@ -268,7 +279,7 @@ class ApiOkmallSetLoadWorker(QThread):
             "detail_search_keyword": "",
             "page": page
         }
-        encoded_brand = quote(brand)
+        encoded_brand = quote(brand.encode('euc-kr'))  # ✅ 정확한 인코딩 방식
         headers = {
             "accept": "text/html, */*; q=0.01",
             "accept-encoding": "gzip, deflate, br, zstd",

@@ -301,7 +301,6 @@ class MainWindow(QWidget):
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
                 self.on_demand_worker.progress_end_signal.connect(self.progress_end)
-                self.on_demand_worker.msg_signal.connect(self.show_message)
                 self.on_demand_worker.start()
         else:
             self.collect_button.setText("시작")
