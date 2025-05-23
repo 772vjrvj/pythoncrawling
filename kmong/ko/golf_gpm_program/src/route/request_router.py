@@ -33,6 +33,8 @@ class RequestRouter:
 
         # 특수 케이스: 모바일 삭제
         if method == 'GET' and parsed_path.startswith(self.base_mobile_path):
+            log(f"[delete] : {parsed_path}")
+            log(f"[delete] : {self.base_mobile_path}")
             params = parse_qs(urlparse(url).query)
             required_keys = {'timestamp', 'bookingStartDt', 'data', 'bookingNumber'}
             if required_keys.issubset(params):
@@ -71,13 +73,13 @@ class RequestRouter:
         # 상태 코드 확인
         if response.status_code != 200:
             log(f"[{action}] : HTTP 응답 실패 (status code: {response.status_code})")
-            return
+
 
         try:
             # 응답 코드 및 상태 체크
             if resp_json.get("code") != "OK" and str(resp_json.get("status")) != "200":
                 log(f"[{action}] : 응답 실패 (code: {resp_json.get('code')}, status: {resp_json.get('status')})")
-                return
+
 
             # SELECT 요청인 경우 캐시 저장
             if action == 'select':
@@ -93,11 +95,11 @@ class RequestRouter:
 
     def request_set_delete_mobile(self, request, action):
         response = wait_for_response(request)
-        if response and response.status_code == 200:
+        if response:
             try:
                 req_json = parse_urlencoded_form(request.body.decode('utf-8', errors='replace'))
                 resp_json = json.loads(response.body.decode('utf-8', errors='replace'))
-                if resp_json.get("code") != "OK" and str(resp_json.get("status")) != "200":
+                if resp_json.get("code") == "OK" and str(resp_json.get("status")) == "200":
                     if resp_json.get("entity", {}).get("destroy", []):
                         self.dispatch_action(req_json, resp_json, 'delete_mobile')
             except Exception as e:

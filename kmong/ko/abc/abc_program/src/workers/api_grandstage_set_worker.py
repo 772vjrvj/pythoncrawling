@@ -1,13 +1,14 @@
 import os
-import os
 import ssl
 import time
 from urllib.parse import urlparse, parse_qs
+
 import pandas as pd
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 from bs4 import BeautifulSoup
 from selenium import webdriver
+
 from src.utils.number_utils import calculate_divmod, divide_and_truncate_per
 from src.utils.time_utils import get_current_yyyymmddhhmmss
 

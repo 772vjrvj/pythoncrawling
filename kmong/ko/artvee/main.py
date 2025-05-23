@@ -196,7 +196,10 @@ class ARTVEE:
                     "MaxPx-가로":maxX,
                     "MaxPx-세로":maxY,
                     "url":pieceUrl,
-                    "skdata":imgInfo
+                    "skdata":imgInfo,
+                    "이미지 명": "",
+                    "이미지 명 생략여부": "",
+                    "이미지 저장여부": ""
                 }])
                 print({
                     "페이지":i-1,
@@ -654,7 +657,7 @@ def collection_main(category, excelCheck, downloadCheck)->None:
     # 파일이 존재하면 아래 작업을 진행
     print(f"artvee_{category}.xlsx 파일이 존재합니다.")
     currentPath = os.getcwd().replace("\\","/")
-    firstSheetColumn = ["페이지","ID","작가명","작품명","작품명풀네임","국가","국적및생몰년도","장르","작품년도","Px-가로","Px-세로","MaxPx-가로","MaxPx-세로","url","skdata","이미지 저장여부"]
+    firstSheetColumn = ["페이지","ID","작가명","작품명","작품명풀네임","국가","국적및생몰년도","장르","작품년도","Px-가로","Px-세로","MaxPx-가로","MaxPx-세로","url","skdata","이미지 명", "이미지 명 생략여부", "이미지 저장여부"]
     secondSheetColumn = ["페이지","작가명","국가","수량","작가내용"]
     totalImageInfoList:list[dict] = []
     artvee = ARTVEE()
@@ -719,12 +722,13 @@ def collection_main(category, excelCheck, downloadCheck)->None:
             continue
         if imageInfo.status_code == 200:
             try:
-
                 # (1) category 경로에 저장
                 os.makedirs(imageCategoryPath, exist_ok=True)
                 f = open(f"{imageCategoryPath}/{filename}.jpg",'wb')
                 f.write(imageInfo.content)
                 f.close()
+
+                MAX_PATH_LENGTH = 260  # Windows 제한
 
                 # ✅ (2) 작가별 폴더에도 저장 (추가)
                 os.makedirs(imageArtistPath, exist_ok=True)
@@ -732,10 +736,24 @@ def collection_main(category, excelCheck, downloadCheck)->None:
                 artist_dir = Path(imageArtistPath) / safe_artist_name
                 artist_dir.mkdir(parents=True, exist_ok=True)
 
-                with open(artist_dir / f"{filename}.jpg", 'wb') as f:
-                    f.write(imageInfo.content)
+                # 전체 경로 계산
+                full_path_base = str(artist_dir.resolve())
+                ext = ".jpg"
+                max_filename_length = MAX_PATH_LENGTH - len(full_path_base) - 1 - len(ext)  # -1 for slash
 
-                df_excel.at[idx,"이미지 저장여부"] = ""
+                # 파일명 잘림 여부 확인 및 자르기
+                original_filename = filename
+                if len(original_filename) > max_filename_length:
+                    filename = original_filename[:max_filename_length]
+                    omitted_flag = "O"
+                else:
+                    omitted_flag = "X"
+                df_excel.at[idx, "이미지 명"] = f"{filename}{ext}"
+                df_excel.at[idx, "이미지 명 생략여부"] = omitted_flag
+                image_path = artist_dir / f"{filename}{ext}"
+                with open(image_path, 'wb') as f:
+                    f.write(imageInfo.content)
+                df_excel.at[idx, "이미지 저장여부"] = ""
             except Exception as e: # timeout으로 인한 넘김
                 print(f'e :{e}')
                 print(f"{filename} 저장 실패")

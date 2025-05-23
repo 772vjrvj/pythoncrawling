@@ -154,15 +154,15 @@ class ApiOkmallSetLoadWorker(QThread):
         if not match:
             return None
 
-        encoded = match.group(1)
+        encoded = match.group(1).replace('+', ' ')  # ➕ 먼저 + 를 공백으로 변환
 
         try:
-            # 1차 시도: EUC-KR로 직접 디코딩 (okmall 링크가 대부분 이 방식)
+            # 1차 시도: EUC-KR
             return unquote_to_bytes(encoded).decode('euc-kr')
         except UnicodeDecodeError:
             try:
                 # 2차 fallback: UTF-8
-                return unquote(encoded)  # 문자열로 디코딩
+                return unquote(encoded)
             except Exception as e:
                 self.log_signal.emit(f"[❌ 디코딩 실패] {e}")
                 return encoded
