@@ -703,8 +703,14 @@ def collection_main(category, excelCheck, downloadCheck)->None:
         return
     print(f"{fileInfo} 이미지 추출중")
 
+
     MAX_PATH_LENGTH = 260  # Windows 제한
     ext = ".jpg"
+
+    # 🔧 경고 방지: 문자열 타입 명시
+    df_excel["이미지 명"] = df_excel["이미지 명"].astype(str)
+    df_excel["이미지 명 생략여부"] = df_excel["이미지 명 생략여부"].astype(str)
+    df_excel["이미지 저장여부"] = df_excel["이미지 저장여부"].astype(str)
 
     for idx, dataInfo in enumerate(tqdm(df_excel["skdata"])):
         imageUrl = f"https://mdl.artvee.com/sdl/{dataInfo}sdl.jpg"
@@ -733,13 +739,13 @@ def collection_main(category, excelCheck, downloadCheck)->None:
                 # ✅ (1) category 경로에 저장
                 os.makedirs(imageCategoryPath, exist_ok=True)
                 full_path_category = str(Path(imageCategoryPath).resolve())
-                max_filename_length_category = MAX_PATH_LENGTH - len(full_path_category) - 1 - len(ext)
+                max_len_category = MAX_PATH_LENGTH - len(full_path_category) - 1 - len(ext)
 
                 filename_category = safe_filename
-                omitted_flag = "X"
-                if len(filename_category) > max_filename_length_category:
-                    filename_category = filename_category[:max_filename_length_category]
-                    omitted_flag = "O"
+                omitted_flag_category = "X"
+                if len(filename_category) > max_len_category:
+                    filename_category = filename_category[:max_len_category]
+                    omitted_flag_category = "O"
 
                 with open(Path(imageCategoryPath) / f"{filename_category}{ext}", 'wb') as f:
                     f.write(imageInfo.content)
@@ -751,20 +757,23 @@ def collection_main(category, excelCheck, downloadCheck)->None:
                 artist_dir.mkdir(parents=True, exist_ok=True)
 
                 full_path_artist = str(artist_dir.resolve())
-                max_filename_length_artist = MAX_PATH_LENGTH - len(full_path_artist) - 1 - len(ext)
+                max_len_artist = MAX_PATH_LENGTH - len(full_path_artist) - 1 - len(ext)
 
                 filename_artist = safe_filename
-                if len(filename_artist) > max_filename_length_artist:
-                    filename_artist = filename_artist[:max_filename_length_artist]
-                    omitted_flag = "O"
+                omitted_flag_artist = "X"
+                if len(filename_artist) > max_len_artist:
+                    filename_artist = filename_artist[:max_len_artist]
+                    omitted_flag_artist = "O"
 
                 image_path = artist_dir / f"{filename_artist}{ext}"
                 with open(image_path, 'wb') as f:
                     f.write(imageInfo.content)
 
-                # 엑셀 정보 업데이트
+                # ✅ 엑셀 정보 업데이트
                 df_excel.at[idx, "이미지 명"] = f"{filename_artist}{ext}"
-                df_excel.at[idx, "이미지 명 생략여부"] = omitted_flag
+                df_excel.at[idx, "이미지 명 생략여부"] = (
+                    "O" if omitted_flag_category == "O" or omitted_flag_artist == "O" else "X"
+                )
                 df_excel.at[idx, "이미지 저장여부"] = ""
 
             except Exception as e:
@@ -776,7 +785,7 @@ def collection_main(category, excelCheck, downloadCheck)->None:
         elif imageInfo.status_code == 404:
             soup = BeautifulSoup(imageInfo.content, "xml")
             errormsg = soup.find("Code").text
-            if errormsg.find("NoSuchKey") != -1:
+            if "NoSuchKey" in errormsg:
                 df_excel.at[idx, "이미지 저장여부"] = "없음"
                 continue
 
