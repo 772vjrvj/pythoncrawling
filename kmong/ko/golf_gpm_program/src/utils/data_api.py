@@ -8,7 +8,7 @@ def parse_urlencoded_form(raw_body: str) -> dict:
     return {k: v[0] if len(v) == 1 else v for k, v in parse_qs(decoded).items()}
 
 
-def wait_for_response(request, timeout=3.0, interval=0.1):
+def wait_for_response(request, timeout=30.0, interval=0.1):
     start = time.monotonic()
     while not request.response:
         if time.monotonic() - start > timeout:

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QThread
-from src.utils.config import SITE_URL, BASE_BOOKING_PATH, BASE_BOOKING_MOBILE_PATH
+from src.utils.config import SITE_URL, BASE_BOOKING_PATH, BASE_BOOKING_MOBILE_PATH, BASE_RESERVATION_MOBILE_PATH
 from src.utils.selenium import SeleniumDriverManager
 from src.service.reservation_service import ReservationService
 from src.route.request_router import RequestRouter
@@ -24,7 +24,8 @@ class MainWorker(QThread):
         self.router = RequestRouter(
             ReservationService(self.token, self.store_id),
             BASE_BOOKING_PATH,
-            BASE_BOOKING_MOBILE_PATH
+            BASE_BOOKING_MOBILE_PATH,
+            BASE_RESERVATION_MOBILE_PATH
         )
 
     def run(self):

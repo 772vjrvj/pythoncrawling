@@ -146,23 +146,26 @@ class ApiOkmallSetLoadWorker(QThread):
         except Exception as e:
             self.log_signal.emit(f'엑셀 에러 발생: {e}')
 
-
     def get_query_params(self, url, name):
         parsed_url = urlparse(url)
         query = parsed_url.query
 
-        # brand= 뒤에 전체 값 추출
         match = re.search(rf"{name}=([^&]+)", query)
-        if match:
-            encoded = match.group(1)  # ex: %C6%C4%C5%B8%B0%ED%B4%CF%BE%C6%28patagonia%29
+        if not match:
+            return None
+
+        encoded = match.group(1)
+
+        try:
+            # 1차 시도: EUC-KR로 직접 디코딩 (okmall 링크가 대부분 이 방식)
+            return unquote_to_bytes(encoded).decode('euc-kr')
+        except UnicodeDecodeError:
             try:
-                # 💡 핵심: unquote_to_bytes로 URL 인코딩 → 바이트 그대로 추출
-                raw_bytes = unquote_to_bytes(encoded)
-                return raw_bytes.decode('euc-kr')
+                # 2차 fallback: UTF-8
+                return unquote(encoded)  # 문자열로 디코딩
             except Exception as e:
-                self.log_signal.emit(f"[❌ EUC-KR 디코딩 실패] {e}")
+                self.log_signal.emit(f"[❌ 디코딩 실패] {e}")
                 return encoded
-        return None
 
     # 브랜드 api_data
     def product_api_data(self, url):
@@ -279,7 +282,7 @@ class ApiOkmallSetLoadWorker(QThread):
             "detail_search_keyword": "",
             "page": page
         }
-        encoded_brand = quote(brand.encode('euc-kr'))  # ✅ 정확한 인코딩 방식
+        encoded_brand = quote(brand)
         headers = {
             "accept": "text/html, */*; q=0.01",
             "accept-encoding": "gzip, deflate, br, zstd",

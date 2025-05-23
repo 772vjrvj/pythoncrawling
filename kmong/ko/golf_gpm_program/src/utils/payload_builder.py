@@ -19,7 +19,7 @@ class PayloadBuilder:
             "requests"      : req_json.get("bookingMemo"),
             "paymented"     : req_json.get("paymentYn", "N") == "Y",
             "partySize"     : int(req_json.get("bookingCnt", 1)),
-            "paymentAmount" : int(req_json.get("paymentAmount", 0)),
+            "paymentAmount" : int(req_json.get("paymentTotAmount", 0)),
             "startDate"     : to_iso_format(req_json.get("bookingStartDt")),
             "endDate"       : to_iso_format(req_json.get("bookingEndDt")),
         }

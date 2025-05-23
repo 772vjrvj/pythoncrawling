@@ -39,7 +39,22 @@ pyinstaller main.py `
   --name main `
   --console `
   --distpath "./dist" `
-  --workpath "./build"
+  --workpath "./build" `
+  --version-file=version.txt
+
+
+pyinstaller main.py ^
+  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.crt;seleniumwire" ^
+  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.key;seleniumwire" ^
+  --icon "./image/icon.ico" ^
+  --name main ^
+  --console ^
+  --distpath "./dist" ^
+  --workpath "./build" ^
+  --version-file=version.txt
+
+6823189ccaf95dcb25d42273
+
 
 
 ca.crt
@@ -59,6 +74,8 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OTBkN2VhNzUwZmY5YTY2ODllOWFmMyI
 
 개발계 storeId:
 6823189ccaf95dcb25d42273
+
+68270f2ebccd6f8f8f03bdcc
 
 골프존파크 죽전골프앤
 경영주id

@@ -42,7 +42,7 @@ class ReservationService:
 
     def edit_move(self, req_json=None, resp_json=None):
         payload = PayloadBuilder.edit_move(req_json)
-        send_to_external_api_action(self.token, self.store_id, "edit", payload)
+        send_to_external_api_action(self.token, self.store_id, "edit", payload, 'm')
 
     def delete_admin(self, req_json, resp_json):
         booking_nums = req_json.get("bookingNums", [])

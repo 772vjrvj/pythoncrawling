@@ -2,7 +2,7 @@ from src.utils.log import log, log_json
 from src.utils.config import EXTERNAL_API_BASE_URL
 import requests
 
-def send_to_external_api_action(token, store_id, action, payload):
+def send_to_external_api_action(token, store_id, action, payload, type=None):
     log(f"[{action}] : payload ↓")
     log_json(payload)
     headers = {
@@ -10,7 +10,11 @@ def send_to_external_api_action(token, store_id, action, payload):
         "Content-Type": "application/json"
     }
     try:
-        url = f"{EXTERNAL_API_BASE_URL}/stores/{store_id}/reservation/crawl"
+        if type == 'm':
+            url = f"{EXTERNAL_API_BASE_URL}/stores/{store_id}/reservation/crawl/fields"
+        else:
+            url = f"{EXTERNAL_API_BASE_URL}/stores/{store_id}/reservation/crawl"
+
         method = {"register": requests.post, "edit": requests.patch, "delete": requests.delete}.get(action)
         log(f"[{action}] : {url}")
         if method:

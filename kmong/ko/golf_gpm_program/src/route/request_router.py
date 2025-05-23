@@ -7,22 +7,24 @@ from src.utils.log import log, log_json
 from src.utils.data_api import wait_for_response, parse_urlencoded_form
 
 class RequestRouter:
-    def __init__(self, service, base_booking_path, base_mobile_path):
+    def __init__(self, service, base_booking_path, base_mobile_path, base_reservation_mobile_path):
         self.service = service
         self.base_booking_path = base_booking_path
         self.base_mobile_path = base_mobile_path
+        self.base_reservation_mobile_path = base_reservation_mobile_path
         self.cached_entities = []
         self.routes = [
             Route('GET',  re.compile(fr'{self.base_booking_path}/\d+(\?timestamp=|$)'),           self.request_set, 'select'),
             Route('POST', re.compile(fr'{self.base_booking_path}/register(\?timestamp=|$)'),      self.request_set, 'register'),
             Route('POST', re.compile(fr'{self.base_booking_path}/\d+/edit(\?timestamp=|$)'),      self.request_set, 'edit'),
             Route('POST', re.compile(fr'{self.base_booking_path}/\d+/ajax-edit(\?timestamp=|$)'), self.request_set, 'edit_move'),
-            Route('POST', re.compile(fr'{self.base_booking_path}/\d+/delete(\?timestamp=|$)'),    self.request_set, 'delete'),
+            Route('POST', re.compile(fr'{self.base_booking_path}/\d+/delete(\?timestamp=|$)'),    self.request_set, 'delete')
         ]
 
     def handle(self, request):
         url = request.url
         method = request.method
+        parsed_path = urlparse(url).path
 
         for route in self.routes:
             if route.matches(method, url):
@@ -30,11 +32,12 @@ class RequestRouter:
                 return
 
         # 특수 케이스: 모바일 삭제
-        if method == 'GET' and url.startswith(self.base_mobile_path):
+        if method == 'GET' and parsed_path.startswith(self.base_mobile_path):
             params = parse_qs(urlparse(url).query)
             required_keys = {'timestamp', 'bookingStartDt', 'data', 'bookingNumber'}
             if required_keys.issubset(params):
                 self.request_set_delete_mobile(request, 'delete_mobile')
+
 
     def request_set(self, request, action):
         response = wait_for_response(request)
