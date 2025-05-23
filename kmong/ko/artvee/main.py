@@ -703,76 +703,94 @@ def collection_main(category, excelCheck, downloadCheck)->None:
         return
     print(f"{fileInfo} 이미지 추출중")
 
+    MAX_PATH_LENGTH = 260  # Windows 제한
+    ext = ".jpg"
+
     for idx, dataInfo in enumerate(tqdm(df_excel["skdata"])):
         imageUrl = f"https://mdl.artvee.com/sdl/{dataInfo}sdl.jpg"
-        nameInfo = df_excel.at[idx,"작가명"]
-        pieceInfo = df_excel.at[idx,"작품명"]
-        idInfo = df_excel.at[idx,"ID"]
-        imageIs = df_excel.at[idx,"이미지 저장여부"]
-        if downloadCheck =="2" and imageIs != "X":
+        nameInfo = df_excel.at[idx, "작가명"]
+        pieceInfo = df_excel.at[idx, "작품명"]
+        idInfo = df_excel.at[idx, "ID"]
+        imageIs = df_excel.at[idx, "이미지 저장여부"]
+
+        if downloadCheck == "2" and imageIs != "X":
             continue
-        filename = f"{nameInfo}_{pieceInfo}_{idInfo}"
+
+        original_filename = f"{nameInfo}_{pieceInfo}_{idInfo}"
+        safe_filename = original_filename.replace("/", "_").replace("\\", "_").strip()
+
         try:
-            imageInfo = requests.get(imageUrl,headers=headers,timeout=30)
-        except Exception as e: # timeout으로 인한 넘김
+            imageInfo = requests.get(imageUrl, headers=headers, timeout=30)
+        except Exception as e:
             print(f'e :{e}')
-            print(f"{filename} 저장 실패")
-            df_excel.at[idx,"이미지 저장여부"] = "X"
+            print(f"{safe_filename} 저장 실패")
+            df_excel.at[idx, "이미지 저장여부"] = "X"
             time.sleep(5)
             continue
+
         if imageInfo.status_code == 200:
             try:
-                # (1) category 경로에 저장
+                # ✅ (1) category 경로에 저장
                 os.makedirs(imageCategoryPath, exist_ok=True)
-                f = open(f"{imageCategoryPath}/{filename}.jpg",'wb')
-                f.write(imageInfo.content)
-                f.close()
+                full_path_category = str(Path(imageCategoryPath).resolve())
+                max_filename_length_category = MAX_PATH_LENGTH - len(full_path_category) - 1 - len(ext)
 
-                MAX_PATH_LENGTH = 260  # Windows 제한
+                filename_category = safe_filename
+                omitted_flag = "X"
+                if len(filename_category) > max_filename_length_category:
+                    filename_category = filename_category[:max_filename_length_category]
+                    omitted_flag = "O"
 
-                # ✅ (2) 작가별 폴더에도 저장 (추가)
+                with open(Path(imageCategoryPath) / f"{filename_category}{ext}", 'wb') as f:
+                    f.write(imageInfo.content)
+
+                # ✅ (2) 작가별 폴더에도 저장
                 os.makedirs(imageArtistPath, exist_ok=True)
                 safe_artist_name = nameInfo.replace("/", "_").replace("\\", "_").strip()
                 artist_dir = Path(imageArtistPath) / safe_artist_name
                 artist_dir.mkdir(parents=True, exist_ok=True)
 
-                # 전체 경로 계산
-                full_path_base = str(artist_dir.resolve())
-                ext = ".jpg"
-                max_filename_length = MAX_PATH_LENGTH - len(full_path_base) - 1 - len(ext)  # -1 for slash
+                full_path_artist = str(artist_dir.resolve())
+                max_filename_length_artist = MAX_PATH_LENGTH - len(full_path_artist) - 1 - len(ext)
 
-                # 파일명 잘림 여부 확인 및 자르기
-                original_filename = filename
-                if len(original_filename) > max_filename_length:
-                    filename = original_filename[:max_filename_length]
+                filename_artist = safe_filename
+                if len(filename_artist) > max_filename_length_artist:
+                    filename_artist = filename_artist[:max_filename_length_artist]
                     omitted_flag = "O"
-                else:
-                    omitted_flag = "X"
-                df_excel.at[idx, "이미지 명"] = f"{filename}{ext}"
-                df_excel.at[idx, "이미지 명 생략여부"] = omitted_flag
-                image_path = artist_dir / f"{filename}{ext}"
+
+                image_path = artist_dir / f"{filename_artist}{ext}"
                 with open(image_path, 'wb') as f:
                     f.write(imageInfo.content)
+
+                # 엑셀 정보 업데이트
+                df_excel.at[idx, "이미지 명"] = f"{filename_artist}{ext}"
+                df_excel.at[idx, "이미지 명 생략여부"] = omitted_flag
                 df_excel.at[idx, "이미지 저장여부"] = ""
-            except Exception as e: # timeout으로 인한 넘김
+
+            except Exception as e:
                 print(f'e :{e}')
-                print(f"{filename} 저장 실패")
-                df_excel.at[idx,"이미지 저장여부"] = "X"
+                print(f"{safe_filename} 저장 실패")
+                df_excel.at[idx, "이미지 저장여부"] = "X"
                 time.sleep(5)
+
         elif imageInfo.status_code == 404:
-            soup = BeautifulSoup(imageInfo.content,"xml")
+            soup = BeautifulSoup(imageInfo.content, "xml")
             errormsg = soup.find("Code").text
             if errormsg.find("NoSuchKey") != -1:
-                df_excel.at[idx,"이미지 저장여부"] = "없음"
+                df_excel.at[idx, "이미지 저장여부"] = "없음"
                 continue
+
         else:
-            print(f"{filename} 저장 실패")
-            df_excel.at[idx,"이미지 저장여부"] = "X"
+            print(f"{safe_filename} 저장 실패")
+            df_excel.at[idx, "이미지 저장여부"] = "X"
             time.sleep(5)
+
         time.sleep(0.5)
-    with pd.ExcelWriter(f"{excelPath}/{fileInfo}",engine='openpyxl') as writer: #xlsxwriter
-        df_excel.to_excel(writer,sheet_name="1",index=False)
-        df_excel_data.to_excel(writer,sheet_name="2",index=False)
+
+    # ✅ 엑셀 저장
+    with pd.ExcelWriter(f"{excelPath}/{fileInfo}", engine='openpyxl') as writer:
+        df_excel.to_excel(writer, sheet_name="1", index=False)
+        df_excel_data.to_excel(writer, sheet_name="2", index=False)
 
 
 if __name__ == "__main__":
