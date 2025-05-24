@@ -96,6 +96,8 @@ class ARTVEE:
         totalCount = 1
         totalImageInfoList:list[dict] = []
         while 1:
+            if i == 2:
+                break
             url = f"{collectionUrl}page/{i}?&per_page=70"
             try:
                 res = requests.get(url,headers=self.headers)
@@ -157,20 +159,20 @@ class ARTVEE:
                     standardX = standard[0].strip()
                     standardY = standard[1].strip()
                 except:
-                    standardX = "정보없음"
-                    standardY = "정보없음"
+                    standardX = ""
+                    standardY = ""
                 try:
                     max = sizeData["hdlimagesize"].split("px")[0].split("x")
                     maxX = max[0].strip()
                     maxY = max[1].strip()
                 except:
-                    maxX = "정보없음"
-                    maxY = "정보없음"
+                    maxX = ""
+                    maxY = ""
                 pieceUrl = str(infoData.find("a")["href"])
                 pieceInfo = infoData.find("h3",class_="product-title").text.strip()
                 title = pieceInfo.split("(")[0].strip()
                 if len(pieceInfo.split("(")) == 1:
-                    birth = "없음"
+                    birth = ""
                 elif len(pieceInfo.split("(")) == 2:
                     birth = pieceInfo.split("(")[1].split(")")[0].strip()
                 elif len(pieceInfo.split("(")) == 3:
@@ -178,7 +180,7 @@ class ARTVEE:
                 try:
                     int(birth)
                 except:
-                    birth = "없음"
+                    birth = ""
                 if title == "":
                     title = "("+pieceInfo.split("(")[1].split("(")[0].strip()
                 df_info = pd.DataFrame.from_dict([{
@@ -447,7 +449,7 @@ def main()->None:
                 soup = BeautifulSoup(imageInfo.content,"xml")
                 errormsg = soup.find("Code").text
                 if errormsg.find("NoSuchKey") != -1:
-                    df_excel.at[idx,"이미지 저장여부"] = "없음"
+                    df_excel.at[idx,"이미지 저장여부"] = "X"
                     continue
             else:
                 print(f"{filename} 저장 실패")
@@ -520,7 +522,7 @@ def sub_main()->None:
     currentPath = os.getcwd().replace("\\","/")
     excelCheck = input("전체 엑셀 추출 하시겠습니까? 1.예 2. 아니오 : ").strip()
     downloadCheck = input("1. 이미지 다운로드 / 2. 다운안된 이미지 재 다운로드 : ")
-    firstSheetColumn = ["페이지","작가순서","그림순서","ID","작가명","작품명","작품명풀네임","국가","장르","작품년도","수량","Px-가로","Px-세로","MaxPx-가로","MaxPx-세로","url","skdata","이미지 저장여부"]
+    firstSheetColumn = ["페이지","작가순서","그림순서","ID","작가명","작품명","작품명풀네임","국가","장르","작품년도","수량","Px-가로","Px-세로","MaxPx-가로","MaxPx-세로","url","skdata","이미지 저장여부", "에러내용"]
     secondSheetColumn = ["","페이지","작가명","국가","수량","작가내용"]
     totalImageInfoList:list[dict] = []
     excelIndex = 1
@@ -647,21 +649,31 @@ def collection_filter()-> tuple[str, str]:
     return excelCheck, downloadCheck
 
 
-def collection_main(category, excelCheck, downloadCheck)->None:
-    currentPath = os.getcwd()  # 현재 작업 디렉터리
+def collection_main(category, excelCheck, downloadCheck) -> None:
+    currentPath = os.getcwd().replace("\\", "/")
     excelPath = f"{currentPath}/result/excel/collection"
+    os.makedirs(excelPath, exist_ok=True)
+
     file_path = os.path.join(excelPath, f"artvee_{category}.xlsx")
+    firstSheetColumn = ["페이지", "ID", "작가명", "작품명", "작품명풀네임", "국가", "국적및생몰년도", "장르", "작품년도",
+                        "Px-가로", "Px-세로", "MaxPx-가로", "MaxPx-세로", "url", "skdata", "이미지 명", "이미지 명 생략여부", "이미지 저장여부", "에러내용"]
+    secondSheetColumn = ["페이지", "작가명", "국가", "수량", "작가내용"]
+
+    # 파일이 없으면 생성
     if not os.path.exists(file_path):
-        print(f"artvee_{category}.xlsx 파일이 존재하지 않습니다.")
-        return None
-    # 파일이 존재하면 아래 작업을 진행
-    print(f"artvee_{category}.xlsx 파일이 존재합니다.")
-    currentPath = os.getcwd().replace("\\","/")
-    firstSheetColumn = ["페이지","ID","작가명","작품명","작품명풀네임","국가","국적및생몰년도","장르","작품년도","Px-가로","Px-세로","MaxPx-가로","MaxPx-세로","url","skdata","이미지 명", "이미지 명 생략여부", "이미지 저장여부"]
-    secondSheetColumn = ["페이지","작가명","국가","수량","작가내용"]
-    totalImageInfoList:list[dict] = []
+        print(f"✅ artvee_{category}.xlsx 파일이 존재하지 않아 새로 생성합니다.")
+        df1 = pd.DataFrame(columns=firstSheetColumn)
+        df2 = pd.DataFrame(columns=secondSheetColumn)
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df1.to_excel(writer, sheet_name="1", index=False)
+            df2.to_excel(writer, sheet_name="2", index=False)
+    else:
+        print(f"📂 artvee_{category}.xlsx 파일이 존재합니다.")
+
+    # 엑셀 로딩 후 작업 진행
+    totalImageInfoList: list[dict] = []
     artvee = ARTVEE()
-    headers=artvee.login()
+    headers = artvee.login()
 
     collectionUrl = f"https://artvee.com/c/{category}/"
     collectionCount = "0"
@@ -711,7 +723,9 @@ def collection_main(category, excelCheck, downloadCheck)->None:
     df_excel["이미지 명"] = df_excel["이미지 명"].astype(str)
     df_excel["이미지 명 생략여부"] = df_excel["이미지 명 생략여부"].astype(str)
     df_excel["이미지 저장여부"] = df_excel["이미지 저장여부"].astype(str)
+    df_excel["에러내용"] = df_excel["에러내용"].astype(str)
 
+    # 메인 다운로드 루프
     for idx, dataInfo in enumerate(tqdm(df_excel["skdata"])):
         imageUrl = f"https://mdl.artvee.com/sdl/{dataInfo}sdl.jpg"
         nameInfo = df_excel.at[idx, "작가명"]
@@ -720,10 +734,20 @@ def collection_main(category, excelCheck, downloadCheck)->None:
         imageIs = df_excel.at[idx, "이미지 저장여부"]
 
         if downloadCheck == "2" and imageIs != "X":
+            # 🔧 NaN 값 공백으로 처리 (3개 컬럼)
+            for col in ["이미지 저장여부", "이미지 명 생략여부", "에러내용"]:
+                val = df_excel.at[idx, col]
+                if pd.isna(val) or str(val).strip().lower() == "nan":
+                    df_excel.at[idx, col] = ""
             continue
 
         original_filename = f"{nameInfo}_{pieceInfo}_{idInfo}"
-        safe_filename = original_filename.replace("/", "_").replace("\\", "_").strip()
+        safe_filename = sanitize_filename(original_filename)
+
+        df_excel.at[idx, "이미지 저장여부"] = ""
+        df_excel.at[idx, "이미지 명"] = ""
+        df_excel.at[idx, "이미지 명 생략여부"] = ""
+        df_excel.at[idx, "에러내용"] = ""
 
         try:
             imageInfo = requests.get(imageUrl, headers=headers, timeout=30)
@@ -731,67 +755,63 @@ def collection_main(category, excelCheck, downloadCheck)->None:
             print(f'e :{e}')
             print(f"{safe_filename} 저장 실패")
             df_excel.at[idx, "이미지 저장여부"] = "X"
+            df_excel.at[idx, "이미지 명"] = ""
+            df_excel.at[idx, "이미지 명 생략여부"] = ""
+            df_excel.at[idx, "에러내용"] = f"{e}"
             time.sleep(5)
             continue
 
         if imageInfo.status_code == 200:
             try:
-                # ✅ (1) category 경로에 저장
+                # ✅ (1) category 저장
                 os.makedirs(imageCategoryPath, exist_ok=True)
-                full_path_category = str(Path(imageCategoryPath).resolve())
-                max_len_category = MAX_PATH_LENGTH - len(full_path_category) - 1 - len(ext)
-
-                filename_category = safe_filename
-                omitted_flag_category = "X"
-                if len(filename_category) > max_len_category:
-                    filename_category = filename_category[:max_len_category]
-                    omitted_flag_category = "O"
-
+                filename_category, omitted_cat = shorten_filename(Path(imageCategoryPath), safe_filename)
                 with open(Path(imageCategoryPath) / f"{filename_category}{ext}", 'wb') as f:
                     f.write(imageInfo.content)
 
-                # ✅ (2) 작가별 폴더에도 저장
-                os.makedirs(imageArtistPath, exist_ok=True)
-                safe_artist_name = nameInfo.replace("/", "_").replace("\\", "_").strip()
+                # ✅ (2) 작가별 폴더 저장
+                safe_artist_name = sanitize_filename(nameInfo)
                 artist_dir = Path(imageArtistPath) / safe_artist_name
                 artist_dir.mkdir(parents=True, exist_ok=True)
 
-                full_path_artist = str(artist_dir.resolve())
-                max_len_artist = MAX_PATH_LENGTH - len(full_path_artist) - 1 - len(ext)
-
-                filename_artist = safe_filename
-                omitted_flag_artist = "X"
-                if len(filename_artist) > max_len_artist:
-                    filename_artist = filename_artist[:max_len_artist]
-                    omitted_flag_artist = "O"
-
+                filename_artist, omitted_art = shorten_filename(artist_dir, safe_filename)
                 image_path = artist_dir / f"{filename_artist}{ext}"
                 with open(image_path, 'wb') as f:
                     f.write(imageInfo.content)
 
-                # ✅ 엑셀 정보 업데이트
+                # ✅ 엑셀 업데이트
                 df_excel.at[idx, "이미지 명"] = f"{filename_artist}{ext}"
-                df_excel.at[idx, "이미지 명 생략여부"] = (
-                    "O" if omitted_flag_category == "O" or omitted_flag_artist == "O" else "X"
-                )
+                df_excel.at[idx, "이미지 명 생략여부"] = "O" if "O" in [omitted_cat, omitted_art] else ""
                 df_excel.at[idx, "이미지 저장여부"] = ""
+                df_excel.at[idx, "에러내용"] = ""
 
             except Exception as e:
                 print(f'e :{e}')
                 print(f"{safe_filename} 저장 실패")
                 df_excel.at[idx, "이미지 저장여부"] = "X"
+                df_excel.at[idx, "이미지 명"] = ""
+                df_excel.at[idx, "이미지 명 생략여부"] = ""
+                df_excel.at[idx, "에러내용"] = f"{e}"
                 time.sleep(5)
 
         elif imageInfo.status_code == 404:
             soup = BeautifulSoup(imageInfo.content, "xml")
             errormsg = soup.find("Code").text
+            print(f"{safe_filename} {errormsg} 저장 실패")
             if "NoSuchKey" in errormsg:
-                df_excel.at[idx, "이미지 저장여부"] = "없음"
+
+                df_excel.at[idx, "이미지 저장여부"] = "X"
+                df_excel.at[idx, "이미지 명"] = ""
+                df_excel.at[idx, "이미지 명 생략여부"] = ""
+                df_excel.at[idx, "에러내용"] = "Download 확인 NoSuchKey"
                 continue
 
         else:
             print(f"{safe_filename} 저장 실패")
             df_excel.at[idx, "이미지 저장여부"] = "X"
+            df_excel.at[idx, "이미지 명"] = ""
+            df_excel.at[idx, "이미지 명 생략여부"] = ""
+            df_excel.at[idx, "에러내용"] = "기타에러"
             time.sleep(5)
 
         time.sleep(0.5)
@@ -801,6 +821,21 @@ def collection_main(category, excelCheck, downloadCheck)->None:
         df_excel.to_excel(writer, sheet_name="1", index=False)
         df_excel_data.to_excel(writer, sheet_name="2", index=False)
 
+# 🔧 파일명 안전화 함수
+def sanitize_filename(filename: str) -> str:
+    filename = filename.replace("/", "_").replace("\\", "_")
+    filename = re.sub(r'[<>:"|?*\u2018\u2019\u201C\u201D]', '', filename)  # ‘’, “”, 특수 따옴표 제거
+    return filename.strip()
+
+# 🔧 경로에 맞춰 파일명 자르기 함수
+def shorten_filename(base_path: Path, filename: str) -> (str, str):
+    MAX_PATH_LENGTH = 250  # Windows 제한
+    ext = ".jpg"
+    safe_name = sanitize_filename(filename)
+    max_len = MAX_PATH_LENGTH - len(str(base_path.resolve())) - 1 - len(ext)
+    if len(safe_name) > max_len:
+        return safe_name[:max_len], "O"
+    return safe_name, "X"
 
 if __name__ == "__main__":
     mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : / 4. collection by category 선택 : ")
