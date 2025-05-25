@@ -5,3 +5,5 @@ TEST_TOKEN               = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OTB
 BASE_BOOKING_PATH        = r'/rest/ui/booking'
 BASE_BOOKING_MOBILE_PATH = '/rest/ui/polling/booking/'
 BASE_RESERVATION_MOBILE_PATH = '/rest/ui/reservation/'
+
+
