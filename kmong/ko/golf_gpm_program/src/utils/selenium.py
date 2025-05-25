@@ -26,15 +26,17 @@ class SeleniumDriverManager:
         key_path = os.path.join(cert_dir, 'ca.key')
 
         seleniumwire_options = {
-            'disable_encoding': True,
-            'verify_ssl': True,
-            'intercept': True,  # 후킹 활성화
-            'ca_cert': cert_path,
+            'disable_encoding': True,      # ✅ 압축 응답 자동 해제
+            'verify_ssl': True,            # 인증서 유효성 검사 유지
+            'intercept': True,             # ✅ 응답 후킹 활성화
+            'ca_cert': cert_path,          # 사용자 인증서 지정
             'ca_key': key_path,
-            'exclude_hosts': [
+            'capture_headers': True,       # ✅ 헤더도 저장
+            'ignore_http_methods': ['OPTIONS'],  # ❌ Preflight 요청 무시
+            'exclude_hosts': [             # ✅ 제외할 도메인 최소화
                 'gstatic.com', 'google.com', 'googletagmanager.com', 'gvt1.com',
                 'polyfill-fastly.io', 'fonts.googleapis.com', 'fonts.gstatic.com',
-                'bizmall.golfzon.com', 'uf.gzcdn.net', 'https://i.gzcdn.net'
+                'bizmall.golfzon.com', 'uf.gzcdn.net', 'i.gzcdn.net'
             ]
         }
 

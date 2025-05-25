@@ -1,15 +1,16 @@
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtWidgets import (
-    QLabel, QVBoxLayout, QFrame, QHBoxLayout, QSizePolicy, QWidget, QPushButton, QDesktopWidget, QDialog
+    QLabel, QVBoxLayout, QFrame, QHBoxLayout, QSizePolicy, QWidget, QPushButton, QDesktopWidget, QDialog, QTextEdit
 )
 import requests
 
 from src.api.token import get_golf_token
 from src.ui.login_Info_dialog import LoginInfoDialog
 from src.ui.store_Info_dialog import StoreInfoDialog
+from src.utils.gui_log_bridge import log_bridge
 from src.workers.main_worker import MainWorker
-from src.utils.log import log, log_json
+from src.utils.log import log, log_json, set_gui_log_callback
 
 
 class LoginWindow(QWidget):
@@ -97,7 +98,7 @@ class LoginWindow(QWidget):
         """)
 
         # 항목
-        self.store_info_main_label = QLabel("• 매장명 : -")
+        self.store_info_main_label = QLabel("● 매장명 : -")
         self.store_info_main_label.setAlignment(Qt.AlignLeft)
         self.store_info_main_label.setFrameShape(QFrame.NoFrame)
         self.store_info_main_label.setStyleSheet("""
@@ -107,7 +108,7 @@ class LoginWindow(QWidget):
             padding: 5px 0;
         """)
 
-        self.store_info_local_label = QLabel("• 지   점 : -")
+        self.store_info_local_label = QLabel("● 지   점 : -")
         self.store_info_local_label.setAlignment(Qt.AlignLeft)
         self.store_info_local_label.setFrameShape(QFrame.NoFrame)
         self.store_info_local_label.setStyleSheet("""
@@ -260,6 +261,17 @@ class LoginWindow(QWidget):
         layout.addWidget(store_set_group)
         layout.addLayout(start_button_layout)
 
+        # ✅ 로그 출력창 추가
+        self.log_output = QTextEdit()
+        self.log_output.setReadOnly(True)
+        self.log_output.setFixedHeight(500)
+        self.log_output.setStyleSheet("font-size: 12px; background-color: #f7f7f7; border: 1px solid #cccccc;")
+        layout.addWidget(self.log_output)
+
+        # ✅ 로그 콜백 등록
+        log_bridge.connect_to(self.log_output.append)
+
+
         self.center_window()
 
     # 화면 중앙배치
@@ -322,14 +334,14 @@ class LoginWindow(QWidget):
             data = response.json()
 
             # 예시: 매장명과 지점명을 화면에 표시
-            self.store_info_main_label.setText(f"• 매장명 : {data.get('name', '-')}")
-            self.store_info_local_label.setText(f"• 지   점 : {data.get('branch', '-')}")
+            self.store_info_main_label.setText(f"● 매장명 : {data.get('name', '-')}")
+            self.store_info_local_label.setText(f"● 지   점 : {data.get('branch', '-')}")
 
             log(f"매장 정보 불러오기 성공")
-            log(f"• 매장명 : {data.get('name', '-')}")
-            log(f"• 지  점 : {data.get('branch', '-')}")
+            log(f"● 매장명 : {data.get('name', '-')}")
+            log(f"● 지  점 : {data.get('branch', '-')}")
 
         except requests.RequestException as e:
-            log(f"❌ 매장 정보 불러오기 실패: {str(e)}")
+            log(f"매장 정보 불러오기 실패: {str(e)}")
 
 

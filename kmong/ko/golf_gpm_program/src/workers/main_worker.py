@@ -7,6 +7,7 @@ from src.utils.log import log
 import time
 from collections import deque
 
+
 class MainWorker(QThread):
     def __init__(self, user_id, password, store_id, token):
         super().__init__()
@@ -25,7 +26,8 @@ class MainWorker(QThread):
             ReservationService(self.token, self.store_id),
             BASE_BOOKING_PATH,
             BASE_BOOKING_MOBILE_PATH,
-            BASE_RESERVATION_MOBILE_PATH
+            BASE_RESERVATION_MOBILE_PATH,
+            self.driver
         )
 
     def run(self):
