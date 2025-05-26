@@ -43,19 +43,9 @@ pyinstaller main.py `
   --version-file=version.txt
 
 
-pyinstaller main.py ^
-  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.crt;seleniumwire" ^
-  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.key;seleniumwire" ^
-  --icon "./image/icon.ico" ^
-  --name main ^
-  --console ^
-  --distpath "./dist" ^
-  --workpath "./build" ^
-  --version-file=version.txt
+
 
 6823189ccaf95dcb25d42273
-
-
 
 ca.crt
 ca.key
@@ -90,3 +80,15 @@ qwer1234
 
 앱 예약은 GPM 모바일 앱을 다운로드후 가능합니다.
 문의사항은 늦게라도 언제든 연락 주세요.
+
+
+pyinstaller main.py `
+  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.crt;seleniumwire" `
+  --add-data "D:\GIT\pythoncrawling\venv\Lib\site-packages\seleniumwire\ca.key;seleniumwire" `
+  --add-data ".env;." `
+  --icon "./image/icon.ico" `
+  --name main `
+  --noconsole `
+  --distpath "./dist" `
+  --workpath "./build" `
+  --version-file=version.txt

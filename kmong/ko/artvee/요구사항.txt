@@ -40,3 +40,5 @@ dist 폴더는 EXE 파일이 생성되는 최종 출력 폴더입니다.
 https://artvee.com/c/abstract/
 
 
+
+pyinstaller --icon=crawling.ico main.py

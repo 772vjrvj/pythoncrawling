@@ -95,9 +95,8 @@ class ARTVEE:
         i = 1
         totalCount = 1
         totalImageInfoList:list[dict] = []
+        artist_count_dict = {}
         while 1:
-            if i == 2:
-                break
             url = f"{collectionUrl}page/{i}?&per_page=70"
             try:
                 res = requests.get(url,headers=self.headers)
@@ -108,6 +107,7 @@ class ARTVEE:
                 continue
             if res.status_code != 200:
                 break
+
             time.sleep(random.uniform(0.45, 0.55))
             soup = BeautifulSoup(res.content,"html.parser")
             if soup.find("div",class_="entry-content") != None or str(soup).find("Sorry, we can't seem to find the page you're looking for") != -1:
@@ -128,7 +128,7 @@ class ARTVEE:
 
             total = soup.find("p",class_="woocommerce-result-count").text.replace("items","").strip()
 
-            artist_count_dict = {}
+
             for index, infoData in enumerate(infoList, start=1):
                 brand_div = infoData.find('div', class_='woodmart-product-brands-links')
                 country = ""
@@ -223,14 +223,20 @@ class ARTVEE:
                 df = pd.concat([df,df_info])
                 totalCount+=1
 
-            # 최종 작가별 수량 DataFrame 생성
-            df_data = pd.DataFrame(
-                [{"작가명": name, "수량": count}
-                 for name, count in artist_count_dict.items() if name != "작가명 없음"]
-                + [{"작가명": "작가명 없음", "수량": artist_count_dict["작가명 없음"]}]
-                if "작가명 없음" in artist_count_dict else
-                [{"작가명": name, "수량": count} for name, count in artist_count_dict.items()]
-            )
+        # 최종 작가별 수량 DataFrame 생성
+        # 작가명 없음이 있는 경우 처리
+        rows = []
+
+        for name, count in artist_count_dict.items():
+            if name != "작가명 없음":
+                rows.append({"작가명": name, "수량": count})
+
+        # 마지막에 "작가명 없음" 추가
+        if "작가명 없음" in artist_count_dict:
+            rows.append({"작가명": "작가명 없음", "수량": artist_count_dict["작가명 없음"]})
+
+        df_data = pd.DataFrame(rows)
+
 
         return [df,df_data,totalImageInfoList]
 
@@ -657,7 +663,7 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
     file_path = os.path.join(excelPath, f"artvee_{category}.xlsx")
     firstSheetColumn = ["페이지", "ID", "작가명", "작품명", "작품명풀네임", "국가", "국적및생몰년도", "장르", "작품년도",
                         "Px-가로", "Px-세로", "MaxPx-가로", "MaxPx-세로", "url", "skdata", "이미지 명", "이미지 명 생략여부", "이미지 저장여부", "에러내용"]
-    secondSheetColumn = ["페이지", "작가명", "국가", "수량", "작가내용"]
+    secondSheetColumn = ["작가명", "수량"]
 
     # 파일이 없으면 생성
     if not os.path.exists(file_path):
@@ -726,7 +732,11 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
     df_excel["에러내용"] = df_excel["에러내용"].astype(str)
 
     # 메인 다운로드 루프
-    for idx, dataInfo in enumerate(tqdm(df_excel["skdata"])):
+
+    total_records = len(df_excel["skdata"])
+    print(f"🔢 총 레코드 수: {total_records}")
+
+    for idx, dataInfo in enumerate(tqdm(df_excel["skdata"], desc="이미지 저장 중", total=total_records)):
         imageUrl = f"https://mdl.artvee.com/sdl/{dataInfo}sdl.jpg"
         nameInfo = df_excel.at[idx, "작가명"]
         pieceInfo = df_excel.at[idx, "작품명"]
@@ -837,8 +847,20 @@ def shorten_filename(base_path: Path, filename: str) -> (str, str):
         return safe_name[:max_len], "O"
     return safe_name, "X"
 
+def count_images_in_folder(folder_path):
+    """주어진 폴더에서 .jpg 파일의 개수를 셈"""
+    image_count = 0
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.lower().endswith(".jpg"):
+                image_count += 1
+    return image_count
+
+
+
+
 if __name__ == "__main__":
-    mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : / 4. collection by category 선택 : ")
+    mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : / 4. collection by category 선택 : / 5. 이미지 수 확인" )
     if mode == "1":
         try:
             main()
@@ -896,6 +918,57 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"{str(e)} 오류로 인한 종료")
             traceback.print_exc()
+
+    elif mode == "5":
+        # 카테고리 번호와 카테고리 매핑
+        category_map = {
+            1: "abstract",
+            2: "figurative",
+            3: "landscape",
+            4: "posters",
+            5: "illustration",
+            6: "religion",
+            7: "drawings",
+            8: "mythology",
+            9: "botanical",
+            10: "asian-art",
+            11: "animals"
+        }
+
+        # 카테고리 번호 입력 받기
+        print("\n")
+        print("-------------------------------------------------------------------------------------")
+        print("\n")
+        print("1. Abstract / 2. Figurative / 3. Landscape / 4. Posters / 5. Illustration")
+        print("6. Religion / 7. Drawings / 8. Mythology / 9. Botanical / 10. Asian Art / 11. Animals")
+        selected = input("이미지수를 확인할 카테고리 번호를 입력하세요 (예: 1,3,5): ")
+
+        selected_categories = [int(num.strip()) for num in selected.split(",")]
+
+        for category_num in selected_categories:
+            if category_num not in category_map:
+                print(f"잘못된 번호입니다: {category_num}")
+                continue
+
+            category_name = category_map[category_num]
+            category_path = os.path.join("result", "image", "collection", category_name, "category")
+
+            # category 폴더 내 이미지 수
+            category_image_count = count_images_in_folder(category_path)
+            print(f"{category_name} 카테고리 'category' 폴더 내 이미지 수: {category_image_count}개")
+
+            # artist 폴더 내 이미지 수
+            artist_folder_path = os.path.join("result", "image", "collection", category_name, "artist")
+            artist_image_count = 0
+            for artist_folder in os.listdir(artist_folder_path):
+                artist_path = os.path.join(artist_folder_path, artist_folder)
+                if os.path.isdir(artist_path):
+                    artist_image_count += count_images_in_folder(artist_path)
+
+            print(f"{category_name} 카테고리 'artist' 폴더 내 이미지 수: {artist_image_count}개")
+            print("-------------------------------------------------------------------------------------")
+
+
     input("완료")
 
 

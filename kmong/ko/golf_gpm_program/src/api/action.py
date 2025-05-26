@@ -19,6 +19,9 @@ def send_to_external_api_action(token, store_id, action, payload, param_type):
             url = f"{EXTERNAL_API_BASE_URL}/stores/{store_id}/reservation/crawl"
 
         method = {"register": requests.post, "edit": requests.patch, "delete": requests.delete}.get(action)
+
+        # 판도쪽 register의 문제로(store_id + bookingnum으로 key를 줘서 에러남) edit로 당분간 대체 2025-05-26
+        method = {"register": requests.patch, "edit": requests.patch, "delete": requests.delete}.get(action)
         log(f"[{action}] : {url}")
         if method:
             response = method(url, headers=headers, json=payload)

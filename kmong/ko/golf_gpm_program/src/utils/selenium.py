@@ -19,25 +19,38 @@ class SeleniumDriverManager:
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
 
-        # PyInstaller 환경을 고려한 인증서 경로 설정
+        # ✅ 디스크 캐시 비활성화
+        chrome_options.add_argument('--disk-cache-size=0')
+        chrome_options.add_argument('--disable-application-cache')
+        chrome_options.add_argument('--media-cache-size=0')
+
+        # ✅ HTTP 캐시 무력화 헤더
+        header_overrides = {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+
+        # PyInstaller 환경 대응
         base_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
         cert_dir = os.path.join(base_path, 'seleniumwire')
         cert_path = os.path.join(cert_dir, 'ca.crt')
         key_path = os.path.join(cert_dir, 'ca.key')
 
         seleniumwire_options = {
-            'disable_encoding': True,      # ✅ 압축 응답 자동 해제
-            'verify_ssl': True,            # 인증서 유효성 검사 유지
-            'intercept': True,             # ✅ 응답 후킹 활성화
-            'ca_cert': cert_path,          # 사용자 인증서 지정
+            'disable_encoding': True,
+            'verify_ssl': True,
+            'intercept': True,
+            'ca_cert': cert_path,
             'ca_key': key_path,
-            'capture_headers': True,       # ✅ 헤더도 저장
-            'ignore_http_methods': ['OPTIONS'],  # ❌ Preflight 요청 무시
-            'exclude_hosts': [             # ✅ 제외할 도메인 최소화
+            'capture_headers': True,
+            'ignore_http_methods': ['OPTIONS'],
+            'exclude_hosts': [
                 'gstatic.com', 'google.com', 'googletagmanager.com', 'gvt1.com',
                 'polyfill-fastly.io', 'fonts.googleapis.com', 'fonts.gstatic.com',
                 'bizmall.golfzon.com', 'uf.gzcdn.net', 'i.gzcdn.net'
-            ]
+            ],
+            'request_storage_base_dir': None,  # 메모리 캐시 사용 시 필요
         }
 
         driver = webdriver.Chrome(
@@ -46,6 +59,10 @@ class SeleniumDriverManager:
             seleniumwire_options=seleniumwire_options
         )
 
+        # ✅ 캐시 무력화를 위한 헤더 설정
+        driver.header_overrides = header_overrides
+
+        # ✅ 탐지 회피용 JS 삽입
         driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": """
                 Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
