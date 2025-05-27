@@ -744,6 +744,7 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
         imageIs = df_excel.at[idx, "이미지 저장여부"]
 
         if downloadCheck == "2" and imageIs != "X":
+            print(f"⏭️ 다운로드 스킵됨 - idx: {idx}, ID: {idInfo}, 저장여부: {imageIs}")
             # 🔧 NaN 값 공백으로 처리 (3개 컬럼)
             for col in ["이미지 저장여부", "이미지 명 생략여부", "에러내용"]:
                 val = df_excel.at[idx, col]
@@ -754,7 +755,7 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
         original_filename = f"{nameInfo}_{pieceInfo}_{idInfo}"
         safe_filename = sanitize_filename(original_filename)
 
-        df_excel.at[idx, "이미지 저장여부"] = ""
+        df_excel.at[idx, "이미지 저장여부"] = "O"
         df_excel.at[idx, "이미지 명"] = ""
         df_excel.at[idx, "이미지 명 생략여부"] = ""
         df_excel.at[idx, "에러내용"] = ""
@@ -789,10 +790,12 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
                 with open(image_path, 'wb') as f:
                     f.write(imageInfo.content)
 
+                print(f"{idx + 1} : {filename_artist}{ext} 이미지 업로드 성공")
+
                 # ✅ 엑셀 업데이트
                 df_excel.at[idx, "이미지 명"] = f"{filename_artist}{ext}"
                 df_excel.at[idx, "이미지 명 생략여부"] = "O" if "O" in [omitted_cat, omitted_art] else ""
-                df_excel.at[idx, "이미지 저장여부"] = ""
+                df_excel.at[idx, "이미지 저장여부"] = "O"
                 df_excel.at[idx, "에러내용"] = ""
 
             except Exception as e:
@@ -805,17 +808,20 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
                 time.sleep(5)
 
         elif imageInfo.status_code == 404:
-            soup = BeautifulSoup(imageInfo.content, "xml")
-            errormsg = soup.find("Code").text
-            print(f"{safe_filename} {errormsg} 저장 실패")
-            if "NoSuchKey" in errormsg:
-
+            try:
+                soup = BeautifulSoup(imageInfo.content, "xml")
+                errormsg = soup.find("Code").text
+                print(f"{safe_filename} {errormsg} 저장 실패")
+                if "NoSuchKey" in errormsg:
+                    df_excel.at[idx, "이미지 저장여부"] = "X"
+                    df_excel.at[idx, "이미지 명"] = ""
+                    df_excel.at[idx, "이미지 명 생략여부"] = ""
+                    df_excel.at[idx, "에러내용"] = "Download 확인 NoSuchKey"
+            except Exception as e:
                 df_excel.at[idx, "이미지 저장여부"] = "X"
                 df_excel.at[idx, "이미지 명"] = ""
                 df_excel.at[idx, "이미지 명 생략여부"] = ""
-                df_excel.at[idx, "에러내용"] = "Download 확인 NoSuchKey"
-                continue
-
+                df_excel.at[idx, "에러내용"] = "404 처리중 에러"
         else:
             print(f"{safe_filename} 저장 실패")
             df_excel.at[idx, "이미지 저장여부"] = "X"
@@ -831,11 +837,13 @@ def collection_main(category, excelCheck, downloadCheck) -> None:
         df_excel.to_excel(writer, sheet_name="1", index=False)
         df_excel_data.to_excel(writer, sheet_name="2", index=False)
 
+
 # 🔧 파일명 안전화 함수
 def sanitize_filename(filename: str) -> str:
     filename = filename.replace("/", "_").replace("\\", "_")
     filename = re.sub(r'[<>:"|?*\u2018\u2019\u201C\u201D]', '', filename)  # ‘’, “”, 특수 따옴표 제거
     return filename.strip()
+
 
 # 🔧 경로에 맞춰 파일명 자르기 함수
 def shorten_filename(base_path: Path, filename: str) -> (str, str):
@@ -847,6 +855,7 @@ def shorten_filename(base_path: Path, filename: str) -> (str, str):
         return safe_name[:max_len], "O"
     return safe_name, "X"
 
+
 def count_images_in_folder(folder_path):
     """주어진 폴더에서 .jpg 파일의 개수를 셈"""
     image_count = 0
@@ -855,8 +864,6 @@ def count_images_in_folder(folder_path):
             if file.lower().endswith(".jpg"):
                 image_count += 1
     return image_count
-
-
 
 
 if __name__ == "__main__":
@@ -968,9 +975,4 @@ if __name__ == "__main__":
             print(f"{category_name} 카테고리 'artist' 폴더 내 이미지 수: {artist_image_count}개")
             print("-------------------------------------------------------------------------------------")
 
-
     input("완료")
-
-
-
-
