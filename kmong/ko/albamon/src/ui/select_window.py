@@ -49,10 +49,10 @@ class SelectWindow(QWidget):
         site_button_first.clicked.connect(lambda: self.select_site("albamon"))
 
 
-        # NEW1
-        site_button_second = QPushButton("NEW1", self)
+        # 알바천국
+        site_button_second = QPushButton("알바천국", self)
         site_button_second.setStyleSheet("""
-            background-color: #D2451E;
+            background-color: #3D3D3D;
             color: white;
             border-radius: 20px;
             font-size: 14px;
@@ -61,43 +61,12 @@ class SelectWindow(QWidget):
         site_button_second.setFixedHeight(40)
         site_button_second.setFixedWidth(300)  # 버튼 너비 설정
         site_button_second.setCursor(Qt.PointingHandCursor)
-        site_button_second.clicked.connect(lambda: self.select_site(""))
+        site_button_second.clicked.connect(lambda: self.select_site("alba"))
 
-
-        # NEW2
-        site_button_third = QPushButton("NEW2", self)
-        site_button_third.setStyleSheet("""
-            background-color: #000080;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        site_button_third.setFixedHeight(40)
-        site_button_third.setFixedWidth(300)  # 버튼 너비 설정
-        site_button_third.setCursor(Qt.PointingHandCursor)
-        site_button_third.clicked.connect(lambda: self.select_site(""))
-
-
-        # NEW3
-        site_button_forth = QPushButton("NEW3", self)
-        site_button_forth.setStyleSheet("""
-            background-color: #cccccc;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        site_button_forth.setFixedHeight(40)
-        site_button_forth.setFixedWidth(300)  # 버튼 너비 설정
-        site_button_forth.setCursor(Qt.PointingHandCursor)
-        site_button_forth.clicked.connect(lambda: self.select_site(""))
 
         # 레이아웃에 요소 추가
         layout.addWidget(site_button_first)
         layout.addWidget(site_button_second)
-        layout.addWidget(site_button_third)
-        layout.addWidget(site_button_forth)
 
         self.center_window()
 
@@ -118,20 +87,17 @@ class SelectWindow(QWidget):
     # 메인 화면 실행
     def select_site(self, site):
 
-        if site == "":
+        if site == "alba":
             self.show_message("접속실패", "해당 사이트는 준비중 입니다...")
             return None
         else:
 
             if site == "albamon":
                 color = "#FF6600"
-                check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
-            elif site == "ZALANDO":
-                color = "#D2451E"
-                check_list = ["Women", "Men", "Girls", "Boys", "Baby"]
-            elif site == "OLDNAVY":
-                color = "#000080"
-                check_list = ["Now Trending!", "Activewear", "Women", "Men", "Girls", "Boys", "Toddler", "Baby", "Maternity"]
+                check_list = []
+            elif site == "alba":
+                color = "#3D3D3D"
+                check_list = []
             else:
                 color = ""
                 check_list = []

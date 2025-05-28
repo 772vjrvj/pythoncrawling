@@ -1,44 +1,5928 @@
 {
-  "companyId": "4aytqkCAfWz-hdmAhsbQWg==",
-  "companyName": "㈜일도그룹",
-  "modifyDate": "2025-01-31",
-  "companyLogoUrl": "https://file.albamon.com/Albamon/Recruit/Photo/C-Photo-View?FN=2024\\12\\23\\JK_CO_fsmzzo24122311462891.jpg",
-  "representativeName": "박주영",
-  "businessItem": "부동산 분양 및 PM사업",
-  "phoneNumber": "",
-  "companyEmail": "",
-  "zipCode": "06134",
-  "address": "서울 강남구 테헤란로7길 7 (역삼동)",
-  "detailAddress": "12층",
-  "fullAddress": "서울 강남구 테헤란로7길 7 (역삼동) 12층",
-  "addressLatitude": 37.49962932507628,
-  "addressLongitude": 127.03041546267532,
-  "jobTypeName": "부동산·중개·임대",
-  "faxNumber": null,
-  "companyHomepage": "http://www.illdogr.com",
-  "establishDate": "2022-01-18",
-  "employeeCount": 90,
-  "companyTypeDescription": {
-    "key": "SMALL_COMPANY",
-    "value": 1,
-    "description": "중소기업 (300명 이하)"
+  "recruitListType": {
+    "key": "NORMAL_ALL",
+    "value": "ALL",
+    "description": "전체알바"
   },
-  "listedCompanyTypeDescription": {
-    "key": "UNLISTED",
-    "value": 0,
-    "description": "비상장"
+  "base": {
+    "pagination": {
+      "page": 3,
+      "size": 50,
+      "totalCount": 195250
+    },
+    "normal": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [
+        {
+          "pageNo": 3,
+          "pageIndex": 0,
+          "no": 101,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109784201,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CFS쿠팡 여주2센터] #최대급여247만원 #반품 품질검수사원 #대모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡풀필먼트서비스(유)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://link.coupang.com/re/CFSFIX?pageKey=YEO2FIX&src=8219216&lptag=Jump",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,475,980원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "입출고·창고관리"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.249363,
+          "longitude": 127.640045,
+          "existsMap": true,
+          "workplaceAddress": "경기도 여주시 점봉동 204-3 여주 쿠팡풀필먼트센터",
+          "workplaceArea": "경기 용인시 수지구 성복동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-9564-1399",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,산재보험,건강보험,대면근무,연차,주간,고용보험,초보 가능,국민연금,동종업종경력,점심제공,경조휴가제,퇴직금",
+          "featureTotal": "월급,여주시,경기,점봉동,쿠팡풀필먼트서비스 유한회사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 1,
+          "no": 102,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109784200,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CFS쿠팡 여주2센터] #최대급여247만원 #반품 품질검수사원 #대모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡풀필먼트서비스(유)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://link.coupang.com/re/CFSFIX?pageKey=YEO2FIX&src=8219216&lptag=Jump",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,475,980원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "입출고·창고관리"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.249363,
+          "longitude": 127.640045,
+          "existsMap": true,
+          "workplaceAddress": "경기도 여주시 점봉동 204-3 여주 쿠팡풀필먼트센터",
+          "workplaceArea": "경기 양평군 양서면",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-9564-1399",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,산재보험,건강보험,대면근무,연차,주간,고용보험,초보 가능,국민연금,동종업종경력,점심제공,경조휴가제,퇴직금",
+          "featureTotal": "월급,여주시,경기,점봉동,쿠팡풀필먼트서비스 유한회사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 2,
+          "no": 103,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109784199,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CFS쿠팡 여주2센터] #최대급여247만원 #반품 품질검수사원 #대모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡풀필먼트서비스(유)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://link.coupang.com/re/CFSFIX?pageKey=YEO2FIX&src=8219216&lptag=Jump",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,475,980원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "입출고·창고관리"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.249363,
+          "longitude": 127.640045,
+          "existsMap": true,
+          "workplaceAddress": "경기도 여주시 점봉동 204-3 여주 쿠팡풀필먼트센터",
+          "workplaceArea": "경기 양평군 양동면",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-9564-1399",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,산재보험,건강보험,대면근무,연차,주간,고용보험,초보 가능,국민연금,동종업종경력,점심제공,경조휴가제,퇴직금",
+          "featureTotal": "월급,여주시,경기,점봉동,쿠팡풀필먼트서비스 유한회사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 3,
+          "no": 104,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109784198,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CFS쿠팡 여주2센터] #최대급여247만원 #반품 품질검수사원 #대모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡풀필먼트서비스(유)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://link.coupang.com/re/CFSFIX?pageKey=YEO2FIX&src=8219216&lptag=Jump",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,475,980원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "입출고·창고관리"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.249363,
+          "longitude": 127.640045,
+          "existsMap": true,
+          "workplaceAddress": "경기도 여주시 점봉동 204-3 여주 쿠팡풀필먼트센터",
+          "workplaceArea": "경기 양평군 강하면",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-9564-1399",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,산재보험,건강보험,대면근무,연차,주간,고용보험,초보 가능,국민연금,동종업종경력,점심제공,경조휴가제,퇴직금",
+          "featureTotal": "월급,여주시,경기,점봉동,쿠팡풀필먼트서비스 유한회사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 4,
+          "no": 105,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109784196,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CFS쿠팡 여주2센터] #최대급여247만원 #반품 품질검수사원 #대모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡풀필먼트서비스(유)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://link.coupang.com/re/CFSFIX?pageKey=YEO2FIX&src=8219216&lptag=Jump",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,475,980원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "입출고·창고관리"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.249363,
+          "longitude": 127.640045,
+          "existsMap": true,
+          "workplaceAddress": "경기도 여주시 점봉동 204-3 여주 쿠팡풀필먼트센터",
+          "workplaceArea": "경기 양평군 강상면",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-9564-1399",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,산재보험,건강보험,대면근무,연차,주간,고용보험,초보 가능,국민연금,동종업종경력,점심제공,경조휴가제,퇴직금",
+          "featureTotal": "월급,여주시,경기,점봉동,쿠팡풀필먼트서비스 유한회사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 5,
+          "no": 106,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109784195,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CFS쿠팡 여주2센터] #최대급여247만원 #반품 품질검수사원 #대모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡풀필먼트서비스(유)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://link.coupang.com/re/CFSFIX?pageKey=YEO2FIX&src=8219216&lptag=Jump",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,475,980원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "입출고·창고관리"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.249363,
+          "longitude": 127.640045,
+          "existsMap": true,
+          "workplaceAddress": "경기도 여주시 점봉동 204-3 여주 쿠팡풀필먼트센터",
+          "workplaceArea": "강원 원주시 단구동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-9564-1399",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,산재보험,건강보험,대면근무,연차,주간,고용보험,초보 가능,국민연금,동종업종경력,점심제공,경조휴가제,퇴직금",
+          "featureTotal": "월급,여주시,경기,점봉동,쿠팡풀필먼트서비스 유한회사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 6,
+          "no": 107,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109739708,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[현대백화점] H.POINT 일반/채팅상담원 모집 합니다.",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "더 케이텍㈜ / 현대백화점 H.POINT 상담센터",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,142,990원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "백화점·쇼핑몰",
+            "콜센터관리·모니터링"
+          ],
+          "closingDate": "2025-06-09",
+          "closingDateWithDDay": "2025-06-09 (마감일 11일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.535725,
+          "longitude": 127.131775,
+          "existsMap": true,
+          "workplaceAddress": "서울 강동구 천호대로 1082 (성내동, 경남빌딩) 701호",
+          "workplaceArea": "서울 강동구 성내동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2082-2245",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "각종 경조금,퇴직연금,산재보험,건강보험,대면근무,연차,주간,고용보험,명절 귀향비 지급,초보 가능,국민연금,월차,동종업종경력,경조휴가제",
+          "featureTotal": "백화점,강동,길동역,월급,성내동,서울,천호,천호역,쇼핑몰,더 케이텍㈜,강동구,강동역,길동",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 7,
+          "no": 108,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109789741,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[동반大환영] 좌식비율높음+다음날 급여+기초화장품+익일지급+동춘역도보",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "역에서도보OK+중식제공+누구나가능+동반가능",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "10,030원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "하루(1일)",
+          "negoWorkPeriod": true,
+          "workingWeek": "월~금",
+          "workingDate": "5/29",
+          "trainee": false,
+          "parts": [
+            "제조·가공·조립",
+            "포장·품질검사",
+            "생산·건설·노무 기타"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.40492,
+          "longitude": 126.68079,
+          "existsMap": true,
+          "workplaceAddress": "인천 연수구 경원대로 180 (동춘동, 동춘역) 도보 10분",
+          "workplaceArea": "인천 부평구 부평동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-5348-9297",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주급가능,근무복 지급,야간근로수당,휴일근로수당,대면근무,연월차수당,석식제공,주간,연장근로수당,인근지역우대,친구와함께가능,대학휴학생우대,명절 귀향비 지급,초보 가능,근무기간협의,대학생우대,월차,동종업종경력,점심제공,퇴직금",
+          "featureTotal": "(주)씨드에이치알,동막,인천,쾌적한 업무공간,원인재,제조,원인재역,동춘역,자율복장,동춘동,건설,연수구,시급,동막역,동춘",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 8,
+          "no": 109,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109769352,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "(평일오전)아이센스리그PC방 신논현점에서 함께 일하실 분을 모집합니다.",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "아이센스리그PC방 신논현점",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "11,000원",
+          "negoPay": false,
+          "workingTime": "08:00~15:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "PC방"
+          ],
+          "closingDate": "2025-05-31",
+          "closingDateWithDDay": "2025-05-31 (마감일 2일전)",
+          "closingDDay": "D-2",
+          "age": "연령무관",
+          "latitude": 37.502724,
+          "longitude": 127.02291,
+          "existsMap": true,
+          "workplaceAddress": "서울특별시 서초구 사평대로56길 14 3층(서초동)",
+          "workplaceArea": "서울 강남구 논현동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "010-9010-1705 010-4231-1625",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,인근지역우대,동종업종경력,대면근무,주간",
+          "featureTotal": "서초구,신논현,사평,시급,서울,아이센스리그PC방 신논현점,서초동,강남,사평역,신논현역,강남역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 9,
+          "no": 110,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109798997,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "(月290만)분당 네이버스퀘어 보안사원 채용(3조2교대)",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜프로에스콤",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,900,000원",
+          "negoPay": false,
+          "workingTime": "시간협의",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "보안·경비·경호",
+            "서비스 기타"
+          ],
+          "closingDate": "2025-06-17",
+          "closingDateWithDDay": "2025-06-17 (마감일 19일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.385036,
+          "longitude": 127.123695,
+          "existsMap": true,
+          "workplaceAddress": "경기 성남시 분당구 황새울로360번길 42 (서현동, AK플라자) 네이버 분당스퀘어",
+          "workplaceArea": "경기 성남시 중원구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2400-4657 02-2183-0115",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,인근지역우대,고용보험,산재보험,국민연금,근무복 지급,건강보험,우수사원 표창/포상,동종업종경력,대면근무,경조휴가제,퇴직금,주간",
+          "featureTotal": "경비,근무복 지원,성남시 분당구,산재보험,건강보험,경조사 지원 ,경기,수내,보안,㈜프로에스콤,월급,이매,고용보험,국민연금 ,수내역,서현동,이매역,서현역,서현,퇴직금,우수사원 포상제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 10,
+          "no": 111,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109768416,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[3PL 업체] 입출고 지게차 사원모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "스타팩 물류센터",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,700,000원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "입출고·창고관리",
+            "지게차운전"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.247356,
+          "longitude": 127.246475,
+          "existsMap": true,
+          "workplaceAddress": "경기 용인시 처인구 주북로 130-1 (주북리) 스타팩",
+          "workplaceArea": "경기 용인시 처인구 양지면",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2751-3834",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,초보 가능,근무복 지급,근무기간협의,점심제공,대면근무,동종업종경력,주간",
+          "featureTotal": "월급,근무복 지원,용인시 처인구,점심 식사 지원,양지면,경기,비제이제이 컴퍼니",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 11,
+          "no": 112,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109768272,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[하루117,850원][통근버스O][초보O]+단순포장/조립",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "금요일4시퇴근/익일지급O",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "10,030원",
+          "negoPay": false,
+          "workingTime": "09:00~16:00",
+          "workingPeriod": "6개월~1년",
+          "negoWorkPeriod": true,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "포장·품질검사",
+            "물류피킹·포장·전산",
+            "생산·건설·노무 기타"
+          ],
+          "closingDate": "2025-06-13",
+          "closingDateWithDDay": "2025-06-13 (마감일 15일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.594913,
+          "longitude": 126.627686,
+          "existsMap": true,
+          "workplaceAddress": "인천 서구 검단로 187",
+          "workplaceArea": "인천 서구 당하동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-9545-7550 010-7697-2210",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,산재보험,주급가능,근무복 지급,건강보험,야간근로수당,휴일근로수당,대면근무,연차,연월차수당,석식제공,주간,연장근로수당,친구와함께가능,고용보험,초보 가능,통근버스 운행,국민연금,근무기간협의,월차,점심제공,퇴직금,정기휴가",
+          "featureTotal": "건설,오류동,시급,주식회사 비피에스,서구,인천,검단오류역,검단오류,왕길,왕길역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 2,
+          "reviewStarPoint": 3.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 12,
+          "no": 113,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109777920,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[약품사무]신촌세브란스병원 약품관리파트 사원 모집",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "[엔젤스태프]신촌 세브란스병원",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,567,900원",
+          "negoPay": false,
+          "workingTime": "08:30~17:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "매장관리·판매",
+            "약국",
+            "사무보조"
+          ],
+          "closingDate": "2025-06-13",
+          "closingDateWithDDay": "2025-06-13 (마감일 15일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.562366,
+          "longitude": 126.9408,
+          "existsMap": true,
+          "workplaceAddress": "서울 서대문구 연세로 50-1 (신촌동, 세브란스병원) 신촌세브란스",
+          "workplaceArea": "서울 서대문구 신촌동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-8380-4183",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "각종 경조금,산재보험,근무복 지급,건강보험,대면근무,연차,주간,연장근로수당,인근지역우대,고용보험,초보 가능,국민연금,동종업종경력,경조휴가제,퇴직금",
+          "featureTotal": "약국,신촌(경의중앙선),서울,서대문구,경의중앙선역,㈜엔젤스태프,휴가제도,경조사 지원 ,휴가비 지원,신촌,공휴일 휴무,월급,4대보험,각종 기념일 선물,이대,신촌역,이대역,신촌동,퇴직금,임직원 할인,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 13,
+          "no": 114,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109798985,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "(月290만)분당 네이버스퀘어 보안사원 채용(3조2교대)",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜프로에스콤",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,900,000원",
+          "negoPay": false,
+          "workingTime": "시간협의",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "보안·경비·경호",
+            "서비스 기타"
+          ],
+          "closingDate": "2025-06-17",
+          "closingDateWithDDay": "2025-06-17 (마감일 19일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.385036,
+          "longitude": 127.123695,
+          "existsMap": true,
+          "workplaceAddress": "경기 성남시 분당구 황새울로360번길 42 (서현동, AK플라자) 네이버 분당스퀘어",
+          "workplaceArea": "경기 성남시 분당구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2400-4657 02-2183-0115",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,인근지역우대,고용보험,산재보험,국민연금,근무복 지급,건강보험,우수사원 표창/포상,동종업종경력,대면근무,경조휴가제,퇴직금,주간",
+          "featureTotal": "경비,근무복 지원,성남시 분당구,산재보험,건강보험,경조사 지원 ,경기,수내,보안,㈜프로에스콤,월급,이매,고용보험,국민연금 ,수내역,서현동,이매역,서현역,서현,퇴직금,우수사원 포상제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 14,
+          "no": 115,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109772829,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[세종CU물류]정규직#월급300#일쉬움#꿀직장#조기퇴근#업계최고 근무환경",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "(유)비에스로지스틱",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,000,000원",
+          "negoPay": false,
+          "workingTime": "09:30~18:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~토",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "제조·가공·조립",
+            "상하차·소화물 분류",
+            "물류피킹·포장·전산"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.547604,
+          "longitude": 127.26544,
+          "existsMap": true,
+          "workplaceAddress": "연기면 공단로49",
+          "workplaceArea": "세종 세종시 연기면",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-6496-1020",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,차량유류보조금,산재보험,건강보험,야간근로수당,휴일근로수당,대면근무,연차,연월차수당,주간,연장근로수당,인근지역우대,고용보험,초보 가능,국민연금,주차비지원,월차,점심제공,동종업종경력,장기근속수당,퇴직금",
+          "featureTotal": "월급,4대보험,야간근로수당,경조사 지원 ,점심 식사 지원,휴일근로수당,(유)비에스로지스틱,유연근무,제조,유류비 지원,퇴직금,연차제도,연장근로수당",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 15,
+          "no": 116,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": true,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 108767597,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "도룡동 / 홀 서빙 / 정직원 채용",
+          "postedDate": "10분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "수린대전엑스포㈜",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,000,000원",
+          "negoPay": true,
+          "workingTime": "10:30~21:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주6일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서빙",
+            "일반음식점",
+            "레스토랑"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.376118,
+          "longitude": 127.39539,
+          "existsMap": true,
+          "workplaceAddress": "대전 유성구 엑스포로151번길 19 (도룡동, 도룡하우스디) 1층 F104호, F105호",
+          "workplaceArea": "대전 유성구 도룡동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "산재보험,근무복 지급,건강보험,우수사원 표창/포상,대면근무,연차,주간,고용보험,초보 가능,국민연금,장기근속자 포상,근무기간협의,동종업종경력,퇴직금",
+          "featureTotal": "근무복 지원,일반음식점,산재보험,건강보험,대전,유성구,장기근속 포상제도,도룡동,레스토랑,월급,고용보험,수린대전엑스포㈜,국민연금 ,퇴직금,우수사원 포상제도,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 16,
+          "no": 117,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109736396,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "(왕초보가능)동양생명 정보변경 단순 문의안내",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "[영업X][평일근무][교육비 일7만]",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,870,000원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "사무보조",
+            "문서작성·자료조사",
+            "고객상담·인바운드"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.62442,
+          "longitude": 127.028465,
+          "existsMap": true,
+          "workplaceAddress": "서울 강북구 미아동 127-7 KT강북지사",
+          "workplaceArea": "경기 의정부시 의정부동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            }
+          ],
+          "managerPhoneNumber": "010-9338-2126",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인센티브제,산재보험,건강보험,우수사원 표창/포상,휴일근로수당,대면근무,연차,연장근로수당,주간,친구와함께가능,고용보험,국민연금,장기근속자 포상,퇴직금",
+          "featureTotal": "서울,퇴직연금,미아동,미아역,경조사 지원 ,삼양사거리,사내 동호회 지원,양육비 지원,미아,삼양사거리역,공휴일 휴무,월급,삼양,4대보험,삼양역,자녀 교육비 지원 ,퍼스널비,강북구,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 17,
+          "no": 118,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 83944606,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[시급13,000원] 파르나스몰 치즈룸x멜팅샵 홀스탭 및 정규직 채용",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "[비안에프엔비] 치즈룸x멜팅샵",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "13,000원",
+          "negoPay": true,
+          "workingTime": "시간협의",
+          "workingPeriod": "3개월~6개월",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서빙",
+            "레스토랑",
+            "패밀리레스토랑"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.509197,
+          "longitude": 127.06078,
+          "existsMap": true,
+          "workplaceAddress": "서울 강남구 테헤란로 521 (삼성동, 파르나스타워) 지하1층 파르나스몰 F-1 치즈룸x멜팅샵",
+          "workplaceArea": "서울 강남구 삼성동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "010-9471-8861",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "야간교통비 지급,고용보험,산재보험,국민연금,근무복 지급,건강보험,점심제공,대면근무,퇴직금,주간",
+          "featureTotal": "패밀리레스토랑,교통비 지원,서울,근무복 지원,비안 엔프엔비,산재보험,건강보험,야간근로수당,삼성중앙,강남구,봉은사,삼성동,레스토랑,시급,고용보험,삼성,봉은사역,국민연금 ,삼성중앙역,삼성역,점심 식사 지원,퇴직금,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 3,
+          "reviewStarPoint": 2.4,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 18,
+          "no": 119,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109772830,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[높은급여/주급/상온/원룸무료]물류센터 지게차&피킹/단순피킹 사원 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "#주간#상온#쾌적환경#식사제공#가족같은분위기",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,800,000원",
+          "negoPay": false,
+          "workingTime": "08:00~18:00",
+          "workingPeriod": "3개월~6개월",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~토",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "상하차·소화물 분류",
+            "물류피킹·포장·전산",
+            "지게차운전"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 0.0,
+          "longitude": 0.0,
+          "existsMap": false,
+          "workplaceAddress": "서이천IC인근",
+          "workplaceArea": "경기 광주시 곤지암읍",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            }
+          ],
+          "managerPhoneNumber": "010-5798-5998",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,기숙사운영,산재보험,주급가능,건강보험,휴일근로수당,대면근무,연차,주간,연장근로수당,인근지역우대,고용보험,초보 가능,국민연금,점심제공,동종업종경력,퇴직금",
+          "featureTotal": "월급,4대보험,식사 지원,㈜태경홀딩스,점심 식사 지원,퇴직금",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 19,
+          "no": 120,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109772820,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[주5일]MZ 팀원 모집합니다. 유플러스 범계점",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜에프원",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,000,000원",
+          "negoPay": false,
+          "workingTime": "09:30~20:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "매장관리·판매",
+            "서비스 기타",
+            "고객상담·인바운드"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.38956,
+          "longitude": 126.95225,
+          "existsMap": true,
+          "workplaceAddress": "경기 안양시 동안구 동안로 120 (호계동, 평촌스포츠센타) 1층 엘지 유플러스",
+          "workplaceArea": "경기 안양시 동안구 호계동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            },
+            {
+              "key": "VISIT",
+              "value": "7",
+              "description": "바로방문"
+            }
+          ],
+          "managerPhoneNumber": "010-9393-6437",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "초보 가능,근무기간협의,월차,동종업종경력,대면근무,연차,정기휴가,주간",
+          "featureTotal": "월급,(주)에프원,평촌역,명학역,평촌,안양시 동안구,호계동,범계,명학,경기,범계역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 4,
+          "reviewStarPoint": 4.6,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 20,
+          "no": 121,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109786744,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[홍대개미 신세계백화점 센텀시티점] 주5일 주방 정사원 구함",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "주식회사 후니에프앤비",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,800,000원",
+          "negoPay": false,
+          "workingTime": "시간협의",
+          "workingPeriod": "6개월~1년",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "일반음식점"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 35.16884,
+          "longitude": 129.1295,
+          "existsMap": true,
+          "workplaceAddress": "부산 해운대구 센텀남대로 35 (우동, 신세계백화점센텀시티점) 지하1층 홍대개미",
+          "workplaceArea": "부산 해운대구 우동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            }
+          ],
+          "managerPhoneNumber": "010-6550-0258",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "각종 경조금,퇴직연금,인센티브제,산재보험,건강보험,우수사원 표창/포상,휴일근로수당,대면근무,연차,연장근로수당,주간,고용보험,국민연금,월차,점심제공,경조휴가제",
+          "featureTotal": "근무복 지원,일반음식점,센텀시티,벡스코역,산재보험,퇴직연금,민락,건강보험,경조사 지원 ,벡스코,휴일근로수당,연장근로수당,월급,고용보험,주식회사 후니에프앤비,민락역,센텀시티역,국민연금 ,부산,점심 식사 지원,해운대구,우동,인센티브 제도,우수사원 포상제도,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 10,
+          "reviewStarPoint": 3.3,
+          "payAdvance": true,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 21,
+          "no": 122,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109794093,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "# 에스원 TM센터 # 기 고객대상 # 아웃콜 진행",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "효성ITX㈜-정규직 / 영등포역 / 역세권 / 전화면접",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "https://www.dodreami.com/Job_details/243cf282-a521-41bd-9ad1-bf815232a302?WHERE=C0044005",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,250,000원",
+          "negoPay": false,
+          "workingTime": "09:30~18:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "텔레마케팅·아웃바운드"
+          ],
+          "closingDate": "2025-06-04",
+          "closingDateWithDDay": "2025-06-04 (마감일 6일전)",
+          "closingDDay": "D-6",
+          "age": "연령무관",
+          "latitude": 37.517105,
+          "longitude": 126.903336,
+          "existsMap": true,
+          "workplaceAddress": "서울 영등포구 영등포동4가 442 타임스퀘어 오피스 B동 12층",
+          "workplaceArea": "인천 미추홀구 주안1동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "HOMEPAGE",
+              "value": "3",
+              "description": "홈페이지"
+            }
+          ],
+          "managerPhoneNumber": "010-7467-3505 02-2102-8690",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "고용보험,초보 가능,각종 경조금,인센티브제,산재보험,국민연금,건강보험,대면근무,경조휴가제,연차,퇴직금,주간",
+          "featureTotal": "영등포시장역,효성ITX㈜,영등포구,월급,문래,영등포동4가,서울,영등포시장,영등포역,문래역,영등포",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 22,
+          "no": 123,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109790674,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "퀴즈노스 판교테크노밸리점 평일크루 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜유썸 퀴즈노스코리아",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "11,000원",
+          "negoPay": false,
+          "workingTime": "시간협의",
+          "workingPeriod": "6개월~1년",
+          "negoWorkPeriod": true,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "바리스타",
+            "패스트푸드점",
+            "커피전문점"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.40045,
+          "longitude": 127.10679,
+          "existsMap": true,
+          "workplaceAddress": "경기 성남시 분당구 대왕판교로 660 (삼평동, 유스페이스1) 1층 111,112호 Quiznos",
+          "workplaceArea": "경기 성남시 분당구 삼평동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-3157-9055 010-3423-7189",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "고용보험,초보 가능,산재보험,국민연금,건강보험,근무기간협의,동종업종경력,대면근무,주간",
+          "featureTotal": "판교,커피전문점,성남시 분당구,삼평동,바리스타,㈜유썸[퀴즈노스코리아],경기,패스트푸드점,시급,이매,4대보험,판교역,이매역,서현역,서현",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 2,
+          "reviewStarPoint": 3.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 23,
+          "no": 124,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109777904,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "자동차부품 생산(조립, 검사)부문 사원 모집(상여100%,월분할)",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "주식회사 인뱅크",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,500,000원",
+          "negoPay": false,
+          "workingTime": "08:00~17:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "제조·가공·조립",
+            "포장·품질검사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.242714,
+          "longitude": 126.9765,
+          "existsMap": true,
+          "workplaceAddress": "수원시 권선구 오목천로 132번길 33",
+          "workplaceArea": "경기 수원시 팔달구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            }
+          ],
+          "managerPhoneNumber": "010-7331-6159 031-376-2595",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "연장근로수당,인근지역우대,고용보험,산재보험,국민연금,근무복 지급,건강보험,휴일근로수당,점심제공,대면근무,동종업종경력,연월차수당,주간",
+          "featureTotal": "고색역,오목천역,근무복 지원,산재보험,휴가제도,건강보험,휴일근로수당,제조,오목천,연장근로수당,월급,고용보험,주식회사 인뱅크,고색,국민연금 ,점심 식사 지원",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 24,
+          "no": 125,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109765240,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "신한라이프 직무설명회/ 2시간참여 5만원",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "신한라이프생명보험 주식회사",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "BY_CASE",
+            "value": "D000",
+            "description": "건별"
+          },
+          "pay": "50,000원",
+          "negoPay": false,
+          "workingTime": "시간협의",
+          "workingPeriod": "하루(1일)",
+          "negoWorkPeriod": true,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "고객상담·인바운드",
+            "금융·보험영업"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "24~99세",
+          "latitude": 37.50318,
+          "longitude": 127.04606,
+          "existsMap": true,
+          "workplaceAddress": "서울 강남구 테헤란로 318 (역삼동) 신한L강남타워 9층 잠실사업단",
+          "workplaceArea": "서울 강남구 역삼동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "근무기간협의,대면근무,주간",
+          "featureTotal": "역삼역,서울,선릉역,선정릉,선릉,보험영업,신한라이프생명보험 주식회사,금융,건별,역삼동,역삼,강남구,선정릉역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 25,
+          "no": 126,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109798975,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[애견물류센터] 6월2일부터 + 익일지급 + 애견에 관심 있으신분 우대",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "6월2일부터#하루알바가능#애견에 관심 많으신분 우대",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "DAILY_WAGE",
+            "value": "B000",
+            "description": "일급"
+          },
+          "pay": "130,000원",
+          "negoPay": false,
+          "workingTime": "08:30~17:30",
+          "workingPeriod": "6개월~1년",
+          "negoWorkPeriod": true,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "입출고·창고관리",
+            "상하차·소화물 분류",
+            "물류피킹·포장·전산"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.25259,
+          "longitude": 127.51725,
+          "existsMap": true,
+          "workplaceAddress": "경기 이천시 부발읍 송온리 448",
+          "workplaceArea": "경기 이천시 부발읍",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2085-4006",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인근지역우대,고용보험,산재보험,국민연금,주급가능,근무기간협의,건강보험,동종업종경력,대면근무,연차,주간",
+          "featureTotal": "일급,주식회사 에이치제이시스템,식사 지원,경기,이천시,자율복장,부발읍",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 26,
+          "no": 127,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109798012,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "(양재동)건물 빌딩관리원,미화원 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜조은플러스",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,871,000원",
+          "negoPay": false,
+          "workingTime": "07:30~18:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "보안·경비·경호",
+            "청소·미화"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.474174,
+          "longitude": 127.04067,
+          "existsMap": true,
+          "workplaceAddress": "서울 서초구 마방로 16 (양재동, 재연빌딩) 양재동 261",
+          "workplaceArea": "서울 서초구 양재동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            }
+          ],
+          "managerPhoneNumber": "010-4753-1463",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인턴기간있음,각종 경조금,퇴직연금,근무복 지급,건강보험,휴일근로수당,대면근무,연차,주간,인근지역우대,고용보험,국민연금,월차,동종업종경력",
+          "featureTotal": "경비,서울,양재시민의숲역,퇴직연금,근무복 지원,양재동,건강보험,경조사 지원 ,양재시민의숲,휴일근로수당,매봉,양재,양재역,매봉역,서초구,보안,월급,(주)조은플러스,고용보험,국민연금 ,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 5,
+          "reviewStarPoint": 4.8,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 27,
+          "no": 128,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109754352,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[정규직] 수유리우동 주방업무 (금오점)",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "수유리우동(금오점)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "10,030원",
+          "negoPay": true,
+          "workingTime": "시간협의",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주6일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "주방장·조리사",
+            "주방보조·설거지",
+            "일반음식점"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.751617,
+          "longitude": 127.069374,
+          "existsMap": true,
+          "workplaceAddress": "경기 의정부시 청사로47번길 7-24 (금오동) 101호",
+          "workplaceArea": "경기 의정부시 금오동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2889-2244",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "인근지역우대,고용보험,산재보험,국민연금,건강보험,동종업종경력,대면근무,퇴직금,주간",
+          "featureTotal": "일반음식점,산재보험,건강보험,㈜밀밭,경기,효자역,의정부시,시급,고용보험,주방보조,국민연금 ,주방장,조리사,경기도청북부청사역,금오동,효자,새말역,퇴직금,새말,경기도청북부청사",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 28,
+          "no": 129,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109767934,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[서빙] 호텔 내 업장 서빙(백사이드) 아르바이트 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "워커힐호텔",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "HOURLY_WAGE",
+            "value": "A000",
+            "description": "시급"
+          },
+          "pay": "14,000원",
+          "negoPay": false,
+          "workingTime": "12:00~21:00",
+          "workingPeriod": "1개월~3개월",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서빙",
+            "호텔·리조트·숙박"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.558643,
+          "longitude": 127.11172,
+          "existsMap": true,
+          "workplaceAddress": "서울 광진구 워커힐로 177 (광장동, 워커힐호텔) 워커힐호텔",
+          "workplaceArea": "서울 광진구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "대면근무,주간",
+          "featureTotal": "암사역,광나루역,아차산,서울,광진구,근무복 지원,식사 지원,암사,호텔,시급,숙박,광장동,리조트,광나루,주식회사 해밀인,아차산역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 29,
+          "no": 130,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109799089,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "::13:30:: 점심먹고 나와서 전화받기 (간단문의/접수/안내팀)",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "+간단접수,타이핑/재택전환/cs업무/초보환영+",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,600,000원",
+          "negoPay": false,
+          "workingTime": "13:30~22:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "사무보조",
+            "고객상담·인바운드",
+            "쇼핑몰인바운드"
+          ],
+          "closingDate": "2025-05-30",
+          "closingDateWithDDay": "2025-05-30 (내일마감)",
+          "closingDDay": "내일마감",
+          "age": "연령무관",
+          "latitude": 35.139267,
+          "longitude": 129.06143,
+          "existsMap": true,
+          "workplaceAddress": "부산 동구 조방로 27 (범일동) 우신빌딩 2층 메타엠 #부산감만용당해운대다대장림쇼핑주문접수해피콜단순접수상담인바운드간단쉬운상담타자캐셔문의콜택시판매데스크심사확인1차남포동광복동연제",
+          "workplaceArea": "부산 부산진구 양정동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2395-4092",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "",
+          "featureTotal": "",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 30,
+          "no": 131,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109795397,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[주5일교대/오전조/오후조]단국대학교병원 조리사 및 주방보조 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "단국대학교병원 구내식당",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,450,000원",
+          "negoPay": false,
+          "workingTime": "10:00~19:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "주방장·조리사",
+            "주방보조·설거지",
+            "급식·푸드시스템"
+          ],
+          "closingDate": "2025-06-11",
+          "closingDateWithDDay": "2025-06-11 (마감일 13일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.842964,
+          "longitude": 127.173256,
+          "existsMap": true,
+          "workplaceAddress": "천안시 동남구 망향로 201 단국대학교병원",
+          "workplaceArea": "충남 천안시 서북구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-9764-1374",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "",
+          "featureTotal": "",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 31,
+          "no": 132,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109777424,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "+게임 안에서 정의구현+  배그 모니터링 인원모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "[게임QA] #핵사용 #모니터링 #운영지원",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "YEARLY_SALARY",
+            "value": "G000",
+            "description": "연봉"
+          },
+          "pay": "26,000,000원",
+          "negoPay": true,
+          "workingTime": "시간협의",
+          "workingPeriod": "6개월~1년",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "사무보조",
+            "사이트관리·기술지원",
+            "QA·테스터·검증"
+          ],
+          "closingDate": "2025-05-30",
+          "closingDateWithDDay": "2025-05-30 (내일마감)",
+          "closingDDay": "내일마감",
+          "age": "연령무관",
+          "latitude": 37.481915,
+          "longitude": 126.881584,
+          "existsMap": true,
+          "workplaceAddress": "서울 금천구 가산디지털1로 186 (가산동, 제이플라츠) 13층 #게임모니터링홍대마포합정영등포온수천왕광명부평부천소사안양안산시흥가리봉대림연수신도림철산qa게임행정사무보조라벨링ai모",
+          "workplaceArea": "경기 부천시 소사동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2395-4092",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "고용보험,각종 경조금,퇴직연금,산재보험,국민연금,건강보험,대면근무,경조휴가제,연차,주간",
+          "featureTotal": "철산,서울,가산디지털단지역,테스터,연봉,가산디지털단지,㈜메타엠,철산역,남구로역,금천구,가산동,남구로",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 32,
+          "no": 133,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109794806,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[격주 주간2교대]충남대학교 기숙사 식당 주방보조 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "충남대학교 기숙사 식당",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,800,000원",
+          "negoPay": false,
+          "workingTime": "05:30~14:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주6일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "주방보조·설거지",
+            "일반음식점",
+            "급식·푸드시스템"
+          ],
+          "closingDate": "2025-06-11",
+          "closingDateWithDDay": "2025-06-11 (마감일 13일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.368324,
+          "longitude": 127.341644,
+          "existsMap": true,
+          "workplaceAddress": "대전 유성구 대학로 99 충남대학교 기숙사",
+          "workplaceArea": "대전 유성구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-9764-1374",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "",
+          "featureTotal": "",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 33,
+          "no": 134,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109794558,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[366만원/기숙사/3교대/외국계]반도체소재 생산기술팀 제조 정규직",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜엔씨케이",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,660,000원",
+          "negoPay": false,
+          "workingTime": "08:00~17:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "제조·가공·조립",
+            "포장·품질검사",
+            "반도체·전자부품생산"
+          ],
+          "closingDate": "2025-06-11",
+          "closingDateWithDDay": "2025-06-11 (마감일 13일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.955578,
+          "longitude": 127.07927,
+          "existsMap": true,
+          "workplaceAddress": "경기 평택시 팽성읍 추팔리 401 (주)엔씨케이",
+          "workplaceArea": "충남 천안시 서북구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-3916-9488",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "",
+          "featureTotal": "",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 34,
+          "no": 135,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109790333,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "전화면접+혜택최고+문의사항 인바운드",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "타사에는없는혜택/신입지원팀/TM경력우대",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,650,000원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "사무보조",
+            "고객상담·인바운드",
+            "쇼핑몰인바운드"
+          ],
+          "closingDate": "2025-06-16",
+          "closingDateWithDDay": "2025-06-16 (마감일 18일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 35.19588,
+          "longitude": 129.07932,
+          "existsMap": true,
+          "workplaceAddress": "부산 연제구 중앙대로 1217 (거제동, 국제문화센터) 12층 [인바운드,아웃바운드,높은급여,고소득,정착금,장기근속,장기근무,알바,아르바이트,사무,사무보조,캐셔,판매,매장관리]",
+          "workplaceArea": "부산 동래구 사직동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2395-3794",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "",
+          "featureTotal": "",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 35,
+          "no": 136,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109786008,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "남녀/감기약 제약회사 기계조작 공정 생산직 F2 F4 F5 F6 환영",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "주5일근무 연장없음/성환역 두정역만 통근차 탑승",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,100,000원",
+          "negoPay": false,
+          "workingTime": "08:30~17:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "제조·가공·조립",
+            "포장·품질검사",
+            "기계조작·오퍼레이터"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 0.0,
+          "longitude": 0.0,
+          "existsMap": false,
+          "workplaceAddress": "충남 천안시 서북구 성환읍 000",
+          "workplaceArea": "충남 천안시 서북구 성환읍",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2433-6789",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,건강보험,우수사원 표창/포상,연차,연월차수당,주간,연장근로수당,인근지역우대,고용보험,근무기간협의,경조휴가제,장기근속수당,정기휴가,각종 경조금,산재보험,야간근로수당,근무복 지급,휴일근로수당,대면근무,급구,대학휴학생우대,초보 가능,통근버스 운행,국민연금,장기근속자 포상,월차,점심제공,퇴직금",
+          "featureTotal": "근무복 지원,산재보험,출퇴근 셔틀버스 운영,오퍼레이터,건강보험,경조사 지원 ,야간근로수당,휴일근로수당,제조,장기근속 포상제도,(주)헤만글로벌,연장근로수당,월급,고용보험,천안시 서북구,국민연금 ,점심 식사 지원,충남,퇴직금,우수사원 포상제도,성환읍,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 36,
+          "no": 137,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109790332,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "ㅣ지원금 최대 200만ㅣ롯데카드 단순문의 (TM경력도 우대)",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "+타사대비 혜택많음, 점심식권, 기프티콘+",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,550,000원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "사무보조",
+            "고객상담·인바운드",
+            "쇼핑몰인바운드"
+          ],
+          "closingDate": "2025-06-16",
+          "closingDateWithDDay": "2025-06-16 (마감일 18일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 35.19588,
+          "longitude": 129.07932,
+          "existsMap": true,
+          "workplaceAddress": "부산 연제구 중앙대로 1217 (거제동, 국제문화센터) 12층 [인바운드,아웃바운드,높은급여,고소득,정착금,장기근속,장기근무,알바,아르바이트,사무,사무보조,캐셔,판매,매장관리]",
+          "workplaceArea": "부산 해운대구 좌동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2395-3794",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "",
+          "featureTotal": "",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 37,
+          "no": 138,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": true,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 2
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109794086,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[성과급 120만원] 하나카드 발급파트 채용",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "하나카드㈜",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,199,060원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~금",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "매장관리·판매",
+            "물류피킹·포장·전산",
+            "QA·테스터·검증"
+          ],
+          "closingDate": "2025-06-17",
+          "closingDateWithDDay": "2025-06-17 (마감일 19일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.48559,
+          "longitude": 126.99438,
+          "existsMap": true,
+          "workplaceAddress": "서울 서초구 방배로 131 (방배동, 하나은행방배사옥)",
+          "workplaceArea": "서울 전체",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            }
+          ],
+          "managerPhoneNumber": "010-1111-1111 02-6924-9734",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "각종 경조금,산재보험,건강보험,대면근무,연차,주간,인근지역우대,고용보험,초보 가능,국민연금,동종업종경력,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "퇴직금,방배동,서울,이수역,야간근로수당,방배역,내방,성과급,생일 이벤트,서초구,월급,4대보험,이수,테스터,우수사원 포상제도,방배,㈜에이치엔서브,연차제도,내방역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": false
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 38,
+          "no": 139,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109755316,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[주5일교대/오전조/오후조]단국대학교병원 조리사 및 주방보조 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "단국대학교병원 구내식당",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,450,000원",
+          "negoPay": false,
+          "workingTime": "10:00~19:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "주방장·조리사",
+            "주방보조·설거지",
+            "급식·푸드시스템"
+          ],
+          "closingDate": "2025-06-09",
+          "closingDateWithDDay": "2025-06-09 (마감일 11일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.842964,
+          "longitude": 127.173256,
+          "existsMap": true,
+          "workplaceAddress": "천안시 동남구 망향로 201 단국대학교병원",
+          "workplaceArea": "충남 천안시 동남구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-9764-1374",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,인턴기간있음,각종 경조금,산재보험,근무복 지급,건강보험,야간근로수당,휴일근로수당,대면근무,연차,연월차수당,주간,연장근로수당,인근지역우대,고용보험,초보 가능,국민연금,근무기간협의,월차,동종업종경력,점심제공,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "월급,4대보험,주방보조,급식,식사 지원,주방장,㈜닥터잡,조리사,푸드시스템,퇴직금",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 39,
+          "no": 140,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109755241,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[격주 주간2교대]충남대학교 기숙사 식당 주방보조 모집",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "충남대학교 기숙사 식당",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "2,800,000원",
+          "negoPay": false,
+          "workingTime": "05:30~14:30",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": true,
+          "workingWeek": "주6일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "주방보조·설거지",
+            "일반음식점",
+            "급식·푸드시스템"
+          ],
+          "closingDate": "2025-06-09",
+          "closingDateWithDDay": "2025-06-09 (마감일 11일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.368324,
+          "longitude": 127.341644,
+          "existsMap": true,
+          "workplaceAddress": "대전 유성구 대학로 99 충남대학교 기숙사",
+          "workplaceArea": "대전 유성구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-9764-1374",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,인턴기간있음,각종 경조금,차량유류보조금,산재보험,근무복 지급,건강보험,휴일근로수당,대면근무,연차,연월차수당,주간,연장근로수당,인근지역우대,고용보험,초보 가능,국민연금,근무기간협의,월차,조식제공,동종업종경력,점심제공,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "충남대역,근무복 지원,일반음식점,목원대),식사 지원,명절선물/명절상여 지원,경조사 지원 ,갑천,대전,유성구,구암,목원대역,갑천역,구암역,월급,4대보험,주방보조,급식,궁동,㈜닥터잡,푸드시스템,유성온천(충남대,유성온천역,퇴직금",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 40,
+          "no": 141,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109753904,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[366만원/기숙사/3교대/외국계]반도체소재 생산기술팀 제조 정규직",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "㈜엔씨케이",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "3,660,000원",
+          "negoPay": false,
+          "workingTime": "08:00~17:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "제조·가공·조립",
+            "포장·품질검사",
+            "반도체·전자부품생산"
+          ],
+          "closingDate": "2025-06-09",
+          "closingDateWithDDay": "2025-06-09 (마감일 11일전)",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 36.955578,
+          "longitude": 127.07927,
+          "existsMap": true,
+          "workplaceAddress": "경기 평택시 팽성읍 추팔리 401 (주)엔씨케이",
+          "workplaceArea": "충남 천안시 서북구",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-3916-9488",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,차량유류보조금,건강보험,우수사원 표창/포상,연차,연월차수당,석식제공,주간,연장근로수당,친구와함께가능,고용보험,명절 귀향비 지급,경조휴가제,장기근속수당,정기휴가,인턴기간있음,기숙사운영,각종 경조금,인센티브제,산재보험,근무복 지급,야간근로수당,휴일근로수당,대면근무,초보 가능,국민연금,장기근속자 포상,월차,조식제공,점심제공,퇴직금",
+          "featureTotal": "반도체,식사 지원,명절선물/명절상여 지원,기숙사 지원,휴가제도,경조사 지원 ,성과급,경기,제조,장기근속 포상제도,상해보험,평택시,팽성읍,월급,4대보험,㈜닥터잡,퇴직금,연차제도",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 41,
+          "no": 142,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695309,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[새벽배송/생수전담] #월500만+a 외국인가능/초보환영/단순배송/잔업X",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡워터플랙스(생수전담배송 기사채용)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "01:00~11:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "요일협의",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "상하차·소화물 분류",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.682987,
+          "longitude": 126.75514,
+          "existsMap": true,
+          "workplaceAddress": "경기 고양시 일산서구 대화동 2035",
+          "workplaceArea": "경기 고양시 일산서구 대화동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,차량유류보조금,퇴직연금,산재보험,정기보너스,야간근로수당,근무복 지급,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "탄현,월급,고양시 일산서구,탄현역,일산역,일산,배송기사,택배,대화,경기,대화역,대화동,㈜ 라웰드",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 42,
+          "no": 143,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695256,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CJ생수배송초보가능] 자율출퇴근 단가제 월500만+a 동반가능 투잡환영",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "CJ대한통운(CJ생수전담배송)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~토",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "매장관리·판매 기타",
+            "서비스 기타",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.56033,
+          "longitude": 127.18879,
+          "existsMap": true,
+          "workplaceAddress": "경기 하남시 망월동 1071",
+          "workplaceArea": "경기 하남시 망월동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,퇴직연금,차량유류보조금,산재보험,정기보너스,근무복 지급,야간근로수당,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "월급,미사역,하남시,미사,하남풍산,하남풍산역,배송기사,택배,강일역,망월동,경기,강일,㈜ 라웰드",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 43,
+          "no": 144,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695254,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[CJ생수배송초보가능] 자율출퇴근 단가제 월500만+a 동반가능 투잡환영",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "CJ대한통운(CJ생수전담배송)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~토",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "매장관리·판매 기타",
+            "서비스 기타",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.38536,
+          "longitude": 127.28791,
+          "existsMap": true,
+          "workplaceAddress": "경기 광주시 초월읍 대쌍령리 204",
+          "workplaceArea": "경기 광주시 초월읍",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,차량유류보조금,퇴직연금,산재보험,정기보너스,야간근로수당,근무복 지급,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "월급,초월읍,광주시,배송기사,택배,경기,㈜ 라웰드",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 44,
+          "no": 145,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695198,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[초보환영/간편배송] 소화물배송+묶음배송/희망지역가능+경력무관+비대면배송",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "CJ대한통운 (분류작업 없는 소화물 전담 배송)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "09:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "월~토",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "화물·운송·이사",
+            "택배·배송기사",
+            "퀵서비스"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 35.19004,
+          "longitude": 129.09044,
+          "existsMap": true,
+          "workplaceAddress": "부산 연제구 연산동 313-10",
+          "workplaceArea": "부산 연제구 연산동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,퇴직연금,차량유류보조금,산재보험,정기보너스,근무복 지급,야간근로수당,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "택배,동래역,퀵서비스,㈜ 라웰드,연산동,연산역,월급,이사,연산,연제구,배송기사,부산,교대,교대역,운송,화물,동래",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 45,
+          "no": 146,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695164,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[쿠팡고정구역배송] 가벼운물량#희망지역근무#분류X#동반근무환영#초기비용X",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡 퀵플렉스 (쿠팡직영점에서 모집하는 배송기사 공고)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "상하차·소화물 분류",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.456688,
+          "longitude": 126.65334,
+          "existsMap": true,
+          "workplaceAddress": "인천 미추홀구 용현동 491-48",
+          "workplaceArea": "인천 미추홀구 용현동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,퇴직연금,차량유류보조금,산재보험,정기보너스,근무복 지급,야간근로수당,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "월급,인하대,인천,인하대역,제물포,배송기사,택배,미추홀구,숭의,용현동,㈜ 라웰드,제물포역,숭의역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 46,
+          "no": 147,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695163,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[쿠팡고정구역배송] 가벼운물량#희망지역근무#분류X#동반근무환영#초기비용X",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡 퀵플렉스 (쿠팡직영점에서 모집하는 배송기사 공고)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "상하차·소화물 분류",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.570343,
+          "longitude": 126.817055,
+          "existsMap": true,
+          "workplaceAddress": "서울 강서구 마곡동 733-2",
+          "workplaceArea": "서울 강서구 마곡동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,퇴직연금,차량유류보조금,산재보험,정기보너스,근무복 지급,야간근로수당,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "신방화역,공항시장역,월급,신방화,서울,마곡동,배송기사,택배,강서구,방화역,㈜ 라웰드,방화,공항시장",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 47,
+          "no": 148,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695162,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[쿠팡고정구역배송] 가벼운물량#희망지역근무#분류X#동반근무환영#초기비용X",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡 퀵플렉스 (쿠팡직영점에서 모집하는 배송기사 공고)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "상하차·소화물 분류",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 35.1804,
+          "longitude": 126.901184,
+          "existsMap": true,
+          "workplaceAddress": "광주 북구 용봉동 1228-7",
+          "workplaceArea": "광주 북구 용봉동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,퇴직연금,차량유류보조금,산재보험,정기보너스,근무복 지급,야간근로수당,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "월급,광주,배송기사,택배,북구,용봉동,㈜ 라웰드",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 48,
+          "no": 149,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695161,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[쿠팡고정구역배송] 가벼운물량#희망지역근무#분류X#동반근무환영#초기비용X",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡 퀵플렉스 (쿠팡직영점에서 모집하는 배송기사 공고)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "상하차·소화물 분류",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 37.269306,
+          "longitude": 127.03204,
+          "existsMap": true,
+          "workplaceAddress": "경기 수원시 팔달구 인계동 468",
+          "workplaceArea": "경기 수원시 팔달구 인계동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,퇴직연금,차량유류보조금,산재보험,정기보너스,근무복 지급,야간근로수당,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "인계동,월급,매교,매교역,매탄권선,배송기사,택배,경기,수원시 팔달구,수원시청,수원시청역,㈜ 라웰드,매탄권선역",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        },
+        {
+          "pageNo": 3,
+          "pageIndex": 49,
+          "no": 150,
+          "paidService": {
+            "useWanted": false,
+            "useMobilePick": false,
+            "useMobileIcon": false,
+            "useMobileCompanyNameColor": false,
+            "useMobileText": false,
+            "mobileText": "",
+            "useMobileHighlightText": false,
+            "mobileHighlightText": "",
+            "usePcHighlighter": false,
+            "pcTwinkleIconCode": "00",
+            "pcTwinkleIconText": "",
+            "usePcTwinkleColor": false,
+            "useAlbamonZ": false,
+            "totalProductCount": 1
+          },
+          "recruitSourceType": {
+            "key": "ALBAMON",
+            "value": "ALBAMON",
+            "description": "알바몬"
+          },
+          "recruitType": {
+            "key": "NORMAL",
+            "value": "NORMAL",
+            "description": "일반 공고"
+          },
+          "recruitNo": 109695160,
+          "jobkoreaRecruitNo": 0,
+          "recruitTitle": "[쿠팡고정구역배송] 가벼운물량#희망지역근무#분류X#동반근무환영#초기비용X",
+          "postedDate": "11분전",
+          "postStatusType": {
+            "key": "POSTING",
+            "value": "1",
+            "description": "게제중"
+          },
+          "companyName": "쿠팡 퀵플렉스 (쿠팡직영점에서 모집하는 배송기사 공고)",
+          "backgroundImageUrl": "",
+          "logoUrl": "",
+          "companyHomePageUrl": "",
+          "payType": {
+            "key": "MONTHLY_SALARY",
+            "value": "C000",
+            "description": "월급"
+          },
+          "pay": "5,000,000원",
+          "negoPay": false,
+          "workingTime": "11:00~18:00",
+          "workingPeriod": "1년이상",
+          "negoWorkPeriod": false,
+          "workingWeek": "주5일",
+          "workingDate": "",
+          "trainee": false,
+          "parts": [
+            "서비스 기타",
+            "상하차·소화물 분류",
+            "택배·배송기사"
+          ],
+          "closingDate": "상시모집",
+          "closingDateWithDDay": "상시모집",
+          "closingDDay": "",
+          "age": "연령무관",
+          "latitude": 35.242157,
+          "longitude": 128.58397,
+          "existsMap": true,
+          "workplaceAddress": "경남 창원시 마산회원구 합성동 150-2",
+          "workplaceArea": "경남 창원시 마산회원구 합성동",
+          "distanceToWorkplace": "",
+          "applicationTypes": [
+            {
+              "key": "ONLINE",
+              "value": "1",
+              "description": "온라인지원"
+            },
+            {
+              "key": "EMAIL",
+              "value": "2",
+              "description": "이메일 지원"
+            },
+            {
+              "key": "SMS",
+              "value": "8",
+              "description": "간편문자지원"
+            },
+            {
+              "key": "PHONE",
+              "value": "6",
+              "description": "전화연락"
+            }
+          ],
+          "managerPhoneNumber": "010-2914-9667",
+          "hashTags": [],
+          "skillTags": [],
+          "filterTotal": "주차가능,야간교통비 지급,각종 경조금,차량유류보조금,퇴직연금,산재보험,정기보너스,야간근로수당,근무복 지급,우수사원 표창/포상,휴일근로수당,대면근무,연차,연월차수당,주간,친구와함께가능,고용보험,명절 귀향비 지급,초보 가능,주차비지원,장기근속자 포상,월차,경조휴가제,장기근속수당,퇴직금",
+          "featureTotal": "합성동,월급,창원시 마산회원구,배송기사,택배,경남,㈜ 라웰드",
+          "scraped": false,
+          "existsScrapMemo": false,
+          "scrapedDate": null,
+          "applicationStatusType": {
+            "key": "NONE",
+            "value": "",
+            "description": "지원 내역 없음"
+          },
+          "appliedApplicationType": [],
+          "appliedDate": null,
+          "postedByCurrentAuthMember": false,
+          "productStatisticsCode": "",
+          "reviewCount": 0,
+          "reviewStarPoint": 0.0,
+          "payAdvance": false,
+          "mobileManagerPhoneNumber": true
+        }
+      ],
+      "debugQuery": ""
+    },
+    "mobileTop": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "mobileTopPlus": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "mobileTopLogo": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "extension": {
+      "extensionSearchType": {
+        "key": "NONE",
+        "value": "",
+        "description": "확장 검색 안함"
+      },
+      "extensionSearchAreaType": {
+        "key": "NONE",
+        "value": "",
+        "description": ""
+      },
+      "totalCount": 0,
+      "areas": [],
+      "recruit": {
+        "listSectionType": {
+          "key": "NONE",
+          "value": "",
+          "description": "일반"
+        },
+        "title": "",
+        "tags": [],
+        "productCode": "",
+        "productCodeForStatistics": "",
+        "smartRecommendationCode": "",
+        "recruitListCode": "",
+        "collection": [],
+        "debugQuery": ""
+      }
+    }
   },
-  "capitalAmount": "",
-  "salesAmount": "3,000억",
-  "businessSummary": null,
-  "businessHistory": null,
-  "interestCompanyInfo": {
-    "interested": false,
-    "myRecruit": false,
-    "interestedTotalCount": 66
+  "paid": {
+    "mobileTopBanner": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "mobileBanner": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcFranchiseBox": {
+      "listSectionType": {
+        "key": "NONE",
+        "value": "",
+        "description": "일반"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcGrand": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcGrandGold": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcFocus": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcFocusGold": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcSpecial": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcSpecialGold": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcTop": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcTopLogo": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcTopRecommendation": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcKeyword": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "pcKeywordLogo": {
+      "listSectionType": {
+        "key": "UNDEFINED",
+        "value": "UNDEFINED",
+        "description": "정의되지 않음"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    }
   },
-  "franchiseCodeSignUp": false,
-  "associationName": "",
-  "associationAddressGroupName": "",
-  "isChatResponseRateHighRecruit": false
+  "additional": {
+    "shortTerm": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_SHORT_TERMS",
+        "value": "RECOMMENDATION_SHORT_TERMS",
+        "description": "스마트 추천-단기"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "apply": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_APPLY",
+        "value": "RECOMMENDATION_APPLY",
+        "description": "스마트 추천 - 유사회원 지원"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "smart": {
+      "listSectionType": {
+        "key": "RECOMMENDATION",
+        "value": "RECOMMENDATION",
+        "description": "스마트 추천"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "recent": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_RECENT",
+        "value": "RECOMMENDATION_RECENT",
+        "description": "스마트추천 - 주목 방금올라온"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "part": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_PART",
+        "value": "RECOMMENDATION_PART",
+        "description": "스마트 추천 - 유사 업직종"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "nearbyTown": {
+      "listSectionType": {
+        "key": "TOWN_NEAR",
+        "value": "TOWN_NEAR",
+        "description": "우리동네 알바 - 잠깐! 가까운 동네 알바"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "myTown": {
+      "listSectionType": {
+        "key": "TOWN_HOT",
+        "value": "TOWN_HOT",
+        "description": "우리동네 알바 - 따끈따끈 우리동네 알바"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "keyword": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_KEYWORD",
+        "value": "RECOMMENDATION_KEYWORD",
+        "description": "{키워드} 관련 놓치기 정말 아까운 알바"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "homework": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_KEYWORD_HOMEWORK",
+        "value": "RECOMMENDATION_KEYWORD_HOMEWORK",
+        "description": "집에서 편하게 꿀재택 알바"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "brand": {
+      "listSectionType": {
+        "key": "RECOMMENDATION_KEYWORD_BRAND",
+        "value": "RECOMMENDATION_KEYWORD_BRAND",
+        "description": "따끈따끈 {브랜드}관련 알바"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    },
+    "albamonZRecommendation": {
+      "listSectionType": {
+        "key": "ALBAMONZ_RECOMMENDATION",
+        "value": "ALBAMONZ_RECOMMENDATION",
+        "description": "제트 추천 알바"
+      },
+      "title": "",
+      "tags": [],
+      "productCode": "",
+      "productCodeForStatistics": "",
+      "smartRecommendationCode": "",
+      "recruitListCode": "",
+      "collection": [],
+      "debugQuery": ""
+    }
+  },
+  "contents": {
+    "hotspots": {
+      "display": false,
+      "collection": []
+    },
+    "hotspotMapBanner": {
+      "display": false,
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "text": ""
+    },
+    "specUpBonus": {
+      "exists": false,
+      "companyName": "",
+      "summary": "",
+      "detail": "",
+      "additional": ""
+    },
+    "brand": {
+      "display": false,
+      "brandName": null,
+      "special": false,
+      "brandLogoUrl": null,
+      "part": null,
+      "brandRecruitTotalCount": null,
+      "partRecruitTotalCount": null,
+      "condition": null,
+      "samePartBrands": null
+    },
+    "recommendationRecruitments": [],
+    "noticeKeywordTypes": [],
+    "encourageResumeCreation": {
+      "display": false,
+      "existsTempResume": false,
+      "recruitTotalCount": 0
+    },
+    "encourageResumeUpdateEducation": {
+      "display": false,
+      "resumeNo": 0,
+      "lastEducation": ""
+    },
+    "encourageResumeUpdatePreference": {
+      "display": false
+    },
+    "encourageResumeUpdateArea": {
+      "display": false
+    },
+    "encourageResumeOpen": {
+      "display": false
+    },
+    "encourageResumeUpdateKeyword": {
+      "display": false,
+      "searchKeywordMappingType": {
+        "key": "INVALID",
+        "value": 0,
+        "description": "매칭 없음"
+      },
+      "keyword": "",
+      "wishAreaCode": "",
+      "jobTypeCode": "",
+      "workDayType": null,
+      "workTimeType": null,
+      "wishWorkPeriod": null,
+      "wishPartCode": ""
+    }
+  },
+  "condition": {
+    "tags": [],
+    "descriptions": [],
+    "exceptedConditions": [],
+    "attributeFilters": [],
+    "rejectKeyword": false,
+    "ignoreKeyword": false
+  }
 }

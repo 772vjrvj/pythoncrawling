@@ -1,4 +1,6 @@
 from datetime import datetime
+import keyring
+
 from queue import Queue
 
 from PyQt5.QtCore import Qt
@@ -9,11 +11,10 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLa
 from src.ui.check_popup import CheckPopup
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.singleton import GlobalState
-from src.workers.api_mytheresa_set_worker import ApiMytheresaSetLoadWorker
-from src.workers.api_zalando_set_worker import ApiZalandoSetLoadWorker
 from src.workers.api_albamon_set_worker import ApiAlbamonSetLoadWorker
 from src.workers.check_worker import CheckWorker
 from src.workers.progress_thread import ProgressThread
+from src.utils.config import server_name  # 서버 URL 및 설정 정보
 
 
 class MainWindow(QWidget):
@@ -225,12 +226,27 @@ class MainWindow(QWidget):
         self.collect_button.setCursor(Qt.PointingHandCursor)
         self.collect_button.clicked.connect(self.start_on_demand_worker)
 
+        self.log_out_button = QPushButton("로그아웃")
+        self.log_out_button.setStyleSheet(f"""
+            background-color: {self.color};
+            color: white;
+            border-radius: 15%;
+            font-size: 16px;
+            padding: 10px;
+        """)
+        self.log_out_button.setFixedWidth(100)  # 고정된 너비
+        self.log_out_button.setFixedHeight(40)  # 고정된 높이
+        self.log_out_button.setCursor(Qt.PointingHandCursor)
+        self.log_out_button.clicked.connect(self.on_log_out)
+
+
         # 왼쪽 버튼 레이아웃
         # left_button_layout.addWidget(self.check_list_button)
         left_button_layout.addWidget(self.site_list_button)
         left_button_layout.addWidget(self.log_reset_button)
         left_button_layout.addWidget(self.program_reset_button)
         left_button_layout.addWidget(self.collect_button)
+        left_button_layout.addWidget(self.log_out_button)
 
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
@@ -405,3 +421,17 @@ class MainWindow(QWidget):
     def go_site_list(self):
         self.close()  # 로그인 화면 종료
         self.app_manager.go_to_select()
+
+    def on_log_out(self):
+        try:
+            keyring.delete_password(server_name, "username")
+            keyring.delete_password(server_name, "password")
+            self.add_log("🔐 저장된 로그인 정보 삭제 완료")
+        except keyring.errors.PasswordDeleteError as e:
+            self.add_log(f"⚠️ 로그인 정보 삭제 실패 (저장 안 되어 있음): {str(e)}")
+        except Exception as e:
+            self.add_log(f"❌ 로그인 정보 삭제 중 예외 발생: {str(e)}")
+
+        self.add_log("🚪 로그아웃 처리 및 로그인 화면으로 이동")
+        self.close()  # 메인 창 종료
+        self.app_manager.go_to_login()

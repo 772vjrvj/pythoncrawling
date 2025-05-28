@@ -14,12 +14,48 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from selenium import webdriver
 from tqdm import tqdm
+import logging
+from datetime import datetime
+import builtins
+
 
 # 현재 디렉터리에 있는 다른 파일을 import하려면 sys.path.append("./")를 추가해야 해당 파일을 찾을 수 있습니다.
 sys.path.append("./")
 
 # SSL 인증서 검증을 건너뜀
 ssl._create_default_https_context = ssl._create_unverified_context
+
+
+# ✅ 글로벌 영역에 백업
+original_print = builtins.print
+
+
+def init_logger():
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_file = os.path.join(log_dir, f"{today}.log")
+
+    # ✅ 콘솔 출력을 중복 방지하기 위해 StreamHandler 제거
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(filename)s:%(lineno)d - %(funcName)s] %(message)s",
+        handlers=[
+            logging.FileHandler(log_file, encoding="utf-8")
+        ]
+    )
+
+    # ✅ print()를 logging.info() + 콘솔 출력으로 덮기
+    def dual_print(*args, **kwargs):
+        msg = " ".join(str(arg) for arg in args)
+        logging.info(msg, stacklevel=2)  # 👈 호출자 기준 라인으로 기록
+        original_print(*args, **kwargs)
+    builtins.print = dual_print
+
+    # ✅ original_print를 다른 모듈에서도 사용 가능하게 전역 등록
+    globals()["original_print"] = original_print
+
 
 class ARTVEE:
     def __init__(self) -> None:
@@ -867,6 +903,7 @@ def count_images_in_folder(folder_path):
 
 
 if __name__ == "__main__":
+    init_logger()  # 로그 초기화
     mode = input("1. artvee 다운 / 2. 엑셀 번역 : / 3. artvee artist 다운 : / 4. collection by category 선택 : / 5. 이미지 수 확인" )
     if mode == "1":
         try:

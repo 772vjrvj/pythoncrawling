@@ -1,4 +1,6 @@
 from PyQt5.QtCore import QThread
+
+from src.service.reservation_dom import DomReservationExtractor, JSFn
 from src.utils.config import SITE_URL, BASE_BOOKING_PATH, BASE_BOOKING_MOBILE_PATH, BASE_RESERVATION_MOBILE_PATH
 from src.utils.selenium import SeleniumDriverManager
 from src.service.reservation_service import ReservationService
@@ -6,6 +8,7 @@ from src.route.request_router import RequestRouter
 from src.utils.log import log
 import time
 from collections import deque
+from src.state.dom_state import DomState
 
 
 class MainWorker(QThread):
@@ -18,6 +21,7 @@ class MainWorker(QThread):
         self.processed_requests = deque(maxlen=1000)  # ✅ 최근 1000개만 기억
         self.driver = None
         self.router = None
+        self.dom_extr = None
 
     def init(self):
         self.driver = SeleniumDriverManager().setup_driver()
@@ -29,6 +33,8 @@ class MainWorker(QThread):
             BASE_RESERVATION_MOBILE_PATH,
             self.driver
         )
+        # ✅ DOM 감지기 생성 및 observer 삽입
+
 
     def run(self):
         self.init()
@@ -36,6 +42,10 @@ class MainWorker(QThread):
         log("등록, 수정, 삭제시 API 호출을 진행합니다...")
 
         time.sleep(2)
+
+        self.dom_extr = DomReservationExtractor(self.driver)
+        self.dom_extr.inject_observer()
+        time.sleep(1)
 
         try:
             self.login()
@@ -47,6 +57,13 @@ class MainWorker(QThread):
 
         try:
             while True:
+                # ✅ 주기적으로 DOM 데이터 확인
+                dom_data = self.dom_extr.js_fn(JSFn.GET_BOOKING_DATA)
+                if dom_data:
+                    log(f"데이터 {dom_data}")
+                    DomState.set(dom_data)
+
+                # 요청 감지 및 처리
                 for request in list(self.driver.requests):
                     if request.id in self.processed_requests:
                         continue

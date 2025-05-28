@@ -1,5 +1,7 @@
+from src.state.dom_state import DomState
 from src.utils.payload_builder import PayloadBuilder
 from src.api.action import send_to_external_api_action
+from src.utils.log import log, log_json
 
 class ReservationService:
     def __init__(self, token: str, store_id: str):
@@ -8,6 +10,12 @@ class ReservationService:
 
 
     def register(self, req_json=None, resp_json=None):
+
+        dom_data = DomState.get()
+        if dom_data:
+            dom_name = dom_data.get("name")
+            log(f"dom_name : {dom_name}")
+
         for entity in PayloadBuilder.extract_entities(resp_json):
             external_id = entity.get("bookingNumber", [None])[0]
             machine_number = entity.get("machineNumber")
