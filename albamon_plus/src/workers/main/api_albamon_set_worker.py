@@ -8,15 +8,13 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 import pandas as pd
 import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
-import requests
-from PyQt5.QtCore import QThread, pyqtSignal
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from src.utils.time_utils import get_current_yyyymmddhhmmss
+from src.workers.api_base_worker import BaseApiWorker
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -25,66 +23,15 @@ company_name = '알바몬'
 site_name = 'albamon'
 
 excel_filename = ''
-baseUrl = "https://www.albamon.com/jobs/area"
-baseLoginUrl = "https://www.albamon.com/user-account/login"
-baseAllUrl = "https://www.albamon.com/jobs/total"
-
-# API
-def parse_albamon_url():
-    # page 제외하고 기본 payload 설정
-    payload = {
-        "pagination": {
-            "page": 1,  # page는 외부에서 전달받음
-            "size": 50
-        },
-        "recruitListType": "NORMAL_ALL",
-        "sortTabCondition": {
-            "searchPeriodType": "ALL",
-            "sortType": "DEFAULT"
-        },
-
-        "condition": {
-            "age": 0,
-            "areas": [],
-            "educationType": "ALL",
-            "employmentTypes": [],
-            "endWorkTime": "",
-            "excludeBar": False,
-            "excludeKeywordList": [],
-            "excludeKeywords": [],
-            "excludeNegoAge": False,
-            "excludeNegoGender": False,
-            "excludeNegoWorkTime": False,
-            "excludeNegoWorkWeek": False,
-            "genderType": "NONE",
-            "includeKeyword": "",
-            "moreThanEducation": False,
-            "parts": [],
-            "similarDongJoin": False,
-            "startWorkTime": "",
-            "workDayTypes": [],
-            "workPeriodTypes": [],
-            "workTimeTypes": [],
-            "workWeekTypes": [],
-        }
-    }
-    return payload
 
 
-class ApiAlbamonSetLoadWorker(QThread):
-    log_signal = pyqtSignal(str)         # 로그 메시지를 전달하는 시그널
-    progress_signal = pyqtSignal(float, float)  # 진행률 업데이트를 전달하는 시그널
-    progress_end_signal = pyqtSignal()   # 종료 시그널
-    msg_signal = pyqtSignal(str, str, object)
+class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
     # 초기화
-    def __init__(self, checked_list):
+    def __init__(self):
         super().__init__()
-        self.baseUrl = baseUrl
-        self.baseLoginUrl = baseLoginUrl
-        self.baseAllUrl = baseAllUrl
-        self.sess = requests.Session()
-        self.checked_list = checked_list
+        self.base_login_url = "https://www.albamon.com/user-account/login"
+        self.base_all_url   = "https://www.albamon.com/jobs/total"
 
         self.excludeKeywords = ""
         self.includeKeyword = ""
@@ -103,25 +50,34 @@ class ApiAlbamonSetLoadWorker(QThread):
         self.before_pro_value = 0
 
 
+    def init(self):
+        # 현재 모니터 해상도 가져오기
+        screen_width, screen_height = pyautogui.size()
+
+        # 창 크기를 너비 절반, 높이 전체로 설정
+        self.driver.set_window_size(screen_width // 2, screen_height)
+
+        # 창 위치를 왼쪽 상단에 배치
+        self.driver.set_window_position(0, 0)
+
+        # 로그인 열기
+        self.driver.get(self.base_login_url)
+
+
     # 프로그램 실행
-    def run(self):
-        global image_main_directory, company_name, site_name, excel_filename, baseUrl
-
-        self.log_signal.emit("크롤링 시작")
+    def main(self):
         result_list = []
-        self.log_signal.emit("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
-        self.login()
         self.wait_for_user_confirmation()
-
         self.wait_for_select_confirmation()
 
-        self.log_signal.emit("크롤링 사이트 인증에 성공하였습니다.")
-        self.log_signal.emit(f"전체 회사수 계산을 시작합니다. 잠시만 기다려주세요.")
+        self.log_func("크롤링 사이트 인증에 성공하였습니다.")
+        self.log_func(f"전체 회사수 계산을 시작합니다. 잠시만 기다려주세요.")
         self.total_cnt_cal()
-        self.log_signal.emit(f"전체 회사수 {self.total_cnt} 개")
-        self.log_signal.emit(f"전체 페이지수 {self.total_pages} 개")
+        self.log_func(f"전체 회사수 {self.total_cnt} 개")
+        self.log_func(f"전체 페이지수 {self.total_pages} 개")
 
-        csv_filename = os.path.join(os.getcwd(), f"알바몬_{get_current_yyyymmddhhmmss()}.csv")
+        csv_filename = self.file_driver.get_csv_filename("알바몬")
+
         # columns = ["NO", "사업체명", "채용담당자명", "휴대폰 번호", "근무지 주소", "지역1", "지역2", "지역3", "급여 정보", "근무 기간", "등록일",
         #            "근무 요일", "근무 시간", "고용 형태", "복리후생 정보", "업직종", "업종", "대표자명", "기업주소"]
 
@@ -131,10 +87,10 @@ class ApiAlbamonSetLoadWorker(QThread):
         df.to_csv(csv_filename, index=False, encoding="utf-8-sig")
 
         for page in range(1, self.total_pages + 1):
-            self.log_signal.emit(f"현재 페이지 {page}")
+            self.log_func(f"현재 페이지 {page}")
             time.sleep(1)
             if not self.running:  # 실행 상태 확인
-                self.log_signal.emit("크롤링이 중지되었습니다.")
+                self.log_func("크롤링이 중지되었습니다.")
                 break
 
             collection, pagination = self.main_request(page)
@@ -142,19 +98,19 @@ class ApiAlbamonSetLoadWorker(QThread):
             for index, data in enumerate(collection):
 
                 if not self.running:  # 실행 상태 확인
-                    self.log_signal.emit("크롤링이 중지되었습니다.")
+                    self.log_func("크롤링이 중지되었습니다.")
                     break
 
                 time.sleep(1)
 
                 # 폰번호가 없는경우
                 # if data.get('managerPhoneNumber', '') == '':
-                #     self.log_signal.emit(f"번호 없음 Skip")
+                #     self.log_func(f"번호 없음 Skip")
                 #     self.current_cnt = self.current_cnt + 1
                 #     pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 #     self.progress_signal.emit(self.before_pro_value, pro_value)
                 #     self.before_pro_value = pro_value
-                #     self.log_signal.emit(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
+                #     self.log_func(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
                 #     continue
 
                 scraped_date = data.get("scrapedDate", "")
@@ -200,46 +156,37 @@ class ApiAlbamonSetLoadWorker(QThread):
                     # obj['대표자명'] = detail_data.get('companyData', {}).get('representativeName', '')
                     # obj['기업주소'] = detail_data.get('companyData', {}).get('fullAddress', '')
 
-                self.log_signal.emit(f"현재 채용 정보 : {obj}")
+                self.log_func(f"현재 채용 정보 : {obj}")
 
                 result_list.append(obj)
 
                 if (index + 1) % 5 == 0:
-                    df = pd.DataFrame(result_list, columns=columns)
-                    df.to_csv(csv_filename, mode='a', header=False, index=False, encoding="utf-8-sig")
-                    result_list.clear()
+                    self.excel_driver.append_to_csv(csv_filename, result_list, columns)
 
                 self.current_cnt = self.current_cnt + 1
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
+                self.log_func(f"self.before_pro_value : {self.before_pro_value}")
                 self.progress_signal.emit(self.before_pro_value, pro_value)
+                self.log_func(f"pro_value : {pro_value}")
                 self.before_pro_value = pro_value
-                self.log_signal.emit(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
+
+                self.log_func(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
 
             if result_list:
-                df = pd.DataFrame(result_list, columns=columns)
-                df.to_csv(csv_filename, mode='a', header=False, index=False, encoding="utf-8-sig")
+                self.excel_driver.append_to_csv(csv_filename, result_list, columns)
 
-        self.progress_signal.emit(self.before_pro_value, 1000000)
-        time.sleep(3)
-        self.log_signal.emit("=============== 크롤링 종료")
-        self.progress_end_signal.emit()
-
-    # 프로그램 중단
-    def stop(self):
-        """스레드 중지를 요청하는 메서드"""
-
-        self.running = False
 
     def wait_for_user_confirmation(self):
-        """사용자가 확인(alert) 창에서 OK를 누를 때까지 대기"""
+        self.log_func("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
+
         event = threading.Event()  # OK 버튼 누를 때까지 대기할 이벤트 객체
 
         # 사용자에게 메시지 창 요청
         self.msg_signal.emit("로그인 후  후 OK를 눌러주세요", "info", event)
 
         # 사용자가 OK를 누를 때까지 대기
-        self.log_signal.emit("📢 사용자 입력 대기 중...")
+        self.log_func("📢 사용자 입력 대기 중...")
         event.wait()  # 사용자가 OK를 누르면 해제됨
 
         # 쿠키 설정
@@ -248,9 +195,9 @@ class ApiAlbamonSetLoadWorker(QThread):
             self.sess.cookies.set(cookie['name'], cookie['value'])
 
         # 사용자가 OK를 눌렀을 경우 실행
-        self.log_signal.emit("✅ 사용자가 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
+        self.log_func("✅ 사용자가 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
 
-        self.driver.get(self.baseAllUrl)
+        self.driver.get(self.base_all_url)
 
         time.sleep(2)  # 예제용
 
@@ -259,7 +206,7 @@ class ApiAlbamonSetLoadWorker(QThread):
             EC.element_to_be_clickable((By.XPATH, '//span[.//span[text()="상세조건"]]'))
         ).click()
 
-        self.log_signal.emit("🚀 작업 완료!")
+        self.log_func("🚀 작업 완료!")
 
 
     def wait_for_select_confirmation(self):
@@ -270,12 +217,11 @@ class ApiAlbamonSetLoadWorker(QThread):
         self.msg_signal.emit("키워드(포함/제외) 추가 후 OK를 눌러주세요(아래 목록이 나오는걸 확인하세요)", "info", event)
 
         # 사용자가 OK를 누를 때까지 대기
-        self.log_signal.emit("📢 사용자 입력 대기 중...")
+        self.log_func("📢 사용자 입력 대기 중...")
         event.wait()  # 사용자가 OK를 누르면 해제됨
 
         # 사용자가 OK를 눌렀을 경우 실행
-        self.log_signal.emit("✅ 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
-
+        self.log_func("✅ 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
 
         # 현재 URL 가져오기
         current_url = self.driver.current_url
@@ -289,49 +235,11 @@ class ApiAlbamonSetLoadWorker(QThread):
         self.excludeKeywords = unquote(exclude)
         self.includeKeyword = unquote(include)
 
-        self.log_signal.emit(f"🔍 제외 키워드: {self.excludeKeywords}")
-        self.log_signal.emit(f"🔍 포함 키워드: {self.includeKeyword}")
+        self.log_func(f"🔍 제외 키워드: {self.excludeKeywords}")
+        self.log_func(f"🔍 포함 키워드: {self.includeKeyword}")
 
         time.sleep(2)  # 예제용
-        self.log_signal.emit("🚀 작업 완료!")
-
-
-    def login(self):
-        webdriver_options = webdriver.ChromeOptions()
-
-        ###### 자동 제어 감지 방지 #####
-        webdriver_options.add_argument('--disable-blink-features=AutomationControlled')
-
-        ##### 화면 최대 #####
-        # webdriver_options.add_argument("--start-maximized")  # 최대화 대신 크기 조절 사용
-
-        ##### headless 모드 비활성화 (브라우저 UI 보이게) #####
-        # webdriver_options.add_argument("--headless")
-
-        ##### 자동 경고 제거 #####
-        webdriver_options.add_experimental_option('useAutomationExtension', False)
-
-        ##### 로깅 비활성화 #####
-        webdriver_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
-        ##### 자동화 도구 사용 감지 제거 #####
-        webdriver_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-
-        # 드라이버 실행
-        self.driver = webdriver.Chrome(options=webdriver_options)
-        self.driver.set_page_load_timeout(120)
-
-        # 현재 모니터 해상도 가져오기
-        screen_width, screen_height = pyautogui.size()
-
-        # 창 크기를 너비 절반, 높이 전체로 설정
-        self.driver.set_window_size(screen_width // 2, screen_height)
-
-        # 창 위치를 왼쪽 상단에 배치
-        self.driver.set_window_position(0, 0)
-
-        # 로그인 열기
-        self.driver.get(self.baseLoginUrl)
+        self.log_func("🚀 작업 완료!")
 
 
     def main_request(self, page=1):
@@ -401,7 +309,7 @@ class ApiAlbamonSetLoadWorker(QThread):
             }
         }
 
-        self.log_signal.emit(f"payload : {payload}")
+        self.log_func(f"payload : {payload}")
 
         response = self.sess.post(url, headers=headers, json=payload, timeout=10)
 
@@ -413,7 +321,6 @@ class ApiAlbamonSetLoadWorker(QThread):
         else:
             print(f"Error: {response.status_code}")
             return [], {}
-
 
 
     # 페이지 데이터 가져오기
@@ -451,19 +358,19 @@ class ApiAlbamonSetLoadWorker(QThread):
                 if script_tag:
                     json_data = json.loads(script_tag.string)
                     data = json_data.get("props", {}).get("pageProps", {}).get("data", {})
-                    self.log_signal.emit(f"회사정보 가져오기 성공")
+                    self.log_func(f"회사정보 가져오기 성공")
                     return data
                 else:
                     print("JSON 데이터를 찾을 수 없습니다.")
             else:
                 # 상태 코드가 200이 아닌 경우
-                self.log_signal.emit(f"HTTP 요청 실패: 상태 코드 {res.status_code}, 내용: {res.text}")
+                self.log_func(f"HTTP 요청 실패: 상태 코드 {res.status_code}, 내용: {res.text}")
                 return None
 
         except Exception as e:
             print(f'error : {e}')
             # 네트워크 에러 또는 기타 예외 처리
-            self.log_signal.emit(f"요청 중 에러 발생: {e}")
+            self.log_func(f"요청 중 에러 발생: {e}")
             return None
 
     # 전체 갯수 조회

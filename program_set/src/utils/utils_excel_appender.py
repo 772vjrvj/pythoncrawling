@@ -130,7 +130,6 @@ class CsvAppender:
         except Exception as e:
             self.log_func(f"❌ metastyle_all.csv 저장 실패: {e}")
 
-
     def _sync_columns(self, df, row_df):
         """row_df에만 있는 컬럼이 있다면 df에도 추가"""
         for col in row_df.columns:
@@ -152,7 +151,6 @@ class CsvAppender:
                 return []
         else:
             return []
-
 
     def set_file_path(self, new_file_path):
         self.file_path = new_file_path

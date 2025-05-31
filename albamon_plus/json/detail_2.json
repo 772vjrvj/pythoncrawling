@@ -1,0 +1,441 @@
+{
+  "recruitNo": 107967948,
+  "tempIdx": 0,
+  "postStatus": {
+    "key": "OPEN",
+    "value": "1",
+    "description": "게재중인 공고"
+  },
+  "recruitStatus": 3,
+  "recruitStatusExtra": 0,
+  "deleted": false,
+  "closeStat": false,
+  "closingDateTime": "2025-03-11 00:00:00",
+  "deadlineDate": "상시모집",
+  "closingDateTerm": "",
+  "closingDateTermNum": -1,
+  "allTime": true,
+  "registDateTime": "2025-02-19 00:24:30",
+  "firstRegistDateTime": "2025-02-19 00:23:26",
+  "modifyDateTime": "2025-02-20 21:25:03",
+  "firstPostDateTime": "2025-02-19 00:25:00",
+  "recruitTitle": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+  "recruitCompanyName": "김억삼포차",
+  "recruitMemberCount": "0",
+  "numberOfApplicants": "0명(인원미정)",
+  "recruitViewCount": 0,
+  "easyGiStat": 0,
+  "simpleRecruitStatus": false,
+  "simpleRecruitContents": "",
+  "productPaidStatus": {
+    "key": "PAID",
+    "value": 1,
+    "description": "유료"
+  },
+  "photoType": "G",
+  "useCompanyPhoto": false,
+  "recruitImages": {
+    "photoType": {
+      "key": "RECRUIT_PHOTO",
+      "value": 1,
+      "description": "공고사진"
+    },
+    "photos": [],
+    "videos": null
+  },
+  "area": {
+    "value": "I000",
+    "description": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층"
+  },
+  "workingAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
+  "publishAreaDongCode": "",
+  "latitude": 37.55084991455078,
+  "longitude": 126.9222412109375,
+  "addressLatitude": 304966.0,
+  "addressLongitude": 550390.0,
+  "autoMatchExceptionId": false,
+  "subwayAutoMatch": true,
+  "universityAutoMatch": true,
+  "station": [
+    {
+      "line": "6호선",
+      "description": "상수",
+      "walking": "도보 6분",
+      "subwayCode": "106",
+      "stationCode": "10625",
+      "lineIcon": "icon_metro_line6",
+      "stationExitNumber": "",
+      "stationExitDescription": "",
+      "stationDistanceCode": 104,
+      "stationDistanceWalkingMinute": 6
+    },
+    {
+      "line": "2호선",
+      "description": "합정",
+      "walking": "도보 10분",
+      "subwayCode": "102",
+      "stationCode": "10235",
+      "lineIcon": "icon_metro_line2",
+      "stationExitNumber": "",
+      "stationExitDescription": "",
+      "stationDistanceCode": 107,
+      "stationDistanceWalkingMinute": 10
+    },
+    {
+      "line": "2호선",
+      "description": "홍대입구",
+      "walking": "도보 10분",
+      "subwayCode": "102",
+      "stationCode": "10236",
+      "lineIcon": "icon_metro_line2",
+      "stationExitNumber": "",
+      "stationExitDescription": "",
+      "stationDistanceCode": 107,
+      "stationDistanceWalkingMinute": 10
+    }
+  ],
+  "universities": [
+    {
+      "universityCode": "I660",
+      "universityName": "홍익대학교(서울캠퍼스)",
+      "universityStreetCode": "104",
+      "walkingMinute": 6,
+      "value": "홍익대학교(서울캠퍼스)",
+      "description": "도보6분"
+    },
+    {
+      "universityCode": "I260",
+      "universityName": "서강대학교",
+      "universityStreetCode": "119",
+      "walkingMinute": 28,
+      "value": "서강대학교",
+      "description": "도보28분"
+    },
+    {
+      "universityCode": "I480",
+      "universityName": "연세대학교(신촌캠퍼스)",
+      "universityStreetCode": "120",
+      "walkingMinute": 30,
+      "value": "연세대학교(신촌캠퍼스)",
+      "description": "도보30분"
+    }
+  ],
+  "part": [
+    {
+      "value": "1123",
+      "description": "주방보조·설거지"
+    },
+    {
+      "value": "1010",
+      "description": "일반음식점"
+    },
+    {
+      "value": "1121",
+      "description": "서빙"
+    }
+  ],
+  "jobFieldInputStatus": true,
+  "jobField": "홀, 주방",
+  "employmentType": [
+    {
+      "key": "FULL_TIME",
+      "value": 2,
+      "description": "정규직"
+    },
+    {
+      "key": "CONTRACT_WORK",
+      "value": 3,
+      "description": "계약직"
+    }
+  ],
+  "gender": {
+    "value": "0",
+    "description": "성별무관"
+  },
+  "ageDescription": "연령무관",
+  "startAge": 0,
+  "endAge": 0,
+  "ageTheme": "00",
+  "ageYouthAvailable": false,
+  "oldAge": false,
+  "workPeriod": {
+    "value": "48",
+    "description": "1년이상"
+  },
+  "workTermTopDescription": "장기",
+  "workTermStartDate": null,
+  "workTermEndDate": null,
+  "workTermDescription": null,
+  "workTermConsult": true,
+  "workDays": {
+    "value": "50",
+    "description": "요일협의"
+  },
+  "workWeek": null,
+  "workWeekEtc": "주5일 평일 2일 휴무",
+  "workHour": {
+    "value": "40",
+    "description": ""
+  },
+  "workTimeDetail": "18:00~06:00(익일)",
+  "workStartTime": "18:00",
+  "workEndTime": "06:00",
+  "workTimeOption": null,
+  "workTimeConsult": false,
+  "workTimeOpt": "",
+  "educationLevels": [
+    {
+      "value": "0",
+      "description": "학력무관"
+    }
+  ],
+  "educationRequirementUniversityStudent": false,
+  "salaryType": {
+    "key": "MONTHLY",
+    "value": "C000",
+    "description": "월급"
+  },
+  "salaryDescription": "월급",
+  "salary": 3000000,
+  "payEtcInfo": [
+    "협의가능",
+    "수습기간있음"
+  ],
+  "salaryConsult": true,
+  "extraSalary": "300~급여협의",
+  "holidaySalaryStatus": 0,
+  "salaryFranchise": null,
+  "salaryCalculatorSalaryType": "4",
+  "salaryCalculatorWorkDay": 0,
+  "salaryCalculatorRealWorkTime": "12.0",
+  "salaryCalculatorWorkTime": 12.0,
+  "applyType": [
+    "ONLINE_APPLY",
+    "SMS_APPLY"
+  ],
+  "applyOnlineStatus": true,
+  "applyEmailStatus": false,
+  "applyHomepageStatus": false,
+  "applySmsStatus": true,
+  "applySmsForm": "이름/성별/주방 직원, 홀 직원/면접가능날짜",
+  "applyEasySmsStatus": true,
+  "applyTellStatus": false,
+  "applyVisitStatus": false,
+  "applyEtcPossibleStatus": false,
+  "applyPossibleStatue": true,
+  "passCorpFormFlag": false,
+  "applyFormFile": null,
+  "smsApplyDescription": "이름/성별/주방 직원, 홀 직원/면접가능날짜",
+  "myApplyType": null,
+  "myEtcApplyType": null,
+  "applyStatisticsDisplayStatus": true,
+  "preferences": "",
+  "preferenceCondition": "",
+  "additionalPreferenceCondition": "0010100000",
+  "beginnerAvailableStatus": true,
+  "possibleWorkWithFriend": false,
+  "trainee": false,
+  "welfareBenefits": [
+    {
+      "value": "10",
+      "description": "국민연금"
+    },
+    {
+      "value": "20",
+      "description": "고용보험"
+    },
+    {
+      "value": "30",
+      "description": "산재보험"
+    },
+    {
+      "value": "40",
+      "description": "건강보험"
+    },
+    {
+      "value": "140",
+      "description": "휴일근로수당"
+    },
+    {
+      "value": "300",
+      "description": "연장근로수당"
+    },
+    {
+      "value": "120",
+      "description": "우수사원 표창/포상"
+    },
+    {
+      "value": "200",
+      "description": "조식 제공"
+    },
+    {
+      "value": "210",
+      "description": "중식 제공"
+    },
+    {
+      "value": "220",
+      "description": "석식 제공"
+    }
+  ],
+  "passQuestionCount": 0,
+  "previousQuestion": null,
+  "preQuestionRegistStatus": 0,
+  "minimumWage": 10030,
+  "payPolicy": {
+    "resultCode": 1,
+    "resultMessage": "",
+    "isViolation": false
+  },
+  "authenticationTags": [
+    {
+      "value": "1",
+      "description": "근로계약서 작성 약속"
+    },
+    {
+      "value": "1",
+      "description": "기업인증 완료여부"
+    },
+    {
+      "value": "1",
+      "description": "성희롱예방교육 수료여부"
+    }
+  ],
+  "sexualHarassmentPreventionEducationStatus": true,
+  "certificationMarkStatus": true,
+  "laborContractWriteStatus": 1,
+  "unfitRecruitCheck": 0,
+  "logisticsCompanyStatus": false,
+  "logisticsCompanyName": null,
+  "carBuyGuide": false,
+  "consignor": false,
+  "companyId": "d1qfR322-h_GMm6vZLJj8A==",
+  "franchiseCode": 0,
+  "memberNo": 0,
+  "corpCode": 0,
+  "companyName": "김억삼포차",
+  "brandKeyword": null,
+  "businessItem": null,
+  "companyAddress": "서울 마포구 잔다리로 8 (서교동, 화진빌딩) 1,2층",
+  "companyHomepage": null,
+  "logoPath": "",
+  "companyLogo": null,
+  "favoriteCorporationTotalCount": 0,
+  "myFavoriteCorporationTotalCount": 0,
+  "recruiterKey": "wUrPKuattSmXfpt5jvgzVYWAWgRgVp34GrCqF4p++sFYng3yp+YvcF/3nY94DlsBc9KjKLL3Ciq4xKow4tDHJceDeFR1WPD9VJ2uNRK4zvL559sTkVYXPyOSnVKZrWxlPDdICiDxiu+oeG0Vuxw+qPlF53ssDw9qEZ2zhp4K6QSj6FjK9rXlVBRCcCXk3az4RYBOVTcyMwmYo+sbb940niFn5eRnmkOgG+of3gOvrnD5g/bW14kK/kIYDq/ineP9V7hYY7CsGKqkaxABLpQihyF1uy0vpZq7TxROQiPj4dkndaXhm0EHT6Q742bVV2aw",
+  "recruiter": "김한상",
+  "managerContactPrivateStatus": false,
+  "managerContactExtraPrivateStatus": false,
+  "phoneNumber": null,
+  "managerEmail": null,
+  "managerEmailPrivateStatus": false,
+  "managerFax": "",
+  "recruitUrl": "",
+  "safeNumberStatus": null,
+  "nonMembersPassword": null,
+  "userIpAddress": null,
+  "albamonAppNo": 0,
+  "mobileDate": "2025-02-19 00:24:30",
+  "amAppDt": "2025-02-20 21:24:30",
+  "pcSortDate": "2025-02-20 21:24:30",
+  "jobkoreaRecruit": false,
+  "jobKoreaRecruitNo": null,
+  "jobKoreaGno": null,
+  "jobKoreaRecruitPay": null,
+  "scrap": false,
+  "crawlingBlock": false,
+  "shareKey": "66f75cc",
+  "optionTotalStat": 1,
+  "mealOfferState": "0",
+  "hasReport": false,
+  "overRecruitKeyword": false,
+  "hasOptionHistory": false,
+  "hasKeywordHistory": false,
+  "existNotPaidOption": false,
+  "existNotPaidKeyword": false,
+  "existReservedService": false,
+  "prepaymentCheck": false,
+  "publishEndDate": null,
+  "rightRecruitPromiseState": 0,
+  "goodJobState": "0",
+  "roadViewStatus": "0",
+  "contractStatus": "0",
+  "employContractWriteState": 0,
+  "optionSkinStatus": "0",
+  "optionMapPlusStatus": "0",
+  "optionMapPointStatus": "0",
+  "specUpExposureTypeCode": 0,
+  "workAddressSearchRegistStatus": 12,
+  "referenceRecruitNo": null,
+  "grandLogoName": "",
+  "bannerLogoName": "",
+  "themeAlbaType": null,
+  "companyLogoUseStatus": false,
+  "recruitLogoImagePath": "",
+  "companyLogoFileName": null,
+  "headlineImageName": null,
+  "preferenceLicense": "",
+  "recessMinute": 0,
+  "employContractWritePromiseStatus": 1,
+  "jobTypeNameGaTag": [
+    "주방보조·설거지",
+    "일반음식점",
+    "서빙"
+  ],
+  "workTermGaTag": "48",
+  "publishAreaGaTag": "서울 전체",
+  "employmentTypeGaTag": [
+    "계약직",
+    "정규직"
+  ],
+  "preview": false,
+  "applicantCount": null,
+  "publishAreaCode": "I000",
+  "albamonZ": false,
+  "albamonZApply": false,
+  "reviewSummary": null,
+  "productAreaGaTag": "",
+  "fromRecommendType": null,
+  "naverRecruitInfo": {
+    "@context": "http://schema.org",
+    "@type": "JobPosting",
+    "title": "마포 상수 홍대 김억삼포차 홀/주방 직원 모집중 경력무관 식사제공",
+    "datePosted": "2025-02-19",
+    "validThrough": "2025-03-11",
+    "employmentType": [
+      "FULL_TIME",
+      "CONTRACTOR"
+    ],
+    "experienceRequirements": "신입",
+    "jobLocation": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "잔다리로 8 (서교동, 화진빌딩) 1,2층",
+          "addressLocality": "마포구",
+          "addressRegion": "서울",
+          "addressCountry": "대한민국"
+        }
+      }
+    ],
+    "description": "김억삼포차에서 채용을 진행합니다. \n 업직종:주방보조·설거지,일반음식점,서빙 \n 근무기간:1년이상 \n 복리후생:국민연금,고용보험,산재보험,건강보험,휴일근로수당,연장근로수당,우수사원 표창/포상,조식 제공,중식 제공,석식 제공",
+    "baseSalary": {
+      "@type": "MonetaryAmount",
+      "currency": "KRW",
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": 3000000,
+        "unitText": "MONTH"
+      }
+    },
+    "workHours": "풀타임",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": "김억삼포차"
+    }
+  },
+  "showPopularRecruitTicker": false,
+  "isChatResponseRateHighRecruit": false,
+  "applyNo": null,
+  "isChatResponseSetting": false
+}
