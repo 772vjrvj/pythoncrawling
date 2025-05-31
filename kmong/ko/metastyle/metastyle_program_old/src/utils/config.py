@@ -1,5 +1,6 @@
 # 전역 변수
 SERVER_URL = "http://vjrvj.cafe24.com"
+server_name = "MyAppAutoLogin"
 
 IMAGE_MAIN_DIRECTORY = 'images'
 

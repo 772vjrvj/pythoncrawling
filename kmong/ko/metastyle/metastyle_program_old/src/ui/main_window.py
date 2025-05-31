@@ -1,3 +1,5 @@
+import keyring
+
 from datetime import datetime
 from queue import Queue
 
@@ -7,7 +9,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLa
                              QTextEdit, QProgressBar)
 
 from src.ui.check_popup import CheckPopup
-from src.utils.config import SERVER_URL
+from src.utils.config import SERVER_URL, server_name
 from src.utils.singleton import GlobalState
 from src.workers.worker_factory import WORKER_CLASS_MAP
 from src.workers.check_worker import CheckWorker
@@ -20,11 +22,14 @@ class MainWindow(QWidget):
     def __init__(self, app_manager):
         super().__init__()
         self.header_label = None
+
         self.log_reset_button = None
         self.site_list_button = None
         self.program_reset_button = None
         self.collect_button = None
         self.check_list_button = None
+        self.log_out_button = None
+
         self.select_check_list = None
         self.task_queue = None
         self.progress_thread = None
@@ -158,6 +163,7 @@ class MainWindow(QWidget):
         self.log_reset_button     = self.create_button("로그리셋", self.color, self.log_reset)
         self.program_reset_button = self.create_button("초기화", self.color, self.program_reset)
         self.collect_button       = self.create_button("시작", self.color, self.start_on_demand_worker)
+        self.log_out_button       = self.create_button("로그아웃", self.color, self.on_log_out)
 
         # 왼쪽 버튼 레이아웃
         left_button_layout.addWidget(self.check_list_button)
@@ -165,6 +171,7 @@ class MainWindow(QWidget):
         left_button_layout.addWidget(self.log_reset_button)
         left_button_layout.addWidget(self.program_reset_button)
         left_button_layout.addWidget(self.collect_button)
+        left_button_layout.addWidget(self.log_out_button)
 
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
@@ -351,3 +358,18 @@ class MainWindow(QWidget):
     def go_site_list(self):
         self.close()  # 로그인 화면 종료
         self.app_manager.go_to_select()
+
+
+    def on_log_out(self):
+        try:
+            keyring.delete_password(server_name, "username")
+            keyring.delete_password(server_name, "password")
+            self.add_log("🔐 저장된 로그인 정보 삭제 완료")
+        except keyring.errors.PasswordDeleteError as e:
+            self.add_log(f"⚠️ 로그인 정보 삭제 실패 (저장 안 되어 있음): {str(e)}")
+        except Exception as e:
+            self.add_log(f"❌ 로그인 정보 삭제 중 예외 발생: {str(e)}")
+
+        self.add_log("🚪 로그아웃 처리 및 로그인 화면으로 이동")
+        self.close()  # 메인 창 종료
+        self.app_manager.go_to_login()

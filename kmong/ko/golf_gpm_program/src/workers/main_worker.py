@@ -1,6 +1,4 @@
 from PyQt5.QtCore import QThread
-
-from src.service.reservation_dom import DomReservationExtractor, JSFn
 from src.utils.config import SITE_URL, BASE_BOOKING_PATH, BASE_BOOKING_MOBILE_PATH, BASE_RESERVATION_MOBILE_PATH
 from src.utils.selenium import SeleniumDriverManager
 from src.service.reservation_service import ReservationService
@@ -8,7 +6,8 @@ from src.route.request_router import RequestRouter
 from src.utils.log import log
 import time
 from collections import deque
-from src.state.dom_state import DomState
+import hashlib
+import datetime
 
 
 class MainWorker(QThread):
@@ -18,10 +17,11 @@ class MainWorker(QThread):
         self.user_id = user_id
         self.password = password
         self.store_id = store_id
-        self.processed_requests = deque(maxlen=1000)  # ✅ 최근 1000개만 기억
+        self.processed_requests = deque(maxlen=1000)  # ✅ 해시값 기준 중복 방지
+        self.processed_objects = set()               # ✅ request 객체 자체 중복 방지
         self.driver = None
         self.router = None
-        self.dom_extr = None
+        self.start_time = datetime.datetime.utcnow()  # ✅ 기준 시간
 
     def init(self):
         self.driver = SeleniumDriverManager().setup_driver()
@@ -33,8 +33,6 @@ class MainWorker(QThread):
             BASE_RESERVATION_MOBILE_PATH,
             self.driver
         )
-        # ✅ DOM 감지기 생성 및 observer 삽입
-
 
     def run(self):
         self.init()
@@ -42,10 +40,6 @@ class MainWorker(QThread):
         log("등록, 수정, 삭제시 API 호출을 진행합니다...")
 
         time.sleep(2)
-
-        self.dom_extr = DomReservationExtractor(self.driver)
-        self.dom_extr.inject_observer()
-        time.sleep(1)
 
         try:
             self.login()
@@ -57,19 +51,34 @@ class MainWorker(QThread):
 
         try:
             while True:
-                # ✅ 주기적으로 DOM 데이터 확인
-                dom_data = self.dom_extr.js_fn(JSFn.GET_BOOKING_DATA)
-                if dom_data:
-                    log(f"데이터 {dom_data}")
-                    DomState.set(dom_data)
-
-                # 요청 감지 및 처리
+                log(f"시작 확인 len : {len(list(self.driver.requests))}")
                 for request in list(self.driver.requests):
-                    if request.id in self.processed_requests:
+                    if request.response and request.response.status_code == 304:
+                        continue  # 캐시 응답이면 무시
+
+                    if id(request) in self.processed_objects:
                         continue
-                    self.processed_requests.append(request.id)
+
+                    req_key = self._get_request_key(request)
+                    if not req_key or req_key in self.processed_requests:
+                        continue
+
+                    self.processed_requests.append(req_key)
+                    self.processed_objects.add(id(request))
                     self.router.handle(request)
+
+                try:
+                    storage = self.driver._request_storage
+                    storage._requests.clear()
+                    storage._id_to_request.clear()
+                    storage._request_id_counter = 0
+                except Exception as e:
+                    log(f"요청 저장소 클리어 실패: {e}")
+
+
+                log(f"끝 확인 len : {len(list(self.driver.requests))}")
                 time.sleep(0.5)
+
         except KeyboardInterrupt:
             log("종료 요청 감지, 브라우저 닫는 중...")
             self.driver.quit()
@@ -86,3 +95,20 @@ class MainWorker(QThread):
         login_btn = self.driver.find_element("xpath", "//button[@type='submit']")
         login_btn.click()
         log("로그인 시도 완료")
+
+
+    def _get_request_key(self, request):
+        try:
+            url_base = request.url.split("?")[0]
+            body = request.body.decode(errors="ignore") if request.body else ""
+
+            # ✅ 응답 바디 일부도 포함시켜 중복 체크 강화
+            response_body = ""
+            if request.response and request.response.body:
+                response_body = request.response.body.decode(errors="ignore")[:100]  # 일부만
+
+            raw = f"{request.method}:{url_base}:{body}:{response_body}"
+            return hashlib.sha256(raw.encode()).hexdigest()
+        except Exception as e:
+            log(f"요청 키 생성 중 오류: {e}")
+            return None

@@ -1,0 +1,348 @@
+[2025.05.26 22:59:55.128] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.26 23:00:04.944] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.26 23:00:04.946] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.26 23:00:05.025] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0MDI4MDA0fQ.djjt1UuXrSaeYVZjinT28CB0HcD1TjksRoc5nJ93acg
+[2025.05.26 23:00:05.065] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.26 23:00:05.066] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.26 23:00:05.068] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.26 23:00:05.070] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.26 23:00:05.071] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.26 23:00:22.312] INFO log.py:80 ▶ main_worker.py:36 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.26 23:00:24.633] INFO log.py:80 ▶ main_worker.py:71 ▶ 로그인 시도 완료
+[2025.05.26 23:00:24.634] INFO log.py:80 ▶ main_worker.py:46 ▶ 요청 감지 대기 중...
+[2025.05.26 23:00:56.148] INFO log.py:80 ▶ request_router.py:82 ▶ [register] : Request Body
+[2025.05.26 23:00:56.148] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "shopNo": "14150",
+  "bookingName": "테스트",
+  "cellNumber": "1234",
+  "bookingCnt": "2",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": "37205",
+  "bookingChannel": "1",
+  "fixedYn": "N",
+  "paymentYn": "N",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "bookingStartDt": "20250530231000",
+  "bookingEndDt": "20250531011000",
+  "gameTime": "120"
+}
+[2025.05.26 23:00:56.148] INFO log.py:80 ▶ request_router.py:84 ▶ [register] : Response Body
+[2025.05.26 23:00:56.148] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "entity": [
+    {
+      "bookingNumber": [
+        80616835
+      ],
+      "machineNumber": 37205
+    }
+  ],
+  "entitys": [
+    {
+      "bookingNumber": [
+        80616835
+      ],
+      "machineNumber": 37205
+    }
+  ],
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:00:56.152] INFO log.py:80 ▶ action.py:6 ▶ [register] : type None
+[2025.05.26 23:00:56.152] INFO log.py:80 ▶ action.py:7 ▶ [register] : payload ↓
+[2025.05.26 23:00:56.152] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616835",
+  "roomId": "37205",
+  "crawlingSite": "GolfzonPark",
+  "name": "테스트",
+  "phone": "1234",
+  "paymented": false,
+  "partySize": 2,
+  "paymentAmount": 0,
+  "startDate": "2025-05-30T23:10:00+09:00",
+  "endDate": "2025-05-31T01:10:00+09:00"
+}
+[2025.05.26 23:00:56.153] INFO log.py:80 ▶ action.py:25 ▶ [register] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:00:56.267] INFO log.py:80 ▶ action.py:30 ▶ [register] : 판도 서버 전송 성공
+[2025.05.26 23:01:01.952] INFO log.py:80 ▶ request_router.py:82 ▶ [edit_move] : Request Body
+[2025.05.26 23:01:01.952] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "bookingStartDt": "20250530234000",
+  "bookingEndDt": "20250531014000",
+  "bookingNumber": "80616835",
+  "machineNumber": "37206",
+  "isSelfReserve": "0"
+}
+[2025.05.26 23:01:01.952] INFO log.py:80 ▶ request_router.py:84 ▶ [edit_move] : Response Body
+[2025.05.26 23:01:01.952] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "entity": 80616835,
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:01.953] INFO log.py:80 ▶ action.py:6 ▶ [edit] : type m
+[2025.05.26 23:01:01.953] INFO log.py:80 ▶ action.py:7 ▶ [edit] : payload ↓
+[2025.05.26 23:01:01.954] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616835",
+  "roomId": "37206",
+  "startDate": "2025-05-30T23:40:00+09:00",
+  "endDate": "2025-05-31T01:40:00+09:00",
+  "crawlingSite": "GolfzonPark"
+}
+[2025.05.26 23:01:01.954] INFO log.py:80 ▶ action.py:25 ▶ [edit] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl/fields
+[2025.05.26 23:01:02.029] INFO log.py:80 ▶ action.py:30 ▶ [edit] : 판도 서버 전송 성공
+[2025.05.26 23:01:08.500] INFO log.py:80 ▶ request_router.py:82 ▶ [edit] : Request Body
+[2025.05.26 23:01:08.506] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "shopNo": "14150",
+  "bookingName": "테스트",
+  "cellNumber": "1234",
+  "bookingCnt": "2",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": [
+    "37206",
+    "37203",
+    "37209"
+  ],
+  "bookingChannel": "1",
+  "fixedYn": "N",
+  "paymentYn": "N",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "bookingStartDt": "20250530234000",
+  "bookingEndDt": "20250531014000",
+  "gameTime": "120",
+  "bookingNumber": "80616835"
+}
+[2025.05.26 23:01:08.507] INFO log.py:80 ▶ request_router.py:84 ▶ [edit] : Response Body
+[2025.05.26 23:01:08.509] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "entity": [
+    {
+      "bookingNumber": [
+        80616841
+      ],
+      "machineNumber": 37206
+    },
+    {
+      "bookingNumber": [
+        80616842
+      ],
+      "machineNumber": 37203
+    },
+    {
+      "bookingNumber": [
+        80616843
+      ],
+      "machineNumber": 37209
+    }
+  ],
+  "entitys": [
+    {
+      "bookingNumber": [
+        80616841
+      ],
+      "machineNumber": 37206
+    },
+    {
+      "bookingNumber": [
+        80616842
+      ],
+      "machineNumber": 37203
+    },
+    {
+      "bookingNumber": [
+        80616843
+      ],
+      "machineNumber": 37209
+    }
+  ],
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:08.519] INFO log.py:80 ▶ action.py:6 ▶ [delete] : type None
+[2025.05.26 23:01:08.522] INFO log.py:80 ▶ action.py:7 ▶ [delete] : payload ↓
+[2025.05.26 23:01:08.523] INFO log.py:104 ▶ action.py:8 ▶ {
+  "crawlingSite": "GolfzonPark",
+  "reason": "추가 수정시 기존 취소",
+  "externalId": "80616835"
+}
+[2025.05.26 23:01:08.527] INFO log.py:80 ▶ action.py:25 ▶ [delete] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:08.633] INFO log.py:80 ▶ action.py:30 ▶ [delete] : 판도 서버 전송 성공
+[2025.05.26 23:01:08.633] INFO log.py:80 ▶ action.py:6 ▶ [register] : type None
+[2025.05.26 23:01:08.634] INFO log.py:80 ▶ action.py:7 ▶ [register] : payload ↓
+[2025.05.26 23:01:08.634] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616841",
+  "roomId": "37206",
+  "crawlingSite": "GolfzonPark",
+  "name": "테스트",
+  "phone": "1234",
+  "paymented": false,
+  "partySize": 2,
+  "paymentAmount": 0,
+  "startDate": "2025-05-30T23:40:00+09:00",
+  "endDate": "2025-05-31T01:40:00+09:00"
+}
+[2025.05.26 23:01:08.634] INFO log.py:80 ▶ action.py:25 ▶ [register] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:08.691] INFO log.py:80 ▶ action.py:30 ▶ [register] : 판도 서버 전송 성공
+[2025.05.26 23:01:08.692] INFO log.py:80 ▶ action.py:6 ▶ [register] : type None
+[2025.05.26 23:01:08.692] INFO log.py:80 ▶ action.py:7 ▶ [register] : payload ↓
+[2025.05.26 23:01:08.692] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616842",
+  "roomId": "37203",
+  "crawlingSite": "GolfzonPark",
+  "name": "테스트",
+  "phone": "1234",
+  "paymented": false,
+  "partySize": 2,
+  "paymentAmount": 0,
+  "startDate": "2025-05-30T23:40:00+09:00",
+  "endDate": "2025-05-31T01:40:00+09:00"
+}
+[2025.05.26 23:01:08.692] INFO log.py:80 ▶ action.py:25 ▶ [register] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:08.887] INFO log.py:80 ▶ action.py:30 ▶ [register] : 판도 서버 전송 성공
+[2025.05.26 23:01:08.888] INFO log.py:80 ▶ action.py:6 ▶ [register] : type None
+[2025.05.26 23:01:08.888] INFO log.py:80 ▶ action.py:7 ▶ [register] : payload ↓
+[2025.05.26 23:01:08.889] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616843",
+  "roomId": "37209",
+  "crawlingSite": "GolfzonPark",
+  "name": "테스트",
+  "phone": "1234",
+  "paymented": false,
+  "partySize": 2,
+  "paymentAmount": 0,
+  "startDate": "2025-05-30T23:40:00+09:00",
+  "endDate": "2025-05-31T01:40:00+09:00"
+}
+[2025.05.26 23:01:08.889] INFO log.py:80 ▶ action.py:25 ▶ [register] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:09.293] INFO log.py:80 ▶ action.py:30 ▶ [register] : 판도 서버 전송 성공
+[2025.05.26 23:01:19.208] INFO log.py:80 ▶ request_router.py:82 ▶ [edit_move] : Request Body
+[2025.05.26 23:01:19.209] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "bookingStartDt": "20250530235000",
+  "bookingEndDt": "20250531015000",
+  "bookingNumber": "80616841",
+  "machineNumber": "37206",
+  "isSelfReserve": "0"
+}
+[2025.05.26 23:01:19.209] INFO log.py:80 ▶ request_router.py:84 ▶ [edit_move] : Response Body
+[2025.05.26 23:01:19.210] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "entity": 80616835,
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:19.210] INFO log.py:80 ▶ action.py:6 ▶ [edit] : type m
+[2025.05.26 23:01:19.210] INFO log.py:80 ▶ action.py:7 ▶ [edit] : payload ↓
+[2025.05.26 23:01:19.211] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616841",
+  "roomId": "37206",
+  "startDate": "2025-05-30T23:50:00+09:00",
+  "endDate": "2025-05-31T01:50:00+09:00",
+  "crawlingSite": "GolfzonPark"
+}
+[2025.05.26 23:01:19.211] INFO log.py:80 ▶ action.py:25 ▶ [edit] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl/fields
+[2025.05.26 23:01:19.303] INFO log.py:80 ▶ action.py:30 ▶ [edit] : 판도 서버 전송 성공
+[2025.05.26 23:01:23.403] INFO log.py:80 ▶ request_router.py:82 ▶ [edit_move] : Request Body
+[2025.05.26 23:01:23.403] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "bookingStartDt": "20250530235000",
+  "bookingEndDt": "20250531015000",
+  "bookingNumber": "80616842",
+  "machineNumber": "37203",
+  "isSelfReserve": "0"
+}
+[2025.05.26 23:01:23.404] INFO log.py:80 ▶ request_router.py:84 ▶ [edit_move] : Response Body
+[2025.05.26 23:01:23.404] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "entity": 80616835,
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:23.405] INFO log.py:80 ▶ action.py:6 ▶ [edit] : type m
+[2025.05.26 23:01:23.405] INFO log.py:80 ▶ action.py:7 ▶ [edit] : payload ↓
+[2025.05.26 23:01:23.406] INFO log.py:104 ▶ action.py:8 ▶ {
+  "externalId": "80616842",
+  "roomId": "37203",
+  "startDate": "2025-05-30T23:50:00+09:00",
+  "endDate": "2025-05-31T01:50:00+09:00",
+  "crawlingSite": "GolfzonPark"
+}
+[2025.05.26 23:01:23.406] INFO log.py:80 ▶ action.py:25 ▶ [edit] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl/fields
+[2025.05.26 23:01:23.511] INFO log.py:80 ▶ action.py:30 ▶ [edit] : 판도 서버 전송 성공
+[2025.05.26 23:01:39.742] INFO log.py:80 ▶ request_router.py:82 ▶ [delete] : Request Body
+[2025.05.26 23:01:39.743] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "shopNo": "14150",
+  "bookingNumber": "80616841",
+  "bookingNums": "80616841",
+  "isPenalty": "false"
+}
+[2025.05.26 23:01:39.743] INFO log.py:80 ▶ request_router.py:84 ▶ [delete] : Response Body
+[2025.05.26 23:01:39.743] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:39.743] INFO log.py:80 ▶ action.py:6 ▶ [delete] : type None
+[2025.05.26 23:01:39.744] INFO log.py:80 ▶ action.py:7 ▶ [delete] : payload ↓
+[2025.05.26 23:01:39.744] INFO log.py:104 ▶ action.py:8 ▶ {
+  "crawlingSite": "GolfzonPark",
+  "reason": "운영자 취소",
+  "externalId": "80616841"
+}
+[2025.05.26 23:01:39.745] INFO log.py:80 ▶ action.py:25 ▶ [delete] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:39.823] INFO log.py:80 ▶ action.py:30 ▶ [delete] : 판도 서버 전송 성공
+[2025.05.26 23:01:43.168] INFO log.py:80 ▶ request_router.py:82 ▶ [delete] : Request Body
+[2025.05.26 23:01:43.169] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "shopNo": "14150",
+  "bookingNumber": "80616842",
+  "bookingNums": "80616842",
+  "isPenalty": "false"
+}
+[2025.05.26 23:01:43.169] INFO log.py:80 ▶ request_router.py:84 ▶ [delete] : Response Body
+[2025.05.26 23:01:43.169] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:43.169] INFO log.py:80 ▶ action.py:6 ▶ [delete] : type None
+[2025.05.26 23:01:43.170] INFO log.py:80 ▶ action.py:7 ▶ [delete] : payload ↓
+[2025.05.26 23:01:43.170] INFO log.py:104 ▶ action.py:8 ▶ {
+  "crawlingSite": "GolfzonPark",
+  "reason": "운영자 취소",
+  "externalId": "80616842"
+}
+[2025.05.26 23:01:43.170] INFO log.py:80 ▶ action.py:25 ▶ [delete] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:43.236] INFO log.py:80 ▶ action.py:30 ▶ [delete] : 판도 서버 전송 성공
+[2025.05.26 23:01:46.058] INFO log.py:80 ▶ request_router.py:82 ▶ [delete] : Request Body
+[2025.05.26 23:01:46.058] INFO log.py:104 ▶ request_router.py:83 ▶ {
+  "shopNo": "14150",
+  "bookingNumber": "80616843",
+  "bookingNums": "80616843",
+  "isPenalty": "false"
+}
+[2025.05.26 23:01:46.058] INFO log.py:80 ▶ request_router.py:84 ▶ [delete] : Response Body
+[2025.05.26 23:01:46.058] INFO log.py:104 ▶ request_router.py:85 ▶ {
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.26 23:01:46.059] INFO log.py:80 ▶ action.py:6 ▶ [delete] : type None
+[2025.05.26 23:01:46.059] INFO log.py:80 ▶ action.py:7 ▶ [delete] : payload ↓
+[2025.05.26 23:01:46.059] INFO log.py:104 ▶ action.py:8 ▶ {
+  "crawlingSite": "GolfzonPark",
+  "reason": "운영자 취소",
+  "externalId": "80616843"
+}
+[2025.05.26 23:01:46.059] INFO log.py:80 ▶ action.py:25 ▶ [delete] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.26 23:01:46.172] INFO log.py:80 ▶ action.py:30 ▶ [delete] : 판도 서버 전송 성공

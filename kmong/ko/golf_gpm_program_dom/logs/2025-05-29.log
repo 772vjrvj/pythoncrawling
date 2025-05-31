@@ -1,0 +1,432 @@
+[2025.05.29 22:30:22.945] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.29 22:31:00.014] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.29 22:31:00.019] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.29 22:31:00.132] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0Mjg1NDU5fQ.aWbLz4xTvEWfilJpqqa9_xakSMA4vSjWELSt8hFidIE
+[2025.05.29 22:31:00.176] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.29 22:31:00.177] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.29 22:31:00.179] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.29 22:31:00.181] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.29 22:31:00.182] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.29 22:31:11.797] INFO log.py:80 ▶ main_worker.py:42 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.29 22:31:14.177] INFO log.py:80 ▶ reservation_dom.py:19 ▶ [DOM] MutationObserver JS 주입 완료
+[2025.05.29 22:31:15.505] INFO log.py:80 ▶ main_worker.py:88 ▶ 로그인 시도 완료
+[2025.05.29 22:31:15.506] INFO log.py:80 ▶ main_worker.py:56 ▶ 요청 감지 대기 중...
+[2025.05.29 22:31:17.624] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:19.793] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:21.541] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:22.401] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:22.996] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:23.553] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:24.116] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:24.704] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:25.283] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 22:31:25.856] INFO log.py:80 ▶ reservation_dom.py:27 ▶ [DOM] JS 함수 호출 실패 (getBookingData): Message: javascript error: getBookingData is not defined
+  (Session info: chrome=137.0.7151.55)
+Stacktrace:
+	GetHandleVerifier [0x0x128f173+62931]
+	GetHandleVerifier [0x0x128f1b4+62996]
+	(No symbol) [0x0x10a1053]
+	(No symbol) [0x0x10a7860]
+	(No symbol) [0x0x10a9df5]
+	(No symbol) [0x0x1130a0e]
+	(No symbol) [0x0x110e4ac]
+	(No symbol) [0x0x112f9e3]
+	(No symbol) [0x0x110e2a6]
+	(No symbol) [0x0x10dd5f0]
+	(No symbol) [0x0x10de464]
+	GetHandleVerifier [0x0x14e3463+2504899]
+	GetHandleVerifier [0x0x14de892+2485490]
+	GetHandleVerifier [0x0x12b590a+220522]
+	GetHandleVerifier [0x0x12a6388+157672]
+	GetHandleVerifier [0x0x12acb6d+184269]
+	GetHandleVerifier [0x0x1297158+95672]
+	GetHandleVerifier [0x0x1297300+96096]
+	GetHandleVerifier [0x0x12821aa+9738]
+	BaseThreadInitThunk [0x0x7748fcc9+25]
+	RtlGetAppContainerNamedObjectPath [0x0x77a182ae+286]
+	RtlGetAppContainerNamedObjectPath [0x0x77a1827e+238]
+
+[2025.05.29 23:20:20.816] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.29 23:20:24.127] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.29 23:20:24.131] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.29 23:20:24.214] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0Mjg4NDIzfQ.F0Ij2TxXfl5-IexB9P1-DzEUEGktY9YHUNz-P4qT7yo
+[2025.05.29 23:20:24.251] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.29 23:20:24.252] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.29 23:20:24.254] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.29 23:20:24.255] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.29 23:20:24.257] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.29 23:20:30.032] INFO log.py:80 ▶ main_worker.py:40 ▶ 사이트 접속 완료
+[2025.05.29 23:20:31.310] INFO log.py:80 ▶ main_worker.py:53 ▶ 로그인 완료
+[2025.05.29 23:22:10.478] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.29 23:22:33.056] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.29 23:22:33.059] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.29 23:22:33.121] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0Mjg4NTUxfQ.WKkTkhZv9eI1yQcpQ8oBVUj6eKTH_N4570cVjM8u9xo
+[2025.05.29 23:22:33.159] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.29 23:22:33.160] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.29 23:22:33.161] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.29 23:22:33.163] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.29 23:22:33.164] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.29 23:22:38.129] INFO log.py:80 ▶ main_worker.py:43 ▶ 사이트 접속 완료
+[2025.05.29 23:22:39.408] INFO log.py:80 ▶ main_worker.py:56 ▶ 로그인 완료
+[2025.05.29 23:22:48.623] INFO log.py:80 ▶ reservation_dom.py:19 ▶ [DOM] MutationObserver JS 주입 완료
+[2025.05.29 23:23:28.715] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.29 23:23:31.739] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.29 23:23:31.742] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.29 23:23:31.802] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0Mjg4NjEwfQ.uvXeaDxDcuFQHxO955sfiMfxiHcNOnXu__c4e_M5yQw
+[2025.05.29 23:23:31.844] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.29 23:23:31.845] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.29 23:23:31.847] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.29 23:23:31.848] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.29 23:23:31.849] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.29 23:23:36.119] INFO log.py:80 ▶ main_worker.py:43 ▶ 사이트 접속 완료
+[2025.05.29 23:23:37.369] INFO log.py:80 ▶ main_worker.py:56 ▶ 로그인 완료
+[2025.05.29 23:23:47.600] INFO log.py:80 ▶ reservation_dom.py:19 ▶ [DOM] MutationObserver JS 주입 완료
+[2025.05.29 23:24:38.297] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.29 23:24:42.788] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.29 23:24:42.791] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.29 23:24:42.857] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0Mjg4NjgxfQ.EQ2cpVwqvGLy2HA94LRYuO4v8OhIkZ14UxZR_1NPtu8
+[2025.05.29 23:24:42.897] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.29 23:24:42.898] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.29 23:24:42.899] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.29 23:24:42.901] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.29 23:24:42.901] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.29 23:24:47.967] INFO log.py:80 ▶ main_worker.py:43 ▶ 사이트 접속 완료
+[2025.05.29 23:24:49.201] INFO log.py:80 ▶ main_worker.py:56 ▶ 로그인 완료
+[2025.05.29 23:24:51.202] INFO log.py:80 ▶ main_worker.py:115 ▶ 예약 탭 없음 → 새 탭 열림 대기
+[2025.05.29 23:24:52.927] INFO log.py:80 ▶ main_worker.py:127 ▶ 새 탭 감지됨: C53648383223F967F161A7537F69A672
+[2025.05.29 23:24:52.960] INFO log.py:80 ▶ main_worker.py:80 ▶ 예약 탭 감시 시작
+[2025.05.29 23:24:58.421] INFO log.py:80 ▶ reservation_dom.py:19 ▶ [DOM] MutationObserver JS 주입 완료
+[2025.05.29 23:26:03.337] INFO log.py:80 ▶ log.py:112 ▶ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.29 23:26:06.393] INFO log.py:80 ▶ login_window.py:300 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.29 23:26:06.396] INFO log.py:80 ▶ token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.29 23:26:06.495] INFO log.py:80 ▶ token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTA0Mjg4NzY1fQ.QenZ8R2dXocgRRFdhmQ7_TSsx4gfw_ODyQ2vhPNCe1I
+[2025.05.29 23:26:06.533] INFO log.py:80 ▶ login_window.py:340 ▶ 매장 정보 불러오기 성공
+[2025.05.29 23:26:06.534] INFO log.py:80 ▶ login_window.py:341 ▶ ● 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.29 23:26:06.535] INFO log.py:80 ▶ login_window.py:342 ▶ ● 지  점 : GPM스크랩
+[2025.05.29 23:26:06.537] INFO log.py:80 ▶ login_window.py:311 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.29 23:26:06.538] INFO log.py:80 ▶ login_window.py:312 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.29 23:26:11.576] INFO log.py:80 ▶ main_worker.py:43 ▶ 사이트 접속 완료
+[2025.05.29 23:26:12.823] INFO log.py:80 ▶ main_worker.py:56 ▶ 로그인 완료
+[2025.05.29 23:26:14.825] INFO log.py:80 ▶ main_worker.py:115 ▶ 예약 탭 없음 → 새 탭 열림 대기
+[2025.05.29 23:26:17.052] INFO log.py:80 ▶ main_worker.py:126 ▶ 새 탭 감지됨: F64ED084DC37FC9796AFC69381301D9C
+[2025.05.29 23:26:17.074] INFO log.py:80 ▶ main_worker.py:80 ▶ 예약 탭 감시 시작
+[2025.05.29 23:26:23.362] INFO log.py:80 ▶ reservation_dom.py:19 ▶ [DOM] MutationObserver JS 주입 완료
+[2025.05.29 23:26:51.123] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:51.756] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:52.377] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:52.947] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:53.537] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:54.123] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:54.710] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:55.299] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:55.873] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:56.471] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:57.082] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:57.703] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:58.319] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:58.925] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:26:59.518] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:00.091] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:00.670] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:01.265] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:01.838] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:02.451] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:03.050] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:03.652] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:04.234] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:04.820] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:05.397] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:05.975] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:06.565] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:07.163] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:07.734] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:08.339] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:08.972] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:09.552] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:10.134] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:10.736] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:11.309] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:11.874] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:12.444] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:13.015] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:13.585] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:14.232] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:14.841] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:15.421] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:16.030] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:16.627] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:17.273] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:17.857] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:18.456] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:19.112] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:19.712] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:20.307] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:20.881] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:21.463] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:22.049] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:22.648] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:23.222] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:23.808] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:24.392] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '테스트', 'timestamp': 1748528810816}
+[2025.05.29 23:27:24.991] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:25.570] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:26.149] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:26.768] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:27.362] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:27.958] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:28.562] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:29.167] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528844737}
+[2025.05.29 23:27:29.762] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528849210}
+[2025.05.29 23:27:30.347] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:30.983] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:31.581] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:32.185] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:32.764] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:33.343] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:33.951] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:34.525] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:35.098] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:35.670] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:36.279] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:36.859] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:37.432] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:38.016] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:38.631] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '1234', 'timestamp': 1748528850251}
+[2025.05.29 23:27:39.233] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:39.819] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:40.433] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:41.043] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:41.624] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:42.198] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:42.804] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:43.382] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:43.994] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:44.607] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:45.181] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:45.775] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}
+[2025.05.29 23:27:46.412] INFO log.py:80 ▶ main_worker.py:89 ▶ [DOM] 예약 데이터 감지: {'name': '555555', 'timestamp': 1748528858812}

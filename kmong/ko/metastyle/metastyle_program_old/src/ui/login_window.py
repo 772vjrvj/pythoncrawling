@@ -1,9 +1,13 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox,
+                             QCheckBox)
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from src.workers.login_thread import LoginThread
 from src.ui.password_change_window import PasswordChangeWindow
 from src.utils.singleton import GlobalState
+
+import keyring
+from src.utils.config import server_name  # 서버 URL 및 설정 정보
 
 # 로그인 창
 class LoginWindow(QWidget):
@@ -24,6 +28,7 @@ class LoginWindow(QWidget):
         painter.setPen(QColor("#e0e0e0"))  # 테두리 색상
         painter.drawRect(0, 0, 32, 32)  # 동그란 원 그리기 (좌상단 0,0에서 64x64 크기)
         painter.end()
+
         # 윈도우 아이콘 설정
         self.setWindowIcon(QIcon(icon_pixmap))
         self.setGeometry(100, 100, 500, 300)
@@ -47,7 +52,8 @@ class LoginWindow(QWidget):
         """)
         self.id_input.setFixedHeight(40)
         self.id_input.setFixedWidth(300)
-
+        
+        # 비밀번호 입력
         self.password_input = QLineEdit(self)
         self.password_input.setPlaceholderText("비밀번호를 입력하세요")
         self.password_input.setEchoMode(QLineEdit.Password)
@@ -61,8 +67,33 @@ class LoginWindow(QWidget):
         self.password_input.setFixedHeight(40)
         self.password_input.setFixedWidth(300)  # 너비를 화면의 절반 정도로 설정
 
+        # 자동 로그인 체크박스 (init 내부에서)
+        self.auto_login_checkbox = QCheckBox("자동 로그인", self)
+        self.auto_login_checkbox.setCursor(Qt.PointingHandCursor)  # 손가락 모양
+        self.auto_login_checkbox.setStyleSheet("""
+            QCheckBox {
+                font-size: 13px;
+                color: #444;
+                spacing: 8px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                border: 1px solid #888;
+                background-color: #f0f0f0;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #4682B4;
+                image: url();
+            }
+        """)
+        self.auto_login_checkbox.setChecked(False)
+
+        # 버튼 레이아웃
         button_layout = QHBoxLayout()
 
+        # 로그인 버튼
         self.login_button = QPushButton("로그인", self)
         self.login_button.setStyleSheet("""
             background-color: #4682B4;
@@ -75,7 +106,8 @@ class LoginWindow(QWidget):
         self.login_button.setFixedWidth(140)  # 버튼 너비 설정
         self.login_button.setCursor(Qt.PointingHandCursor)
         self.login_button.clicked.connect(self.login)
-
+        
+        # 비밀번호 변경
         self.change_password_button = QPushButton("비밀번호 변경", self)
         self.change_password_button.setStyleSheet("""
             background-color: #4682B4;
@@ -95,8 +127,25 @@ class LoginWindow(QWidget):
 
         layout.addWidget(self.id_input)
         layout.addWidget(self.password_input)
+        layout.addWidget(self.auto_login_checkbox)
         layout.addLayout(button_layout)
         self.center_window()
+
+        # 자동 로그인 시도
+        self.try_auto_login()
+
+    # 자동 로그인
+    def try_auto_login(self):
+        try:
+            username = keyring.get_password(server_name, "username")
+            password = keyring.get_password(server_name, "password")
+            if username and password:
+                self.id_input.setText(username)
+                self.password_input.setText(password)
+                self.auto_login_checkbox.setChecked(True)
+                self.login()  # 자동 로그인 실행
+        except Exception:
+            pass
 
     # 화면 중앙배치
     def center_window(self):

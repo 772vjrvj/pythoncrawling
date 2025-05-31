@@ -1,28 +1,18 @@
-from src.state.dom_state import DomState
 from src.utils.payload_builder import PayloadBuilder
 from src.api.action import send_to_external_api_action
-from src.utils.log import log, log_json
 
 class ReservationService:
     def __init__(self, token: str, store_id: str):
         self.token = token
         self.store_id = store_id
 
-
     def register(self, req_json=None, resp_json=None):
-
-        dom_data = DomState.get()
-        if dom_data:
-            dom_name = dom_data.get("name")
-            log(f"dom_name : {dom_name}")
-
         for entity in PayloadBuilder.extract_entities(resp_json):
             external_id = entity.get("bookingNumber", [None])[0]
             machine_number = entity.get("machineNumber")
             reserve_no = req_json.get("reserveNo") or None
             payload = PayloadBuilder.register_or_edit(req_json, external_id, machine_number, reserve_no)
             send_to_external_api_action(self.token, self.store_id, "register", payload, None)
-
 
     def edit(self, req_json=None, resp_json=None):
         entities = PayloadBuilder.extract_entities(resp_json)
@@ -50,11 +40,9 @@ class ReservationService:
             payload = PayloadBuilder.register_or_edit(req_json, external_id, machine_number)
             send_to_external_api_action(self.token, self.store_id, "edit", payload, None)
 
-
     def edit_move(self, req_json=None, resp_json=None):
         payload = PayloadBuilder.edit_move(req_json)
         send_to_external_api_action(self.token, self.store_id, "edit", payload, 'm')
-
 
     def delete_admin(self, req_json, resp_json):
         group_id = req_json.get("reservation.reserveNo")

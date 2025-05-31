@@ -22,12 +22,6 @@ class SeleniumDriverManager:
         chrome_options.add_argument('--disable-application-cache')
         chrome_options.add_argument('--media-cache-size=0')
 
-        header_overrides = {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        }
-
         base_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
         cert_dir = os.path.join(base_path, 'seleniumwire')
         cert_path = os.path.join(cert_dir, 'ca.crt')
@@ -55,16 +49,19 @@ class SeleniumDriverManager:
             seleniumwire_options=seleniumwire_options
         )
 
-        driver.header_overrides = header_overrides
-
-        # ✅ 수정된 인터셉터
+        # ✅ 헤더 기반 캐시 무효화
         def interceptor(request):
             for h in ['If-Modified-Since', 'If-None-Match']:
                 if h in request.headers:
                     del request.headers[h]
 
+            request.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            request.headers['Pragma'] = 'no-cache'
+            request.headers['Expires'] = '0'
+
         driver.request_interceptor = interceptor
 
+        # ✅ 브라우저 자동화 탐지 우회
         driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": """
                 Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
@@ -73,5 +70,8 @@ class SeleniumDriverManager:
                 Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
             """
         })
+
+        # ✅ 브라우저 캐시 비활성화 (CDP)
+        driver.execute_cdp_cmd('Network.setCacheDisabled', {'cacheDisabled': True})
 
         return driver

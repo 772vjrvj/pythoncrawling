@@ -1,20 +1,30 @@
-# src/state/dom_state.py
-
 class DomState:
-    _latest_data = {}
+    _data_list = []
 
     @classmethod
-    def set(cls, data: dict):
-        cls._latest_data = data
+    def add(cls, data: dict):
+        for item in cls._data_list:
+            if item == data:
+                return
+        cls._data_list.append(data)
 
     @classmethod
-    def get(cls) -> dict:
-        return cls._latest_data
+    def get_all(cls) -> list:
+        return cls._data_list
 
     @classmethod
     def clear(cls):
-        cls._latest_data = {}
+        cls._data_list = []
 
     @classmethod
     def has(cls, key: str) -> bool:
-        return key in cls._latest_data
+        return any(key in item for item in cls._data_list)
+
+    @classmethod
+    def get_last(cls) -> dict:
+        return cls._data_list[-1] if cls._data_list else {}
+
+    @classmethod
+    def update(cls, index: int, data: dict):
+        if 0 <= index < len(cls._data_list):
+            cls._data_list[index] = data

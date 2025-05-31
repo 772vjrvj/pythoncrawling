@@ -1,0 +1,108 @@
+[2025.05.24 01:27:52.632] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.24 01:27:52.633] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.24 01:27:52.747] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzc3NjcxfQ.H0AoRjyu_0E82CyBNTXwO-lThUqyNmjhkY5v4E22jn8
+[2025.05.24 01:27:52.783] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.24 01:27:52.783] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.24 01:27:52.784] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.24 01:27:52.785] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.24 01:27:52.785] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.24 01:28:02.497] main_worker.py:34 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.24 01:28:05.146] main_worker.py:69 ▶ 로그인 시도 완료
+[2025.05.24 01:28:05.147] main_worker.py:44 ▶ 요청 감지 대기 중...
+[2025.05.24 23:50:17.099] INFO log.py:87 ▶ ✅ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.24 23:50:20.898] INFO login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.24 23:50:20.898] INFO token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.24 23:50:20.966] INFO token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzODU4MjE5fQ.lrHSpHX8kde-WrnBFiOMY7JOcxVTi2fmjze4Qhc82n8
+[2025.05.24 23:50:21.000] INFO login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.24 23:50:21.001] INFO login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.24 23:50:21.001] INFO login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.24 23:50:21.001] INFO login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.24 23:50:21.001] INFO login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.24 23:50:25.729] INFO main_worker.py:35 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.24 23:50:27.956] INFO main_worker.py:70 ▶ 로그인 시도 완료
+[2025.05.24 23:50:27.956] INFO main_worker.py:45 ▶ 요청 감지 대기 중...
+[2025.05.24 23:53:05.374] INFO log.py:87 ▶ ✅ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.24 23:57:24.456] INFO log.py:87 ▶ ✅ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.24 23:57:36.252] INFO log.py:87 ▶ ✅ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.24 23:57:44.553] INFO login_window.py:299 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.24 23:57:44.557] INFO token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.24 23:57:44.642] INFO token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzODU4NjYyfQ.t8OPqE9C3QXqXeIp5NtVYaFvWuEqJWhuenFTiG9Us_Y
+[2025.05.24 23:57:44.723] INFO login_window.py:339 ▶ 매장 정보 불러오기 성공
+[2025.05.24 23:57:44.725] INFO login_window.py:340 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.24 23:57:44.728] INFO login_window.py:341 ▶ • 지  점 : GPM스크랩
+[2025.05.24 23:57:44.732] INFO login_window.py:310 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.24 23:57:44.734] INFO login_window.py:311 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.24 23:57:49.925] INFO main_worker.py:35 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.24 23:57:52.434] INFO main_worker.py:70 ▶ 로그인 시도 완료
+[2025.05.24 23:57:52.435] INFO main_worker.py:45 ▶ 요청 감지 대기 중...
+[2025.05.24 23:59:02.830] INFO log.py:87 ▶ ✅ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.24 23:59:33.800] INFO log.py:87 ▶ ✅ 로거 초기화 완료 - ENV: dev, IS_DEV: True
+[2025.05.24 23:59:41.342] INFO login_window.py:299 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.24 23:59:41.345] INFO token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.24 23:59:41.423] INFO token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzODU4Nzc5fQ.EdnuEk9AoIAs3swreSfzKVC1kVEf6yiJiJ29sjTt0lg
+[2025.05.24 23:59:41.473] INFO login_window.py:339 ▶ 매장 정보 불러오기 성공
+[2025.05.24 23:59:41.474] INFO login_window.py:340 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.24 23:59:41.476] INFO login_window.py:341 ▶ • 지  점 : GPM스크랩
+[2025.05.24 23:59:41.478] INFO login_window.py:310 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.24 23:59:41.479] INFO login_window.py:311 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.24 23:59:46.356] INFO main_worker.py:35 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.24 23:59:49.051] INFO main_worker.py:70 ▶ 로그인 시도 완료
+[2025.05.24 23:59:49.052] INFO main_worker.py:45 ▶ 요청 감지 대기 중...
+[2025.05.25 00:00:12.044] INFO request_router.py:66 ▶ [register] : Request Body
+[2025.05.25 00:00:12.045] INFO request_router.py:67 ▶ {
+  "shopNo": "14150",
+  "bookingName": "테스트",
+  "cellNumber": "1234",
+  "bookingCnt": "2",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": "37208",
+  "bookingChannel": "1",
+  "fixedYn": "N",
+  "paymentYn": "N",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "bookingStartDt": "20250530001000",
+  "bookingEndDt": "20250530021000",
+  "gameTime": "120"
+}
+[2025.05.25 00:00:12.046] INFO request_router.py:68 ▶ [register] : Response Body
+[2025.05.25 00:00:12.047] INFO request_router.py:69 ▶ {
+  "entity": [
+    {
+      "bookingNumber": [
+        80502006
+      ],
+      "machineNumber": 37208
+    }
+  ],
+  "entitys": [
+    {
+      "bookingNumber": [
+        80502006
+      ],
+      "machineNumber": 37208
+    }
+  ],
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.25 00:00:12.051] INFO action.py:6 ▶ [register] : type None
+[2025.05.25 00:00:12.051] INFO action.py:7 ▶ [register] : payload ↓
+[2025.05.25 00:00:12.052] INFO action.py:8 ▶ {
+  "externalId": "80502006",
+  "roomId": "37208",
+  "crawlingSite": "GolfzonPark",
+  "name": "테스트",
+  "phone": "1234",
+  "paymented": false,
+  "partySize": 2,
+  "paymentAmount": 0,
+  "startDate": "2025-05-30T00:10:00+09:00",
+  "endDate": "2025-05-30T02:10:00+09:00"
+}
+[2025.05.25 00:00:12.053] INFO action.py:22 ▶ [register] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.25 00:00:12.143] INFO action.py:27 ▶ [register] : 판도 서버 전송 성공

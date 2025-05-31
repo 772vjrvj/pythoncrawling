@@ -1,0 +1,444 @@
+[2025.05.23 05:43:12.945] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 05:43:12.946] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 05:43:13.036] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzA2NTkyfQ.cNEhgA3L9XIFAlo9Ztl35o7mgHylnBL0xmW7D685mrs
+[2025.05.23 05:43:13.083] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 05:43:13.084] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 05:43:13.084] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 05:43:13.086] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 05:43:13.086] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 05:44:17.266] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 05:44:17.267] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 05:44:17.319] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzA2NjU3fQ.u5eiAP-xro69D0XTtTv5lwIs8QEusNnEIR5lthrhj58
+[2025.05.23 05:44:17.356] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 05:44:17.356] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 05:44:17.357] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 05:44:17.357] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 05:44:17.358] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 05:44:45.589] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 05:44:45.589] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 05:44:45.645] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzA2Njg1fQ.IQ8UbR4kLJXBfreYE6OnZkNisEeooXiIV_CvrhNV11s
+[2025.05.23 05:44:45.682] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 05:44:45.683] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 05:44:45.683] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 05:44:45.683] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 05:44:45.683] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 05:44:50.707] main_worker.py:33 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 05:44:53.120] main_worker.py:68 ▶ 로그인 시도 완료
+[2025.05.23 05:44:53.120] main_worker.py:43 ▶ 요청 감지 대기 중...
+[2025.05.23 07:50:03.293] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 07:50:03.294] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 07:50:03.367] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzE0MjAzfQ.f1u8gXc3cSqgQEjLAasMNrO-G7gftIFJoSkrxY4O0ec
+[2025.05.23 07:50:03.413] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 07:50:03.414] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 07:50:03.414] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 07:50:03.414] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 07:50:03.415] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 07:50:08.609] main_worker.py:33 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 07:50:10.927] main_worker.py:68 ▶ 로그인 시도 완료
+[2025.05.23 07:50:10.927] main_worker.py:43 ▶ 요청 감지 대기 중...
+[2025.05.23 10:11:23.185] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 10:11:23.187] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 10:11:23.273] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzIyNjgyfQ.zHYptVP45oVLNH2X42icsProokFCZpusF024-lP-xPs
+[2025.05.23 10:11:23.313] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 10:11:23.313] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 10:11:23.313] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 10:11:23.314] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 10:11:23.315] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 10:11:34.783] main_worker.py:34 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 10:11:37.552] main_worker.py:69 ▶ 로그인 시도 완료
+[2025.05.23 10:11:37.553] main_worker.py:44 ▶ 요청 감지 대기 중...
+[2025.05.23 11:07:30.413] request_router.py:66 ▶ [register] : Request Body
+[2025.05.23 11:07:30.415] request_router.py:67 ▶ {
+  "shopNo": "14150",
+  "bookingName": "고승현",
+  "cellNumber": "010-7141-0772",
+  "bookingCnt": "1",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": "37205",
+  "bookingChannel": "2",
+  "fixedYn": "N",
+  "paymentYn": "N",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "reserveNo": "33586230",
+  "reserveStatus": "20",
+  "reserveSoftware": "56",
+  "gameType": "0",
+  "roomCount": "1",
+  "gameCount": "1",
+  "optionFlag": "0",
+  "reservation.shopNo": "14150",
+  "reservation.reserveNo": "33586230",
+  "reservation.reserveStatus": "20",
+  "bookingStartDt": "20250529200000",
+  "bookingEndDt": "20250529210000",
+  "gameTime": "60"
+}
+[2025.05.23 11:07:30.415] request_router.py:68 ▶ [register] : Response Body
+[2025.05.23 11:07:30.415] request_router.py:69 ▶ {
+  "code": "FAIL",
+  "codeMessage": "update resevation fail",
+  "status": "304",
+  "statusMessage": "NOT_MODIFIED"
+}
+[2025.05.23 11:07:30.416] request_router.py:79 ▶ [register] : 응답 실패 (code: FAIL, status: 304)
+[2025.05.23 11:09:42.971] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 11:09:42.972] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 11:09:43.059] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzI2MTgyfQ.-coGLxiAvyPuW8BOcwhnZ3055YNKv60ucRqNC0jmKu0
+[2025.05.23 11:09:43.105] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 11:09:43.105] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 11:09:43.106] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 11:09:43.107] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 11:09:43.108] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 11:09:49.360] main_worker.py:34 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 11:09:51.977] main_worker.py:69 ▶ 로그인 시도 완료
+[2025.05.23 11:09:51.977] main_worker.py:44 ▶ 요청 감지 대기 중...
+[2025.05.23 13:02:53.586] request_router.py:66 ▶ [register] : Request Body
+[2025.05.23 13:02:53.588] request_router.py:67 ▶ {
+  "shopNo": "14150",
+  "bookingName": "테스트",
+  "cellNumber": "010-7141-0772",
+  "bookingCnt": "1",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": "37205",
+  "bookingChannel": "2",
+  "fixedYn": "N",
+  "paymentYn": "Y",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "reserveNo": "33589705",
+  "reserveStatus": "20",
+  "reserveSoftware": "56",
+  "paymentTotAmount": "17000",
+  "gameType": "0",
+  "roomCount": "1",
+  "gameCount": "1",
+  "optionFlag": "0",
+  "reservation.shopNo": "14150",
+  "reservation.reserveNo": "33589705",
+  "reservation.reserveStatus": "20",
+  "bookingStartDt": "20250529060000",
+  "bookingEndDt": "20250529070000",
+  "gameTime": "60"
+}
+[2025.05.23 13:02:53.590] request_router.py:68 ▶ [register] : Response Body
+[2025.05.23 13:02:53.591] request_router.py:69 ▶ {
+  "code": "FAIL",
+  "codeMessage": "update resevation fail",
+  "status": "304",
+  "statusMessage": "NOT_MODIFIED"
+}
+[2025.05.23 13:02:53.591] request_router.py:79 ▶ [register] : 응답 실패 (code: FAIL, status: 304)
+[2025.05.23 13:18:45.601] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 13:18:45.603] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 13:18:45.705] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzMzOTI1fQ.IkvbXgSDbRQgVUlaJ-SFOZqzThJzSLEd--dbqLkufww
+[2025.05.23 13:18:45.758] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 13:18:45.759] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 13:18:45.759] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 13:18:45.761] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 13:18:45.762] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 13:18:53.043] main_worker.py:34 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 13:18:55.330] main_worker.py:69 ▶ 로그인 시도 완료
+[2025.05.23 13:18:55.330] main_worker.py:44 ▶ 요청 감지 대기 중...
+[2025.05.23 13:19:43.589] request_router.py:66 ▶ [register] : Request Body
+[2025.05.23 13:19:43.601] request_router.py:67 ▶ {
+  "shopNo": "14150",
+  "bookingName": "테스트",
+  "cellNumber": "010-7141-0772",
+  "bookingCnt": "1",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": "37207",
+  "bookingChannel": "2",
+  "fixedYn": "N",
+  "paymentYn": "Y",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "reserveNo": "33590363",
+  "reserveStatus": "20",
+  "reserveSoftware": "56",
+  "paymentTotAmount": "17000",
+  "bookingMobileMemo": "테스트입니다ㅠ 양해부탁드립니다",
+  "gameType": "0",
+  "roomCount": "1",
+  "gameCount": "1",
+  "optionFlag": "0",
+  "reservation.shopNo": "14150",
+  "reservation.reserveNo": "33590363",
+  "reservation.reserveStatus": "20",
+  "bookingStartDt": "20250529060000",
+  "bookingEndDt": "20250529070000",
+  "gameTime": "60"
+}
+[2025.05.23 13:19:43.602] request_router.py:68 ▶ [register] : Response Body
+[2025.05.23 13:19:43.609] request_router.py:69 ▶ {
+  "entity": [
+    {
+      "bookingNumber": [
+        80379183
+      ],
+      "machineNumber": 37207
+    }
+  ],
+  "entitys": [
+    {
+      "bookingNumber": [
+        80379183
+      ],
+      "machineNumber": 37207
+    }
+  ],
+  "code": "OK",
+  "codeMessage": "success",
+  "status": "200",
+  "statusMessage": "OK"
+}
+[2025.05.23 13:19:43.613] action.py:6 ▶ [register] : payload ↓
+[2025.05.23 13:19:43.617] action.py:7 ▶ {
+  "externalId": "80379183",
+  "roomId": "37207",
+  "crawlingSite": "GolfzonPark",
+  "name": "테스트",
+  "phone": "010-7141-0772",
+  "paymented": true,
+  "partySize": 1,
+  "paymentAmount": 17000,
+  "startDate": "2025-05-29T06:00:00+09:00",
+  "endDate": "2025-05-29T07:00:00+09:00",
+  "externalGroupId": "33590363"
+}
+[2025.05.23 13:19:43.620] action.py:19 ▶ [register] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.23 13:19:43.724] action.py:24 ▶ [register] : 판도 서버 전송 성공
+[2025.05.23 13:28:35.960] request_router.py:54 ▶ [register] : 응답 없음 (response is None)
+[2025.05.23 13:42:19.347] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 13:42:19.349] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 13:42:19.423] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzM1MzM4fQ.6moAjBTIGmcuh6G8Wz6ulsVXl_F2eqvDsMbv9zKfozU
+[2025.05.23 13:42:19.467] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 13:42:19.468] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 13:42:19.468] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 13:42:19.469] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 13:42:19.469] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 13:42:25.673] main_worker.py:34 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 13:42:28.377] main_worker.py:69 ▶ 로그인 시도 완료
+[2025.05.23 13:42:28.378] main_worker.py:44 ▶ 요청 감지 대기 중...
+[2025.05.23 13:43:59.004] request_router.py:36 ▶ [delwte] : /rest/ui/polling/booking/14150
+[2025.05.23 13:43:59.004] request_router.py:37 ▶ [delwte] : /rest/ui/polling/booking/
+[2025.05.23 13:44:04.269] request_router.py:68 ▶ [register] : Request Body
+[2025.05.23 13:44:04.270] request_router.py:69 ▶ {
+  "shopNo": "14150",
+  "bookingName": "테스트",
+  "cellNumber": "010-7141-0772",
+  "bookingCnt": "1",
+  "gameMode": "0",
+  "bookingPlayHole": "18",
+  "machineNumber": "37208",
+  "bookingChannel": "2",
+  "fixedYn": "N",
+  "paymentYn": "Y",
+  "paymentStatus": "0",
+  "leftHand": "false",
+  "isSelfReserve": "0",
+  "reserveNo": "33591294",
+  "reserveStatus": "20",
+  "reserveSoftware": "56",
+  "paymentTotAmount": "17000",
+  "gameType": "0",
+  "roomCount": "1",
+  "gameCount": "1",
+  "optionFlag": "0",
+  "reservation.shopNo": "14150",
+  "reservation.reserveNo": "33591294",
+  "reservation.reserveStatus": "20",
+  "bookingStartDt": "20250529060000",
+  "bookingEndDt": "20250529070000",
+  "gameTime": "60"
+}
+[2025.05.23 13:44:04.270] request_router.py:70 ▶ [register] : Response Body
+[2025.05.23 13:44:04.270] request_router.py:71 ▶ {
+  "code": "FAIL",
+  "codeMessage": "update resevation fail",
+  "status": "304",
+  "statusMessage": "NOT_MODIFIED"
+}
+[2025.05.23 13:44:04.271] request_router.py:81 ▶ [register] : 응답 실패 (code: FAIL, status: 304)
+[2025.05.23 13:44:57.745] request_router.py:36 ▶ [delwte] : /rest/ui/polling/booking/14150
+[2025.05.23 13:44:57.746] request_router.py:37 ▶ [delwte] : /rest/ui/polling/booking/
+[2025.05.23 13:44:57.746] action.py:6 ▶ [delete] : payload ↓
+[2025.05.23 13:44:57.746] action.py:7 ▶ {
+  "crawlingSite": "GolfzonPark",
+  "reason": "고객 취소",
+  "externalGroupId": "33591294"
+}
+[2025.05.23 13:44:57.746] action.py:19 ▶ [delete] : https://api.dev.24golf.co.kr/stores/6823189ccaf95dcb25d42273/reservation/crawl
+[2025.05.23 13:44:57.801] action.py:26 ▶ [delete] : 판도 서버 전송 실패 -> 400
+[2025.05.23 13:44:57.806] action.py:28 ▶ [delete] : 실패 내용 ↓
+[2025.05.23 13:44:57.807] action.py:29 ▶ {
+  "statusCode": 400,
+  "message": [
+    "property externalGroupId should not exist",
+    "externalId must be a string"
+  ],
+  "error": "Bad Request"
+}
+[2025.05.23 15:46:18.720] login_window.py:288 ▶ 매장 정보 가져오기 및 크롤링 쓰레드 시작
+[2025.05.23 15:46:18.721] token.py:8 ▶ 토큰 요청 URL: https://api.dev.24golf.co.kr/auth/token/stores/6823189ccaf95dcb25d42273/role/singleCrawler
+[2025.05.23 15:46:18.821] token.py:14 ▶ 토큰 요청 성공: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjMxODljY2FmOTVkY2IyNWQ0MjI3MyIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTAzNzQyNzc4fQ.Cf9_OvkYTTOwi78aOpDrW72xy9AvCJ1n00EUinszBRY
+[2025.05.23 15:46:18.859] login_window.py:328 ▶ 매장 정보 불러오기 성공
+[2025.05.23 15:46:18.860] login_window.py:329 ▶ • 매장명 : 용인 골프존파크 죽전골프앤D
+[2025.05.23 15:46:18.860] login_window.py:330 ▶ • 지  점 : GPM스크랩
+[2025.05.23 15:46:18.861] login_window.py:299 ▶ 전달할 로그인 정보: ID=bancj1, PW=qwer1234
+[2025.05.23 15:46:18.861] login_window.py:300 ▶ 전달할 매장 ID: 6823189ccaf95dcb25d42273
+[2025.05.23 15:46:27.560] main_worker.py:34 ▶ 등록, 수정, 삭제시 API 호출을 진행합니다...
+[2025.05.23 15:46:30.205] main_worker.py:69 ▶ 로그인 시도 완료
+[2025.05.23 15:46:30.206] main_worker.py:44 ▶ 요청 감지 대기 중...
+[2025.05.23 15:50:11.560] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 15:50:11.561] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 15:54:59.081] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 15:54:59.081] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 15:55:08.446] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 15:55:08.446] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:18:28.805] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:18:28.805] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:20:07.041] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:20:07.041] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:20:14.720] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:20:14.720] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:25:29.278] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:25:29.279] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:26:09.476] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:26:09.477] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:28:27.882] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:28:27.883] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:30:55.619] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:30:55.619] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:31:52.012] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:31:52.012] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:32:17.494] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:32:17.494] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:32:42.775] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:32:42.775] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:33:10.079] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:33:10.079] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:33:24.622] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:33:24.622] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 16:38:14.825] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 16:38:14.825] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 17:26:04.957] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 17:26:04.958] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 17:36:12.950] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 17:36:12.950] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 17:36:43.707] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 17:36:43.708] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 17:37:08.472] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 17:37:08.472] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 17:40:50.619] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 17:40:50.619] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 18:11:56.771] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 18:11:56.771] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 18:12:13.088] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 18:12:13.089] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 18:38:30.749] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 18:38:30.749] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:05:38.465] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:05:38.465] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:05:39.684] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:05:39.684] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:05:47.054] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:05:47.054] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:05:51.987] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:05:51.987] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:05:58.800] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:05:58.800] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:06:01.349] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:06:01.350] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:21:34.185] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:21:34.185] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:21:37.186] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:21:37.187] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:26:01.593] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:26:01.594] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:29:55.425] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:29:55.425] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 19:30:20.807] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 19:30:20.808] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:10:22.367] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:10:22.367] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:34:47.651] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:34:47.652] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:54:08.439] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:54:08.439] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:54:28.445] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:54:28.445] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:54:35.215] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:54:35.215] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:54:41.341] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:54:41.341] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:55:06.708] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:55:06.708] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:55:10.475] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:55:10.475] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:56:07.978] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:56:07.978] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:56:18.517] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:56:18.517] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:56:22.822] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:56:22.822] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:56:25.922] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:56:25.923] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:56:32.574] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:56:32.574] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 20:56:43.488] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 20:56:43.489] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 21:06:41.575] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 21:06:41.576] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 21:06:45.347] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 21:06:45.347] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 21:28:31.950] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 21:28:31.950] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:12:45.499] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:12:45.499] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:12:52.275] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:12:52.275] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:12:54.741] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:12:54.742] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:12:59.147] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:12:59.147] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:13:02.921] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:13:02.921] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:16:08.803] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:16:08.803] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:16:21.272] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:16:21.272] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:16:26.182] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:16:26.182] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:55:37.970] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:55:37.971] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:55:42.395] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:55:42.395] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:55:46.072] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:55:46.072] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:55:49.170] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:55:49.170] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:55:57.938] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:55:57.939] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:56:42.215] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:56:42.215] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:56:45.366] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:56:45.366] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:56:53.541] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:56:53.541] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:56:57.998] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:56:57.999] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:57:46.134] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:57:46.134] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:57:49.910] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:57:49.910] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 22:57:53.066] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 22:57:53.066] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
+[2025.05.23 23:09:32.434] request_router.py:36 ▶ [delete] : /rest/ui/polling/booking/14150
+[2025.05.23 23:09:32.435] request_router.py:37 ▶ [delete] : /rest/ui/polling/booking/
