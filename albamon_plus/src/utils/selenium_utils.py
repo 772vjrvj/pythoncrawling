@@ -1,6 +1,7 @@
 import os
 import ssl
-
+import time
+import traceback
 import psutil
 import requests
 from selenium import webdriver
@@ -63,36 +64,42 @@ class SeleniumUtils:
             # webdriver_options.add_argument("--window-size=960,1080")       # 전체 모니터의 절반 너비, 최대 높이
             self.driver = webdriver.Chrome(options=webdriver_options)
 
-
         except WebDriverException:
             self.driver = None
 
 
     def set_chrome_driver_user(self):
         try:
-            self.close_chrome_processes()
+            self._close_chrome_processes()
+            time.sleep(2)
 
             chrome_options = Options()
-            user_data_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data"
-            profile = "Default"
 
-            chrome_options.add_argument(f"user-data-dir={user_data_dir}")
-            chrome_options.add_argument(f"profile-directory={profile}")
+            # 사용자 프로필 디렉토리 (충돌 방지를 위해 새 임시 프로필 경로 사용 권장)
+            temp_profile_dir = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Google\\Chrome\\User Data\\SeleniumTemp"
+            chrome_options.add_argument(f"--user-data-dir={temp_profile_dir}")
+            chrome_options.add_argument("--profile-directory=Default")
+
+            # 안정성 향상 옵션
             chrome_options.add_argument("--disable-gpu")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--disable-software-rasterizer")
             chrome_options.add_argument("--start-maximized")
-            # chrome_options.add_argument("--headless")  # Headless 모드 추가
+            chrome_options.add_argument("--remote-debugging-port=9222")
+            chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 
+            # User-Agent 설정
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             chrome_options.add_argument(f'user-agent={user_agent}')
+
+            # 봇 감지 우회 설정
             chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
             chrome_options.add_experimental_option('useAutomationExtension', False)
 
+            # 다운로드 설정
             download_dir = os.path.abspath("downloads")
             os.makedirs(download_dir, exist_ok=True)
-
             chrome_options.add_experimental_option('prefs', {
                 "download.default_directory": download_dir,
                 "download.prompt_for_download": False,
@@ -100,21 +107,44 @@ class SeleniumUtils:
                 "safebrowsing.enabled": True
             })
 
-            self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            # WebDriver 실행
+            self.driver = webdriver.Chrome(
+                service=Service(ChromeDriverManager().install()),
+                options=chrome_options
+            )
 
+            # 봇 탐지 우회용 JS 삽입
             script = '''
                 Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
                 window.navigator.chrome = { runtime: {} };
                 Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
                 Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-                Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' });
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                });
             '''
             self.driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': script})
-        except WebDriverException:
+
+        except WebDriverException as e:
+            print(f"❌ WebDriverException 발생: {e}")
+            traceback.print_exc()
             self.driver = None
 
+    # 크롬 끄기
+    def _close_chrome_processes(self):
+        """Chrome 및 ChromeDriver 관련 프로세스를 안전하게 종료합니다."""
+        target_names = ['chrome.exe', 'chromedriver.exe']
 
-    def start_driver(self, timeout=120, user=None):
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                proc_name = proc.info['name']
+                if proc_name and proc_name.lower() in target_names:
+                    proc.kill()
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+
+
+    def start_driver(self, timeout=30, user=None):
         if user:
             self.set_chrome_driver_user()
         else:

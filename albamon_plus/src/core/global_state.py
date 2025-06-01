@@ -4,6 +4,7 @@ class GlobalState:
     SITE = "site"
     COLOR = "color"
     COOKIES = "cookies"
+    USER = "user"
 
     _instance = None
 
@@ -27,6 +28,7 @@ class GlobalState:
                 self.NAME: "",
                 self.SITE: "",
                 self.COLOR: "",
+                self.USER: "",
             }
             self._initialized = True
 

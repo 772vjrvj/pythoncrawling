@@ -1,5 +1,5 @@
 import os
-from time_utils import get_current_yyyymmddhhmmss
+from src.utils.time_utils import get_current_yyyymmddhhmmss
 
 class FileUtils:
     def __init__(self, log_func):

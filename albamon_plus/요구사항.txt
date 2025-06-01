@@ -27,7 +27,10 @@
 
 https://www.albamon.com/jobs/area?page=1&areas=I000&employmentTypes=FULL_TIME
 
-
-pyinstaller --onefile --noconsole --icon=crawling.ico main.py
-
-pyinstaller --noconsole --icon=crawling.ico main.py
+pyinstaller main.py `
+  --icon "./image/crawling.ico" `
+  --name main `
+  --noconsole `
+  --distpath "./dist" `
+  --workpath "./build" `
+  --version-file=version.txt

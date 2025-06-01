@@ -49,7 +49,7 @@ def fetch_search_results(query, page):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        a = 1
+        pass
     return None
 
 

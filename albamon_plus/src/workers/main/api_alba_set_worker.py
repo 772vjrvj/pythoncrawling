@@ -1,5 +1,7 @@
 import json
 import math
+import os
+import ssl
 import threading
 import time
 from urllib.parse import urlparse, parse_qs, unquote
@@ -11,10 +13,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from src.utils.time_utils import get_current_yyyymmddhhmmss
 from src.workers.api_base_worker import BaseApiWorker
 
+ssl._create_default_https_context = ssl._create_unverified_context
 
-class ApiAlbamonSetLoadWorker(BaseApiWorker):
+image_main_directory = 'albamon_images'
+company_name = '알바몬'
+site_name = 'albamon'
+
+excel_filename = ''
+
+
+class ApiAlbaSetLoadWorker(BaseApiWorker):
 
     # 초기화
     def __init__(self):
@@ -27,6 +38,10 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
         self.running = True  # 실행 상태 플래그 추가
         self.driver = None
+
+        self.com_list = []
+        self.main_model = None
+        self.product_info_list = []
 
         self.total_cnt = 0
         self.total_pages = 0
@@ -151,7 +166,9 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
                 self.current_cnt = self.current_cnt + 1
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
+                self.log_func(f"self.before_pro_value : {self.before_pro_value}")
                 self.progress_signal.emit(self.before_pro_value, pro_value)
+                self.log_func(f"pro_value : {pro_value}")
                 self.before_pro_value = pro_value
 
                 self.log_func(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
@@ -329,7 +346,8 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
             "upgrade-insecure-requests": "1",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
         }
-        result = None
+
+
         try:
             res = self.sess.get(url, headers=headers, timeout=10)
 
@@ -341,19 +359,19 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
                     json_data = json.loads(script_tag.string)
                     data = json_data.get("props", {}).get("pageProps", {}).get("data", {})
                     self.log_func(f"회사정보 가져오기 성공")
-                    result = data
+                    return data
                 else:
                     print("JSON 데이터를 찾을 수 없습니다.")
             else:
                 # 상태 코드가 200이 아닌 경우
                 self.log_func(f"HTTP 요청 실패: 상태 코드 {res.status_code}, 내용: {res.text}")
+                return None
 
         except Exception as e:
             print(f'error : {e}')
             # 네트워크 에러 또는 기타 예외 처리
             self.log_func(f"요청 중 에러 발생: {e}")
-        finally:
-            return result
+            return None
 
     # 전체 갯수 조회
     def total_cnt_cal(self):

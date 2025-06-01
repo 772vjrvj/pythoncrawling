@@ -13,6 +13,7 @@ from selenium.common.exceptions import (
     WebDriverException
 )
 
+from src.core.global_state import GlobalState
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from src.utils.selenium_utils import SeleniumUtils
@@ -86,7 +87,11 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         
         # 셀레니움 초기화
         self.selenium_driver = SeleniumUtils(headless=False)
-        self.driver = self.selenium_driver.start_driver(1200, False)
+
+
+        state = GlobalState()
+        user = state.get("user")
+        self.driver = self.selenium_driver.start_driver(1200, user)
         self.sess = self.selenium_driver.get_session()
 
 

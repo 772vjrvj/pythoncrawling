@@ -75,6 +75,7 @@ class SelectWindow(QWidget):
         state.set(GlobalState.NAME, site.label)
         state.set(GlobalState.SITE, site.key)
         state.set(GlobalState.COLOR, site.color)
+        state.set(GlobalState.USER, site.user)
 
         self.close()
         self.app_manager.go_to_main()
