@@ -1,0 +1,28 @@
+■ 크몽
+
+■ 날짜
+2025-06-03
+
+■ ID
+강렬한잉어3717
+
+
+■ URL
+https://www.edmunds.com/search/?key=f2da9bdb-490f-c153-050d-d25ab43fd710&make=tesla&model=tesla%7Cmodel-y
+https://www.edmunds.com/tesla/model-y/2025/consumer-reviews/
+https://www.edmunds.com/tesla/model-y/2024/consumer-reviews/
+
+
+■ 검색 키워드
+2025 테슬라 y
+2024 테슬라 y
+TESLA MODEL Y 2024 2025
+
+
+■ 리뷰 분석
+키워드는 정리하시다가 리뷰에서 만족하는 부분을 키워드로 잡아주시면 될 것 같습니다!
+예를 들어서 안정성, 가격, 연비, 기술 진보 이런 키워드입니다!
+
+■ 결과
+
+크롤링이 안되서 json판 뽑아서 작업함

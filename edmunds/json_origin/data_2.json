@@ -1,0 +1,1412 @@
+{
+  "data": {
+    "vehicleReviews": {
+      "ratingAggregation": {
+        "averageStars": 3.8
+      },
+      "totalReviews": 96,
+      "reviews": [
+        {
+          "id": "2744548557400203264",
+          "author": {
+            "authorName": "Patty B."
+          },
+          "created": "Mon May 15 19:08:03 PDT 2023",
+          "updated": "Tue May 16 06:56:19 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Model Y is almost perfect.",
+          "text": "After reading about the quality issues, I was hesitant to purchase a Tesla. When taking delivery I took a long list of about 50 items to check. I could only find 2 issues-the lower ppf was not installed and the trunk needed minor adjusting. Tesla fixed it in a 30 minute appointment and couldn't be more accommodating. The car has been a joy to drive. I would buy another in a heartbeat. Between the safety and security, which ranks #1 in my book, the software is like no other car out there. Tesla is a few years ahead of the pack. The OTA updates come often and the car just keeps getting better than the first day I purchased it. ",
+          "thumbsUp": 30,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 4,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2679312178235080704",
+          "author": {
+            "authorName": "Richard"
+          },
+          "created": "Tue Feb 14 17:55:01 PST 2023",
+          "updated": "Wed Feb 15 08:45:11 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Roomy. Fun Drive. Meh Build Q, Charmless Tesla.",
+          "text": "Bought my 2021 Model Y just after the height of Covid. Purchase procedure was charmless. Do not forget to bring your smart phone because they will not let you have the car without you acknowledging the purchase using YOUR phone. Customer next to me picked up their Tesla and one of their doors would not unlock. Mine had slightly misaligned doors, but they functioned correctly. They give you 10 days to report any initial problems. LOL. Do they not have their own QC department? \n\nOverall, build and material quality are OK, but definitely sub-par for the luxury segment. I have ongoing problems with trapped moisture obscuring my cameras after rain storms. Had one camera replaced, but replacement also not sealed. Oversized/uneven gaps between some body panels, and one door edge has a sharp point where the metal bends. Road noise and cabin vibration is OK, not great. Our Volvo S60 was almost 20K cheaper and has better materials, seat comfort, noise isolation, and build tolerances. Rear speakers are mounted to the inside hatch door, so sound quality is crippled when trunk is filled with bags/luggage. Lastly, and most importantly, my battery range has dwindled to less than 85% in two years.\n\nI was not impressed with my customer experience a Tesla. Nothing too negative, just a total lack of personal connection from Tesla. No one explained anything about the car to me or called to see how the purchase went or how my car is doing. Tesla just deducts money from my bank account every month and sends me an email receipt. The upside is that picking up the car took about 30 minutes instead of 3 hours since the financials are all worked out ahead of time.\n\nNow for the positives: Fast dual engine. Acceleration is super smooth. Cabin is very roomy. Storage ample. Sound system is very good (though the interface needs improvement). Car feels fairly nimble. Great inch-by-inch control when backing into tight spaces or sloped roads/driveways. Poor visibility though rear window made up for with great visibility using rear and side cameras. Supercharger network is fairly extensive in CA, and works well, but I mostly charge from home. The Infotainment system has a lot of features and supported services (Apple Music, Spotify, Tidal, Tune-In, et cetera), even though using the complex interface is too distracting while driving. This car needs more buttons and less screen swiping. Voice recognition for phone and navigation system (addresses) actually quite decent. ",
+          "thumbsUp": 65,
+          "thumbsDown": 5,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 3,
+              "safety": 4,
+              "performance": 5,
+              "reliability": 4,
+              "technology": 5,
+              "interior": 3,
+              "comfort": 3
+            }
+          }
+        },
+        {
+          "id": "2892840714387169280",
+          "author": {
+            "authorName": "Peter"
+          },
+          "created": "Wed Dec 06 08:38:06 PST 2023",
+          "updated": "Mon Dec 18 06:17:49 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best EV for $42,000",
+          "text": "$51,500 less $9,500 Federal & NY State tax credits = $42,000 for Tesla 2023 Model Y AWD Dual Motor Long Range\n\nDrove 250 miles NY to DC - Autopilot did most of the driving and charged 190 miles in 20 minutes at NJ Turnpike rest stop.  Tesla shows you each Supercharger available on your trip and how many stalls are available at any time. \n\nQuiet, fast, and incredibly roomy.  Controls are intuitive. \n\nCharge at home after midnight and receive a check back each month for $0.10 for each kWh (NY is $0.27/kWh).  Use about $90/month in electricity for about 1000 miles and get back about $35. ",
+          "thumbsUp": 49,
+          "thumbsDown": 4,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2938521399167221760",
+          "author": {
+            "authorName": "Priya"
+          },
+          "created": "Wed Feb 07 09:17:28 PST 2024",
+          "updated": "Wed Feb 14 06:32:27 PST 2024",
+          "styleId": "402013277",
+          "year": 2023,
+          "styleName": "4dr SUV (electric DD)",
+          "spans": null,
+          "title": "Poor quality glass on the roof",
+          "text": "We bought the model Y in September of 2023 and we noticed a huge crack in the roof 6 months after.  Is not covered in warranty as it's not a stress crack and is costing a lot to replace ! Was disappointed with the quality of the glass and is a safety concern. Will not recommend!! ",
+          "thumbsUp": 72,
+          "thumbsDown": 7,
+          "vehicleRating": {
+            "overall": 1,
+            "categorized": {
+              "value": 0,
+              "safety": 0,
+              "performance": 0,
+              "reliability": 0,
+              "technology": 0,
+              "interior": 0,
+              "comfort": 0
+            }
+          }
+        },
+        {
+          "id": "2837277856917889024",
+          "author": {
+            "authorName": "Doug Corson"
+          },
+          "created": "Wed Sep 20 17:44:37 PDT 2023",
+          "updated": "Wed Sep 27 07:36:20 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Fast and Fun",
+          "text": "Bought long range Tesla Y a month ago..\nTraded in a Ford F150 Crew Cab that was 12 Years old.\nGas prices are real high,   so figured , lets do it.\n\nPositives:  Super Fast and smooth,  takes off like rocket but with no engine noise. 1/4 mile time rivals many medium priced sports cars.  Can zoom in and out of traffic very easily.\nStereo is top notch,  go into Setting and turn up Sub Woofer, you wont be disappointed.\nHuge wheels,  Interior seats have a clean crisp look and feel.\nI like all in one screen to control everything, no need to search for buttons.\nLooks futuristic.  Interior is huge, especially trunk space.\nLove the Carvana like purchasing experience.   We bought last car from Carvana and its great, just show up get your car and move on with your day.   I don't need hand holding or taking 5 hours.   If you like BS ing with car sales people then Tesla not for you.\nGas savings is already stacking up,  Tesla app has the total estimated charge total cost vs. what you have have paid with local gas prices.. !   Tesla's app also tells you many things and reminders about charging.. The charging will automatically shut down once battery is full. \nDont forget about 7500 tax credit !\n\nNegatives:  Not many,    Hard to figure out the IPAD that is connected and does everything on the car.  This maybe took 3 days,   Letting go of the Pedal  causes an immediate breaking... Its great because never use brakes again but takes getting used to. \nOther than this.. I give it a 5 stars... \nNegatives:   Not cheap price, ",
+          "thumbsUp": 17,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 4,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2660314705132158976",
+          "author": {
+            "authorName": "Jackson "
+          },
+          "created": "Thu Jan 19 12:50:25 PST 2023",
+          "updated": "Mon Jan 23 06:50:32 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best car I’ve ever owned",
+          "text": "I’ve owned expensive German gas cars, even finely-tuned race versions that cost extra. They drive like junk compared to electric and nobody does electric anywhere near as well as Tesla. Every other car available is 5-10 year behind in Software (both UI/UX and OTA updates/fixes), efficiency, ADAS (ignore the media, Autopilot is unbelievable and free with purchase), Safety (Tesla data and government data both show they are the safest cars on the road), charging network (both supercharger and onboard routing unmatched in industry - it is the only EV you really can road trip)… now for the fun part. Driving a Tesla is fun. It handles like a dream, is quiet and the acceleration is unbelievable. In traffic or cities, the car’s instant torque puts you wherever you want to be right away.\n\nAfter the latest price drops (Jan 2023), with the edition of eligibility for the IRA tax credit ($7500), nobody can compete on price. It is a screaming deal. The best part about buying EV and specifically Tesla (bc of price reductions) is the cost savings. A “full tank”, chargin at home costs me about $8. I took an 1100 mile road trip from Texas to to Virginia for about $60 using Superchargers and Autopilot. It is the not way to road trip. With at home charging, you wake up every morning with a “full tank”. Who needs more than 300 miles per day? I know a few, but those are edge cases and just stop at a supercharger for 15 minutes then… most stops at a supercharger are about 15-30 minutes. Stretch, bathroom, snack, back on the road.\n\nWe have 2 cars in our household and both are Teslas (a Y and 3). Over 5 years, with tax credits and fuel/maintenance savings, we have saved about $50,000 by switching to electric. The only maintenance required has been wiper blades, tires, cabin filter (it’s a HEPA btw!) and windshield fluid. For some minor repairs we needed, covered under warranty, Tesla mobile service came to our house and made the fixes. Love Tesla mobile service! Also, never visit a dealership or gas station again… good riddance to both!\n\nThe Model Y has a ton of space, frunk, trunk, sub trunk, legroom, headroom all great! Seats are comfy, interior is minimal and beautifully designed. The center screen is perfect and the user interface is WAY ahead the “competition”. \n\nDon’t be fooled by marketing or negative media coverage, nobody makes a car, let alone an EV that matches Tesla. They are the market leaders for a reason. This is my fifth Tesla and I will only buy Tesla for the foreseeable future. Maybe one day there will be proper competition, but not today.",
+          "thumbsUp": 103,
+          "thumbsDown": 14,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2976022697978667008",
+          "author": {
+            "authorName": "JeffB"
+          },
+          "created": "Sat Mar 30 04:05:51 PDT 2024",
+          "updated": "Mon Apr 01 06:54:37 PDT 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Tesla Model Y LR straight talk!",
+          "text": "I've had my MYLR for about 6 months now and here is what I've observed.\nPlus: performance is incredible especially after having the accelration boost installed (free); crisp and direct handling;  very stable; quiet ride except at freeway speeds;  very fun car to drive;  very comfortable inside with plenty of room.  Minus:  ride quality:  had to buy TEIN adjustable rear shocks to make this car acceptable; computer interface: a bit quirky\n\nThings i would fix:  ride quality:  offer an adaptive suspension or better yet have a suspension evaluation and upgrade done on this car - there is no reason to have a ride as unforgiving as this - a car's suspension can be dialed in so it's smooth and absorbs bumps well but still handles exceptionally well, it can be done;  windshield wipers need to be on one of the stalks as it's unsafe in rainy conditions to try and adjust them on the computer which requires you to take your eyes off the road;  start up:  sometimes requires the card to be tapped in front of the armrest because the car just won't start with my iphone being in the car and properly set up;  rain sensing wipers need to be done properly as cars have had them for 15-20 years now and these I wold give a C-; add a center instrument binacle which shows basic information so you don't have to consult a computer to get the information you need to drive safely.\n\nSummary:  This Tesla is a home run but could easily be made into a grand slam which just a few tweaks and thoughtful upgrades.",
+          "thumbsUp": 10,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 3,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 4,
+              "interior": 3,
+              "comfort": 3
+            }
+          }
+        },
+        {
+          "id": "2663439506098888704",
+          "author": {
+            "authorName": "Logopogos"
+          },
+          "created": "Mon Jan 23 20:18:51 PST 2023",
+          "updated": "Mon Jan 30 08:48:19 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Quite close to the perfect vehicle...",
+          "text": "If you haven't driven one, give it a shot and I think you'll see why this almost the perfect vehicle.\n\nIt's fast, good range, very comfortable (the front seats are more comfortable than those in the Model X), good cargo space, and handles really well. Feels planted and controlled. \n\nSupercharger network is fantastic. Charging at home is easy and convenient and way cheaper than gas.\n\nIt checks all the right boxes for most people's needs in my opinion. These price cuts make it an even better deal.\n",
+          "thumbsUp": 16,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2960180317774774272",
+          "author": {
+            "authorName": "Happy Tesla Owner"
+          },
+          "created": "Fri Mar 08 06:29:52 PST 2024",
+          "updated": "Fri Mar 08 06:35:56 PST 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Loving it!",
+          "text": "Disclaimer: I’m only a couple of months into ownership but I love it. Best car I’ve ever owned. I look forward to driving it every day. Super convenient and incredibly fast. It handles like a dream despite the fact that it looks like a big egg!  I have a 4 Runner and my Tesla has just as much practical storage, if not more. Top reasons for why it’s so great: 1) acceleration and handling. I purchased the acceleration boost and… wow. 2) climate control. I live in the Colorado High Rockies. When it’s cold outside it’s warm in your Tesla, just open the app and press a button. Climate control is better than my home. No drafts, just comfort. 3) no fussing around with option packages at purchase. All Tesla models have virtually the same options. No cloth seats, no paying extra for rear seat heater. Own a Tesla, you get all of the options. 3) technology is unrivaled. Love the silly options like video games, watching Netflix in park, etc. I will wait to see how it holds up over time but 2015 model S reviews on Edmonds are extraordinarily favorable— that’s a good sign. Top issue thus far:  get the mudflaps when you purchase one. if you don’t, it will damage the paint just behind the rear passenger doors. I don’t know why Tesla doesn’t make it standard given the design flaw. The front tires kick road debris up and it has a sandblasting effect over time. I’m the only person who would notice and mud flaps should fix it but that’s a Tesla oversight in design. If your worried about range and battery degradation over time, read older model Tesla reviews and stop worrying about it. So much more convenient than an ICE car. It is superior to nearly every car on the road. ",
+          "thumbsUp": 9,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2823605053791092736",
+          "author": {
+            "authorName": "Arthur, Pac NW"
+          },
+          "created": "Fri Sep 01 20:59:12 PDT 2023",
+          "updated": "Fri Sep 08 06:36:49 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Paradigm Shift - Buh Bye Dealer Nonsense",
+          "text": "Agree the testing/buying experience from Tesla is nonchalant. Everyone was nice enough - yet I found more help online than in-store. But after testing a few EVs from Kia, Hyundai and Chevy, the Tesla Y felt special. Contrary to reviews - it drove well, is super comfortable and confident,\nintuitive - and no other EV felt as unique. All the rest struggled to be car-like and was just fussy, busy and unnecessary (a glowing orb from Genesis, anyone?) I had to work very hard to get past Elon and focused on the genius of an EV that tops all other with range, simplicity and value. At the time of purchase, the runner-up for me was Ioniq 5 LTD yet it was more $ and … the dealer experience was an incredible turn off. More games - non-refundable deposits, sales person riding along on test drives, yada yada. Tesla just lets you demo the vehicle, and I took it out several times. The only warning is to carefully follow referral programs rules as Tesla won’t budge if you botch the sequence ahead of placing an order. Aside from that one snafu it was as easy as ordering and picking up an iPhone - decent updates, Tesla crew was always kind and helpful - and I didn’t feel beat up  by the sales process. It takes 30 mins (I spent more time than most inspecting the EV on delivery), and zero BS that you’re used to from dealers. I’ve owned a lot of cars over  the years. A LOT. Audi, BMW, Subaru, Honda, Toyota - and none are as comfortable and sporty as the Y. I love the simple design, it has the best stereo I’ve ever experienced, charging and connectivity is seamless. Most of all, there’s not an overwhelming brand play with Tesla (no swooshing sounds and graphics). You get in, tap the brake, drive. I rented a Tesla while visiting my family - and my biggest gripe is the valet key which is no substitute for the phone key connectivity. If Hertz just bought Tesla fobs for their fleet, the experience would have been much better. With the card, there’s no perimeter detection like a fob experience, so it felt at odds with the greatness of their phone key and app. I worry about rumors - build quality, etc - but the EV feels solid. It’s a blast to drive and all-in feels way ahead of the dated MFG + dealer network one has to muddle through. I can see myself in this EV for a long time. Good luck on your search!",
+          "thumbsUp": 36,
+          "thumbsDown": 5,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 4,
+              "technology": 4,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2887040376085110784",
+          "author": {
+            "authorName": "AL"
+          },
+          "created": "Tue Nov 28 08:33:52 PST 2023",
+          "updated": "Tue Dec 05 06:26:01 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "The Good and Bad of Tesla",
+          "text": "I now have three Tesla’s. I have two Model Y’s and one Model 3. Overall the buying experience was excellent. There was no need to haggle over prices and delivery was exceptionally easy. However, there are some draw backs.  Currently we have significant negative equity in each of our three cars due to the continuous price drops after purchasing them. In one case I took delivery days after a reduction and attempted to reason with Tesla but they would not provide any kind of consideration.\nThe cars ride very nicely and are very comfortable inside. However, the claim that you will get nearly 300 miles per charge is completely erroneous. You may extend your range if you are constantly on the highway but you are actually getting about 100-150 miles per charge in your normal day to day driving. Use those as your true calculations as you figure whether it's better to go electric or gas.\nLastly we just had the worst customer service I've experienced in a while when it came to their repair shop. Recently I had to take my Model Y to Tesla because the undercarriage piece broke off for going through a puddle! Yes, a puddle on the street made the undercarriage break off.  The best part of this is that they would not even cover it under warranty as the Telsa repair MANAGER said that was an \"atmospheric event.\" Do your research and see how many others had the same issue.  \nYou should consider this car from all angles before making a decision. Although it is an excellent driving vehicle, you will experience significant frustrations if you ever need to repair it or ever decide to sell your car. Do your own research on all of these issues and draw your own conclusions.",
+          "thumbsUp": 37,
+          "thumbsDown": 6,
+          "vehicleRating": {
+            "overall": 2,
+            "categorized": {
+              "value": 3,
+              "safety": 2,
+              "performance": 4,
+              "reliability": 1,
+              "technology": 4,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2865634162165014528",
+          "author": {
+            "authorName": "Stangcbr"
+          },
+          "created": "Sun Oct 29 20:43:32 PDT 2023",
+          "updated": "Mon Oct 30 11:01:16 PDT 2023",
+          "styleId": "401975394",
+          "year": 2023,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "First electric car and never going back to ICE!",
+          "text": "I got the Model Y Performance. I absolutely love this car. I am a 42yr yr old male for reference.  It has made driving fun again!  \nPros:\n* Ridiculously fast. Everyone is amazed at is acceleration and instant torque at any speed. \n* One pedal driving is a game changer. Love the car coming to a stop by itself and automatically holding the car in place when stopped. No moving from brake to throttle and vice versa. \n* Not having keys and just using a cell phone to get in and out is fantastic. So seamless coming to and leaving the car. Everything turns on and off automatically.\n* Music and movies sound amazing!  \n* The free autopilot works great and really makes short or long trips much more pleasant. \n* The supercharging is simpler than a gas station. Just plug in and everything is taken care of. No swiping credit cards. Navigation to chargers is automatic in the maps. \n* The remote control of the car via the app for climate, charging, video monitoring, cracking windows, unlocking, etc. is wonderful to use. Car is always at the right temp. \n* I am an anal engineer and I had zero issues with quality control.  They must have really improved.\n* With the performance, I have had so many people comment on how good the car looks. Grey with Uber wheels and a white interior is the way to go if you want a good looking car.\n* No more gas stations, oil changes, brake replacements, and having free miles with my solar system is great!\n* Cheaper than every other competitive EV with this performance level. 17k less than Mach E GT,\n24k less than EV6 GT when comparing with the rebates I got. \n* Don’t have to deal with the crooks at the dealership. Super easy pick up and no extra fees. I just bought Ford Maverick also and they tried to drop $2900 bucks of extra crap on a $28k truck! Never again. \n\nCons:\n* It is a\nSomewhat rougher riding car compared to the LR but way better than my mustang and it is much faster than the mustang.  It is a performance car with sweet looking low profile tires so expected. Wouldn’t trade to a LR. Look and speed are worth it. \n* It is a quiet car inside for the most part but some road noise can come though due to the lowered ride and low profile tires. Again, it is a performance SUV.  \n* No Car play sucks but honestly, the existing system does just about everything I need. Would like the maps to show cops like WAZE though. \n* No native garage door control without paying for MyQ, which does work very well. $48 a year though. Haven’t decided if I am renewing it. \n\nOverall, I couldn’t be happier with my purchase and highly, highly recommend. I love driving again. For the value, Tesla does not have any competition.  Buy one!",
+          "thumbsUp": 17,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 4,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2807649047621238784",
+          "author": {
+            "authorName": "Eric Henrickson"
+          },
+          "created": "Thu Aug 10 20:37:28 PDT 2023",
+          "updated": "Wed Feb 28 06:45:40 PST 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Almost a great vehicle ",
+          "text": "Most everything about the Y is awesome. It’s handling, acceleration, charging network and even its towing capabilities. The range: We are all aware that the EPA uses a combined city/hwy method of calculating range. Thus, most any EV at highway speeds will underperform compared to its advertised range. But I turns out that highway mileage is really the only practical way of determining true range. It’s really the overwhelmingly predominant type of driving in which range becomes important. Some manufacturers do a good job of representing this in their advertising. Tesla does not. Granted, I live in WV, which is about as hilly as it gets. So that affects range. If I drive north on a road trip to New England, my maximum range before needing to charge (less than 10% battery) is less than 210 miles. That’s driven at the speed limit. So the range is more than 36% less than advertised. It does a bit better without the hills, but still falls well short of expected performance. \n\nIt is a mistake to call it an SUV. It’s clearly not. 6.6” is a pathetic ground clearance for any vehicle marketed as an SUV. I can’t drive it to my favorite kayak destination. I have to keep my truck for that. The roof rack options are also very limiting. Try loading your kayaks on there sometime. It is a passenger vehicle that is meant for roads and nothing more. \n\nAlso should mention that the customer service is about as poor as you can imagine. I was told to schedule my delivery appointment and had two days to choose from. When I scheduled it, the location came up as a dealership that was four hours away. The nearest one to me is an hour away. It wasn’t easy to find a human to talk with to be able to correct that mistake. This required a new appointment, with a deadline of 4PM to schedule it or else they would sell the car to someone else. Very limited window for the appointment. It’s almost as if they believe anyone can just rearrange their work schedule at any time. It turns out they did not have the vehicle or even know where it was. Another reschedule. Further hassles with insurance cards, etc. We had to stop on our way to pick it up to redo paperwork that they had for weeks. They stated multiple times that they would register the vehicle in my state. They never did. And never sent me documents to register it until I called them days before the temporary registration expired. There are many more points of failure, but I’ll conclude. ",
+          "thumbsUp": 31,
+          "thumbsDown": 5,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 4,
+              "safety": 4,
+              "performance": 5,
+              "reliability": 4,
+              "technology": 4,
+              "interior": 3,
+              "comfort": 3
+            }
+          }
+        },
+        {
+          "id": "2883366056047370240",
+          "author": {
+            "authorName": "GiveMeRadar"
+          },
+          "created": "Thu Nov 23 06:53:39 PST 2023",
+          "updated": "Mon Nov 27 07:37:16 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Someone needs to be fired at Tesla...",
+          "text": "Seriously.  Let me start by saying I love the car for all the reasons everyone else has said.  No need to repeat.  But what DOES need repeating, is the practically CRIMINAL removal of radar sensors for parking assistance, blind-side warning, and cross traffic alerts.  NONE of these work worth a crap.  Completely useless.  I feel like I'm driving in 1970.  Looking over my shoulder before changing lanes is a must.  Crossing your fingers and hoping you don't hit the curb and or anything in your garage.  Backing out of a parking spot super slowly and hoping no one is zooming through the lot to smash into you.  Stuff like that.  \n\nNo top-down 360 view, like my $20,000 less Bolt EUV Premier has.  In fact, all of the above that car has. To make matters more infuriating, the word on the street is that they will be bringing back the front bumper camera and radar soon - with no option to retrofit to my 2023 $60,000 MYLR AWD.  I'm super pissed.  I will never buy another Tesla unless they offer a way to fix this NIGHTMARE.  I bought this as my forever car, and now I have to spend another $15,000 to sell my car and buy the next version which has these features put back in??  This $150 worth of parts Elon saved by removing them?  Critical, everyday needed, driving and parking features??  Already in the car.  Removed.  And no way to add back in if you bought this $60,000 Hi-Tech masterpiece that just lost half of it's hi tech value but removing these radar sensors.  Aaaaarrrrrggggghhhhh!!!!!  ",
+          "thumbsUp": 20,
+          "thumbsDown": 3,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 4,
+              "safety": 2,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 4,
+              "interior": 5,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2771911806586888192",
+          "author": {
+            "authorName": "Cape Boy"
+          },
+          "created": "Thu Jun 22 13:13:57 PDT 2023",
+          "updated": "Thu Jun 29 05:32:28 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Six months in and I’m impressed. But….",
+          "text": "Had my Model Y for six months now. Got it as hedge against not being able to get petrol, given governments policies.\nPros: Fast, best seat comfort, handling is good but not BMW like, home charging is a big plus, tech is superb, build quality has been good except for one annoying rattle, have not yet had to charge on the road but knowing Tesla has best network allays my range anxiety, one pedal driving is great. Had to use Tesla Service center: they were very good, but no provision to ask questions, taking delivery was shorter in time than gassing up my ICE vehicle.\nCons: No Apple CarPlay, no S-XM, annoying rattle, no ventilated seats, poor rear visibility. The minimalist design is nice but there’s too much reliance on the center touchscreen with too much buried in the menus. Having to go into the touch screen to open the glove box is too much, same for wipers etc. Too much reliance on Tesla ap and no provision asking questions in advance. Once Tesla opens up Supercharger network will we have waits for all the other models that will crowd in?\nI feel that by opening their Supercharger network they will lose their unique selling advantage and people will buy Ford, GM or whomever.\nOverall if you are going to  go electric Tesla is the way to go ….now.",
+          "thumbsUp": 14,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 4,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 4,
+              "interior": 4,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2823991597433847808",
+          "author": {
+            "authorName": "JAM"
+          },
+          "created": "Sat Sep 02 09:47:11 PDT 2023",
+          "updated": "Fri Sep 08 06:37:07 PDT 2023",
+          "styleId": "401986011",
+          "year": 2023,
+          "styleName": "4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "A few safety concerns",
+          "text": "I have owned the 2023 Model Y since March 2023. Overall I like the car. However, there are a few major (for myself) safety concerns:\n\nThere are no aural or visual warnings for perpendicular crossing traffic while in reverse. Backing out of our driveway our street is 30 MPH. The cameras are not wide enough view to see past the width of the driveway by more than a few feet nor are they clear enough. Let alone pedestrians walking behind the car while backing out of a parking space.\n\nWhile there is a warning on the screen for traffic in lanes on either side of the car, for the car to the left I have to glance to the right to visually see the warning (if the car is in a blind spot). I cannot believe that Tesla does not have a yellow warning light in each side view mirror as my 2014 Camry did.\n\nWhile on cruise control - if there is a vehicle that is crossing across perpendicular to the road I am on - in a normal situation the vehicle crossing would not even warrant taking my foot off the gas pedal. However, the Tesla goes into an abrupt braking for no reason. If given a choice, I would much prefer an aural warning first, and then automatic braking if needed.\n\nIf the 2024 models correct these issues, I would have much preferred to wait. Hopefully they do and new buyers will appreciate the improvements.",
+          "thumbsUp": 25,
+          "thumbsDown": 5,
+          "vehicleRating": {
+            "overall": 3,
+            "categorized": {
+              "value": 5,
+              "safety": 3,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 3,
+              "interior": 4,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2835186806300598272",
+          "author": {
+            "authorName": "Jo The Pilot"
+          },
+          "created": "Sun Sep 17 20:30:04 PDT 2023",
+          "updated": "Mon Sep 18 07:51:58 PDT 2023",
+          "styleId": "401975394",
+          "year": 2023,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Tesla Still Beats Everyone Else",
+          "text": " I bought a 2023 Tesla Model Y Performance. Beside the fun of beating everyone else on the street including motorcycles this has been the best daily driver I've ever had. So, I have a truck and a motorcycle for other purposes, but I LOVE not having to fill my tank with gas. Love love my monthly gas bill compared to my electric bill. Not even close. Electric has saved me a ton of daily expenses.\nThe only complaint I have is the annoying buzzer that goes off if i get too close to the edge of the lane. I know it's for my safety and those in my vehicle LOL.\nI'll alway have a gas vehicle alongside this, but this is the best daily driver EVER.",
+          "thumbsUp": 6,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 4,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2881361951831105536",
+          "author": {
+            "authorName": "Paul Alappat"
+          },
+          "created": "Mon Nov 20 12:31:51 PST 2023",
+          "updated": "Mon Nov 27 08:46:38 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Electric range is off by 40%",
+          "text": "The best things about my 2023 Tesla Model Y\n1. No more gas pumps. Thus avoiding junk but tasty food.\n2. No more oil changes and other scalping going for service at the dealership,\n3. Barely using break pads on account of one-pedal driving.\nNot-so-good things about Tesla Model Y\n1. Tesla dealers and operatives are not at all helpful. One fine morning you get a call and must pick up your vehicle in one week or you will lose money (Deposit). \n2. I don't know about other electric cars, in my Model-Y you only get only 60% of the advertised range (about 200miles). You can only charge upto 80% (for battery longevity) and you have to recharge when it gets to 20%. That means you leave behind 40% or 130 miles.\n3. In addition when the weather is too hot (over 80F your AC is running all the time, if you are parked in the sun. This is to prevent battery getting too hot and catching fire. Again this eats into your mileage.\n4. You need to spend $$ to cover the front to prevent paint chips.\n5. Not having screen in front can get you into an accident till you get used to it.\n6. Too many electronic nannies. \n7. If you drive faster than 60mph, your range will disappear faster. (Probably same with ICE cars but I haven't noticed it as bad.)",
+          "thumbsUp": 21,
+          "thumbsDown": 4,
+          "vehicleRating": {
+            "overall": 3,
+            "categorized": {
+              "value": 3,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 3,
+              "interior": 3,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2792364847313420288",
+          "author": {
+            "authorName": "Don"
+          },
+          "created": "Thu Jul 20 18:30:29 PDT 2023",
+          "updated": "Fri Jul 21 06:57:05 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "\"Worst in Class\" customer service",
+          "text": "\"Worst in Class\" customer service. Tesla buyers, beware...try calling Tesla and asking a question. The hold time is infinity+4 hours. Also, I paid cash for my Model Y and Tesla received the title from NJ DMV more than a month ago, and they will not send it to me (they said they are too busy and told me to wait another 3 months then follow-up...this is MY CAR not theirs)! I want to get rid of it but I can't since they have not mailed me the title yet. Absolutely uncaring and unprofessional. I wish I had made another choice. ELON MUSK, if you are reading this FIRE YOUR CUSTOMER SERVICE MANAGEMENT TEAM!!!",
+          "thumbsUp": 98,
+          "thumbsDown": 25,
+          "vehicleRating": {
+            "overall": 1,
+            "categorized": {
+              "value": 0,
+              "safety": 0,
+              "performance": 0,
+              "reliability": 0,
+              "technology": 0,
+              "interior": 0,
+              "comfort": 0
+            }
+          }
+        },
+        {
+          "id": "2940740908110364672",
+          "author": {
+            "authorName": "Matthew C"
+          },
+          "created": "Sat Feb 10 10:47:14 PST 2024",
+          "updated": "Mon Feb 12 07:03:39 PST 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "2024 Model Y Long Range is almost perfect",
+          "text": "I am quite happy with my brand new 2024 Model Y dual motor long-range. For me, the technology is stunning, The ride is good, great steering, and very fast when needed. The seating position is quite nice, tons of storage space, awesome sound system, super smooth and quiet, And of course all the benefits of a BEV with the supercharger network! We got the upgrade interior in white which is a nice offset to the dark gray exterior. One pedal driving is really great once you get used to it. And of course you have built-in internet connection, so you can stream videos while you're charging. Preconditioning the interior and the battery before you drive is such a good feature. We also use dog mode extensively as we have a little dog that loves to travel with us. I like the undistracting minimalist interior, I really like the capabilities of the phone app and using it as a key. You just walk up, sit down and drive away! I realized that it's going to take a little bit longer to do longer drives, but i'm willing to accept that and have great confidence with the supercharger network. Fit and finish on the 2924 is quite good and so far no problems at all. Yes, there are some limitations technologically, like no Apple Carplay or Android Auto, but I'm willing to deal with those limitations and adapt to Tesla's approach. The buying experience was super easy without the dealer upsell issues. Overall 5 stars!",
+          "thumbsUp": 13,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 5,
+              "safety": 4,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2882242689996693504",
+          "author": {
+            "authorName": "IgorK"
+          },
+          "created": "Tue Nov 21 17:41:43 PST 2023",
+          "updated": "Wed Oct 23 04:52:39 PDT 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Pure joy!",
+          "text": "1 year/9.5K miles update\n\nThe good: \nEverybody in the family LOVES driving Tesla. To the extend that I take it in the morning to drop our daughter to school, then drive to work and return during lunch to hand the car over to my wife so that she can pick our daughter up from school and drive her to the activities in the afternoon. Our older daughter only drives Tesla when she is back from college. MDX sits in the garage for weeks without being driven. If it goes like this we will need to buy another Tesla (well... maybe not, see below).\nWe had a flat tire (sidewall cut), a guy came with the loaner wheel within 40 minutes, then Tesla replaced the tire on my wheel and the mobile service brought the wheel to my house. We only paid for the new tire. With such service, one does not need a spare.\n\nNot so good: \n1. The car had a glitch when the software update got stuck half way for about 6 months. The car was constantly trying to install it and hence has never fallen asleep. This was resulting in loosing 10-12% charge daily. Using the car every day I was not noticing that until we went on vacation and problem became obvious. Once noticed, I called Tesla, they tried to fix the issue remotely but eventually said I need to make a service appointment. The only available appointment was in a month, luckily the service center took me walk-in and it took them two days to fix the issue. So it was fixed in the end but the issue costed me $$$$ in electricity + some time \n2. A few other relatively small but still annoying issues: \n    - a rattle noise. Could not locate the source for it yet, despite youtube and forums are full of discussion of the same issue.  \n    - the windshield constantly fogs or some type of film appears on it. I tried to wash it with various solutions - does not help. Ended up having a microfiber cloth handy and just wiping the class from inside every other day\n    - Another common complaint, no parking sensors. As a result, the bottom of the front bumper is all in scratches\n\nBut all these are not the reasons I'll probably not buy another Tesla. The reason is the INSURANCE COST. It is simply ridiculously high, about 2x of the MDX, despite MDX being more expensive and, in my view, less safe. \n\n___________________________________________________________________________\nI know there are myriads of reviews on Model Y both in the written format and on youtube but I'm reading edmunds reviews when doing my research and hence felt obliged to leave mine here.\nSome background: \n1. This is our second EV, we used to lease Hyundai Ioniq Electric 2020. That was a decent  car, especially for our purposes (first car for our high-school teenager and then we used it as our main city car when she left to college). Plus, our lease was almost free (very-very cheap) considering the federal tax credit back then and all the EV incentives from the state of NJ.  Since then, we moved to GA and after lots of hesitation we nevertheless returned the car (rather than buying it from the lease).\n2. I have not test-driven BWM or Mercedes EV's, I'm sure they are great vehicles, but also they are quite a bit more expensive. Besides, we used to own BMW 3-rd series and while fun to drive, our experience with its reliability made us not wanting to deal with BMW's again. \n3. I consider myself an enthusiastic driver. Nothing crazy but I like dynamic driving. My other car is manual 2006 Subaru Legacy Spec B. To the extend possible, I'm maintaining and fixing our cars myself. \n4. The main point of comparison is our second family/wife's car - 2023 Acura MDX (\"Unimpressed\" review on that car can be found here too)\n5. I don't qualify for the federal tax credit, nor state of GA has ANY incentives for EVs. Even then, after all the recent cuts, I consider Tesla Model Y worth the price. If you do get the federal tax credit and/or have state incentives, I really don't see how any other car can get anywhere close to Model Y in terms of both the practicality (including virtually no need for maintenance) and fun to drive.\n \nWe get the car just a bit over a month ago and now have 1,100 miles on it. Mostly city driving, one 300 mile road trip. \n\nThe buying experience was the best ever. I placed the order online on Friday night, next Thursday morning I was driving my new Tesla. I spent about 10 minutes at the delivery center and even that was because in GA there is one form that has to be signed physically. The car was waiting for me, it just took a minute to setup the phone key. The plate, registration and the title arrived in the mail in a couple weeks. For me that was a huge plus, I absolutely hate dealing with the sales people.    \n\nThe car is fun to drive. I can accelerate when and how I need it to, the handling and steering are great. The sitting position and the seats are very comfortable (I'm 6'2'' with the back pain problem), and can sit behind myself quite comfortably too. \n\nThe tech is beyond intuitive (especially comparing to Acura). I don't need keys and I don't even carry the card with me, everything is done through the phone. For me there is absolutely no problem with all the controls being on the touch screen, again - everything is super intuitive. \n\nIf I have to complain about something, it would be the road noise at the highway speeds. Not too bad, but it would be nice to have a quieter interior. \n     \nTo conclude (for now), I'm very-very pleased with the car. Honestly, should I bought Tesla first, I would have never ever bought the Acura, its tech is so outdated and also it was quite a bit more expensive...",
+          "thumbsUp": 9,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2710900958699061248",
+          "author": {
+            "authorName": "Pierre"
+          },
+          "created": "Thu Mar 30 08:56:17 PDT 2023",
+          "updated": "Tue Apr 01 05:22:48 PDT 2025",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Excellent, but miss Android",
+          "text": "I have been the owner of a Tesla Model Y for over 12 months now. I live in Switzerland, with plenty of mountains, so one has to go up and down quite regularly, a potential challenge for an EV. And the winter road conditions may be challenging... But so far, so good. The only complaint, and it is major in my experience, is the lack of a robust navigation system. I am appalled by the quality of the native navigation system as it is, with speed limits being often wrong. I also find the traffic information to be of a lesser quality than the one you get from Waze. This probably explains why there is a market for accessories that allow you to attach your smartphone to your Tesla's big screen. An absurdity: a nice large screen, that needs a smaller one (your smartphone) attached to it, just to address the shortcomings of an inevitably subpar Tesla software ecosystem. Tesla engineers & strategists: please give serious consideration to opening up the Tesla software to an Android-based system through the big screen, as this would have allowed to take advantage of so much better navigation apps like Waze.\nAnother crap & ridiculous decision: that of not allowing a Tesla owner to get the full functionalities on his car, if he-she uses his phone to provide access to the Internet. And also, not recognizing the hot spot automatically when the phone is put in tethering mode. Someone at Tesla thought that by making life more difficult for some Tesla users would drive them to fork out the monthly connectivity service, which was already paid for by them as part of their mobile phone package.\nAnd then of course, there is the elephant in the room, I mean the owner of the Tesla company. I would never have bought the car had I known what this horrible human being would be morphing into. Same feeling some Germans must have had after the second World War regarding Volkswagen.\n",
+          "thumbsUp": 29,
+          "thumbsDown": 7,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 3,
+              "safety": 4,
+              "performance": 4,
+              "reliability": 4,
+              "technology": 2,
+              "interior": 3,
+              "comfort": 3
+            }
+          }
+        },
+        {
+          "id": "2692226968329895936",
+          "author": {
+            "authorName": "Need for Speed"
+          },
+          "created": "Sat Mar 04 13:34:24 PST 2023",
+          "updated": "Mon Mar 06 07:28:29 PST 2023",
+          "styleId": "401975394",
+          "year": 2023,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best Car I owned",
+          "text": "I love changing my cars often. But looks like I’m keeping this one for a while. It is fast, it’s agile and practical. Has ton of space, hidden compartments. I love getting software updates. Brings new features. Driving it is cheap. Almost no maintenance. See some negative reviews. May be I was fortunate. Close to 15K miles and zero issues!!! I would definitely recommend. ",
+          "thumbsUp": 12,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2707337498349641728",
+          "author": {
+            "authorName": "Gmouid"
+          },
+          "created": "Sat Mar 25 10:56:19 PDT 2023",
+          "updated": "Fri Mar 31 11:45:15 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best car we have every owned",
+          "text": "We received our car in December 2020. We had 1 problem with door sticking which was fixed at our house by technician that came to our house. We love the acceleration, very comfortable seats and convenience of charging at home. We leased this Tesla, the next one we will be buying. We are 100% happy. Apple CarPlay is great but is unnecessary on the Tesla because their system is excellent. ",
+          "thumbsUp": 15,
+          "thumbsDown": 3,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2892277539575185408",
+          "author": {
+            "authorName": "Gasser"
+          },
+          "created": "Tue Dec 05 13:59:10 PST 2023",
+          "updated": "Wed Dec 06 07:29:36 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "A few wipes away from perfect",
+          "text": "Have had a Model Y AWD Long Range for a month. Build quality good. Paint good, panel gaps good, all doors, windows, seats, seat heaters work. Only glitch is when I start up and shift into R or D, windshield wipers make 2 wipes before settling down. I hope it’s not a sign of some other electrical gremlin. My wife feels suspension is too harsh. I don’t like the frameless window, the turn signal views would be better served with the BSM like Mercedes. I dislike the distracting screen, buttons for most functions would be better. I bought the newest Tesla charger (60 amps) and car charges at 44 miles/hour. Lease rate was great!!! $200/month less than Mercedes GLC.\nOverall, a solid “B”. ",
+          "thumbsUp": 5,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 4,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2960532090581475328",
+          "author": {
+            "authorName": "Skepticaleye"
+          },
+          "created": "Fri Mar 08 18:08:47 PST 2024",
+          "updated": "Mon Mar 11 05:39:30 PDT 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "So Much Fun, and Affordable",
+          "text": "Have owned for 6 weeks and still learning all the cool electronics. Have been enjoying the comfortable and pleasant ride from the get-go. As many others note, the driving experience is wonderful. The controls, both of the driving experience and creature comforts, once you learn what's possible, are mostly beyond the usual automotive standard. Oddly, the traffic-aware cruise control is not as smooth as expected, but it's a cut or two above the old cruise control. Absolutely love the home charging, \"pre-conditioning\" (warming/cooling the car for your departure time), and range. A quick look at Tesla's charging network and ability to find the best charging site for you makes range anxiety melt away on those occasions when you plan to travel more than 250 miles. So much about this car is so much less hassle than an ICE car. You just have to get used to driving a vehicle that is fundamentally different, which is a step into the future and a lot of fun. For Colorado residents, there's a $5,000 tax credit on top of the federal $7,500 credit (which is applied at the time of sale), and that makes the Model Y less expensive than a comparable RAV4 hybrid or CR-V hybrid. ",
+          "thumbsUp": 5,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "3067859003625562112",
+          "author": {
+            "authorName": "John S"
+          },
+          "created": "Sat Aug 03 21:08:12 PDT 2024",
+          "updated": "Mon Aug 05 07:20:40 PDT 2024",
+          "styleId": "402023058",
+          "year": 2024,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "MYP goes vroom in comfort ",
+          "text": "I decided to try a Tesla as I use my car for work.  I weighed a lot of vehicle options but for the price, power, and efficiency I could not find a better car. I have already put 32,000 miles in my first year of ownership. I haven’t had any issues at all, even my factory tires are still I good shape.  Will probably have to change them around 40,000 but that will be the First maintenance done to the car.   \n\n",
+          "thumbsUp": 8,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "2869401928239579136",
+          "author": {
+            "authorName": "Zhonehusker"
+          },
+          "created": "Sat Nov 04 01:29:25 PDT 2023",
+          "updated": "Mon Nov 06 07:31:35 PST 2023",
+          "styleId": "401975394",
+          "year": 2023,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "2023 Model Y Performance owner 14 k miles 6 mths",
+          "text": "I will start this that I also own a 2022 Ford Lightning. So at non Tesla charging stations get to see all the other EVs. And the charging network pain that goes with it.\n\nSo for my Model Y performance. Absolutely could not be happier and more impressed. 10 years ahead of everyone else. Yes I guess when I think about it, maybe it rides a little rough. I don’t notice because I love driving this. The control system with two wheels, two stalks, control screen. Absolutely easy. Complete genius.\n\nAnd easy to learn. Both myself and my wife (whom did not want a Tesla and one day later wouldn’t buy anything else) had mastered in 4 hours. I have owned about every brand. Mercedes,Lexus, Acura,Jaguar, Ford,GM etc. etc. This Tesla is not another car. It is a new transportation vehicle and eco-system that is so superior it will forever change personal transportation as we know it. \n",
+          "thumbsUp": 8,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "3038235635105218560",
+          "author": {
+            "authorName": "Mike H "
+          },
+          "created": "Mon Jun 24 00:11:51 PDT 2024",
+          "updated": "Mon Jun 24 06:34:20 PDT 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best American vehicle available",
+          "text": "The Tesla Model Y is good at so many things.  Quiet and calm when you want but still faster than sports cars.  Great for people who love tech but simple to do all the basics.  Huge amount of storage when you include frunk, sub-trunk and trunk side compartments.  App control is so nice - pre-heat or pre-cool, send nav directions trough app, view car cameras and honk horn remotely.  Dog-mode is a brilliant feature.  Autopilot in traffic is such a stress reducer!  Software so good that I don't want car play or android auto.  Love watching YouTube or Netflix when I have time to kill.  Best stereo I've ever had.  Nice to listen to text messages and respond through dictation.  Syncs with calendar so knows nav when I get in the car.  Reliable supercharging offers peace of mind with no range anxiety.  Just an incredible car - amazed I can afford something this good!",
+          "thumbsUp": 8,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2815853300133371904",
+          "author": {
+            "authorName": "Bob Richardson "
+          },
+          "created": "Tue Aug 22 04:17:51 PDT 2023",
+          "updated": "Tue Sep 03 07:38:55 PDT 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best, most fun car ever",
+          "text": "Just an all around amazing fun car that does many things an ICE vehicle can never do. Range is more than adequate, Tesla charging network is flawless and convenient.  Does not contain thousands of items needed by an ICE vehicle. Of great importance to me is dog mode. I can now go shopping or to the beach in Florida any time I want and take my pup with me. No more worry about car overheating. Size and camp mode makes it ideal for long distance travel in total comfort. Auto drive means no more exhaustion on long drives. Auto drive has already avoided two accidents in town. I use it all the time. Having heat pump, Netflix and Hulu etc. means long waits in car are not an inconvenience. Incredibly easy to keep charged in carport as needed. The longer I have it the more I love it.",
+          "thumbsUp": 14,
+          "thumbsDown": 3,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2927181746214346752",
+          "author": {
+            "authorName": "Muhammad"
+          },
+          "created": "Mon Jan 22 17:47:36 PST 2024",
+          "updated": "Tue Jan 23 06:20:23 PST 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "A Rocky Road with My Tesla Model Y",
+          "text": "\nAs a new Tesla Model Y owner, I embarked on what I hoped would be a seamless journey with a cutting-edge electric vehicle. However, my experience has been anything but smooth, marked by a series of unfortunate incidents and what I perceive as inadequate customer service.\n\nWindshield Woes: Within the first month, I encountered a mysterious crack in the front windshield. Tesla's assessment attributed it to a rock strike – an explanation I found perplexing and somewhat unsatisfactory. The responsibility for repair costs, amounting to approximately $2000, fell entirely on me, a disheartening outcome for such a new purchase.\n\nTire Troubles on the Road: My drive from Redmond, WA to Portland, OR was abruptly interrupted by a blown tire – a stressful situation exacerbated by a blizzard. Tesla's roadside assistance was far from comforting; their suggestion to book a hotel and wait for service was impractical given the severe weather conditions and my family's well-being. Although they eventually sent a service truck to replace the tire, their insistence on taking the damaged tire to their service center was another point of frustration.\n\nCompounded by the discovery of a second damaged tire, with an additional cost of $420 for replacements, the ordeal was a significant inconvenience. It disrupted our family routine, causing us to miss work and school.\n\nComparing Experiences: Reflecting on my ownership of cars from other brands like Nissan, Toyota, and Honda, I can't recall facing such issues. My decision to switch to Tesla was driven by a desire to embrace environmentally friendly technology and to benefit from the purported long-term economical advantages of an electric vehicle. However, this series of events has led me to question my decision.\n\nAs of now, I'm left with the task of coordinating the retrieval of my tire from Portland and addressing the bubble in the second tire, which renders my car undriveable. It's a reminder that every purchase, especially one as significant as a vehicle, comes with its own set of challenges.\n\nIn Conclusion: This review is a candid account of my experience as a Tesla owner. It's not just about the technical difficulties, but also about the expectation of support and service that should accompany any high-end product. I remain hopeful for a resolution and believe that sharing my story might help others in making informed decisions. My journey with Tesla continues, and I'm eager to see if the coming weeks bring about a change in my current perspective.",
+          "thumbsUp": 60,
+          "thumbsDown": 20,
+          "vehicleRating": {
+            "overall": 1,
+            "categorized": {
+              "value": 2,
+              "safety": 2,
+              "performance": 5,
+              "reliability": 2,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "3118185400240095232",
+          "author": {
+            "authorName": "Cantor"
+          },
+          "created": "Sat Oct 12 07:37:46 PDT 2024",
+          "updated": "Mon Oct 14 06:04:59 PDT 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Nice car",
+          "text": "I have the 2024 awd long range model in ultra red.  I've noticed that some people complain about having to take your eyes off of the road to start the wipers.  This is not true.    Quickly tap the button on the left stick once and then within a few seconds move the left control button on the steering wheel left or right to speed up the wipers.  Alternatively, hold down the right button on the wheel and say \"wipers on level 3\" or whatever level you want.  You can also get CarPlay if you want it by buying a wireless CarPlay adapter on Amazon for less than $100 so CarPlay is available if you want it.\n     The interior is a little more Spartan than I would like but everything else I like.  For long road trips charge the car to 100% and you will get around 300 miles range but I never drive that far without stopping and, like a gas car, wouldn't let the battery go to close to 0.",
+          "thumbsUp": 7,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 3,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "3112411181440843776",
+          "author": {
+            "authorName": "EZR888"
+          },
+          "created": "Fri Oct 04 08:25:25 PDT 2024",
+          "updated": "Mon Oct 14 05:56:29 PDT 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Don't believe the low star reviews.",
+          "text": "There's an \"understanding\" curve to owning an EV.  Seems that all of the low star reviews are from people who haven't figured out how an EV works. You can't drive 80-85mph and expect to get great range. Keep it under 75 and you'll lose 10-30% of stated range. If it's very cold weather, expect a bigger drop, like 40%.  But you still have 140 miles in cold weather at Highway speeds. My first car was a Spark EV that got 82 miles.  I had a 70 mile roundtrip commute.  It was stressful, but in 2 years i never ran out of juice.  My 2023 MY LR AWD gets me 285 miles on long trips.  Range anxiety is just not a thing in a Tesla. I've been driving Bolts for the last 7 year's and even with their 190 miles of highway range, i still had some anxiety on long trips. \n\nPROS:\n\n* Charging network and integration of it with the car is fantastic. No one else has this. \n\n* Acceleration is fantastic. \n\n* The Bang & Olufsen sound system is INCREDIBLE.\n\n* Camp Mode!  You can sleep in the car even if you're 6'4\" like i am.  \n\n* Teslas don't get stolen. It's too easy to track them.  \n\n* The car looks fantastic, and there are tons of after-market customizations you can do.\n\n* Over The Air updates have been very regular and have really made great updates to functionality. Blind spot warning lights were missing, but they've handled this really well in an update earlier this year.  It's now the best I've ever seen in any car, which is great after being literally the worst.   \n\nCONS\n\n* My Bolt Premiere has FAR better parking assistance and cross traffic warning. For a $50,000 car, it's a crime that Tesla doesn't have the same features as the Bolt Premiere. Top down 360 camera for parking is a must. Teslas version is pathetic and Elon should be embarrassed. It's almost useless. \n\n* Ride quality could be better, but it's not as bad as a lot of people say. The tires are low profile, but once they break in after 500 miles, the ride smooths out a bit. Also, the suspension was updated in mid 2023, which made a big difference. Luckily, i got mine in November.  \n\n* Tesla Service is inconsistent between locations. I also find that in ALL of Elons companies, the service is not great. The Reps often don't really seem to care. It's like talking to someone at the DMV, though even they (the DMV) have gotten much better. \n\n* Expect to pay double, at least, for car insurance. I have a perfect record, and I'm paying over $1800/yr. I've heard horror stories of younger people paying double or triple what they were paying.  And that's with using Tesla Insurance, which is going to be cheaper than anyone else. \n\nThe car is a blast to drive, and, like all EV's, you can't wait to drive it again.  The technology in it is super fun. In my decades of driving and owning over 30 cars - mostly German and Japanese luxury brands, this is my favorite car of them all.  ",
+          "thumbsUp": 4,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 0,
+              "safety": 0,
+              "performance": 0,
+              "reliability": 0,
+              "technology": 0,
+              "interior": 0,
+              "comfort": 0
+            }
+          }
+        },
+        {
+          "id": "2663134756703174656",
+          "author": {
+            "authorName": "David S"
+          },
+          "created": "Mon Jan 23 10:13:22 PST 2023",
+          "updated": "Tue Jan 24 07:48:10 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best Car Money Can Buy!",
+          "text": "A+ in all the categories that matter to me: Performance, Safety, Technology, Reliability",
+          "thumbsUp": 8,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 4,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2888628117864742912",
+          "author": {
+            "authorName": "G, Seattle, WA"
+          },
+          "created": "Thu Nov 30 13:08:25 PST 2023",
+          "updated": "Fri Dec 01 05:43:27 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Disappointing",
+          "text": "The Tesla Model Y is great in theory. Indeed, it drives beautifully and offers promising glimpses of transport in the future. That said, it's nowhere close to ready for prime time based on my experience with a three year lease. In particular: \n\nBattery Life: Range is nowhere close to advertised particularly when it's cold or there's any kind of hill to climb. \n\nTires: I had two blowouts after rolling over unobtrusive hazards, and the other two tires needed to be replaced after a mere 23,000 miles. Why? Because the Tesla is HEAVY and the standard tires seem chosen for looks and not durability.\n\nWheels: Related, in designing the wheels for aerodynamics (a generous assumption), they were very subject to curb rash when parallel parking. Common in my city.\n\nSoftware: The digital experience is very cool, and updates are an interesting idea, except when controls you were counting on -- like the windshield wipers -- move around. Or when connecting directly to Spotify requires you to cancel a long-running family subscription with dozens of playlists. Don't worry -- there's a workaround, says Tesla. Just fiddle with Bluetooth connections and looking at your phone while driving. Hmmm\n\nWindshield Wipers: The wiper system runs on cameras not sensors. So when experiencing light rain or mist (common in my city), the wipers do not engage. This visibility hazard is compounded by then needed to fiddle with software to turn on wipers that either run too fast or intermittently. \n\nDoor Handles: Cute idea to have them flush with the doors, but almost every passenger I ever had, struggled to open the doors.\n\nMaintenance: With the limited number of parts in its drivetrain, Tesla advertised the need for little maintenance. Yet, senor problems, recalls, and the above-mentioned tire problems, had me in the shop 7 times over three years!\n\nService/Support: Tesla people are competent and nice. Yet, they're saddled with a product that's not up to snuff and they're trained not to apologize, much less take financial responsibility for issues that should have been under warranty.\n\nElon: Over the course of my lease, Elon took control of Twitter/X. It was interesting to watch the car's brand value diminish during this time. \"How could you use a car from him?\" was the question I started to get on a routine basis. I don't subscribe to the idea that one person is the whole company, but this may be a concern to people who are brand conscious.\n\nBottom line: This car was very disappointing and I have continually recommended against buying them. I'd also call myself skeptical of the EV category until battery technology improves. My next car will be a hybrid, or maybe a plug-in hybrid.",
+          "thumbsUp": 67,
+          "thumbsDown": 31,
+          "vehicleRating": {
+            "overall": 1,
+            "categorized": {
+              "value": 1,
+              "safety": 2,
+              "performance": 5,
+              "reliability": 1,
+              "technology": 2,
+              "interior": 2,
+              "comfort": 2
+            }
+          }
+        },
+        {
+          "id": "2686261033028026368",
+          "author": {
+            "authorName": "George White"
+          },
+          "created": "Fri Feb 24 08:01:09 PST 2023",
+          "updated": "Mon Feb 27 09:34:04 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Out of this world technology ",
+          "text": "Incredible technology but very simple to use. TESLA has the best engineers in the world and I noticed the difference with other car makers.\nI loved my BMW but I have no regrets. I will buy Tesla only.",
+          "thumbsUp": 7,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 4,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2949752099560620032",
+          "author": {
+            "authorName": "ALH"
+          },
+          "created": "Thu Feb 22 21:10:52 PST 2024",
+          "updated": "Thu Feb 29 06:28:42 PST 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Liked the car but it had a fatal flaw",
+          "text": "This new Y dual motor was the 3rd Tesla in the family.  Obviously, I knew and liked the brand. HOWEVER, this one had \"new type\" but faulty exterior camers which intermittently shut down.  When that happened, the dash screen went blank and it was impossible to see behind the car.  Forget about backing up unless you want to risk a collision or hitting a pedestrian. Tesla's service (euphemism) did not distinguish itself by, first, insisting I simply drive the car as is till they could engineer a fix by way of \"update.\" When I refused, they--eventually--bought it back.",
+          "thumbsUp": 18,
+          "thumbsDown": 8,
+          "vehicleRating": {
+            "overall": 2,
+            "categorized": {
+              "value": 2,
+              "safety": 4,
+              "performance": 4,
+              "reliability": 1,
+              "technology": 4,
+              "interior": 3,
+              "comfort": 2
+            }
+          }
+        },
+        {
+          "id": "2910317754891804672",
+          "author": {
+            "authorName": "NorthEastern"
+          },
+          "created": "Sat Dec 30 11:21:51 PST 2023",
+          "updated": "Mon Jul 08 05:29:23 PDT 2024",
+          "styleId": "401975394",
+          "year": 2023,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "I took delivery of the Model Y 12/22/23",
+          "text": "Build quality was near perfect. 3 mm panel gaps all around except for 3 inches with a 4.5 mm gap. Gauge measured. Performance edition, with near scary scary acceleration when in 490 hp mode. BMW 5 series handling characteristics. Perfect dead center steering. 21 inch wheels with extremely low profile tires makes for a harsher ride. FSD, which performs near perfect. A wonderful sports car to drive, with the body of a SUV.\n\nUpdate 6 months later, although I wished I had not ordered FSD yet. I almost never use it because it is just too fun to drive.",
+          "thumbsUp": 5,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 0,
+              "technology": 5,
+              "interior": 4,
+              "comfort": 3
+            }
+          }
+        },
+        {
+          "id": "2831682464231940096",
+          "author": {
+            "authorName": "Sukster"
+          },
+          "created": "Wed Sep 13 00:27:34 PDT 2023",
+          "updated": "Wed Sep 13 06:38:37 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Sloppy Build Quality ",
+          "text": "Rattles, cannot get timely service and loss of battery capacity within a month of ownership, and takes twice the amount to charge than what Tesla quotes at supercharger. That’s why you’ll see no chargers at Tesla stores!!!!!",
+          "thumbsUp": 14,
+          "thumbsDown": 6,
+          "vehicleRating": {
+            "overall": 3,
+            "categorized": {
+              "value": 2,
+              "safety": 4,
+              "performance": 3,
+              "reliability": 1,
+              "technology": 4,
+              "interior": 1,
+              "comfort": 2
+            }
+          }
+        },
+        {
+          "id": "2993261346014101504",
+          "author": {
+            "authorName": "Santa Monica"
+          },
+          "created": "Mon Apr 22 22:55:58 PDT 2024",
+          "updated": "Mon Apr 29 08:17:10 PDT 2024",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": " Tesla Model Y Long Range Review: Expectations vs.",
+          "text": "I purchased the Tesla Model Y Long Range with great enthusiasm, enticed by its advertised specs of 313 miles per charge and an impressive 127 MPGe. However, my hands-on experience has revealed some critical discrepancies that call into question the realism of these claims, especially when compared to conventional vehicles.\n\nBattery Usage and Advertised Range\nGeneral guidance to maintain battery health recommends charging only up to 80% and not letting it drop below 20%. This effectively reduces the usable battery capacity to 60%. Additionally, daily usage of essential features such as the radio and air conditioning draws significantly on the battery, further diminishing the actual range to approximately 150 to 187 miles per charge. This starkly contrasts with the advertised 313 miles, necessitating frequent recharges which could be a considerable inconvenience for users expecting the full advertised range.\n\nEfficiency Comparisons and Real-World Cost\nThe Model Y’s 127 MPGe efficiency rating appears highly optimistic when subjected to practical, everyday driving conditions. Currently enjoying a six-month free charging promotion, I have calculated that without this benefit, the cost of electricity to power the Model Y for 3,698 miles would be at least $328.08, based on the lowest off-peak rate of $0.24 per kWh. In contrast, driving my 2018 V6 Pathfinder under similar conditions (assuming a fuel price of $4.00 per gallon and 24 MPG) would cost $616.66. While the Tesla shows some cost advantage, but, using MPGe= 33.7×Miles Driven/kWh Used​\nBased on my usage of 1,367 kWh to drive 3,700 miles, my MPGe comes out to approximately 91.2. This indicates that my Tesla Model Y Long Range has the energy efficiency equivalent to traveling 91.2 miles on the energy contained in one gallon of gasoline. \n\nConclusion\nThe Tesla Model Y Long Range is undoubtedly a technological marvel, yet its real-world performance in terms of range and efficiency may fall short of expectations set by its promotional claims. Prospective buyers should critically evaluate these factors, as the advertised 127 MPGe.",
+          "thumbsUp": 24,
+          "thumbsDown": 12,
+          "vehicleRating": {
+            "overall": 1,
+            "categorized": {
+              "value": 3,
+              "safety": 2,
+              "performance": 5,
+              "reliability": 2,
+              "technology": 2,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2761851930019364864",
+          "author": {
+            "authorName": "Al Ballerini"
+          },
+          "created": "Thu Jun 08 16:06:46 PDT 2023",
+          "updated": "Thu Jun 15 06:51:41 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Redefining the driving experience  ",
+          "text": "I don’t want to hear another question about the viability of an EV. Tesla has spiked the ball. They made sure they got the tech right first; now the car around it is solid, comfortable and really fun to drive. I am one month into my MY ownership experience and I am totally satisfied. Left my GLE at the Tesla “store” and have zero regrets. ",
+          "thumbsUp": 6,
+          "thumbsDown": 2,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2787873315438346240",
+          "author": {
+            "authorName": "B Mann"
+          },
+          "created": "Fri Jul 14 13:46:37 PDT 2023",
+          "updated": "Fri Jul 21 08:12:44 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Does not instill confidence; many quirks",
+          "text": "READ MANY REVIEWS BEFORE PURCHASING A TESLA. I waited years to buy the Tesla Y thinking most if not all of the new-model kinks would be worked out. Not the case. I paid an extra $6,000 for enhanced auto driving (EAD), but while using it on the highway on a clear sunny day, the wipers came on twice, about an hour apart. Shut off by themselves. How can I trust the car's technology to navigate at 65 mph if they can't even get the wipers right. Further, I set the car to \"open driver's door only\" when it detects a key, but their system applied it to the hatch, too. What?! In other words, if I'm trying to get groceries or luggage, whatever, in the back, I have to open the driver's side door first before I can open the hatch from the outside. Just plain idiotic.\n\nI'm disappointed with my purchase. I wish I could un-do. \n\nSo why two stars? The performance is amazing and it's comfortable. ",
+          "thumbsUp": 22,
+          "thumbsDown": 13,
+          "vehicleRating": {
+            "overall": 2,
+            "categorized": {
+              "value": 2,
+              "safety": 2,
+              "performance": 5,
+              "reliability": 2,
+              "technology": 2,
+              "interior": 4,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "3166244650868170752",
+          "author": {
+            "authorName": "Alpaca Doodles"
+          },
+          "created": "Tue Dec 17 14:02:55 PST 2024",
+          "updated": "Fri Dec 20 04:37:42 PST 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Excited to Buy, Sad to Own",
+          "text": "What I didn’t know:  The paint is soft, as in, so soft that if you take it through a car wash - even with soft scrubbers - you will have swirl marks in the paint.  Additionally, the paint will chip away with every rock that touches the car.  Very noticeable if you get a color paint.  The seats are very uncomfortable.  May have been designed by engineers who have severe head-forward posture and are unable to recognize how uncomfortable the seats are for those with normal posture.  Suspension is so stiff and the headrests are so uncomfortable that on any uneven surface (any road not freshly paved), the headrest will hit your head with force.  The “automatic” wipers are anything but.  That should not have been a tough bar to cross, as most companies have been successfully making automatic wipers for decades.  The interior is cheap, and marks up/frays quickly.  Essentially, it’s the car you get when engineers who don’t know how to design cars or how to properly drive cars are given free rein.  The Autopilot/FSD software drives like a bad 16-year old driver who didn’t take a driving class.  The Hyundai Ioniq 5 is a much better choice value-wise for what you’ll spend on a Tesla.  I will say, the charging network is good.",
+          "thumbsUp": 7,
+          "thumbsDown": 3,
+          "vehicleRating": {
+            "overall": 2,
+            "categorized": {
+              "value": 1,
+              "safety": 3,
+              "performance": 4,
+              "reliability": 1,
+              "technology": 4,
+              "interior": 1,
+              "comfort": 2
+            }
+          }
+        },
+        {
+          "id": "2685543188425334784",
+          "author": {
+            "authorName": "Bub J"
+          },
+          "created": "Thu Feb 23 08:14:55 PST 2023",
+          "updated": "Thu Mar 02 08:22:30 PST 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "MY changed the game.",
+          "text": "Have been a \"car type\" for ever-- had Japanese, German, American cars. It's like comparing a PC to a Mac. I would never go back. I love, love, love everything about the Tesla Model Y. I can not ever see myself switching to another car. ",
+          "thumbsUp": 4,
+          "thumbsDown": 1,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "2771007912719089664",
+          "author": {
+            "authorName": "Tanvir"
+          },
+          "created": "Wed Jun 21 07:18:04 PDT 2023",
+          "updated": "Thu Jun 22 07:56:27 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Worst car i have bought in my life",
+          "text": "- Exterior Panel gaps\n- Rear white bumper color is different than the body color\n- inside squeaky noise\n- autopilot breaks automatically middle of the road even no object infront\n- tire foam (inside the tire) got losses and car start vibrate \nAll these issues causes before less than 6k millage.\n- Service department worse than the issues, they are unprofessional. I had to take my car twice to fix  squeaky noise, still they didn’t put back the panel correctly. For the tire issue they ruined the tire, they used some kind of grease what made the tire popped open oneside of the rim. \n",
+          "thumbsUp": 39,
+          "thumbsDown": 26,
+          "vehicleRating": {
+            "overall": 1,
+            "categorized": {
+              "value": 1,
+              "safety": 2,
+              "performance": 3,
+              "reliability": 3,
+              "technology": 3,
+              "interior": 1,
+              "comfort": 2
+            }
+          }
+        },
+        {
+          "id": "3162403990205382656",
+          "author": {
+            "authorName": "Pvkevino, Lincoln, NE"
+          },
+          "created": "Thu Dec 12 06:52:12 PST 2024",
+          "updated": "Thu Dec 19 04:54:07 PST 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Less than advertised ",
+          "text": "First, Tesla quotes the EPA range of 330 miles per full charge. I found, by keeping continuing track, that my long-range Model Y gets about 220, city and highway combined.  Second, the big screen is impossible to navigate, and dangerous to do so,  while driving.  Third, the weight of the battery makes the ride bumpy and uncomfortable. Fourth, we just learned that we no longer get music free.  Tesla will nickel-and-dime you continuously.  We would like to sell ours, but the market is not favorable.  Ours is less than a year old.  ",
+          "thumbsUp": 6,
+          "thumbsDown": 3,
+          "vehicleRating": {
+            "overall": 2,
+            "categorized": {
+              "value": 0,
+              "safety": 0,
+              "performance": 0,
+              "reliability": 0,
+              "technology": 0,
+              "interior": 0,
+              "comfort": 0
+            }
+          }
+        },
+        {
+          "id": "2758189716012376064",
+          "author": {
+            "authorName": "Zevbo"
+          },
+          "created": "Sat Jun 03 14:50:36 PDT 2023",
+          "updated": "Mon Jun 05 09:24:15 PDT 2023",
+          "styleId": "401918239",
+          "year": 2023,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Game-changer ",
+          "text": "3 weeks in and I’m in heaven with my model Y. I can’t imagine having another car with a young family.",
+          "thumbsUp": 2,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 0,
+              "safety": 0,
+              "performance": 0,
+              "reliability": 0,
+              "technology": 0,
+              "interior": 0,
+              "comfort": 0
+            }
+          }
+        },
+        {
+          "id": "3225398353799757824",
+          "author": {
+            "authorName": "Joseph"
+          },
+          "created": "Sun Mar 09 05:50:46 PDT 2025",
+          "updated": "Mon Mar 10 06:17:10 PDT 2025",
+          "styleId": "402023058",
+          "year": 2024,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Deceptively Interior Space",
+          "text": "Looking at this small SUV from the outside, its hard to believe it being roomy inside until you sit in it. Being a 60 something, 6 foot tall driver, no physical restrictions, I was getting tired of climbing in and out of my sedan and really was looking forward to graduating to something a little higher off the ground without the usual antics getting in and out of a car. A by chance test drive of this Y had me sold in literally 30 minutes. Slid right into the seat, amazed at the headroom. The acceleration off a dead start is nothing short of amazing, as is the sustained, quick ramp up to cruising speed. Sleeky good looking SUV, ample front and rear passenger space for 5 passengers, roomy hatchback trunk with a frunk to boot. A barebone front dash with just a control monitor takes some getting used to but you get used to it. Haven't rolled into a gas station in a year, charge at home and super charge on the road. Knocked one star off for the trunk fitment which need an adjustment. It was fine for awhile but seems to have regressed, not a biggie but build quality in this regard could be better. Other than that, reliable thus far and oh forgot to mention, the maintenance is next to none, just a tire rotation and air filter change.  ",
+          "thumbsUp": 2,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 4,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        },
+        {
+          "id": "3130482327325851648",
+          "author": {
+            "authorName": "RJ"
+          },
+          "created": "Tue Oct 29 06:49:34 PDT 2024",
+          "updated": "Tue Nov 05 08:50:47 PST 2024",
+          "styleId": "402023058",
+          "year": 2024,
+          "styleName": "Performance 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "Best car I’ve ever owned! ",
+          "text": "I absolutely love the tesla model Y. For the first time, I stayed with the same model back to back and upgraded. The tech, safety, convenience are unmatched. It has features that simply don’t exist on other vehicles like a dash cam and sentry recording. It receives software upgrades that regularly add new features. Quality has been great on the two I’ve owned- no significant issues. Instant acceleration and speed are also great and make the car fun to drive. ",
+          "thumbsUp": 2,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 5,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 4,
+              "comfort": 4
+            }
+          }
+        },
+        {
+          "id": "3041933863475068928",
+          "author": {
+            "authorName": "Ron K"
+          },
+          "created": "Sat Jun 29 02:39:34 PDT 2024",
+          "updated": "Mon Jul 08 06:33:32 PDT 2024",
+          "styleId": "402023059",
+          "year": 2024,
+          "styleName": "Long Range 4dr SUV AWD (electric DD)",
+          "spans": null,
+          "title": "love it",
+          "text": "Our first electric car and my wife and I  LOVE everything about it. It took 2 days to feel like we could never go back to gas powered car or SUV.  It the difference between using a dial up phone and cell phone. It helps that we are both mid 70s and still embrace new technology. Welcome to the future. ",
+          "thumbsUp": 2,
+          "thumbsDown": 0,
+          "vehicleRating": {
+            "overall": 5,
+            "categorized": {
+              "value": 5,
+              "safety": 0,
+              "performance": 5,
+              "reliability": 5,
+              "technology": 5,
+              "interior": 5,
+              "comfort": 5
+            }
+          }
+        }
+      ]
+    }
+  }
+}
