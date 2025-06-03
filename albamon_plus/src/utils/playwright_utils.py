@@ -60,6 +60,7 @@ class PlaywrightUtils:
                 )
 
             self.page = await self.context.new_page()
+
             await self._bypass_bot_detection()
 
         except Exception as e:

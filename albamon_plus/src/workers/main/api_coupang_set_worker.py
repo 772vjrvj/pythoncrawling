@@ -4,17 +4,18 @@ import threading
 import time
 from random import random
 from urllib.parse import urlparse, parse_qs, unquote
-from pathlib import Path
 
 import pandas as pd
 import pyautogui
+from playwright.async_api import async_playwright
 
-from src.workers.api_base_worker_sec import BaseApiWorkerSec
+from src.workers.api_base_worker import BaseApiWorker
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
+class ApiCoupangSetLoadWorker(BaseApiWorker):
+
     def __init__(self):
         super().__init__()
         self.channel = None
@@ -27,6 +28,10 @@ class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
         self.includeKeyword = ""
         self.running = True
 
+        self.page = None
+        self.browser = None
+        self.context = None
+
         self.com_list = []
         self.main_model = None
         self.product_info_list = []
@@ -37,13 +42,13 @@ class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
         self.current_cnt = 0
         self.before_pro_value = 0
 
-    async def init(self):
+    async def init(self, context):
         screen_width, screen_height = pyautogui.size()
+        self.context = context
+        self.page = await context.new_page()
         await self.page.set_viewport_size({"width": screen_width // 2, "height": screen_height})
+        await self.page.goto(self.base_login_url)
 
-        # 프로필로 시작했으므로 페이지 명시적 이동만 수행
-        if self.page.url == "about:blank":
-            await self.page.goto(self.base_main_url)
     async def main(self):
         result_list = []
         await self.wait_for_user_confirmation()
@@ -82,11 +87,9 @@ class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
                 await asyncio.sleep(1)
                 if index % 5 == 0:
                     self.excel_driver.append_to_csv(csv_filename, result_list, columns)
-                    result_list.clear()
 
             if result_list:
                 self.excel_driver.append_to_csv(csv_filename, result_list, columns)
-                result_list.clear()
 
     async def wait_for_user_confirmation(self):
         self.log_func("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
@@ -95,9 +98,6 @@ class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
         self.log_func("📢 사용자 입력 대기 중...")
         event.wait()
         self.log_func("✅ 사용자가 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
-
-        # ✅ 로그인 후 상태 저장
-
         await self.page.goto(self.base_main_url)
         await asyncio.sleep(2)
 
@@ -123,7 +123,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
     async def fetch_product_detail(self, url):
         seller_info = {
             "상호명": "",
-            "주소": "",
+            "사업장소재지": "",
             "연락처": "",
             "키워드": self.query
         }
@@ -147,7 +147,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorkerSec):
                     if "상호/대표자" in label:
                         seller_info["상호명"] = value
                     elif "사업장 소재지" in label:
-                        seller_info["주소"] = value
+                        seller_info["사업장소재지"] = value
                     elif "연락처" in label:
                         seller_info["연락처"] = value
 
