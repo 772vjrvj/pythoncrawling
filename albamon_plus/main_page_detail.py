@@ -20,8 +20,8 @@ result_list = []
 result_list_index = 0
 folder_path = ""
 columns = ["상품명", "상호명","사업장소재지", "연락처", "URL", "키워드"]
-
 excel_name = "쿠팡"
+urls_list= []
 
 def extract_last_page(soup):
     global last_page
@@ -73,7 +73,7 @@ def extract_product_urls(soup):
     return url_list
 
 def crawl_once():
-    global current_url, keyword, page, last_page, folder_path, result_list_index
+    global current_url, keyword, page, last_page, folder_path, result_list_index, urls_list
 
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
@@ -137,6 +137,11 @@ def crawl_once():
     last_page = extract_last_page(soup)
     urls = extract_product_urls(soup)
 
+    if urls_list and urls_list[-1] == urls:
+        return False
+    else:
+        urls_list.append(urls)
+
     if os.path.exists(save_path):
         os.remove(save_path)
         print(f"🗑️ HTML 파일 삭제됨: {save_path}")
@@ -144,6 +149,9 @@ def crawl_once():
     for i, url in enumerate(urls, start=1):
         result_list_index += 1
         data_detail(i, url)
+
+    return True
+
 
 def data_detail(i, url):
     global result_list, keyword, page, folder_path, excel_name
@@ -251,7 +259,9 @@ def data_detail(i, url):
             df.to_csv(excel_name, mode='a', header=False, index=False, encoding="utf-8-sig")
         result_list.clear()
 
-    time.sleep(random.uniform(0.5, 1))
+    time.sleep(random.uniform(5, 7))
+
+
 
 def main():
     global page, current_url, last_page, folder_path, excel_name
@@ -274,7 +284,6 @@ def main():
                 print(f"✅page : {page}")
                 print(f"✅last_page : {last_page}")
 
-
             # ✅ current_url의 page 값 수정
             parsed = urllib.parse.urlparse(current_url)
             query = urllib.parse.parse_qs(parsed.query)
@@ -284,15 +293,15 @@ def main():
             current_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}?{new_query}"
             print(f"\n🔁 다음 페이지 URL: {current_url}")
 
-            # 크롬 강제 종료
-            os.system("taskkill /f /im chrome.exe")
-            time.sleep(2)  # 종료 대기
-
-            # 크롬 실행 (사용자 프로필 유지)
-            chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-
-            subprocess.Popen([chrome_path, current_url])
-            time.sleep(4)  # 쿠팡 로딩 대기
+            # # 크롬 강제 종료
+            # os.system("taskkill /f /im chrome.exe")
+            # time.sleep(2)  # 종료 대기
+            #
+            # # 크롬 실행 (사용자 프로필 유지)
+            # chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            #
+            # subprocess.Popen([chrome_path, current_url])
+            # time.sleep(4)  # 쿠팡 로딩 대기
 
 
             # ✅ 브라우저 자동 이동
@@ -305,7 +314,9 @@ def main():
             time.sleep(3)  # 페이지 로딩 대기
 
             print(f"▶ 페이지 {page} 진행")
-            crawl_once()
+            rs = crawl_once()
+            if not rs:
+                break
 
         if result_list:
             df = pd.DataFrame(result_list, columns=columns)
