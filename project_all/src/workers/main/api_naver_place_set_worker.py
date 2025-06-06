@@ -49,6 +49,9 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
 
     # 초기화
     def init(self):
+
+        self.driver_set()
+
         # 현재 모니터 해상도 가져오기
         screen_width, screen_height = pyautogui.size()
 

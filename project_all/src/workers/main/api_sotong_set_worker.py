@@ -19,7 +19,8 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
     def __init__(self):
         super().__init__()
         self.running = True
-
+        self.total_pages = 0
+        self.current_page = 0
         self.before_pro_value = 0
         self.login_id = "sotong"
         self.login_pw = "sotong"
@@ -150,9 +151,23 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
 
                 url = f"https://tongclinic.com/adm/visit_list.php?fr_date={self.fr_date}&to_date={self.to_date}&page={page}"
                 self.driver.get(url)
-                time.sleep(2)
 
                 soup = BeautifulSoup(self.driver.page_source, "html.parser")
+
+                if page == 1:
+
+                    end_page_link = soup.find("a", class_="pg_page pg_end")
+                    if end_page_link:
+                        href = end_page_link.get("href")
+                        query = urllib.parse.urlparse(href).query
+                        page_dict = urllib.parse.parse_qs(query)
+                        page_value = page_dict.get("page", [0])[0]  # 없으면 0 반환
+                        self.log_signal_func(f"맨끝 페이지 번호: {page_value}")
+                        self.total_pages = int(page_value) + 1
+                    else:
+                        self.log_signal_func("맨끝 링크가 없습니다.")
+
+
                 empty_tag = soup.find("td", class_="empty_table")
                 if empty_tag and "자료가 없거나" in empty_tag.text:
                     self.log_signal_func(f"페이지 {page} → 데이터 없음 메시지 확인됨. 종료")
@@ -189,13 +204,21 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
                                     if keyword:
                                         keyword_counter[keyword] += 1
 
-                self.log_signal_func(f"페이지 {page} 처리 완료")
+                self.page_progress()
                 page += 1
 
         except Exception as e:
             self.log_signal_func(f"❌ 키워드 추출 중 오류 발생: {e}")
 
         return keyword_counter
+
+
+    def page_progress(self):
+        self.current_page = self.current_page + 1
+        pro_value = (self.current_page / self.total_pages) * 1000000
+        self.progress_signal.emit(self.before_pro_value, pro_value)
+        self.before_pro_value = pro_value
+        self.log_signal_func(f"현재 페이지 {self.current_page}/{self.total_pages}")
 
 
     # 방문자

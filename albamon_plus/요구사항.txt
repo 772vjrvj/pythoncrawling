@@ -38,6 +38,5 @@ pyinstaller main.py `
 
 
 https://mullvad.net/ko
+계정번호 : 5591478657770516
 
-
-2154933079289499
