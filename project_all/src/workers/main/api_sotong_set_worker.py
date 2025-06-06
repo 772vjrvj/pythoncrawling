@@ -148,9 +148,6 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
         try:
             while True:
 
-                if page == 10:
-                    break
-
                 url = f"https://tongclinic.com/adm/visit_list.php?fr_date={self.fr_date}&to_date={self.to_date}&page={page}"
                 self.driver.get(url)
                 time.sleep(2)
