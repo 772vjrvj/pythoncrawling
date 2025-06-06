@@ -2,14 +2,17 @@ import os
 import ssl
 import time
 import traceback
+
 import psutil
-import requests
 from selenium import webdriver
+from selenium.common import NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException, \
+    ElementNotInteractableException, InvalidSelectorException, TimeoutException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -151,6 +154,33 @@ class SeleniumUtils:
         self.driver.set_page_load_timeout(timeout)
 
         return self.driver
+
+    def handle_selenium_exception(self, context, exception):
+        if isinstance(exception, NoSuchElementException):
+            return f"❌ {context} - 요소 없음"
+        elif isinstance(exception, StaleElementReferenceException):
+            return f"❌ {context} - Stale 요소"
+        elif isinstance(exception, TimeoutException):
+            return f"⏱️ {context} - 로딩 시간 초과"
+        elif isinstance(exception, ElementClickInterceptedException):
+            return f"🚫 {context} - 클릭 방해 요소 존재"
+        elif isinstance(exception, ElementNotInteractableException):
+            return f"🚫 {context} - 요소가 비활성 상태"
+        elif isinstance(exception, InvalidSelectorException):
+            return f"🚫 {context} - 선택자 오류"
+        elif isinstance(exception, WebDriverException):
+            return f"⚠️ {context} - WebDriver 오류"
+        else:
+            return f"❗ {context} - 알 수 없는 오류"
+
+    # SeleniumUtils 내부
+    def wait_element(self, driver, by, selector, timeout=10):
+        try:
+            wait = WebDriverWait(driver, timeout)
+            return wait.until(EC.presence_of_element_located((by, selector)))
+        except Exception as e:
+            self.handle_selenium_exception(f"wait_element: [{selector}] 요소를 {timeout}초 안에 찾지 못했습니다.", e)
+            return None
 
     # 크롬 끄기
     def close_chrome_processes(self):

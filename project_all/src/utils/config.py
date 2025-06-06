@@ -5,6 +5,7 @@ SITE_LIST = [
     Site("네이버플레이스", "NAVER_PLACE", "#03C75A", enabled=True, user=False),
     Site("쿠팡", "COUPANG", "#D73227",             enabled=False, user=False),
     Site("알바천국", "ALBA", "#FFF230",             enabled=True, user=False),
+    Site("소통한방병원", "SOTONG", "#29ADA6",             enabled=True, user=False),
 ]
 
 # 전역 변수
