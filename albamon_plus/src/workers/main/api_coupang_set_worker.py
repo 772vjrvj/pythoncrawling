@@ -180,9 +180,16 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         pyautogui.hotkey('ctrl', 'c')
         time.sleep(0.3)
 
-        # URL 가져오기
-        self.current_url = pyperclip.paste()
-        self.log_signal_func(f"📋 현재 URL 확인: {self.current_url}")
+        if self.page == 1:
+            # URL 가져오기
+            self.current_url = pyperclip.paste()
+            self.log_signal_func(f"📋 현재 URL 확인: {self.current_url}")
+
+            parsed = urllib.parse.urlparse(self.current_url)
+            query = urllib.parse.parse_qs(parsed.query)
+
+            keyword_encoded = query.get("q", [""])[0]
+            self.keyword = urllib.parse.unquote(keyword_encoded)
 
         # 스크롤을 위해 내부 html 링크나 버튼 없는 곳 클릭
         pyautogui.moveTo(300, 400)
@@ -347,7 +354,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
 
         # 👉 실제 대기는 worker가 직접 진행
         for remaining in range(self.chrome_delay_time, 0, -1):
-            self.log_signal_func(f"⏳ 남은 시간: {remaining}초")
+            # self.log_signal_func(f"⏳ 남은 시간: {remaining}초")
             time.sleep(1)
 
 
