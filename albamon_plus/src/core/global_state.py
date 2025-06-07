@@ -5,6 +5,7 @@ class GlobalState:
     COLOR = "color"
     COOKIES = "cookies"
     USER = "user"
+    SETTING = "setting"
 
     _instance = None
 

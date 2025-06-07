@@ -49,6 +49,7 @@ def extract_last_page(soup):
         print("❌ 유효한 페이지 번호를 찾지 못했습니다.")
     return last_page
 
+
 def extract_product_urls(soup):
     base_url = "https://www.coupang.com"
 
@@ -128,6 +129,8 @@ def crawl_once():
 
     pyautogui.hotkey('ctrl', 'w')
     time.sleep(0.5)
+
+
 
     print(f"💾 저장 완료: {save_path}")
 

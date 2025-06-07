@@ -52,4 +52,4 @@ def print_dir_tree(dir_path=".", depth=0, max_depth=4):
         print(f"{prefix}├─ {py_file}")
 
 if __name__ == "__main__":
-    print_dir_tree(".", max_depth=4)
+    print_dir_tree("..", max_depth=4)

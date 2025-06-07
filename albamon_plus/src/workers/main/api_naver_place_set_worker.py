@@ -27,13 +27,13 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
         self.keyword = None
         self.base_login_url = "https://nid.naver.com/nidlogin.login"
         self.base_main_url   = "https://map.naver.com"
+        self.site_name = "네이버플레이스"
 
         self.running = True  # 실행 상태 플래그 추가
         self.driver = None
 
         self.total_cnt = 0
         self.total_pages = 0
-        self.current_page = 0
         self.current_cnt = 0
         self.before_pro_value = 0
 
@@ -77,7 +77,7 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
         self.log_signal_func(f"전체 업체수 {self.total_cnt} 개")
         self.log_signal_func(f"전체 페이지수 {self.total_pages} 개")
 
-        csv_filename = self.file_driver.get_csv_filename("네이버플레이스")
+        csv_filename = self.file_driver.get_csv_filename(self.site_name)
 
         columns = ["업체명", "주소(지번)", "주소(도로명)", "전화번호", "가상전화번호", "검색어"]
 
@@ -114,7 +114,7 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
         # 엑셀 객체 초기화
         self.excel_driver = ExcelUtils(self.log_signal_func)
 
-        # 엑셀 객체 초기화
+        # 파일 객체 초기화
         self.file_driver = FileUtils(self.log_signal_func)
 
         # 셀레니움 초기화
