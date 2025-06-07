@@ -67,6 +67,10 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         self.log_signal_func("📢 사용자 입력 대기 중...")
         event.wait()  # 사용자가 OK를 누르면 해제됨
 
+        self.log_signal_func('📢 마우스와 키보드를 절대 조작하지마세요.')
+        self.log_signal_func('📢 조각하면 에러가 납니다. 그러면 다시 진행해주세요.')
+        time.sleep(2)
+
         # 현재 해상도 가져오기
         screen_width, screen_height = pyautogui.size()
 
@@ -166,7 +170,6 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
 
     # 메인 크롤링
     def main_crawl(self):
-
         # 왼쪽 끝으로 이동
         pyautogui.moveTo(10, 10)
         # 클릭
