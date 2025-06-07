@@ -7,7 +7,9 @@ SITE_LIST = [
         {'name': '제품 딜레이 시간(초)', 'code': 'html_source_delay_time','value': 10},
         {'name': '크롬 재시작 딜레이 시간(초)', 'code': 'chrome_delay_time','value': 1200}
     ]),
-    Site("알바천국", "ALBA", "#FFF230",             enabled=True, user=False, setting=[]),
+    Site("알바천국", "ALBA", "#FFF230",             enabled=True, user=False, setting=[
+        {'name': '감지 대기 딜레이 시간(초)', 'code': 'alba_delay_time','value': 1200}
+    ]),
 ]
 
 # 전역 변수

@@ -21,7 +21,7 @@ from src.workers.api_base_worker import BaseApiWorker
 class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
 
     # 초기화
-    def __init__(self):
+    def __init__(self, setting):
         super().__init__()
         self.cookies = None
         self.keyword = None
@@ -143,10 +143,8 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
 
         # 쿠키 중 NID_AUT 또는 NID_SES 쿠키가 있는지 확인 (네이버 로그인 성공 시 생성되는 쿠키)
         if 'NID_AUT' in cookies and 'NID_SES' in cookies:
-            self.cookies = cookies  # 네이버 로그인 성공 시 쿠키 저장
-
-        for name, value in self.cookies.items():
-            self.sess.cookies.set(name, value)
+            for name, value in cookies.items():
+                self.api_client.cookie_set(name, value)
 
         # 사용자가 OK를 눌렀을 경우 실행
         self.log_signal_func("✅ 사용자가 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
@@ -238,9 +236,8 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
                 'Referer': 'https://map.naver.com/',  # ✅ 반드시 필요
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
             }
-            response = self.sess.get(url, headers=headers)
-            response.raise_for_status()
-            return response.json()
+            response = self.api_client.get(url=url, headers=headers)
+            return response
         except requests.exceptions.RequestException as e:
             print(f"❌ 요청 실패: {e}")
             return None
@@ -265,7 +262,7 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
             }
 
-            res = self.api_client.post(url=url, headers=headers)
+            res = self.api_client.get(url=url, headers=headers)
 
             if res:
                 soup = BeautifulSoup(res, 'html.parser')

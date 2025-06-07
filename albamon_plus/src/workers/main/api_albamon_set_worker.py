@@ -17,12 +17,13 @@ from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
+import random
 
 
 class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
     # 초기화
-    def __init__(self):
+    def __init__(self, setting):
         super().__init__()
         self.base_login_url = "https://www.albamon.com/user-account/login"
         self.base_main_url   = "https://www.albamon.com/jobs/total"
@@ -94,7 +95,7 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
         for page in range(1, self.total_pages + 1):
             self.log_signal_func(f"현재 페이지 {page}")
-            time.sleep(1)
+
             if not self.running:  # 실행 상태 확인
                 self.log_signal_func("크롤링이 중지되었습니다.")
                 break
@@ -177,8 +178,12 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
                 self.log_signal_func(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
 
-            if result_list:
-                self.excel_driver.append_to_csv(csv_filename, result_list, columns)
+                time.sleep(random.uniform(1, 3))
+
+            time.sleep(random.uniform(5, 7))
+
+        if result_list:
+            self.excel_driver.append_to_csv(csv_filename, result_list, columns)
 
 
     # 마무리
@@ -221,9 +226,9 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
         # 쿠키 설정
         # 쿠키 설정
-        cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            self.api_client.cookie_set(cookie['name'], cookie['value'])
+        cookies = {cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}
+        for name, value in cookies.items():
+            self.api_client.cookie_set(name, value)
 
 
         # 사용자가 OK를 눌렀을 경우 실행

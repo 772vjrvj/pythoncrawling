@@ -77,6 +77,7 @@ class MainWindow(QWidget):
             self.program_reset_button.setStyleSheet(main_style(self.color))
             self.collect_button.setStyleSheet(main_style(self.color))
             self.log_out_button.setStyleSheet(main_style(self.color))
+            self.setting_button.setStyleSheet(main_style(self.color))
         else:
             self.set_layout()
 

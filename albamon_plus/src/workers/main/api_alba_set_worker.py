@@ -22,7 +22,7 @@ from src.workers.api_base_worker import BaseApiWorker
 class ApiAlbaSetLoadWorker(BaseApiWorker):
 
     # 초기화
-    def __init__(self):
+    def __init__(self, setting):
         super().__init__()
         self.schExcludeText = ""
         self.schIncludeText = ""
@@ -48,6 +48,7 @@ class ApiAlbaSetLoadWorker(BaseApiWorker):
         self.sess = None
         self.base_url = None
         self.api_client = APIClient(use_cache=False)
+        self.alba_delay_time = self._get_setting_value(setting, "alba_delay_time")
 
 
     # 초기화
@@ -98,6 +99,12 @@ class ApiAlbaSetLoadWorker(BaseApiWorker):
         df.to_csv(csv_filename, index=False, encoding="utf-8-sig")
 
         for page in range(1, self.total_pages + 1):
+
+            if page % 5:
+                self.log_signal_func(f"감지 대비 {self.alba_delay_time}초간 대기하겠습니다.")
+                self.request_chrome_delay()
+
+
             self.log_signal_func(f"현재 페이지 {page}")
             time.sleep(1)
             if not self.running:  # 실행 상태 확인
@@ -129,10 +136,12 @@ class ApiAlbaSetLoadWorker(BaseApiWorker):
 
                 self.log_signal_func(f"현재 페이지 {self.current_cnt}/{self.total_cnt}")
 
-                time.sleep(random.uniform(2, 3))
+                time.sleep(random.uniform(1, 3))
 
-            if result_list:
-                self.excel_driver.append_to_csv(csv_filename, result_list, columns)
+            time.sleep(random.uniform(5, 7))
+
+        if result_list:
+            self.excel_driver.append_to_csv(csv_filename, result_list, columns)
 
     # 종료
     def destroy(self):
@@ -141,6 +150,14 @@ class ApiAlbaSetLoadWorker(BaseApiWorker):
         time.sleep(5)
         self.log_signal_func("=============== 크롤링 종료")
         self.progress_end_signal.emit()
+
+
+    def _get_setting_value(self, setting_list, code_name):
+        for item in setting_list:
+            if item.get("code") == code_name:
+                return item.get("value")
+        return None  # 또는 기본값 0 등
+
 
     # 드라이버 객체 세팅
     def driver_set(self):
@@ -173,9 +190,9 @@ class ApiAlbaSetLoadWorker(BaseApiWorker):
         event.wait()  # 사용자가 OK를 누르면 해제됨
 
         # 쿠키 설정
-        cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            self.api_client.cookie_set(cookie['name'], cookie['value'])
+        cookies = {cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}
+        for name, value in cookies.items():
+            self.api_client.cookie_set(name, value)
 
         # 사용자가 OK를 눌렀을 경우 실행
         self.log_signal_func("✅ 사용자가 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
@@ -393,6 +410,16 @@ class ApiAlbaSetLoadWorker(BaseApiWorker):
             self.total_pages = total_pages
         except Exception as e:
             print(f"Error calculating total count: {e}")
+
+    # 크롬 딜레이 카운트
+    def request_chrome_delay(self):
+        # 👉 UI에게 카운트다운 팝업 요청
+        self.show_countdown_signal_func(self.alba_delay_time)
+
+        # 👉 실제 대기는 worker가 직접 진행
+        for remaining in range(self.alba_delay_time, 0, -1):
+            # self.log_signal_func(f"⏳ 남은 시간: {remaining}초")
+            time.sleep(1)
 
 
     def stop(self):

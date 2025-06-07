@@ -21,6 +21,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
     def __init__(self, setting):
         super().__init__()
 
+        self.current_detail_url = None
         self.result_list = []
         self.current_cnt = 0
         self.current_total_cnt = 0
@@ -40,14 +41,6 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         # ✅ 설정값 세팅
         self.html_source_delay_time = self._get_setting_value(setting, "html_source_delay_time")
         self.chrome_delay_time = self._get_setting_value(setting, "chrome_delay_time")
-
-
-    def _get_setting_value(self, setting_list, code_name):
-        for item in setting_list:
-            if item.get("code") == code_name:
-                return item.get("value")
-        return None  # 또는 기본값 0 등
-
 
 
     def init(self):
@@ -139,16 +132,8 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                     break
 
                 if self.page % 2 == 0:
-                    self.log_signal_func(f"감지봇 우회 크롬 강제종료")
-                    # 크롬 강제 종료
-                    os.system("taskkill /f /im chrome.exe")
-                    self.log_signal_func(f"크롬 종료 대기중 입니다. {self.chrome_delay_time}초 후에 열립니다. 다른 작업을 하지마세요.")
-                    self.request_chrome_delay()  # 카운트다운 팝업 요청 + sleep
-                    # 크롬 실행 (사용자 프로필 유지)
-                    chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-                    subprocess.Popen([chrome_path, self.current_url])
-                    time.sleep(2)  # 쿠팡 로딩 대기
-                    self.log_signal_func(f"크롬 시작")
+                    self.chrome_reset(name='main')
+
                 
             if self.result_list:
                 df = pd.DataFrame(self.result_list, columns=self.columns)
@@ -166,6 +151,13 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         time.sleep(5)
         self.log_signal_func("=============== 크롤링 종료")
         self.progress_end_signal.emit()
+
+
+    def _get_setting_value(self, setting_list, code_name):
+        for item in setting_list:
+            if item.get("code") == code_name:
+                return item.get("value")
+        return None  # 또는 기본값 0 등
 
 
     # 메인 크롤링
@@ -199,7 +191,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         pyautogui.click()
         time.sleep(0.3)
 
-        soup = self.get_soup()
+        soup = self.get_soup(name='main', retry=False)
 
         urls = self.extract_product_urls(soup)
 
@@ -219,7 +211,8 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f'==================================================')
             self.log_signal_func(f'PAGE : {self.page} ({i+1}/{self.current_total_cnt})')
             self.log_signal_func(f'누적 상품수 : {self.current_cnt}')
-            self.data_detail_crawl(i, url)
+            self.current_detail_url = url
+            self.data_detail_crawl()
             self.log_signal_func(f'==================================================')
 
         return True
@@ -250,24 +243,24 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
 
     
     # 상세상품 데이터 크롤링
-    def data_detail_crawl(self, i, url):
+    def data_detail_crawl(self):
         # ✅ 브라우저에 URL 입력 후 이동
         pyautogui.hotkey('ctrl', 'l')
         time.sleep(0.3)
-        pyperclip.copy(url)
+        pyperclip.copy(self.current_detail_url)
         pyautogui.hotkey('ctrl', 'v')
         time.sleep(0.3)
         pyautogui.press('enter')
         time.sleep(3)
 
-        soup = self.get_soup()
+        soup = self.get_soup(name='detail', retry=False)
 
         seller_info = {
             "상품명": "",
             "상호명": "",
             "사업장소재지": "",
             "연락처": "",
-            "URL": url,
+            "URL": self.current_detail_url,
             "PAGE": self.page,
             "키워드": self.keyword
         }
@@ -300,8 +293,6 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                         elif "연락처" in label:
                             seller_info["연락처"] = value
 
-
-
         self.log_signal_func(f'제품정보 : {seller_info}')
         self.log_signal_func(f'연락처 :{seller_info['연락처']}')
 
@@ -320,18 +311,18 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         
 
     # soup 얻기
-    def get_soup(self):
-
+    def get_soup(self, name, retry=False):
         # ✅ 1단계: 아래 방향키로 20번 빠르게 스크롤
         for _ in range(20):
             pyautogui.press('pagedown')
-            time.sleep(0.3)  # 살짝 빠르게, 자연스러운 스크롤
+            time.sleep(0.3)
 
         # ✅ 2단계: 마지막에 스크롤 끝까지 내리기
         for _ in range(3):
             pyautogui.press('end')
-            time.sleep(0.3)  # 로딩 대기 시간
+            time.sleep(0.3)
 
+        # ✅ HTML 소스 보기 -> 복사 -> 닫기
         pyautogui.hotkey('ctrl', 'u')
         time.sleep(random.uniform(self.html_source_delay_time, self.html_source_delay_time + 2))
         pyautogui.hotkey('ctrl', 'a')
@@ -345,8 +336,16 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         self.log_signal_func(f"HTML 길이: {len(html_source)}")
         self.log_signal_func(f"시작부분: {html_source[:200]}")
 
-        soup = BeautifulSoup(html_source, 'html.parser')
+        if "사이트에 연결할 수 없음" in html_source:
+            self.log_signal_func("⚠️ 사이트 연결 오류 감지됨, 크롬 재시작 시도")
+            if not retry:
+                self.chrome_reset(name)
+                return self.get_soup(name, retry=True)
+            else:
+                self.log_signal_func("❌ 재시도 실패: 크롬 재시작 후에도 문제 발생")
+                return None
 
+        soup = BeautifulSoup(html_source, 'html.parser')
         return soup
 
 
@@ -359,6 +358,31 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         for remaining in range(self.chrome_delay_time, 0, -1):
             # self.log_signal_func(f"⏳ 남은 시간: {remaining}초")
             time.sleep(1)
+
+
+    # 크롬 리셋
+    def chrome_reset(self, name):
+        self.log_signal_func(f"감지봇 우회 크롬 강제종료")
+        if name == 'main':
+            # 크롬 강제 종료
+            os.system("taskkill /f /im chrome.exe")
+            self.log_signal_func(f"크롬 종료 대기중 입니다. {self.chrome_delay_time}초 후에 열립니다. 다른 작업을 하지마세요.")
+            self.request_chrome_delay()  # 카운트다운 팝업 요청 + sleep
+            # 크롬 실행 (사용자 프로필 유지)
+            chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            subprocess.Popen([chrome_path, self.current_url])
+            time.sleep(2)  # 쿠팡 로딩 대기
+            self.log_signal_func(f"크롬 시작")
+        else:
+            # 크롬 강제 종료
+            os.system("taskkill /f /im chrome.exe")
+            self.log_signal_func(f"크롬 종료 대기중 입니다. {self.chrome_delay_time}초 후에 열립니다. 다른 작업을 하지마세요.")
+            self.request_chrome_delay()  # 카운트다운 팝업 요청 + sleep
+            # 크롬 실행 (사용자 프로필 유지)
+            chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            subprocess.Popen([chrome_path, self.current_detail_url])
+            time.sleep(2)  # 쿠팡 로딩 대기
+            self.log_signal_func(f"크롬 시작")
 
 
     # 정지    
