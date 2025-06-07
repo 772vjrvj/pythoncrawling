@@ -303,7 +303,7 @@ def main():
             if page % 3 == 0:
                 # 크롬 강제 종료
                 os.system("taskkill /f /im chrome.exe")
-                time.sleep(1200)  # 종료 대기
+                time.sleep(random.uniform(1200, 1320))  # 종료 대기
 
                 # 크롬 실행 (사용자 프로필 유지)
                 chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"

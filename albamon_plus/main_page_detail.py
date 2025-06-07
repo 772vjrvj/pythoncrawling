@@ -96,9 +96,9 @@ def crawl_once():
     pyautogui.click()
     time.sleep(0.3)
 
-    for _ in range(10):
+    for _ in range(11):
         pyautogui.scroll(-1000)
-        time.sleep(0.2)
+        time.sleep(0.3)
 
     pyautogui.hotkey('ctrl', 'u')
     time.sleep(5)
@@ -147,6 +147,8 @@ def crawl_once():
         print(f"🗑️ HTML 파일 삭제됨: {save_path}")
 
     for i, url in enumerate(urls, start=1):
+        if i == 2:
+            break
         result_list_index += 1
         data_detail(i, url)
 
@@ -165,11 +167,15 @@ def data_detail(i, url):
     pyautogui.press('enter')
     time.sleep(3)
 
-    # ✅ 스크롤 끝까지
+    # ✅ 1단계: 아래 방향키로 30번 빠르게 스크롤
+    for _ in range(20):
+        pyautogui.press('pagedown')
+        time.sleep(0.3)  # 살짝 빠르게, 자연스러운 스크롤
+
+    # ✅ 2단계: 마지막에 스크롤 끝까지 내리기
     for _ in range(3):
         pyautogui.press('end')
-        time.sleep(1.5)  # 스크롤 후 로딩 대기
-
+        time.sleep(0.3)  # 로딩 대기 시간
 
     # ✅ HTML 복사
     pyautogui.hotkey('ctrl', 'u')
@@ -237,10 +243,10 @@ def data_detail(i, url):
                     elif "연락처" in label:
                         seller_info["연락처"] = value
 
-    print(f'연락처 : {seller_info["연락처"]}')
-    print(f'상품명 : {seller_info["상품명"]}')
-    print(f'상호명 : {seller_info["상호명"]}')
-    print(f'사업장소재지 : {seller_info["사업장소재지"]}')
+    print(f'{get_current_yyyymmddhhmmss()} 연락처 : {seller_info["연락처"]}')
+    print(f'{get_current_yyyymmddhhmmss()} 상품명 : {seller_info["상품명"]}')
+    print(f'{get_current_yyyymmddhhmmss()} 상호명 : {seller_info["상호명"]}')
+    print(f'{get_current_yyyymmddhhmmss()} 사업장소재지 : {seller_info["사업장소재지"]}')
 
 
 
@@ -280,6 +286,7 @@ def main():
         # ✅ 다음 페이지부터 자동 반복
         while True:
             page += 1
+
             if page > last_page:
                 print(f"✅page : {page}")
                 print(f"✅last_page : {last_page}")
@@ -293,16 +300,16 @@ def main():
             current_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}?{new_query}"
             print(f"\n🔁 다음 페이지 URL: {current_url}")
 
-            # # 크롬 강제 종료
-            # os.system("taskkill /f /im chrome.exe")
-            # time.sleep(2)  # 종료 대기
-            #
-            # # 크롬 실행 (사용자 프로필 유지)
-            # chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-            #
-            # subprocess.Popen([chrome_path, current_url])
-            # time.sleep(4)  # 쿠팡 로딩 대기
+            if page % 3 == 0:
+                # 크롬 강제 종료
+                os.system("taskkill /f /im chrome.exe")
+                time.sleep(random.uniform(1200, 1320))  # 종료 대기
 
+                # 크롬 실행 (사용자 프로필 유지)
+                chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+                subprocess.Popen([chrome_path, current_url])
+                time.sleep(2)  # 쿠팡 로딩 대기
 
             # ✅ 브라우저 자동 이동
             pyautogui.hotkey('ctrl', 'l')
