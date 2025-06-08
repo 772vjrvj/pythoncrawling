@@ -94,6 +94,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"메인 시작")
             self.log_signal_func(f"▶ 페이지 {self.page} 진행")
             self.main_crawl()
+            self.chrome_reset(name='main')
 
             # ✅ 다음 페이지부터 자동 반복
             while True:
@@ -131,14 +132,12 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                 if not rs:
                     break
 
-                if self.page % 2 == 0:
-                    self.chrome_reset(name='main')
+                if self.result_list:
+                    df = pd.DataFrame(self.result_list, columns=self.columns)
+                    df.to_csv(self.csv_filename, mode='a', header=False, index=False, encoding="utf-8-sig")
+                    self.result_list.clear()
 
-                
-            if self.result_list:
-                df = pd.DataFrame(self.result_list, columns=self.columns)
-                df.to_csv(self.csv_filename, mode='a', header=False, index=False, encoding="utf-8-sig")
-                self.result_list.clear()
+                self.chrome_reset(name='main')
 
         except Exception as e:
             print(f"❌ 오류 발생: {str(e)}")
