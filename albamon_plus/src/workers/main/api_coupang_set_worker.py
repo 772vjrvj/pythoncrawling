@@ -1,20 +1,20 @@
-import random
-import ssl
-import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
-import pygetwindow as gw
-import time
-import threading
 import os
-import pandas as pd
-import pyperclip
-import urllib.parse
+import random
 import re
 import subprocess
+import threading
+import time
+import urllib.parse
 
-from PyQt5.QtCore import pyqtSignal
+import pandas as pd
+import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
+import pygetwindow as gw
+import pyperclip
 from bs4 import BeautifulSoup
+
 from src.utils.file_utils import FileUtils
 from src.workers.api_base_worker import BaseApiWorker
+
 
 class ApiCoupangSetLoadWorker(BaseApiWorker):
 
@@ -39,8 +39,8 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         self.base_url = "https://www.coupang.com"
         self.current_page = 0
         # ✅ 설정값 세팅
-        self.html_source_delay_time = self._get_setting_value(setting, "html_source_delay_time")
-        self.chrome_delay_time = self._get_setting_value(setting, "chrome_delay_time")
+        self.html_source_delay_time = self.get_setting_value(setting, "html_source_delay_time")
+        self.chrome_delay_time = self.get_setting_value(setting, "chrome_delay_time")
 
 
     def init(self):
@@ -61,7 +61,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         event.wait()  # 사용자가 OK를 누르면 해제됨
 
         self.log_signal_func('📢 마우스와 키보드를 절대 조작하지마세요.')
-        self.log_signal_func('📢 조각하면 에러가 납니다. 그러면 다시 진행해주세요.')
+        self.log_signal_func('📢 조작하면 에러가 납니다. 그러면 다시 진행해주세요.')
         time.sleep(2)
 
         # 현재 해상도 가져오기
@@ -152,7 +152,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         self.progress_end_signal.emit()
 
 
-    def _get_setting_value(self, setting_list, code_name):
+    def get_setting_value(self, setting_list, code_name):
         for item in setting_list:
             if item.get("code") == code_name:
                 return item.get("value")
@@ -234,8 +234,16 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         urls = set()
         lis = ul.find_all('li', attrs={"data-sentry-component": "ProductItem"}) or ul.find_all('li', class_="search-product")
 
-
         for li in lis:
+            # ✅ '로켓배송' 이미지가 있으면 skip
+            rocket_img = li.find('img', alt="로켓배송")
+            if rocket_img:
+                # 클래스 이름에 "ProductUnit_productName"이 포함된 div 찾기
+                # name_div = li.find('div', class_=lambda c: c and "ProductUnit_productName" in c) or li.find('div', class_="name")
+                # text = name_div.get_text(strip=True) if name_div else "(상품명 없음)"
+                # self.log_signal_func(f'로켓 제외 상품 : {text}')
+                continue
+
             a_tag = li.find('a', href=True)
             if a_tag:
                 href = a_tag['href']
