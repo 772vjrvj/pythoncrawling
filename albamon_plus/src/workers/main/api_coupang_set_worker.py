@@ -94,7 +94,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"메인 시작")
             self.log_signal_func(f"▶ 페이지 {self.page} 진행")
             self.main_crawl()
-            self.chrome_reset(name='main')
+            # self.chrome_reset(name='main')
 
             # ✅ 다음 페이지부터 자동 반복
             while True:
@@ -137,7 +137,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                     df.to_csv(self.csv_filename, mode='a', header=False, index=False, encoding="utf-8-sig")
                     self.result_list.clear()
 
-                self.chrome_reset(name='main')
+                # self.chrome_reset(name='main')
 
         except Exception as e:
             print(f"❌ 오류 발생: {str(e)}")
@@ -211,23 +211,31 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f'PAGE : {self.page} ({i+1}/{self.current_total_cnt})')
             self.log_signal_func(f'누적 상품수 : {self.current_cnt}')
             self.current_detail_url = url
+
+            if i != 0 and i % 35 == 0:
+                self.log_signal_func(f'35개마다 크롬 종료대기')
+                self.chrome_reset('detail')
+
             self.data_detail_crawl()
             self.log_signal_func(f'==================================================')
-
+            
         return True
 
 
     # 메인 페이지 url 얻기
     def extract_product_urls(self, soup):
 
-        ul = soup.find('ul', id='product-list')
+        ul = soup.find('ul', id='productList') or soup.find('ul', id='product-list')
+
         if not ul:
-            self.log_signal_func("❌ 'product-list' UL 태그를 찾을 수 없습니다.")
+            self.log_signal_func("❌ 'productList' 또는 'product-list' UL 태그를 찾을 수 없습니다.")
             return []
 
         urls = set()
+        lis = ul.find_all('li', attrs={"data-sentry-component": "ProductItem"}) or ul.find_all('li', class_="search-product")
 
-        for li in ul.find_all('li', attrs={"data-sentry-component": "ProductItem"}):
+
+        for li in lis:
             a_tag = li.find('a', href=True)
             if a_tag:
                 href = a_tag['href']
@@ -265,7 +273,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         }
 
         # ✅ 상품명 추출
-        title_tag = soup.find("h1", attrs={"data-sentry-component": "ProductTitle"})
+        title_tag = soup.find('h1', class_="prod-buy-header__title") or soup.find('h1', class_="product-title")
         if title_tag:
             seller_info["상품명"] = title_tag.get_text(strip=True)
         else:
