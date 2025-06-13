@@ -41,6 +41,11 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         # ✅ 설정값 세팅
         self.html_source_delay_time = self.get_setting_value(setting, "html_source_delay_time")
         self.chrome_delay_time = self.get_setting_value(setting, "chrome_delay_time")
+        self.st_cnt = 0
+        self.ed_cnt = 0
+        self.st_tm = None
+        self.ed_tm = time.time()
+
 
 
     def init(self):
@@ -169,10 +174,10 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
 
         # URL 창 활성화
         pyautogui.hotkey('ctrl', 'l')
-        time.sleep(0.3)
+        time.sleep(0.5)
         # URL 복사
         pyautogui.hotkey('ctrl', 'c')
-        time.sleep(0.3)
+        time.sleep(0.5)
 
         if self.page == 1:
             # URL 가져오기
@@ -211,11 +216,6 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f'PAGE : {self.page} ({i+1}/{self.current_total_cnt})')
             self.log_signal_func(f'누적 상품수 : {self.current_cnt}')
             self.current_detail_url = url
-
-            if i != 0 and i % 35 == 0:
-                self.log_signal_func(f'35개마다 크롬 종료대기')
-                self.chrome_reset('detail')
-
             self.data_detail_crawl()
             self.log_signal_func(f'==================================================')
             
@@ -234,6 +234,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         urls = set()
         lis = ul.find_all('li', attrs={"data-sentry-component": "ProductItem"}) or ul.find_all('li', class_="search-product")
 
+        rocket_cnt =0
         for li in lis:
             # ✅ '로켓배송' 이미지가 있으면 skip
             rocket_img = li.find('img', alt="로켓배송")
@@ -242,6 +243,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                 # name_div = li.find('div', class_=lambda c: c and "ProductUnit_productName" in c) or li.find('div', class_="name")
                 # text = name_div.get_text(strip=True) if name_div else "(상품명 없음)"
                 # self.log_signal_func(f'로켓 제외 상품 : {text}')
+                rocket_cnt += 1
                 continue
 
             a_tag = li.find('a', href=True)
@@ -251,6 +253,7 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                     href = self.base_url + href
                 urls.add(href)
 
+        self.log_signal_func(f"✅ 로켓상품 제외 {rocket_cnt}개")
         url_list = sorted(list(urls))
 
         self.log_signal_func(f"✅ 총 {len(url_list)}개 상품 URL 추출됨")
@@ -322,13 +325,13 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
                 df.to_csv(self.csv_filename, mode='a', header=False, index=False, encoding="utf-8-sig")
             self.result_list.clear()
 
-        time.sleep(random.uniform(5, 7))
+        time.sleep(random.uniform(1, 3))
         
 
     # soup 얻기
     def get_soup(self, name, retry=False):
         # ✅ 1단계: 아래 방향키로 20번 빠르게 스크롤
-        for _ in range(20):
+        for _ in range(10):
             pyautogui.press('pagedown')
             time.sleep(0.3)
 
@@ -354,7 +357,12 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         if "사이트에 연결할 수 없음" in html_source:
             self.log_signal_func("⚠️ 사이트 연결 오류 감지됨, 크롬 재시작 시도")
             if not retry:
+                self.log_signal_func(f"봇 감지 사이 카운트 : {self.current_cnt - self.ed_cnt}")
+                self.log_signal_func(f"봇 감지 사이 시간 : {time.time() - self.ed_tm}")
+
                 self.chrome_reset(name)
+                self.ed_cnt = self.current_cnt
+                self.ed_tm = time.time()
                 return self.get_soup(name, retry=True)
             else:
                 self.log_signal_func("❌ 재시도 실패: 크롬 재시작 후에도 문제 발생")

@@ -286,8 +286,7 @@ class ApiNaverPlaceSetLoadWorker(BaseApiWorker):
                         result["검색어"] = self.keyword
         except Exception as e:
             self.log_signal_func(f"Error processing data for Place ID: {place_id}: {e}")
-        finally:
-            return result
+        return result
 
 
     def stop(self):

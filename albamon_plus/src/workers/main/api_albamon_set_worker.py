@@ -373,8 +373,7 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
             print(f'error : {e}')
             # 네트워크 에러 또는 기타 예외 처리
             self.log_signal_func(f"요청 중 에러 발생: {e}")
-        finally:
-            return result
+        return result
 
     # 전체 갯수 조회
     def total_cnt_cal(self):

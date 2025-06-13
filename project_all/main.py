@@ -4,8 +4,8 @@ from src.core.global_state import GlobalState
 
 import sys
 
-# 메인함수
-if __name__ == "__main__":
+
+def main() -> None:
     app = QApplication(sys.argv)
 
     state = GlobalState()
@@ -13,4 +13,9 @@ if __name__ == "__main__":
 
     app_manager = AppManager()
     app_manager.go_to_login()
-    sys.exit(app.exec_())
+
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()

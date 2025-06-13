@@ -35,9 +35,29 @@ pyinstaller main.py `
   --workpath "./build" `
   --version-file=version.txt
 
+pyinstaller main.py `
+  --icon "./image/crawling.ico" `
+  --name main `
+  --distpath "./dist" `
+  --workpath "./build" `
+  --version-file=version.txt
+
+
+pyinstaller main.py `
+--icon "./image/crawling.ico" `
+--name main `
+--noconsole `
+--distpath "./dist" `
+--workpath "./build" `
+--version-file=version.txt `
+--collect-all numpy `
+--collect-all pandas
+
+
+
 
 
 https://mullvad.net/ko
 계정번호 : 5591478657770516
 
-crawling_program_v5.zip
+crawling_program_v10.zip

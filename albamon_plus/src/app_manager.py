@@ -1,8 +1,6 @@
 class AppManager:
     def __init__(self):
-        self.login_window = None
-        self.select_window = None
-        self.main_window = None
+        self.login_window = self.select_window = self.main_window = None
 
     def go_to_login(self):
         if not self.login_window:
@@ -14,7 +12,6 @@ class AppManager:
         if not self.select_window:
             from src.ui.select_window import SelectWindow
             from src.utils.config import SITE_LIST
-
             self.select_window = SelectWindow(self, SITE_LIST)
         self.select_window.show()
 
@@ -24,4 +21,3 @@ class AppManager:
             self.main_window = MainWindow(self)
         self.main_window.init_reset()
         self.main_window.show()
-
