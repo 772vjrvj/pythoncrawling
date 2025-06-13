@@ -14,6 +14,7 @@ from src.workers.api_base_worker import BaseApiWorker
 
 class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
 
+
     # 초기화
     def __init__(self, setting):
         super().__init__()
@@ -39,6 +40,7 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
         self.base_url = None
         self.before_pro_value = 0
         self.api_client = APIClient(use_cache=False)
+
 
     # 초기화
     def init(self):
@@ -78,6 +80,9 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
 
             for page in range(1, self.total_pages + 1):
                 try:
+                    if not self.running:  # 실행 상태 확인
+                        self.log_signal_func("크롤링이 중지되었습니다.")
+                        break
                     response = self.fetch_search_results(page)
                     if response and isinstance(response, dict):
                         prodList = response.get("prodList", [])
@@ -115,7 +120,7 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
                         return False
 
                 pro_value = (page / self.total_pages) * 1000000
-                self.progress_signal.emit(self.before_pro_value, pro_value)
+                self.progress_signal_func(self.before_pro_value, pro_value)
                 self.before_pro_value = pro_value
 
                 self.log_signal_func(f"현재 페이지 {page}/{self.total_pages} : {self.current_cnt}/{self.total_cnt}")
@@ -135,7 +140,7 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
             return False
 
 
-
+    # 드라이버 세팅
     def driver_set(self, headless):
         self.log_signal_func("드라이버 세팅 ========================================")
 
@@ -166,11 +171,10 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
 
     # 마무리
     def destroy(self):
-        self.progress_signal.emit(self.before_pro_value, 1000000)
+        self.progress_signal_func(self.before_pro_value, 1000000)
         self.log_signal_func("=============== 크롤링 종료중...")
         time.sleep(5)
         self.log_signal_func("=============== 크롤링 종료")
-        self.progress_end_signal.emit()
 
 
     # 전체 갯수 조회

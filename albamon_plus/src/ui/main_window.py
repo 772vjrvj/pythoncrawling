@@ -178,6 +178,7 @@ class MainWindow(QWidget):
             }
             QProgressBar::chunk {
                 background-color: #4caf50;
+                width: 100%;  # 게이지가 공백 없이 채워짐
                 margin: 0.5px;
             }
         """)

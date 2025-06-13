@@ -12,7 +12,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
     show_countdown_signal = pyqtSignal(int)
 
     def __init__(self):
-        super().__init__()
+        QThread.__init__(self)
 
     def run(self):
         try:
