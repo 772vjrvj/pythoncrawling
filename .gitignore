@@ -112,6 +112,8 @@ node_modules/
 *.docx
 *.crt
 *.key
+*.exe
+*.cert
 
 tving_url/
 
@@ -124,3 +126,4 @@ kmong/ko/netflix/.idea/
 misc.xml
 
 .idea/
+
