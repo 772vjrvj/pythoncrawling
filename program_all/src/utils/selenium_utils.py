@@ -12,6 +12,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+import undetected_chromedriver as uc
+
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -146,8 +148,10 @@ class SeleniumUtils:
                 continue
 
 
-    def start_driver(self, timeout=30, user=None):
-        if user:
+    def start_driver(self, timeout=30, user=None,  mode="default"):
+        if mode == "undetected":
+            self.set_undetected_chrome_driver()
+        elif user:
             self.set_chrome_driver_user()
         else:
             self.set_chrome_driver()
@@ -196,3 +200,35 @@ class SeleniumUtils:
     def quit(self):
         if self.driver:
             self.driver.quit()
+
+
+    def set_undetected_chrome_driver(self):
+        try:
+            options = uc.ChromeOptions()
+            options.add_argument("--start-maximized")
+            options.add_argument("--disable-blink-features=AutomationControlled")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+
+            # ✅ Headless 최적화 (new 방식)
+            if self.headless:
+                options.add_argument("--headless=new")
+
+            # ✅ 이미지·폰트 로딩 차단 -- 속도 최적화
+            prefs = {
+                # "profile.managed_default_content_settings.images": 2,
+                # "profile.managed_default_content_settings.fonts": 2,
+                "download.default_directory": os.path.abspath("downloads"),
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing.enabled": True
+            }
+            os.makedirs(prefs["download.default_directory"], exist_ok=True)
+            options.add_experimental_option("prefs", prefs)
+
+            self.driver = uc.Chrome(options=options)
+
+        except Exception as e:
+            print(f"❌ undetected-chromedriver 로드 실패: {e}")
+            traceback.print_exc()
+            self.driver = None

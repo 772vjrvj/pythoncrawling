@@ -5,6 +5,11 @@ from src.workers.main.api_coupang_set_worker import ApiCoupangSetLoadWorker
 from src.workers.main.api_alba_set_worker import ApiAlbaSetLoadWorker
 from src.workers.main.api_sotong_set_worker import ApiSotongSetLoadWorker
 from src.workers.main.api_seoulfood2025_place_set_worker import ApiSeoulfood2025PlaceSetLoadWorker
+from src.workers.main.api_iherb_set_worker import ApiIherbSetLoadWorker
+
+
+
+
 
 WORKER_CLASS_MAP = {
     "ALBAMON": ApiAlbamonSetLoadWorker,
@@ -13,5 +18,6 @@ WORKER_CLASS_MAP = {
     "ALBA": ApiAlbaSetLoadWorker,
     "SOTONG": ApiSotongSetLoadWorker,
     "SEOUL_FOOD_2025": ApiSeoulfood2025PlaceSetLoadWorker,
-    "NAVER_BLOG_CTT": ApiNaverBlogContentsSetLoadWorker
+    "NAVER_BLOG_CTT": ApiNaverBlogContentsSetLoadWorker,
+    "IHERB": ApiIherbSetLoadWorker
 }

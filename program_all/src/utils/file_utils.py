@@ -79,3 +79,32 @@ class FileUtils:
 
     def get_excel_filename(self, prefix):
         return self.get_timestamped_filepath(prefix, "xlsx", "Excel")
+
+
+    def read_numbers_from_file(self, file_path):
+        """
+        숫자가 한 줄씩 저장된 텍스트 파일을 읽어 정수 리스트로 반환
+
+        :param file_path: 읽을 파일 경로
+        :return: 정수 리스트
+        """
+        numbers = []
+        if not os.path.exists(file_path):
+            self.log_func(f"❌ 파일이 존재하지 않습니다: {file_path}")
+            return numbers
+
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        try:
+                            numbers.append(int(line))
+                        except ValueError:
+                            self.log_func(f"⚠️ 정수 변환 실패 (무시됨): '{line}'")
+        except Exception as e:
+            self.log_func(f"❌ 파일 읽기 실패: {file_path} / 오류: {e}")
+            raise
+
+        self.log_func(f"📄 숫자 {len(numbers)}개 읽음: {file_path}")
+        return numbers

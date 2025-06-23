@@ -21,6 +21,10 @@ SITE_LIST = [
         {'name': '시작 페이지', 'code': 'st_page',    'value': '', 'type': 'input'},
         {'name': '종료 페이지', 'code': 'ed_page',    'value': '', 'type': 'input'}
     ]),
+    Site("IHERB", "IHERB", "#458500", enabled=True, user=False, setting=[
+        {'name': '시작 페이지', 'code': 'st_page','value': '', 'type': 'input'},
+        {'name': '종료 페이지', 'code': 'ed_page','value': '', 'type': 'input'}
+    ]),
 ]
 
 # 전역 변수
