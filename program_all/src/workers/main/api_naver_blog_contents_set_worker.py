@@ -257,13 +257,6 @@ class ApiNaverBlogContentsSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"블로그 목록 조회 중 에러: {e}")
             return []
 
-    # setting에서 값 추출
-    def get_setting_value(self, setting_list, code_name):
-        for item in setting_list:
-            if item.get("code") == code_name:
-                return item.get("value")
-        return None  # 또는 기본값 0 등
-
     # 중지
     def stop(self):
         self.running = False

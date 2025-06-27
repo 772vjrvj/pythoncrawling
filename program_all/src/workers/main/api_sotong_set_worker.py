@@ -90,11 +90,6 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
         except Exception as e:
             self.log_signal_func(f"종료 처리중 오류 발생: {e}")
 
-    def get_setting_value(self, setting_list, code_name):
-        for item in setting_list:
-            if item.get("code") == code_name:
-                return item.get("value")
-        return None
 
     # 드라이버 세팅
     def driver_set(self):

@@ -15,6 +15,7 @@ from src.utils.file_utils import FileUtils
 from src.utils.selenium_utils import SeleniumUtils
 from src.core.global_state import GlobalState
 from src.workers.api_base_worker import BaseApiWorker
+from datetime import datetime
 
 class ApiIherbSetLoadWorker(BaseApiWorker):
 
@@ -75,7 +76,7 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
         wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "selection-list-wrapper")))
 
         # 3. 각 텍스트 항목을 클릭 없이 선택만 처리
-        texts = ["대한민국", "한국어", "USD ($)", "미터법(kg, cm)"]
+        texts = ["일본", "한국어", "USD ($)", "미터법(kg, cm)"]
 
         for idx, text in enumerate(texts):
             # 3️⃣ 4개의 input 중 순서에 따라 선택
@@ -92,7 +93,7 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
             inp.send_keys(text)
             inp.send_keys(Keys.ENTER)
             self.log_signal_func(f"✅ '{text}' 선택 입력 및 엔터 완료")
-            time.sleep(0.5)  # UI 반응 대기
+            time.sleep(1.5)  # UI 반응 대기
 
 
     # 4. 저장 버튼 클릭
@@ -160,10 +161,12 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
 
         # ✅ 1. 품번은 index 기준으로 부여
         obj['품번'] = num
+        obj['할인기간'] = "해당없음"
+        obj['할인 %'] = "해당없음"
 
         try:
             title_text = ""
-            cart_text = ""
+            expiration_date_span_text = ""
 
             # 할인 제목
             try:
@@ -172,23 +175,31 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
             except:
                 pass
 
-            # 할인 설명 (중복불가 안내 등)
             try:
-                cart_span = self.driver.find_element(By.CSS_SELECTOR, "span.discount-cart")
-                cart_text = cart_span.text.strip()
+                expiration_date_span = self.driver.find_element(By.CSS_SELECTOR, "span.expiration-date")
+                expiration_date_span_text = expiration_date_span.text.strip()
             except:
                 pass
 
-            full_text = f"{title_text} {cart_text}"
+            full_text = f"{title_text} {expiration_date_span_text}"
 
             # 할인기간 추출
             if "슈퍼 세일" in full_text:
                 obj['할인기간'] = "SS"
             else:
-                # 날짜 형식 감지
-                date_match = re.search(r"\d{4} 년 \d{2} 월 \d{2} 일 [오전|오후] \d{1,2}시", full_text)
+                # 날짜 형식 감지 및 변환
+                date_match = re.search(r"(\d{4})\s*년\s*(\d{2})\s*월\s*(\d{2})\s*일\s*(오전|오후)\s*(\d{1,2})시", full_text)
                 if date_match:
-                    obj['할인기간'] = date_match.group(0)
+                    year, month, day, am_pm, hour = date_match.groups()
+                    hour = int(hour)
+                    if am_pm == "오후" and hour != 12:
+                        hour += 12
+                    elif am_pm == "오전" and hour == 12:
+                        hour = 0
+
+                    # 날짜 객체 생성
+                    dt = datetime(int(year), int(month), int(day), hour)
+                    obj['할인기간'] = dt.strftime('%Y-%m-%d')
                 else:
                     obj['할인기간'] = "해당없음"
 
@@ -199,22 +210,39 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
             else:
                 obj['할인 %'] = "해당없음"
 
-        except Exception as e:
-            obj['할인기간'] = "해당없음"
-            obj['할인 %'] = "해당없음"
+        except:
+            pass
 
         # ✅ 4. 가격: 현재 페이지에서 가격 태그가 필요한데, 예시가 없으므로 임시 처리
         try:
-            price_els = self.driver.find_elements(By.CSS_SELECTOR, "span.list-price")
             obj['가격'] = "해당없음"  # 기본값
 
+            # 1차 시도: span.list-price 목록에서 첫 번째 유효한 텍스트
+            price_els = self.driver.find_elements(By.CSS_SELECTOR, "span.list-price")
             for el in price_els:
                 text = el.text.strip()
-                if text:  # 공백이 아닌 경우
+                if text:
                     obj['가격'] = text
                     break
+
+            # 2차 시도: div.price-inner-text > p (for문 없이 단일 처리)
+            if obj['가격'] == "해당없음":
+                fallback_el = self.driver.find_element(By.CSS_SELECTOR, "div.price-inner-text > p")
+                text = fallback_el.text.strip()
+                if text:
+                    obj['가격'] = text
+
         except:
-            obj['가격'] = "해당없음"
+            pass
+
+        # ✅ "해당 국가 판매 제외 상품"이 있는 경우 가격 무효 처리
+        try:
+            prohibited = self.driver.find_element(By.CSS_SELECTOR, "span.title.title-prohibited")
+            if "판매 제외" in prohibited.text:
+                obj['가격'] = "해당없음"
+        except:
+            pass
+
 
         # ✅ 5. 재고: <strong class="text-primary">
         try:
@@ -294,13 +322,6 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
         time.sleep(5)
         self.log_signal_func("=============== 크롤링 종료")
         self.progress_end_signal.emit()
-
-    # setting에서 값 추출
-    def get_setting_value(self, setting_list, code_name):
-        for item in setting_list:
-            if item.get("code") == code_name:
-                return item.get("value")
-        return None  # 또는 기본값 0 등
 
     # 중지
     def stop(self):

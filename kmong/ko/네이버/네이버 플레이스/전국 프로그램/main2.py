@@ -40,7 +40,7 @@ def fetch_search_results(query, page):
             'Sec-Ch-Ua-Mobile': '?0',
             'Sec-Ch-Ua-Platform': '"Windows"',
             'Sec-Fetch-Dest': 'document',
-            'referer': '',
+            'referer': 'https://map.naver.com/p/search',
             'Sec-Fetch-Mode': 'navigate',
             'Sec-Fetch-Site': 'none',
             'Sec-Fetch-User': '?1',

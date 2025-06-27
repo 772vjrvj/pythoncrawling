@@ -157,13 +157,6 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         self.progress_end_signal.emit()
 
 
-    def get_setting_value(self, setting_list, code_name):
-        for item in setting_list:
-            if item.get("code") == code_name:
-                return item.get("value")
-        return None  # 또는 기본값 0 등
-
-
     # 메인 크롤링
     def main_crawl(self):
         # 왼쪽 끝으로 이동

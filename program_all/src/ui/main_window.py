@@ -29,7 +29,6 @@ class MainWindow(QWidget):
         self.header_label = None
         self.log_reset_button = None
         self.site_list_button = None
-        self.program_reset_button = None
         self.collect_button = None
         self.task_queue = None
         self.progress_worker = None
@@ -79,7 +78,7 @@ class MainWindow(QWidget):
         if self.on_demand_worker is None:
             worker_class = WORKER_CLASS_MAP.get(self.site)
             if worker_class:
-                self.on_demand_worker = worker_class(self.setting)
+                self.on_demand_worker = worker_class()
                 self.on_demand_worker.log_signal.connect(self.add_log)
                 self.on_demand_worker.show_countdown_signal.connect(self.show_countdown_popup)
                 self.on_demand_worker.progress_signal.connect(self.set_progress)
@@ -94,7 +93,6 @@ class MainWindow(QWidget):
             self.header_label.setText(f"{self.name}")
             self.site_list_button.setStyleSheet(main_style(self.color))
             self.log_reset_button.setStyleSheet(main_style(self.color))
-            self.program_reset_button.setStyleSheet(main_style(self.color))
             self.collect_button.setStyleSheet(main_style(self.color))
             self.log_out_button.setStyleSheet(main_style(self.color))
             self.setting_button.setStyleSheet(main_style(self.color))
@@ -125,7 +123,7 @@ class MainWindow(QWidget):
         self.api_worker.wait()
         self.api_worker = None
         self.stop()
-        self.add_log("동시사용자 접속으로 프로그램을 종료하겠습니다...")
+        self.add_log(f"동시사용자 접속으로 프로그램을 종료하겠습니다... {error_message}")
 
     # 레이아웃 설정
     def set_layout(self):
@@ -157,14 +155,12 @@ class MainWindow(QWidget):
 
         self.site_list_button     = create_common_button("목록", self.go_site_list, self.color, 100)
         self.log_reset_button     = create_common_button("로그리셋", self.log_reset, self.color, 100)
-        self.program_reset_button = create_common_button("초기화", self.log_reset, self.color, 100)
         self.collect_button       = create_common_button("시작", self.start_on_demand_worker, self.color, 100)
         self.log_out_button       = create_common_button("로그아웃", self.on_log_out, self.color, 100)
 
         # 왼쪽 버튼 레이아웃
         left_button_layout.addWidget(self.site_list_button)
         left_button_layout.addWidget(self.log_reset_button)
-        left_button_layout.addWidget(self.program_reset_button)
         left_button_layout.addWidget(self.collect_button)
         left_button_layout.addWidget(self.log_out_button)
 
@@ -238,6 +234,7 @@ class MainWindow(QWidget):
 
             self.progress_bar.setValue(0)
             self.progress_worker.start()
+            self.on_demand_worker.set_setting(self.setting)
             self.on_demand_worker.start()
 
         else:
@@ -249,12 +246,12 @@ class MainWindow(QWidget):
 
     # 프로그램 중지
     def stop(self):
-        # 프로그래스 중지
+        # 크롤링 중지
         if self.on_demand_worker is not None:
             self.on_demand_worker.stop()
             self.on_demand_worker = None
 
-        # 크롤링 중지
+        # 프로그래스 중지
         if self.progress_worker is not None:
             self.progress_worker.stop()
             self.progress_worker = None
@@ -310,11 +307,6 @@ class MainWindow(QWidget):
     # 로그 리셋
     def log_reset(self):
         self.log_window.clear()
-
-    # 프로그램 리셋
-    def program_reset(self):
-        self.log_reset()
-        self.stop()
 
     # 사이트 이동
     def go_site_list(self):

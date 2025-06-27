@@ -3,6 +3,7 @@ import requests
 from requests import Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import requests_cache
 from requests.exceptions import (
     Timeout, TooManyRedirects, ConnectionError, HTTPError,
     URLRequired, RequestException
@@ -10,7 +11,7 @@ from requests.exceptions import (
 
 
 class APIClient:
-    def __init__(self, timeout=30, verify=True, retries=3, backoff=0.3, use_cache=False):
+    def __init__(self, timeout=30, verify=True, retries=3, backoff=0.3, use_cache=False, log_func=None):
         self.timeout = timeout
         self.verify = verify
         self.session = requests.Session()
@@ -19,14 +20,14 @@ class APIClient:
             self._enable_cache()
 
         self._mount_retry_adapter(retries, backoff)
+        self.log_func = log_func
 
     def _enable_cache(self):
         try:
-            import requests_cache
             requests_cache.install_cache('api_cache', expire_after=300)
-            logging.info("✅ requests_cache 활성화됨 (5분)")
+            self.log_func("✅ requests_cache 활성화됨 (5분)")
         except ImportError:
-            logging.warning("⚠️ requests_cache 미설치 → 캐시 비활성화됨.")
+            self.log_func("⚠️ requests_cache 미설치 → 캐시 비활성화됨.")
 
     def _mount_retry_adapter(self, retries, backoff):
         retry = Retry(
@@ -85,18 +86,18 @@ class APIClient:
                     return res.text
 
         except Timeout:
-            logging.error("⏰ 요청 시간이 초과되었습니다.")
+            self.log_func("⏰ 요청 시간이 초과되었습니다.")
         except TooManyRedirects:
-            logging.error("🔁 리다이렉션이 너무 많습니다.")
+            self.log_func("🔁 리다이렉션이 너무 많습니다.")
         except ConnectionError:
-            logging.error("🌐 네트워크 연결 오류입니다.")
+            self.log_func("🌐 네트워크 연결 오류입니다.")
         except HTTPError as e:
-            logging.error(f"📛 HTTP 오류 발생: {e}")
+            self.log_func(f"📛 HTTP 오류 발생: {e}")
         except URLRequired:
-            logging.error("❗ 유효한 URL이 필요합니다.")
+            self.log_func("❗ 유효한 URL이 필요합니다.")
         except RequestException as e:
-            logging.error(f"🚨 요청 실패: {e}")
+            self.log_func(f"🚨 요청 실패: {e}")
         except Exception as e:
-            logging.error(f"❗ 예기치 못한 오류: {e}")
+            self.log_func(f"❗ 예기치 못한 오류: {e}")
 
         return None

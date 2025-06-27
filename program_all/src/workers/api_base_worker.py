@@ -13,6 +13,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def __init__(self):
         super().__init__()
+        self.setting = None
 
     def run(self):
         try:
@@ -34,6 +35,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def log_signal_func(self, msg):
         self.log_signal.emit(msg)
+        print(msg)
 
     def progress_signal_func(self, before, current):
         self.progress_signal.emit(before, current)
@@ -46,6 +48,15 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def show_countdown_signal_func(self, sec):
         self.show_countdown_signal.emit(sec)
+
+    def get_setting_value(self, setting_list, code_name):
+        for item in setting_list:
+            if item.get("code") == code_name:
+                return item.get("value")
+        return None  # 또는 기본값 0 등
+
+    def set_setting(self, setting_list):
+        self.setting = setting_list
 
     @abstractmethod
     def init(self) -> bool:

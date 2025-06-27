@@ -1,13 +1,10 @@
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QComboBox
+    QPushButton, QSizePolicy, QComboBox, QCheckBox
 )
+
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
-
-from src.core.global_state import GlobalState
-from src.workers.factory.worker_factory import WORKER_CLASS_MAP
-from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 
 class SetParamPop(QDialog):
 
@@ -131,6 +128,32 @@ class SetParamPop(QDialog):
 
                 item_layout.addWidget(btn)
 
+            elif item_type == "check":
+                checkbox = QCheckBox(self)
+                checkbox.setChecked(bool(item.get("value")))  # True/False 초기값
+                checkbox.setStyleSheet("""
+                    QCheckBox {
+                        font-size: 14px;
+                        color: #333333;
+                        padding: 5px;
+                    }
+                    QCheckBox::indicator {
+                        width: 18px;
+                        height: 18px;
+                        border-radius: 4px;
+                        border: 2px solid #888888;
+                        background-color: white;
+                    }
+                    QCheckBox::indicator:checked {
+                        background-color: black;
+                        image: url(:/icons/check-white.png);  /* ✔ 아이콘 넣을 수도 있음 */
+                    }
+                """)
+
+                self.input_fields[item["code"]] = checkbox
+                item_layout.addWidget(checkbox)
+
+
             # ✅ 최종적으로 popup_layout에 묶은 item_layout 추가
             popup_layout.addLayout(item_layout)
 
@@ -229,6 +252,11 @@ class SetParamPop(QDialog):
             elif isinstance(widget, QComboBox):
                 value = widget.currentData()  # 실제 값 (value)
                 item["value"] = value
+
+            # ✅ QCheckBox 처리 추가
+            elif isinstance(widget, QCheckBox):
+                item["value"] = widget.isChecked()
+
 
         self.log_signal.emit(f'setting : {self.parent.setting}')
         self.accept()
