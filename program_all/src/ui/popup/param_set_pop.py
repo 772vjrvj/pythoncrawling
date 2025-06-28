@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
 
-class SetParamPop(QDialog):
+class ParamSetPop(QDialog):
 
     log_signal = pyqtSignal(str)  # 🔧 여기에 시그널 정의 필요
 

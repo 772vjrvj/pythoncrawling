@@ -27,7 +27,10 @@ SITE_LIST = [
             {"code": "phone",          "value": "전화번호",      "checked": True},
             {"code": "site",           "value": "사이트",        "checked": True},
             {"code": "region_info",    "value": "주소지정보",    "checked": True},
-        ]),
+        ],
+        region = True
+
+         ),
     Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=True, user=False, setting=[
         {'name': '블로그 URL', 'code': 'url',        'value': '', 'type': 'button'},
         {'name': '게시판 선택', 'code': 'url_select', 'value': '', 'type': 'select'},

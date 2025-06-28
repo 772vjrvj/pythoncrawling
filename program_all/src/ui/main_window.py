@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QDesktop
                              QTextEdit, QProgressBar)
 from src.core.global_state import GlobalState
 from src.ui.popup.countdown_pop import CountdownPop
-from src.ui.popup.set_param_pop import SetParamPop
+from src.ui.popup.param_set_pop import ParamSetPop
 from src.ui.popup.column_set_pop import ColumnSetPop
+from src.ui.popup.region_set_pop import RegionSetPop
 from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -22,17 +23,23 @@ class MainWindow(QWidget):
     # 초기화
     def __init__(self, app_manager):
         super().__init__()
-        self.column_setting_button = None
+
+        self.selected_regions = []
         self.columns = None
+        self.region = None
         self.param_pop = None
         self.setting_button = None
         self.setting = None
         self.name = None
-        self.log_out_button = None
         self.header_label = None
+
+        self.log_out_button = None
         self.log_reset_button = None
         self.site_list_button = None
         self.collect_button = None
+        self.region_setting_button = None
+        self.column_setting_button = None
+
         self.task_queue = None
         self.progress_worker = None
         self.progress_bar = None
@@ -54,6 +61,7 @@ class MainWindow(QWidget):
         self.setting = state.get("setting")
         self.cookies = state.get("cookies")
         self.columns = state.get("columns")
+        self.region = state.get("region")
 
     # 재 초기화
     def init_reset(self):
@@ -178,6 +186,12 @@ class MainWindow(QWidget):
             # 오른쪽 버튼 레이아웃
             self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
             right_button_layout.addWidget(self.column_setting_button)
+
+        if self.region:
+            # 오른쪽 버튼 레이아웃
+            self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
+            right_button_layout.addWidget(self.region_setting_button)
+
 
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
@@ -339,7 +353,7 @@ class MainWindow(QWidget):
 
     # 세팅 버튼
     def open_setting(self):
-        self.param_pop = SetParamPop(self)
+        self.param_pop = ParamSetPop(self)
         self.param_pop.log_signal.connect(self.add_log)
         self.param_pop.exec_()
 
@@ -348,7 +362,15 @@ class MainWindow(QWidget):
         self.param_pop.log_signal.connect(self.add_log)
         self.param_pop.exec_()
 
+    def open_region_setting(self):
+        self.param_pop = RegionSetPop(selected_regions=self.selected_regions, parent=self)
+        self.param_pop.log_signal.connect(self.add_log)
+        self.param_pop.confirm_signal.connect(self.save_selected_regions)
+        self.param_pop.exec_()
 
+    def save_selected_regions(self, selected):
+        self.selected_regions = selected
+        self.add_log(f"{len(selected)}개 지역이 선택되었습니다.")
 
     # 카운트 다운 팝업
     def show_countdown_popup(self, seconds):

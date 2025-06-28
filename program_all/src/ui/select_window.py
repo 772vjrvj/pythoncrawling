@@ -78,6 +78,7 @@ class SelectWindow(QWidget):
         state.set(GlobalState.USER, site.user)
         state.set(GlobalState.SETTING, site.setting)
         state.set(GlobalState.COLUMNS, site.columns)
+        state.set(GlobalState.REGION, site.region)
 
         self.close()
         self.app_manager.go_to_main()
