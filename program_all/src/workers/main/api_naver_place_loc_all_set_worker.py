@@ -32,7 +32,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.csv_filename = None
         self.cookies = None
         self.keyword_list = None
-        self.checked = None
         self.site_name = "네이버 플레이스 전국"
         self.total_cnt = 0
         self.total_pages = 0
@@ -50,7 +49,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
     def init(self):
         keyword_str = self.get_setting_value(self.setting, "keyword")
         self.keyword_list = split_comma_keywords(keyword_str)
-        self.checked = self.get_setting_value(self.setting, "loc_all")
         self.driver_set()
         self.get_cookie()
         self.log_signal_func(f"선택 항목 : {self.columns}")
@@ -67,7 +65,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         df = pd.DataFrame(columns=self.columns)
         df.to_csv(self.csv_filename, index=False, encoding="utf-8-sig")
 
-        if self.checked:
+        if self.region:
             self.loc_all_keyword_list()
         else:
             self.only_keywords_keyword_list()
@@ -76,15 +74,15 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
     # 전국 키워드 조회
     def loc_all_keyword_list(self):
 
-        loc_all_len = len(self.loc_all)
+        loc_all_len = len(self.region)
         keyword_list_len = len(self.keyword_list)
         self.total_cnt = loc_all_len * keyword_list_len * 300
         self.total_pages = loc_all_len * keyword_list_len * 15
 
-        self.log_signal_func(f"예상 전체 업체수 {self.total_cnt} 개")
+        self.log_signal_func(f"예상 전체 수 {self.total_cnt} 개")
         self.log_signal_func(f"예상 전체 페이지수 {self.total_pages} 개")
 
-        for index, loc in enumerate(self.loc_all, start=1):
+        for index, loc in enumerate(self.region, start=1):
             if not self.running:  # 실행 상태 확인
                 self.log_signal_func("크롤링이 중지되었습니다.")
                 break

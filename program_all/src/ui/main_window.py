@@ -24,6 +24,9 @@ class MainWindow(QWidget):
     def __init__(self, app_manager):
         super().__init__()
 
+        self.region_set_pop = None
+        self.column_set_pop = None
+        self.param_set_pop = None
         self.selected_regions = []
         self.columns = None
         self.region = None
@@ -258,6 +261,7 @@ class MainWindow(QWidget):
             self.progress_worker.start()
             self.on_demand_worker.set_setting(self.setting)
             self.on_demand_worker.set_columns(self.columns)
+            self.on_demand_worker.set_region(self.selected_regions)
             self.on_demand_worker.start()
 
         else:
@@ -353,20 +357,26 @@ class MainWindow(QWidget):
 
     # 세팅 버튼
     def open_setting(self):
-        self.param_pop = ParamSetPop(self)
-        self.param_pop.log_signal.connect(self.add_log)
-        self.param_pop.exec_()
+        if self.param_set_pop is None:
+            self.param_set_pop = ParamSetPop(self)
+            self.param_set_pop.log_signal.connect(self.add_log)
+        self.param_set_pop.exec_()
+
 
     def open_column_setting(self):
-        self.param_pop = ColumnSetPop(self)
-        self.param_pop.log_signal.connect(self.add_log)
-        self.param_pop.exec_()
+        if self.column_set_pop is None:
+            self.column_set_pop = ColumnSetPop(self)
+            self.column_set_pop.log_signal.connect(self.add_log)
+        self.column_set_pop.exec_()
+
 
     def open_region_setting(self):
-        self.param_pop = RegionSetPop(selected_regions=self.selected_regions, parent=self)
-        self.param_pop.log_signal.connect(self.add_log)
-        self.param_pop.confirm_signal.connect(self.save_selected_regions)
-        self.param_pop.exec_()
+        if self.region_set_pop is None:
+            self.region_set_pop = RegionSetPop(parent=self)
+            self.region_set_pop.log_signal.connect(self.add_log)
+            self.region_set_pop.confirm_signal.connect(self.save_selected_regions)
+        self.region_set_pop.exec_()
+
 
     def save_selected_regions(self, selected):
         self.selected_regions = selected

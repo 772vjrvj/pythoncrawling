@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QPushButton, QHBoxLayout, QSizePolicy, QCheckBox
+    QPushButton, QHBoxLayout, QSizePolicy, QCheckBox, QLabel
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from src.utils.config import NAVER_LOC_ALL
@@ -19,9 +19,11 @@ class RegionSetPop(QDialog):
         self.setStyleSheet("background-color: white;")
 
         self.selected_regions = selected_regions or []
+
         self.tree = QTreeWidget()
         self.tree.setHeaderHidden(True)
         self.tree.setStyleSheet(self.tree_style())
+        self.tree.setCursor(Qt.PointingHandCursor)  # ✅ 손가락 커서 적용
         self.tree.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self._is_select_all_action = False
@@ -33,8 +35,13 @@ class RegionSetPop(QDialog):
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(10)
 
+        info_label = QLabel("지역을 선택하세요")
+        info_label.setAlignment(Qt.AlignCenter)
+        info_label.setStyleSheet("font-size: 16px; font-weight: bold; padding: 8px;")
+        layout.addWidget(info_label)
+
         self.select_all_checkbox = QCheckBox("전체 선택")
-        self.select_all_checkbox.setCursor(Qt.PointingHandCursor)
+        self.select_all_checkbox.setCursor(Qt.PointingHandCursor)  # ✅ 손가락 커서
         self.select_all_checkbox.setStyleSheet(self.checkbox_style())
         self.select_all_checkbox.stateChanged.connect(self.on_select_all_changed)
         layout.addWidget(self.select_all_checkbox)
@@ -104,13 +111,8 @@ class RegionSetPop(QDialog):
 
         self.tree.blockSignals(True)
         state = item.checkState(0)
-
-        # ✅ 모든 하위 자식까지 재귀적으로 체크 상태 설정
         self.set_check_state_recursive(item, state)
-
-        # ✅ 부모 상태 업데이트
         self.update_parent_check_state(item)
-
         self.tree.blockSignals(False)
 
         self.update_all_checkbox_state()
@@ -129,6 +131,9 @@ class RegionSetPop(QDialog):
             parent = item.parent()
 
     def on_select_all_changed(self, state):
+        if state == Qt.PartiallyChecked:
+            state = Qt.Checked
+
         self._is_select_all_action = True
         self.tree.blockSignals(True)
 
@@ -143,6 +148,7 @@ class RegionSetPop(QDialog):
 
         self.tree.blockSignals(False)
         self._is_select_all_action = False
+
         self.select_all_checkbox.blockSignals(True)
         self.select_all_checkbox.setCheckState(state)
         self.select_all_checkbox.blockSignals(False)
@@ -208,9 +214,11 @@ class RegionSetPop(QDialog):
         return """
             QTreeView {
                 font-size: 14px;
+                padding: 4px 12px;
+                selection-color: black;  /* ✅ 선택된 텍스트 색상 */
             }
             QTreeView::item {
-                padding-left: 8px;
+                padding: 8px 0px;
             }
             QTreeView::indicator {
                 width: 18px;
@@ -223,9 +231,6 @@ class RegionSetPop(QDialog):
             QTreeView::indicator:checked {
                 background-color: black;
             }
-            QTreeView::indicator:hover {
-                cursor: pointer;  /* ✅ 손 모양 */
-            }
         """
 
     def checkbox_style(self):
@@ -233,7 +238,7 @@ class RegionSetPop(QDialog):
             QCheckBox {
                 font-size: 14px;
                 color: #333;
-                padding: 4px 12px;
+                padding: 8px 12px;
             }
             QCheckBox::indicator {
                 width: 18px;
@@ -245,9 +250,6 @@ class RegionSetPop(QDialog):
             }
             QCheckBox::indicator:checked {
                 background-color: black;
-            }
-            QCheckBox::indicator:hover {
-                cursor: pointer;
             }
         """
 
