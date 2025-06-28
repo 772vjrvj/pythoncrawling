@@ -105,10 +105,12 @@ class RegionSetPop(QDialog):
         self.tree.blockSignals(True)
         state = item.checkState(0)
 
-        for i in range(item.childCount()):
-            item.child(i).setCheckState(0, state)
+        # ✅ 모든 하위 자식까지 재귀적으로 체크 상태 설정
+        self.set_check_state_recursive(item, state)
 
+        # ✅ 부모 상태 업데이트
         self.update_parent_check_state(item)
+
         self.tree.blockSignals(False)
 
         self.update_all_checkbox_state()
@@ -179,6 +181,11 @@ class RegionSetPop(QDialog):
             self.select_all_checkbox.setCheckState(Qt.PartiallyChecked)
         self.select_all_checkbox.blockSignals(False)
 
+    def set_check_state_recursive(self, item, state):
+        item.setCheckState(0, state)
+        for i in range(item.childCount()):
+            self.set_check_state_recursive(item.child(i), state)
+
     def confirm_selection(self):
         selected = []
         for i in range(self.tree.topLevelItemCount()):
@@ -216,6 +223,9 @@ class RegionSetPop(QDialog):
             QTreeView::indicator:checked {
                 background-color: black;
             }
+            QTreeView::indicator:hover {
+                cursor: pointer;  /* ✅ 손 모양 */
+            }
         """
 
     def checkbox_style(self):
@@ -235,6 +245,9 @@ class RegionSetPop(QDialog):
             }
             QCheckBox::indicator:checked {
                 background-color: black;
+            }
+            QCheckBox::indicator:hover {
+                cursor: pointer;
             }
         """
 
