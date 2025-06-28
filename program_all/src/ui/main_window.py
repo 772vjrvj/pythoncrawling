@@ -6,8 +6,9 @@ from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QDesktopWidget, QMessageBox,
                              QTextEdit, QProgressBar)
 from src.core.global_state import GlobalState
-from src.ui.popup.countdown_pop import CountdownPopup
+from src.ui.popup.countdown_pop import CountdownPop
 from src.ui.popup.set_param_pop import SetParamPop
+from src.ui.popup.column_set_pop import ColumnSetPop
 from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -21,6 +22,8 @@ class MainWindow(QWidget):
     # 초기화
     def __init__(self, app_manager):
         super().__init__()
+        self.column_setting_button = None
+        self.columns = None
         self.param_pop = None
         self.setting_button = None
         self.setting = None
@@ -50,6 +53,7 @@ class MainWindow(QWidget):
         self.color = state.get("color")
         self.setting = state.get("setting")
         self.cookies = state.get("cookies")
+        self.columns = state.get("columns")
 
     # 재 초기화
     def init_reset(self):
@@ -170,6 +174,10 @@ class MainWindow(QWidget):
         self.setting_button = create_common_button("세팅", self.open_setting, self.color, 100)
         right_button_layout.addWidget(self.setting_button)
 
+        if self.columns:
+            # 오른쪽 버튼 레이아웃
+            self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
+            right_button_layout.addWidget(self.column_setting_button)
 
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
@@ -235,6 +243,7 @@ class MainWindow(QWidget):
             self.progress_bar.setValue(0)
             self.progress_worker.start()
             self.on_demand_worker.set_setting(self.setting)
+            self.on_demand_worker.set_columns(self.columns)
             self.on_demand_worker.start()
 
         else:
@@ -334,7 +343,14 @@ class MainWindow(QWidget):
         self.param_pop.log_signal.connect(self.add_log)
         self.param_pop.exec_()
 
+    def open_column_setting(self):
+        self.param_pop = ColumnSetPop(self)
+        self.param_pop.log_signal.connect(self.add_log)
+        self.param_pop.exec_()
+
+
+
     # 카운트 다운 팝업
     def show_countdown_popup(self, seconds):
-        popup = CountdownPopup(seconds)
+        popup = CountdownPop(seconds)
         popup.exec_()  # 완료될 때까지 block

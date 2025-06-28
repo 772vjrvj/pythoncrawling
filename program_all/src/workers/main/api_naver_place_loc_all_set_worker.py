@@ -34,7 +34,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.keyword_list = None
         self.checked = None
         self.site_name = "네이버 플레이스 전국"
-        self.running = True  # 실행 상태 플래그 추가
         self.total_cnt = 0
         self.total_pages = 0
         self.current_cnt = 0
@@ -45,6 +44,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.before_pro_value = 0
         self.api_client = None
         self.loc_all = NAVER_LOC_ALL
+        self.saved_ids = set()
 
     # 초기화
     def init(self):
@@ -53,6 +53,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.checked = self.get_setting_value(self.setting, "loc_all")
         self.driver_set()
         self.get_cookie()
+        self.log_signal_func(f"선택 항목 : {self.columns}")
+        return True
 
     # 프로그램 실행
     def main(self):
@@ -62,8 +64,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
         self.csv_filename = self.file_driver.get_csv_filename(self.site_name)
 
-        self.columns = ["아이디", "이름", "주소(지번)", "주소(도로명)", "대분류", "소분류", "별점", "방문자리뷰수", "블로그리뷰수", "이용시간1", "이용시간2", "카테고리", "URL", "지도", "편의시설", "전화번호", "사이트", "주소지정보"]
-
         df = pd.DataFrame(columns=self.columns)
         df.to_csv(self.csv_filename, index=False, encoding="utf-8-sig")
 
@@ -71,6 +71,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
             self.loc_all_keyword_list()
         else:
             self.only_keywords_keyword_list()
+        return True
 
     # 전국 키워드 조회
     def loc_all_keyword_list(self):
@@ -100,17 +101,17 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
     # 전국 상세
     def loc_all_keyword_list_detail(self, query, total_queries, current_query_index, total_locs, locs_index):
-
         try:
             page = 1
             results = []
-            all_ids = set()
 
-            # 키워드에 매핑되는 아이디 수집
+            # 새롭게 등장한 아이디 모음
+            current_ids = set()
+
             while True:
                 time.sleep(random.uniform(2, 4))
 
-                if not self.running:  # 실행 상태 확인
+                if not self.running:
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
 
@@ -134,7 +135,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                     self.log_signal_func(f"'list' 데이터 없음")
                     break
 
-                ids_this_page = [place.get("id") for place in place_list if isinstance(place, dict) and place.get("id")]
+                ids_this_page = {place.get("id") for place in place_list if isinstance(place, dict) and place.get("id")}
 
                 self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 페이지: {page}")
                 self.log_signal_func(f"목록: {ids_this_page}")
@@ -142,17 +143,17 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 if not ids_this_page:
                     break
 
-                all_ids.update(ids_this_page)  # 중복되지 않는 아이디만 all_ids에 추가
-
+                current_ids.update(ids_this_page)
                 page += 1
 
-            all_ids_list = list(all_ids)
-            total_count = len(all_ids_list)
+            # 누적된 전체 ID에서 새롭게 등장한 ID만 필터링
+            new_ids = current_ids - self.saved_ids  # ← 핵심 차집합
+            self.saved_ids.update(new_ids)  # 누적
 
-            for idx, place_id in enumerate(all_ids_list, start=1):
+            for idx, place_id in enumerate(new_ids, start=1):
                 time.sleep(random.uniform(2, 4))
 
-                if not self.running:  # 실행 상태 확인
+                if not self.running:
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
 
@@ -161,11 +162,12 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                     self.log_signal_func(f"⚠️ ID {place_id}의 상세 정보를 가져오지 못했습니다.")
                     continue
 
-                self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 전체: {idx} / {total_count}, 아이디: {place_id}, 이름: {place_info['이름']}")
+                self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 수집: {idx} / {len(new_ids)}, 아이디: {place_id}, 이름: {place_info['이름']}")
                 results.append(place_info)
 
-            # csv 파일 저장
+            # 새 항목만 CSV에 저장
             self.excel_driver.append_to_csv(self.csv_filename, results, self.columns)
+
             self.current_cnt = locs_index * current_query_index * 300
             pro_value = (self.current_cnt / self.total_cnt) * 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
@@ -173,6 +175,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
         except Exception as e:
             self.log_signal_func(f"loc_all_keyword_list_detail 크롤링 에러: {e}")
+
 
     # 키워드만 조회
     def only_keywords_keyword_list(self):
@@ -222,7 +225,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.log_signal_func("=============== 크롤링 종료중...")
         time.sleep(5)
         self.log_signal_func("=============== 크롤링 종료")
-        self.progress_end_signal.emit()
+        if self.running:
+            self.progress_end_signal.emit()
 
     # 전체 갯수 조회
     def total_cnt_cal(self):

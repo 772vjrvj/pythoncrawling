@@ -13,6 +13,7 @@ class ExcelUtils:
         df = pd.DataFrame(data_list, columns=columns)
         df.to_csv(filename, mode='a', header=False, index=False, encoding="utf-8-sig")
         data_list.clear()
+        self.log_func("csv 저장완료")
 
 
     def append_to_excel(self, filename, data_list, columns, sheet_name="Sheet1"):
@@ -30,6 +31,7 @@ class ExcelUtils:
                 df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
 
         data_list.clear()
+        self.log_func("excel 저장완료")
 
 
     def convert_csv_to_excel_and_delete(self, csv_filename, sheet_name="Sheet1"):

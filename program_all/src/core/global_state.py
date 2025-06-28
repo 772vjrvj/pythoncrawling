@@ -6,6 +6,7 @@ class GlobalState:
     COOKIES = "cookies"
     USER = "user"
     SETTING = "setting"
+    COLUMNS = "columns"
 
     # 싱글톤 인스턴스를 저장할 변수
     _instance = None
@@ -36,6 +37,8 @@ class GlobalState:
                 self.SITE: "",     # 사이트 코드
                 self.COLOR: "",    # UI 색상
                 self.USER: "",     # 로그인 사용자 정보
+                self.SETTING: "",     # 로그인 사용자 정보
+                self.COLUMNS: "",     # 로그인 사용자 정보
             }
             self._initialized = True  # 초기화 완료 표시
 

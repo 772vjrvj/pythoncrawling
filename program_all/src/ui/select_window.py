@@ -13,7 +13,7 @@ from src.vo.site import Site
 class SelectWindow(QWidget):
 
     # 초기화
-    def __init__(self, app_manager, site_list: list[Site]):
+    def __init__(self, app_manager, site_list):
         super().__init__()
         self.app_manager = app_manager
         self.sites = site_list
@@ -66,7 +66,7 @@ class SelectWindow(QWidget):
         QMessageBox.information(self, title, message)
 
     # 메인 화면 실행
-    def select_site(self, site: Site):
+    def select_site(self, site):
         if not site.is_enabled():
             self.show_message("접속실패", f"{site.label}은(는) 준비 중입니다.")
             return
@@ -77,6 +77,7 @@ class SelectWindow(QWidget):
         state.set(GlobalState.COLOR, site.color)
         state.set(GlobalState.USER, site.user)
         state.set(GlobalState.SETTING, site.setting)
+        state.set(GlobalState.COLUMNS, site.columns)
 
         self.close()
         self.app_manager.go_to_main()

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout
 from PyQt5.QtCore import QTimer, Qt
 
-class CountdownPopup(QDialog):
+class CountdownPop(QDialog):
     def __init__(self, seconds):
         super().__init__()
         self.remaining = seconds
