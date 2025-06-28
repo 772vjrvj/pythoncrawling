@@ -5,7 +5,7 @@ SITE_LIST = [
     Site("네이버 플레이스", "NAVER_PLACE", "#03C75A", enabled=True, user=False, setting=[]),
     Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True, user=False,
          setting=[
-            {'name': '1. 키워드(콤마로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
+            {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
             # {'name': '2. 전국(전국 크롤링 하는 경우 체크해주세요)', 'code': 'loc_all',    'value': '', 'type': 'check'},
          ],
          columns = [

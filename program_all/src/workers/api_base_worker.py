@@ -41,7 +41,6 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def log_signal_func(self, msg):
         self.log_signal.emit(msg)
-        print(msg)
 
 
     def progress_signal_func(self, before, current):

@@ -182,7 +182,7 @@ class MainWindow(QWidget):
         # 오른쪽 버튼 레이아웃
         right_button_layout = QHBoxLayout()
         right_button_layout.setAlignment(Qt.AlignRight)
-        self.setting_button = create_common_button("세팅", self.open_setting, self.color, 100)
+        self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
         right_button_layout.addWidget(self.setting_button)
 
         if self.columns:
@@ -244,7 +244,6 @@ class MainWindow(QWidget):
     def add_log(self, message):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_message = f"[{timestamp}] {message}"
-        # print(log_message)
         self.log_window.append(log_message)  # 직접 호출
 
     # 프로그램 시작 중지

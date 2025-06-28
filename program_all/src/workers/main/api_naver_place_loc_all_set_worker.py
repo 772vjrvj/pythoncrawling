@@ -73,7 +73,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
     # 전국 키워드 조회
     def loc_all_keyword_list(self):
-
         loc_all_len = len(self.region)
         keyword_list_len = len(self.keyword_list)
         self.total_cnt = loc_all_len * keyword_list_len * 300
@@ -173,7 +172,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
         except Exception as e:
             self.log_signal_func(f"loc_all_keyword_list_detail 크롤링 에러: {e}")
-
 
     # 키워드만 조회
     def only_keywords_keyword_list(self):
