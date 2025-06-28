@@ -1,22 +1,11 @@
 # src/proxy_server.py
-# 표준 라이브러리
-import sys
-import os
-import re
-import json
+from mitmproxy import http
 import asyncio
+import json
+import re
 from urllib.parse import parse_qs
 
-# 서드파티 라이브러리
-from mitmproxy import http
-
-# 로컬 모듈 import 전에 경로 추가
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-
-# 로컬 모듈
-from src.utils.logger import get_logger, info_log, error_log
 from src.router.hook_router import save_request, match_and_dispatch
-
 
 TARGETS_REQUEST = {
     "register": re.compile(r"/rest/ui/booking/register(\?timestamp=|$)"),
@@ -28,18 +17,17 @@ TARGETS_REQUEST = {
 
 TARGETS_RESPONSE = TARGETS_REQUEST
 
-logger = get_logger("proxy_logger")
+def nodeLog(*args):
+    print(*args)
+
+def nodeError(*args):
+    print("[ERROR]", *args)
 
 def request(flow: http.HTTPFlow):
     url = flow.request.url
     method = flow.request.method
     content_type = flow.request.headers.get("content-type", "")
-
-    try:
-        raw_text = flow.request.get_text() or ""
-    except ValueError as e:
-        error_log(f"❌ 요청 본문 디코딩 실패: {e}", logger=logger)
-        raw_text = flow.request.raw_content.decode(errors="replace")
+    raw_text = flow.request.get_text() or ""
 
     for action, pattern in TARGETS_REQUEST.items():
         if pattern.search(url):
@@ -52,25 +40,24 @@ def request(flow: http.HTTPFlow):
                         parsed_qs = parse_qs(raw_text)
                         parsed_data = {k: v[0] if len(v) == 1 else v for k, v in parsed_qs.items()}
                     else:
-                        info_log(f"Unknown content type: {content_type}", logger=logger)
+                        nodeError(f"Unknown content type: {content_type}")
                 except Exception as e:
-                    error_log(f"요청 바디 파싱 실패: {e}", logger=logger)
-                    info_log(f"요청 Body (Raw): {raw_text[:500]}", logger=logger)
+                    nodeError(f"❌ 요청 바디 파싱 실패: {e}")
+                    nodeLog(f"📤 요청 Body (Raw): {raw_text[:500]}")
 
                 if parsed_data is not None:
                     save_request(action, url, parsed_data)
-                    info_log(f"[{method}] {url}", logger=logger)
-                    info_log(f"요청 파싱 결과: {json.dumps(parsed_data, ensure_ascii=False, indent=2)}", logger=logger)
-                    info_log(f"[{action}] 요청 감지됨", logger=logger)
+                    nodeLog(f"➡️ [{method}] {url}")
+                    nodeLog(f"📤 요청 파싱 결과: {json.dumps(parsed_data, ensure_ascii=False, indent=2)}")
+                    nodeLog(f"🔍 [{action}] 요청 감지됨")
             break
-
 
 def response(flow: http.HTTPFlow):
     url = flow.request.url
     status = flow.response.status_code
 
     if status in (304, 204):
-        info_log(f"[{status}] 캐시 응답 무시됨: {url}", logger=logger)
+        nodeLog(f"ℹ️ [{status}] 캐시 응답 무시됨: {url}")
         return
 
     content_type = flow.response.headers.get("content-type", "")
@@ -81,20 +68,21 @@ def response(flow: http.HTTPFlow):
         response_json = flow.response.json()
     except Exception as e:
         if "Could not load body" in str(e):
-            info_log(f"응답 본문 없음 (무시됨): {url}", logger=logger)
+            nodeLog(f"⚠️ 응답 본문 없음 (무시됨): {url}")
             return
         else:
-            error_log(f"응답 파싱 실패: {e}", logger=logger)
+            nodeError(f"❌ 응답 파싱 실패: {e}")
             return
 
     for action, pattern in TARGETS_RESPONSE.items():
         if pattern.search(url):
+            # delete_mobile 처리 조건 체크
             if action == "delete_mobile":
                 destroy = response_json.get("entity", {}).get("destroy")
                 if not (isinstance(destroy, list) and len(destroy) > 0):
                     return
-            info_log(f"[{action}] 응답 수신됨", logger=logger)
-            info_log(f"응답 JSON: {json.dumps(response_json, ensure_ascii=False, indent=2)}", logger=logger)
+            nodeLog(f"📦 [{action}] 응답 수신됨")
+            nodeLog(f"📦 응답 JSON: {json.dumps(response_json, ensure_ascii=False, indent=2)}")
+
             asyncio.get_event_loop().create_task(match_and_dispatch(action, url, response_json))
             break
-

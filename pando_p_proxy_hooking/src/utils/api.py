@@ -1,91 +1,49 @@
 # src/utils/api.py
 import requests
+import os
 
-# BASE_URL = 'https://api.dev.24golf.co.kr'; //개발환경
-BASE_URL = 'https://api.24golf.co.kr'  # 운영환경
+BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발
+# BASE_URL = 'https://api.24golf.co.kr'    # 운영
 
-def build_url(store_id: str, param_type: str = None) -> str:
-    if not store_id:
-        raise ValueError("❌ storeId is not set")
+# 인증서 경로 (.pem 형식이어야 함)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # src/utils → src → project root
+MITM_CERT_PATH = os.path.join(BASE_DIR, "cert", "mitmproxy-ca-cert.pem")
 
-    path = 'crawl'
-    if param_type == 'm':
-        path = 'crawl/fields'
-    elif param_type == 'g':
-        path = 'crawl/group'
-
-    return f"{BASE_URL}/stores/{store_id}/reservation/{path}"
-
-def handle_response(response: requests.Response, method_name: str):
-    try:
-        response.raise_for_status()
-        print(f"✅ {method_name} 판도서버 {response.status_code} : 성공")
-        return response.json()
-    except requests.HTTPError as err:
-        print(f"❌ {method_name} 응답 오류 ({response.status_code}): {response.text}")
-        raise
-    except Exception as err:
-        print(f"❌ {method_name} 실행 오류: {str(err)}")
-        raise
-
-def post(token: str, store_id: str, data: dict, param_type: str = None):
-    url = build_url(store_id, param_type)
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-    }
-    res = requests.post(url, json=data, headers=headers)
-    return handle_response(res, 'POST')
-
-def put(token: str, store_id: str, data: dict, param_type: str = None):
-    url = build_url(store_id, param_type)
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-    }
-    res = requests.put(url, json=data, headers=headers)
-    return handle_response(res, 'PUT')
-
-def patch(token: str, store_id: str, data: dict, param_type: str = None):
-    url = build_url(store_id, param_type)
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-    }
-    res = requests.patch(url, json=data, headers=headers)
-    return handle_response(res, 'PATCH')
-
-def delete(token: str, store_id: str, data: dict = None, param_type: str = None):
-    url = build_url(store_id, param_type)
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-    }
-    res = requests.delete(url, json=data, headers=headers)
-    return handle_response(res, 'DELETE')
-
-def fetch_token_from_api(store_id: str):
+def fetch_token_from_api(store_id: str) -> str:
     url = f"{BASE_URL}/auth/token/stores/{store_id}/role/singleCrawler"
-    print(f"🔑 토큰 요청: {url}")
+    print(f"토큰 요청: {url}")
     try:
-        res = requests.get(url, timeout=3)
+        res = requests.get(url, timeout=5, verify=MITM_CERT_PATH)
         res.raise_for_status()
-        data = res.json()
-        token = data.get('token', data)
-        print("✅ 토큰 발급 성공")
+
+        # 응답 본문이 JSON이 아닌 텍스트 토큰임
+        token = res.text.strip()
+
+        if not token or len(token) < 20:
+            print(f"예상치 못한 응답: {token}")
+            return None
+
+        print("토큰 발급 성공")
         return token
+
     except requests.RequestException as err:
-        print(f"❌ 토큰 요청 실패: {err}")
-    print("⚠️ fallback 토큰 반환")
+        print(f"토큰 요청 실패: {err}")
+    print("fallback 토큰 반환")
     return None
+
 
 def fetch_store_info(token: str, store_id: str):
     url = f"{BASE_URL}/stores/{store_id}"
     headers = {'Authorization': f'Bearer {token}'}
     try:
-        res = requests.get(url, headers=headers)
+        res = requests.get(url, headers=headers, timeout=3, verify=MITM_CERT_PATH)
         res.raise_for_status()
-        return res.json()
+        info = res.json()
+        print(f"매장명: {info.get('storeName', '-')}")
+        return info
     except requests.RequestException as err:
-        print(f"❌ 매장 정보 요청 실패: {err}")
+        if hasattr(err, 'response') and err.response is not None:
+            print(f"매장 정보 요청 실패: {err} → {err.response.text}")
+        else:
+            print(f"매장 정보 요청 실패: {err}")
         return None

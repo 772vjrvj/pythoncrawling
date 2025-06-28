@@ -1,42 +1,44 @@
-# hook_router.py
+# src/router/hook_router.py
+import sys
+import os
+# src 상위 루트 경로를 PYTHONPATH에 추가
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
 import asyncio
 import json
-from src.utils.api import patch, delete as api_delete  # 'delete'는 파이썬 예약어라 api_delete로 임포트
-from src.services.token_manager import get_token, get_store_id
-from src.utils.common import to_iso_kst_format, compact  # 필요시 구현
+from src.utils.api_test import patch, delete as api_delete
+from src.utils.token_manager import get_token, get_store_id
+from src.utils.common import to_iso_kst_format, compact
+from src.utils.logger import get_logger, info_log, error_log
+
 
 CRAWLING_SITE = 'GolfzonPark'
 request_store = {}
+logger = get_logger("proxy_logger")
 
-def nodeLog(*args):
-    print(*args)
-
-def nodeError(*args):
-    print("[ERROR]", *args)
 
 def save_request(action, url, data):
     request_store[url] = {'action': action, 'data': data}
-    nodeLog(f"📅 저장됨: [{action}]:data - {data}")
-    nodeLog(f"📅 저장됨: [{action}]:url - {url}")
+    info_log(f"저장됨: [{action}]:data - {data}", logger=logger)
+    info_log(f"저장됨: [{action}]:url - {url}", logger=logger)
+
 
 async def match_and_dispatch(action, url, response_data):
     entry = request_store.get(url)
-    nodeLog(f"📅 저장됨: [{action}]:entry - {entry}")
+    info_log(f"저장됨: [{action}]:entry - {entry}", logger=logger)
 
     token = get_token()
     store_id = get_store_id()
 
-    # delete_mobile 은 요청 매칭 없이도 처리
     if action == 'delete_mobile':
-        nodeLog(f"📦 [{action}] 단독 응답 처리")
+        info_log(f"[{action}] 단독 응답 처리", logger=logger)
         await dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
         return
 
-    # 나머지는 요청-응답 매칭 필요
     if not entry or entry['action'] != action:
         return
 
-    nodeLog(f"✅ 요청-응답 매칭됨: [{action}] - {url}")
+    info_log(f"요청-응답 매칭됨: [{action}] - {url}", logger=logger)
     request_data = entry['data']
     request_store.pop(url, None)
 
@@ -65,7 +67,7 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(request.get('reserveNo')) if request.get('reserveNo') else None,
                 }, exclude_keys=['phone'])
-                nodeLog("📦 register payload:", json.dumps(payload, ensure_ascii=False, indent=2))
+                info_log("register payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                 await patch(token, store_id, payload)
 
         elif action == 'edit':
@@ -74,24 +76,22 @@ async def dispatch_action(action, combined_data, token, store_id):
             machine_number = request.get('machineNumber') or []
             entities = response.get('entitys', [])
 
-            # 모바일에서 2개 이상 수정 시 기존 예약 삭제
             if reserve_no and isinstance(machine_number, list) and len(machine_number) > 0:
                 payload = {
                     'crawlingSite': CRAWLING_SITE,
                     'reason': '모바일 예약 변경 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                nodeLog("📦 delete 고객 payload:", json.dumps(payload, ensure_ascii=False, indent=2))
+                info_log("delete 고객 payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                 await api_delete(token, store_id, payload, 'g')
 
-            # 웹에서 예약수 2 이상이면 기존 예약 모두 삭제
             elif len(entities) > 0:
                 payload = {
                     'crawlingSite': CRAWLING_SITE,
                     'reason': '수정 취소',
                     'externalId': str(booking_number),
                 }
-                nodeLog("📦 delete 운영자 payload:", json.dumps(payload, ensure_ascii=False, indent=2))
+                info_log("delete 운영자 payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                 await api_delete(token, store_id, payload)
 
             if len(entities) > 0:
@@ -110,7 +110,7 @@ async def dispatch_action(action, combined_data, token, store_id):
                         'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                         'externalGroupId': str(reserve_no) if reserve_no else None,
                     }, exclude_keys=['phone'])
-                    nodeLog("📦 edit payload:", json.dumps(payload, ensure_ascii=False, indent=2))
+                    info_log("edit payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                     await patch(token, store_id, payload)
             else:
                 payload = compact({
@@ -127,7 +127,7 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(reserve_no) if reserve_no else None,
                 }, exclude_keys=['phone'])
-                nodeLog("📦 edit payload:", json.dumps(payload, ensure_ascii=False, indent=2))
+                info_log("edit payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                 await patch(token, store_id, payload)
 
         elif action == 'edit_move':
@@ -138,7 +138,7 @@ async def dispatch_action(action, combined_data, token, store_id):
                 'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                 'crawlingSite': CRAWLING_SITE,
             })
-            nodeLog("📦 edit_move payload:", json.dumps(payload, ensure_ascii=False, indent=2))
+            info_log("edit_move payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
             await patch(token, store_id, payload, 'm')
 
         elif action == 'delete':
@@ -149,7 +149,7 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 고객 예약을 운영자가 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                nodeLog("📦 delete 고객:", json.dumps(payload, ensure_ascii=False, indent=2))
+                info_log("delete 고객:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                 await api_delete(token, store_id, payload, 'g')
             else:
                 booking_nums = request.get('bookingNums')
@@ -161,7 +161,7 @@ async def dispatch_action(action, combined_data, token, store_id):
                         'reason': '운영자 취소',
                         'externalId': str(num),
                     }
-                    nodeLog("📦 delete 운영자:", json.dumps(payload, ensure_ascii=False, indent=2))
+                    info_log("delete 운영자:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                     await api_delete(token, store_id, payload)
 
         elif action == 'delete_mobile':
@@ -174,10 +174,11 @@ async def dispatch_action(action, combined_data, token, store_id):
                         'reason': '모바일 고객 예약 취소',
                         'externalGroupId': str(reserve_no),
                     }
-                    nodeLog("📦 delete 모바일 고객:", json.dumps(payload, ensure_ascii=False, indent=2))
+                    info_log("delete 모바일 고객:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
                     await api_delete(token, store_id, payload, 'g')
 
         else:
-            nodeLog(f"⚠️ 알 수 없는 액션: {action}")
+            info_log(f"알 수 없는 액션: {action}", logger=logger)
+
     except Exception as e:
-        nodeError(f"❌ dispatch 처리 실패 [{action}]: {e}")
+        error_log(f"dispatch 처리 실패 [{action}]: {e}", logger=logger)
