@@ -1,7 +1,0 @@
-pyinstaller main.py `
-  --icon "./image/crawling.ico" `
-  --name main `
-  --noconsole `
-  --distpath "./dist" `
-  --workpath "./build" `
-  --version-file=version.txt

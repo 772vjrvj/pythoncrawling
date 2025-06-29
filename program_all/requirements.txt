@@ -1,0 +1,13 @@
+PyQt5
+requests
+pandas
+pyautogui
+beautifulsoup4
+urllib3
+keyring
+selenium
+psutil
+webdriver-manager
+pygetwindow
+pyperclip
+pyinstaller

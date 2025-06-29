@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QDesktop
                              QTextEdit, QProgressBar)
 
 from src.core.global_state import GlobalState
+from src.ui.popup.countdown_pop import CountdownPopup
+from src.ui.popup.set_param_pop import SetParamPop
 from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -17,18 +19,20 @@ from src.workers.progress_worker import ProgressWorker
 
 
 class MainWindow(QWidget):
-    
+
     # 초기화
     def __init__(self, app_manager):
         super().__init__()
+        self.param_pop = None
+        self.setting_button = None
+        self.setting = None
+        self.name = None
         self.log_out_button = None
         self.header_label = None
         self.log_reset_button = None
         self.site_list_button = None
         self.program_reset_button = None
         self.collect_button = None
-        self.check_list_button = None
-        self.select_check_list = None
         self.task_queue = None
         self.progress_worker = None
         self.progress_bar = None
@@ -38,7 +42,6 @@ class MainWindow(QWidget):
         self.app_manager = app_manager
         self.site = None
         self.color = None
-        self.check_list = None
         self.cookies = None
         self.api_worker = None
 
@@ -48,7 +51,7 @@ class MainWindow(QWidget):
         self.name = state.get("name")
         self.site = state.get("site")
         self.color = state.get("color")
-        self.check_list = state.get("check_list")
+        self.setting = state.get("setting")
         self.cookies = state.get("cookies")
 
     # 재 초기화
@@ -69,9 +72,12 @@ class MainWindow(QWidget):
     def ui_set(self):
         if self.layout():
             self.header_label.setText(f"{self.name}")
+            self.site_list_button.setStyleSheet(main_style(self.color))
             self.log_reset_button.setStyleSheet(main_style(self.color))
             self.program_reset_button.setStyleSheet(main_style(self.color))
             self.collect_button.setStyleSheet(main_style(self.color))
+            self.log_out_button.setStyleSheet(main_style(self.color))
+            self.setting_button.setStyleSheet(main_style(self.color))
         else:
             self.set_layout()
 
@@ -90,10 +96,6 @@ class MainWindow(QWidget):
         self.collect_button.setEnabled(False)  # 버튼 비활성화
         self.collect_button.setStyleSheet(main_style(self.color))
         self.collect_button.repaint()
-
-        self.check_list_button.setEnabled(False)
-        self.check_list_button.setStyleSheet(main_style(self.color))
-        self.check_list_button.repaint()
 
         self.log_window.setStyleSheet(LOG_STYLE)
         self.log_window.repaint()
@@ -115,7 +117,7 @@ class MainWindow(QWidget):
         painter = QPainter(icon_pixmap)
         painter.setBrush(QColor("#e0e0e0"))  # 파란색 브러시
         painter.setPen(QColor("#e0e0e0"))  # 테두리 색상
-        painter.drawRect(0, 0, 32, 32)  # 동그란 원 그리기 (좌상단 0,0에서 64x64 크기)
+        painter.drawRect(0, 0, 32, 32)
         painter.end()
         self.setWindowIcon(QIcon(icon_pixmap))
 
@@ -146,8 +148,17 @@ class MainWindow(QWidget):
         left_button_layout.addWidget(self.collect_button)
         left_button_layout.addWidget(self.log_out_button)
 
+        # 오른쪽 버튼 레이아웃
+        right_button_layout = QHBoxLayout()
+        right_button_layout.setAlignment(Qt.AlignRight)
+        self.setting_button = create_common_button("세팅", self.open_setting, self.color, 100)
+        right_button_layout.addWidget(self.setting_button)
+
+
         # 레이아웃에 요소 추가
         header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+        header_layout.addStretch()  # 가운데 공간 확보
+        header_layout.addLayout(right_button_layout)
 
         # 헤더에 텍스트 추가
         self.header_label = QLabel(f"{self.name} 데이터 추출")
@@ -192,6 +203,7 @@ class MainWindow(QWidget):
     def add_log(self, message):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_message = f"[{timestamp}] {message}"
+        # print(log_message)
         self.log_window.append(log_message)  # 직접 호출
 
     # 프로그램 시작 중지
@@ -207,17 +219,19 @@ class MainWindow(QWidget):
             self.progress_worker.log_signal.connect(self.add_log)
             self.progress_worker.start()
 
-            if self.on_demand_worker is None:  # worker가 없다면 새로 생성
+            if self.on_demand_worker is None:
                 worker_class = WORKER_CLASS_MAP.get(self.site)
                 if worker_class:
-                    self.on_demand_worker = worker_class()
+                    self.on_demand_worker = worker_class(self.setting)
                     self.on_demand_worker.log_signal.connect(self.add_log)
+                    self.on_demand_worker.show_countdown_signal.connect(self.show_countdown_popup)
                     self.on_demand_worker.progress_signal.connect(self.set_progress)
                     self.on_demand_worker.msg_signal.connect(self.show_message)
                     self.on_demand_worker.progress_end_signal.connect(self.stop)
                     self.on_demand_worker.start()
                 else:
                     self.add_log(f"[오류] '{self.site}'에 해당하는 워커가 없습니다.")
+
         else:
             self.collect_button.setText("시작")
             self.collect_button.setStyleSheet(main_style(self.color))
@@ -285,11 +299,6 @@ class MainWindow(QWidget):
         main_url_list = url_list
         self.add_log(f'URL 세팅완료: {main_url_list}')
 
-    # 항목 업데이트
-    def check_list_update(self, select_check_list):
-        self.select_check_list = select_check_list
-        self.add_log(f'크롤링 목록 : {select_check_list}')
-
     # 로그 리셋
     def log_reset(self):
         self.log_window.clear()
@@ -319,3 +328,14 @@ class MainWindow(QWidget):
         self.add_log("🚪 로그아웃 처리 및 로그인 화면으로 이동")
         self.close()  # 메인 창 종료
         self.app_manager.go_to_login()
+
+    # 세팅 버튼
+    def open_setting(self):
+        self.param_pop = SetParamPop(self.setting)
+        self.param_pop.log_signal.connect(self.add_log)
+        self.param_pop.exec_()
+
+    # 카운트 다운 팝업
+    def show_countdown_popup(self, seconds):
+        popup = CountdownPopup(seconds)
+        popup.exec_()  # 완료될 때까지 block

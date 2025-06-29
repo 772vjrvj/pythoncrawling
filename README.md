@@ -1,8 +1,5 @@
 # pythoncrawling
 
-이 경로에 웹크롬 드라이버 있음
-C:\Users\772vj\.cache\selenium
-
 ■ 인텔레제이 세팅
 File > Project Structure > Platform Settings > SDKs
 +버튼 누르고 Add Python sdk 추가
@@ -18,15 +15,15 @@ SDK : Python 3.9 (pythoncrawling)
 
 ■ 가상환경
 터미널에서 가상환경 만들기
-python -m venv mypiplist
+python -m venv venv
 
-cd mypiplist
+cd venv
 
 가상환경 나가기
 deactivate
 
 가상환경 진입
-.\mypiplist\Scripts\activate
+.\venv\Scripts\activate
 
 가상환경 활성화
 venv\Scripts\activate

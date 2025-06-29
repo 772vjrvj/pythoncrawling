@@ -1,0 +1,109 @@
+{
+  "pageNo": 2,
+  "pageIndex": 0,
+  "no": 21,
+  "paidService": {
+    "useWanted": false,
+    "useMobilePick": false,
+    "useMobileIcon": true,
+    "useMobileCompanyNameColor": true,
+    "useMobileText": false,
+    "mobileText": "",
+    "useMobileHighlightText": false,
+    "mobileHighlightText": "",
+    "usePcHighlighter": false,
+    "pcTwinkleIconCode": "00",
+    "pcTwinkleIconText": "",
+    "usePcTwinkleColor": false,
+    "useAlbamonZ": false,
+    "totalProductCount": 3
+  },
+  "recruitSourceType": {
+    "key": "ALBAMON",
+    "value": "ALBAMON",
+    "description": "알바몬"
+  },
+  "recruitType": {
+    "key": "NORMAL",
+    "value": "NORMAL",
+    "description": "일반 공고"
+  },
+  "recruitNo": 107875407,
+  "jobkoreaRecruitNo": 0,
+  "recruitTitle": "엄마한테 용돈 플렉스!! 20대 자산가 vs 용돈 타서 쓰는 20대",
+  "postedDate": "18분전",
+  "postStatusType": {
+    "key": "POSTING",
+    "value": "1",
+    "description": "게제중"
+  },
+  "companyName": "부동산 10년차 1위 기업 ㈜일도그룹",
+  "backgroundImageUrl": "",
+  "logoUrl": "",
+  "companyHomePageUrl": "",
+  "payType": {
+    "key": "MONTHLY_SALARY",
+    "value": "C000",
+    "description": "월급"
+  },
+  "pay": "5,000,000원",
+  "negoPay": false,
+  "workingTime": "시간협의",
+  "workingPeriod": "3개월~6개월",
+  "negoWorkPeriod": true,
+  "workingWeek": "주5일",
+  "workingDate": "",
+  "trainee": false,
+  "parts": [
+    "MD·쇼핑몰운영",
+    "사무보조",
+    "고객상담·인바운드"
+  ],
+  "closingDate": "상시모집",
+  "closingDateWithDDay": "상시모집",
+  "closingDDay": "",
+  "age": "연령무관",
+  "latitude": 37.484676,
+  "longitude": 127.12094,
+  "existsMap": true,
+  "workplaceAddress": "서울특별시 송파구 송파대로167, A동224호 현태테라타워홍보관",
+  "workplaceArea": "서울 동대문구 장안동",
+  "distanceToWorkplace": "",
+  "applicationTypes": [
+    {
+      "key": "ONLINE",
+      "value": "1",
+      "description": "온라인지원"
+    },
+    {
+      "key": "SMS",
+      "value": "8",
+      "description": "간편문자지원"
+    },
+    {
+      "key": "PHONE",
+      "value": "6",
+      "description": "전화연락"
+    }
+  ],
+  "managerPhoneNumber": "010-5079-5967",
+  "hashTags": [],
+  "skillTags": [],
+  "filterTotal": "주차가능,기숙사운영,각종 경조금,인센티브제,차량유류보조금,정기보너스,우수사원 표창/포상,대면근무,연차,주간,친구와함께가능,명절 귀향비 지급,초보 가능,통근버스 운행,주차비지원,장기근속자 포상,근무기간협의,월차,점심제공,경조휴가제,정기휴가,퇴직금",
+  "featureTotal": "㈜일도그룹,월급,서울,가락시장,장지,문정역,장지역,잠실동,가락시장역,문정,송파구",
+  "scraped": false,
+  "existsScrapMemo": false,
+  "scrapedDate": "2025-02-20",
+  "applicationStatusType": {
+    "key": "NONE",
+    "value": "",
+    "description": "지원 내역 없음"
+  },
+  "appliedApplicationType": [],
+  "appliedDate": null,
+  "postedByCurrentAuthMember": false,
+  "productStatisticsCode": "",
+  "reviewCount": 0,
+  "reviewStarPoint": 0,
+  "mobileManagerPhoneNumber": true
+}
