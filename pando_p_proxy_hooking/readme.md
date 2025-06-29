@@ -139,3 +139,12 @@ PandoK에서 [시작]버튼만을 눌러 브라우저를 띄운 후에는 예약
 2.1번 이후 크롬을 다시 닫으면 아래와같은 팝업 발생
 --> 프로세스 강제 종료
 -- 0.9.4 ver
+
+
+cd E:\git\pythoncrawling\pando_p_proxy_hooking
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
+
+Get-Process mitmdump
+
+Stop-Process -Id 11780, 14236 -Force
+Stop-Process -Name "mitmdump" -Force

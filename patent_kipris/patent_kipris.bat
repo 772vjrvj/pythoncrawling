@@ -32,5 +32,4 @@ if not exist logs (
 )
 
 REM 프록시 서버 실행
-REM .\mitmdump.exe -s src/server/proxy_server.py
-.\mitmdump.exe -s src/server/proxy_server.py > logs\stdout.log 2> logs\stderr.log
+.\mitmdump.exe -s proxy_server.py > logs\stdout.log 2> logs\stderr.log

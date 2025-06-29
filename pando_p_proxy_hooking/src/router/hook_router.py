@@ -1,51 +1,67 @@
-# src/router/hook_router.py
 import sys
 import os
-# src 상위 루트 경로를 PYTHONPATH에 추가
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-
 import asyncio
 import json
-from src.utils.api_test import patch, delete as api_delete
-from src.utils.token_manager import get_token, get_store_id
-from src.utils.common import to_iso_kst_format, compact
-from src.utils.logger import get_logger, info_log, error_log
+from mitmproxy import ctx
 
+# src 가이드 라우터를 위한 가운데 경로 추가
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+from src.utils.api_test import patch, delete as api_delete
+from src.utils.common import to_iso_kst_format, compact
 
 CRAWLING_SITE = 'GolfzonPark'
 request_store = {}
-logger = get_logger("proxy_logger")
 
+DATA_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data.json"))
+
+
+def load_data():
+    try:
+        with open(DATA_JSON_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        ctx.log.error(f"[data.json] 로딩 실패: {e}")
+        return {}
+
+def get_token():
+    token = load_data().get("token")
+    ctx.log.info(f"token : {token}")
+    return token
+
+def get_store_id():
+    store_id = load_data().get("store_id")
+    ctx.log.info(f"store_id : {store_id}")
+    return store_id
 
 def save_request(action, url, data):
     request_store[url] = {'action': action, 'data': data}
-    info_log(f"저장됨: [{action}]:data - {data}", logger=logger)
-    info_log(f"저장됨: [{action}]:url - {url}", logger=logger)
+    ctx.log.info(f"저장됨: [{action}]:data - {data}")
+    ctx.log.info(f"저장됨: [{action}]:url - {url}")
 
-
-async def match_and_dispatch(action, url, response_data):
+def match_and_dispatch(action, url, response_data):
     entry = request_store.get(url)
-    info_log(f"저장됨: [{action}]:entry - {entry}", logger=logger)
+    ctx.log.info(f"[🧪 경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
+    ctx.log.info(f"매칭 시도: [{action}]:entry - {entry}")
 
     token = get_token()
     store_id = get_store_id()
 
     if action == 'delete_mobile':
-        info_log(f"[{action}] 단독 응답 처리", logger=logger)
-        await dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
+        ctx.log.info(f"[{action}] 단부 응답 처리")
+        dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
         return
 
     if not entry or entry['action'] != action:
         return
 
-    info_log(f"요청-응답 매칭됨: [{action}] - {url}", logger=logger)
+    ctx.log.info(f"요청-응답 매칭됨11111: [{action}] - {url}")
     request_data = entry['data']
     request_store.pop(url, None)
 
-    await dispatch_action(action, {'request': request_data, 'response': response_data}, token, store_id)
+    dispatch_action(action, {'request': request_data, 'response': response_data}, token, store_id)
 
-
-async def dispatch_action(action, combined_data, token, store_id):
+def dispatch_action(action, combined_data, token, store_id):
     request = combined_data.get('request')
     response = combined_data.get('response')
 
@@ -66,9 +82,9 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(request.get('reserveNo')) if request.get('reserveNo') else None,
-                }, exclude_keys=['phone'])
-                info_log("register payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                await patch(token, store_id, payload)
+                }, ['phone'])
+                ctx.log.info("register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                patch(token, store_id, payload)
 
         elif action == 'edit':
             reserve_no = request.get('reserveNo')
@@ -82,8 +98,8 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 예약 변경 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                info_log("delete 고객 payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                await api_delete(token, store_id, payload, 'g')
+                ctx.log.info("delete 고객 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                api_delete(token, store_id, payload, 'g')
 
             elif len(entities) > 0:
                 payload = {
@@ -91,8 +107,8 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'reason': '수정 취소',
                     'externalId': str(booking_number),
                 }
-                info_log("delete 운영자 payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                await api_delete(token, store_id, payload)
+                ctx.log.info("delete 운영자 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                api_delete(token, store_id, payload)
 
             if len(entities) > 0:
                 for entity in entities:
@@ -109,9 +125,9 @@ async def dispatch_action(action, combined_data, token, store_id):
                         'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                         'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                         'externalGroupId': str(reserve_no) if reserve_no else None,
-                    }, exclude_keys=['phone'])
-                    info_log("edit payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                    await patch(token, store_id, payload)
+                    }, ['phone'])
+                    ctx.log.info("edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    patch(token, store_id, payload)
             else:
                 payload = compact({
                     'externalId': str(booking_number),
@@ -126,9 +142,9 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(reserve_no) if reserve_no else None,
-                }, exclude_keys=['phone'])
-                info_log("edit payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                await patch(token, store_id, payload)
+                }, ['phone'])
+                ctx.log.info("edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                patch(token, store_id, payload)
 
         elif action == 'edit_move':
             payload = compact({
@@ -138,8 +154,8 @@ async def dispatch_action(action, combined_data, token, store_id):
                 'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                 'crawlingSite': CRAWLING_SITE,
             })
-            info_log("edit_move payload:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-            await patch(token, store_id, payload, 'm')
+            ctx.log.info("edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            patch(token, store_id, payload, 'm')
 
         elif action == 'delete':
             reserve_no = request.get('reservation.reserveNo')
@@ -149,8 +165,8 @@ async def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 고객 예약을 운영자가 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                info_log("delete 고객:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                await api_delete(token, store_id, payload, 'g')
+                ctx.log.info("delete 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                api_delete(token, store_id, payload, 'g')
             else:
                 booking_nums = request.get('bookingNums')
                 if not isinstance(booking_nums, list):
@@ -161,8 +177,8 @@ async def dispatch_action(action, combined_data, token, store_id):
                         'reason': '운영자 취소',
                         'externalId': str(num),
                     }
-                    info_log("delete 운영자:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                    await api_delete(token, store_id, payload)
+                    ctx.log.info("delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    api_delete(token, store_id, payload)
 
         elif action == 'delete_mobile':
             destroyed = response.get('entity', {}).get('destroy', [])
@@ -174,11 +190,11 @@ async def dispatch_action(action, combined_data, token, store_id):
                         'reason': '모바일 고객 예약 취소',
                         'externalGroupId': str(reserve_no),
                     }
-                    info_log("delete 모바일 고객:", json.dumps(payload, ensure_ascii=False, indent=2), logger=logger)
-                    await api_delete(token, store_id, payload, 'g')
+                    ctx.log.info("delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    api_delete(token, store_id, payload, 'g')
 
         else:
-            info_log(f"알 수 없는 액션: {action}", logger=logger)
+            ctx.log.warn(f"알 수 없는 액션: {action}")
 
     except Exception as e:
-        error_log(f"dispatch 처리 실패 [{action}]: {e}", logger=logger)
+        ctx.log.error(f"dispatch 처리 실패 [{action}]: {e}")

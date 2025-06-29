@@ -15,19 +15,16 @@ def to_iso_kst_format(kst_str: str) -> Optional[str]:
         return None
 
 
-def compact(obj: Dict[str, Any], always_include: List[str] = []) -> Dict[str, Any]:
-    """
-    빈 값 (None, '', [], paymentAmount == 0)을 제거한 새 dict 반환
-    항상 포함시킬 key는 always_include 리스트에 명시
-    """
+def compact(obj, always_include=None):
+    if always_include is None:
+        always_include = []
+
     return {
         k: v for k, v in obj.items()
-        if (
-                k in always_include or (
+        if k in always_include or (
                 v is not None and
                 v != '' and
                 v != [] and
                 not (k == 'paymentAmount' and v == 0)
-        )
         )
     }
