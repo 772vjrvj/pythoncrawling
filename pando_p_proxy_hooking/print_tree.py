@@ -15,7 +15,7 @@ def is_excluded(name: str, full_path: str, is_dir: bool) -> bool:
             return True
     return False
 
-def print_dir_tree(dir_path=".", depth=0, max_depth=4):
+def print_dir_tree(dir_path, depth=0, max_depth=4):
     if depth > max_depth:
         return
 
@@ -42,14 +42,13 @@ def print_dir_tree(dir_path=".", depth=0, max_depth=4):
         elif entry.endswith(".py"):
             py_files.append(entry)
 
-    # 디렉토리 먼저 출력
     for folder in folders:
         print(f"{prefix}├─ {folder}/")
         print_dir_tree(os.path.join(dir_path, folder), depth + 1, max_depth)
 
-    # .py 파일 출력
     for py_file in py_files:
         print(f"{prefix}├─ {py_file}")
 
 if __name__ == "__main__":
-    print_dir_tree("..", max_depth=4)
+    current_dir = os.path.abspath(os.getcwd())
+    print_dir_tree(current_dir, max_depth=4)

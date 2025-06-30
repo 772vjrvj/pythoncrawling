@@ -8,9 +8,8 @@ from src.ui.store_dialog import StoreDialog
 from src.utils.file_storage import load_data, save_data
 import os
 import subprocess
-from src.utils.token_manager import start_token_refresh
+from src.utils.token_manager import start_token
 import time
-from src.utils.token_manager import start_token_refresh, get_token
 from src.utils.api import fetch_store_info
 import socket
 import pathlib
@@ -176,25 +175,11 @@ class MainWindow(QWidget):
         # 저장
         data = load_data()
         data['store_id'] = self.current_store_id
-        save_data(data)
-
         # 토큰 발급 및 저장
-        start_token_refresh(self.current_store_id)
-
-        # 토큰 기다렸다가 받아오기
-        token = None
-        for _ in range(10):  # 최대 5초 대기
-            token = get_token()
-            if token:
-                break
-            time.sleep(0.5)
-
-        if not token:
-            print("토큰이 없습니다.")
-            return
+        start_token(data)
 
         # 매장 정보 요청
-        info = fetch_store_info(token, self.current_store_id)
+        info = fetch_store_info(data['token'], data['store_id'])
         if info:
             self.store_name_value.setText(info.get("name", "-"))
             self.branch_value.setText(info.get("branch", "-"))

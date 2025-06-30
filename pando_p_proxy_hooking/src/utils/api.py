@@ -23,7 +23,7 @@ def fetch_token_from_api(store_id: str) -> str:
             print(f"예상치 못한 응답: {token}")
             return None
 
-        print("토큰 발급 성공")
+        print(f"토큰 발급 성공 : {token}")
         return token
 
     except requests.RequestException as err:

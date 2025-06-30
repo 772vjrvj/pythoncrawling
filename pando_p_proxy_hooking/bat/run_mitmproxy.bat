@@ -8,29 +8,24 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-REM 현재 경로로 이동
 cd /d "%~dp0"
-
-REM UTF-8 환경 설정
 chcp 65001 >nul
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
 
-REM 기존 mitmdump 프로세스 종료
-taskkill /IM mitmdump.exe /F >nul 2>&1
+echo 🔫 mitmdump 종료 중...
+taskkill /F /IM mitmdump.exe /T
 
-REM __pycache__ 강제 삭제 (전체 하위 경로 포함)
+echo 🧹 __pycache__ 정리 중...
 for /r %%i in (.) do (
     if exist "%%i\__pycache__" (
         rd /s /q "%%i\__pycache__"
     )
 )
 
-REM 로그 디렉토리 생성
 if not exist logs (
     mkdir logs
 )
 
-REM 프록시 서버 실행
-REM .\mitmdump.exe -s src/server/proxy_server.py
+echo 🚀 mitmdump 실행
 .\mitmdump.exe -s src/server/proxy_server.py > logs\stdout.log 2> logs\stderr.log

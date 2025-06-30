@@ -1,3 +1,4 @@
+# src/ui/store_dialog.py
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton
 )
