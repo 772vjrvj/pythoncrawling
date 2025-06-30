@@ -42,24 +42,36 @@ class ProxyLogger:
         if "kipris.or.kr" in flow.request.pretty_host and "kpat/resulta.do" in flow.request.pretty_url:
             try:
                 data = json.loads(flow.response.get_text())
-                result = data.get("resultList", [])[0] if data.get("resultList") else {}
-                ctx.log.info("📄 최종 응답 전문 (첫 건):")
-                ctx.log.info(json.dumps(result, indent=2, ensure_ascii=False))
+                result_list = data.get("resultList", [])
+
+                if not result_list:
+                    ctx.log.info("📄 resultList가 비어 있습니다.")
+                    return
+
+                ctx.log.info(f"📄 최종 응답 전문 ({len(result_list)}건):")
+                for i, result in enumerate(result_list, start=1):
+                    ctx.log.info(json.dumps(result, indent=2, ensure_ascii=False))
 
                 if latest_query_text:
-                    file_path = "test.json"
+                    padded_key_base = str(latest_query_text).zfill(7)
+
+                    file_path = "data.json"
                     if os.path.exists(file_path):
                         with open(file_path, "r", encoding="utf-8") as f:
                             existing = json.load(f)
                     else:
                         existing = {}
 
-                    existing[latest_query_text] = result
+                    # 여러 건을 padded_key_base_1, _2 ... 식으로 저장
+                    for i, result in enumerate(result_list, start=1):
+                        key = f"{padded_key_base}_{i}"
+                        existing[key] = result
+                        ctx.log.info(f"✅ 저장 준비: {key}")
 
                     with open(file_path, "w", encoding="utf-8") as f:
                         json.dump(existing, f, indent=2, ensure_ascii=False)
 
-                    ctx.log.info(f"✅ test.json 파일에 '{latest_query_text}' 항목 저장 완료")
+                    ctx.log.info(f"✅ data.json 파일에 '{padded_key_base}_*' 항목들 저장 완료")
 
             except Exception as e:
                 ctx.log.warn(f"⚠️ 응답 처리 실패: {str(e)}")
