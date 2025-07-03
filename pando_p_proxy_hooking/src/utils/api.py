@@ -6,8 +6,11 @@ BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발
 # BASE_URL = 'https://api.24golf.co.kr'    # 운영
 
 # 인증서 경로 (.pem 형식이어야 함)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # src/utils → src → project root
-MITM_CERT_PATH = os.path.join(BASE_DIR, "cert", "mitmproxy-ca-cert.pem")
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # src/utils → src → project root
+# MITM_CERT_PATH = os.path.join(BASE_DIR, "cert", "mitmproxy-ca-cert.pem")
+# MITM_CERT_PATH = os.path.expanduser(r"~\.mitmproxy\mitmproxy-ca-cert.pem")
+MITM_CERT_PATH = os.path.join(os.path.expanduser("~"), ".mitmproxy", "mitmproxy-ca-cert.pem")
+
 
 def fetch_token_from_api(store_id: str) -> str:
     url = f"{BASE_URL}/auth/token/stores/{store_id}/role/singleCrawler"

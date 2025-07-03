@@ -9,7 +9,7 @@ import pandas as pd
 class PatentDetail:
     def __init__(self, ap, no, ipc):
         self.ap = str(ap).strip()
-        self.no = str(no).zfill(4)  # 7자리 보존
+        self.no = str(no).zfill(7)  # 7자리 보존
         self.ipc = str(ipc).strip()
 
 
@@ -41,13 +41,6 @@ def search_patents(detail_list):
             ap_input.clear()
             ap_input.send_keys(patent.ap)
             time.sleep(0.5)
-
-
-            an_input = driver.find_element(By.CSS_SELECTOR, 'input[data-field="AN"]')
-            an_input.clear()
-            an_input.send_keys(patent.no)
-            time.sleep(0.5)
-
 
             # 검색 버튼 클릭
             search_btn = driver.find_element(By.CSS_SELECTOR, 'button.btn-search[data-lang-id="adsr.search"]')

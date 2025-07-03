@@ -1,0 +1,99 @@
+🔒 mitmproxy 인증서 설치 및 프록시 사용 전체 가이드
+이 가이드는 기존 인증서를 완전히 삭제하고, 새로 발급받아 설치한 후, 프로그램이 정상 작동하도록 설정하는 전체 과정을 안내합니다.
+
+
+
+✅ 1단계: 기존 mitmproxy 인증서 삭제
+📍 Windows 인증서 관리자에서 삭제
+Windows 키 + R → certmgr.msc 입력 → Enter
+좌측 트리에서 신뢰할 수 있는 루트 인증 기관 → 인증서 선택
+오른쪽 목록에서 이름에 mitmproxy 포함된 인증서들을 찾기
+여러 개일 경우 Ctrl 키로 다중 선택
+마우스 우클릭 → 삭제(D) → "예" 클릭
+
+
+
+✅ 2단계: 기존 mitmproxy 파일 삭제 (.mitmproxy 폴더)
+파일 탐색기 열기
+주소창에
+%USERPROFILE%
+입력 후 Enter
+
+예: C:\Users\<user>\.mitmproxy
+.mitmproxy 폴더 진입
+
+숨김 폴더일 수 있으니 보기 > 숨긴 항목 체크
+폴더 안의 모든 파일 삭제
+mitmproxy-ca-cert.pem, mitmproxy-ca-cert.p12, mitmproxy-ca-cert.cer 등 포함
+
+
+
+✅ 3단계: Windows 프록시 수동 설정
+Windows 키 + I → [설정] 창 열기
+[네트워크 및 인터넷] 클릭
+왼쪽 메뉴에서 [프록시] 선택
+아래로 내려서 "수동 프록시 설정" 영역으로 이동
+"프록시 서버 사용" 스위치를 켬
+다음 정보 입력:
+주소: 127.0.0.1
+포트: 8080
+[저장] 클릭
+
+
+
+✅ 4단계: 프록시 서버 실행 → 새로운 인증서 생성
+pando_p_proxy_hooking.exe 프로그램 실행
+%USERPROFILE%\.mitmproxy 경로에 새 인증서 파일 생성됨:
+mitmproxy-ca-cert.pem
+mitmproxy-ca-cert.cer
+
+
+
+✅ 5단계: 새로 생성된 인증서 설치 (보안 신뢰 등록)
+.cer 파일을 더블 클릭
+[인증서 설치] 버튼 클릭
+설치 마법사에서 아래와 같이 선택:
+[로컬 컴퓨터(L)] 선택 → "다음"
+[모든 인증서를 다음 저장소에 저장] 체크
+[찾아보기] → "신뢰할 수 있는 루트 인증 기관" 선택
+→ "확인" → "다음" → "마침"
+설치 완료 메시지 확인 후 닫기
+
+
+
+✅ 6단계: 인증서 등록 확인
+윈도우 키 + R → certmgr.msc → Enter
+좌측 트리에서 신뢰할 수 있는 루트 인증 기관 > 인증서 이동
+mitmproxy로 시작하는 인증서가 있는지 확인
+
+
+
+✅ 7단계: 프로그램용 인증서 복사
+
+탐색기에서 :
+%USERPROFILE%\.mitmproxy
+넣고 엔터 후 이동
+
+폴더에서 다음 두 파일 복사:
+mitmproxy-ca-cert.pem
+mitmproxy-ca-cert.cer
+
+C:\Users\<user>\Desktop\pando_p_proxy_hooking\_internal\cert
+폴더로 이동
+
+기존에 있던 .pem 또는 .cer 파일이 있다면 삭제
+
+위에서 복사한거 붙여넣기
+
+
+
+✅ 8단계: 프로그램 종료
+프로그램창 종료후
+end.bat 실행 -> 아무키나 누르기
+
+
+
+✅ 9단계: 프로그램 다시 실행
+C:\Users\<user>\Desktop\pando_p_proxy_hooking\_internal\logs
+
+mitm_bat.log 파일 로그 확인

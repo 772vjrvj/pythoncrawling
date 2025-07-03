@@ -1,0 +1,4 @@
+옵션	역할	왜 필요?
+--no-http2	HTTP/2 통신 방지	mitmproxy가 HTTP/2를 완벽하게 지원 못 하기 때문
+--ssl-insecure	서버 인증서 유효성 검증 생략	서버의 TLS 인증서 문제로 후킹 실패하는 걸 막기 위해
+

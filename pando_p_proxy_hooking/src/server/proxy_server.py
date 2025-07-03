@@ -80,12 +80,12 @@ class ProxyLogger:
 
         ctx.log.info(f"[응답] {flow.request.method} {url} → {status}")
 
-        if status in (304, 204):
-            ctx.log.info(f"[{status}] 캐시 응답 무시됨: {url}")
+        if status == 204:
+            ctx.log.info("[204] 응답 무시됨: 본문 없음")
             return
 
-        content_type = flow.response.headers.get("content-type", "")
-        if "application/json" not in content_type:
+        if not flow.response.content:
+            ctx.log.info("⚠️ 응답 본문이 비어 있음 → 스킵")
             return
 
         try:

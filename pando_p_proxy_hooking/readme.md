@@ -148,3 +148,39 @@ Get-Process mitmdump
 
 Stop-Process -Id 11780, 14236 -Force
 Stop-Process -Name "mitmdump" -Force
+
+
+
+
+■ 2025-07-02
+*매장:당산 골프존파크 GPM hooking
+*매장ID:68636f9e1b554bb5c193ad06
+304에러 제거
+
+https://docs.google.com/spreadsheets/d/1ll0t1y2RmXiCY_pfXszL6gv8D8KQFQSRrcWISwkjB9c/edit?gid=0#gid=0
+
+502에러
+www.passuneb.com
+www.ceo.dev.anytimegolf24.com
+
+
+✅ 2. HTTP/2 끄기
+bash
+복사
+편집
+mitmdump --no-http2 -s proxy_server.py
+일부 서버는 HTTP/2가 아닌 경우에만 정상 동작합니다.
+
+mitmproxy는 HTTP/2를 100% 완벽하게 지원하지 않음
+- .\mitmdump.exe -s src/server/proxy_server.py > logs\stdout.log 2> logs\stderr.log
++ .\mitmdump.exe --no-http2 --ssl-insecure -s src/server/proxy_server.py > logs\stdout.log 2> logs\stderr.log
+
+
+
+
+
+
+
+
+
+

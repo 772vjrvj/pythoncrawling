@@ -1,0 +1,141 @@
+✅ 2. 공식 홈페이지에서 직접 다운로드
+🔗 주소:
+https://mitmproxy.org/downloads/
+📦 설치 방법:
+Windows zip 버전 다운로드 → 압축 해제
+그 안에 mitmproxy.exe, mitmdump.exe, mitmweb.exe가 포함됨
+
+
+
+🔒 mitmproxy 인증서 설치 및 프록시 사용 전체 가이드 (Windows 기준)
+이 가이드는 기존 인증서를 완전히 삭제하고, 새로 발급받아 설치한 후, 프로그램이 정상 작동하도록 설정하는 전체 과정을 안내합니다.
+
+
+✅ 1단계: 기존 mitmproxy 인증서 삭제
+📍 Windows 인증서 관리자에서 삭제
+Windows 키 + R → certmgr.msc 입력 → Enter
+좌측 트리에서 신뢰할 수 있는 루트 인증 기관 → 인증서 선택
+오른쪽 목록에서 이름에 mitmproxy 포함된 인증서들을 찾기
+여러 개일 경우 Ctrl 키로 다중 선택
+마우스 우클릭 → 삭제(D) → "예" 클릭
+
+
+
+✅ 2단계: 기존 mitmproxy 파일 삭제 (.mitmproxy 폴더)
+파일 탐색기 열기
+주소창에 %USERPROFILE% 입력 후 Enter
+예: C:\Users\사용자명\
+.mitmproxy 폴더 진입
+숨김 폴더일 수 있으니 보기 > 숨긴 항목 체크
+폴더 안의 모든 파일 삭제
+mitmproxy-ca-cert.pem, mitmproxy-ca-cert.p12, mitmproxy-ca-cert.cer 등 포함
+
+
+
+✅ 3단계: Windows 프록시 수동 설정 (GUI 방식)
+HTTPS 트래픽을 mitmproxy로 정상적으로 중계하려면, Windows 네트워크 설정에서 프록시 서버를 수동으로 설정해야 합니다.
+📍 방법 1: Windows 설정에서 수동 프록시 설정
+Windows 키 + I → [설정] 창 열기
+[네트워크 및 인터넷] 클릭
+왼쪽 메뉴에서 [프록시] 선택
+아래로 내려서 "수동 프록시 설정" 영역으로 이동
+"프록시 서버 사용" 스위치를 켬
+다음 정보 입력:
+주소: 127.0.0.1
+포트: 8080
+[저장] 클릭
+
+💡 로컬 주소에 대해서는 프록시 서버 사용 안 함은 체크 해제해도 무방
+📍 방법 2: 제어판 고급 설정
+Windows 키 + R → inetcpl.cpl 입력 → Enter
+(인터넷 옵션 창 열림)
+[연결] 탭 > LAN 설정 클릭
+"프록시 서버 사용" 체크
+주소: 127.0.0.1, 포트: 8080 입력
+"로컬 주소에 프록시 서버 사용 안 함" 체크 해제
+[확인] → [확인] 눌러 설정 저장
+
+🧼 프록시 해제 (중지 시)
+작업 후 프록시를 끄려면 동일한 설정 페이지로 들어가서 프록시 사용 스위치 또는 체크박스 비활성화하면 됩니다.
+
+
+
+✅ 4단계: 프록시 서버 실행 → 새로운 인증서 생성
+mitmdump 또는 mitmproxy 실행 (예: .bat로 실행하거나 수동 명령어 입력)
+
+bash
+복사
+편집
+mitmdump.exe -s src\server\proxy_server.py
+첫 실행 시 %USERPROFILE%\.mitmproxy 경로에 새 인증서 파일 생성됨:
+
+mitmproxy-ca-cert.pem
+
+mitmproxy-ca-cert.p12
+
+✅ 5단계: 새로 생성된 인증서 설치 (보안 신뢰 등록)
+파일 탐색기에서 %USERPROFILE%\.mitmproxy 폴더로 이동
+
+mitmproxy-ca-cert.pem 파일을 확장자 변경
+
+이름: mitmproxy-ca-cert.pem → mitmproxy-ca-cert.cer
+
+.cer 파일을 더블 클릭
+
+[인증서 설치] 버튼 클릭
+
+설치 마법사에서 아래와 같이 선택:
+
+[로컬 컴퓨터(L)] 선택 → "다음"
+
+[모든 인증서를 다음 저장소에 저장] 체크
+
+[찾아보기] → "신뢰할 수 있는 루트 인증 기관" 선택
+
+→ "확인" → "다음" → "마침"
+
+설치 완료 메시지 확인 후 닫기
+
+✅ 6단계: 인증서 등록 확인
+윈도우 키 + R → certmgr.msc → Enter
+
+좌측 트리에서 신뢰할 수 있는 루트 인증 기관 > 인증서 이동
+
+mitmproxy로 시작하는 인증서가 있는지 확인
+
+✅ 7단계: 프로그램용 인증서 복사
+%USERPROFILE%\.mitmproxy 폴더에서 다음 두 파일 복사:
+
+mitmproxy-ca-cert.pem
+
+(필요시 .cer도 함께)
+
+프로젝트 내 cert 폴더로 이동
+
+기존에 있던 .pem 또는 .cer 파일이 있다면 삭제
+
+새 인증서를 cert 폴더에 붙여넣기
+
+✅ 8단계: 프로그램 실행
+기존 프록시 프로그램 실행 스크립트 실행:
+
+bash
+복사
+편집
+.\mitmdump.exe -s src\server\proxy_server.py
+로그에 다음과 같은 메시지가 보이면 성공:
+
+csharp
+복사
+편집
+HTTP(S) proxy listening at *:8080
+[client connect]
+[request] ...
+정상적으로 HTTPS 요청이 복호화되고, 인증서 오류가 없음
+
+📌 참고 사항
+Firefox 브라우저는 별도 인증서 저장소를 사용하므로 추가 등록 필요
+
+시스템 프록시 설정이 초기화되면 다시 netsh winhttp set proxy ... 명령 실행
+
+인증서 등록 후에도 안 될 경우, 브라우저 캐시 또는 재부팅 권장

@@ -167,6 +167,7 @@ class MainWindow(QWidget):
 
         # 프록시 실행
         self.run_proxy()
+        time.sleep(2)
 
         if not self.wait_for_proxy():
             print("프록시 서버가 포트 8080에서 실행되지 않았습니다.")
