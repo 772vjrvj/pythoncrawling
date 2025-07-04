@@ -37,6 +37,7 @@ class ProxyLogger:
                 ctx.log.info(f"📨 요청 Payload에서 추출된 queryText: {query_text}")
 
     def response(self, flow: http.HTTPFlow):
+        global latest_query_text
 
         if "kipris.or.kr" in flow.request.pretty_host and "kpat/resulta.do" in flow.request.pretty_url:
             try:
@@ -51,25 +52,26 @@ class ProxyLogger:
                 for i, result in enumerate(result_list, start=1):
                     ctx.log.info(json.dumps(result, indent=2, ensure_ascii=False))
 
-                file_path = "data.json"
-                ctx.log.info("📄 existing 111")
-                if os.path.exists(file_path):
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        existing = json.load(f)
-                else:
-                    existing = {}
-                ctx.log.info("📄 existing 222")
+                if latest_query_text:
+                    padded_key_base = str(latest_query_text).zfill(7)
 
-                # 여러 건을 padded_key_base_1, _2 ... 식으로 저장
-                for i, result in enumerate(result_list, start=1):
-                    key = f"{result['AN']}_{i}"
-                    existing[key] = result
-                    ctx.log.info(f"✅ 저장 준비: {key}")
+                    file_path = "data.json"
+                    if os.path.exists(file_path):
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            existing = json.load(f)
+                    else:
+                        existing = {}
 
-                with open(file_path, "w", encoding="utf-8") as f:
-                    json.dump(existing, f, indent=2, ensure_ascii=False)
+                    # 여러 건을 padded_key_base_1, _2 ... 식으로 저장
+                    for i, result in enumerate(result_list, start=1):
+                        key = f"{padded_key_base}_{i}"
+                        existing[key] = result
+                        ctx.log.info(f"✅ 저장 준비: {key}")
 
-                ctx.log.info(f"✅ data.json 파일에 항목들 저장 완료")
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        json.dump(existing, f, indent=2, ensure_ascii=False)
+
+                    ctx.log.info(f"✅ data.json 파일에 '{padded_key_base}_*' 항목들 저장 완료")
 
             except Exception as e:
                 ctx.log.warn(f"⚠️ 응답 처리 실패: {str(e)}")
