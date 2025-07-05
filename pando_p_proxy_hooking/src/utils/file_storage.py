@@ -1,8 +1,17 @@
 #src/utils/.file_storage.py
+import os
 import json
 import os
+import sys
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data.json')
+def get_base_dir():
+    # 빌드된 exe에서 실행 중이면 sys.executable 기준
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    # 평소 개발 환경에선 이 파일 기준
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+DATA_FILE = os.path.join(get_base_dir(), 'data.json')
 
 def load_data():
     if not os.path.exists(DATA_FILE):
@@ -20,6 +29,6 @@ def load_data():
         return {}
 
 def save_data(data):
-    print(data)
+    print(f"💾 저장 중: {DATA_FILE}")
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

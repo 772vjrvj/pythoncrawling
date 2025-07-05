@@ -2,7 +2,6 @@ import os
 import subprocess
 import time
 import socket
-import pathlib
 import ctypes
 import winreg
 import sys
@@ -31,7 +30,11 @@ class MainWindow(QWidget):
         if getattr(sys, 'frozen', False):
             return os.path.dirname(sys.executable)
         else:
-            return os.path.dirname(os.path.abspath(__file__))
+            return os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+
+    def get_resource_path(self, relative_path):
+        base = self.get_runtime_dir()
+        return os.path.join(base, relative_path)
 
     def ui_set(self):
         self.setWindowTitle("PandoP")
@@ -73,7 +76,6 @@ class MainWindow(QWidget):
         row1 = QHBoxLayout()
         label1 = QLabel("● 매장명 :")
         label1.setFixedWidth(70)
-        label1.setStyleSheet("background-color: #fafafa;")
         self.store_name_value = QLabel("-")
         row1.addWidget(label1)
         row1.addSpacing(10)
@@ -83,7 +85,6 @@ class MainWindow(QWidget):
         row2 = QHBoxLayout()
         label2 = QLabel("● 지   점 :")
         label2.setFixedWidth(70)
-        label2.setStyleSheet("background-color: #fafafa;")
         self.branch_value = QLabel("-")
         row2.addWidget(label2)
         row2.addSpacing(10)
@@ -154,7 +155,6 @@ class MainWindow(QWidget):
         time.sleep(2)
 
         if not self.wait_for_proxy():
-            print("프록시 서버가 포트 8080에서 실행되지 않았습니다.")
             return
 
         data = load_data()
@@ -165,7 +165,6 @@ class MainWindow(QWidget):
         if info:
             self.store_name_value.setText(info.get("name", "-"))
             self.branch_value.setText(info.get("branch", "-"))
-            print("매장 정보 UI 업데이트 완료")
             data.update({"name": info.get("name", ""), "branch": info.get("branch", "")})
             save_data(data)
         else:
@@ -183,43 +182,68 @@ class MainWindow(QWidget):
         except Exception as e:
             print(f"❌ 프록시 설정 실패: {e}")
 
+    def kill_mitmdump_process(self):
+        try:
+            subprocess.call(["taskkill", "/F", "/IM", "mitmdump.exe", "/T"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print("🛑 기존 mitmdump 프로세스 종료됨")
+        except Exception as e:
+            print(f"⚠️ mitmdump 종료 실패: {e}")
+
+
     def init_cert_and_proxy(self):
         print("🔐 인증서 초기화 및 프록시 서버 시작 중...")
+
+        # 1. 실행 중인 프록시 종료
+        self.kill_mitmdump_process()
+
+        # 2. 윈도우 시스템 프록시 설정
         self.set_windows_gui_proxy()
 
-        base_dir = self.get_runtime_dir()
-        user_profile = os.environ.get("USERPROFILE", "")
-        mitm_folder = os.path.join(user_profile, ".mitmproxy")
-        mitmdump_path = os.path.join(base_dir, "mitmdump.exe")
-        cert_path = os.path.join(mitm_folder, "mitmproxy-ca-cert.cer")
+        # 3. 경로 설정
+        mitmdump_path = self.get_resource_path("mitmdump.exe")
+        user_profile  = os.environ.get("USERPROFILE", "")
+        mitm_folder   = os.path.join(user_profile, ".mitmproxy")
+        cert_path     = os.path.join(mitm_folder, "mitmproxy-ca-cert.cer")
 
-        # 1. 기존 인증서 및 디렉토리 제거
+        # 4. 기존 인증서 제거
         if os.path.exists(cert_path):
-            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if os.path.exists(mitm_folder):
             subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
 
-        # 2. 인증서 생성을 위한 mitmdump 실행 (임시 종료 없이 5초 대기)
-        subprocess.call([mitmdump_path, "--quit"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # 5. 인증서 생성을 위해 잠깐 mitmdump 실행
+        print("🔧 mitmdump 실행 중 (인증서 생성)...")
+        subprocess.Popen(
+            [mitmdump_path],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
         time.sleep(5)
 
-        # 3. 인증서 존재 확인 후 등록
+        self.kill_mitmdump_process()
+
+        # 6. 인증서 등록
         if os.path.exists(cert_path):
             result = subprocess.call(["certutil", "-addstore", "Root", cert_path])
             if result != 0:
                 print("❌ 인증서 등록 실패. 관리자 권한 필요!")
                 return
             print("✅ 인증서 등록 완료!")
+        else:
+            print("❌ 인증서 생성 실패. mitmdump 실행 확인 필요.")
+            return
 
-        # 4. 실제 프록시 실행
+        # 7. 프록시 서버 실행
         self.run_proxy()
+
 
     def run_proxy(self):
         print("[프록시] 프록시 실행 준비 중...")
-        base_dir = self.get_runtime_dir()
-        mitmdump_path = os.path.join(base_dir, "mitmdump.exe")
-        script_path = os.path.join(base_dir, "src", "server", "proxy_server.py")
-        logs_dir = os.path.join(base_dir, "logs")
+
+        mitmdump_path = self.get_resource_path("mitmdump.exe")
+        script_path   = self.get_resource_path("src/server/proxy_server.py")
+        logs_dir      = self.get_resource_path("logs")
         os.makedirs(logs_dir, exist_ok=True)
         log_path = os.path.join(logs_dir, "mitm_bat.log")
 

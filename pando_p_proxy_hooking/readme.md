@@ -157,6 +157,13 @@ Stop-Process -Name "mitmdump" -Force
 *매장ID:68636f9e1b554bb5c193ad06
 304에러 제거
 
+
+id:fogjin94
+pw:cns0753!
+
+
+
+
 https://docs.google.com/spreadsheets/d/1ll0t1y2RmXiCY_pfXszL6gv8D8KQFQSRrcWISwkjB9c/edit?gid=0#gid=0
 
 502에러
@@ -179,8 +186,13 @@ mitmproxy는 HTTP/2를 100% 완벽하게 지원하지 않음
 
 
 
+pyinstaller --noconfirm --onefile --console --uac-admin --add-data "mitmdump.exe;." --add-data "src/server/proxy_server.py;src/server" main.py
 
 
+
+
+
+pyinstaller --noconfirm --onedir --console --uac-admin main.py
 
 
 

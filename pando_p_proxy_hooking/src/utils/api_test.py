@@ -45,6 +45,7 @@ def post(token: str, store_id: str, data: dict, param_type: str = None):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
     }
+    ctx.log.info(f"[POST] header : {headers}")
     ctx.log.info(f"[POST] {url}\n{json.dumps(data, ensure_ascii=False, indent=2)}")
     try:
         res = requests.post(url, json=data, headers=headers, proxies={"http": None, "https": None})
@@ -59,6 +60,7 @@ def put(token: str, store_id: str, data: dict, param_type: str = None):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
     }
+    ctx.log.info(f"[PUT] header : {headers}")
     ctx.log.info(f"[PUT] {url}\n{json.dumps(data, ensure_ascii=False, indent=2)}")
     try:
         res = requests.put(url, json=data, headers=headers, proxies={"http": None, "https": None})
@@ -73,6 +75,7 @@ def patch(token: str, store_id: str, data: dict, param_type: str = None):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
     }
+    ctx.log.info(f"[PATCH] header : {headers}")
     ctx.log.info(f"[PATCH] {url}\n{json.dumps(data, ensure_ascii=False, indent=2)}")
     try:
         res = requests.patch(url, json=data, headers=headers, proxies={"http": None, "https": None})
@@ -87,6 +90,7 @@ def delete(token: str, store_id: str, data: dict = None, param_type: str = None)
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
     }
+    ctx.log.info(f"[DELETE] header : {headers}")
     ctx.log.info(f"[DELETE] {url}\n{json.dumps(data, ensure_ascii=False, indent=2)}")
     try:
         res = requests.delete(url, json=data, headers=headers, proxies={"http": None, "https": None})

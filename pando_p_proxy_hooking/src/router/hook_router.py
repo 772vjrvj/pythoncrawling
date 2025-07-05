@@ -4,16 +4,23 @@ import asyncio
 import json
 from mitmproxy import ctx
 
+# 실행 위치 기준으로 data.json 접근을 위해 base_dir 설정
+def get_base_dir():
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    else:
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+
+DATA_JSON_PATH = os.path.join(get_base_dir(), "data.json")
+
 # src 가이드 라우터를 위한 가운데 경로 추가
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.insert(0, get_base_dir())
 
 from src.utils.api_test import patch, delete as api_delete
 from src.utils.common import to_iso_kst_format, compact
 
 CRAWLING_SITE = 'GolfzonPark'
 request_store = {}
-
-DATA_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data.json"))
 
 
 def load_data():
