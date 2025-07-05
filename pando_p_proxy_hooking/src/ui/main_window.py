@@ -1,3 +1,4 @@
+# src/ui/main_window
 import os
 import subprocess
 import time
@@ -26,15 +27,18 @@ class MainWindow(QWidget):
         self.ui_set()
         self.load_store_id()
 
+
     def get_runtime_dir(self):
         if getattr(sys, 'frozen', False):
             return os.path.dirname(sys.executable)
         else:
             return os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 
+
     def get_resource_path(self, relative_path):
         base = self.get_runtime_dir()
         return os.path.join(base, relative_path)
+
 
     def ui_set(self):
         self.setWindowTitle("PandoP")
@@ -98,9 +102,13 @@ class MainWindow(QWidget):
 
         button_box = QHBoxLayout()
         self.store_button = QPushButton("등록")
-        self.start_button = QPushButton("시작")
         self.store_button.setFixedWidth(130)
+        self.store_button.setCursor(Qt.PointingHandCursor)
+
+        self.start_button = QPushButton("시작")
         self.start_button.setFixedWidth(130)
+        self.start_button.setCursor(Qt.PointingHandCursor)
+
         button_box.addStretch()
         button_box.addWidget(self.store_button)
         button_box.addSpacing(20)
@@ -116,11 +124,13 @@ class MainWindow(QWidget):
         self.store_button.clicked.connect(self.open_store_dialog)
         self.start_button.clicked.connect(self.start_action)
 
+
     def load_store_id(self):
         data = load_data()
         self.current_store_id = data.get("store_id") or self.current_store_id
         self.store_name_value.setText(data.get("name") or "-")
         self.branch_value.setText(data.get("branch") or "-")
+
 
     def save_store_id(self, store_id):
         self.current_store_id = store_id
@@ -128,12 +138,14 @@ class MainWindow(QWidget):
         data['store_id'] = store_id
         save_data(data)
 
+
     def open_store_dialog(self):
         dialog = StoreDialog(current_store_id=self.current_store_id)
         if dialog.exec_() == QDialog.Accepted:
             store_id = dialog.get_data()
             if store_id is not None:
                 self.save_store_id(store_id)
+
 
     def wait_for_proxy(self, port=8080, timeout=10):
         start = time.time()
@@ -146,6 +158,7 @@ class MainWindow(QWidget):
             time.sleep(0.5)
         print(f"프록시 서버가 포트 {port}에서 실행되지 않았습니다.")
         return False
+
 
     def start_action(self):
         if not self.current_store_id:
@@ -170,6 +183,12 @@ class MainWindow(QWidget):
         else:
             print("매장 정보 요청 실패")
 
+        self.store_button.hide()
+        self.start_button.setText("종료")
+        self.start_button.clicked.disconnect()
+        self.start_button.clicked.connect(self.cleanup_and_exit)
+
+
     def set_windows_gui_proxy(self, host="127.0.0.1", port=8080):
         key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
         try:
@@ -181,6 +200,7 @@ class MainWindow(QWidget):
             print(f"✅ Windows GUI 프록시 설정됨: {host}:{port}")
         except Exception as e:
             print(f"❌ 프록시 설정 실패: {e}")
+
 
     def kill_mitmdump_process(self):
         try:
@@ -258,3 +278,41 @@ class MainWindow(QWidget):
             print(f"[프록시] mitmdump 실행 완료 (로그: {log_path})")
         except Exception as e:
             print(f"[프록시] 실행 실패: {e}")
+
+
+    def cleanup_and_exit(self):
+        print("🧹 종료 작업 수행 중...")
+
+        # 1. 프록시 프로세스 종료
+        self.kill_mitmdump_process()
+
+        # 2. 윈도우 프록시 해제
+        try:
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
+                winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
+            ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
+            ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
+            print("✅ 프록시 설정 해제 완료")
+        except Exception as e:
+            print(f"❌ 프록시 해제 실패: {e}")
+
+        # 3. 인증서 제거
+        user_profile = os.environ.get("USERPROFILE", "")
+        mitm_folder = os.path.join(user_profile, ".mitmproxy")
+        try:
+            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if os.path.exists(mitm_folder):
+                subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
+            print("✅ 인증서 제거 완료")
+        except Exception as e:
+            print(f"❌ 인증서 제거 실패: {e}")
+
+        # 4. 종료
+        self.close()
+
+
+    def closeEvent(self, event):
+        self.cleanup_and_exit()
+        event.accept()
