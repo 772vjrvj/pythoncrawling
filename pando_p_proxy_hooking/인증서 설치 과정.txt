@@ -4,6 +4,10 @@ https://mitmproxy.org/downloads/
 📦 설치 방법:
 Windows zip 버전 다운로드 → 압축 해제
 그 안에 mitmproxy.exe, mitmdump.exe, mitmweb.exe가 포함됨
+https://mitmproxy.org/downloads/
+https://mitmproxy.org/downlDownloads > 12.1.1oads/
+✔ mitmproxy-12.1.1-windows-x86_64.zip (79.1 MB)
+
 
 
 

@@ -1,7 +1,7 @@
 import os
 import fnmatch
 
-EXCLUDE_DIRS = {'.idea', 'build', 'dist', 'image', 'logs', 'test', 'seleniumwire', '__pycache__'}
+EXCLUDE_DIRS = {'.idea', 'build', 'image', 'test', 'seleniumwire', '__pycache__'}
 EXCLUDE_FILES = {'.env', 'main.spec', 'print_tree.py'}
 EXCLUDE_PATTERNS = ['*.txt']
 
@@ -39,7 +39,7 @@ def print_dir_tree(dir_path, depth=0, max_depth=4):
 
         if is_dir:
             folders.append(entry)
-        elif entry.endswith((".py", ".bat", ".log")):
+        elif entry.endswith((".py", ".bat", ".log", ".exe")):
             py_files.append(entry)
 
     for folder in folders:

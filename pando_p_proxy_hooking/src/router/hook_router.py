@@ -16,7 +16,7 @@ DATA_JSON_PATH = os.path.join(get_base_dir(), "data.json")
 # src 가이드 라우터를 위한 가운데 경로 추가
 sys.path.insert(0, get_base_dir())
 
-from src.utils.api_test import patch, delete as api_delete
+from src.utils.api_proxy import patch, delete as api_delete
 from src.utils.common import to_iso_kst_format, compact
 
 CRAWLING_SITE = 'GolfzonPark'
