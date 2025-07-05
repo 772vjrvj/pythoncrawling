@@ -6,6 +6,8 @@ DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
 
 def load_data():
     if not os.path.exists(DATA_FILE):
+        print(f"⚠️ data.json 없음. 새로 생성합니다: {DATA_FILE}")
+        save_data({})
         return {}
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -14,7 +16,7 @@ def load_data():
                 return {}
             return json.loads(content)
     except json.JSONDecodeError:
-        # 파일 내용이 유효하지 않을 때 빈 dict 반환
+        print("⚠️ data.json 내용 파싱 실패. 빈 딕셔너리로 대체합니다.")
         return {}
 
 def save_data(data):

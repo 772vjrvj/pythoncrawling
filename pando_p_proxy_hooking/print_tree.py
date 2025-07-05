@@ -39,7 +39,7 @@ def print_dir_tree(dir_path, depth=0, max_depth=4):
 
         if is_dir:
             folders.append(entry)
-        elif entry.endswith(".py"):
+        elif entry.endswith((".py", ".bat", ".log")):
             py_files.append(entry)
 
     for folder in folders:
