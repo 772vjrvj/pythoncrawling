@@ -3,6 +3,7 @@ import os
 import asyncio
 import json
 from mitmproxy import ctx
+from src.utils.logger import log_info, log_error, log_warn
 
 # 실행 위치 기준으로 data.json 접근을 위해 base_dir 설정
 def get_base_dir():
@@ -28,41 +29,42 @@ def load_data():
         with open(DATA_JSON_PATH, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        ctx.log.error(f"[data.json] 로딩 실패: {e}")
+        log_error(f"[판도] [data.json] 로딩 실패: {e}")
         return {}
+
 
 def get_token():
     token = load_data().get("token")
-    ctx.log.info(f"token : {token}")
+    log_info(f"[판도] token : {token}")
     return token
 
 def get_store_id():
     store_id = load_data().get("store_id")
-    ctx.log.info(f"store_id : {store_id}")
+    log_info(f"[판도] store_id : {store_id}")
     return store_id
 
 def save_request(action, url, data):
     request_store[url] = {'action': action, 'data': data}
-    ctx.log.info(f"저장됨: [{action}]:data - {data}")
-    ctx.log.info(f"저장됨: [{action}]:url - {url}")
+    log_info(f"[판도] 저장됨: [{action}]:data - {data}")
+    log_info(f"[판도] 저장됨: [{action}]:url - {url}")
 
 def match_and_dispatch(action, url, response_data):
     entry = request_store.get(url)
-    ctx.log.info(f"[🧪 경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
-    ctx.log.info(f"매칭 시도: [{action}]:entry - {entry}")
+    log_info(f"[판도] [경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
+    log_info(f"[판도] 매칭 시도: [{action}]:entry - {entry}")
 
     token = get_token()
     store_id = get_store_id()
 
     if action == 'delete_mobile':
-        ctx.log.info(f"[{action}] 단부 응답 처리")
+        log_info(f"[판도] [{action}] 단부 응답 처리")
         dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
         return
 
     if not entry or entry['action'] != action:
         return
 
-    ctx.log.info(f"요청-응답 매칭됨11111: [{action}] - {url}")
+    log_info(f"[판도] 요청-응답 매칭됨: [{action}] - {url}")
     request_data = entry['data']
     request_store.pop(url, None)
 
@@ -90,7 +92,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(request.get('reserveNo')) if request.get('reserveNo') else None,
                 }, ['phone'])
-                ctx.log.info("register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 patch(token, store_id, payload)
 
         elif action == 'edit':
@@ -105,7 +107,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 예약 변경 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                ctx.log.info("delete 고객 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] delete 고객 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 api_delete(token, store_id, payload, 'g')
 
             elif len(entities) > 0:
@@ -114,7 +116,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'reason': '수정 취소',
                     'externalId': str(booking_number),
                 }
-                ctx.log.info("delete 운영자 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] delete 운영자 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 api_delete(token, store_id, payload)
 
             if len(entities) > 0:
@@ -133,7 +135,7 @@ def dispatch_action(action, combined_data, token, store_id):
                         'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                         'externalGroupId': str(reserve_no) if reserve_no else None,
                     }, ['phone'])
-                    ctx.log.info("edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     patch(token, store_id, payload)
             else:
                 payload = compact({
@@ -150,7 +152,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(reserve_no) if reserve_no else None,
                 }, ['phone'])
-                ctx.log.info("edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 patch(token, store_id, payload)
 
         elif action == 'edit_move':
@@ -161,7 +163,7 @@ def dispatch_action(action, combined_data, token, store_id):
                 'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                 'crawlingSite': CRAWLING_SITE,
             })
-            ctx.log.info("edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            log_info("[판도] edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
             patch(token, store_id, payload, 'm')
 
         elif action == 'delete':
@@ -172,7 +174,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 고객 예약을 운영자가 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                ctx.log.info("delete 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] delete 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 api_delete(token, store_id, payload, 'g')
             else:
                 booking_nums = request.get('bookingNums')
@@ -184,7 +186,7 @@ def dispatch_action(action, combined_data, token, store_id):
                         'reason': '운영자 취소',
                         'externalId': str(num),
                     }
-                    ctx.log.info("delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload)
 
         elif action == 'delete_mobile':
@@ -197,11 +199,11 @@ def dispatch_action(action, combined_data, token, store_id):
                         'reason': '모바일 고객 예약 취소',
                         'externalGroupId': str(reserve_no),
                     }
-                    ctx.log.info("delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload, 'g')
 
         else:
-            ctx.log.warn(f"알 수 없는 액션: {action}")
+            log_warn(f"[판도] 알 수 없는 액션: {action}")
 
     except Exception as e:
-        ctx.log.error(f"dispatch 처리 실패 [{action}]: {e}")
+        log_error(f"[판도] dispatch 처리 실패 [{action}]: {e}")

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any, Dict, Optional, List
-
+from src.utils.logger import log_error
 
 def to_iso_kst_format(kst_str: str) -> Optional[str]:
     """
@@ -11,9 +11,8 @@ def to_iso_kst_format(kst_str: str) -> Optional[str]:
         dt = datetime.strptime(kst_str, "%Y%m%d%H%M%S")
         return dt.strftime("%Y-%m-%dT%H:%M:%S+09:00")
     except Exception as e:
-        print(f"날짜 변환 오류: {e}")
+        log_error(f"[판도] 날짜 변환 오류: {e}")
         return None
-
 
 def compact(obj, always_include=None):
     if always_include is None:

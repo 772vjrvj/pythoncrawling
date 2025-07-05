@@ -1,4 +1,3 @@
-# src/ui/main_window
 import os
 import subprocess
 import time
@@ -15,6 +14,7 @@ from src.ui.store_dialog import StoreDialog
 from src.utils.file_storage import load_data, save_data
 from src.utils.token_manager import start_token
 from src.utils.api import fetch_store_info
+from src.utils.logger import log_info, log_error
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -27,18 +27,15 @@ class MainWindow(QWidget):
         self.ui_set()
         self.load_store_id()
 
-
     def get_runtime_dir(self):
         if getattr(sys, 'frozen', False):
             return os.path.dirname(sys.executable)
         else:
             return os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 
-
     def get_resource_path(self, relative_path):
         base = self.get_runtime_dir()
         return os.path.join(base, relative_path)
-
 
     def ui_set(self):
         self.setWindowTitle("PandoP")
@@ -124,20 +121,17 @@ class MainWindow(QWidget):
         self.store_button.clicked.connect(self.open_store_dialog)
         self.start_button.clicked.connect(self.start_action)
 
-
     def load_store_id(self):
         data = load_data()
         self.current_store_id = data.get("store_id") or self.current_store_id
         self.store_name_value.setText(data.get("name") or "-")
         self.branch_value.setText(data.get("branch") or "-")
 
-
     def save_store_id(self, store_id):
         self.current_store_id = store_id
         data = load_data()
         data['store_id'] = store_id
         save_data(data)
-
 
     def open_store_dialog(self):
         dialog = StoreDialog(current_store_id=self.current_store_id)
@@ -146,19 +140,17 @@ class MainWindow(QWidget):
             if store_id is not None:
                 self.save_store_id(store_id)
 
-
     def wait_for_proxy(self, port=8080, timeout=10):
         start = time.time()
         while time.time() - start < timeout:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 result = sock.connect_ex(('127.0.0.1', port))
                 if result == 0:
-                    print(f"프록시 서버가 포트 {port}에서 실행 중입니다.")
+                    log_info(f"[판도] 프록시 서버가 포트 {port}에서 실행 중입니다.")
                     return True
             time.sleep(0.5)
-        print(f"프록시 서버가 포트 {port}에서 실행되지 않았습니다.")
+        log_error(f"[판도] 프록시 서버가 포트 {port}에서 실행되지 않았습니다.")
         return False
-
 
     def start_action(self):
         if not self.current_store_id:
@@ -181,13 +173,12 @@ class MainWindow(QWidget):
             data.update({"name": info.get("name", ""), "branch": info.get("branch", "")})
             save_data(data)
         else:
-            print("매장 정보 요청 실패")
+            log_error("[판도] ❌ 매장 정보 요청 실패")
 
         self.store_button.hide()
         self.start_button.setText("종료")
         self.start_button.clicked.disconnect()
         self.start_button.clicked.connect(self.cleanup_and_exit)
-
 
     def set_windows_gui_proxy(self, host="127.0.0.1", port=8080):
         key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
@@ -197,70 +188,52 @@ class MainWindow(QWidget):
                 winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, f"{host}:{port}")
             ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
             ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
-            print(f"✅ Windows GUI 프록시 설정됨: {host}:{port}")
+            log_info(f"[판도] ✅ Windows GUI 프록시 설정됨: {host}:{port}")
         except Exception as e:
-            print(f"❌ 프록시 설정 실패: {e}")
-
+            log_error(f"[판도] ❌ 프록시 설정 실패: {e}")
 
     def kill_mitmdump_process(self):
         try:
             subprocess.call(["taskkill", "/F", "/IM", "mitmdump.exe", "/T"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            print("🛑 기존 mitmdump 프로세스 종료됨")
+            log_info("[판도] 🛑 기존 mitmdump 프로세스 종료됨")
         except Exception as e:
-            print(f"⚠️ mitmdump 종료 실패: {e}")
-
+            log_error(f"[판도] ⚠️ mitmdump 종료 실패: {e}")
 
     def init_cert_and_proxy(self):
-        print("🔐 인증서 초기화 및 프록시 서버 시작 중...")
-
-        # 1. 실행 중인 프록시 종료
+        log_info("[판도] 🔐 인증서 초기화 및 프록시 서버 시작 중...")
         self.kill_mitmdump_process()
-
-        # 2. 윈도우 시스템 프록시 설정
         self.set_windows_gui_proxy()
 
-        # 3. 경로 설정
         mitmdump_path = self.get_resource_path("mitmdump.exe")
         user_profile  = os.environ.get("USERPROFILE", "")
         mitm_folder   = os.path.join(user_profile, ".mitmproxy")
         cert_path     = os.path.join(mitm_folder, "mitmproxy-ca-cert.cer")
 
-        # 4. 기존 인증서 제거
         if os.path.exists(cert_path):
-            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if os.path.exists(mitm_folder):
             subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
 
-        # 5. 인증서 생성을 위해 잠깐 mitmdump 실행
-        print("🔧 mitmdump 실행 중 (인증서 생성)...")
-        subprocess.Popen(
-            [mitmdump_path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
+        log_info("[판도] 🔧 mitmdump 실행 중 (인증서 생성)...")
+        subprocess.Popen([mitmdump_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(5)
 
         self.kill_mitmdump_process()
 
-        # 6. 인증서 등록
         if os.path.exists(cert_path):
             result = subprocess.call(["certutil", "-addstore", "Root", cert_path])
             if result != 0:
-                print("❌ 인증서 등록 실패. 관리자 권한 필요!")
+                log_error("[판도] ❌ 인증서 등록 실패. 관리자 권한 필요!")
                 return
-            print("✅ 인증서 등록 완료!")
+            log_info("[판도] ✅ 인증서 등록 완료!")
         else:
-            print("❌ 인증서 생성 실패. mitmdump 실행 확인 필요.")
+            log_error("[판도] ❌ 인증서 생성 실패. mitmdump 실행 확인 필요.")
             return
 
-        # 7. 프록시 서버 실행
         self.run_proxy()
 
-
     def run_proxy(self):
-        print("[프록시] 프록시 실행 준비 중...")
-
+        log_info("[판도] [프록시] 프록시 실행 준비 중...")
         mitmdump_path = self.get_resource_path("mitmdump.exe")
         script_path   = self.get_resource_path("src/server/proxy_server.py")
         logs_dir      = self.get_resource_path("logs")
@@ -275,29 +248,24 @@ class MainWindow(QWidget):
                     stderr=subprocess.STDOUT,
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
-            print(f"[프록시] mitmdump 실행 완료 (로그: {log_path})")
+            log_info(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
         except Exception as e:
-            print(f"[프록시] 실행 실패: {e}")
-
+            log_error(f"[판도] [프록시] 실행 실패: {e}")
 
     def cleanup_and_exit(self):
-        print("🧹 종료 작업 수행 중...")
-
-        # 1. 프록시 프로세스 종료
+        log_info("[판도] 🧹 종료 작업 수행 중...")
         self.kill_mitmdump_process()
 
-        # 2. 윈도우 프록시 해제
         try:
             key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
                 winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
             ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
             ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
-            print("✅ 프록시 설정 해제 완료")
+            log_info("[판도] ✅ 프록시 설정 해제 완료")
         except Exception as e:
-            print(f"❌ 프록시 해제 실패: {e}")
+            log_error(f"[판도] ❌ 프록시 해제 실패: {e}")
 
-        # 3. 인증서 제거
         user_profile = os.environ.get("USERPROFILE", "")
         mitm_folder = os.path.join(user_profile, ".mitmproxy")
         try:
@@ -305,13 +273,11 @@ class MainWindow(QWidget):
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if os.path.exists(mitm_folder):
                 subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
-            print("✅ 인증서 제거 완료")
+            log_info("[판도] ✅ 인증서 제거 완료")
         except Exception as e:
-            print(f"❌ 인증서 제거 실패: {e}")
+            log_error(f"[판도] ❌ 인증서 제거 실패: {e}")
 
-        # 4. 종료
         self.close()
-
 
     def closeEvent(self, event):
         self.cleanup_and_exit()
