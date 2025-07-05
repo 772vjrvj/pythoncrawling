@@ -1,3 +1,4 @@
+# src/ui/main_window.py
 import os
 import subprocess
 import time
@@ -14,7 +15,7 @@ from src.ui.store_dialog import StoreDialog
 from src.utils.file_storage import load_data, save_data
 from src.utils.token_manager import start_token
 from src.utils.api import fetch_store_info
-from src.utils.logger import log_info, log_error
+from src.utils.logger import ui_log, ui_log, init_pando_logger
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -24,6 +25,10 @@ class MainWindow(QWidget):
         self.store_button     = None
         self.branch_value     = None
         self.store_name_value = None
+        self.init_set()
+
+    def init_set(self):
+        init_pando_logger()
         self.ui_set()
         self.load_store_id()
 
@@ -146,10 +151,10 @@ class MainWindow(QWidget):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 result = sock.connect_ex(('127.0.0.1', port))
                 if result == 0:
-                    log_info(f"[판도] 프록시 서버가 포트 {port}에서 실행 중입니다.")
+                    ui_log(f"[판도] 프록시 서버가 포트 {port}에서 실행 중입니다.")
                     return True
             time.sleep(0.5)
-        log_error(f"[판도] 프록시 서버가 포트 {port}에서 실행되지 않았습니다.")
+        ui_log(f"[판도] 프록시 서버가 포트 {port}에서 실행되지 않았습니다.")
         return False
 
     def start_action(self):
@@ -173,7 +178,7 @@ class MainWindow(QWidget):
             data.update({"name": info.get("name", ""), "branch": info.get("branch", "")})
             save_data(data)
         else:
-            log_error("[판도] ❌ 매장 정보 요청 실패")
+            ui_log("[판도] 매장 정보 요청 실패")
 
         self.store_button.hide()
         self.start_button.setText("종료")
@@ -188,19 +193,19 @@ class MainWindow(QWidget):
                 winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, f"{host}:{port}")
             ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
             ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
-            log_info(f"[판도] ✅ Windows GUI 프록시 설정됨: {host}:{port}")
+            ui_log(f"[판도] Windows GUI 프록시 설정됨: {host}:{port}")
         except Exception as e:
-            log_error(f"[판도] ❌ 프록시 설정 실패: {e}")
+            ui_log(f"[판도] 프록시 설정 실패: {e}")
 
     def kill_mitmdump_process(self):
         try:
             subprocess.call(["taskkill", "/F", "/IM", "mitmdump.exe", "/T"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            log_info("[판도] 🛑 기존 mitmdump 프로세스 종료됨")
+            ui_log("[판도] 기존 mitmdump 프로세스 종료됨")
         except Exception as e:
-            log_error(f"[판도] ⚠️ mitmdump 종료 실패: {e}")
+            ui_log(f"[판도] mitmdump 종료 실패: {e}")
 
     def init_cert_and_proxy(self):
-        log_info("[판도] 🔐 인증서 초기화 및 프록시 서버 시작 중...")
+        ui_log("[판도] 인증서 초기화 및 프록시 서버 시작 중...")
         self.kill_mitmdump_process()
         self.set_windows_gui_proxy()
 
@@ -214,7 +219,7 @@ class MainWindow(QWidget):
         if os.path.exists(mitm_folder):
             subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
 
-        log_info("[판도] 🔧 mitmdump 실행 중 (인증서 생성)...")
+        ui_log("[판도] 🔧 mitmdump 실행 중 (인증서 생성)...")
         subprocess.Popen([mitmdump_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(5)
 
@@ -223,17 +228,17 @@ class MainWindow(QWidget):
         if os.path.exists(cert_path):
             result = subprocess.call(["certutil", "-addstore", "Root", cert_path])
             if result != 0:
-                log_error("[판도] ❌ 인증서 등록 실패. 관리자 권한 필요!")
+                ui_log("[판도] 인증서 등록 실패. 관리자 권한 필요!")
                 return
-            log_info("[판도] ✅ 인증서 등록 완료!")
+            ui_log("[판도] 인증서 등록 완료!")
         else:
-            log_error("[판도] ❌ 인증서 생성 실패. mitmdump 실행 확인 필요.")
+            ui_log("[판도] 인증서 생성 실패. mitmdump 실행 확인 필요.")
             return
 
         self.run_proxy()
 
     def run_proxy(self):
-        log_info("[판도] [프록시] 프록시 실행 준비 중...")
+        ui_log("[판도] [프록시] 프록시 실행 준비 중...")
         mitmdump_path = self.get_resource_path("mitmdump.exe")
         script_path   = self.get_resource_path("src/server/proxy_server.py")
         logs_dir      = self.get_resource_path("logs")
@@ -248,12 +253,12 @@ class MainWindow(QWidget):
                     stderr=subprocess.STDOUT,
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
-            log_info(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
+            ui_log(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
         except Exception as e:
-            log_error(f"[판도] [프록시] 실행 실패: {e}")
+            ui_log(f"[판도] [프록시] 실행 실패: {e}")
 
     def cleanup_and_exit(self):
-        log_info("[판도] 🧹 종료 작업 수행 중...")
+        ui_log("[판도] 🧹 종료 작업 수행 중...")
         self.kill_mitmdump_process()
 
         try:
@@ -262,9 +267,9 @@ class MainWindow(QWidget):
                 winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
             ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
             ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
-            log_info("[판도] ✅ 프록시 설정 해제 완료")
+            ui_log("[판도] 프록시 설정 해제 완료")
         except Exception as e:
-            log_error(f"[판도] ❌ 프록시 해제 실패: {e}")
+            ui_log(f"[판도] 프록시 해제 실패: {e}")
 
         user_profile = os.environ.get("USERPROFILE", "")
         mitm_folder = os.path.join(user_profile, ".mitmproxy")
@@ -273,9 +278,9 @@ class MainWindow(QWidget):
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if os.path.exists(mitm_folder):
                 subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
-            log_info("[판도] ✅ 인증서 제거 완료")
+            ui_log("[판도] 인증서 제거 완료")
         except Exception as e:
-            log_error(f"[판도] ❌ 인증서 제거 실패: {e}")
+            ui_log(f"[판도] 인증서 제거 실패: {e}")
 
         self.close()
 
