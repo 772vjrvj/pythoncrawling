@@ -253,6 +253,13 @@ class MainWindow(QWidget):
                     stderr=subprocess.STDOUT,
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
+            
+            # 운영시에는 이걸로해서 아에 로그 기록 안하게 하기
+            # subprocess.Popen(
+            #     [mitmdump_path, "--no-http2", "--ssl-insecure", "-s", script_path],
+            #     creationflags=subprocess.CREATE_NO_WINDOW
+            # )
+                
             ui_log(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
         except Exception as e:
             ui_log(f"[판도] [프록시] 실행 실패: {e}")
