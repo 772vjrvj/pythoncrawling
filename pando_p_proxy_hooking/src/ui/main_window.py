@@ -265,7 +265,7 @@ class MainWindow(QWidget):
         script_path   = self.get_resource_path("src/server/proxy_server.py")
         logs_dir      = self.get_resource_path("logs")
         os.makedirs(logs_dir, exist_ok=True)
-        log_path = os.path.join(logs_dir, "mitm_bat.log")
+        log_path = os.path.join(logs_dir, "proxy_server.log")
 
         try:
             with open(log_path, "w", encoding="utf-8") as log_file:
