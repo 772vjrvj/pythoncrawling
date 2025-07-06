@@ -106,7 +106,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 if not self.running:
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
-                time.sleep(random.uniform(2, 4))
+                time.sleep(random.uniform(1, 2))
 
                 result = self.fetch_search_results(query, page)
                 if not result:
@@ -128,7 +128,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 if place_id in self.saved_ids:
                     continue  # ✅ 이미 수집한 ID는 건너뜀
 
-                time.sleep(random.uniform(2, 4))
+                time.sleep(random.uniform(1, 2))
 
                 place_info = self.fetch_place_info(place_id)
                 if not place_info:
@@ -171,7 +171,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
             self.before_pro_value = pro_value
 
             self.log_signal_func(f"현재 페이지 {self.current_cnt}/{self.total_cnt} : {obj}")
-            time.sleep(random.uniform(2, 3))
+            time.sleep(random.uniform(1, 2))
 
         if result_list:
             self.excel_driver.append_to_csv(self.csv_filename, result_list, self.columns)
@@ -310,9 +310,14 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         except Exception as e:
             self.log_signal_func(f"[에러] fetch_search_results 실패: {e}")
             return []
-
-    def clean_number(value):
-        return "" if not value or value == 0 else value
+    
+    # 숫자 체크
+    def clean_number(self, value):
+        try:
+            num = float(value)
+            return "" if num == 0 else num
+        except (ValueError, TypeError):
+            return ""
 
     # 상세조회
     def fetch_place_info(self, place_id):
@@ -337,108 +342,117 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 'upgrade-insecure-requests': '1',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
             }
+
             response = self.api_client.get(url=url, headers=headers)
 
-            if response:
-                soup = BeautifulSoup(response, 'html.parser')
-                script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
-    
-                if script_tag:
-                    json_text = re.search(r'window\.__APOLLO_STATE__\s*=\s*(\{.*\});', script_tag.string)
-                    if json_text:
-                        data = json.loads(json_text.group(1))
-                        name = data.get(f"PlaceDetailBase:{place_id}", {}).get("name", "")
-                        road = data.get(f"PlaceDetailBase:{place_id}", {}).get("road", "")
-                        address = data.get(f"PlaceDetailBase:{place_id}", {}).get("address", "")
-                        roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
-                        category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
-                        conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", [])
-                        phone = data.get(f"PlaceDetailBase:{place_id}", {}).get("phone", [])
-                        virtualPhone = data.get(f"PlaceDetailBase:{place_id}", {}).get("virtualPhone", [])
+            if not response:
+                self.log_signal_func(f"⚠️ Place ID {place_id} 응답 없음.")
+                return None
 
-                        # 방문자 별점
-                        visitorReviewsScore = clean_number(data.get(f"VisitorReviewStatsResult:{place_id}", {}).get("review", {}).get("avgRating", ""))
+            soup = BeautifulSoup(response, 'html.parser')
+            script_tag = soup.find('script', string=re.compile('window.__APOLLO_STATE__'))
 
-                        # 방문자리뷰수
-                        visitorReviewsTotal = clean_number(data.get(f"VisitorReviewStatsResult:{place_id}", {}).get("review", {}).get("totalCount", ""))
+            if not script_tag or not script_tag.string:
+                self.log_signal_func(f"⚠️ Place ID {place_id}의 스크립트 태그 없음 또는 비어 있음.")
+                return None
 
-                        # 블로그리뷰수
-                        fsasReviewsTotal     = clean_number(data.get(f"VisitorReviewStatsResult:{place_id}", {}).get("analysis", {}).get("votedKeyword", {}).get("userCount", ""))
+            match = re.search(r'window\.__APOLLO_STATE__\s*=\s*(\{.*\});', script_tag.string)
+            if not match:
+                self.log_signal_func(f"⚠️ Place ID {place_id}의 JSON 파싱 실패.")
+                return None
 
-                        root_query = data.get("ROOT_QUERY", {})
-                        place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
-    
-                        # 기본 place_detail_key 값이 없으면 checkRedirect 포함된 key로 재시도
-                        if place_detail_key not in root_query:
-                            place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+            try:
+                data = json.loads(match.group(1))
+            except Exception as e:
+                self.log_signal_func(f"⚠️ Place ID {place_id} JSON decode 실패: {e}")
+                return None
 
-                        # business_hours 초기 시도
-                        business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
-    
-                        # business_hours 값이 없으면 다른 source를 시도
-                        if not business_hours:
-                            business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
-    
-                        new_business_hours_json = root_query.get(place_detail_key, {}).get('newBusinessHours', [])
-    
-                        if not new_business_hours_json:
-                            new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
+            if not isinstance(data, dict):
+                self.log_signal_func(f"⚠️ Place ID {place_id} data가 dict가 아님: {type(data)}")
+                return None
 
-    
-                        # category를 대분류와 소분류로 나누기
-                        category_list = category.split(',') if category else ["", ""]
-                        main_category = category_list[0] if len(category_list) > 0 else ""
-                        sub_category = category_list[1] if len(category_list) > 1 else ""
-    
-                        url = f"https://m.place.naver.com/place/{place_id}/home"
-                        map_url = f"https://map.naver.com/p/entry/place/{place_id}"
-    
-                        urls = []
-                        homepages = root_query.get(place_detail_key, {}).get('shopWindow', {}).get("homepages", "")
-                        if homepages:
-                            # etc 배열에서 url 가져오기
-                            for item in homepages.get("etc", []):
-                                urls.append(item.get("url", ""))
-    
-                            # repr의 url 가져오기
-                            repr_data = homepages.get("repr")
-                            repr_url = repr_data.get("url", "") if repr_data else ""
-                            if repr_url:
-                                urls.append(repr_url)
-    
-                        result = {
-                            "아이디": place_id,
-                            "이름": name,
-                            "주소(지번)": address,
-                            "주소(도로명)": roadAddress,
-                            "대분류": main_category,
-                            "소분류": sub_category,
-                            "별점": visitorReviewsScore,
-                            "방문자리뷰수": visitorReviewsTotal,
-                            "블로그리뷰수": fsasReviewsTotal,
-                            "이용시간1": self.format_business_hours(business_hours),
-                            "이용시간2": self.format_new_business_hours(new_business_hours_json),
-                            "카테고리": category,
-                            "URL": url,
-                            "지도": map_url,
-                            "편의시설": ', '.join(conveniences) if conveniences else '',
-                            "가상번호": virtualPhone,
-                            "전화번호": phone,
-                            "사이트": urls,
-                            "주소지정보": road
-                        }
-    
-                        return result
+            # 기본 정보 추출
+            base = data.get(f"PlaceDetailBase:{place_id}", {})
+            name = base.get("name", "")
+            road = base.get("road", "")
+            address = base.get("address", "")
+            roadAddress = base.get("roadAddress", "")
+            category = base.get("category", "")
+            conveniences = base.get("conveniences", [])
+            phone = base.get("phone", "")
+            virtualPhone = base.get("virtualPhone", "")
 
-            self.current_cnt = self.current_cnt + 1
-            pro_value = (self.current_cnt / self.total_cnt) * 1000000
-            self.progress_signal.emit(self.before_pro_value, pro_value)
-            self.before_pro_value = pro_value
+            # 방문자 리뷰 정보
+            review_stats = data.get(f"VisitorReviewStatsResult:{place_id}", {})
+            review = review_stats.get("review", {}) or {}
+            analysis = review_stats.get("analysis", {}) or {}
+
+            visitorReviewsScore = self.clean_number(review.get("avgRating", ""))
+            visitorReviewsTotal = self.clean_number(review.get("totalCount", ""))
+            voted_keyword = analysis.get("votedKeyword") or {}
+            fsasReviewsTotal = self.clean_number(voted_keyword.get("userCount", ""))
+
+            # 영업시간 정보
+            root_query = data.get("ROOT_QUERY", {})
+            place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+
+            if place_detail_key not in root_query:
+                place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+
+            business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
+            if not business_hours:
+                business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
+
+            new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours", [])
+            if not new_business_hours_json:
+                new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
+
+            # 사이트 URL 정보
+            urls = []
+            homepages = root_query.get(place_detail_key, {}).get('shopWindow', {}).get("homepages", "")
+            if homepages:
+                for item in homepages.get("etc", []):
+                    urls.append(item.get("url", ""))
+                repr_data = homepages.get("repr")
+                if repr_data:
+                    repr_url = repr_data.get("url", "")
+                    if repr_url:
+                        urls.append(repr_url)
+
+            # 카테고리 분리
+            category_list = category.split(',') if category else ["", ""]
+            main_category = category_list[0] if len(category_list) > 0 else ""
+            sub_category = category_list[1] if len(category_list) > 1 else ""
+
+            result = {
+                "아이디": place_id,
+                "이름": name,
+                "주소(지번)": address,
+                "주소(도로명)": roadAddress,
+                "대분류": main_category,
+                "소분류": sub_category,
+                "별점": visitorReviewsScore,
+                "방문자리뷰수": visitorReviewsTotal,
+                "블로그리뷰수": fsasReviewsTotal,
+                "이용시간1": self.format_new_business_hours(new_business_hours_json),
+                "이용시간2": self.format_business_hours(business_hours),
+                "카테고리": category,
+                "URL": f"https://m.place.naver.com/place/{place_id}/home",
+                "지도": f"https://map.naver.com/p/entry/place/{place_id}",
+                "편의시설": ', '.join(conveniences) if conveniences else '',
+                "가상번호": virtualPhone,
+                "전화번호": phone,
+                "사이트": urls,
+                "주소지정보": road
+            }
+
+            return result
 
         except requests.exceptions.RequestException as e:
-            self.log_signal_func(f"Failed to fetch data for Place ID: {place_id}. Error: {e}")
+            self.log_signal_func(f"❌ 네트워크 에러: Place ID {place_id}: {e}")
         except Exception as e:
-            self.log_signal_func(f"Error processing data for Place ID: {place_id}: {e}")
+            self.log_signal_func(f"❌ 처리 중 에러: Place ID {place_id}: {e}")
+
         return None
 
     # 영업시간 함수1
