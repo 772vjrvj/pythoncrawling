@@ -105,6 +105,9 @@ class RegionSetPop(QDialog):
         self.tree.blockSignals(False)
         self.update_all_check_states()
 
+        # ✅ 전체 선택 체크박스를 기본적으로 해제 상태로 설정
+        self.select_all_checkbox.setCheckState(Qt.Unchecked)
+
     def on_item_changed(self, item, column):
         if self.tree.signalsBlocked():
             return

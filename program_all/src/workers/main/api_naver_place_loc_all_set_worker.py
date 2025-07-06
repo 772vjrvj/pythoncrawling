@@ -100,59 +100,35 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
     def loc_all_keyword_list_detail(self, query, total_queries, current_query_index, total_locs, locs_index):
         try:
             page = 1
-            results = []
-
-            # 새롭게 등장한 아이디 모음
-            current_ids = set()
+            result_ids = []
 
             while True:
-                time.sleep(random.uniform(2, 4))
-
                 if not self.running:
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
+                time.sleep(random.uniform(2, 4))
 
                 result = self.fetch_search_results(query, page)
-                if not isinstance(result, dict):
-                    self.log_signal_func(f"API 응답 오류 또는 형식 이상: {type(result)} → {result}")
+                if not result:
                     break
-
-                place_section = result.get("result", {})
-                if not isinstance(place_section, dict):
-                    self.log_signal_func(f"'result' 데이터 없음")
-                    break
-
-                place_data = place_section.get("place", {})
-                if not isinstance(place_data, dict):
-                    self.log_signal_func(f"'place' 데이터 없음")
-                    break
-
-                place_list = place_data.get("list", [])
-                if not isinstance(place_list, list):
-                    self.log_signal_func(f"'list' 데이터 없음")
-                    break
-
-                ids_this_page = {place.get("id") for place in place_list if isinstance(place, dict) and place.get("id")}
-
+                result_ids.extend(result)
                 self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 페이지: {page}")
-                self.log_signal_func(f"목록: {ids_this_page}")
-
-                if not ids_this_page:
-                    break
-
-                current_ids.update(ids_this_page)
+                self.log_signal_func(f"목록: {result}")
                 page += 1
 
-            # 누적된 전체 ID에서 새롭게 등장한 ID만 필터링
-            new_ids = current_ids - self.saved_ids  # ← 핵심 차집합
-            self.saved_ids.update(new_ids)  # 누적
+            new_ids = list(dict.fromkeys(result_ids))
+
+            results = []
 
             for idx, place_id in enumerate(new_ids, start=1):
-                time.sleep(random.uniform(2, 4))
-
                 if not self.running:
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
+
+                if place_id in self.saved_ids:
+                    continue  # ✅ 이미 수집한 ID는 건너뜀
+
+                time.sleep(random.uniform(2, 4))
 
                 place_info = self.fetch_place_info(place_id)
                 if not place_info:
@@ -162,9 +138,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 수집: {idx} / {len(new_ids)}, 아이디: {place_id}, 이름: {place_info['이름']}")
                 results.append(place_info)
 
-            # 새 항목만 CSV에 저장
+            self.saved_ids.update(new_ids)
             self.excel_driver.append_to_csv(self.csv_filename, results, self.columns)
-
             self.current_cnt = locs_index * current_query_index * 300
             pro_value = (self.current_cnt / self.total_cnt) * 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
@@ -177,8 +152,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
     def only_keywords_keyword_list(self):
         result_list = []
         all_ids_list = self.total_cnt_cal()
-        self.log_signal_func(f"전체 업체수 {self.total_cnt} 개")
-        self.log_signal_func(f"전체 페이지수 {self.total_pages} 개")
+        self.log_signal_func(f"전체 항목 수 {self.total_cnt} 개")
+        self.log_signal_func(f"전체 페이지 수 {self.total_pages} 개")
 
         for index, place_id in enumerate(all_ids_list, start=1):
             if not self.running:  # 실행 상태 확인
@@ -227,55 +202,30 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
     # 전체 갯수 조회
     def total_cnt_cal(self):
         try:
-
-            all_ids = set()
             page_all = 0
+            result_ids = []
+
             for index, keyword in enumerate(self.keyword_list, start=1):
                 if not self.running:  # 실행 상태 확인
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
+
                 page = 1
-                self.log_signal_func(f"키워드 {index}/{len(self.keyword_list)}: {keyword}")
-
-                # 키워드에 매핑되는 아이디 수집
                 while True:
-                    time.sleep(random.uniform(1, 2))
-
-                    if not self.running:  # 실행 상태 확인
+                    if not self.running:
                         self.log_signal_func("크롤링이 중지되었습니다.")
                         break
+                    time.sleep(random.uniform(1, 2))
+
+                    self.log_signal_func(f"전체 {index}/{len(self.keyword_list)}, keyword: {keyword}, page: {page}")
 
                     result = self.fetch_search_results(keyword, page)
-                    if not isinstance(result, dict):
-                        self.log_signal_func(f"API 응답 오류 또는 형식 이상: {type(result)} → {result}")
-                        break
+                    result_ids.extend(result)
 
-                    place_section = result.get("result", {})
-                    if not isinstance(place_section, dict):
-                        self.log_signal_func(f"'result' 데이터 없음")
-                        break
-
-                    place_data = place_section.get("place", {})
-                    if not isinstance(place_data, dict):
-                        self.log_signal_func(f"'place' 데이터 없음")
-                        break
-
-                    place_list = place_data.get("list", [])
-                    if not isinstance(place_list, list):
-                        self.log_signal_func(f"'list' 데이터 없음")
-                        break
-
-                    ids_this_page = [place.get("id") for place in place_list if isinstance(place, dict) and place.get("id")]
-                    self.log_signal_func(f"목록: {ids_this_page}")
-
-                    if not ids_this_page:
-                        break
-
-                    all_ids.update(ids_this_page)
                     page += 1
                     page_all += 1
 
-            all_ids_list = list(all_ids)
+            all_ids_list = list(dict.fromkeys(result_ids))
             self.total_cnt = len(all_ids_list)
             self.total_pages = page_all
             return all_ids_list
@@ -308,14 +258,61 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         
     # 플레이스 목록
     def fetch_search_results(self, keyword, page):
-        url = f"https://map.naver.com/p/api/search/allSearch?query={keyword}&type=all&searchCoord=&boundary=&page={page}"
+        url = "https://pcmap-api.place.naver.com/graphql"
+
         headers = {
-            'Referer': 'https://map.naver.com/p/search',  # ✅ 반드시 필요
-            'Cookie': self.place_cookie,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
+            "method": "POST",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko",
+            "content-type": "application/json",
+            # "cookie": self.place_cookie,
+            "referer": "https://pcmap.place.naver.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
         }
-        response = self.api_client.get(url=url, headers=headers)
-        return response
+        payload = [{
+            "operationName": "getPlacesList",
+            "variables": {
+                "useReverseGeocode": True,
+                "input": {
+                    "query": keyword,
+                    "start": (page - 1) * 100 + 1,
+                    "display": page * 100,
+                    "adult": True,
+                    "spq": True,
+                    "queryRank": "",
+                    "x": "",
+                    "y": "",
+                    "clientX": "",
+                    "clientY": "",
+                    "deviceType": "pcmap",
+                    "bounds": ""
+                },
+                "isNmap": True,
+                "isBounds": True,
+                "reverseGeocodingInput": {
+                    "x": "",
+                    "y": ""
+                }
+            },
+            "query": "query getPlacesList($input: PlacesInput, $isNmap: Boolean!, $isBounds: Boolean!, $reverseGeocodingInput: ReverseGeocodingInput, $useReverseGeocode: Boolean = false) {  businesses: places(input: $input) {    total    items {      id      name      normalizedName      category      cid      detailCid {        c0        c1        c2        c3        __typename      }      categoryCodeList      dbType      distance      roadAddress      address      fullAddress      commonAddress      bookingUrl      phone      virtualPhone      businessHours      daysOff      imageUrl      imageCount      x      y      poiInfo {        polyline {          shapeKey {            id            name            version            __typename          }          boundary {            minX            minY            maxX            maxY            __typename          }          details {            totalDistance            arrivalAddress            departureAddress            __typename          }          __typename        }        polygon {          shapeKey {            id            name            version            __typename          }          boundary {            minX            minY            maxX            maxY            __typename          }          __typename        }        __typename      }      subwayId      markerId @include(if: $isNmap)      markerLabel @include(if: $isNmap) {        text        style        stylePreset        __typename      }      imageMarker @include(if: $isNmap) {        marker        markerSelected        __typename      }      oilPrice @include(if: $isNmap) {        gasoline        diesel        lpg        __typename      }      isPublicGas      isDelivery      isTableOrder      isPreOrder      isTakeOut      isCvsDelivery      hasBooking      naverBookingCategory      bookingDisplayName      bookingBusinessId      bookingVisitId      bookingPickupId      baemin {        businessHours {          deliveryTime {            start            end            __typename          }          closeDate {            start            end            __typename          }          temporaryCloseDate {            start            end            __typename          }          __typename        }        __typename      }      yogiyo {        businessHours {          actualDeliveryTime {            start            end            __typename          }          bizHours {            start            end            __typename          }          __typename        }        __typename      }      isPollingStation      hasNPay      talktalkUrl      visitorReviewCount      visitorReviewScore      blogCafeReviewCount      bookingReviewCount      streetPanorama {        id        pan        tilt        lat        lon        __typename      }      naverBookingHubId      bookingHubUrl      bookingHubButtonName      newOpening      newBusinessHours {        status        description        dayOff        dayOffDescription        __typename      }      coupon {        total        promotions {          promotionSeq          couponSeq          conditionType          image {            url            __typename          }          title          description          type          couponUseType          __typename        }        __typename      }      mid      hasMobilePhoneNumber      hiking {        distance        startName        endName        __typename      }      __typename    }    optionsForMap @include(if: $isBounds) {      ...OptionsForMap      displayCorrectAnswer      correctAnswerPlaceId      __typename    }    searchGuide {      queryResults {        regions {          displayTitle          query          region {            rcode            __typename          }          __typename        }        isBusinessName        __typename      }      queryIndex      types      __typename    }    queryString    siteSort    __typename  }  reverseGeocodingAddr(input: $reverseGeocodingInput) @include(if: $useReverseGeocode) {    ...ReverseGeocodingAddr    __typename  }}fragment OptionsForMap on OptionsForMap {  maxZoom  minZoom  includeMyLocation  maxIncludePoiCount  center  spotId  keepMapBounds  __typename}fragment ReverseGeocodingAddr on ReverseGeocodingResult {  rcode  region  __typename}"
+        }]
+
+        try:
+            res = self.api_client.post(url=url, headers=headers, json=payload)
+            if not isinstance(res, list) or not res or not isinstance(res[0], dict):
+                return []
+
+            items = res[0].get("data", {}).get("businesses", {}).get("items", [])
+            if not isinstance(items, list):
+                return []
+
+            return [item.get("id") for item in items if isinstance(item, dict) and item.get("id")]
+        except Exception as e:
+            self.log_signal_func(f"[에러] fetch_search_results 실패: {e}")
+            return []
+
+    def clean_number(value):
+        return "" if not value or value == 0 else value
 
     # 상세조회
     def fetch_place_info(self, place_id):
@@ -356,21 +353,25 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                         roadAddress = data.get(f"PlaceDetailBase:{place_id}", {}).get("roadAddress", "")
                         category = data.get(f"PlaceDetailBase:{place_id}", {}).get("category", "")
                         conveniences = data.get(f"PlaceDetailBase:{place_id}", {}).get("conveniences", [])
+                        phone = data.get(f"PlaceDetailBase:{place_id}", {}).get("phone", [])
                         virtualPhone = data.get(f"PlaceDetailBase:{place_id}", {}).get("virtualPhone", [])
-                        visitorReviewsScore = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsScore", "")
-                        visitorReviewsTotal = data.get(f"PlaceDetailBase:{place_id}", {}).get("visitorReviewsTotal", "")
-    
+
+                        # 방문자 별점
+                        visitorReviewsScore = clean_number(data.get(f"VisitorReviewStatsResult:{place_id}", {}).get("review", {}).get("avgRating", ""))
+
+                        # 방문자리뷰수
+                        visitorReviewsTotal = clean_number(data.get(f"VisitorReviewStatsResult:{place_id}", {}).get("review", {}).get("totalCount", ""))
+
+                        # 블로그리뷰수
+                        fsasReviewsTotal     = clean_number(data.get(f"VisitorReviewStatsResult:{place_id}", {}).get("analysis", {}).get("votedKeyword", {}).get("userCount", ""))
+
                         root_query = data.get("ROOT_QUERY", {})
                         place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
     
                         # 기본 place_detail_key 값이 없으면 checkRedirect 포함된 key로 재시도
                         if place_detail_key not in root_query:
                             place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
-    
-                        fsasReviewsTotal = root_query.get(place_detail_key, {}).get('fsasReviews', {}).get("total", "")
-                        if not fsasReviewsTotal:
-                            fsasReviewsTotal = root_query.get(place_detail_key, {}).get("fsasReviews({\"fsasReviewsType\":\"restaurant\"})", {}).get("total", "")
-    
+
                         # business_hours 초기 시도
                         business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
     
@@ -382,11 +383,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
     
                         if not new_business_hours_json:
                             new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
-    
-                        # 별점, 방문자 리뷰 수, 블로그 리뷰 수가 0이거나 없으면 공백 처리
-                        visitorReviewsScore = visitorReviewsScore if visitorReviewsScore and visitorReviewsScore != "0" else ""
-                        visitorReviewsTotal = visitorReviewsTotal if visitorReviewsTotal and visitorReviewsTotal != "0" else ""
-                        fsasReviewsTotal = fsasReviewsTotal if fsasReviewsTotal and fsasReviewsTotal != "0" else ""
+
     
                         # category를 대분류와 소분류로 나누기
                         category_list = category.split(',') if category else ["", ""]
@@ -425,7 +422,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                             "URL": url,
                             "지도": map_url,
                             "편의시설": ', '.join(conveniences) if conveniences else '',
-                            "전화번호": virtualPhone,
+                            "가상번호": virtualPhone,
+                            "전화번호": phone,
                             "사이트": urls,
                             "주소지정보": road
                         }

@@ -24,6 +24,7 @@ SITE_LIST = [
             {"code": "url",            "value": "URL",           "checked": True},
             {"code": "map",            "value": "지도",          "checked": True},
             {"code": "amenities",      "value": "편의시설",      "checked": True},
+            {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
             {"code": "phone",          "value": "전화번호",      "checked": True},
             {"code": "site",           "value": "사이트",        "checked": True},
             {"code": "region_info",    "value": "주소지정보",    "checked": True},
