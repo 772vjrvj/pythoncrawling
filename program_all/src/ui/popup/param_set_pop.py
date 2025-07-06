@@ -6,6 +6,9 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
 
+from src.ui.style.style import create_common_button
+
+
 class ParamSetPop(QDialog):
 
     log_signal = pyqtSignal(str)  # 🔧 여기에 시그널 정의 필요
@@ -160,31 +163,10 @@ class ParamSetPop(QDialog):
         # 버튼 레이아웃
         button_layout = QHBoxLayout()
 
-        self.cancel_button = QPushButton("취소", self)
-        self.cancel_button.setStyleSheet("""
-            background-color: #cccccc;
-            color: black;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.cancel_button.setFixedHeight(40)
-        self.cancel_button.setFixedWidth(140)
-        self.cancel_button.setCursor(Qt.PointingHandCursor)
-        self.cancel_button.clicked.connect(self.reject)
+        self.cancel_button = create_common_button("취소", self.reject, "#cccccc", 140)
 
-        self.confirm_button = QPushButton("확인", self)
-        self.confirm_button.setStyleSheet("""
-            background-color: black;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.confirm_button.setFixedHeight(40)
-        self.confirm_button.setFixedWidth(140)
-        self.confirm_button.setCursor(Qt.PointingHandCursor)
-        self.confirm_button.clicked.connect(self.on_confirm)
+        self.confirm_button = create_common_button("확인", self.on_confirm, "black", 140)
+
 
         button_layout.setContentsMargins(0, 15, 0, 0)  # top에만 20px
         button_layout.addWidget(self.cancel_button)

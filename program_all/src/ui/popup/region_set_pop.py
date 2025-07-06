@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import (
     QPushButton, QHBoxLayout, QSizePolicy, QCheckBox, QLabel
 )
 from PyQt5.QtCore import Qt, pyqtSignal
+
+from src.ui.style.style import create_common_button
 from src.utils.config import NAVER_LOC_ALL
 
 
@@ -12,6 +14,8 @@ class RegionSetPop(QDialog):
 
     def __init__(self, selected_regions=None, parent=None):
         super().__init__(parent)
+        self.confirm_btn = None
+        self.cancel_btn = None
         self.parent = parent
         self.setWindowTitle("지역 선택")
         self.resize(800, 600)
@@ -53,21 +57,12 @@ class RegionSetPop(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.setContentsMargins(0, 15, 0, 0)
 
-        cancel_btn = QPushButton("취소")
-        cancel_btn.setFixedSize(140, 40)
-        cancel_btn.setCursor(Qt.PointingHandCursor)
-        cancel_btn.setStyleSheet(self.button_style("#cccccc", "black"))
-        cancel_btn.clicked.connect(self.reject)
+        self.cancel_btn = create_common_button("취소", self.reject, "#cccccc", 140)
+        self.confirm_btn = create_common_button("확인", self.confirm_selection, "black", 140)
 
-        confirm_btn = QPushButton("확인")
-        confirm_btn.setFixedSize(140, 40)
-        confirm_btn.setCursor(Qt.PointingHandCursor)
-        confirm_btn.setStyleSheet(self.button_style("black", "white"))
-        confirm_btn.clicked.connect(self.confirm_selection)
-
-        btn_layout.addWidget(cancel_btn)
+        btn_layout.addWidget(self.cancel_btn)
         btn_layout.addStretch()
-        btn_layout.addWidget(confirm_btn)
+        btn_layout.addWidget(self.confirm_btn)
         layout.addLayout(btn_layout)
 
     def populate_tree(self):

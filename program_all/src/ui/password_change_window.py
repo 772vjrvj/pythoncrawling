@@ -1,7 +1,9 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QDesktopWidget, QMessageBox)
-import requests
 from src.workers.change_password_woker import ChangePasswordWorker
+from src.ui.style.style import main_style, create_line_edit, create_common_button
+import requests
+
 
 class PasswordChangeWindow(QDialog):
     def __init__(self, parent=None):
@@ -19,76 +21,23 @@ class PasswordChangeWindow(QDialog):
         layout.setSpacing(20)
 
         # 아이디 입력
-        self.id_input = QLineEdit(self)
-        self.id_input.setPlaceholderText("ID를 입력하세요")
-        self.id_input.setStyleSheet("""
-            border-radius: 20px;
-            border: 2px solid #888888;
-            padding: 10px;
-            font-size: 14px;
-            color: #333333;
-        """)
-        self.id_input.setFixedHeight(40)
-        self.id_input.setFixedWidth(300)
+        self.id_input = create_line_edit("ID를 입력하세요", False, "#888888", 300)
 
         # 현재 비밀번호 입력
-        self.current_password_input = QLineEdit(self)
-        self.current_password_input.setPlaceholderText("현재 비밀번호를 입력하세요")
-        self.current_password_input.setEchoMode(QLineEdit.Password)
-        self.current_password_input.setStyleSheet("""
-            border-radius: 20px;
-            border: 2px solid #888888;
-            padding: 10px;
-            font-size: 14px;
-            color: #333333;
-        """)
-        self.current_password_input.setFixedHeight(40)
-        self.current_password_input.setFixedWidth(300)
+        self.current_password_input = create_line_edit("현재 비밀번호를 입력하세요", True, "#888888", 300)
+
 
         # 새 비밀번호 입력
-        self.new_password_input = QLineEdit(self)
-        self.new_password_input.setPlaceholderText("새 비밀번호를 입력하세요")
-        self.new_password_input.setEchoMode(QLineEdit.Password)
-        self.new_password_input.setStyleSheet("""
-            border-radius: 20px;
-            border: 2px solid #888888;
-            padding: 10px;
-            font-size: 14px;
-            color: #333333;
-        """)
-        self.new_password_input.setFixedHeight(40)
-        self.new_password_input.setFixedWidth(300)
+        self.new_password_input = create_line_edit("새 비밀번호를 입력하세요", True, "#888888", 300)
 
         # 버튼 레이아웃
         button_layout = QHBoxLayout()
 
         # 비밀번호 변경 버튼
-        self.change_button = QPushButton("비밀번호 변경", self)
-        self.change_button.setStyleSheet("""
-            background-color: #8A2BE2;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.change_button.setFixedHeight(40)
-        self.change_button.setFixedWidth(140)
-        self.change_button.setCursor(Qt.PointingHandCursor)
-        self.change_button.clicked.connect(self.change_password)
+        self.change_button = create_common_button("비밀번호 변경", self.change_password, "#4682B4", 140)
 
         # 취소 버튼
-        self.cancel_button = QPushButton("취소", self)
-        self.cancel_button.setStyleSheet("""
-            background-color: #8A2BE2;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            padding: 10px;
-        """)
-        self.cancel_button.setFixedHeight(40)
-        self.cancel_button.setFixedWidth(140)
-        self.cancel_button.setCursor(Qt.PointingHandCursor)
-        self.cancel_button.clicked.connect(self.cancel_change)
+        self.cancel_button = create_common_button("취소", self.cancel_change, "#4682B4", 140)
 
         button_layout.addWidget(self.change_button)
         button_layout.addWidget(self.cancel_button)

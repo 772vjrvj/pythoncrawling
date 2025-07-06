@@ -36,7 +36,7 @@ def create_common_button(
 
 def main_style(color):
     return f"""
-        border-radius: 20px;
+        border-radius: 10px;
         border: 2px solid {color};
         padding: 10px;
         font-weight: 490;

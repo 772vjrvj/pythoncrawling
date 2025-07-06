@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout, QSizePolicy, QWidget, QGridLayout
 )
 from PyQt5.QtCore import Qt, pyqtSignal
+from src.ui.style.style import create_common_button
 
 
 class ColumnSetPop(QDialog):
@@ -10,6 +11,8 @@ class ColumnSetPop(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.confirm_btn = None
+        self.cancel_btn = None
         self.parent = parent
         self.setWindowTitle("컬럼 선택")
         self.resize(700, 450)
@@ -77,23 +80,13 @@ class ColumnSetPop(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.setContentsMargins(0, 15, 0, 0)
 
-        cancel_btn = QPushButton("취소")
-        cancel_btn.setFixedHeight(40)
-        cancel_btn.setFixedWidth(140)
-        cancel_btn.setCursor(Qt.PointingHandCursor)
-        cancel_btn.setStyleSheet(self.button_style("#cccccc", "black"))
-        cancel_btn.clicked.connect(self.reject)
+        self.cancel_btn = create_common_button("취소", self.reject, "#cccccc", 140)
 
-        confirm_btn = QPushButton("확인")
-        confirm_btn.setFixedHeight(40)
-        confirm_btn.setFixedWidth(140)
-        confirm_btn.setCursor(Qt.PointingHandCursor)
-        confirm_btn.setStyleSheet(self.button_style("black", "white"))
-        confirm_btn.clicked.connect(self.confirm_selection)
+        self.confirm_btn = create_common_button("확인", self.confirm_selection, "black", 140)
 
-        btn_layout.addWidget(cancel_btn)
+        btn_layout.addWidget(self.cancel_btn)
         btn_layout.addStretch()
-        btn_layout.addWidget(confirm_btn)
+        btn_layout.addWidget(self.confirm_btn)
         layout.addLayout(btn_layout)
 
     def handle_all_checkbox_click(self):
