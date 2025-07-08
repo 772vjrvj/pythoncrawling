@@ -50,21 +50,21 @@ def save_request(action, url, data):
 
 def match_and_dispatch(action, url, response_data):
     entry = request_store.get(url)
-    log_info(f"[판도] [경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
-    log_info(f"[판도] 매칭 시도: [{action}]:entry - {entry}")
+    log_info(f"[판도] [match_and_dispatch] : [경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
+    log_info(f"[판도] [match_and_dispatch] : 시도: [{action}]:entry - {entry}")
 
     token = get_token()
     store_id = get_store_id()
 
     if action == 'delete_mobile':
-        log_info(f"[판도] [{action}] 단부 응답 처리")
+        log_info(f"[판도] [match_and_dispatch] : [{action}] 단부 응답 처리")
         dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
         return
 
     if not entry or entry['action'] != action:
         return
 
-    log_info(f"[판도] 요청-응답 매칭됨: [{action}] - {url}")
+    log_info(f"[판도] [match_and_dispatch] : 요청-응답 매칭됨: [{action}] - {url}")
     request_data = entry['data']
     request_store.pop(url, None)
 
@@ -87,12 +87,14 @@ def dispatch_action(action, combined_data, token, store_id):
                     'requests': request.get('bookingMemo'),
                     'paymented': request.get('paymentYn') == 'Y',
                     'partySize': int(request.get('bookingCnt', 1)),
-                    'paymentAmount': int(request.get('bookingTotAmount', 0)),
+                    'paymentAmount': int(
+                        request.get('bookingTotAmount') or request.get('paymentTotAmount') or 0
+                    ),
                     'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(request.get('reserveNo')) if request.get('reserveNo') else None,
                 }, ['phone'])
-                log_info("[판도] register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] [dispatch_action] : register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 patch(token, store_id, payload)
 
         elif action == 'edit':
@@ -130,12 +132,14 @@ def dispatch_action(action, combined_data, token, store_id):
                         'requests': request.get('bookingMemo'),
                         'paymented': request.get('paymentYn') == 'Y',
                         'partySize': int(request.get('bookingCnt', 1)),
-                        'paymentAmount': int(request.get('bookingTotAmount', 0)),
+                        'paymentAmount': int(
+                            request.get('bookingTotAmount') or request.get('paymentTotAmount') or 0
+                        ),
                         'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                         'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                         'externalGroupId': str(reserve_no) if reserve_no else None,
                     }, ['phone'])
-                    log_info("[판도] edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] [dispatch_action] : edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     patch(token, store_id, payload)
             else:
                 payload = compact({
@@ -147,12 +151,14 @@ def dispatch_action(action, combined_data, token, store_id):
                     'requests': request.get('bookingMemo'),
                     'paymented': request.get('paymentYn') == 'Y',
                     'partySize': int(request.get('bookingCnt', 1)),
-                    'paymentAmount': int(request.get('bookingTotAmount', 0)),
+                    'paymentAmount': int(
+                        request.get('bookingTotAmount') or request.get('paymentTotAmount') or 0
+                    ),
                     'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(reserve_no) if reserve_no else None,
                 }, ['phone'])
-                log_info("[판도] edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] [dispatch_action] edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 patch(token, store_id, payload)
 
         elif action == 'edit_move':
@@ -163,7 +169,7 @@ def dispatch_action(action, combined_data, token, store_id):
                 'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                 'crawlingSite': CRAWLING_SITE,
             })
-            log_info("[판도] edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            log_info("[판도] [dispatch_action] edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
             patch(token, store_id, payload, 'm')
 
         elif action == 'delete':
@@ -186,7 +192,7 @@ def dispatch_action(action, combined_data, token, store_id):
                         'reason': '운영자 취소',
                         'externalId': str(num),
                     }
-                    log_info("[판도] delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] [dispatch_action] delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload)
 
         elif action == 'delete_mobile':
@@ -199,11 +205,11 @@ def dispatch_action(action, combined_data, token, store_id):
                         'reason': '모바일 고객 예약 취소',
                         'externalGroupId': str(reserve_no),
                     }
-                    log_info("[판도] delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] [dispatch_action] delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload, 'g')
 
         else:
-            log_warn(f"[판도] 알 수 없는 액션: {action}")
+            log_warn(f"[판도] [dispatch_action] 알 수 없는 액션: {action}")
 
     except Exception as e:
-        log_error(f"[판도] dispatch 처리 실패 [{action}]: {e}")
+        log_error(f"[판도] [dispatch_action] 처리 실패 [{action}]: {e}")

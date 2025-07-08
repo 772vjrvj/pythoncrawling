@@ -44,18 +44,18 @@ class ProxyLogger:
         method = flow.request.method
         content_type = flow.request.headers.get("content-type", "")
 
-        log_info(f"[요청] {method} {url}")
+        log_info(f"[판도] [request] : {method} {url}")
 
         try:
             raw_text = flow.request.raw_content.decode('utf-8', errors='replace')
         except Exception as e:
-            log_error(f"❌ 요청 본문 디코딩 실패: {e}")
+            log_error(f"[판도] [request] : 본문 디코딩 실패: {e}")
             raw_text = "<디코딩 실패>"
 
         for action, pattern in TARGETS_REQUEST.items():
             if pattern.search(url):
                 if method in ("POST", "PUT"):
-                    log_info("[판도] 요청 URL 매칭됨")
+                    log_info("[판도] [request] : URL 매칭됨")
                     parsed_data = None
                     try:
                         if "application/json" in content_type:
@@ -66,49 +66,56 @@ class ProxyLogger:
                         else:
                             log_info(f"⚠️ Unknown content type: {content_type}")
                     except Exception as e:
-                        log_error(f"[판도] 요청 바디 파싱 실패: {e}")
-                        log_info(f"[판도] 요청 Body (Raw): {raw_text[:500]}")
+                        log_error(f"[판도] [request] : 바디 파싱 실패: {e}")
+                        log_info(f"[판도] [request] : Body (Raw): {raw_text[:500]}")
 
                     if parsed_data is not None:
                         save_request(action, url, parsed_data)
-                        log_info(f"[판도] [{method}] {url}")
-                        log_info("[판도] 요청 파싱 결과:\n" + json.dumps(parsed_data, ensure_ascii=False, indent=2))
-                        log_info(f"[판도] [{action}] 요청 감지됨")
+                        log_info(f"[판도] [request] : [{method}] {url}")
+                        log_info("[판도] [request] : 파싱 결과\n" + json.dumps(parsed_data, ensure_ascii=False, indent=2))
+                        log_info(f"[판도] [request] : [{action}] 요청 감지됨")
                 break
 
     def response(self, flow: http.HTTPFlow):
         url = flow.request.url
         status = flow.response.status_code
 
-        log_info(f"[응답] {flow.request.method} {url} → {status}")
+        log_info(f"[판도] [response] : {flow.request.method} {url} → {status}")
 
         if status == 204:
-            log_info("[204] 응답 무시됨: 본문 없음")
+            log_info("[판도] [response] : [204] 응답 무시됨: 본문 없음")
             return
 
         if not flow.response.content:
-            log_info("⚠️ 응답 본문이 비어 있음 → 스킵")
+            log_info("[판도] [response] : 본문이 비어 있음 → 스킵")
             return
 
         try:
             response_json = flow.response.json()
         except Exception as e:
             if "Could not load body" in str(e):
-                log_info(f"응답 본문 없음 (무시됨): {url}")
+                log_info(f"[판도] [response] : 응답 본문 없음 (무시됨): {url}")
                 return
             else:
-                log_error(f"응답 파싱 실패: {e}")
+                log_error(f"[판도] [response] : 실패: {e}")
                 return
 
         for action, pattern in TARGETS_RESPONSE.items():
             if pattern.search(url):
-                log_info("[판도] 응답 URL 매칭됨")
+                log_info("[판도] [response] : URL 매칭됨")
                 if action == "delete_mobile":
                     destroy = response_json.get("entity", {}).get("destroy")
                     if not (isinstance(destroy, list) and len(destroy) > 0):
                         return
-                log_info(f"[판도] [{action}] 응답 수신됨")
-                log_info("[판도] 응답 JSON:\n" + json.dumps(response_json, ensure_ascii=False, indent=2))
+
+                response_code = response_json.get("code")
+                if response_code == "FAIL":
+                    log_info(f"[판도] [response] : 처리 중단 응답 code가 FAIL → {url}")
+                    return
+
+                log_info(f"[판도] [response] : [{action}] 수신됨")
+                log_info("[판도] [response] : JSON\n" + json.dumps(response_json, ensure_ascii=False, indent=2))
+
                 match_and_dispatch(action, url, response_json)
                 break
 

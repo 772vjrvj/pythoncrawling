@@ -126,6 +126,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                     break
 
                 if place_id in self.saved_ids:
+                    self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 수집: {idx} / {len(new_ids)}, 중복 아이디: {place_id}")
                     continue  # ✅ 이미 수집한 ID는 건너뜀
 
                 time.sleep(random.uniform(1, 2))
@@ -220,12 +221,15 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                     self.log_signal_func(f"전체 {index}/{len(self.keyword_list)}, keyword: {keyword}, page: {page}")
 
                     result = self.fetch_search_results(keyword, page)
+                    if not result:
+                        break
                     result_ids.extend(result)
 
                     page += 1
                     page_all += 1
 
             all_ids_list = list(dict.fromkeys(result_ids))
+            self.log_signal_func(f"전체 : {all_ids_list}")
             self.total_cnt = len(all_ids_list)
             self.total_pages = page_all
             return all_ids_list
@@ -276,7 +280,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 "input": {
                     "query": keyword,
                     "start": (page - 1) * 100 + 1,
-                    "display": page * 100,
+                    "display": 100,
                     "adult": True,
                     "spq": True,
                     "queryRank": "",
