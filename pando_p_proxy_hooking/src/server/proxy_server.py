@@ -19,6 +19,7 @@ TARGETS_REQUEST = {
     "edit_move": re.compile(r"/rest/ui/booking/\d+/ajax-edit(\?timestamp=|$)"),
     "delete": re.compile(r"/rest/ui/booking/\d+/delete(\?timestamp=|$)"),
     "delete_mobile": re.compile(r"/rest/ui/polling/booking/\d+\?(?=.*\btimestamp=)(?=.*\bbookingStartDt=)(?=.*\bdata=)(?=.*\bbookingNumber=)"),
+    "reseration": re.compile(r"/golfzone/agent/reseration\.json$")
 }
 TARGETS_RESPONSE = TARGETS_REQUEST
 
@@ -44,12 +45,12 @@ class ProxyLogger:
         method = flow.request.method
         content_type = flow.request.headers.get("content-type", "")
 
-        log_info(f"[판도] [request] : {method} {url}")
+        log_info(f"[request] : {method} {url}")
 
         try:
             raw_text = flow.request.raw_content.decode('utf-8', errors='replace')
         except Exception as e:
-            log_error(f"[판도] [request] : 본문 디코딩 실패: {e}")
+            log_error(f"[request] : 본문 디코딩 실패: {e}")
             raw_text = "<디코딩 실패>"
 
         for action, pattern in TARGETS_REQUEST.items():
@@ -79,26 +80,28 @@ class ProxyLogger:
     def response(self, flow: http.HTTPFlow):
         url = flow.request.url
         status = flow.response.status_code
+        method = flow.request.method
 
-        log_info(f"[판도] [response] : {flow.request.method} {url} → {status}")
+        log_info(f"[response] : {method} : {url} → {status}")
 
         if status == 204:
-            log_info("[판도] [response] : [204] 응답 무시됨: 본문 없음")
+            log_info("[response] : [204] 응답 무시됨: 본문 없음")
             return
 
         if not flow.response.content:
-            log_info("[판도] [response] : 본문이 비어 있음 → 스킵")
+            log_info("[response] : 본문이 비어 있음 → 스킵")
             return
 
+        response_json = {}
         try:
             response_json = flow.response.json()
         except Exception as e:
-            if "Could not load body" in str(e):
-                log_info(f"[판도] [response] : 응답 본문 없음 (무시됨): {url}")
-                return
-            else:
-                log_error(f"[판도] [response] : 실패: {e}")
-                return
+            log_error(f"[response] : JSON 파싱 실패: {e}")
+            try:
+                raw_text = flow.response.content.decode("utf-8", errors="replace")
+                log_info(f"[response] : 원본 응답 (일부):\n{raw_text[:300]}")
+            except Exception as de:
+                log_error(f"[response] : 디코딩도 실패: {de}")
 
         for action, pattern in TARGETS_RESPONSE.items():
             if pattern.search(url):
@@ -108,10 +111,12 @@ class ProxyLogger:
                     if not (isinstance(destroy, list) and len(destroy) > 0):
                         return
 
-                response_code = response_json.get("code")
-                if response_code == "FAIL":
-                    log_info(f"[판도] [response] : 처리 중단 응답 code가 FAIL → {url}")
-                    return
+                # ✅ reseration은 code 검사 생략
+                if action != "reseration":
+                    response_code = response_json.get("code")
+                    if response_code == "FAIL":
+                        log_info(f"[판도] [response] : 처리 중단 응답 code가 FAIL → {url}")
+                        return
 
                 log_info(f"[판도] [response] : [{action}] 수신됨")
                 log_info("[판도] [response] : JSON\n" + json.dumps(response_json, ensure_ascii=False, indent=2))

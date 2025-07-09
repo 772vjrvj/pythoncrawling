@@ -66,7 +66,7 @@ def match_and_dispatch(action, url, response_data):
 
     log_info(f"[판도] [match_and_dispatch] : 요청-응답 매칭됨: [{action}] - {url}")
     request_data = entry['data']
-    request_store.pop(url, None)
+    request_store.pop(url, None) # .pop(url, None)은 해당 url 키가 존재하면 그 값을 꺼내고, 딕셔너리에서 제거합니다.
 
     dispatch_action(action, {'request': request_data, 'response': response_data}, token, store_id)
 
@@ -207,6 +207,25 @@ def dispatch_action(action, combined_data, token, store_id):
                     }
                     log_info("[판도] [dispatch_action] delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload, 'g')
+
+        elif action == 'reseration':
+            payload = compact({
+                'externalId': str(request.get('booking_number')),
+                'roomId': str(request.get('booking_system')),
+                'crawlingSite': CRAWLING_SITE,
+                'name': str(request.get('booking_name')),
+                'phone': str(request.get('booking_phone')),
+                'requests': str(request.get('booking_memo') or ''),
+                'paymented': False,  # GolfzonPark는 결제 여부 미지원
+                'partySize': 0,
+                'paymentAmount': 0,  # 결제 금액 없음
+                'startDate': to_iso_kst_format(request.get('booking_date')),
+                'endDate': to_iso_kst_format(request.get('booking_date')),
+                'externalGroupId': None,
+            }, ['phone'])
+
+            log_info("[판도] [dispatch_action] reseration payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            patch(token, store_id, payload)
 
         else:
             log_warn(f"[판도] [dispatch_action] 알 수 없는 액션: {action}")
