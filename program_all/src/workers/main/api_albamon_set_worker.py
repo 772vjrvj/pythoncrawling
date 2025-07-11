@@ -23,7 +23,7 @@ import random
 class ApiAlbamonSetLoadWorker(BaseApiWorker):
 
     # 초기화
-    def __init__(self, setting):
+    def __init__(self):
         super().__init__()
         self.base_login_url = "https://www.albamon.com/user-account/login"
         self.base_main_url   = "https://www.albamon.com/jobs/total"
@@ -49,7 +49,6 @@ class ApiAlbamonSetLoadWorker(BaseApiWorker):
         self.base_url = None
         self.before_pro_value = 0
         self.api_client = APIClient(use_cache=False)
-
 
 
     def init(self):

@@ -72,7 +72,8 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def set_columns(self, columns):
         # ✅ 체크된 항목들의 'value'만 추출해서 저장
-        self.columns = [col["value"] for col in columns if col.get("checked", False)]
+        if columns:
+            self.columns = [col["value"] for col in columns if col.get("checked", False)]
 
 
     def set_region(self, region):

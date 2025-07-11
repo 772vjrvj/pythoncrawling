@@ -16,7 +16,7 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
 
 
     # 초기화
-    def __init__(self, setting):
+    def __init__(self):
         super().__init__()
         self.cookies = None
         self.keyword = None
