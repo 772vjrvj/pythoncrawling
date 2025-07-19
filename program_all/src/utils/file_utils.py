@@ -18,7 +18,7 @@ class FileUtils:
         :param folder_name: 생성할 폴더명 (상대경로)
         :return: 생성된 폴더의 전체 경로 문자열
         """
-        folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), folder_name)
+        folder_path = os.path.join(os.getcwd(), folder_name)
         # __file__은 현재 파일의 경로, 이를 기준으로 폴더 생성 위치를 정함
 
         if not os.path.exists(folder_path):  # 해당 경로가 존재하지 않는다면
@@ -108,3 +108,30 @@ class FileUtils:
 
         self.log_func(f"📄 숫자 {len(numbers)}개 읽음: {file_path}")
         return numbers
+
+
+    def save_image(self, folder_path, filename, image_url, headers=None):
+        """
+        지정된 폴더에 이미지 저장
+
+        :param folder_path: 저장할 폴더 경로
+        :param filename: 저장할 파일 이름 (예: product_1.jpg)
+        :param image_url: 이미지 URL
+        :param headers: requests 헤더 (선택)
+        :return: 저장된 파일 경로
+        """
+        import requests
+
+        save_path = os.path.join(folder_path, filename)
+        try:
+            response = requests.get(image_url, headers=headers)
+            response.raise_for_status()
+
+            with open(save_path, "wb") as f:
+                f.write(response.content)
+
+            self.log_func(f"🖼️ 이미지 저장 완료: {save_path}")
+            return save_path
+        except Exception as e:
+            self.log_func(f"❌ 이미지 저장 실패: {save_path} / 오류: {e}")
+            return None

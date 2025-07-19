@@ -3,17 +3,25 @@ import os
 import asyncio
 import json
 from mitmproxy import ctx
+from src.utils.logger import log_info, log_error, log_warn
+
+# 실행 위치 기준으로 data.json 접근을 위해 base_dir 설정
+def get_base_dir():
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    else:
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+
+DATA_JSON_PATH = os.path.join(get_base_dir(), "data.json")
 
 # src 가이드 라우터를 위한 가운데 경로 추가
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.insert(0, get_base_dir())
 
-from src.utils.api_test import patch, delete as api_delete
+from src.utils.api_proxy import patch, delete as api_delete
 from src.utils.common import to_iso_kst_format, compact
 
 CRAWLING_SITE = 'GolfzonPark'
 request_store = {}
-
-DATA_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data.json"))
 
 
 def load_data():
@@ -21,43 +29,44 @@ def load_data():
         with open(DATA_JSON_PATH, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        ctx.log.error(f"[data.json] 로딩 실패: {e}")
+        log_error(f"[판도] [data.json] 로딩 실패: {e}")
         return {}
+
 
 def get_token():
     token = load_data().get("token")
-    ctx.log.info(f"token : {token}")
+    log_info(f"[판도] token : {token}")
     return token
 
 def get_store_id():
     store_id = load_data().get("store_id")
-    ctx.log.info(f"store_id : {store_id}")
+    log_info(f"[판도] store_id : {store_id}")
     return store_id
 
 def save_request(action, url, data):
     request_store[url] = {'action': action, 'data': data}
-    ctx.log.info(f"저장됨: [{action}]:data - {data}")
-    ctx.log.info(f"저장됨: [{action}]:url - {url}")
+    log_info(f"[판도] 저장됨: [{action}]:data - {data}")
+    log_info(f"[판도] 저장됨: [{action}]:url - {url}")
 
 def match_and_dispatch(action, url, response_data):
     entry = request_store.get(url)
-    ctx.log.info(f"[🧪 경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
-    ctx.log.info(f"매칭 시도: [{action}]:entry - {entry}")
+    log_info(f"[판도] [match_and_dispatch] : [경로 확인] DATA_JSON_PATH: {DATA_JSON_PATH}")
+    log_info(f"[판도] [match_and_dispatch] : 시도: [{action}]:entry - {entry}")
 
     token = get_token()
     store_id = get_store_id()
 
     if action == 'delete_mobile':
-        ctx.log.info(f"[{action}] 단부 응답 처리")
+        log_info(f"[판도] [match_and_dispatch] : [{action}] 단부 응답 처리")
         dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
         return
 
     if not entry or entry['action'] != action:
         return
 
-    ctx.log.info(f"요청-응답 매칭됨11111: [{action}] - {url}")
+    log_info(f"[판도] [match_and_dispatch] : 요청-응답 매칭됨: [{action}] - {url}")
     request_data = entry['data']
-    request_store.pop(url, None)
+    request_store.pop(url, None) # .pop(url, None)은 해당 url 키가 존재하면 그 값을 꺼내고, 딕셔너리에서 제거합니다.
 
     dispatch_action(action, {'request': request_data, 'response': response_data}, token, store_id)
 
@@ -78,12 +87,14 @@ def dispatch_action(action, combined_data, token, store_id):
                     'requests': request.get('bookingMemo'),
                     'paymented': request.get('paymentYn') == 'Y',
                     'partySize': int(request.get('bookingCnt', 1)),
-                    'paymentAmount': int(request.get('bookingTotAmount', 0)),
+                    'paymentAmount': int(
+                        request.get('bookingTotAmount') or request.get('paymentTotAmount') or 0
+                    ),
                     'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(request.get('reserveNo')) if request.get('reserveNo') else None,
                 }, ['phone'])
-                ctx.log.info("register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] [dispatch_action] : register payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 patch(token, store_id, payload)
 
         elif action == 'edit':
@@ -98,7 +109,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 예약 변경 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                ctx.log.info("delete 고객 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] delete 고객 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 api_delete(token, store_id, payload, 'g')
 
             elif len(entities) > 0:
@@ -107,7 +118,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'reason': '수정 취소',
                     'externalId': str(booking_number),
                 }
-                ctx.log.info("delete 운영자 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] delete 운영자 payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 api_delete(token, store_id, payload)
 
             if len(entities) > 0:
@@ -121,12 +132,14 @@ def dispatch_action(action, combined_data, token, store_id):
                         'requests': request.get('bookingMemo'),
                         'paymented': request.get('paymentYn') == 'Y',
                         'partySize': int(request.get('bookingCnt', 1)),
-                        'paymentAmount': int(request.get('bookingTotAmount', 0)),
+                        'paymentAmount': int(
+                            request.get('bookingTotAmount') or request.get('paymentTotAmount') or 0
+                        ),
                         'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                         'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                         'externalGroupId': str(reserve_no) if reserve_no else None,
                     }, ['phone'])
-                    ctx.log.info("edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] [dispatch_action] : edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     patch(token, store_id, payload)
             else:
                 payload = compact({
@@ -138,12 +151,14 @@ def dispatch_action(action, combined_data, token, store_id):
                     'requests': request.get('bookingMemo'),
                     'paymented': request.get('paymentYn') == 'Y',
                     'partySize': int(request.get('bookingCnt', 1)),
-                    'paymentAmount': int(request.get('bookingTotAmount', 0)),
+                    'paymentAmount': int(
+                        request.get('bookingTotAmount') or request.get('paymentTotAmount') or 0
+                    ),
                     'startDate': to_iso_kst_format(request.get('bookingStartDt')),
                     'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                     'externalGroupId': str(reserve_no) if reserve_no else None,
                 }, ['phone'])
-                ctx.log.info("edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] [dispatch_action] edit payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 patch(token, store_id, payload)
 
         elif action == 'edit_move':
@@ -154,7 +169,7 @@ def dispatch_action(action, combined_data, token, store_id):
                 'endDate': to_iso_kst_format(request.get('bookingEndDt')),
                 'crawlingSite': CRAWLING_SITE,
             })
-            ctx.log.info("edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            log_info("[판도] [dispatch_action] edit_move payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
             patch(token, store_id, payload, 'm')
 
         elif action == 'delete':
@@ -165,7 +180,7 @@ def dispatch_action(action, combined_data, token, store_id):
                     'reason': '모바일 고객 예약을 운영자가 취소',
                     'externalGroupId': str(reserve_no),
                 }
-                ctx.log.info("delete 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                log_info("[판도] delete 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                 api_delete(token, store_id, payload, 'g')
             else:
                 booking_nums = request.get('bookingNums')
@@ -177,7 +192,7 @@ def dispatch_action(action, combined_data, token, store_id):
                         'reason': '운영자 취소',
                         'externalId': str(num),
                     }
-                    ctx.log.info("delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] [dispatch_action] delete 운영자:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload)
 
         elif action == 'delete_mobile':
@@ -190,11 +205,32 @@ def dispatch_action(action, combined_data, token, store_id):
                         'reason': '모바일 고객 예약 취소',
                         'externalGroupId': str(reserve_no),
                     }
-                    ctx.log.info("delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+                    log_info("[판도] [dispatch_action] delete 모바일 고객:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
                     api_delete(token, store_id, payload, 'g')
 
+        elif action == 'reseration':
+            payload = compact({
+                'externalId': str(request.get('booking_number')),
+                'roomId': str(request.get('booking_system')),
+                'crawlingSite': CRAWLING_SITE,
+                'name': str(request.get('booking_name')),
+
+
+                'phone': str(request.get('booking_phone')),
+                'requests': str(request.get('booking_memo') or ''),
+                'paymented': False,  # GolfzonPark는 결제 여부 미지원
+                'partySize': 0,
+                'paymentAmount': 0,  # 결제 금액 없음
+                'startDate': to_iso_kst_format(request.get('booking_date')),
+                'endDate': to_iso_kst_format(request.get('booking_date')),
+                'externalGroupId': None,
+            }, ['phone'])
+
+            log_info("[판도] [dispatch_action] reseration payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            patch(token, store_id, payload)
+
         else:
-            ctx.log.warn(f"알 수 없는 액션: {action}")
+            log_warn(f"[판도] [dispatch_action] 알 수 없는 액션: {action}")
 
     except Exception as e:
-        ctx.log.error(f"dispatch 처리 실패 [{action}]: {e}")
+        log_error(f"[판도] [dispatch_action] 처리 실패 [{action}]: {e}")

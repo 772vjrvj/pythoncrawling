@@ -1,8 +1,8 @@
 from src.vo.site import Site
 
 SITE_LIST = [
-    Site("알바몬", "ALBAMON", "#FF6600", enabled=True, user=False, setting=[]),
-    Site("네이버 플레이스", "NAVER_PLACE", "#03C75A", enabled=True, user=False, setting=[]),
+    Site("알바몬", "ALBAMON", "#FF6600", enabled=True, user=False, setting=[]), # 성공
+    # Site("네이버 플레이스", "NAVER_PLACE", "#03C75A", enabled=True, user=False, setting=[]),
     Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True, user=False,
          setting=[
             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
@@ -24,13 +24,12 @@ SITE_LIST = [
             {"code": "url",            "value": "URL",           "checked": True},
             {"code": "map",            "value": "지도",          "checked": True},
             {"code": "amenities",      "value": "편의시설",      "checked": True},
+            {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
             {"code": "phone",          "value": "전화번호",      "checked": True},
             {"code": "site",           "value": "사이트",        "checked": True},
             {"code": "region_info",    "value": "주소지정보",    "checked": True},
         ],
-        region = True
-
-         ),
+         region = True),
     Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=True, user=False, setting=[
         {'name': '블로그 URL', 'code': 'url',        'value': '', 'type': 'button'},
         {'name': '게시판 선택', 'code': 'url_select', 'value': '', 'type': 'select'},
@@ -49,11 +48,21 @@ SITE_LIST = [
         {'name': '종료 날짜(YYYY-MM-DD)', 'code': 'to_date','value': '', 'type': 'input'}
     ]),
     Site("SEOUL FOOD 2025", "SEOUL_FOOD_2025", "#000000", enabled=True, user=False, setting=[]),
-
     Site("IHERB", "IHERB", "#458500", enabled=True, user=False, setting=[
         {'name': '시작 페이지', 'code': 'st_page','value': '', 'type': 'input'},
         {'name': '종료 페이지', 'code': 'ed_page','value': '', 'type': 'input'}
     ]),
+    Site("YUPOO", "YUPOO", "#49BC85", enabled=True, user=False,
+         setting=[
+             {'name': '1. 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
+             {'name': '2. 쿠키 목록페이지', 'code': 'cookie1',    'value': '', 'type': 'input'},
+             {'name': '2. 쿠키 상세페이지', 'code': 'cookie2',    'value': '', 'type': 'input'},
+         ]),
+    Site("OVREPLE", "OVREPLE", "#812625", enabled=True, user=False,
+         setting=[
+             {'name': '1. 카테고리 아이디',                   'code': 'ca_id',      'value': '', 'type': 'input'},
+             {'name': '2. 상품 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+         ])
 ]
 
 # 전역 변수

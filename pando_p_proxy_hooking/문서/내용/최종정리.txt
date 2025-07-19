@@ -1,0 +1,47 @@
+## 2025-07-05
+
+■ 1. intellij 관리자 권한으로 실행
+
+■ 2. 빌드
+pyinstaller main.py `
+  --onefile `
+  --name main `
+  --uac-admin `
+  --noconfirm `
+  --distpath dist `
+  --workpath build `
+  --paths . `
+  --windowed 콘솔창 없이(선택사항)
+
+■ 3. 파일 추가
+src폴더, logs폴더, data.json, mitmdump.exe를
+main.exe(관리자 모양) 이 있는 폴더에 넣는다.
+dist/
+├─ logs
+├─ src
+├─ main.exe
+├─ mitmdump.exe
+이렇게 되어야함
+
+■ 4. 실행전
+main.exe 실행전에
+window 키 + R -> certmgr.msc -> 엔터
+    4-1.
+     삭제
+    실뢰할 수 있는 루트인증 기관 >> 인증서 에서 mitmproxy 삭제
+
+    4-2. mimt폴더 인증서 삭제
+    C:\Users\772vj\.mitmproxy 경로의 .mitmproxy 폴더 삭제
+
+    4-3. 수동 프로시 설정 끄기
+    윈도우 > proxy 검색 > 네트워크 및 인터넷 > 프록시
+    수동 프록시 설정 -> 수동 프록시 사용 [주소 127.0.0.1 / 포드 : 8080]
+
+■ 5. 실행후
+실행 전과 반대
+    5-1. 루트인증서 확인
+    5-2. mimt폴더 인증서 확인
+    5-3. 수동 프로시 설정 확인
+    5-4. logs의 mitm_bat.log 확인
+
+■ 6. 프로그램 종료후

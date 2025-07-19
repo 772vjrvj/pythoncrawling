@@ -1,3 +1,4 @@
+# src/ui/store_dialog.py
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton
 )
@@ -70,10 +71,12 @@ class StoreDialog(QDialog):
         self.cancel_btn = QPushButton("취소")  # 취소 버튼
         self.cancel_btn.clicked.connect(self.reject)  # 취소 시 다이얼로그 닫기
         self.cancel_btn.setFixedWidth(130)
+        self.cancel_btn.setCursor(Qt.PointingHandCursor)
 
         self.save_btn = QPushButton("등록")  # 등록 버튼
         self.save_btn.clicked.connect(self.on_save_clicked)  # 등록 시 저장 처리
         self.save_btn.setFixedWidth(130)
+        self.save_btn.setCursor(Qt.PointingHandCursor)
 
         button_layout.addStretch()  # 좌측 여백 확보
         button_layout.addWidget(self.cancel_btn)

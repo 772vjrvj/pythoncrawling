@@ -37,29 +37,39 @@ class ProxyLogger:
                 ctx.log.info(f"📨 요청 Payload에서 추출된 queryText: {query_text}")
 
     def response(self, flow: http.HTTPFlow):
-        global latest_query_text
 
         if "kipris.or.kr" in flow.request.pretty_host and "kpat/resulta.do" in flow.request.pretty_url:
             try:
                 data = json.loads(flow.response.get_text())
-                result = data.get("resultList", [])[0] if data.get("resultList") else {}
-                ctx.log.info("📄 최종 응답 전문 (첫 건):")
-                ctx.log.info(json.dumps(result, indent=2, ensure_ascii=False))
+                result_list = data.get("resultList", [])
 
-                if latest_query_text:
-                    file_path = "test.json"
-                    if os.path.exists(file_path):
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            existing = json.load(f)
-                    else:
-                        existing = {}
+                if not result_list:
+                    ctx.log.info("📄 resultList가 비어 있습니다.")
+                    return
 
-                    existing[latest_query_text] = result
+                ctx.log.info(f"📄 최종 응답 전문 ({len(result_list)}건):")
+                for i, result in enumerate(result_list, start=1):
+                    ctx.log.info(json.dumps(result, indent=2, ensure_ascii=False))
 
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        json.dump(existing, f, indent=2, ensure_ascii=False)
+                file_path = "data.json"
+                ctx.log.info("📄 existing 111")
+                if os.path.exists(file_path):
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        existing = json.load(f)
+                else:
+                    existing = {}
+                ctx.log.info("📄 existing 222")
 
-                    ctx.log.info(f"✅ test.json 파일에 '{latest_query_text}' 항목 저장 완료")
+                # 여러 건을 padded_key_base_1, _2 ... 식으로 저장
+                for i, result in enumerate(result_list, start=1):
+                    key = f"{result['AN']}_{i}"
+                    existing[key] = result
+                    ctx.log.info(f"✅ 저장 준비: {key}")
+
+                with open(file_path, "w", encoding="utf-8") as f:
+                    json.dump(existing, f, indent=2, ensure_ascii=False)
+
+                ctx.log.info(f"✅ data.json 파일에 항목들 저장 완료")
 
             except Exception as e:
                 ctx.log.warn(f"⚠️ 응답 처리 실패: {str(e)}")
