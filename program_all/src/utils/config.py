@@ -57,6 +57,11 @@ SITE_LIST = [
              {'name': '1. 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
              {'name': '2. 쿠키 목록페이지', 'code': 'cookie1',    'value': '', 'type': 'input'},
              {'name': '2. 쿠키 상세페이지', 'code': 'cookie2',    'value': '', 'type': 'input'},
+         ]),
+    Site("OVREPLE", "OVREPLE", "#812625", enabled=True, user=False,
+         setting=[
+             {'name': '1. 카테고리 아이디',                   'code': 'ca_id',      'value': '', 'type': 'input'},
+             {'name': '2. 상품 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
          ])
 ]
 

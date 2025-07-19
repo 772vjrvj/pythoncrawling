@@ -5,7 +5,7 @@ import pandas as pd
 EXCEL_PATH = "YUPOO_20250711012843.xlsx"  # 입력 파일
 OUTPUT_PATH = "YUPOO_20250711012843_완성본.xlsx"  # 출력 파일
 IMAGE_FOLDER = "images/yupoo"  # 이미지 경로
-BASE_URL = "https://trendell.store/data/editor/yupoo"  # 이미지 주소 prefix
+BASE_URL = "http://43.202.198.24/data/item/yupoo"  # 이미지 주소 prefix
 
 # 엑셀 불러오기
 df = pd.read_excel(EXCEL_PATH, dtype=str)

@@ -16,7 +16,7 @@ from src.workers.api_base_worker import BaseApiWorker
 
 class ApiSotongSetLoadWorker(BaseApiWorker):
 
-    def __init__(self, setting):
+    def __init__(self):
         super().__init__()
         self.running = True
         self.total_pages = 0
@@ -24,8 +24,8 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
         self.before_pro_value = 0
         self.login_id = "sotong"
         self.login_pw = "sotong"
-        self.fr_date = self.get_setting_value(setting, "fr_date")
-        self.to_date = self.get_setting_value(setting, "to_date")
+        self.fr_date = None
+        self.to_date = None
         self.driver = None
         self.file_driver = None
         self.excel_driver = None
@@ -35,6 +35,8 @@ class ApiSotongSetLoadWorker(BaseApiWorker):
     # 초기화
     def init(self):
         try:
+            self.fr_date = self.get_setting_value(self.setting, "fr_date")
+            self.to_date = self.get_setting_value(self.setting, "to_date")
             self.driver_set()
             state = GlobalState()
             user = state.get("user")

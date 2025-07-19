@@ -214,6 +214,8 @@ def dispatch_action(action, combined_data, token, store_id):
                 'roomId': str(request.get('booking_system')),
                 'crawlingSite': CRAWLING_SITE,
                 'name': str(request.get('booking_name')),
+
+
                 'phone': str(request.get('booking_phone')),
                 'requests': str(request.get('booking_memo') or ''),
                 'paymented': False,  # GolfzonPark는 결제 여부 미지원
