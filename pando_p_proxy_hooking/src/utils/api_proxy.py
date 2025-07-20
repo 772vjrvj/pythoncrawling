@@ -4,8 +4,10 @@ import json
 from mitmproxy import ctx
 from src.utils.logger import log_info, log_error, log_warn  # ✅ 공통 로그 함수 사용
 
-#BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
+# BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
 BASE_URL = 'https://api.24golf.co.kr'  # 운영환경
+LOCAL_URL = 'http://localhost:32123'  # 운영환경
+
 
 def build_url(store_id: str, param_type: str = None) -> str:
     if not store_id:
@@ -18,6 +20,7 @@ def build_url(store_id: str, param_type: str = None) -> str:
         path = 'crawl/group'
 
     return f"{BASE_URL}/stores/{store_id}/reservation/{path}"
+
 
 def handle_response(response: requests.Response, method_name: str):
     try:
@@ -40,6 +43,7 @@ def handle_response(response: requests.Response, method_name: str):
         log_error(error_msg)
         raise
 
+
 def post(token: str, store_id: str, data: dict, param_type: str = None):
     url = build_url(store_id, param_type)
     headers = {
@@ -54,6 +58,7 @@ def post(token: str, store_id: str, data: dict, param_type: str = None):
     except Exception as e:
         log_error(f"[판도] [api] : POST 요청 중 예외 발생: {e}")
         return None
+
 
 def put(token: str, store_id: str, data: dict, param_type: str = None):
     url = build_url(store_id, param_type)
@@ -70,6 +75,7 @@ def put(token: str, store_id: str, data: dict, param_type: str = None):
         log_error(f"[판도] [api] : PUT 요청 중 예외 발생: {e}")
         return None
 
+
 def patch(token: str, store_id: str, data: dict, param_type: str = None):
     url = build_url(store_id, param_type)
     headers = {
@@ -85,6 +91,23 @@ def patch(token: str, store_id: str, data: dict, param_type: str = None):
         log_error(f"[판도] [api] : PATCH 요청 중 예외 발생: {e}")
         return None
 
+
+def local_web_req(token: str, store_id: str, data: dict, param_type: str = None):
+    url = local_web_build_url(store_id, param_type)
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+    }
+    log_info(f"[판도] [api] : [GET] header : {headers}")
+    log_info(f"[판도] [api] : [GET] {url}\n{json.dumps(data, ensure_ascii=False, indent=2)}")
+    try:
+        res = requests.get(url, params=data, headers=headers, proxies={"http": None, "https": None})
+        return handle_response(res, 'GET')
+    except Exception as e:
+        log_error(f"[판도] [api] : PATCH 요청 중 예외 발생: {e}")
+        return None
+
+
 def delete(token: str, store_id: str, data: dict = None, param_type: str = None):
     url = build_url(store_id, param_type)
     headers = {
@@ -99,6 +122,7 @@ def delete(token: str, store_id: str, data: dict = None, param_type: str = None)
     except Exception as e:
         log_error(f"[판도] [api] : DELETE 요청 중 예외 발생: {e}")
         return None
+
 
 def fetch_token_from_api(store_id: str):
     url = f"{BASE_URL}/auth/token/stores/{store_id}/role/singleCrawler"
@@ -116,6 +140,7 @@ def fetch_token_from_api(store_id: str):
     log_warn("[판도]️ [api] : fallback 토큰 반환")
     return None
 
+
 def fetch_store_info(token: str, store_id: str):
     url = f"{BASE_URL}/stores/{store_id}"
     headers = {'Authorization': f'Bearer {token}'}
@@ -128,3 +153,10 @@ def fetch_store_info(token: str, store_id: str):
         msg = f"[판도] [api] : 매장 정보 요청 실패: {err}"
         log_error(msg)
         return None
+
+
+def local_web_build_url(store_id: str, param_type: str = None) -> str:
+    if not store_id:
+        raise ValueError("storeId is not set")
+
+    return f"{LOCAL_URL}/reseration"

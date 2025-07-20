@@ -17,7 +17,7 @@ DATA_JSON_PATH = os.path.join(get_base_dir(), "data.json")
 # src 가이드 라우터를 위한 가운데 경로 추가
 sys.path.insert(0, get_base_dir())
 
-from src.utils.api_proxy import patch, delete as api_delete
+from src.utils.api_proxy import patch, local_web_req, delete as api_delete
 from src.utils.common import to_iso_kst_format, compact
 
 CRAWLING_SITE = 'GolfzonPark'
@@ -210,24 +210,11 @@ def dispatch_action(action, combined_data, token, store_id):
 
         elif action == 'reseration':
             payload = compact({
-                'externalId': str(request.get('booking_number')),
-                'roomId': str(request.get('booking_system')),
-                'crawlingSite': CRAWLING_SITE,
-                'name': str(request.get('booking_name')),
+                'bookingDate': request.get('booking_date')
+            }, [])
 
-
-                'phone': str(request.get('booking_phone')),
-                'requests': str(request.get('booking_memo') or ''),
-                'paymented': False,  # GolfzonPark는 결제 여부 미지원
-                'partySize': 0,
-                'paymentAmount': 0,  # 결제 금액 없음
-                'startDate': to_iso_kst_format(request.get('booking_date')),
-                'endDate': to_iso_kst_format(request.get('booking_date')),
-                'externalGroupId': None,
-            }, ['phone'])
-
-            log_info("[판도] [dispatch_action] reseration payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
-            patch(token, store_id, payload)
+            log_info("[판도] [dispatch_action] [전화예약] reseration payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            local_web_req(token, store_id, payload)
 
         else:
             log_warn(f"[판도] [dispatch_action] 알 수 없는 액션: {action}")
