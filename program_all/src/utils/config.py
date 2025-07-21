@@ -62,7 +62,9 @@ SITE_LIST = [
          setting=[
              {'name': '1. 카테고리 아이디',                   'code': 'ca_id',      'value': '', 'type': 'input'},
              {'name': '2. 상품 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-         ])
+         ]),
+    Site("1004YA", "1004YA", "#FB92BA", enabled=True, user=False,
+         setting=[]),
 ]
 
 # 전역 변수

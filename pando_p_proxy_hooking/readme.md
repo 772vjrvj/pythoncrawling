@@ -1,5 +1,10 @@
 ■ 매장정보
 
+    매장ID : 687df837ccdd3048647c8e92
+    gpm 아이디 :jskzzang
+    gpm 비번 : jsk$13579
+    청주 용담 JS
+
     ceo 정보
     id:fogjin94
     pw:cns0753!
