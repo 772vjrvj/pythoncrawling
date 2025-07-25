@@ -19,8 +19,10 @@ TARGETS_REQUEST = {
     "edit_move": re.compile(r"/rest/ui/booking/\d+/ajax-edit(\?timestamp=|$)"),
     "delete": re.compile(r"/rest/ui/booking/\d+/delete(\?timestamp=|$)"),
     "delete_mobile": re.compile(r"/rest/ui/polling/booking/\d+\?(?=.*\btimestamp=)(?=.*\bbookingStartDt=)(?=.*\bdata=)(?=.*\bbookingNumber=)"),
-    "reseration": re.compile(r"/golfzone/agent/reseration\.json$")
+    "reseration": re.compile(r"/golfzone/agent/reseration\.json$"),
+    "mobile_host": re.compile(r"/rest/ui/reservation/\d+\?(?=.*\btimestamp=)(?=.*\bdata=)")
 }
+
 TARGETS_RESPONSE = TARGETS_REQUEST
 
 class ProxyLogger:

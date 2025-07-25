@@ -210,10 +210,28 @@ def dispatch_action(action, combined_data, token, store_id):
 
         elif action == 'reseration':
             payload = compact({
-                'bookingDate': request.get('booking_date')
+                'bookingDate': request.get('booking_date'),
+                'type': 'p'
             }, [])
 
             log_info("[판도] [dispatch_action] [전화예약] reseration payload:\n" + json.dumps(payload, ensure_ascii=False, indent=2))
+            local_web_req(token, store_id, payload)
+
+        elif action == 'mobile_host':
+            entitys = response.get('entitys', [])
+            reserve_datetime = None
+
+            if entitys and isinstance(entitys, list):
+                reserve_datetime = entitys[0].get('reserveDatetime')
+
+            payload = compact({
+                'bookingDate': reserve_datetime,
+                'type': 'm'
+            }, [])
+
+            log_info("[판도] [dispatch_action] [모바일 예약 요청] reservation payload:\n" +
+                     json.dumps(payload, ensure_ascii=False, indent=2))
+
             local_web_req(token, store_id, payload)
 
         else:

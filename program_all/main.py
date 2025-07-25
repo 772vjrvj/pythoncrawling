@@ -1,21 +1,10 @@
-from PyQt5.QtWidgets import QApplication
-from src.app_manager import AppManager
-from src.core.global_state import GlobalState
+import pandas as pd
 
-import sys
+# 파일 읽기 (한글 인코딩 고려)
+df = pd.read_csv("리플 최종.csv", encoding='utf-8')  # 또는 encoding='cp949'
 
+# SHOP_ID 앞에 'V_' 붙이기
+df['SHOP_ID'] = df['SHOP_ID'].astype(str).apply(lambda x: f'V_{x}')
 
-def main() -> None:
-    app = QApplication(sys.argv)
-
-    state = GlobalState()
-    state.initialize()
-
-    app_manager = AppManager()
-    app_manager.go_to_login()
-
-    sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    main()
+# CSV 저장 (한글 인코딩 설정)
+df.to_csv("리플 최종_V.csv", index=False, encoding='utf-8-sig')
