@@ -1,5 +1,7 @@
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
@@ -26,6 +28,7 @@ base_price = 0
 unit = '개'
 stnd_cnt = '1'
 email_list = []
+global_month_review_cnt = 0
 
 # 드라이버 설정 함수
 def setup_driver():
@@ -70,9 +73,283 @@ def extract_non_numbers(input_string):
         print(f"Error in extracting non-numbers from {input_string}: {e}")
         return ''  # 에러 발생 시 빈 문자열 반환
 
+
+# 네이버 크롤링 함수
+def extract_product_info(idx, element, name, qty):
+    """ 제품 정보를 추출하는 함수 """
+    try:
+        # 상점 이름 추출
+        try:
+            mall_name = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.mall"] img').get_attribute('alt')
+        except NoSuchElementException:
+            mall_name = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.mall"]').text.split('\n')[0]
+
+        # 제품 이름 추출
+        prod_name = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.pd"]').text
+
+        # 가격 추출
+        price_str = element.find_element(By.CSS_SELECTOR, '[data-shp-area="prc.price"]').text.replace('최저', '').strip()
+        numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
+
+        # qty 값이 숫자를 포함하지 않으면 '1개' 할당
+        if not any(char.isdigit() for char in qty):
+            qt = f'{stnd_cnt}{unit}'
+        else:
+            qt = qty
+
+        one_price = (numeric_price / convert_to_float(qt)) * float(stnd_cnt)
+
+        temp_list = [name, '네이버', qt, mall_name, '', prod_name, numeric_price, one_price]
+
+        print(f"네이버 제품 {idx}: {temp_list}")
+
+        return temp_list
+    except Exception as e:
+        print(f"Error in extracting product info: {e}")
+        return None  # 에러 발생 시 None 반환
+
+
+def extract_ul_class(driver):
+    """ ul 클래스 이름 추출 함수 """
+    try:
+        uls = driver.find_elements(By.CSS_SELECTOR, '#section_price ul')  # ul 목록
+        for e in uls:  # ul 안에 li class 이름 가져오기
+            if 'productList_list_seller' in e.get_attribute('class'):
+                return e.get_attribute('class').split(' ')[0]
+    except Exception as e:
+        print(f"Error in extracting ul class: {e}")
+    return ""
+
+
+def process_product_list(driver, ul_class, name, qty, naver_temp_list):
+    """ 제품 목록 처리 함수 """
+    try:
+        prod_list = driver.find_elements(By.CSS_SELECTOR, f'#section_price .{ul_class} li')
+
+        # 첫 번째 제품 목록으로 스크롤
+        action = ActionChains(driver)
+        action.move_to_element(prod_list[0]).perform()
+        time.sleep(1)
+
+        # 공통 함수 호출하여 제품 정보 추출
+        for idx, e in enumerate(prod_list):
+
+            # 기준인건 1개까지
+            if qty == f'{stnd_cnt}{unit}' and idx > 0:
+                break
+
+            # 기준이 아닌건 3개까지
+            if qty != f'{stnd_cnt}{unit}' and idx > 2:
+                break
+
+            temp_list = extract_product_info(idx, e, name, qty)
+            if temp_list:
+                naver_temp_list.append(temp_list)
+            else:
+                print(f"Error in scraping 네이버: index {idx}")
+    except Exception as e:
+        print(f"Error in processing product list: {e}")
+
+
+def scrape_naver(driver, name, naver_url, open_market_list):
+    global unit, stnd_cnt, base_price
+    try:
+        if not naver_url:
+            return []
+        driver.get(naver_url)
+        print(naver_url)
+        naver_temp_list = []
+        time.sleep(3)
+
+        # 판매중단 확인
+        try:
+            status_element = driver.find_element(By.CSS_SELECTOR, "h3.noPrice_status__lBnHb")
+            if status_element.text.strip() == "판매중단":
+                return []  # '판매중단'이면 빈 리스트 반환
+        except NoSuchElementException:
+            # 해당 요소가 없는 경우 별도 처리(여기서는 그냥 pass)
+            pass
+
+        # 기준 가격 세팅
+        # 테이블 찾기
+        table = driver.find_element(By.CLASS_NAME, "productByMall_list_seller__yNhgM")
+
+        # tbody 내부의 모든 tr 가져오기
+        trs = table.find_element(By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")
+
+        # 결과 저장용 리스트
+        results = []
+        base_result = {}
+
+        # tr 루프 돌면서 데이터 추출
+        for tr in trs:
+            try:
+                # 첫 번째 td 내부의 div 안에 a 태그 찾기
+                a_tag = tr.find_element(By.CSS_SELECTOR, "td.productByMall_mall_area__4i3v_ div.productByMall_text_over__mA2mG a.productByMall_mall__SIa50.linkAnchor._nlog_click._nlog_impression_element")
+
+                # href 및 text 가져오기
+                href = a_tag.get_attribute("href")
+                text = a_tag.text.strip()
+
+                # 만약 text 값이 비어있다면 a 태그 내 img 태그의 alt 값 가져오기
+                if not text:
+                    try:
+                        img_tag = a_tag.find_element(By.TAG_NAME, "img")
+                        text = img_tag.get_attribute("alt").strip()
+                    except Exception:
+                        text = ""
+
+                # 두 번째 td에서 가격 추출 (a 태그 내부 text)
+                try:
+                    price_tag = tr.find_element(By.CSS_SELECTOR, "td:nth-of-type(2) a strong")
+                    price_text = price_tag.text.strip().replace(",", "")  # 콤마 제거
+                    price = int(price_text) if price_text.isdigit() else 0  # 정수 변환, 숫자가 아닐 경우 0
+                except Exception:
+                    price = 0  # 가격이 없을 경우 기본값 0 설정
+
+                # 결과 저장
+                results.append({"href": href, "text": text, "price": price})
+
+            except Exception as e:
+                print(f"Error processing row: {e}")
+
+        # 결과 출력
+        for result in results:
+
+            text = result['text']
+            print(f'text : {text}')
+            if text in open_market_list:
+                base_price = result['price']
+                base_result = result
+                break
+
+            href = result['href']
+            if href:
+                print(f'href : {href}')
+                driver.get(href)
+                time.sleep(3)  # 리디렉션이 있을 수 있으므로 대기
+                final_url = driver.current_url  # 최종 URL 가져오기
+                contains_naver = "naver.com" in final_url.lower()
+
+                if contains_naver:
+                    base_price = result['price']
+                    base_result = result
+                    break
+
+        print(f'기준상품 : {base_result}')
+
+
+
+        driver.get(naver_url)
+
+
+        # 상품구성: 1개, 2개, 3개 등 옵션 처리
+        qtys = []
+
+        product_options = driver.find_element(By.CLASS_NAME, "condition_area")
+
+        target_elements = product_options.find_elements(
+            By.CLASS_NAME,
+            "stdOpt_standard_option_area__kh9jP"
+        )
+
+
+        # 첫번 번째 요소 선택
+        if len(target_elements) > 0:
+            count_element = None
+            if len(target_elements) == 1:
+                count_element = target_elements[0]
+            elif len(target_elements) == 2:
+                count_element = target_elements[1]
+
+            scroll_area = count_element.find_element(By.CLASS_NAME, "stdOpt_scroll_area__yTJwJ")
+
+            buttons = scroll_area.find_elements(By.TAG_NAME, "button")
+
+            for button in buttons:
+                span = button.find_element(By.CLASS_NAME, "stdOpt_title__Rky56")
+                qtys.append(span)
+
+
+        ul_class = extract_ul_class(driver)  # ul 클래스 추출
+
+        if len(qtys) > 0:
+            # ['1개', '2개', '3개', '4개', '5개']
+            qlist = [q.text for q in qtys]
+            print(qlist)
+
+            unit = extract_non_numbers(qlist[0])
+            print(f'단위 : {unit}')
+
+            stnd_cnt = extract_numbers(qlist[0])
+            print(f'기준 수량 : {stnd_cnt}')
+
+            delivery_option = 0
+
+            for p in range(len(qtys)):
+                print(qlist[p])
+                driver.find_element(By.CSS_SELECTOR, f'[data-shp-contents-type="{qlist[p]}"]').click()
+                time.sleep(2)
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                driver.execute_script("window.scrollTo(0, 0);")
+
+
+                if qlist[p] != f'{stnd_cnt}{unit}':
+                    delivery_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="배송비포함 필터"]')
+
+                    if delivery_elements[0].text == 'on':
+                        # delivery_elements[0].click()  # 배송비포함 클릭
+
+                        delivery_element = delivery_elements[0]
+                        driver.execute_script("arguments[0].click();", delivery_element)
+
+                        time.sleep(0.5)
+                        delivery_option = 1
+
+                    card_elements = driver.find_elements(By.CSS_SELECTOR, '[data-shp-contents-type="카드할인가 정렬"]')
+                    if card_elements[0].text == 'off':
+                        card_elements[0].click()  # 배송비포함 클릭
+                        time.sleep(0.5)
+                        card_option = 1
+
+
+                if not ul_class:
+                    continue
+
+                process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
+
+                # 1개는 1개 , 1개 이상은 3개로 제한을 두었기 때문에 페이징 처리 필요 없음
+                # try:
+                #     # 페이지네이션 처리
+                #     pagination_wrap = driver.find_element(By.CLASS_NAME, 'productList_seller_wrap__FZtUS')
+                #     pagination = pagination_wrap.find_element(By.CLASS_NAME, 'pagination_pagination__JW7zT')
+                #     page_links = pagination.find_elements(By.TAG_NAME, 'a')
+                #
+                #     # 페이지가 있는 경우 처리
+                #     for page_link in page_links:
+                #         page_link.click()  # 페이지 클릭
+                #         time.sleep(2)  # 페이지 로드 대기
+                #         # 제품 목록 처리
+                #         process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
+                #
+                # except Exception as e:
+                #     # 페이지네이션이 없는 경우 예외 처리
+                #     print(f"Pagination not found for item {qlist[p]}. Processing product list without pagination.")
+                #     process_product_list(driver, ul_class, name, qlist[p], naver_temp_list)
+
+        else:
+            # 수량 옵션이 없는 경우 제품 목록 처리
+            process_product_list(driver, ul_class, name, f'{stnd_cnt}{unit}', naver_temp_list)
+
+        return naver_temp_list
+
+    except (NoSuchElementException, TimeoutException) as e:
+        print(f"Error in Naver scraping: {e}")
+        return []
+
+
 # 다나와 크롤링 함수
 def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
-    global base_price
     try:
         if not danawa_url:
             return []
@@ -81,72 +358,34 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
         print(danawa_url)
         danawa_temp_list = []
 
-        # 다른구성상품 더보기/접기
+        # 구성 상품 열기 클릭 시 에러 발생 시 빈 리스트 반환
         try:
-            if driver.find_elements(By.XPATH, '//*[@id="bundleProductMoreButton"]'):
-                driver.find_element(By.XPATH, '//*[@id="bundleProductMoreButton"]').click()
-                print("다른구성상품을 성공적으로 열었습니다.")
+            if driver.find_elements(By.XPATH, '//*[@id="bundleProductMoreOpen"]'):
+                driver.find_element(By.XPATH, '//*[@id="bundleProductMoreOpen"]').click()
+                print("구성 상품을 성공적으로 열었습니다.")
             else:
-                print("다른구성상품을 찾을 수 없습니다. 계속 진행합니다.")
+                print("구성 상품을 찾을 수 없습니다. 계속 진행합니다.")
         except ElementNotInteractableException as e:
             # 버튼이 있지만 상호작용이 불가능한 경우에만 넘어감
-            print(f"다른구성상품 열기 버튼이 있지만 상호작용이 불가능하여 넘어갑니다: {e}")
+            print(f"구성 상품 열기 버튼이 있지만 상호작용이 불가능하여 넘어갑니다: {e}")
             pass  # 다음 라인으로 넘어가서 계속 진행
         except Exception as e:
             # 다른 예외는 발생 시 빈 리스트 반환
-            print(f"Error occurred while trying to open 다른구성상품: {e}")
+            print(f"Error occurred while trying to open 구성 상품: {e}")
             return []
 
-        # 다른 구성
-        danawa_opt_url_list = [e.get_attribute('href') for e in driver.find_elements(By.CSS_SELECTOR, '[class="list__variant-selector"] li a')] # class명 변경 2025-07-27
-        danawa_opt_text_list = [e.text for e in driver.find_elements(By.CSS_SELECTOR, '[class="list__variant-selector"] li .text__spec')] # class명 변경 2025-07-27
+
+        danawa_opt_url_list = [e.get_attribute('href') for e in driver.find_elements(By.CSS_SELECTOR, '[class="othr_list"] li .chk a')]
+        danawa_opt_text_list = [e.text for e in driver.find_elements(By.CSS_SELECTOR, '[class="othr_list"] li .chk a')]
         # ['1개', '2개', '3개', '4개', '5개'] #['https://prod.danawa.com/info/?pcode=5970722', 'https://prod.danawa.com/info/?pcode=5970724', 'https://prod.danawa.com/info/?pcode=5970731', 'https://prod.danawa.com/info/?pcode=5970748', 'https://prod.danawa.com/info/?pcode=5970738']
 
         print(danawa_opt_url_list)
         print(danawa_opt_text_list)
 
-        # 기준 가격 1개 2025-07-27 추가
-        if danawa_opt_text_list and danawa_opt_text_list[0]:
-            driver.get(danawa_opt_url_list[0])
-            time.sleep(2)
-            driver.find_elements(By.CSS_SELECTOR, '.cardSaleChkbox')[0].click()  # 카드할인가 클릭
-            driver.find_elements(By.CSS_SELECTOR, '.postPriceChkbox')[0].click()  # 배송비 클릭
-            time.sleep(1)
-            html = driver.page_source
-            soup = BeautifulSoup(html, 'html.parser')
-
-            numeric_left_price = 0
-            numeric_rgt_price = 0
-
-            # 왼쪽 가격 추출
-            left_pay_dil_prod_e_list = soup.select('.columm.left_col .diff_item')
-            if left_pay_dil_prod_e_list:
-                item = left_pay_dil_prod_e_list[0]
-                card_price_tag = item.select_one('.card_line .prc_t')
-                if card_price_tag:
-                    price_str = card_price_tag.text
-                else:
-                    prc_price_tag = item.select_one('.prc_line .prc_c')
-                    price_str = prc_price_tag.text if prc_price_tag else ''
-                numeric_left_price = extract_numeric_price(price_str) if price_str else 0
-
-            # 오른쪽 가격 추출
-            rgt_pay_dil_prod_e_list = soup.select('.columm.rgt_col .diff_item')
-            if rgt_pay_dil_prod_e_list:
-                item = rgt_pay_dil_prod_e_list[0]
-                prc_price_tag = item.select_one('.prc_c')
-                price_str = prc_price_tag.text if prc_price_tag else ''
-                numeric_rgt_price = extract_numeric_price(price_str) if price_str else 0
-
-            # 더 작은 값을 base_price로 설정
-            base_price = min(numeric_left_price, numeric_rgt_price)
-
-
         # 수량옵션이 없는경우 1개로 처리하기 위한 세팅
         if not danawa_opt_url_list:
             danawa_opt_url_list = [1]
             danawa_opt_text_list = [1]
-
 
         for ii in range(len(danawa_opt_url_list)):
             print(danawa_opt_url_list[ii])
@@ -161,9 +400,10 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             driver.execute_script("window.scrollTo(0, 0);")
-            driver.find_elements(By.CSS_SELECTOR, '.cardSaleChkbox')[0].click()  # 카드할인가 클릭 2025-07-27 제거
-            driver.find_elements(By.CSS_SELECTOR, '.postPriceChkbox')[0].click()  # 배송비 클릭
+            driver.find_elements(By.CSS_SELECTOR, '.cardSaleChkbox')[0].click()  # 카드할인가 클릭
             time.sleep(1)
+
+
 
             html = driver.page_source
             soup = BeautifulSoup(html, 'html.parser')
@@ -179,31 +419,7 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
                     mall_name = mall_name_elem[0].get('alt') if mall_name_elem else (
                         item.select('a .txt_logo')[0].text if item.select('a .txt_logo') else ""
                     )
-
                     prod_name = item.select('.info_line')[0].text.strip()
-
-
-                    # 상품명에 해외가 들어가거나 배송비가 4000이상이면 제외
-                    if '해외' in prod_name:
-                        print(f"다나와 해외 상품 발견 {prod_name}")
-                        continue
-
-                    ship_tag = item.select_one('.prc_line .ship')
-                    delivery_info = 0  # 기본값: 배송비 없음 또는 무료
-
-                    if ship_tag:
-                        ship_text = ship_tag.text.strip()
-
-                        # 배송비가 숫자일 경우 추출
-                        match = re.search(r'배송비\s?([\d,]+)원', ship_text)
-                        if match:
-                            delivery_info = int(match.group(1).replace(',', ''))
-                            if delivery_info >= 4000:
-                                print(f"다나와 배송비 4,000원 이상 상품 발견 {prod_name}")
-                                continue
-
-                        elif '무료배송' in ship_text:
-                            delivery_info = '무료배송'
 
                     # card_line이 존재하는지 확인하고 적절한 price_str을 설정
                     card_line = item.select('.card_line')
@@ -226,9 +442,9 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
                         else:
                             qty = danawa_opt_text_list[ii]
 
-                    one_price = math.floor((numeric_price / convert_to_float(qty)) * float(stnd_cnt))
+                    one_price = (numeric_price / convert_to_float(qty)) * float(stnd_cnt)
 
-                    temp_list = [name, '다나와', qty, mall_name, delivery_info, prod_name, numeric_price, one_price]
+                    temp_list = [name, '다나와', qty, mall_name, '무료배송', prod_name, numeric_price, one_price]
                     print(f"다나와 {ei} : {temp_list}")
                     danawa_temp_list.append(temp_list)
                 except Exception as e:
@@ -248,31 +464,6 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
                     )
 
                     prod_name = item.select('.info_line')[0].text.strip()
-
-
-                    # 상품명에 해외가 들어가거나 배송비가 4000이상이면 제외
-                    if '해외' in prod_name:
-                        print(f"다나와 해외 상품 발견 {prod_name}")
-                        continue
-
-                    ship_tag = item.select_one('.prc_line .ship')
-                    delivery_info = 0  # 기본값: 배송비 없음 또는 무료
-
-                    if ship_tag:
-                        ship_text = ship_tag.text.strip()
-
-                        # 배송비가 숫자일 경우 추출
-                        match = re.search(r'배송비\s?([\d,]+)원', ship_text)
-                        if match:
-                            delivery_info = int(match.group(1).replace(',', ''))
-                            if delivery_info >= 4000:
-                                print(f"다나와 배송비 4,000원 이상 상품 발견 {prod_name}")
-                                continue
-
-                        elif '무료배송' in ship_text:
-                            delivery_info = '무료배송'
-
-
                     price_str = item.select('.prc_c')[0].text
                     numeric_price = extract_numeric_price(price_str)  # 숫자만 추출한 가격
 
@@ -284,9 +475,9 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
                         else:
                             qty = danawa_opt_text_list[ii]
 
-                    one_price = math.floor((numeric_price / convert_to_float(qty)) * float(stnd_cnt))
+                    one_price = (numeric_price / convert_to_float(qty)) * float(stnd_cnt)
 
-                    temp_list = [name, '다나와', qty, mall_name, delivery_info, prod_name, numeric_price, one_price]
+                    temp_list = [name, '다나와', qty, mall_name, '유/무료배송', prod_name, numeric_price, one_price]
                     print(f"다나와 {ei} : {temp_list}")
                     danawa_temp_list.append(temp_list)
                 except Exception as e:
@@ -466,7 +657,7 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
                         qty = how_many
 
                     # 리스트에 데이터 추가
-                    one_price = math.floor((numeric_price / convert_to_float(qty)) * float(stnd_cnt))
+                    one_price = (numeric_price / convert_to_float(qty)) * float(stnd_cnt)
 
                     temp_list = [name, '에누리', qty, mall_name, '무료배송', prod_name, numeric_price, one_price]
                     print(f"에누리 {ei} : {temp_list}")
@@ -622,8 +813,24 @@ def convert_to_float(value, default=1.0):
 def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name, open_market_list, producdt_count):
     global base_price
     try:
+
+        except_list = ws[f'A{row_index}'].value.split(',') if ws[f'A{row_index}'].value else []
+
+
+        # 기준가격(네이버) 계산 (네이버인 것중 첫번째의 가격을 갯수로 나눈 것)
+        # 사용안함 2024-02-01
+        # 이 코드에서는 next()를 사용하여 조건에 맞는 첫 번째 항목을 찾아 filtered_naver에 저장하고, 값이 존재하면 계산하여 ws에 저장합니다.
+        # filtered_naver = next((entry for entry in merge_list if entry[1] == '네이버' and entry[3]), None)
+        # if filtered_naver:
+        #     naver_price = filtered_naver[6] / convert_to_float(filtered_naver[2])  # 숫자로 변환, 실패 시 기본값 사용
+        #     ws[f'G{row_index}'] = int(naver_price * int(stnd_cnt))  # 기준가격(네이버) 셀
+
+
         # 기준가격(네이버) 계산 실제 사이트의 가격
-        ws[f'E{row_index}'] = base_price
+        ws[f'G{row_index}'] = base_price
+
+        # except_list에 포함된 mall_name 제외 수집 제외몰 사용 X
+        # merge_list = [entry for entry in merge_list if entry[3] not in except_list]
 
         # 5% 할인을 적용할 상점 이름과 비교
         for entry in merge_list:
@@ -641,19 +848,32 @@ def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name, o
         # 나머지 판매처 및 상품 업데이트 (정렬 후) [가격 / 수량] 해서 오름차순으로 정렬 맨위가 가격이 가장 쌈
         merge_list.sort(key=lambda x: x[6] / convert_to_float(x[2]) if x[6] else float('inf'))
 
-        if len(merge_list) > 0:
-            numeric_qty_0 = convert_to_float(merge_list[0][2])  # 숫자로 변환
-            numeric_price_0 = merge_list[0][6]
-            ws[f'F{row_index}'] = f"{merge_list[0][1]}-{merge_list[0][2]}-{merge_list[0][3]}"  # 판매처1
-            ws[f'G{row_index}'] = merge_list[0][5]  # 상품명1
-            ws[f'H{row_index}'] = int((numeric_price_0 / numeric_qty_0) * float(stnd_cnt))  # 가격1
+        # 1개짜리 수집인 경우 네이버는 제외 2024-10-01
+        filtered_list = [
+            item for item in merge_list
+            if not (item[1] == '네이버' and convert_to_float(item[2]) == 1)
+        ]
 
-        if len(merge_list) > 1 and producdt_count > 1:
-            numeric_qty_1 = convert_to_float(merge_list[1][2])  # 숫자로 변환
-            numeric_price_1 = merge_list[1][6]
-            ws[f'I{row_index}'] = f"{merge_list[1][1]}-{merge_list[1][2]}-{merge_list[1][3]}"  # 판매처2
-            ws[f'J{row_index}'] = merge_list[1][5]  # 상품명2
-            ws[f'K{row_index}'] = int((numeric_price_1 / numeric_qty_1) * float(stnd_cnt)) # 가격2
+        if len(filtered_list) > 0:
+            numeric_qty_0 = convert_to_float(filtered_list[0][2])  # 숫자로 변환
+            numeric_price_0 = filtered_list[0][6]
+            ws[f'H{row_index}'] = f"{filtered_list[0][1]}-{filtered_list[0][2]}-{filtered_list[0][3]}"  # 판매처1
+            ws[f'I{row_index}'] = filtered_list[0][5]  # 상품명1
+            ws[f'J{row_index}'] = int((numeric_price_0 / numeric_qty_0) * float(stnd_cnt))  # 가격1
+
+        if len(filtered_list) > 1 and producdt_count > 1:
+            numeric_price_1 = filtered_list[1][6]
+            numeric_qty_1 = convert_to_float(filtered_list[1][2])  # 숫자로 변환
+            ws[f'K{row_index}'] = f"{filtered_list[1][1]}-{filtered_list[1][2]}-{filtered_list[1][3]}"  # 판매처2
+            ws[f'L{row_index}'] = filtered_list[1][5]  # 상품명2
+            ws[f'M{row_index}'] = int((numeric_price_1 / numeric_qty_1) * float(stnd_cnt)) # 가격2
+
+        if len(filtered_list) > 2 and producdt_count > 2:
+            numeric_price_2 = filtered_list[2][6]
+            numeric_qty_2 = convert_to_float(filtered_list[2][2])  # 숫자로 변환
+            ws[f'N{row_index}'] = f"{filtered_list[2][1]}-{filtered_list[2][2]}-{filtered_list[2][3]}"  # 판매처3
+            ws[f'O{row_index}'] = filtered_list[2][5]  # 상품명3
+            ws[f'P{row_index}'] = int((numeric_price_2 / numeric_qty_2) * float(stnd_cnt))  # 가격3
 
         # 배경색 설정 (빨간색)
         red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
@@ -661,6 +881,7 @@ def save_row_to_excel(ws, merge_list, row_index, err_list, five_per_mall_name, o
 
         set_cell_color(ws, 'B', row_index, err_list, 0, red_fill, white_fill)
         set_cell_color(ws, 'C', row_index, err_list, 1, red_fill, white_fill)
+        set_cell_color(ws, 'D', row_index, err_list, 2, red_fill, white_fill)
 
         print(f"Row {row_index} 엑셀에 업데이트됨.")
 
@@ -770,18 +991,20 @@ def send_naver_email(sender_email, sender_password, recipient_email, subject, bo
 def email_setting(ws, index, email_data):
     global email_list
     columns = [
-        "수집제외몰", "다나와 URL", "에누리 URL", "상품명", "기준가격",  # 0, 1, 2, 3, 4, 5
-        "판매처1", "상품명1", "가격1",  # 6, 7, 8
-        "판매처2", "상품명2", "가격2",  # 9, 10, 11
-        "키워드" # 12
+        "수집제외몰", "네이버 URL", "다나와 URL", "에누리 URL", "상품명", "메모", "기준가격",  # 0, 1, 2, 3, 4, 5, 6
+        "판매처1", "상품명1", "가격1",  # 7, 8, 9
+        "판매처2", "상품명2", "가격2",  # 10, 11, 12
+        "판매처3", "상품명3", "가격3",  # 13, 14, 15
+        "키워드"
     ]
 
     # 기본값 설정
     default_values = {
-        "수집제외몰": "", "다나와 URL": "", "에누리 URL": "",
-        "상품명": "", "기준가격": 0.0,
+        "수집제외몰": "", "네이버 URL": "", "다나와 URL": "", "에누리 URL": "",
+        "상품명": "", "메모": "", "기준가격": 0.0,
         "판매처1": "", "상품명1": "", "가격1": 0.0,
         "판매처2": "", "상품명2": "", "가격2": 0.0,
+        "판매처3": "", "상품명3": "", "가격3": 0.0,
         "키워드": ""
     }
 
@@ -827,42 +1050,49 @@ def email_setting(ws, index, email_data):
 def process_seller(index, row, seller, email_data, seller_key, product_key, price_key):
     global email_list, global_month_review_cnt
 
+    # keywords = row['키워드'].split(',')
     keywords = row['키워드'].split(',') if row['키워드'] else []
     product_string = row[product_key]
 
-    if seller in row[seller_key] or any(keyword in product_string for keyword in keywords):
-        # 순수익 계산
-        net_profit = row['기준가격'] - row[price_key] - (row['기준가격'] * (email_data['수수료율'] / 100)) - email_data['배송비']
+    if email_data['리뷰'] and global_month_review_cnt >= email_data['리뷰수']:
+        if seller in row[seller_key] or any(keyword in product_string for keyword in keywords):
+            # 순수익 계산
+            net_profit = row['기준가격'] - row[price_key] - (row['기준가격'] * (email_data['수수료율'] / 100)) - email_data['배송비']
 
-        # 마진율 계산
-        if row['기준가격'] > 0:
-            net_profit_rate = (net_profit / row['기준가격']) * 100
-            net_profit_rate = math.floor(net_profit_rate * 100) / 100  # 소수점 두 자리까지 내림
-        else:
-            net_profit_rate = 0.0  # 기준가격이 0일 때는 마진율 0으로 처리
+            # 마진율 계산
+            if row['기준가격'] > 0:
+                net_profit_rate = (net_profit / row['기준가격']) * 100
+                net_profit_rate = math.floor(net_profit_rate * 100) / 100  # 소수점 두 자리까지 내림
+            else:
+                net_profit_rate = 0.0  # 기준가격이 0일 때는 마진율 0으로 처리
 
-        if email_data['마진율시작'] <= net_profit_rate <= email_data['마진율끝']:
-            excel_row = index
+            if email_data['마진율시작'] <= net_profit_rate <= email_data['마진율끝']:
+                excel_row = index
 
-            # URL 결정
-            email_url = ''
-            if '에누리' in row[seller_key]:
-                email_url = row['에누리 URL']
-            elif '다나와' in row[seller_key]:
-                email_url = row['다나와 URL']
+                # URL 결정
+                email_url = ''
+                if '에누리' in row[seller_key]:
+                    email_url = row['에누리 URL']
+                elif '네이버' in row[seller_key]:
+                    email_url = row['네이버 URL']
+                elif '다나와' in row[seller_key]:
+                    email_url = row['다나와 URL']
 
-            # 엑셀 행 내용 생성
-            email_content = {
-                'excel_row': excel_row,
-                'product_name': row['상품명'],
-                'danawa_url': row['다나와 URL'],
-                'product': row[product_key],
-                'seller': row[seller_key],
-                'net_profit_rate': net_profit_rate,
-                'email_url': email_url
-            }
+                # 엑셀 행 내용 생성
+                # email_content = f"{excel_row} / {row['상품명']} / {row['네이버 URL']} / {row[product_key]} / {row['메모']} / {row[seller_key]} / {net_profit_rate}% / {email_url}"
+                # email_content = [excel_row, row['상품명'], row['네이버 URL'], row[product_key], row['메모'], row[seller_key], net_profit_rate, email_url]
+                email_content = {
+                    'excel_row': excel_row,
+                    'product_name': row['상품명'],
+                    'naver_url': row['네이버 URL'],
+                    'product': row[product_key],
+                    'memo': row['메모'],
+                    'seller': row[seller_key],
+                    'net_profit_rate': net_profit_rate,
+                    'email_url': email_url,
+                }
 
-            email_list.append(email_content)
+                email_list.append(email_content)
 
 
 # 이메일 테이블 형식으로
@@ -875,8 +1105,9 @@ def create_email_table(email_list):
         <tr style="border: 1px solid #dddddd; text-align: left; padding: 12px;">
             <td style="border: 1px solid #dddddd; padding: 12px;">{row['excel_row']}</td>
             <td style="border: 1px solid #dddddd; padding: 12px;">{row['product_name']}</td>
-            <td style="border: 1px solid #dddddd; padding: 12px;"><a href=\"{row['danawa_url']}\" target=\"_blank\">{row['danawa_url']}</a></td>
+            <td style="border: 1px solid #dddddd; padding: 12px;"><a href=\"{row['naver_url']}\" target=\"_blank\">{row['naver_url']}</a></td>
             <td style="border: 1px solid #dddddd; padding: 12px;">{row['product']}</td>
+            <td style="border: 1px solid #dddddd; padding: 12px;">{row['memo']}</td>
             <td style="border: 1px solid #dddddd; padding: 12px;">{row['seller']}</td>
             <td style="border: 1px solid #dddddd; padding: 12px;">{row['net_profit_rate']}%</td>
             <td style="border: 1px solid #dddddd; padding: 12px;"><a href=\"{row['email_url']}\" target=\"_blank\">{row['email_url']}</a></td>
@@ -893,8 +1124,9 @@ def create_email_table(email_list):
             <tr style="border: 1px solid #dddddd; background-color: #f4f4f4; font-weight: bold;">
                 <th style="border: 1px solid #dddddd; padding: 12px;">엑셀 번호</th>
                 <th style="border: 1px solid #dddddd; padding: 12px;">상품명</th>
-                <th style="border: 1px solid #dddddd; padding: 12px;">다나와 URL</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">네이버 URL</th>
                 <th style="border: 1px solid #dddddd; padding: 12px;">상품명1</th>
+                <th style="border: 1px solid #dddddd; padding: 12px;">메모</th>
                 <th style="border: 1px solid #dddddd; padding: 12px;">판매처</th>
                 <th style="border: 1px solid #dddddd; padding: 12px;">마진율</th>
                 <th style="border: 1px solid #dddddd; padding: 12px;">URL</th>
@@ -941,6 +1173,84 @@ def check_previous_month_add(today, start_date_of_previous_month, input_date):
         return -1
 
 
+
+def get_month_review_cnt(driver, naver_url, email_data):
+    if not naver_url:
+        return 0
+    driver.get(naver_url)
+    time.sleep(3)
+
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+    month_review_cnt = 0
+
+    try:
+        element = driver.find_element(By.CSS_SELECTOR, 'a[data-shp-contents-id="최신순"]')
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        element.click()
+        time.sleep(2)
+    except Exception as e:
+        print("Initial sort button click error:", e)
+        return month_review_cnt
+
+    group_page = 0
+    today = datetime.now()  # 현재 날짜 및 시간
+    start_date_of_previous_month = previous_month_date(today)
+
+    while True:
+        for page_num in range(1, 11):  # 한 번에 최대 10페이지까지 탐색
+            print(f'page_num : {page_num}')
+            try:
+                if page_num != 1:
+                    page_num_value = group_page + page_num
+                    page_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, f'//div[@id="section_review"]//a[@data-shp-contents-id="{page_num_value}"]'))
+                    )
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", page_button)
+                    page_button.click()
+                    time.sleep(2)
+
+                review_items = driver.find_elements(By.CSS_SELECTOR, '.reviewItems_list_review__q726A li')
+
+                for li in review_items:
+                    try:
+                        div_date = li.find_element(By.CLASS_NAME, "reviewItems_etc_area__3VUjt")
+                        span_tags = div_date.find_elements(By.CSS_SELECTOR, '.reviewItems_etc__9ej69')
+
+                        input_date = span_tags[2].text.strip()
+
+                        check = check_previous_month_add(today, start_date_of_previous_month, input_date)
+
+                        if check == -1:
+                            print("-1 returned, stopping.")
+                            return month_review_cnt
+
+                        month_review_cnt += check
+
+                        if month_review_cnt > email_data['리뷰수']:
+                            print("Review count exceeded, stopping.")
+                            return month_review_cnt
+                    except Exception as e:
+                        print(f"Review item parsing error: {e}")
+
+                print(f'month_review_cnt: {month_review_cnt}')
+
+            except Exception as e:
+                print(f"Page {page_num} click failed or not found: {e}")
+                return month_review_cnt
+
+        try:
+            next_button = driver.find_element(By.CSS_SELECTOR, '.pagination_next__3_3ip')
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
+            next_button.click()
+            group_page += 10
+            time.sleep(2)
+        except Exception:
+            print("Reached last pagination group.")
+            return month_review_cnt
+
+
+
 # 메인 함수
 def main(excel_path, limit_count, on_and_off, five_per_mall_name, start_row, end_row, repeat, email_data, open_market_list, producdt_count):
     global global_month_review_cnt
@@ -971,15 +1281,35 @@ def main(excel_path, limit_count, on_and_off, five_per_mall_name, start_row, end
 
             # 시작행 ~ 끝행 사이에서만 작업함
             try:
-                name        = ws[f'D{i}'].value # 상품이름
-                danawa_url  = ws[f'B{i}'].value # 다나와 URL
-                enuri_url   = ws[f'C{i}'].value # 에누리 URL
+                name        = ws[f'E{i}'].value # 상품이름
+                naver_url   = ws[f'B{i}'].value # 네이버 URL
+                danawa_url  = ws[f'C{i}'].value # 다나와 URL
+                enuri_url   = ws[f'D{i}'].value # 에누리 URL
 
                 # 에러 리스트 초기화 (각 크롤링 사이트별 에러 체크)
-                err_list = [0, 0]
+                err_list = [0, 0, 0]
 
                 # 전체 병합 리스트 초기화
                 merge_list = []
+
+                # 1. 네이버 크롤링 처리
+                print("============================== 네이버 시작 ==============================")
+                naver_result = scrape_naver(driver, name, naver_url, open_market_list)
+                sorted_merge_list = sorted(naver_result, key=lambda x: x[-1])
+
+                if naver_result and email_data['리뷰']:
+                    global_month_review_cnt = get_month_review_cnt(driver, naver_url, email_data)
+                    print(f'리뷰수 : {global_month_review_cnt}')
+                    if global_month_review_cnt > email_data['리뷰수']:
+                        ws[f'F{i}'] = f'{email_data['리뷰수']}+'
+                    else:
+                        ws[f'F{i}'] = global_month_review_cnt
+
+                result_print(sorted_merge_list, '네이버')
+                print(f'네이버 수: {len(naver_result)}')
+                print("============================== 네이버 끝 ==============================")
+                handle_scraping_result(naver_result, 0, err_list, merge_list)
+                print(f'\n\n')
 
                 # 2. 다나와 크롤링 처리
                 print("============================== 다나와 시작 ==============================")
@@ -1037,11 +1367,11 @@ if __name__ == "__main__":
     # 원하는 값을 여기에 입력하세요.
     excel_path = "프로그램_테스트.xlsx"     # 파일 이름 (프로그램이 실행되는 경로에 파일이 있어야 합니다.)
     limit_count = 5                      # 사이트의 갯수별 수집 갯수
-    producdt_count = 2                   # 판매처 갯수 1~3까지 입력가능
+    producdt_count = 1                   # 판매처 갯수 1~3까지 입력가능
     on_and_off = 0                       # 1개 수집 : on (수집 변수 1) / off 미수집 변수 0 (기본 미수집 0)
     five_per_mall_name = ['11번가', '옥션']        # 5% 할인 적용 판매처 (옥션, G마켓, 11번가...)
 
-    start_row = 2    # 첫 row값은 기본 2이상으로 설정 - 엑셀2번줄
+    start_row = 2  # 첫 row값은 기본 2이상으로 설정
     end_row = 100    # 실제 row수보다 작거나 같게 설정
 
     # repeat가 False면 1회 반복 후 종료 True면 무한반복
@@ -1084,16 +1414,18 @@ if __name__ == "__main__":
     email_data = {
         '수수료율': 1, #(단위 %)
         '배송비': 1,        #(단위 원)
-        '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
-        # '판매처': [], #(명확히 입력)
+        # '판매처': ['G마켓', '이마트몰', '쿠팡', '11번가'], #(명확히 입력)
+        '판매처': [], #(명확히 입력)
         '마진율시작': 1,        #(단위 %)
         '마진율끝': 100,        #(단위 %)
-        '전송기준수': 0,     #(단위 개 매진률수 이상이 되면 메일 발송)
-        '발신자이메일': '',
-        '발신자비밀번호': '',
-        '수신자이메일': [],
+        '전송기준수': 2,     #(단위 개 매진률수 이상이 되면 메일 발송)
+        '발신자이메일': '772vjrvj@naver.com',
+        '발신자비밀번호': 'Ksh#8818510',
+        '수신자이메일': ['goodbye772@naver.com', '772vjrvj@naver.com'],
         '제목': '특정 마진률 이상이면 메일 전송',
         '내용': '', # 엑셀행/ 상품명 / 네or다or에-N개-판매처 / 마진% / URL(네or다or에) 이 형식으로 바뀔것임 초기값은 공백
+        '리뷰수': 5, # 0이면 off / 0이상 이면 on
+        '리뷰': True # True / False (on / off)
     }
 
     # 메인실행 함수
@@ -1176,10 +1508,3 @@ if __name__ == "__main__":
 # 상품없음 수정
 # 리다이렉트 수정
 # 기준가격 수정
-
-
-# 2027-07-27 ver_12
-# 네이버 전체제거
-# 다나와 배송비 클릭진행
-# 다나와 배송비 4,000원 이상 제외, 다나와 상품명 '해외'들어가면 제외
-# 다나와 기준가격 1개 상품에서 좌우 비교하여 가격 작은것
