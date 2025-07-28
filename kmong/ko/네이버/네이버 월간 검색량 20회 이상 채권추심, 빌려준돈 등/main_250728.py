@@ -5,7 +5,9 @@ import time
 
 # 주요 키워드 리스트
 main_keywords = [
-    '보증금 대출', '상간남', '채권추심 방법'
+    '빌려준 돈', '양육비', '임대료', '공사대금', '물품대금',
+    '계약금반환', '퇴직금', '임금', '보증금',
+    '상간녀 상간남 위자료', '판결 후 못 받은 돈', '소송비용', '대여금'
 ]
 
 max_keywords = 50  # 키워드당 최대 연관 키워드 수
@@ -79,21 +81,7 @@ if __name__ == '__main__':
 
     # 데이터프레임으로 변환
     df = pd.DataFrame(result_dict)
-    df.to_excel('keyword_search_volume2.xlsx', index=False)
+    df.to_excel('keyword_search_volume.xlsx', index=False)
 
     end_time = time.time()
     print(f"✅ 모든 키워드 수집 완료. 엑셀 저장됨. 총 소요시간: {end_time - start_time:.2f}초")
-
-
-
-# 원 키워드	대체 검색 키워드
-# 판결 후 못 받은 돈	승소 후 돈 못받음
-# 판결 후 강제집행
-# 채권추심 방법
-# 판결문 집행 방법
-# 돈 받는 법
-# 민사소송 돈 받는 방법
-# 승소 후 채무 불이행
-# 채무자가 돈 안줄때
-# 지급명령 후 돈 못받음
-# 법원 판결 후 돈 못받음

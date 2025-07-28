@@ -7,7 +7,7 @@ import time
 keywords = ['채권추심', '빌려준돈', '떼인돈', '지급명령신청', '미수채권']
 
 # 최대 연관 키워드 수
-max_keywords = 10000
+max_keywords = 100
 
 # 크롤링 결과를 저장할 리스트
 data = []

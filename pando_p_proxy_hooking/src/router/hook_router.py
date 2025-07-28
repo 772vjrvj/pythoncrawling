@@ -57,7 +57,12 @@ def match_and_dispatch(action, url, response_data):
     store_id = get_store_id()
 
     if action == 'delete_mobile':
-        log_info(f"[판도] [match_and_dispatch] : [{action}] 단부 응답 처리")
+        log_info(f"[판도] [match_and_dispatch] : [{action}] 응답 처리")
+        dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
+        return
+
+    if action == 'mobile_host':
+        log_info(f"[판도] [match_and_dispatch] : [{action}] 응답 처리")
         dispatch_action(action, {'request': None, 'response': response_data}, token, store_id)
         return
 
