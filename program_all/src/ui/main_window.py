@@ -30,7 +30,7 @@ class MainWindow(QWidget):
         self.selected_regions = []
         self.columns = None
         self.region = None
-        self.param_pop = None
+        self.popup = None
         self.setting_button = None
         self.setting = None
         self.name = None
@@ -65,6 +65,7 @@ class MainWindow(QWidget):
         self.cookies = state.get("cookies")
         self.columns = state.get("columns")
         self.region = state.get("region")
+        self.popup = state.get("popup")
 
     # 재 초기화
     def init_reset(self):

@@ -10,6 +10,7 @@ from src.workers.main.api_iherb_set_worker import ApiIherbSetLoadWorker
 from src.workers.main.api_yupoo_set_worker import ApiYupooSetLoadWorker
 from src.workers.main.api_ovreple_set_worker import ApiOvrepleSetLoadWorker
 from src.workers.main.api_1004ya_set_worker import Api1004yaSetLoadWorker
+from src.workers.main.api_app_sensortower_set_worker import ApiAppSensertowerSetLoadWorker
 
 WORKER_CLASS_MAP = {
     "ALBAMON": ApiAlbamonSetLoadWorker,
@@ -24,4 +25,5 @@ WORKER_CLASS_MAP = {
     "YUPOO": ApiYupooSetLoadWorker,
     "OVREPLE": ApiOvrepleSetLoadWorker,
     "1004YA": Api1004yaSetLoadWorker,
+    "APP_SENSORTOWER": ApiAppSensertowerSetLoadWorker,
 }

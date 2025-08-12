@@ -8,6 +8,7 @@ class GlobalState:
     SETTING = "setting"
     COLUMNS = "columns"
     REGION = "region"
+    POPUP = "popup"
 
     # 싱글톤 인스턴스를 저장할 변수
     _instance = None
@@ -41,6 +42,7 @@ class GlobalState:
                 self.SETTING: "",     # 로그인 사용자 정보
                 self.COLUMNS: "",     # 로그인 사용자 정보
                 self.REGION: "",     # 로그인 사용자 정보
+                self.POPUP: "",     # 로그인 사용자 정보
             }
             self._initialized = True  # 초기화 완료 표시
 
