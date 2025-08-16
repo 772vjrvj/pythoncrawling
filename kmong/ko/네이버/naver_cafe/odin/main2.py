@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import openpyxl
 from datetime import datetime
 import re
+import os
+import csv
 
 BASE_API = "https://m.cafe.daum.net/api/v1/common-articles"
 BASE_VIEW = "https://cafe.daum.net/odin"
@@ -16,6 +18,9 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 TODAY_STR = datetime.today().strftime("%y.%m.%d")
+
+# CSV 저장 단위(개)
+CSV_CHUNK_SIZE = 100
 
 # ─────────────────────────────────────────────────────────────
 # Excel 불법 제어문자 제거 (openpyxl IllegalCharacterError 대응)
@@ -30,6 +35,9 @@ def clean_text(value) -> str:
         value = str(value)
     return ILLEGAL_CTRL_RE.sub("", value)
 # ─────────────────────────────────────────────────────────────
+
+# 공통 헤더
+HEADERS_ROW = ["게시판", "작성 날짜", "게시글 제목", "게시글 내용", "url", "id"]
 
 # ----------- API 요청 -----------
 def fetch_page(fldid, page_num, after=None):
@@ -117,60 +125,117 @@ def parse_article_content(fldid, dataid):
 
     return "\n".join(paragraphs)
 
-# ----------- Excel 저장 -----------
-def save_to_excel(board_name, fldid, data_list):
-    filename = f"odin_{board_name}.xlsx"
+# ----------- CSV 유틸 -----------
+def get_out_paths(board_name: str):
+    """현재 작업 폴더 기준으로 JSON/CSV/XLSX 파일 경로 반환"""
+    json_path = os.path.abspath(f"odin_{board_name}.json")
+    base_dir = os.path.dirname(json_path)
+    csv_path  = os.path.join(base_dir, f"odin_{board_name}.csv")
+    xlsx_path = os.path.join(base_dir, f"odin_{board_name}.xlsx")
+    return json_path, csv_path, xlsx_path
+
+def ensure_csv_header(csv_path: str):
+    """CSV 파일이 없으면 헤더 생성"""
+    if not os.path.exists(csv_path):
+        with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.writer(f)
+            w.writerow(HEADERS_ROW)
+        print(f"🧾 CSV 헤더 생성: {csv_path}")
+
+def append_rows(csv_path: str, rows: list):
+    """rows를 CSV에 append (이미 sanitize된 값 사용 권장)"""
+    if not rows:
+        return
+    with open(csv_path, "a", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        w.writerows(rows)
+    print(f"💾 CSV append 저장: +{len(rows)} rows → {csv_path}")
+
+def row_from_item(board_name: str, fldid: str, item: dict) -> list:
+    """API 아이템을 CSV 1행으로 변환 + sanitize"""
+    date_str = item.get("articleElapsedTime", "") or ""
+    if ("분 전" in date_str) or ("시간 전" in date_str) or ("초 전" in date_str):
+        date_str = TODAY_STR
+
+    title   = item.get("title", "") or ""
+    content = item.get("content", "") or ""
+    dataid  = str(item.get("dataid", "") or "")
+    url     = f"{BASE_VIEW}/{fldid}/{dataid}" if dataid else ""
+
+    row = [
+        board_name,
+        date_str,
+        title,
+        content,
+        url,
+        dataid
+    ]
+    # sanitize
+    return [clean_text(v) for v in row]
+
+# ----------- CSV → XLSX 변환 -----------
+def csv_to_xlsx(csv_path: str, xlsx_path: str):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Articles"
-    ws.append(["게시판", "작성 날짜", "게시글 제목", "게시글 내용", "url", "id"])
 
-    for item in data_list:
-        date_str = item.get("articleElapsedTime", "") or ""
-        if ("분 전" in date_str) or ("시간 전" in date_str) or ("초 전" in date_str):
-            date_str = TODAY_STR
+    with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            # XLSX 쓰기 전에 추가 sanitize
+            safe_row = [clean_text(c) for c in row]
+            ws.append(safe_row)
 
-        dataid = str(item.get("dataid", "") or "")
-        row = [
-            board_name,
-            date_str,
-            item.get("title", "") or "",
-            item.get("content", "") or "",
-            f"{BASE_VIEW}/{fldid}/{dataid}" if dataid else "",
-            dataid
-        ]
-        # 🔹 모든 셀 sanitize 후 추가
-        ws.append([clean_text(v) for v in row])
-
-    wb.save(filename)
-    print(f"✅ Excel 저장 완료 → {filename}")
+    wb.save(xlsx_path)
+    print(f"✅ 최종 엑셀 저장 완료 → {xlsx_path}")
 
 # ----------- 메인 실행 -----------
 def run_for_board(board_name, fldid):
     print(f"\n===== [{board_name}] 수집 시작 =====")
-    # 1. JSON 수집
-    articles = collect_articles(fldid)
-    with open(f"odin_{board_name}.json", "w", encoding="utf-8") as f:
-        json.dump(articles, f, ensure_ascii=False, indent=2)
-    print(f"✅ JSON 저장 완료 → odin_{board_name}.json")
+    json_path, csv_path, xlsx_path = get_out_paths(board_name)
 
-    # 2. 상세 페이지 파싱
-    enriched_data = []
+    # 1. JSON 수집 저장
+    articles = collect_articles(fldid)
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(articles, f, ensure_ascii=False, indent=2)
+    print(f"✅ JSON 저장 완료 → {json_path}")
+
+    # 2. CSV 준비(헤더)
+    ensure_csv_header(csv_path)
+
+    # 3. 상세 페이지 파싱 + 100개마다 CSV append
+    buffer = []
+    total = len(articles)
     for idx, art in enumerate(articles, 1):
         dataid = art.get("dataid")
         if not dataid:
             continue
+
         content = parse_article_content(fldid, dataid)
         art["content"] = content
-        enriched_data.append(art)
-        print(f"[{board_name}] {idx}/{len(articles)} dataid={dataid} 내용 파싱 완료")
+
+        buffer.append(row_from_item(board_name, fldid, art))
+
+        # 100개 단위로 저장
+        if len(buffer) == CSV_CHUNK_SIZE:
+            append_rows(csv_path, buffer)
+            buffer = []
+
+        print(f"[{board_name}] detail {idx}/{total} dataid={dataid} ✅")
         time.sleep(0.15)  # 서버 부하 방지
 
-    # 3. Excel 저장 (sanitize 적용)
-    save_to_excel(board_name, fldid, enriched_data)
+    # 남은 데이터 저장
+    if buffer:
+        append_rows(csv_path, buffer)
+
+    # 4. CSV → XLSX 변환
+    csv_to_xlsx(csv_path, xlsx_path)
+
+    print(f"🎉 [{board_name}] 전체 완료")
 
 if __name__ == "__main__":
     # 자유게시판
     # run_for_board("자유게시판", "D034")
+
     # 오딘 광장
     run_for_board("오딘광장", "DjO0")
