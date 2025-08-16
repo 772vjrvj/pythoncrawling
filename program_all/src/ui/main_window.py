@@ -24,9 +24,12 @@ class MainWindow(QWidget):
     def __init__(self, app_manager):
         super().__init__()
 
+        self.right_button_layout = None
         self.region_set_pop = None
         self.column_set_pop = None
         self.param_set_pop = None
+        self.excel_set_pop = None
+
         self.selected_regions = []
         self.columns = None
         self.region = None
@@ -42,6 +45,7 @@ class MainWindow(QWidget):
         self.collect_button = None
         self.region_setting_button = None
         self.column_setting_button = None
+        self.excel_setting_button = None
 
         self.task_queue = None
         self.progress_worker = None
@@ -102,7 +106,7 @@ class MainWindow(QWidget):
                 self.on_demand_worker.progress_end_signal.connect(self.stop)
             else:
                 self.add_log(f"[오류] '{self.site}'에 해당하는 워커가 없습니다.")
-        
+
     # 화면 업데이트
     def ui_set(self):
         if self.layout():
@@ -111,9 +115,51 @@ class MainWindow(QWidget):
             self.log_reset_button.setStyleSheet(main_style(self.color))
             self.collect_button.setStyleSheet(main_style(self.color))
             self.log_out_button.setStyleSheet(main_style(self.color))
-            self.setting_button.setStyleSheet(main_style(self.color))
+
+            # 🔧 기존 오른쪽 버튼 싹 제거 후 다시 구성
+            self._clear_right_buttons()
+
+            if self.setting:
+                self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.setting_button)
+
+            if self.columns:
+                # 오른쪽 버튼 레이아웃
+                self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.column_setting_button)
+
+            if self.region:
+                # 오른쪽 버튼 레이아웃
+                self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.region_setting_button)
+
+            if self.popup:
+                # 오른쪽 버튼 레이아웃
+                self.excel_setting_button = create_common_button("엑셀세팅", self.open_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.excel_setting_button)
+
         else:
             self.set_layout()
+
+
+    # ─────────────────────────────────────────────────────────
+    # 기존 오른쪽 버튼들 제거 유틸
+    # ─────────────────────────────────────────────────────────
+    def _clear_right_buttons(self):
+        if not self.right_button_layout:
+            return
+        while self.right_button_layout.count():
+            item = self.right_button_layout.takeAt(0)
+            w = item.widget()
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        # 참조 리셋
+        self.setting_button = None
+        self.column_setting_button = None
+        self.region_setting_button = None
+        self.excel_setting_button = None
+
 
     # ui 속성 변경
     def update_style_prop(self, item_name, prop, value):
@@ -166,8 +212,8 @@ class MainWindow(QWidget):
         header_layout = QHBoxLayout()
 
         # 왼쪽 버튼들 레이아웃
-        left_button_layout = QHBoxLayout()
-        left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
+        self.left_button_layout = QHBoxLayout()
+        self.left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
         self.site_list_button     = create_common_button("목록", self.go_site_list, self.color, 100)
         self.log_reset_button     = create_common_button("로그리셋", self.log_reset, self.color, 100)
@@ -175,32 +221,39 @@ class MainWindow(QWidget):
         self.log_out_button       = create_common_button("로그아웃", self.on_log_out, self.color, 100)
 
         # 왼쪽 버튼 레이아웃
-        left_button_layout.addWidget(self.site_list_button)
-        left_button_layout.addWidget(self.log_reset_button)
-        left_button_layout.addWidget(self.collect_button)
-        left_button_layout.addWidget(self.log_out_button)
+        self.left_button_layout.addWidget(self.site_list_button)
+        self.left_button_layout.addWidget(self.log_reset_button)
+        self.left_button_layout.addWidget(self.collect_button)
+        self.left_button_layout.addWidget(self.log_out_button)
 
         # 오른쪽 버튼 레이아웃
-        right_button_layout = QHBoxLayout()
-        right_button_layout.setAlignment(Qt.AlignRight)
-        self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
-        right_button_layout.addWidget(self.setting_button)
+        self.right_button_layout = QHBoxLayout()
+        self.right_button_layout.setAlignment(Qt.AlignRight)
+
+        if self.setting:
+            self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.setting_button)
 
         if self.columns:
             # 오른쪽 버튼 레이아웃
             self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
-            right_button_layout.addWidget(self.column_setting_button)
+            self.right_button_layout.addWidget(self.column_setting_button)
 
         if self.region:
             # 오른쪽 버튼 레이아웃
             self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
-            right_button_layout.addWidget(self.region_setting_button)
+            self.right_button_layout.addWidget(self.region_setting_button)
+
+        if self.popup:
+            # 오른쪽 버튼 레이아웃
+            self.excel_setting_button = create_common_button("엑셀세팅", self.open_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.excel_setting_button)
 
 
         # 레이아웃에 요소 추가
-        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+        header_layout.addLayout(self.left_button_layout)  # 왼쪽 버튼 레이아웃 추가
         header_layout.addStretch()  # 가운데 공간 확보
-        header_layout.addLayout(right_button_layout)
+        header_layout.addLayout(self.right_button_layout)
 
         # 헤더에 텍스트 추가
         self.header_label = QLabel(f"{self.name} 데이터 추출")
@@ -339,7 +392,7 @@ class MainWindow(QWidget):
     def go_site_list(self):
         self.close()  # 로그인 화면 종료
         self.app_manager.go_to_select()
-    
+
     # 로그아웃
     def on_log_out(self):
         try:

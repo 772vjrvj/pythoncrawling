@@ -19,6 +19,17 @@ class SelectWindow(QWidget):
     - 검색창 아래 얇은 구분선
     - 스크롤 가능한 사이트 버튼 목록(가로 300px 고정, 중앙 정렬)
     - 창 최소 크기: 화면 높이의 1/2, 너비 500px (이하로는 축소 불가)
+
+     SelectWindow (QWidget)
+     └─ layout : QVBoxLayout
+     ├─ search_edit : QLineEdit
+     ├─ sep : QFrame (구분선)
+     └─ scroll_area : QScrollArea
+     └─ viewport (내부 위젯, QScrollArea가 자동 생성)
+     └─ scroll_host : QWidget            # setWidget()으로 붙인 컨테이너
+     └─ scroll_layout : QVBoxLayout   # 버튼들이 여기에 쌓임
+     ├─ create_common_button(...) × N
+     └─ spacer (Expanding)
     """
 
     def __init__(self, app_manager, site_list):
@@ -56,8 +67,9 @@ class SelectWindow(QWidget):
         - 창 최소 너비: 500
         를 계산해 둔다.
         """
-        screen_geo = QDesktopWidget().screenGeometry()  # 전체 화면 지오메트리
-        self.fixed_h = int(screen_geo.height() * 0.5)   # 최소 높이(화면의 절반)
+        # screen_geo = QDesktopWidget().screenGeometry()  # 전체 화면 지오메트리
+        # self.fixed_h = int(screen_geo.height() * 0.5)   # 최소 높이(화면의 절반)
+        self.fixed_h = 600
         self.fixed_w = 500                               # 최소 너비(500px 고정)
 
     # ─────────────────────────────────────────
@@ -84,14 +96,17 @@ class SelectWindow(QWidget):
 
         # 3) 메인 수직 레이아웃 구성
         layout = QVBoxLayout(self)                               # 루트 레이아웃
-        layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)       # 상단 정렬 + 가로 중앙
+        layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)       # 상단 정렬 + 가로 중앙 # 레이아웃 “자기자신”의 정렬
+        # AlignTop 창(부모)에 세로로 여유 공간이 생기면, 내용을 위쪽에 붙여 놓습니다. (아래쪽이 비게 됨)
+        # AlignHCenter 가로 여유 공간이 생기면, 내용을 가로 중앙에 둡니다.
         layout.setContentsMargins(20, 20, 20, 20)                # 바깥 마진
         layout.setSpacing(16)                                    # 위젯 간 간격
+        # 검색창 ↔ 구분선 ↔ 스크롤영역 사이 세로 간격이 16px
 
         # 4) 검색 입력창(엔터로 검색 실행)
         self.search_edit = QLineEdit(self)                       # 검색어 입력창
         self.search_edit.setPlaceholderText("검색어를 입력후 엔터를 치세요.")  # 플레이스홀더
-        self.search_edit.setClearButtonEnabled(True)             # 클리어 버튼 표시
+        self.search_edit.setClearButtonEnabled(True)             # 클리어 버튼 표시 (x)
         self.search_edit.setFixedHeight(40)                      # 높이 고정
         self.search_edit.setFixedWidth(300)                      # 너비 고정(열 너비와 동일)
         self.search_edit.setStyleSheet(main_style("#888888"))    # 테두리/서체 스타일
@@ -116,7 +131,7 @@ class SelectWindow(QWidget):
 
         self.scroll_host = QW()                                  # 스크롤 내부 실제 컨테이너
         self.scroll_host.setFixedWidth(300)                      # 열 너비 300 고정(버튼과 동일)
-        self.scroll_host.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        self.scroll_host.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred) # Fixed 가로로 절대 늘어나지 않음. Preferred 늘거나 줄 수 있음
 
         self.scroll_layout = QVBoxLayout(self.scroll_host)       # 버튼을 쌓을 수직 레이아웃
         self.scroll_layout.setAlignment(Qt.AlignTop)             # 위에서부터 쌓기
@@ -129,11 +144,8 @@ class SelectWindow(QWidget):
         # 7) 스크롤바 등장/제거 시 중앙 보정(좌측 마진을 스크롤바 폭만큼 줌)
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self._on_scroll_range_changed)
 
-
         # 8) 초기 렌더링 및 마진 보정
         self._rebuild_buttons()     # 버튼 리스트 최초 생성
-        self._adjust_scrollbar_margin()  # 마진 초기 보정
-
 
     # ─────────────────────────────────────────
     # 스크롤바 범위가 바뀌면(등장/제거) 콘텐츠 열이 창 기준 중앙을 유지하도록 마진 재보정
@@ -155,6 +167,9 @@ class SelectWindow(QWidget):
         q = (self.search_edit.text() or "").strip()  # 현재 검색어
         self._apply_search(q)
 
+    # ─────────────────────────────────────────
+    # 검색
+    # ─────────────────────────────────────────
     def _apply_search(self, q: str):
         """
         실제 필터링 로직.
@@ -162,17 +177,22 @@ class SelectWindow(QWidget):
         - casefold()로 대/소문자 구분 없이 부분 포함 검색
         - Site.label, Site.key 기준으로 매칭
         """
-        q_norm = (q or "").strip().casefold()  # 국제 문자까지 고려한 소문자화
+        q_norm = self._norm_text(q)
         if not q_norm:
-            # 입력이 비었으면 전체 목록
             self.filtered_sites = list(self.sites)
         else:
-            def norm(s): return (s or "").casefold()  # None 안전 처리 + casefold
             self.filtered_sites = [
                 s for s in self.sites
-                if (q_norm in norm(s.label)) or (q_norm in norm(getattr(s, "key", "")))
+                if (q_norm in self._norm_text(s.label)) or (q_norm in self._norm_text(getattr(s, "key", "")))
             ]
-        self._rebuild_buttons()  # 결과 반영
+        self._rebuild_buttons()
+
+    # ─────────────────────────────────────────
+    # 검색 문자 처리
+    # ─────────────────────────────────────────
+    def _norm_text(self, s: str) -> str:
+        """None/빈값 안전 처리 + casefold로 대소문자 무시 정규화"""
+        return (s or "").casefold()
 
     # ─────────────────────────────────────────
     # 버튼 리스트 렌더링
@@ -189,8 +209,8 @@ class SelectWindow(QWidget):
         while self.scroll_layout.count():
             item = self.scroll_layout.takeAt(0)
             w = item.widget()
-            if w:
-                w.setParent(None)
+            if w is not None:
+                w.deleteLater()   # ← 검색처럼 자주 갈아끼울 땐 이게 깔끔
 
         # 2) 필터링된 사이트 목록으로 버튼 재생성
         for site in self.filtered_sites:
@@ -269,6 +289,7 @@ class SelectWindow(QWidget):
         state.set(GlobalState.SETTING, site.setting)   # 설정 정보
         state.set(GlobalState.COLUMNS, site.columns)   # 컬럼/필드 구성
         state.set(GlobalState.REGION, site.region)     # 리전/지역 등
+        state.set(GlobalState.POPUP, site.popup)     # 리전/지역 등
 
         self.close()                                   # 현재 선택창 닫기
         self.app_manager.go_to_main()                  # 메인 화면으로 전환

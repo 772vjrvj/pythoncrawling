@@ -65,7 +65,7 @@ SITE_LIST = [
          ]),
     Site("1004YA", "1004YA", "#FB92BA", enabled=True, user=False,
          setting=[]),
-    Site("APP SENSORTOWER", "APP_SENSORTOWER", "#1F9E8F", enabled=True, user=False, setting=[], popup=True), # 성공
+    Site("APP SENSORTOWER", "APP_SENSORTOWER", "#1F9E8F", enabled=True, user=False, setting=[], popup=True) # 성공
 ]
 
 # 전역 변수
