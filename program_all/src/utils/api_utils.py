@@ -8,6 +8,8 @@ from requests.exceptions import (
     Timeout, TooManyRedirects, ConnectionError, HTTPError,
     URLRequired, RequestException
 )
+from typing import Iterable, List, Optional, Union
+from http.cookiejar import Cookie
 
 
 class APIClient:
@@ -55,6 +57,45 @@ class APIClient:
     def cookie_set(self, name, value):
         if name and value:
             self.session.cookies.set(name, value)
+
+    def cookie_get(
+            self,
+            name: Optional[str] = None,
+            domain: Optional[str] = None,
+            path: Optional[str] = None,
+            as_dict: bool = False,
+    ) -> Union[List[Cookie], List[dict]]:
+        """
+        세션 쿠키를 필터링해서 반환.
+        - name/domain/path 중 지정된 조건에 매칭되는 쿠키만 리턴
+        - as_dict=True 이면 dict list로 반환
+        """
+        jar = self.session.cookies
+        matched: List[Cookie] = []
+        for c in jar:
+            if name is not None and c.name != name:
+                continue
+            if domain is not None and (c.domain or "").lstrip(".") != domain.lstrip("."):
+                continue
+            if path is not None and (c.path or "/") != path:
+                continue
+            matched.append(c)
+
+        if as_dict:
+            return [
+                {
+                    "name": c.name,
+                    "value": c.value,
+                    "domain": c.domain,
+                    "path": c.path,
+                    "secure": c.secure,
+                    "expires": c.expires,
+                    "rest": getattr(c, "rest", {}),
+                }
+                for c in matched
+            ]
+        return matched
+
 
     def _request(self, method, url, headers=None, params=None, data=None, json=None):
         try:

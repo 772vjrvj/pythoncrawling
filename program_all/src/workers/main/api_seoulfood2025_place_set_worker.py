@@ -229,7 +229,7 @@ class ApiSeoulfood2025PlaceSetLoadWorker(BaseApiWorker):
             response = self.api_client.post(url=url, headers=headers, json=payload)
             return response
         except requests.exceptions.RequestException as e:
-            print(f"❌ 요청 실패: {e}")
+            self.log_signal_func(f"❌ 요청 실패: {e}")
             return None
 
     

@@ -219,7 +219,8 @@ class SelectWindow(QWidget):
                 site.label,
                 partial(self.select_site, site),
                 site.color,
-                300
+                300,
+                site.enabled
             )
             btn.setFixedWidth(300)                          # 버튼 폭 300 고정
             btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 사이즈 정책 고정/고정

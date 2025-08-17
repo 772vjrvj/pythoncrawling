@@ -1,41 +1,40 @@
 from src.vo.site import Site
 
 SITE_LIST = [
-    Site("알바몬", "ALBAMON", "#FF6600", enabled=True, user=False, setting=[]), # 성공
-    # Site("네이버 플레이스", "NAVER_PLACE", "#03C75A", enabled=True, user=False, setting=[]),
     Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True, user=False,
          setting=[
-            {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
-            # {'name': '2. 전국(전국 크롤링 하는 경우 체크해주세요)', 'code': 'loc_all',    'value': '', 'type': 'check'},
+             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
          ],
          columns = [
-            {"code": "id",             "value": "아이디",        "checked": True},
-            {"code": "name",           "value": "이름",          "checked": True},
-            {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
-            {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
-            {"code": "category_main",  "value": "대분류",        "checked": True},
-            {"code": "category_sub",   "value": "소분류",        "checked": True},
-            {"code": "rating",         "value": "별점",          "checked": True},
-            {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
-            {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
-            {"code": "open_time1",     "value": "이용시간1",     "checked": True},
-            {"code": "open_time2",     "value": "이용시간2",     "checked": True},
-            {"code": "category",       "value": "카테고리",      "checked": True},
-            {"code": "url",            "value": "URL",           "checked": True},
-            {"code": "map",            "value": "지도",          "checked": True},
-            {"code": "amenities",      "value": "편의시설",      "checked": True},
-            {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
-            {"code": "phone",          "value": "전화번호",      "checked": True},
-            {"code": "site",           "value": "사이트",        "checked": True},
-            {"code": "region_info",    "value": "주소지정보",    "checked": True},
-        ],
-         region = True),
+             {"code": "id",             "value": "아이디",        "checked": True},
+             {"code": "name",           "value": "이름",          "checked": True},
+             {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
+             {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
+             {"code": "category_main",  "value": "대분류",        "checked": True},
+             {"code": "category_sub",   "value": "소분류",        "checked": True},
+             {"code": "rating",         "value": "별점",          "checked": True},
+             {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
+             {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
+             {"code": "open_time1",     "value": "이용시간1",     "checked": True},
+             {"code": "open_time2",     "value": "이용시간2",     "checked": True},
+             {"code": "category",       "value": "카테고리",      "checked": True},
+             {"code": "url",            "value": "URL",           "checked": True},
+             {"code": "map",            "value": "지도",          "checked": True},
+             {"code": "amenities",      "value": "편의시설",      "checked": True},
+             {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
+             {"code": "phone",          "value": "전화번호",      "checked": True},
+             {"code": "site",           "value": "사이트",        "checked": True},
+             {"code": "region_info",    "value": "주소지정보",    "checked": True},
+         ],
+         region = True
+         ),
     Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=True, user=False, setting=[
         {'name': '블로그 URL', 'code': 'url',        'value': '', 'type': 'button'},
         {'name': '게시판 선택', 'code': 'url_select', 'value': '', 'type': 'select'},
         {'name': '시작 페이지', 'code': 'st_page',    'value': '', 'type': 'input'},
         {'name': '종료 페이지', 'code': 'ed_page',    'value': '', 'type': 'input'}
     ]),
+    Site("알바몬", "ALBAMON", "#FF6600", enabled=True, user=False, setting=[]),
     Site("쿠팡", "COUPANG", "#D73227", enabled=True, user=False, setting=[
         {'name': '제품 딜레이 시간(초)', 'code': 'html_source_delay_time','value': 6},
         {'name': '크롬 재시작 딜레이 시간(초)', 'code': 'chrome_delay_time','value': 3600}
@@ -52,20 +51,22 @@ SITE_LIST = [
         {'name': '시작 페이지', 'code': 'st_page','value': '', 'type': 'input'},
         {'name': '종료 페이지', 'code': 'ed_page','value': '', 'type': 'input'}
     ]),
-    Site("YUPOO", "YUPOO", "#49BC85", enabled=True, user=False,
-         setting=[
+    Site("YUPOO", "YUPOO", "#49BC85", enabled=True, user=False, setting=[
              {'name': '1. 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'},
              {'name': '2. 쿠키 목록페이지', 'code': 'cookie1',    'value': '', 'type': 'input'},
              {'name': '2. 쿠키 상세페이지', 'code': 'cookie2',    'value': '', 'type': 'input'},
          ]),
-    Site("OVREPLE", "OVREPLE", "#812625", enabled=True, user=False,
-         setting=[
+    Site("OVREPLE", "OVREPLE", "#812625", enabled=True, user=False, setting=[
              {'name': '1. 카테고리 아이디',                   'code': 'ca_id',      'value': '', 'type': 'input'},
              {'name': '2. 상품 아이디(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
          ]),
-    Site("1004YA", "1004YA", "#FB92BA", enabled=True, user=False,
-         setting=[]),
-    Site("APP SENSORTOWER", "APP_SENSORTOWER", "#1F9E8F", enabled=True, user=False, setting=[], popup=True) # 성공
+    Site("1004YA", "1004YA", "#FB92BA", enabled=True, user=False, setting=[]),
+    Site("APP SENSORTOWER", "APP_SENSORTOWER", "#1F9E8F", enabled=True, user=False, setting=[], popup=True),
+
+    Site("ABC-MART", "ABC_MART", "#ee1c25", enabled=True, user=False, setting=[], popup=True),
+    Site("GRAND STAGE", "GRAND_STAGE", "#000", enabled=True, user=False, setting=[], popup=True),
+    Site("On the spot", "ON_THE_SPOT", "#272B44", enabled=True, user=False, setting=[], popup=True),
+    Site("OK mall", "OK_MALL", "#000000", enabled=True, user=False, setting=[], popup=True),
 ]
 
 # 전역 변수

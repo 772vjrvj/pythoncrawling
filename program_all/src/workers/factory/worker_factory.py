@@ -12,6 +12,15 @@ from src.workers.main.api_ovreple_set_worker import ApiOvrepleSetLoadWorker
 from src.workers.main.api_1004ya_set_worker import Api1004yaSetLoadWorker
 from src.workers.main.api_app_sensortower_set_worker import ApiAppSensertowerSetLoadWorker
 
+from src.workers.main.api_abcmart_set_worker import ApiAbcmartSetLoadWorker
+from src.workers.main.api_grandstage_set_worker import ApiGrandstageSetLoadWorker
+from src.workers.main.api_okmall_set_worker import ApiOkmallSetLoadWorker
+from src.workers.main.api_onthespot_set_worker import ApiOnthespotSetLoadWorker
+
+
+
+
+
 WORKER_CLASS_MAP = {
     "ALBAMON": ApiAlbamonSetLoadWorker,
     # "NAVER_PLACE": ApiNaverPlaceSetLoadWorker,
@@ -26,4 +35,9 @@ WORKER_CLASS_MAP = {
     "OVREPLE": ApiOvrepleSetLoadWorker,
     "1004YA": Api1004yaSetLoadWorker,
     "APP_SENSORTOWER": ApiAppSensertowerSetLoadWorker,
+
+    "ABC_MART": ApiAbcmartSetLoadWorker,
+    "GRAND_STAGE": ApiGrandstageSetLoadWorker,
+    "ON_THE_SPOT": ApiOnthespotSetLoadWorker,
+    "OK_MALL": ApiOkmallSetLoadWorker,
 }

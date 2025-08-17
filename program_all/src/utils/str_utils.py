@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse, parse_qs
 
 def split_comma_keywords(keyword_str):
     """콤마로 구분된 키워드 문자열을 리스트로 변환"""
@@ -11,3 +12,9 @@ def extract_numbers(text):
     예: "in total 352 albums and 12 tracks" → [352, 12]
     """
     return [int(num) for num in re.findall(r'\d+', text)]
+
+
+def get_query_params(url, name):
+    parsed_url = urlparse(url)
+    query_params = parse_qs(parsed_url.query)
+    return query_params.get(name, [None])[0]

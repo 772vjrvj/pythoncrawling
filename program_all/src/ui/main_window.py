@@ -10,6 +10,8 @@ from src.ui.popup.countdown_pop import CountdownPop
 from src.ui.popup.param_set_pop import ParamSetPop
 from src.ui.popup.column_set_pop import ColumnSetPop
 from src.ui.popup.region_set_pop import RegionSetPop
+from src.ui.popup.excel_set_pop import ExcelSetPop
+
 from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -24,6 +26,8 @@ class MainWindow(QWidget):
     def __init__(self, app_manager):
         super().__init__()
 
+        self.user = None
+        self.excel_data_list = None
         self.right_button_layout = None
         self.region_set_pop = None
         self.column_set_pop = None
@@ -135,7 +139,7 @@ class MainWindow(QWidget):
 
             if self.popup:
                 # 오른쪽 버튼 레이아웃
-                self.excel_setting_button = create_common_button("엑셀세팅", self.open_setting, self.color, 100)
+                self.excel_setting_button = create_common_button("엑셀세팅", self.open_excel_setting, self.color, 100)
                 self.right_button_layout.addWidget(self.excel_setting_button)
 
         else:
@@ -246,7 +250,7 @@ class MainWindow(QWidget):
 
         if self.popup:
             # 오른쪽 버튼 레이아웃
-            self.excel_setting_button = create_common_button("엑셀세팅", self.open_setting, self.color, 100)
+            self.excel_setting_button = create_common_button("엑셀세팅", self.open_excel_setting, self.color, 100)
             self.right_button_layout.addWidget(self.excel_setting_button)
 
 
@@ -312,9 +316,21 @@ class MainWindow(QWidget):
 
             self.progress_bar.setValue(0)
             self.progress_worker.start()
-            self.on_demand_worker.set_setting(self.setting)
-            self.on_demand_worker.set_columns(self.columns)
-            self.on_demand_worker.set_region(self.selected_regions)
+            if self.setting:
+                self.on_demand_worker.set_setting(self.setting)
+
+            if self.columns:
+                self.on_demand_worker.set_columns(self.columns)
+
+            if self.selected_regions:
+                self.on_demand_worker.set_region(self.selected_regions)
+
+            if self.excel_data_list:
+                self.on_demand_worker.set_excel_data_list(self.excel_data_list)
+
+            if self.user:
+                self.on_demand_worker.set_user(self.user)
+
             self.on_demand_worker.start()
 
         else:
@@ -439,3 +455,24 @@ class MainWindow(QWidget):
     def show_countdown_popup(self, seconds):
         popup = CountdownPop(seconds)
         popup.exec_()  # 완료될 때까지 block
+
+
+    # 전체 등록 팝업
+    def open_excel_setting(self):
+        self.excel_set_pop = ExcelSetPop(parent=self)  # 부모 객체 전달
+        self.excel_set_pop.updateList.connect(self.excel_data_set_list)
+        self.excel_set_pop.updateUser.connect(self.update_user)
+        self.excel_set_pop.exec_()
+
+
+    # url list 업데이트
+    def excel_data_set_list(self, excel_data_list):
+        self.excel_data_list = excel_data_list
+        self.add_log(f'엑셀 데이터 갯수 : {len(self.excel_data_list)}')
+        for data in excel_data_list:
+            self.add_log(data)
+
+
+    def update_user(self, user):
+        self.user = user
+        self.add_log(f'유저 : {self.user}')
