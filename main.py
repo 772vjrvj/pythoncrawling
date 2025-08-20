@@ -1,176 +1,27 @@
-import requests
-import json
-import time
-from bs4 import BeautifulSoup
-import openpyxl
-from datetime import datetime
-import re
+import os
 
-BASE_API = "https://m.cafe.daum.net/api/v1/common-articles"
-BASE_VIEW = "https://cafe.daum.net/odin"
-GRPID = "1YvZ5"
-PAGE_SIZE = 50
-STOP_DATE = "23.08.11"  # 발견 시 종료
-HEADERS = {
-    "Accept": "application/json",
-    "User-Agent": "Mozilla/5.0"
-}
-TODAY_STR = datetime.today().strftime("%y.%m.%d")
+def count_python_lines(folder_path):
+    total_lines = 0
+    file_count = 0
 
-# ─────────────────────────────────────────────────────────────
-# Excel 불법 제어문자 제거 (openpyxl IllegalCharacterError 대응)
-# 허용: \t, \n, \r / 제거: 그 외 0x00-0x1F
-ILLEGAL_CTRL_RE = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F]')
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(".py"):  # 파이썬 파일만
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                        line_count = len(lines)
+                        total_lines += line_count
+                        file_count += 1
+                        print(f"{file_path}: {line_count} lines")
+                except Exception as e:
+                    print(f"⚠️ {file_path} 읽기 오류: {e}")
 
-def clean_text(value) -> str:
-    """엑셀이 허용하지 않는 제어문자 제거"""
-    if value is None:
-        return ""
-    if not isinstance(value, str):
-        value = str(value)
-    return ILLEGAL_CTRL_RE.sub("", value)
-# ─────────────────────────────────────────────────────────────
+    print("-" * 50)
+    print(f"총 파일 수: {file_count}")
+    print(f"전체 라인 수 합계: {total_lines}")
 
-# ----------- API 요청 -----------
-def fetch_page(fldid, page_num, after=None):
-    params = {
-        "grpid": GRPID,
-        "fldid": fldid,
-        "pageSize": PAGE_SIZE,
-        "targetPage": page_num
-    }
-    if after:
-        params["afterBbsDepth"] = after
-
-    r = requests.get(BASE_API, params=params, headers=HEADERS, timeout=10)
-    r.raise_for_status()
-    return r.json()
-
-# ----------- 수집 -----------
-def collect_articles(fldid):
-    all_data = []
-    after_cursor = None
-    page_num = 1
-
-    while True:
-        data = fetch_page(fldid, page_num, after_cursor)
-        articles = data.get("articles", [])
-
-        if not articles:
-            print(f"📌 [{fldid}] 더 이상 데이터 없음. 종료")
-            break
-
-        last_date = articles[-1].get("articleElapsedTime", "N/A")
-
-        for article in articles:
-            if article.get("articleElapsedTime") == STOP_DATE:
-                print(f"📌 [{fldid}] {STOP_DATE} 발견 → 수집 종료")
-                return all_data
-            all_data.append(article)
-
-        print(f"[{fldid} | Page {page_num}] {len(articles)}건 수집 / 누적 {len(all_data)}건 / 마지막 날짜 {last_date}")
-
-        after_cursor = articles[-1].get("bbsDepth")
-        if not after_cursor:
-            print(f"📌 [{fldid}] 다음 커서 없음. 종료")
-            break
-
-        page_num += 1
-        time.sleep(0.3)
-
-    return all_data
-
-# ----------- HTML 파싱 -----------
-def parse_article_content(fldid, dataid):
-    url = f"https://m.cafe.daum.net/odin/{fldid}/{dataid}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0 Mobile Safari/537.36",
-        "Referer": f"https://m.cafe.daum.net/odin/{fldid}"
-    }
-    try:
-        res = requests.get(url, headers=headers, timeout=10)
-        res.raise_for_status()
-    except Exception as e:
-        print(f"❌ [{fldid}] {dataid} 요청 실패: {e}")
-        return ""
-
-    soup = BeautifulSoup(res.text, "html.parser")
-
-    # 1) 기본: id="article" 안의 <p> 태그들
-    article_div = soup.find("div", id="article", class_="tx-content-container")
-    paragraphs = []
-    if article_div:
-        for p in article_div.find_all("p"):
-            for br in p.find_all("br"):
-                br.replace_with("\n")
-            text = p.get_text(strip=True)
-            if text:
-                paragraphs.append(text)
-
-    # 2) <p>가 없거나 내용이 비었을 때 → id="protectTable" 안의 text 사용
-    if not paragraphs:
-        protect_div = soup.find(id="protectTable")
-        if protect_div:
-            text = protect_div.get_text(strip=True)
-            if text:
-                paragraphs.append(text)
-
-    return "\n".join(paragraphs)
-
-# ----------- Excel 저장 -----------
-def save_to_excel(board_name, fldid, data_list):
-    filename = f"odin_{board_name}.xlsx"
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Articles"
-    ws.append(["게시판", "작성 날짜", "게시글 제목", "게시글 내용", "url", "id"])
-
-    for item in data_list:
-        date_str = item.get("articleElapsedTime", "") or ""
-        if ("분 전" in date_str) or ("시간 전" in date_str) or ("초 전" in date_str):
-            date_str = TODAY_STR
-
-        dataid = str(item.get("dataid", "") or "")
-        row = [
-            board_name,
-            date_str,
-            item.get("title", "") or "",
-            item.get("content", "") or "",
-            f"{BASE_VIEW}/{fldid}/{dataid}" if dataid else "",
-            dataid
-        ]
-        # 🔹 모든 셀 sanitize 후 추가
-        ws.append([clean_text(v) for v in row])
-
-    wb.save(filename)
-    print(f"✅ Excel 저장 완료 → {filename}")
-
-# ----------- 메인 실행 -----------
-def run_for_board(board_name, fldid):
-    print(f"\n===== [{board_name}] 수집 시작 =====")
-    # 1. JSON 수집
-    articles = collect_articles(fldid)
-    with open(f"odin_{board_name}.json", "w", encoding="utf-8") as f:
-        json.dump(articles, f, ensure_ascii=False, indent=2)
-    print(f"✅ JSON 저장 완료 → odin_{board_name}.json")
-
-    # 2. 상세 페이지 파싱
-    enriched_data = []
-    for idx, art in enumerate(articles, 1):
-        dataid = art.get("dataid")
-        if not dataid:
-            continue
-        content = parse_article_content(fldid, dataid)
-        art["content"] = content
-        enriched_data.append(art)
-        print(f"[{board_name}] {idx}/{len(articles)} dataid={dataid} 내용 파싱 완료")
-        time.sleep(0.15)  # 서버 부하 방지
-
-    # 3. Excel 저장 (sanitize 적용)
-    save_to_excel(board_name, fldid, enriched_data)
-
+# 사용 예시
 if __name__ == "__main__":
-    # 자유게시판
-    # run_for_board("자유게시판", "D034")
-    # 오딘 광장
-    run_for_board("오딘광장", "DjO0")
+    count_python_lines("E:\\git\\pythoncrawling\\kmong\\ko\\bitgate-crypto-exchanger-main")# 폴더 경로 넣어주세요

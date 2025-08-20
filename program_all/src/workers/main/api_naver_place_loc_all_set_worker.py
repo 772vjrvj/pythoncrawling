@@ -129,7 +129,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                     self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 수집: {idx} / {len(new_ids)}, 중복 아이디: {place_id}")
                     continue  # ✅ 이미 수집한 ID는 건너뜀
 
-                time.sleep(random.uniform(1, 2))
+                time.sleep(random.uniform(2, 4))
 
                 place_info = self.fetch_place_info(place_id)
                 if not place_info:
@@ -341,7 +341,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 'sec-fetch-dest': 'document',
                 'sec-fetch-mode': 'navigate',
                 'sec-fetch-site': 'none',
-                'referer': '',
+                'referer': f"https://m.place.naver.com/place/{place_id}",
                 'sec-fetch-user': '?1',
                 'upgrade-insecure-requests': '1',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
