@@ -1,4 +1,5 @@
 from math import floor
+import re
 
 
 def divide_and_truncate(param1, param2):
@@ -23,3 +24,13 @@ def calculate_divmod(total_cnt, divisor=30):
     quotient = total_cnt // divisor  # 몫
     remainder = total_cnt % divisor  # 나머지
     return quotient, remainder
+
+
+def to_int_digits(s: str) -> int:
+    """'1,234원' -> 1234"""
+    if not s:
+        return 0
+    nums = re.findall(r"\d+", s)
+    return int("".join(nums)) if nums else 0
+
+

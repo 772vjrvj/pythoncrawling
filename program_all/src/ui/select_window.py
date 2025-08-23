@@ -69,7 +69,7 @@ class SelectWindow(QWidget):
         """
         # screen_geo = QDesktopWidget().screenGeometry()  # 전체 화면 지오메트리
         # self.fixed_h = int(screen_geo.height() * 0.5)   # 최소 높이(화면의 절반)
-        self.fixed_h = 600
+        self.fixed_h = 500 # 600
         self.fixed_w = 500                               # 최소 너비(500px 고정)
 
     # ─────────────────────────────────────────
@@ -103,24 +103,27 @@ class SelectWindow(QWidget):
         layout.setSpacing(16)                                    # 위젯 간 간격
         # 검색창 ↔ 구분선 ↔ 스크롤영역 사이 세로 간격이 16px
 
+
         # 4) 검색 입력창(엔터로 검색 실행)
-        self.search_edit = QLineEdit(self)                       # 검색어 입력창
-        self.search_edit.setPlaceholderText("검색어를 입력후 엔터를 치세요.")  # 플레이스홀더
-        self.search_edit.setClearButtonEnabled(True)             # 클리어 버튼 표시 (x)
-        self.search_edit.setFixedHeight(40)                      # 높이 고정
-        self.search_edit.setFixedWidth(300)                      # 너비 고정(열 너비와 동일)
-        self.search_edit.setStyleSheet(main_style("#888888"))    # 테두리/서체 스타일
-        self.search_edit.returnPressed.connect(self._run_search) # Enter 입력 시 검색 실행
-        layout.addWidget(self.search_edit, alignment=Qt.AlignHCenter)  # 중앙 배치
+        # self.search_edit = QLineEdit(self)                       # 검색어 입력창
+        # self.search_edit.setPlaceholderText("검색어를 입력후 엔터를 치세요.")  # 플레이스홀더
+        # self.search_edit.setClearButtonEnabled(True)             # 클리어 버튼 표시 (x)
+        # self.search_edit.setFixedHeight(40)                      # 높이 고정
+        # self.search_edit.setFixedWidth(300)                      # 너비 고정(열 너비와 동일)
+        # self.search_edit.setStyleSheet(main_style("#888888"))    # 테두리/서체 스타일
+        # self.search_edit.returnPressed.connect(self._run_search) # Enter 입력 시 검색 실행
+        # layout.addWidget(self.search_edit, alignment=Qt.AlignHCenter)  # 중앙 배치
+
 
         # 5) 검색창 아래 구분선(가로 300px, 두께 1px, 중간 정렬)
-        sep = QFrame(self)                                       # 수평선 프레임
-        sep.setFrameShape(QFrame.HLine)                          # 가로선 모양
-        sep.setFrameShadow(QFrame.Plain)                         # 평면 그림자(단색)
-        sep.setFixedSize(300, 1)                                 # 너비 300, 높이 1
-        sep.setStyleSheet("background-color: #888888;")          # 라인 색상(연한 회색)
-        sep.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 사이즈 정책(고정/고정)
-        layout.addWidget(sep, alignment=Qt.AlignHCenter)         # 중앙 배치
+        # sep = QFrame(self)                                       # 수평선 프레임
+        # sep.setFrameShape(QFrame.HLine)                          # 가로선 모양
+        # sep.setFrameShadow(QFrame.Plain)                         # 평면 그림자(단색)
+        # sep.setFixedSize(300, 1)                                 # 너비 300, 높이 1
+        # sep.setStyleSheet("background-color: #888888;")          # 라인 색상(연한 회색)
+        # sep.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 사이즈 정책(고정/고정)
+        # layout.addWidget(sep, alignment=Qt.AlignHCenter)         # 중앙 배치
+
 
         # 6) 스크롤 가능한 사이트 버튼 리스트
         self.scroll_area = QScrollArea(self)                     # 스크롤 컨테이너
@@ -203,7 +206,8 @@ class SelectWindow(QWidget):
         - 기존 위젯 제거
         - create_common_button(...)으로 버튼 생성
         - 버튼 너비 300 고정(열 너비와 맞춤)
-        - 하단 여백용 스페이서 추가
+        - 버튼이 1개면 세로 중앙에 배치
+        - 버튼이 여러 개면 위에서부터 쌓고 하단 스페이서 추가
         """
         # 1) 기존 위젯 제거(메모리 누수 방지: 부모 해제)
         while self.scroll_layout.count():
@@ -212,9 +216,13 @@ class SelectWindow(QWidget):
             if w is not None:
                 w.deleteLater()   # ← 검색처럼 자주 갈아끼울 땐 이게 깔끔
 
-        # 2) 필터링된 사이트 목록으로 버튼 재생성
-        for site in self.filtered_sites:
-            # 공통 스타일 버튼 생성: (라벨, 클릭 핸들러, 색상, 너비)
+        n = len(self.filtered_sites)
+
+        if n == 1:
+            # 2-1) 버튼이 1개일 때 → 세로 중앙 정렬
+            self.scroll_layout.addStretch(1)  # 위쪽 공간 확보
+
+            site = self.filtered_sites[0]
             btn = create_common_button(
                 site.label,
                 partial(self.select_site, site),
@@ -224,12 +232,29 @@ class SelectWindow(QWidget):
             )
             btn.setFixedWidth(300)                          # 버튼 폭 300 고정
             btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 사이즈 정책 고정/고정
-            self.scroll_layout.addWidget(btn)               # 레이아웃에 추가
+            self.scroll_layout.addWidget(btn, alignment=Qt.AlignHCenter)  # 중앙 정렬 배치
 
-        # 3) 하단 빈 공간 채우기용 스페이서(스크롤 최하단에서 여유 공간 확보)
-        spacer = QW()
-        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.scroll_layout.addWidget(spacer)
+            self.scroll_layout.addStretch(1)  # 아래쪽 공간 확보
+
+        else:
+            # 2-2) 버튼이 여러 개일 때 → 기존 방식 (위에서부터 쌓기)
+            for site in self.filtered_sites:
+                # 공통 스타일 버튼 생성: (라벨, 클릭 핸들러, 색상, 너비)
+                btn = create_common_button(
+                    site.label,
+                    partial(self.select_site, site),
+                    site.color,
+                    300,
+                    site.enabled
+                )
+                btn.setFixedWidth(300)                          # 버튼 폭 300 고정
+                btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 사이즈 정책 고정/고정
+                self.scroll_layout.addWidget(btn)               # 레이아웃에 추가
+
+            # 3) 하단 빈 공간 채우기용 스페이서(스크롤 최하단에서 여유 공간 확보)
+            spacer = QW()
+            spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            self.scroll_layout.addWidget(spacer)
 
         # 4) 보정 재적용(스크롤바 등장/제거 상황 반영)
         self._adjust_scrollbar_margin()

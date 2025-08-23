@@ -18,3 +18,7 @@ def get_query_params(url, name):
     parsed_url = urlparse(url)
     query_params = parse_qs(parsed_url.query)
     return query_params.get(name, [None])[0]
+
+
+def str_clean(s: str) -> str:
+    return (s or "").replace("\u00a0", " ").strip()
