@@ -11,13 +11,13 @@ _DIR = os.path.dirname(__file__)
 _DB_DIR = os.path.join(_DIR, "data")
 os.makedirs(_DB_DIR, exist_ok=True)
 
-DB_PATH = os.path.join(_DB_DIR, "nh_bank_transactions.db")
+DB_PATH = os.path.join(_DB_DIR, "nh_bank.db")
 
 _SCHEMA = """
 PRAGMA journal_mode=WAL;
 PRAGMA synchronous=NORMAL;
 
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE IF NOT EXISTS NH_BANK (
     id TEXT PRIMARY KEY,                          -- {in|ex}_{branchId}_{timestamp}
     type TEXT NOT NULL,                           -- '입금' | '출금'
     name TEXT NOT NULL,                           -- 거래기록사항
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS transactions (
     updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
-CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
-CREATE INDEX IF NOT EXISTS idx_tx_name ON transactions(name);
+CREATE INDEX IF NOT EXISTS idx_tx_date ON NH_BANK(date);
+CREATE INDEX IF NOT EXISTS idx_tx_type ON NH_BANK(type);
+CREATE INDEX IF NOT EXISTS idx_tx_name ON NH_BANK(name);
 """
 
 class NhBankTxRepository:
@@ -48,7 +48,7 @@ class NhBankTxRepository:
 
     def upsert_many(self, txs: Iterable[Dict[str, Any]]) -> int:
         q = """
-        INSERT INTO transactions (id, type, name, date, real_date, balance_after, amount, created_at, updated_at)
+        INSERT INTO NH_BANK (id, type, name, date, real_date, balance_after, amount, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, strftime('%s','now'), strftime('%s','now'))
         ON CONFLICT(id) DO UPDATE SET
             type          = excluded.type,
@@ -80,7 +80,7 @@ class NhBankTxRepository:
         """
         sql = """SELECT id, type, name, date, real_date,
                         balance_after AS balanceAfterTransaction, amount
-                 FROM transactions
+                 FROM NH_BANK
                  WHERE date = ?"""
         with self._lock, self._conn:
             cur = self._conn.execute(sql, (int(ts),))

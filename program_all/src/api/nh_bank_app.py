@@ -51,7 +51,7 @@ def create_app(repo: NhBankTxRepository, api_key: str) -> FastAPI:
             raise HTTPException(status_code=401, detail="Unauthorized")
 
 
-    @app.get("/nhbank/transactions/by-timestamp", response_model=List[TxOut])
+    @app.get("/nhbank/transactions/by-timestamp", response_model=TxOut)
     def get_transactions_by_timestamp(
             ts: int = Query(..., description="date 필드(unix timestamp, 초 단위)"),
             x_api_key: Optional[str] = Header(default=None, alias="X-API-Key")
@@ -60,7 +60,7 @@ def create_app(repo: NhBankTxRepository, api_key: str) -> FastAPI:
         rows = repo.get_by_timestamp(ts)
         if not rows:
             raise HTTPException(status_code=404, detail="No transactions found at given timestamp")
-        return rows
+        return rows[0]
 
 
     return app
