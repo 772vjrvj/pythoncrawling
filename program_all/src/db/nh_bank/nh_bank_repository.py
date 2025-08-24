@@ -87,6 +87,32 @@ class NhBankTxRepository:
             return [dict(r) for r in cur.fetchall()]
 
 
+    def list_all(
+            self,
+            limit: Optional[int] = None,
+            offset: int = 0,
+            order: str = "DESC",
+    ) -> List[Dict[str, Any]]:
+        """
+        전체 거래내역 조회 (옵션: limit/offset/pagination, 정렬)
+        order: "ASC" | "DESC"
+        """
+        order_norm = "DESC" if str(order).upper() != "ASC" else "ASC"
+
+        base_sql = """SELECT id, type, name, date, real_date,
+                             balance_after AS balanceAfterTransaction, amount
+                      FROM NH_BANK
+                      ORDER BY date {}""".format(order_norm)
+
+        with self._lock, self._conn:
+            if limit is None:
+                cur = self._conn.execute(base_sql)
+            else:
+                cur = self._conn.execute(base_sql + " LIMIT ? OFFSET ?", (int(limit), int(offset)))
+            return [dict(r) for r in cur.fetchall()]
+
+
+
     def close(self):
         with self._lock:
             self._conn.close()

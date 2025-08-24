@@ -2,7 +2,7 @@
 """
 NhBank FastAPI App (CRUD + timestamp + UPSERT)
 """
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Literal
 from fastapi import FastAPI, HTTPException, Query, Header, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -62,5 +62,21 @@ def create_app(repo: NhBankTxRepository, api_key: str) -> FastAPI:
             raise HTTPException(status_code=404, detail="No transactions found at given timestamp")
         return rows[0]
 
+
+    # ★ 전체 조회 API
+    @app.get("/nhbank/transactions", response_model=List[TxOut])
+    def list_transactions(
+            limit: Optional[int] = Query(None, ge=1, le=10000, description="가져올 최대 건수(없으면 전체)"),
+            offset: int = Query(0, ge=0, description="페이징 오프셋"),
+            order: Literal["asc", "desc"] = Query("desc", description="정렬: asc|desc"),
+            x_api_key: Optional[str] = Header(default=None, alias="X-API-Key"),
+    ):
+        """
+        전체 거래내역 조회 (옵션: limit/offset/order).
+        기본은 최신순(desc).
+        """
+        _auth(x_api_key)
+        rows = repo.list_all(limit=limit, offset=offset, order=order.upper())
+        return rows
 
     return app
