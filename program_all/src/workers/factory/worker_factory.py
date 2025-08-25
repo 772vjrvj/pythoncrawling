@@ -15,7 +15,8 @@
 # from src.workers.main.api_grandstage_set_worker import ApiGrandstageSetLoadWorker
 # from src.workers.main.api_okmall_set_worker import ApiOkmallSetLoadWorker
 # from src.workers.main.api_onthespot_set_worker import ApiOnthespotSetLoadWorker
-from src.workers.main.api_nh_bank_set_worker import ApiNhBankSetLoadWorker
+# from src.workers.main.api_nh_bank_set_worker import ApiNhBankSetLoadWorker
+from src.workers.main.api_naver_cafe_count_only_set_worker import ApiNaverCafeCountOnlySetLoadWorker
 
 
 
@@ -39,5 +40,6 @@ WORKER_CLASS_MAP = {
     # "GRAND_STAGE": ApiGrandstageSetLoadWorker,
     # "ON_THE_SPOT": ApiOnthespotSetLoadWorker,
     # "OK_MALL": ApiOkmallSetLoadWorker,
-    "NH_BANK": ApiNhBankSetLoadWorker
+    # "NH_BANK": ApiNhBankSetLoadWorker,
+    "NAVER_CAFE_CTT_CNT_ONLY": ApiNaverCafeCountOnlySetLoadWorker
 }

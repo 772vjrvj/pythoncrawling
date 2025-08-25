@@ -28,7 +28,8 @@ SITE_LIST = [
     #      ],
     #      region = True
     #      ),
-    Site("NH Bank", "NH_BANK", "#03C75A", enabled=True, user=False, setting=[]),
+    # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True, user=False, setting=[]),
+    Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True, user=False, setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False, user=False, setting=[
     #     {'name': '블로그 URL', 'code': 'url',        'value': '', 'type': 'button'},
     #     {'name': '게시판 선택', 'code': 'url_select', 'value': '', 'type': 'select'},
