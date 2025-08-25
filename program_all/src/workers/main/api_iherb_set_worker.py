@@ -21,10 +21,10 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
 
 
     # 초기화
-    def __init__(self, setting):
+    def __init__(self):
         super().__init__()
         self.blog_id = None
-        self.setting = setting
+        self.setting = None
         self.cookies = None
         self.keyword = None
         self.base_main_url = "https://kr.iherb.com/pr"
@@ -188,7 +188,11 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
                 obj['할인기간'] = "SS"
             else:
                 # 날짜 형식 감지 및 변환
-                date_match = re.search(r"(\d{4})\s*년\s*(\d{2})\s*월\s*(\d{2})\s*일\s*(오전|오후)\s*(\d{1,2})시", full_text)
+                date_match = re.search(
+                    r"(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일\s*(오전|오후)\s*(\d{1,2})시(?:에)?",
+                    full_text
+                )
+
                 if date_match:
                     year, month, day, am_pm, hour = date_match.groups()
                     hour = int(hour)
