@@ -40,7 +40,6 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.file_driver = None
         self.excel_driver = None
         self.sess = None
-        self.before_pro_value = 0
         self.api_client = None
         self.loc_all = NAVER_LOC_ALL
         self.saved_ids = set()
