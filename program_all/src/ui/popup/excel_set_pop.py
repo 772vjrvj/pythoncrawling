@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
     QDialog, QTableWidget, QHeaderView, QAbstractItemView
 )
 from src.ui.popup.excel_drag_drop_label import ExcelDragDropLabel
+from pathlib import Path
 
 class ExcelSetPop(QDialog):
     updateList = pyqtSignal(object)   # list[dict] 안전 전달
@@ -54,21 +55,27 @@ class ExcelSetPop(QDialog):
 
         self.center_window()
 
+
     def load_excel(self, file_paths):
         try:
             dfs = []
             self.user = {}
 
             for file in file_paths:
+                base = Path(file).stem  # "A.xlsx" -> "A"
+
                 if file.lower().endswith(".csv"):
                     df = pd.read_csv(file, dtype=str).fillna("")
+                    df["file"] = base                   # ← 파일명 컬럼 추가
                     dfs.append(df)
                 else:
                     excel_file = pd.ExcelFile(file)
+                    # 시트1: 데이터
                     df1 = excel_file.parse(sheet_name=0, dtype=str).fillna("")
+                    df1["file"] = base                  # ← 파일명 컬럼 추가
                     dfs.append(df1)
 
-                    # 2번째 시트: 사용자(ID/PW)
+                    # 시트2: 사용자(ID/PW)
                     if len(excel_file.sheet_names) >= 2:
                         df2 = excel_file.parse(sheet_name=1, dtype=str).fillna("")
                         if not df2.empty and "ID" in df2.columns and "PW" in df2.columns:
@@ -97,13 +104,12 @@ class ExcelSetPop(QDialog):
                     self.table_widget.setItem(r, c, QTableWidgetItem(val))
 
             header = self.table_widget.horizontalHeader()
-            # 컬럼이 세팅된 "이후"에 모드 지정
             header.setSectionResizeMode(QHeaderView.Interactive)
             header.setStretchLastSection(True)
             self.table_widget.setUpdatesEnabled(True)
 
             self.drag_drop_label.setText(
-                f"총 {len(file_paths)}개 파일, {len(rows)}행 {len(headers)}열 로드 완료"
+                f"총 {len(file_paths)}개 파일, {len(rows)}행 {len(headers)}열 로드 완료 (file 컬럼 포함)"
             )
             self.drag_drop_label.setStyleSheet("background-color: lightgreen;")
 
