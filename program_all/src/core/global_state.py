@@ -1,14 +1,14 @@
 class GlobalState:
     # 전역에서 사용하는 고정된 키 상수들 (문자열 오타 방지용)
-    NAME = "name"
-    SITE = "site"
-    COLOR = "color"
+    NAME    = "name"
+    SITE    = "site"
+    COLOR   = "color"
     COOKIES = "cookies"
-    USER = "user"
+    USER    = "user"
     SETTING = "setting"
     COLUMNS = "columns"
-    REGION = "region"
-    POPUP = "popup"
+    REGION  = "region"
+    POPUP   = "popup"
 
     # 싱글톤 인스턴스를 저장할 변수
     _instance = None
@@ -34,15 +34,15 @@ class GlobalState:
         # 초기화되지 않은 경우, 기본값으로 상태 딕셔너리를 설정
         if not self._initialized:
             self._data = {
-                self.COOKIES: "",  # 쿠키 정보
-                self.NAME: "",     # 사용자 이름
-                self.SITE: "",     # 사이트 코드
-                self.COLOR: "",    # UI 색상
-                self.USER: "",     # 로그인 사용자 정보
-                self.SETTING: "",     # 로그인 사용자 정보
-                self.COLUMNS: "",     # 로그인 사용자 정보
-                self.REGION: "",     # 로그인 사용자 정보
-                self.POPUP: "",     # 로그인 사용자 정보
+                self.COOKIES    : "",  # 쿠키 정보
+                self.NAME       : "",     # 사용자 이름
+                self.SITE       : "",     # 사이트 코드
+                self.COLOR      : "",    # UI 색상
+                self.USER       : "",     # 로그인 사용자 정보
+                self.SETTING    : "",     # 로그인 사용자 정보
+                self.COLUMNS    : "",     # 로그인 사용자 정보
+                self.REGION     : "",     # 로그인 사용자 정보
+                self.POPUP      : "",     # 로그인 사용자 정보
             }
             self._initialized = True  # 초기화 완료 표시
 
