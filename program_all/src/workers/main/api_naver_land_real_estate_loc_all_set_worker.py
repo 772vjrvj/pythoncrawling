@@ -45,7 +45,9 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         self.selenium_driver = None
         self.loc_all = NAVER_LOC_ALL
         self.chrome_macro = None
-        self.seen_numbers: set = set()  # complexNumber 전역 중복 방지
+        self.seen_numbers: set[str] = set()  # complexNumber 전역 중복 방지
+        self.seen_article_numbers: set[str] = set()   # 👈 중복 관리용 Set 추가
+        self.seen_broker_keys: set[tuple] = set()   # 👈 중복 관리용
 
     # 초기화
     def init(self):
@@ -58,6 +60,8 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
     # 프로그램 실행
     def main(self):
         self.seen_numbers.clear()  # ✅ 실행마다 초기화
+        self.seen_article_numbers.clear()   # ✅ 추가
+        self.seen_broker_keys.clear()       # ✅ 추가
         self.log_signal_func("시작합니다.")
         self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
         df = pd.DataFrame(columns=self.columns)
@@ -76,8 +80,18 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         self.driver = None
 
+
+        total_len = len(self.article_result_list)
+        self.log_signal_func(f"article_result_list len : {total_len}")
+
+
+
         for ix, article in enumerate(self.article_result_list, start=1):
             self.fetch_article_detail_by_article(article)
+            self.log_signal_func(f"진행 ({ix} / {total_len}) ==============================")
+            pro_value = (ix / total_len) * 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+            self.before_pro_value = pro_value
 
 
         # 엑셀 후처리 및 진행률 마무리
@@ -117,18 +131,9 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                     full_name = name + query
                     self.log_signal_func(f"전국: {index} / {loc_all_len}, 키워드: {idx} / {keyword_list_len}, 검색어: {full_name}")
                     self.fetch_complex(full_name)
-                    # self.set_pro_value()
             else:
                 self.log_signal_func(f"전국: {index} / {loc_all_len}, 검색어: {name}")
                 self.fetch_complex(name)
-                # self.set_pro_value()
-
-
-    def set_pro_value(self):
-        self.current_cnt = self.current_cnt + 1
-        pro_value = (self.current_cnt / self.total_cnt) * 1000000
-        self.progress_signal.emit(self.before_pro_value, pro_value)
-        self.before_pro_value = pro_value
 
 
     def wait_ready(self, timeout_sec: float = 5.0) -> None:
@@ -318,22 +323,52 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         page = 1
         while True:
             data = self.execute_post_json(api_url, payload)
-
             if data.get("isSuccess") is not True:
                 break
 
             result = data.get("result") or {}
             items: List[Dict[str, Any]] = (
-                    result.get("list")
-                    or result.get("articles")
-                    or result.get("contents")
-                    or []
+                    result.get("list") or result.get("articles") or result.get("contents") or []
             )
             if not items:
                 break
 
+            # ✅ 단일 루프 (브로커키/아티클키 모두 여기서 처리)
             for it in items:
-                rep = it.get("representativeArticleInfo") or {}
+                rep    = it.get("representativeArticleInfo") or {}
+                addr   = rep.get("address") or {}
+                broker = rep.get("brokerInfo") or {}
+
+                # --- 브로커 중복 키 정규화 ---
+                city    = (addr.get("city") or "").strip().casefold()
+                division= (addr.get("division") or "").strip().casefold()
+                sector  = (addr.get("sector") or "").strip().casefold()
+                bname   = (broker.get("brokerageName") or "").strip().casefold()
+
+                broker_key = (city, division, sector, bname)
+
+                # --- 아티클 중복 키 ---
+                art_no = rep.get("articleNumber") or rep.get("id")
+                if isinstance(art_no, (int, float)):  # 숫자형 방지
+                    art_no = str(int(art_no))
+                elif art_no is not None:
+                    art_no = str(art_no).strip()
+
+                # ✅ 필요에 따라 두 기준 중 하나만, 혹은 OR/AND로 결정
+                #   - 업소(브로커) 단위만 dedup이면: broker_key 기준만 체크
+                #   - 업소+매물 모두 유일 원하면: (broker_key, art_no) 같이 묶어서 키로
+                #
+                # 여기서는 "부동산 DB 목적"이라고 하셨으므로 broker_key 기준으로만 필터링하되,
+                # art_no도 세트에 넣어 이후 상세조회 중복을 방지합니다.
+                if broker_key in self.seen_broker_keys:
+                    continue
+                self.seen_broker_keys.add(broker_key)
+
+                if art_no:
+                    if art_no in self.seen_article_numbers:
+                        # 이미 같은 매물 상세를 처리한 적이 있으면 스킵
+                        continue
+                    self.seen_article_numbers.add(art_no)
 
                 new_item = {
                     "_meta": {
@@ -346,32 +381,25 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                     "representativeArticleInfo": rep,
                 }
 
-                # 안전 로그 (키 없을 때도 에러 안 나게)
-                art_no = rep.get("articleNumber") or rep.get("id")
-                self.log_signal_func(f"articleNumber={art_no}")
+                # ✅ 따옴표 오류 수정 + 정확한 필드 참조
+                self.log_signal_func(
+                    f"city={addr.get('city','')} division={addr.get('division','')} "
+                    f"sector={addr.get('sector','')} brokerageName={broker.get('brokerageName','')}"
+                )
 
                 self.article_result_list.append(new_item)
 
-            # 페이지네이션 플래그는 기존 그대로
+            # 페이지네이션
             next_cursor = result.get("lastInfo")
-            has_more = (
-                    result.get("hasMore")
-                    or result.get("isNext")
-                    or result.get("hasNext")
-            )
+            has_more = (result.get("hasMore") or result.get("isNext") or result.get("hasNext"))
 
-            # 다음 페이지 커서 설정
             if next_cursor:
                 payload["lastInfo"] = next_cursor
 
-            # 다음 호출 여부 판단:
-            # 1) has_more flag가 있으면 그에 따름
-            # 2) flag가 없는 경우에도 next_cursor가 있고 이번에 items가 찼으면 한 번 더 시도
             if has_more or (next_cursor and len(items) > 0):
                 page += 1
                 time.sleep(0.25)
                 continue
-
             break
 
         time.sleep(0.25)
