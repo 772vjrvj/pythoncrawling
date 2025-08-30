@@ -479,10 +479,27 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         # 3) __NEXT_DATA__에서 result 배열만 추출
         real_states = self.parse_target_broker_results(html)  # 원하는 스키마만 필터링
+        phone_set_real_states: List[Dict[str, Any]] = []
         for ix, rs in enumerate(real_states, start=1):
-            self.log_signal_func(f"rs({ix}): {rs}")
+            # phone 평탄화
+            phone = (rs.get("phone") or {})
+            flat = dict(rs)  # 원본 보존 후 복사
+            flat["phone_brokerage"] = phone.get("brokerage") or ""
+            flat["phone_mobile"]   = phone.get("mobile") or ""
+            flat.pop("phone", None)  # 중첩 phone 제거 (원하면 유지해도 됨)
 
-        self.real_state_result_list.extend(real_states)
+            # 로그 (원본 대신 평탄화된 값 표시)
+            self.log_signal_func(
+                f"rs({ix}): brokerageName={flat.get('brokerageName')}, "
+                f"brokerName={flat.get('brokerName')}, "
+                f"phone_brokerage={flat.get('phone_brokerage')}, "
+                f"phone_mobile={flat.get('phone_mobile')}"
+            )
+
+            phone_set_real_states.append(flat)
+
+        # 최종 누적
+        self.real_state_result_list.extend(phone_set_real_states)
 
     # 드라이버 세팅
     def driver_set(self, headless):
