@@ -21,6 +21,7 @@ from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.chrome_macro import ChromeMacro
+from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
 
 class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
@@ -63,18 +64,20 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         df.to_excel(self.excel_filename, index=False)  # 인코딩 인자 제거
         self.loc_all_keyword_list()
         for index, cmplx in enumerate(self.complex_result_list, start=1):
-            if index == 6:
-                break
             self.log_signal_func(f"데이터 {index}: {cmplx}")
             self.fetch_article_by_complex(cmplx)
 
-        for ix, article in enumerate(self.article_result_list, start=1):
-            if ix == 6:
-                break
-            self.fetch_article_detail_by_article(article)
+        # 드라이버 먼저 닫기 (가능하면)
+        try:
+            if getattr(self, "driver", None):
+                self.driver.quit()
+        except Exception as e:
+            self.log_signal_func(f"[경고] 드라이버 종료 중 예외: {e}")
 
-        for i, rs in enumerate(self.real_state_result_list, start=1):
-            self.log_signal_func(f"최종 {i}: {rs}")
+        self.driver = None
+
+        for ix, article in enumerate(self.article_result_list, start=1):
+            self.fetch_article_detail_by_article(article)
 
 
         # 엑셀 후처리 및 진행률 마무리
@@ -211,6 +214,28 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         return "https://fin.land.naver.com/search?q=" + urlencode({"q": keyword})[2:]
 
 
+    def _restart_driver(self):
+        try:
+            if getattr(self, "driver", None):
+                try: self.driver.quit()
+                except Exception: pass
+        finally:
+            state = GlobalState()
+            user = state.get("user")
+            self.driver = self.selenium_driver.start_driver(1200, user)
+
+
+    def _with_driver_retry(self, fn, max_retry=1):
+        try:
+            return fn()
+        except (InvalidSessionIdException, WebDriverException):
+            if max_retry <= 0:
+                raise
+            self.log_signal_func("[세션복구] 드라이버 재시작")
+            self._restart_driver()
+            return self._with_driver_retry(fn, max_retry - 1)
+
+
     def execute_fetch(self, api_url: str, timeout_ms: int = 15000) -> Dict[str, Any]:
         js = r"""
             const url = arguments[0];
@@ -233,7 +258,11 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
             .catch(err => done({ ok: false, error: String(err) }))
             .finally(() => clearTimeout(timer));
         """
-        result = self.driver.execute_async_script(js, api_url, timeout_ms)
+
+        result = self._with_driver_retry(
+            lambda: self.driver.execute_async_script(js, api_url, timeout_ms)
+        )
+
         if not isinstance(result, dict) or not result.get("ok"):
             return {}
         data = result.get("data") or {}
@@ -373,13 +402,17 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
             .catch(err => done({ ok: false, error: String(err) }))
             .finally(() => clearTimeout(timer));
         """
-        result = self.driver.execute_async_script(js, url, body, timeout_ms)
+        # ✅ _with_driver_retry 래퍼를 쓰되, 올바른 인자 순서로 전달
+        result = self._with_driver_retry(
+            lambda: self.driver.execute_async_script(js, url, body, timeout_ms)
+        )
         if not isinstance(result, dict) or not result.get("ok"):
             raise RuntimeError(f"fetch error: {result.get('error') if isinstance(result, dict) else result}")
         data = result.get("data") or {}
         if not isinstance(data, dict):
             raise RuntimeError("Invalid JSON response")
         return data
+
 
 
     def parse_next_queries_results(self, html: str) -> list[dict]:
@@ -632,11 +665,16 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         # 1) 새 탭으로 열고(첫 건은 기존 탭 없음 → False), 이전 탭 닫기(둘째부터 True)
         url = f"{article_url}{article_number}"
-        self.chrome_macro.open_url(url, replace_previous=True)
-        time.sleep(0.6)  # 환경에 따라 조절 (0.5~1.2)
+        # self.chrome_macro.open_url(url, replace_previous=True)
+        # time.sleep(0.6)  # 환경에 따라 조절 (0.5~1.2)
 
         # 2) 현재 탭(=방금 연 컨텐츠 탭)의 원본 HTML 소스 가져오기
-        html = self.chrome_macro.copy_page_html_via_view_source()
+        # html = self.chrome_macro.copy_page_html_via_view_source()
+
+        html = self.chrome_macro.open_and_grab_html(
+            url, settle=1.0, close_tab_after=True, view_source_settle=0.8
+        )
+
 
         # 3) __NEXT_DATA__에서 result 배열만 추출
         real_states = self.parse_target_broker_results(html)  # 원하는 스키마만 필터링
@@ -676,21 +714,26 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
     def driver_set(self, headless):
         self.log_signal_func("드라이버 세팅 ========================================")
 
-        # 엑셀 객체 초기화
+        # (1) 시작 전 모든 크롬 종료
+        try:
+            tmp_macro = ChromeMacro(default_settle=1.0)
+            tmp_macro.close_all()
+            time.sleep(0.6)
+        except Exception as e:
+            self.log_signal_func(f"[경고] 시작 전 크롬 종료 실패: {e}")
+
+        # (2) 엑셀/파일/셀레니움
         self.excel_driver = ExcelUtils(self.log_signal_func)
-
-        # 파일 객체 초기화
         self.file_driver = FileUtils(self.log_signal_func)
-
-        # 셀레니움 초기화
         self.selenium_driver = SeleniumUtils(headless)
+
 
         state = GlobalState()
         user = state.get("user")
         self.driver = self.selenium_driver.start_driver(1200, user)
 
+        # (3) 매크로 준비 (여기서는 close_all 금지)
         self.chrome_macro = ChromeMacro(default_settle=1.0)
-
 
     # 마무리
     def destroy(self):
@@ -700,14 +743,6 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                 self.chrome_macro.close_all()
         except Exception as e:
             self.log_signal_func(f"[경고] 크롬 종료 중 예외: {e}")
-
-
-        # 드라이버 먼저 닫기 (가능하면)
-        try:
-            if getattr(self, "driver", None):
-                self.driver.quit()
-        except Exception as e:
-            self.log_signal_func(f"[경고] 드라이버 종료 중 예외: {e}")
 
         self.progress_signal.emit(self.before_pro_value, 1000000)
         self.log_signal_func("=============== 크롤링 종료중...")

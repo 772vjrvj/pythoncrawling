@@ -2,15 +2,16 @@
 # 목적: 매크로(키보드/창 포커싱) 방식으로 "크롬에서 URL 열기"만 담당하는 안정 모듈 (객체지향)
 # 특징:
 #  - Selenium/Playwright/Puppeteer 미사용
-#  - 브라우저가 떠 있으면: 새 탭으로 열고, 옵션에 따라 직전 탭(왼쪽) 1개 닫기 지원
+#  - 한 번 띄운 창/프로필 안에서만 새 탭을 열도록 전용 user-data-dir 지원(충돌 최소화)
+#  - 권장 흐름: open_url(replace_previous=False) → 파싱 → close_active_tab()
 #  - __enter__/__exit__ 지원 (with 문)
-#  - 전역 함수 대신 ChromeMacro 인스턴스 메서드로 제공
 
 import os
 import re
 import json
 import time
 import shutil
+import tempfile
 import subprocess
 from typing import Optional
 
@@ -38,6 +39,8 @@ class ChromeMacro:
         pyautogui FAILSAFE (마우스 화면 모서리 이동 시 강제중단) 사용 여부
     chrome_path : Optional[str]
         크롬 실행 파일 경로를 직접 지정(미지정 시 자동 탐색)
+    isolate_profile : bool
+        True면 전용 user-data-dir(임시 폴더)을 사용해 항상 같은 창/프로필에 탭을 엶
     """
 
     def __init__(
@@ -46,6 +49,9 @@ class ChromeMacro:
             default_settle: float = 1.0,
             failsafe: bool = True,
             chrome_path: Optional[str] = None,
+            isolate_profile: bool = True,
+            auto_close_all_on_init: bool = False,     # 👈 추가
+            suppress_signin_ui: bool = True,          # 👈 추가
     ) -> None:
         self.window_title_keyword = window_title_keyword
         self.default_settle = float(default_settle)
@@ -55,6 +61,24 @@ class ChromeMacro:
         self.chrome_path = chrome_path or self._which_chrome()
         if not self.chrome_path:
             raise ChromeOpenError("크롬 실행 파일을 찾을 수 없습니다. (Chrome 미설치 또는 PATH 미등록)")
+
+        # 전용 프로필 디렉터리(있으면 항상 같은 창/프로필로 열림)
+        self.profile_dir = None
+        if isolate_profile:
+            self.profile_dir = os.path.join(tempfile.gettempdir(), f"chrome-macro-{os.getpid()}")
+            os.makedirs(self.profile_dir, exist_ok=True)
+
+        self.suppress_signin_ui = bool(suppress_signin_ui)
+
+        if isolate_profile:
+            self.profile_dir = os.path.join(tempfile.gettempdir(), f"chrome-macro-{os.getpid()}")
+            os.makedirs(self.profile_dir, exist_ok=True)
+
+        if auto_close_all_on_init:               # 👈 시작 전에 정리
+            self.close_all()
+            time.sleep(0.4)
+
+
 
     # ─────────────────────────────────────────
     # 기본 유틸
@@ -106,10 +130,22 @@ class ChromeMacro:
         pyautogui.hotkey(*keys)
         time.sleep(pause)
 
+
     def _spawn_chrome_url(self, url: str) -> None:
         try:
+            args = [
+                self.chrome_path,
+                "--no-first-run",
+                "--no-default-browser-check",
+                "--disable-sync",
+                "--disable-features=EnableSyncConsent",
+            ]
+            if self.profile_dir:  # ✅ 전용 프로필 사용
+                args.append(f"--user-data-dir={self.profile_dir}")
+            args.append(url)
+
             subprocess.Popen(
-                [self.chrome_path, url],
+                args,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 shell=False,
@@ -117,7 +153,6 @@ class ChromeMacro:
             )
         except Exception as e:
             raise ChromeOpenError(f"크롬 실행 실패: {e}")
-
     # ─────────────────────────────────────────
     # 공개 메서드
     # ─────────────────────────────────────────
@@ -129,10 +164,8 @@ class ChromeMacro:
         """
         크롬에 URL 열기(새 탭 또는 새 창).
 
-        replace_previous=True 이고 이미 크롬이 떠 있으면:
-          1) 새 탭이 오른쪽에 생성됨(활성)
-          2) 왼쪽(직전) 탭으로 이동(Ctrl+Shift+Tab)
-          3) 그 탭 닫기(Ctrl+W)
+        권장: replace_previous=False 로 열고, 파싱 후 close_active_tab() 호출.
+        replace_previous=True 는 포커스 엇갈림으로 종종 새 창이 생길 수 있으므로 지양.
         """
         if not url or not isinstance(url, str):
             raise ChromeOpenError("유효한 URL 문자열이 필요합니다.")
@@ -143,8 +176,14 @@ class ChromeMacro:
         self._activate_chrome_or_raise()
 
         if replace_previous and was_running:
+            # 새 탭(오른쪽) 활성 상태 가정 → 왼쪽(직전) 탭 닫기
             self._hotkey("ctrl", "shift", "tab", pause=0.05)
             self._hotkey("ctrl", "w", pause=0.05)
+
+    def close_active_tab(self, pause: float = 0.08) -> None:
+        """현재 활성 탭 하나만 닫기 (창은 유지)."""
+        self._activate_chrome_or_raise()
+        self._hotkey("ctrl", "w", pause=pause)
 
     def copy_current_url(self) -> str:
         """활성 탭의 주소창에서 현재 URL 복사해서 반환."""
@@ -157,7 +196,7 @@ class ChromeMacro:
     def copy_page_html_via_view_source(self, settle_after_open: float = 0.8) -> str:
         """
         현재 활성 탭의 원본 HTML 소스 가져오기.
-        1) 현재 URL 복사 → 2) 새 탭으로 view-source:URL 열기 → 3) 전체복사 → 4) 탭 닫기
+        1) 현재 URL 복사 → 2) 새 탭으로 view-source:URL 열기 → 3) 전체복사 → 4) 탭 닫기 → 5) 원탭 복귀
         """
         self._activate_chrome_or_raise()
 
@@ -169,7 +208,7 @@ class ChromeMacro:
         if not cur_url:
             raise ChromeOpenError("현재 탭 URL을 읽지 못했습니다. (주소창 복사 실패)")
 
-        # view-source 열기
+        # view-source 열기(새 탭)
         self._hotkey("ctrl", "t", pause=0.08)
         vs_url = f"view-source:{cur_url}" if not cur_url.startswith("view-source:") else cur_url
         pyautogui.typewrite(vs_url, interval=0.0)
@@ -182,15 +221,30 @@ class ChromeMacro:
         time.sleep(0.05)
         html = pyperclip.paste() or ""
 
-        # 임시 탭 닫기 → 원탭 복귀
+        # 임시 view-source 탭 닫기 → 원탭 복귀
         self._hotkey("ctrl", "w", pause=0.08)
 
         if not html:
             raise ChromeOpenError("페이지 소스 복사에 실패했습니다. (클립보드가 비어있음)")
         return html
 
+    def open_and_grab_html(self, url: str, *, settle: Optional[float] = None, close_tab_after: bool = True,
+                           view_source_settle: float = 0.8) -> str:
+        """
+        URL을 열고(view-source 경유) HTML을 가져온 뒤, 필요 시 활성 탭을 닫아 한 탭 정책 유지.
+
+        Returns
+        -------
+        html : str
+        """
+        self.open_url(url, replace_previous=False, settle=settle)
+        html = self.copy_page_html_via_view_source(settle_after_open=view_source_settle)
+        if close_tab_after:
+            self.close_active_tab()
+        return html
+
     def close_all(self) -> None:
-        """모든 chrome.exe 종료 (다른 앱 영향 없음)."""
+        """모든 chrome.exe 종료 (다른 앱 영향 있음 주의). 전용 프로필 사용 시 충돌은 적지만, 사용은 신중히."""
         if not self.is_running:
             return
         try:
@@ -213,6 +267,5 @@ class ChromeMacro:
     def __exit__(self, exc_type, exc, tb):
         # FAILSAFE 원복
         pyautogui.FAILSAFE = self._prev_failsafe
-        # 여기서 크롬을 강제 종료할 필요는 없음(선택)
         # 필요 시: self.close_all()
         return False  # 예외 전파
