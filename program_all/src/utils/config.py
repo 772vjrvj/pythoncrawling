@@ -33,11 +33,54 @@ SITE_LIST = [
              {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
          ],
          columns = [
-             {"code": "brokerageName",      "value": "중개사무소이름",    "checked": True},
-             {"code": "brokerName",         "value": "중개사이름",       "checked": True},
-             {"code": "address",            "value": "주소",            "checked": True},
-             {"code": "phone_brokerage",    "value": "사무소번호",       "checked": True},
-             {"code": "phone_mobile",       "value": "헨드폰번호",       "checked": True}
+             # 메타
+             {"code": "article_number",        "value": "번호",   "checked": False},
+             {"code": "region",                "value": "지역",   "checked": False},
+             {"code": "city",                  "value": "시도",   "checked": True},
+             {"code": "division",              "value": "시군구",  "checked": True},
+             {"code": "sector",                "value": "읍면동",  "checked": True},
+
+             # {"code": "item_name",             "value": "매물명",  "checked": True},
+
+             # 주소/위치
+             {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
+             {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
+             {"code": "keyword",               "value": "키워드",  "checked": True},
+             {"code": "complex_name",          "value": "단지명",  "checked": True},
+             {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
+
+             # 중개사
+             {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
+             {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
+             {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
+             {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
+             {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
+
+             # 층/방향
+             {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
+             {"code": "target_floor",          "value": "층(목표)",     "checked": False},
+             {"code": "total_floor",           "value": "층(전체)",     "checked": False},
+             {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
+             # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
+             {"code": "direction_standard",    "value": "방향기준",     "checked": False},
+
+             # 면적
+             {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
+             {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
+             {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
+
+             # 가격/비용
+             {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
+             {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
+             {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
+
+             # 유형/일자
+             # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
+             # {"code": "trade_type",            "value": "거래유형",     "checked": True},
+             {"code": "exposure_date",         "value": "노출일",       "checked": False},
+             {"code": "confirm_date",          "value": "확인일",       "checked": False},
+             {"code": "approval_elapsed_year", "value": "준공연차",     "checked": False},
+             {"code": "completion_date",       "value": "준공일",       "checked": False},
          ],
          region = True
          ),

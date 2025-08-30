@@ -35,7 +35,7 @@ class SeleniumUtils:
             # Chrome 브라우저를 실행할 때 자동으로 브라우저를 최대화 상태로 시작합니다.
             # 이 옵션은 사용자가 브라우저를 처음 실행할 때 크기가 자동으로 최대로 설정되도록 합니다.
             ##### 화면 최대 #####
-            webdriver_options.add_argument("--start-maximized")
+            # webdriver_options.add_argument("--start-maximized")
 
             # headless 모드로 Chrome을 실행합니다.
             # 이는 화면을 표시하지 않고 백그라운드에서 브라우저를 실행하게 됩니다.
@@ -64,8 +64,8 @@ class SeleniumUtils:
 
             ##### 브라우저 위치 및 크기 설정 #####
             # 예: 해상도 1920x1080 기준으로 왼쪽 끝에 위치, 너비는 960, 높이는 1080
-            # webdriver_options.add_argument("--window-position=0,0")        # 브라우저를 좌측 상단에 위치
-            # webdriver_options.add_argument("--window-size=960,1080")       # 전체 모니터의 절반 너비, 최대 높이
+            webdriver_options.add_argument("--window-position=0,0")        # 브라우저를 좌측 상단에 위치
+            webdriver_options.add_argument("--window-size=500,600")       # 전체 모니터의 절반 너비, 최대 높이
             self.driver = webdriver.Chrome(options=webdriver_options)
 
         except WebDriverException:

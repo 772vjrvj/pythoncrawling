@@ -63,14 +63,26 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         df.to_excel(self.excel_filename, index=False)  # 인코딩 인자 제거
         self.loc_all_keyword_list()
         for index, cmplx in enumerate(self.complex_result_list, start=1):
+            if index == 6:
+                break
             self.log_signal_func(f"데이터 {index}: {cmplx}")
             self.fetch_article_by_complex(cmplx)
 
         for ix, article in enumerate(self.article_result_list, start=1):
+            if ix == 6:
+                break
             self.fetch_article_detail_by_article(article)
 
+        for i, rs in enumerate(self.real_state_result_list, start=1):
+            self.log_signal_func(f"최종 {i}: {rs}")
 
-         # 전역 누적
+
+        # 엑셀 후처리 및 진행률 마무리
+        self.excel_driver.save_obj_list_to_excel(
+            self.excel_filename,
+            self.real_state_result_list,
+            columns=self.columns
+        )
 
         return True
 
@@ -102,11 +114,11 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                     full_name = name + query
                     self.log_signal_func(f"전국: {index} / {loc_all_len}, 키워드: {idx} / {keyword_list_len}, 검색어: {full_name}")
                     self.fetch_complex(full_name)
-                    self.set_pro_value()
+                    # self.set_pro_value()
             else:
                 self.log_signal_func(f"전국: {index} / {loc_all_len}, 검색어: {name}")
                 self.fetch_complex(name)
-                self.set_pro_value()
+                # self.set_pro_value()
 
 
     def set_pro_value(self):
@@ -245,6 +257,8 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         # ✅ 핵심 수정: complexNumber를 문자열로 강제
         complex_number = str(cn)
         complex_name = row.get("complexName") or row.get("name")
+        legal_division_name = row.get("legalDivisionName", "")
+        keyword = row.get("_meta", {}).get("keyword", "")
 
         html_url_tpl = "https://fin.land.naver.com/complexes/{complexNumber}?tab=article"
         api_url = "https://fin.land.naver.com/front-api/v1/complex/article/list"
@@ -297,6 +311,8 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                         "complexNumber": str(complex_number),
                         "complexName": complex_name,
                         "page": page,
+                        "legal_division_name": legal_division_name,
+                        "keyword": keyword
                     },
                     "representativeArticleInfo": rep,
                 }
@@ -460,14 +476,159 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         return [r for r in all_results if self.is_target_broker_result(r)]
 
 
+    def _to_pyeong(self, sqm: Any, nd: int = 1) -> str:
+        try:
+            v = float(sqm)
+            return f"{round(v / 3.305785, nd)}"
+        except Exception:
+            return ""
+
+    def _fmt_price_krw(self, n: Any) -> str:
+        try:
+            n = int(n)
+        except Exception:
+            return ""
+        eok = n // 100_000_000
+        man = (n % 100_000_000) // 10_000
+        if eok and man:
+            return f"{eok}억 {man:,}만원"
+        elif eok:
+            return f"{eok}억"
+        else:
+            return f"{man:,}만원"
+
+    def _fmt_date_yyyymmdd(self, s: Any) -> str:
+        s = (s or "")
+        if isinstance(s, str) and len(s) == 8 and s.isdigit():
+            return f"{s[:4]}-{s[4:6]}-{s[6:8]}"
+        return s or ""
+
+
+    def _direction_to_ko(self, code: Any) -> str:
+        c = (code or "").upper()
+        # 가장 흔한 코드 매핑
+        table = {
+            "E": "동", "EE": "동",
+            "W": "서", "WW": "서",
+            "S": "남", "SS": "남",
+            "N": "북", "NN": "북",
+            "SE": "남동", "ES": "남동",
+            "SW": "남서", "WS": "남서",
+            "NE": "북동", "EN": "북동",
+            "NW": "북서", "WN": "북서",
+        }
+        if c in table:
+            return table[c]
+        # 3글자 같은 변형(ENE/ESE/WSW 등) 대략 매핑
+        if "S" in c and "E" in c and "W" not in c: return "남동"
+        if "S" in c and "W" in c and "E" not in c: return "남서"
+        if "N" in c and "E" in c and "W" not in c: return "북동"
+        if "N" in c and "W" in c and "E" not in c: return "북서"
+        if "E" in c and "W" not in c: return "동"
+        if "W" in c and "E" not in c: return "서"
+        if "S" in c and "N" not in c: return "남"
+        if "N" in c and "S" not in c: return "북"
+        return c  # 알 수 없는 코드는 원문 반환
+
+
+    def _extract_article_info_from_flat_dict(self, d: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        단일 dict 스키마(예: 당신이 올린 샘플)에서 기사/면적/가격/좌표/방향 등을 한 번에 뽑아
+        기존 한글 키 형태로 반환합니다. (리스트 스키마가 아니라 '평평한' 단일 객체용)
+        """
+        if not isinstance(d, dict):
+            return {}
+
+        # ── 안전 접근 ─────────────────────────────────────────────────────────────
+        addr    = d.get("address") or {}
+        coords  = addr.get("coordinates") or {}
+        detail  = d.get("articleDetail") or {}
+        fdet    = detail.get("floorDetailInfo") or {}
+        space   = d.get("spaceInfo") or {}
+        price   = d.get("priceInfo") or {}
+        binfo   = d.get("buildingInfo") or {}
+        verif   = d.get("verificationInfo") or {}
+        binfo2  = d.get("brokerInfo") or {}
+
+        # ── 보조 가공 ────────────────────────────────────────────────────────────
+        ex = space.get("exclusiveSpace")
+        sp = space.get("supplySpace")
+        ct = space.get("contractSpace")
+        deal = price.get("dealPrice")
+        mfee = price.get("managementFeeAmount")
+
+        # 층 표현: floorInfo 제공되면 그대로, 없으면 target/total로 구성
+        floor_info = detail.get("floorInfo") or (
+            f"{fdet.get('targetFloor','')}/{fdet.get('totalFloor','')}"
+            if (fdet.get("targetFloor") and fdet.get("totalFloor")) else ""
+        )
+
+        # ── 결과 조합(기존 한글 키 규격) ─────────────────────────────────────────
+        out: Dict[str, Any] = {
+            "번호":           d.get("articleNumber") or "",
+            "단지명":            d.get("complexName") or d.get("articleName") or "",
+            "매물명":            d.get("articleName") or "",
+            "동(단지)":          d.get("dongName") or "",
+
+            "시도":               addr.get("city") or "",
+            "시군구":               addr.get("division") or "",
+            "읍면동":          addr.get("sector") or "",
+
+            # 좌표: x=경도, y=위도
+            "경도":             coords.get("xCoordinate"),
+            "위도":             coords.get("yCoordinate"),
+
+            "층":               floor_info,
+            "층(목표)":          fdet.get("targetFloor") or "",
+            "층(전체)":          fdet.get("totalFloor") or "",
+
+            "방향":              self._direction_to_ko(detail.get("direction")),
+            "방향(원문)":         detail.get("direction") or "",
+            "방향기준":           detail.get("directionStandard") or "",
+
+            "전용(㎡/평)":        f"{ex} / {self._to_pyeong(ex)}" if ex is not None else "",
+            "공급(㎡/평)":        f"{sp} / {self._to_pyeong(sp)}" if sp is not None else "",
+            "계약(㎡/평)":        f"{ct} / {self._to_pyeong(ct)}" if ct is not None else "",
+
+            "매매가":            self._fmt_price_krw(deal) if deal else "",
+            "매매가(원)":         deal,
+            "관리비":             mfee,
+
+            "부동산종류":         d.get("realEstateType") or "",
+            "거래유형":           d.get("tradeType") or "",
+
+            "노출일":             verif.get("exposureStartDate") or "",
+            "확인일":             verif.get("articleConfirmDate") or "",
+            "준공연차":           binfo.get("approvalElapsedYear"),
+            "준공일":             self._fmt_date_yyyymmdd(binfo.get("buildingConjunctionDate")),
+        }
+
+        # (옵션) 중개사명이 이 객체에 있으면 같이 얹어줌 — 전화번호는 이 스키마엔 없음
+        if binfo2:
+            out.setdefault("중개사무소이름", binfo2.get("brokerageName", ""))
+            out.setdefault("중개사이름",   binfo2.get("brokerName", ""))
+            # out.setdefault("주소",       ???)  # 주소는 위의 기사/단지 주소와 구분 필요 시 별도 키로
+
+        return out
+
+
     def fetch_article_detail_by_article(self, article):
         article_url = "https://fin.land.naver.com/articles/"
 
-        rep = (article or {}).get("representativeArticleInfo") or {}
+        rep = article.get("representativeArticleInfo") or {}
         article_number = rep.get("articleNumber") or rep.get("id")
+
+        keyword = article.get("_meta", {}).get("keyword", "")
+        legal_division_name = article.get("_meta", {}).get("legal_division_name", "")
+        complex_name = article.get("_meta", {}).get("complexName", "")
+
         if not article_number:
             self.log_signal_func("[경고] articleNumber가 없어 상세 조회를 건너뜁니다.")
             return
+
+
+        out = self._extract_article_info_from_flat_dict(rep)
+
 
         # 1) 새 탭으로 열고(첫 건은 기존 탭 없음 → False), 이전 탭 닫기(둘째부터 True)
         url = f"{article_url}{article_number}"
@@ -479,27 +640,37 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         # 3) __NEXT_DATA__에서 result 배열만 추출
         real_states = self.parse_target_broker_results(html)  # 원하는 스키마만 필터링
-        phone_set_real_states: List[Dict[str, Any]] = []
-        for ix, rs in enumerate(real_states, start=1):
-            # phone 평탄화
-            phone = (rs.get("phone") or {})
-            flat = dict(rs)  # 원본 보존 후 복사
-            flat["phone_brokerage"] = phone.get("brokerage") or ""
-            flat["phone_mobile"]   = phone.get("mobile") or ""
-            flat.pop("phone", None)  # 중첩 phone 제거 (원하면 유지해도 됨)
 
-            # 로그 (원본 대신 평탄화된 값 표시)
+        only5_rows: List[Dict[str, Any]] = []
+        for ix, rs in enumerate(real_states, start=1):
+            phone = (rs.get("phone") or {})
+
+            row_ko = {
+                "중개사무소 이름": rs.get("brokerageName", ""),
+                "중개사 이름":   rs.get("brokerName", ""),
+                "중개사무소 주소":        rs.get("address", ""),
+                "중개사무소 번호":    phone.get("brokerage", ""),
+                "중개사 헨드폰번호":    phone.get("mobile", ""),  # 요청하신 표기 그대로 사용
+                "지역":         legal_division_name,
+                "키워드":       keyword,
+                "매물":         complex_name,
+            }
+
+            # 기사 상세 out 병합
+            row_ko.update(out)
+
+            # (선택) 로그
             self.log_signal_func(
-                f"rs({ix}): brokerageName={flat.get('brokerageName')}, "
-                f"brokerName={flat.get('brokerName')}, "
-                f"phone_brokerage={flat.get('phone_brokerage')}, "
-                f"phone_mobile={flat.get('phone_mobile')}"
+                f"rs({ix}): {row_ko['중개사무소 이름']} / {row_ko['중개사 이름']} / {row_ko['중개사무소 주소']} / "
+                f"{row_ko['중개사무소 번호']} / {row_ko['중개사 헨드폰번호']}"
             )
 
-            phone_set_real_states.append(flat)
+            only5_rows.append(row_ko)
 
-        # 최종 누적
-        self.real_state_result_list.extend(phone_set_real_states)
+        # 최종 누적 (오직 5개 필드만)
+        self.real_state_result_list.extend(only5_rows)
+
+
 
     # 드라이버 세팅
     def driver_set(self, headless):
@@ -523,14 +694,6 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
     # 마무리
     def destroy(self):
-
-        # 엑셀 후처리 및 진행률 마무리
-        self.excel_driver.save_obj_list_to_excel(
-            self.excel_filename,
-            self.real_state_result_list,
-            columns=self.columns
-        )
-
         # 크롬 정리 (선택)
         try:
             if getattr(self, "chrome_macro", None):
