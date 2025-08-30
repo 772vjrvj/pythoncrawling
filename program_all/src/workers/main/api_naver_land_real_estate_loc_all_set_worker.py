@@ -698,9 +698,13 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         # 2) 현재 탭(=방금 연 컨텐츠 탭)의 원본 HTML 소스 가져오기
         # html = self.chrome_macro.copy_page_html_via_view_source()
-
-        html = self.chrome_macro.open_and_grab_html(
-            url, settle=1.0, close_tab_after=True, view_source_settle=0.8
+        html = chrome_macro.open_and_grab_html(
+            url,
+            settle=1.1,
+            close_tab_after=True,
+            view_source_settle=1.2,
+            copy_retries=6,
+            copy_wait_each=3.0,
         )
 
 
