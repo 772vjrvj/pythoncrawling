@@ -37,3 +37,15 @@ def format_real_date(ts: int) -> str:
         return datetime.fromtimestamp(ts, ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S")
     except Exception:
         return ""
+
+
+def parse_yy_mm_dd(d: str) -> str:
+    """
+    '25.08.25' → '2025-08-25'
+    """
+    d = (d or "").strip()
+    try:
+        return datetime.strptime(d, "%y.%m.%d").strftime("%Y-%m-%d")
+    except Exception:
+        return ""
+
