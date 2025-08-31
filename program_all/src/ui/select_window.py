@@ -316,6 +316,7 @@ class SelectWindow(QWidget):
         state.set(GlobalState.COLUMNS, site.columns)   # 컬럼/필드 구성
         state.set(GlobalState.REGION, site.region)     # 리전/지역 등
         state.set(GlobalState.POPUP, site.popup)     # 리전/지역 등
+        state.set(GlobalState.SITES, site.sites)   # 컬럼/필드 구성
 
         self.close()                                   # 현재 선택창 닫기
         self.app_manager.go_to_main()                  # 메인 화면으로 전환

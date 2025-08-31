@@ -9,6 +9,7 @@ from src.core.global_state import GlobalState
 from src.ui.popup.countdown_pop import CountdownPop
 from src.ui.popup.param_set_pop import ParamSetPop
 from src.ui.popup.column_set_pop import ColumnSetPop
+from src.ui.popup.site_set_pop import SiteSetPop
 from src.ui.popup.region_set_pop import RegionSetPop
 from src.ui.popup.excel_set_pop import ExcelSetPop
 
@@ -31,11 +32,13 @@ class MainWindow(QWidget):
         self.right_button_layout = None
         self.region_set_pop = None
         self.column_set_pop = None
+        self.site_set_pop = None
         self.param_set_pop = None
         self.excel_set_pop = None
 
         self.selected_regions = []
         self.columns = None
+        self.sites = None
         self.region = None
         self.popup = None
         self.setting_button = None
@@ -49,6 +52,7 @@ class MainWindow(QWidget):
         self.collect_button = None
         self.region_setting_button = None
         self.column_setting_button = None
+        self.site_setting_button = None
         self.excel_setting_button = None
 
         self.task_queue = None
@@ -72,6 +76,7 @@ class MainWindow(QWidget):
         self.setting = state.get("setting")
         self.cookies = state.get("cookies")
         self.columns = state.get("columns")
+        self.sites = state.get("sites")
         self.region = state.get("region")
         self.popup = state.get("popup")
 
@@ -132,6 +137,11 @@ class MainWindow(QWidget):
                 self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
                 self.right_button_layout.addWidget(self.column_setting_button)
 
+            if self.sites:
+                # 오른쪽 버튼 레이아웃
+                self.site_setting_button = create_common_button("사이트세팅", self.open_site_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.site_setting_button)
+
             if self.region:
                 # 오른쪽 버튼 레이아웃
                 self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
@@ -161,6 +171,7 @@ class MainWindow(QWidget):
         # 참조 리셋
         self.setting_button = None
         self.column_setting_button = None
+        self.site_setting_button = None
         self.region_setting_button = None
         self.excel_setting_button = None
 
@@ -243,6 +254,11 @@ class MainWindow(QWidget):
             self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
             self.right_button_layout.addWidget(self.column_setting_button)
 
+        if self.sites:
+            # 오른쪽 버튼 레이아웃
+            self.site_setting_button = create_common_button("사이트세팅", self.open_site_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.site_setting_button)
+
         if self.region:
             # 오른쪽 버튼 레이아웃
             self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
@@ -321,6 +337,9 @@ class MainWindow(QWidget):
 
             if self.columns:
                 self.on_demand_worker.set_columns(self.columns)
+
+            if self.sites:
+                self.on_demand_worker.set_sites(self.sites)
 
             if self.selected_regions:
                 self.on_demand_worker.set_region(self.selected_regions)
@@ -437,6 +456,12 @@ class MainWindow(QWidget):
             self.column_set_pop = ColumnSetPop(self)
             self.column_set_pop.log_signal.connect(self.add_log)
         self.column_set_pop.exec_()
+
+    def open_site_setting(self):
+        if self.site_set_pop is None:
+            self.site_set_pop = SiteSetPop(self)
+            self.site_set_pop.log_signal.connect(self.add_log)
+        self.site_set_pop.exec_()
 
 
     def open_region_setting(self):

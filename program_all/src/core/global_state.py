@@ -9,6 +9,7 @@ class GlobalState:
     COLUMNS = "columns"
     REGION  = "region"
     POPUP   = "popup"
+    SITES   = "sites"
 
     # 싱글톤 인스턴스를 저장할 변수
     _instance = None
@@ -39,10 +40,11 @@ class GlobalState:
                 self.SITE       : "",     # 사이트 코드
                 self.COLOR      : "",    # UI 색상
                 self.USER       : "",     # 로그인 사용자 정보
-                self.SETTING    : "",     # 로그인 사용자 정보
-                self.COLUMNS    : "",     # 로그인 사용자 정보
-                self.REGION     : "",     # 로그인 사용자 정보
-                self.POPUP      : "",     # 로그인 사용자 정보
+                self.SETTING    : "",     # 세팅 정보
+                self.COLUMNS    : "",     # 항목 정보
+                self.REGION     : "",     # 지역 정보
+                self.POPUP      : "",     # 팝업 정보
+                self.SITES      : "",     # 사이트 정보
             }
             self._initialized = True  # 초기화 완료 표시
 

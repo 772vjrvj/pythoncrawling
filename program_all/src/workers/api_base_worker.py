@@ -18,6 +18,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         self.excel_data_list = None
         self.region = None
         self.columns = None
+        self.sites = None
         self.setting = None
         self.running = True  # 실행 상태 플래그 추가
 
@@ -84,6 +85,12 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
         # ✅ 체크된 항목들의 'value'만 추출해서 저장
         if columns:
             self.columns = [col["value"] for col in columns if col.get("checked", False)]
+
+
+    def set_sites(self, sites):
+        # ✅ 체크된 항목들의 'value'만 추출해서 저장
+        if sites:
+            self.sites = [col["value"] for col in sites if col.get("checked", False)]
 
 
     def set_region(self, region):

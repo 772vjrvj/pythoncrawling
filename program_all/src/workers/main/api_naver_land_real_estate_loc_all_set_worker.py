@@ -11,7 +11,6 @@ import requests
 from typing import Any, Dict, Iterable, List, Optional
 from urllib.parse import urlencode
 
-from src.utils.config import NAVER_LOC_ALL
 from src.core.global_state import GlobalState
 from src.utils.api_utils import APIClient
 from src.utils.str_utils import split_comma_keywords
@@ -19,7 +18,6 @@ from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
-from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.utils.chrome_macro import ChromeMacro
 from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
 
@@ -43,7 +41,6 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         self.real_state_result_list = []
         self.excel_driver = None
         self.selenium_driver = None
-        self.loc_all = NAVER_LOC_ALL
         self.chrome_macro = None
         self.seen_numbers: set[str] = set()  # complexNumber 전역 중복 방지
         self.seen_article_numbers: set[str] = set()   # 👈 중복 관리용 Set 추가
@@ -68,6 +65,10 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         df.to_excel(self.excel_filename, index=False)  # 인코딩 인자 제거
         self.loc_all_keyword_list()
         for index, cmplx in enumerate(self.complex_result_list, start=1):
+            if not self.running:  # 실행 상태 확인
+                self.log_signal_func("크롤링이 중지되었습니다.")
+                break
+
             self.log_signal_func(f"데이터 {index}: {cmplx}")
             self.fetch_article_by_complex(cmplx)
 
@@ -88,6 +89,10 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
             self.chrome_macro.start_focus_watcher(interval=1.5)  # 1.5초마다 체크
 
         for ix, article in enumerate(self.article_result_list, start=1):
+            if not self.running:  # 실행 상태 확인
+                self.log_signal_func("크롤링이 중지되었습니다.")
+                break
+
             self.fetch_article_detail_by_article(article)
             self.log_signal_func(f"진행 ({ix} / {total_len}) ==============================")
             pro_value = (ix / total_len) * 1000000
@@ -187,6 +192,10 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
             # 수집 및 complexNumber 기준 중복 제거
             new_count = 0
             for it in items:
+                if not self.running:  # 실행 상태 확인
+                    self.log_signal_func("크롤링이 중지되었습니다.")
+                    break
+
                 raw_num = it.get("complexNumber")
                 num = str(raw_num) if raw_num is not None else None  # ✅ 통일
 
@@ -335,6 +344,10 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
             # ✅ 단일 루프 (브로커키/아티클키 모두 여기서 처리)
             for it in items:
+                if not self.running:  # 실행 상태 확인
+                    self.log_signal_func("크롤링이 중지되었습니다.")
+                    break
+
                 rep    = it.get("representativeArticleInfo") or {}
                 addr   = rep.get("address") or {}
                 broker = rep.get("brokerInfo") or {}
@@ -474,6 +487,10 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         results: list[dict] = []
 
         for q in queries:
+            if not self.running:  # 실행 상태 확인
+                self.log_signal_func("크롤링이 중지되었습니다.")
+                break
+
             try:
                 st = (q or {}).get("state", {})
                 dt = (st or {}).get("data", {})
