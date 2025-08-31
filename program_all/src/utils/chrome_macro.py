@@ -203,12 +203,8 @@ class ChromeMacro:
             time.sleep(0.02)
             pyperclip.copy(backup)
 
+
     def _read_clipboard_stable(self, timeout: float = 5.0, min_len: int = 1) -> str:
-        """
-        Windows 클립보드 잠금/지연을 고려한 반복 읽기.
-        - win32clipboard가 있으면 네이티브 경로 우선(더 안정적)
-        - 없으면 pyperclip로 폴백
-        """
         end = time.time() + max(0.5, timeout)
         last = ""
         while time.time() < end:
@@ -216,7 +212,10 @@ class ChromeMacro:
                 if win32clipboard and win32con:
                     win32clipboard.OpenClipboard()
                     try:
-                        data = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+                        if win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+                            data = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+                        else:
+                            data = ""
                     finally:
                         win32clipboard.CloseClipboard()
                 else:
@@ -228,6 +227,8 @@ class ChromeMacro:
                 pass
             time.sleep(0.05)
         return last or ""
+
+
 
     def _dump_dom_via_headless(self, url: str, timeout: float = 25.0) -> str:
         """
@@ -328,16 +329,16 @@ class ChromeMacro:
         time.sleep(0.04)
         return (pyperclip.paste() or "").strip()
 
+
     def copy_page_html_via_view_source(
             self,
             settle_after_open: float = 1.0,
-            copy_retries: int = 5,
-            copy_wait_each: float = 2.5,
+            copy_retries: int = 6,
+            copy_wait_each: float = 3.0,
     ) -> str:
         """
-        활성 탭의 '원본 HTML 소스'를 view-source로 열어 복사한다(강화판).
-        - 렌더/포커스/클립보드 레이스 대비: 재시도 + 안정 읽기
-        - 최후수단: headless --dump-dom 으로 Fallback
+        활성 탭의 '원본 HTML 소스'를 view-source로 열어 복사(강화판).
+        우선 클립보드 방식 → 실패 시 파일 저장 백업 → 최후수단 headless --dump-dom
         """
         self._activate_chrome_or_raise()
 
@@ -357,35 +358,57 @@ class ChromeMacro:
         pyautogui.press("enter")
         time.sleep(float(settle_after_open))
 
-        # 3) 전체 복사(재시도 루프)
+        # 2.5) 페이지 영역 포커스 보정
+        self._focus_into_page_area()
+        time.sleep(0.05)
+
+        # 3) 클립보드 방식 복사(로딩/포커스/훅킹 대비 재시도)
         clip_backup = pyperclip.paste()
         html = ""
         try:
             for _ in range(copy_retries):
-                self._activate_chrome_or_raise()  # 포커스 보강
-                pyperclip.copy("")                # 초기화
-                self._hotkey("ctrl", "a", pause=0.06, retries=1)
-                self._hotkey("ctrl", "c", pause=0.10, retries=1)
-                html = self._read_clipboard_stable(timeout=copy_wait_each, min_len=1)
-                if html:
-                    break
-                time.sleep(0.15)
+                self._activate_chrome_or_raise()
+                self._focus_into_page_area()
+                pyperclip.copy("")  # 초기화
+
+                self._hotkey("ctrl", "a", pause=0.08, retries=1)
+                self._hotkey("ctrl", "c", pause=0.12, retries=1)
+
+                copied = self._read_clipboard_stable(timeout=copy_wait_each, min_len=1).strip()
+
+                # 주소창을 잡은 경우(= URL만 복사됐거나 'view-source:'만 존재) 필터링
+                if not copied or copied == cur_url or copied.startswith("view-source:"):
+                    time.sleep(0.2)
+                    continue
+
+                # 너무 짧으면 아직 로딩 전일 수 있음(문자 수 기준 완화 가능)
+                if len(copied) < 40 and "<!doctype" not in copied.lower() and "<html" not in copied.lower():
+                    time.sleep(0.2)
+                    continue
+
+                html = copied
+                break
         finally:
-            if not html:
-                try:
-                    pyperclip.copy(clip_backup)
-                except Exception:
-                    pass
+            # 복구(실패해도 무시)
+            try:
+                pyperclip.copy(clip_backup)
+            except Exception:
+                pass
 
         # 4) 임시 view-source 탭 닫고 복귀
         self._hotkey("ctrl", "w", pause=0.08)
 
-        # 5) 최후수단: Headless 덤프
+        # 5) 클립보드 실패 → 파일 저장 백업 플랜
         if not html:
-            html = self._dump_dom_via_headless(cur_url)
+            html = self._save_view_source_to_temp(timeout=6.0)
+
+        # 6) 최후수단: Headless 덤프
+        if not html:
+            html = self._dump_dom_via_headless(cur_url, timeout=30.0)
             if not html:
-                raise ChromeOpenError("페이지 소스 복사에 실패했습니다. (클립보드/렌더 지연)")
+                raise ChromeOpenError("페이지 소스 복사에 실패했습니다. (클립보드/저장/헤드리스 모두 실패)")
         return html
+
 
     def open_and_grab_html(
             self,
@@ -432,12 +455,11 @@ class ChromeMacro:
     # 포커스 watcher 추가
     # ─────────────────────────────────────────
     def _focus_loop(self, interval: float = 1.0):
-        """백그라운드에서 주기적으로 크롬 포커스 확인 & 복원"""
         while self._focus_running:
             try:
                 active = gw.getActiveWindow()
-                if not active or self.window_title_keyword not in active.title:
-                    # 크롬이 활성창이 아니면 복원
+                active_title = getattr(active, "title", "") or ""
+                if not active or self.window_title_keyword not in active_title:
                     self._activate_chrome_or_raise(timeout=1.5)
             except Exception:
                 pass
@@ -458,6 +480,59 @@ class ChromeMacro:
             self._focus_thread.join(timeout=2.0)
             self._focus_thread = None
 
+    def _focus_into_page_area(self):
+        """
+        주소창 → 페이지 영역으로 포커스를 확실히 옮긴다.
+        - F6은 크롬에서 주소창/툴바/북마크바/페이지 영역 사이를 순환
+        """
+        try:
+            # 주소창에 있을 확률이 높으니 두세 번 돌려 페이지로 내린다
+            for _ in range(3):
+                pyautogui.press("f6")
+                time.sleep(0.08)
+        except Exception:
+            pass
+
+
+    def _save_view_source_to_temp(self, timeout: float = 6.0) -> str:
+        tmp_dir = tempfile.gettempdir()
+        tmp_path = os.path.join(tmp_dir, f"view_source_{int(time.time()*1000)}.txt")
+
+        self._hotkey("ctrl", "s", pause=0.15, retries=1)
+        time.sleep(0.25)
+
+        # 파일명 입력란으로 확실히 포커스 이동
+        try:
+            pyautogui.hotkey("alt", "n")
+            time.sleep(0.06)
+        except Exception:
+            pass
+
+        self._paste_text(tmp_path)
+        time.sleep(0.05)
+        pyautogui.press("enter")
+        time.sleep(0.2)
+        pyautogui.press("enter")
+
+        end = time.time() + max(1.5, timeout)
+        while time.time() < end:
+            if os.path.isfile(tmp_path) and os.path.getsize(tmp_path) > 0:
+                try:
+                    with open(tmp_path, "r", encoding="utf-8", errors="ignore") as f:
+                        return f.read()
+                finally:
+                    try:
+                        os.remove(tmp_path)
+                    except Exception:
+                        pass
+            time.sleep(0.1)
+
+        try:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        except Exception:
+            pass
+        return ""
 
     # 컨텍스트 매니저 지원: with ChromeMacro() as cm: ...
     def __enter__(self):
