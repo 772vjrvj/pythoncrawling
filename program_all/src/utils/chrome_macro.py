@@ -14,6 +14,7 @@ import pyperclip
 # (선택) Windows 네이티브 클립보드 접근: 있으면 더 안정적, 없으면 pyperclip로 폴백
 import win32clipboard
 import win32con
+import threading  # ✅ 누락 보강
 
 
 class ChromeOpenError(Exception):
