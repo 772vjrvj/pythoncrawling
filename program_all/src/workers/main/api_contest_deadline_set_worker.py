@@ -10,16 +10,15 @@ from bs4 import BeautifulSoup
 from src.utils.api_utils import APIClient
 from src.utils.file_utils import FileUtils
 from src.utils.excel_utils import ExcelUtils
+from src.utils.time_utils import parse_yy_mm_dd
 from src.workers.api_base_worker import BaseApiWorker
-
+from difflib import SequenceMatcher  # [ADD]
 
 class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
     # 초기화
     def __init__(self):
         super().__init__()
-        self.columns: Optional[List[str]] = None
-        self.sites: Optional[List[str]] = None
         self.excel_filename: Optional[str] = None
         self.site_name = "공모전 마감"
         self.total_cnt = 0
@@ -70,6 +69,10 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
     # 초기화
     def init(self):
+
+        self.LINK_HASH = self.get_setting_value(self.setting, "linkareer")
+        self.THINK_QUERYSTR = self.get_setting_value(self.setting, "thinkgood")
+
         self.driver_set()
         self.log_signal_func(f"선택 항목 : {self.columns}")
         self.log_signal_func(f"선택 사이트 : {self.sites}")
@@ -220,29 +223,6 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
 
     # ──────────────── 공통 Date 유틸 ────────────────────────────────────────────
-    # [ADD] 일관된 날짜 파서
-    @staticmethod
-    def _to_iso_date(date_obj: datetime) -> str:
-        return date_obj.strftime("%Y-%m-%d")
-
-    @staticmethod
-    def _try_parse_ymd(date_str: str) -> str:
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y-%m-%d")
-        except Exception:
-            return ""
-
-    @staticmethod
-    def _parse_yy_mm_dd(d: str) -> str:
-        """
-        '25.08.25' → '2025-08-25'
-        """
-        d = (d or "").strip()
-        try:
-            return datetime.strptime(d, "%y.%m.%d").strftime("%Y-%m-%d")
-        except Exception:
-            return ""
-
     # ──────────────── WEVITY ───────────────────────────────────────────────────
     def fetch_wevity(self, start_gp: int = 1, max_gp: Optional[int] = None):
         """
@@ -390,11 +370,28 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
             organ = (item.get("cl_host", "") or "").strip()
 
+            # [ADD] 제목/주최사가 잘린 경우 상세 페이지 조회
+            if (title.endswith("…") or organ.endswith("…")) and full_url:
+                try:
+                    detail_html = self._http_get_text(full_url, headers=self.ALLCON_HEADERS)
+                    if detail_html:
+                        detail_soup = BeautifulSoup(detail_html, "html.parser")
+                        # 제목 h1
+                        h1 = detail_soup.select_one("div.contest_title_wrap h1")
+                        if h1:
+                            title = h1.get_text(strip=True)
+                        # 주최사 td.desc_host
+                        host_td = detail_soup.select_one("td.desc_host")
+                        if host_td:
+                            organ = host_td.get_text(strip=True)
+                except Exception as e:
+                    self.log_signal_func(f"[ALL-CON][상세조회실패] {full_url} → {e}")
+
             date_text = item.get("cl_date", "") or ""
             deadline = ""
             if "~" in date_text:
                 end_raw = date_text.split("~")[-1]
-                deadline = self._parse_yy_mm_dd(end_raw)
+                deadline = parse_yy_mm_dd(end_raw)
 
             items.append({
                 "사이트": "ALL-CON",
@@ -405,6 +402,8 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
                 "페이지": int(data.get("currentPage", page) or page),
             })
         return items
+
+
 
     # ──────────────── LINKAREER ────────────────────────────────────────────────
     # [ADD] 링크리어 마감 오름차순 페치
@@ -472,7 +471,8 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
             if deadline_ts:
                 try:
                     dt = datetime.fromtimestamp(deadline_ts / 1000)
-                    deadline = self._to_iso_date(dt)
+                    deadline = dt.strftime("%Y-%m-%d")
+
                 except Exception:
                     pass
 
@@ -564,22 +564,135 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
             })
         return items
 
+
+    # [ADD] 포함 매칭 유틸 (정규화 포함)
+    def _includes_match(self, a: Optional[str], b: Optional[str]) -> bool:
+        a_n = self._norm_text(a or "")
+        b_n = self._norm_text(b or "")
+        if not a_n or not b_n:
+            return False
+        return a_n in b_n or b_n in a_n
+
+
     # 후처리(정렬 등)
+    # ──────────────── 정렬 + 중복 제거 (유사도 0.9) ─────────────────────────────
     def data_asc_set(self):
-        """마감일 오름차순 정렬(날짜 형식 가능한 것만 우선 정렬)"""
+        """마감일 오름차순 정렬 후, (동일 마감일 & 주최사/공모전명 유사도≥0.9) 중복 제거
+           + [ADD] 어제 이전(≤ 어제) 마감 데이터 제거
+        """
         if not self.result_list:
             return
 
+        # [ADD] 0) 어제 이전(≤ 어제) 마감 데이터 제거
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+
+        def _parse_date_yyyy_mm_dd(s: str):
+            try:
+                return datetime.strptime(s, "%Y-%m-%d").date()
+            except Exception:
+                return None
+
+        before_len = len(self.result_list)
+        filtered = []
+        for row in self.result_list:
+            v = (row.get("마감일") or "").strip()
+            if not v:
+                # 비어있는 마감일은 유지 (원하시면 아래 한 줄로 제거 가능)
+                # continue  # ← 주석 해제 시, 마감일 비어있는 항목도 제거
+                filtered.append(row)
+                continue
+            d = _parse_date_yyyy_mm_dd(v)
+            if d is None:
+                # 파싱 불가한 형식은 유지 (원하시면 제거로 바꿔도 됨)
+                filtered.append(row)
+                continue
+            if d <= yesterday:
+                # 어제 이전(<= 어제) → 제거
+                continue
+            filtered.append(row)
+
+        removed_old_cnt = before_len - len(filtered)
+        if removed_old_cnt > 0:
+            self.log_signal_func(f"지난 마감 제거: {removed_old_cnt}건 제거(≤ {yesterday.isoformat()})")
+        self.result_list = filtered
+
+        # 1) 날짜 정렬 (YYYY-MM-DD 가능한 것 먼저)
         def _key(o: Dict[str, Any]):
             v = o.get("마감일") or ""
             try:
                 return datetime.strptime(v, "%Y-%m-%d")
             except Exception:
-                # 날짜 없거나 형식 아님 → 뒤로
                 return datetime.max
-
         self.result_list.sort(key=_key)
         self.log_signal_func("정렬 완료(마감일 오름차순)")
+
+        # 2) 중복 제거
+        # [CHANGE] 중복 제거 로직: 유사도 → 포함 매칭(동일 마감일)
+        deduped: List[Dict[str, Any]] = []
+        for cur in self.result_list:
+            cur_deadline = (cur.get("마감일") or "").strip()
+            cur_title = cur.get("공모전명")
+            cur_organ = cur.get("주최사")
+
+            if not cur_deadline or not self._norm_text(cur_title):
+                deduped.append(cur)
+                continue
+
+            is_dup = False
+            for prev in deduped:
+                if (prev.get("마감일") or "").strip() != cur_deadline:
+                    continue
+
+                prev_title = prev.get("공모전명")
+                prev_organ = prev.get("주최사")
+
+                # 제목 포함 매칭은 필수
+                title_dup = self._includes_match(prev_title, cur_title)
+
+                # 주최사는 양쪽 중 하나라도 비어있으면 '일치'로 간주(기존 정책 유지),
+                # 둘 다 있으면 포함 매칭
+                if self._norm_text(cur_organ) and self._norm_text(prev_organ):
+                    organ_dup = self._includes_match(prev_organ, cur_organ)
+                else:
+                    organ_dup = True
+
+                if title_dup and organ_dup:
+                    self.log_signal_func(
+                        f"[중복제거] '{cur_title}' ({cur_organ}) → '{prev_title}' ({prev_organ}) 동일 마감일 {cur_deadline}"
+                    )
+                    is_dup = True
+                    break
+
+            if not is_dup:
+                deduped.append(cur)
+
+        removed_dup_cnt = len(self.result_list) - len(deduped)
+        self.result_list = deduped
+        self.log_signal_func(f"중복 제거 완료: {removed_dup_cnt}건 제거")
+
+
+    def _norm_text(self, s: Optional[str]) -> str:
+        s = self._str_clean(s or "")
+        s = s.lower()
+        s = re.sub(r"[\(\)\[\]\{\}<>【】〈〉《》『』「」]", " ", s)  # 괄호류 제거 [추가]
+        s = re.sub(r"[\t\r\n]", " ", s)
+        s = re.sub(r"\s+", " ", s).strip()
+        return s
+
+    @staticmethod
+    def _sim_ratio(a: str, b: str) -> float:
+        """시퀀스 유사도 0~1"""
+        return SequenceMatcher(None, a, b).ratio()
+
+
+
+    @staticmethod
+    def _str_clean(s: str) -> str:
+        s = s or ""
+        s = s.strip()
+        s = re.compile(r"\s+").sub(" ", s)
+        return s
 
     # 드라이버 세팅
     def driver_set(self):
