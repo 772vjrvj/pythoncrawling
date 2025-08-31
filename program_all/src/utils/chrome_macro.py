@@ -12,12 +12,8 @@ import pygetwindow as gw
 import pyperclip
 
 # (선택) Windows 네이티브 클립보드 접근: 있으면 더 안정적, 없으면 pyperclip로 폴백
-try:
-    import win32clipboard
-    import win32con
-except Exception:
-    win32clipboard = None
-    win32con = None
+import win32clipboard
+import win32con
 
 
 class ChromeOpenError(Exception):
@@ -76,6 +72,10 @@ class ChromeMacro:
         self.window_title_keyword = window_title_keyword
         self.default_settle = float(default_settle)
         self._keeper_created = False  # ✅ 브라우저 종료 방지용 keeper 탭 생성 여부
+
+        # ✅ 포커스 watcher
+        self._focus_thread = None
+        self._focus_running = False
 
         # PyAutoGUI failsafe 설정 저장/적용
         self._prev_failsafe = pyautogui.FAILSAFE
@@ -427,6 +427,37 @@ class ChromeMacro:
         except Exception as e:
             raise ChromeOpenError(f"크롬 종료 실패: {e}")
 
+    # ─────────────────────────────────────────
+    # 포커스 watcher 추가
+    # ─────────────────────────────────────────
+    def _focus_loop(self, interval: float = 1.0):
+        """백그라운드에서 주기적으로 크롬 포커스 확인 & 복원"""
+        while self._focus_running:
+            try:
+                active = gw.getActiveWindow()
+                if not active or self.window_title_keyword not in active.title:
+                    # 크롬이 활성창이 아니면 복원
+                    self._activate_chrome_or_raise(timeout=1.5)
+            except Exception:
+                pass
+            time.sleep(interval)
+
+    def start_focus_watcher(self, interval: float = 1.0):
+        """포커스 복원 watcher 시작"""
+        if self._focus_thread and self._focus_thread.is_alive():
+            return
+        self._focus_running = True
+        self._focus_thread = threading.Thread(target=self._focus_loop, args=(interval,), daemon=True)
+        self._focus_thread.start()
+
+    def stop_focus_watcher(self):
+        """포커스 복원 watcher 중지"""
+        self._focus_running = False
+        if self._focus_thread:
+            self._focus_thread.join(timeout=2.0)
+            self._focus_thread = None
+
+
     # 컨텍스트 매니저 지원: with ChromeMacro() as cm: ...
     def __enter__(self):
         """with 문 진입 시 자기 자신을 반환."""
@@ -438,4 +469,5 @@ class ChromeMacro:
         예외는 여기서 삼키지 않고(=False) 호출자에게 전파.
         """
         pyautogui.FAILSAFE = self._prev_failsafe
+        self.stop_focus_watcher()   # ✅ watcher 정리 추가
         return False

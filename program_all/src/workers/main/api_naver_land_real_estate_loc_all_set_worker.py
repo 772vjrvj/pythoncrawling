@@ -766,6 +766,8 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         # (3) 매크로 준비 (여기서는 close_all 금지)
         self.chrome_macro = ChromeMacro(default_settle=1.0)
+        # ✅ 포커스 복원 watcher 시작
+        self.chrome_macro.start_focus_watcher(interval=1.0)
 
     # 마무리
     def destroy(self):
