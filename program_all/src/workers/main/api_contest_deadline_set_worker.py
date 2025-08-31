@@ -30,6 +30,8 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
         self.api_client: Optional[APIClient] = None
         self.result_list: List[Dict[str, Any]] = []
 
+        self.dup = True
+
         # ── WEVITY ───────────────────────────────────────────────────────────────
         self.WEVITY_BASE = "https://www.wevity.com/"
         self.WEVITY_LIST_TPL = self.WEVITY_BASE + "?c=find&s=1&mode=soon&gub=1&gp={gp}"
@@ -72,6 +74,7 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
         self.LINK_HASH = self.get_setting_value(self.setting, "linkareer")
         self.THINK_QUERYSTR = self.get_setting_value(self.setting, "thinkgood")
+        self.dup = self.get_setting_value(self.setting, "dup")
 
         self.driver_set()
         self.log_signal_func(f"선택 항목 : {self.columns}")
@@ -122,7 +125,10 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
             self.before_pro_value = pro_value
             time.sleep(0.2)
 
-        self.data_asc_set()
+
+        if self.dup:
+            self.log_signal_func(f"중복 제거 시작==============================")
+            self.data_asc_set()
 
     # ──────────────── 공통 HTTP 유틸 ─────────────────────────────────────────────
     # [ADD] APIClient를 일관되게 사용하는 JSON/HTML fetch 헬퍼

@@ -2,6 +2,7 @@ from src.vo.site import Site
 
 SITE_LIST = [
     Site("공모전 마감 사이트 통합", "CONTEST_DEADLINE", "#D73227", enabled=True, user=False, setting=[
+        {'name': '중복제거',    'code': 'dup','value': False, 'type': 'check'},
         {'name': 'THINKGOOD', 'code': 'thinkgood','value': 'Y_lDUDfEFsFTgLsbFt-VyefFa_wNrqLAoJIolxPo8ycVd6GOlgXVj7ap50cJxtWOLgFMFsM1kbLnzIZm-i9SszImy2-ricuLrjl9bQDJNig'},
         {'name': 'LINKAREER', 'code': 'linkareer', 'value': 'f59df641666ef9f55c69ed6a14866bfd2f87fb32c89a80038a466b201ee11422'},
         ],
