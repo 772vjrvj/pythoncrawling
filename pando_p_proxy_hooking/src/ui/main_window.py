@@ -8,7 +8,7 @@ import winreg
 import sys
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
-    QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog
+    QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog, QCheckBox
 )
 from PyQt5.QtCore import Qt
 from src.ui.store_dialog import StoreDialog
@@ -20,6 +20,7 @@ from src.utils.logger import ui_log, ui_log, init_pando_logger
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.auto_login_checkbox = None
         self.current_store_id = None
         self.start_button     = None
         self.store_button     = None
@@ -31,6 +32,8 @@ class MainWindow(QWidget):
         init_pando_logger()
         self.ui_set()
         self.load_store_id()
+        if self.current_store_id and self.store_name_value and self.branch_value and self.auto_login_checkbox.isChecked():
+            self.start_action()
 
     def get_runtime_dir(self):
         if getattr(sys, 'frozen', False):
@@ -102,6 +105,45 @@ class MainWindow(QWidget):
         info_box.setLayout(info_layout)
         layout.addWidget(info_box)
 
+
+        # 자동 로그인 체크박스 (init 내부에서)
+        self.auto_login_checkbox = QCheckBox("자동 로그인", self)
+        self.auto_login_checkbox.setCursor(Qt.PointingHandCursor)  # 손가락 모양
+        self.auto_login_checkbox.setStyleSheet("""
+            QCheckBox {
+                font-size: 13px;
+                color: #444;
+                spacing: 8px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                border: 1px solid #888;
+                background-color: #f0f0f0;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #4682B4;
+                image: url();
+            }
+        """)
+
+        data = load_data()
+        if data['auto_login'] == "F":
+            checked = False
+        else:
+            checked = True
+
+        self.auto_login_checkbox.setChecked(checked)
+
+        self.auto_login_checkbox.stateChanged.connect(self.on_auto_login_changed)
+        checked_box = QHBoxLayout()
+        checked_box.addStretch()
+        checked_box.addWidget(self.auto_login_checkbox)
+        checked_box.addStretch()
+        layout.addLayout(checked_box)
+        layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
         button_box = QHBoxLayout()
         self.store_button = QPushButton("등록")
         self.store_button.setFixedWidth(130)
@@ -125,6 +167,17 @@ class MainWindow(QWidget):
         self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
         self.store_button.clicked.connect(self.open_store_dialog)
         self.start_button.clicked.connect(self.start_action)
+
+
+    def on_auto_login_changed(self):
+        if self.auto_login_checkbox.isChecked():
+            auto_login = "T"
+        else:
+            auto_login = "F"
+        data = load_data()
+        data['auto_login'] = auto_login
+        save_data(data)
+
 
     def load_store_id(self):
         data = load_data()
