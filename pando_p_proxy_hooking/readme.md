@@ -48,7 +48,9 @@ https://www.notion.so/API-1c275c7d0bb28037bc7dcef7ec791595?source=copy_link
 
 
 ✅ 빌드
-pyinstaller main.py `
+--windowed 콘솔창 없이(선택사항)
+
+pyinstaller .\main.py `
   --onefile `
   --name main `
   --uac-admin `
@@ -56,4 +58,10 @@ pyinstaller main.py `
   --distpath dist `
   --workpath build `
   --paths . `
-  --windowed 콘솔창 없이(선택사항)
+  --windowed `
+  --icon "assets\pandop_off.ico" `
+  --add-data "assets;assets"
+
+
+
+pyinstaller -y --clean .\main.spec

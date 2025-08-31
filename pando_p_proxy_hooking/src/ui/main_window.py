@@ -6,35 +6,45 @@ import socket
 import ctypes
 import winreg
 import sys
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
-    QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog, QCheckBox
+    QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog, QCheckBox,
+    QSystemTrayIcon, QMenu, QAction, QStyle
 )
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
+
 from src.ui.store_dialog import StoreDialog
 from src.utils.file_storage import load_data, save_data
 from src.utils.token_manager import start_token
 from src.utils.api import fetch_store_info
-from src.utils.logger import ui_log, ui_log, init_pando_logger
+from src.utils.logger import ui_log, init_pando_logger
+
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.auto_login_checkbox = None
-        self.current_store_id = None
-        self.start_button     = None
-        self.store_button     = None
-        self.branch_value     = None
-        self.store_name_value = None
+        self.current_store_id    = None
+        self.start_button        = None
+        self.store_button        = None
+        self.branch_value        = None
+        self.store_name_value    = None
+
+        # 트레이 관련
+        self.tray                = None
+        self.tray_act_start      = None
+        self.tray_act_stop       = None
+
+        # 상태 플래그
+        self.is_running          = False  # "시작" 후 동작 중 여부
+        self.enable_tray_toast = False  # ✅ 알림(풍선) 표시 여부. 기본 False로 OFF
+
         self.init_set()
 
-    def init_set(self):
-        init_pando_logger()
-        self.ui_set()
-        self.load_store_id()
-        if self.current_store_id and self.store_name_value and self.branch_value and self.auto_login_checkbox.isChecked():
-            self.start_action()
-
+    # ─────────────────────────────────────────────────────────────────────────
+    # 공용 경로 유틸
     def get_runtime_dir(self):
         if getattr(sys, 'frozen', False):
             return os.path.dirname(sys.executable)
@@ -45,6 +55,21 @@ class MainWindow(QWidget):
         base = self.get_runtime_dir()
         return os.path.join(base, relative_path)
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # 초기화
+    def init_set(self):
+        init_pando_logger()
+        self.ui_set()
+        self.create_tray()         # ← 트레이 아이콘 구성
+
+        self.load_store_id()
+
+        # 자동로그인 설정이면 자동 시작
+        if self.current_store_id and self.store_name_value and self.branch_value and self.auto_login_checkbox.isChecked():
+            self.start_action()
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # UI 구성
     def ui_set(self):
         self.setWindowTitle("PandoP")
         self.setMinimumSize(600, 200)
@@ -105,10 +130,9 @@ class MainWindow(QWidget):
         info_box.setLayout(info_layout)
         layout.addWidget(info_box)
 
-
-        # 자동 로그인 체크박스 (init 내부에서)
+        # 자동 로그인 체크박스
         self.auto_login_checkbox = QCheckBox("자동 로그인", self)
-        self.auto_login_checkbox.setCursor(Qt.PointingHandCursor)  # 손가락 모양
+        self.auto_login_checkbox.setCursor(Qt.PointingHandCursor)
         self.auto_login_checkbox.setStyleSheet("""
             QCheckBox {
                 font-size: 13px;
@@ -129,14 +153,10 @@ class MainWindow(QWidget):
         """)
 
         data = load_data()
-        if data['auto_login'] == "F":
-            checked = False
-        else:
-            checked = True
-
+        checked = (data.get('auto_login') != "F")
         self.auto_login_checkbox.setChecked(checked)
-
         self.auto_login_checkbox.stateChanged.connect(self.on_auto_login_changed)
+
         checked_box = QHBoxLayout()
         checked_box.addStretch()
         checked_box.addWidget(self.auto_login_checkbox)
@@ -144,12 +164,13 @@ class MainWindow(QWidget):
         layout.addLayout(checked_box)
         layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
+        # 버튼 박스
         button_box = QHBoxLayout()
         self.store_button = QPushButton("등록")
         self.store_button.setFixedWidth(130)
         self.store_button.setCursor(Qt.PointingHandCursor)
 
-        self.start_button = QPushButton("시작")
+        self.start_button = QPushButton("시작")  # 동적 변경: 시작 ↔ 중지
         self.start_button.setFixedWidth(130)
         self.start_button.setCursor(Qt.PointingHandCursor)
 
@@ -165,20 +186,79 @@ class MainWindow(QWidget):
         self.setLayout(layout)
         self.setWindowFlag(Qt.Window)
         self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+
+        # 시그널
         self.store_button.clicked.connect(self.open_store_dialog)
         self.start_button.clicked.connect(self.start_action)
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # 트레이 아이콘/메뉴 구성
+    def create_tray(self):
+        # 초기 아이콘: 중지 상태(대기)
+        initial_icon = "assets/pandop_off.ico"  # ← 원하는 파일명
+        self.tray = QSystemTrayIcon(self)
+        self.tray.setToolTip("PandoP")
+        self.set_tray_icon(initial_icon)
 
-    def on_auto_login_changed(self):
-        if self.auto_login_checkbox.isChecked():
-            auto_login = "T"
+        icon_path = self.get_resource_path("assets/pandop.ico")
+        if os.path.exists(icon_path):
+            icon = QIcon(icon_path)
         else:
-            auto_login = "F"
+            # 아이콘 없으면 기본 아이콘 폴백
+            icon = self.style().standardIcon(QStyle.SP_ComputerIcon)
+
+        self.tray = QSystemTrayIcon(icon, self)
+        self.tray.setToolTip("PandoP")
+
+        menu = QMenu()
+
+        act_show = QAction("열기", self)
+        act_show.triggered.connect(self.showMainWindow)
+        menu.addAction(act_show)
+        menu.addSeparator()
+
+        self.tray_act_start = QAction("시작", self)
+        self.tray_act_start.triggered.connect(self.start_action)
+        menu.addAction(self.tray_act_start)
+
+        self.tray_act_stop = QAction("중지", self)
+        self.tray_act_stop.setEnabled(False)  # 초기엔 중지 불가
+        self.tray_act_stop.triggered.connect(self.stop_action)
+        menu.addAction(self.tray_act_stop)
+
+        menu.addSeparator()
+
+        act_quit = QAction("종료", self)
+        act_quit.triggered.connect(self.quit_app)
+        menu.addAction(act_quit)
+
+        self.tray.setContextMenu(menu)
+
+        # 좌클릭(Trigger)시 창 토글
+        self.tray.activated.connect(self.on_tray_activated)
+
+        self.tray.show()
+        ui_log("[판도] 트레이 아이콘 준비됨")
+
+    def on_tray_activated(self, reason):
+        if reason == QSystemTrayIcon.Trigger:  # 좌클릭
+            self.showMainWindow()
+
+    def showMainWindow(self):
+        self.show()
+        self.raise_()
+        self.activateWindow()
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 설정 저장
+    def on_auto_login_changed(self):
+        auto_login = "T" if self.auto_login_checkbox.isChecked() else "F"
         data = load_data()
         data['auto_login'] = auto_login
         save_data(data)
 
-
+    # ─────────────────────────────────────────────────────────────────────────
+    # 스토어 로드/저장
     def load_store_id(self):
         data = load_data()
         self.current_store_id = data.get("store_id") or self.current_store_id
@@ -198,6 +278,8 @@ class MainWindow(QWidget):
             if store_id is not None:
                 self.save_store_id(store_id)
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # 프록시 대기/시작/중지/종료
     def wait_for_proxy(self, port=8080, timeout=10):
         start = time.time()
         while time.time() - start < timeout:
@@ -211,6 +293,9 @@ class MainWindow(QWidget):
         return False
 
     def start_action(self):
+        """시작(프록시/토큰/매장정보)"""
+        if self.is_running:
+            return
         if not self.current_store_id:
             return
 
@@ -233,11 +318,104 @@ class MainWindow(QWidget):
         else:
             ui_log("[판도] 매장 정보 요청 실패")
 
-        self.store_button.hide()
-        self.start_button.setText("종료")
-        self.start_button.clicked.disconnect()
-        self.start_button.clicked.connect(self.cleanup_and_exit)
+        # 상태 전환: 실행 중
+        self.is_running = True
+        # 실행 중 아이콘
+        self.set_tray_icon("assets/pandop_on.ico")
 
+        self.store_button.hide()
+
+        # 버튼/트레이 상태 동기화
+        try:
+            self.start_button.clicked.disconnect()
+        except Exception:
+            pass
+        self.start_button.setText("중지")
+        self.start_button.clicked.connect(self.stop_action)
+
+        if self.tray_act_start: self.tray_act_start.setEnabled(False)
+        if self.tray_act_stop:  self.tray_act_stop.setEnabled(True)
+
+        # 트레이 풍선 도움말
+        # ↓↓↓ 알림 off (필요하면 True로 켜고, 메시지 유지)
+        if self.tray and self.enable_tray_toast:
+            self.tray.showMessage("PandoP", "동작을 시작했습니다. 창을 닫아도 트레이에서 계속 실행됩니다.",
+                                  QSystemTrayIcon.Information, 2500)
+
+
+    def stop_action(self):
+        """중지(프록시/인증서 정리). 창은 닫지 않음."""
+        if not self.is_running:
+            return
+
+        self._do_cleanup()  # 실제 정리 로직
+
+        # 상태 전환: 중지됨
+        self.is_running = False
+        # 중지(대기) 아이콘
+        self.set_tray_icon("assets/pandop_off.ico")
+        self.store_button.show()
+
+        try:
+            self.start_button.clicked.disconnect()
+        except Exception:
+            pass
+        self.start_button.setText("시작")
+        self.start_button.clicked.connect(self.start_action)
+
+        if self.tray_act_start: self.tray_act_start.setEnabled(True)
+        if self.tray_act_stop:  self.tray_act_stop.setEnabled(False)
+
+        if self.tray and self.enable_tray_toast:
+            self.tray.showMessage("PandoP", "동작을 중지했습니다. 필요 시 다시 시작하세요.",
+                                  QSystemTrayIcon.Information, 2500)
+
+    def quit_app(self):
+        """트레이 '종료'에서 호출: 동작 중이면 정리 후 앱 종료"""
+        if self.is_running:
+            self._do_cleanup()
+            self.is_running = False
+        # 앱 완전 종료
+        from PyQt5.QtWidgets import QApplication
+        QApplication.instance().quit()
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 기존 정리 로직 분리
+    def _do_cleanup(self):
+        """프록시/인증서 정리 (창 닫지 않음). 기존 cleanup_and_exit의 핵심만 분리."""
+        ui_log("[판도] 🧹 정리 작업 수행 중...")
+        self.kill_mitmdump_process()
+        # 1) 프록시 해제
+        try:
+            key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
+                winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
+            ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
+            ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
+            ui_log("[판도] 프록시 설정 해제 완료")
+        except Exception as e:
+            ui_log(f"[판도] 프록시 해제 실패: {e}")
+
+        # 2) 인증서 제거
+        user_profile = os.environ.get("USERPROFILE", "")
+        mitm_folder = os.path.join(user_profile, ".mitmproxy")
+        try:
+            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if os.path.exists(mitm_folder):
+                subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
+            ui_log("[판도] 인증서 제거 완료")
+        except Exception as e:
+            ui_log(f"[판도] 인증서 제거 실패: {e}")
+
+    # (유지) 기존 메서드는 Quit 경로에서만 사용하도록 래핑 가능
+    def cleanup_and_exit(self):
+        """하위호환: 호출되면 정리 후 앱 종료"""
+        self._do_cleanup()
+        self.close()  # closeEvent에서 실제 종료 로직을 가로채지 않도록 아래에서 처리
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 프록시/인증서 셋업 & 실행
     def set_windows_gui_proxy(self, host="127.0.0.1", port=8080):
         key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
         try:
@@ -306,44 +484,45 @@ class MainWindow(QWidget):
                     stderr=subprocess.STDOUT,
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
-            
-            # 운영시에는 이걸로해서 아에 로그 기록 안하게 하기
+
+            # 운영시 로그 완전 비활성화 버전
             # subprocess.Popen(
             #     [mitmdump_path, "--no-http2", "--ssl-insecure", "-s", script_path],
             #     creationflags=subprocess.CREATE_NO_WINDOW
             # )
-                
+
             ui_log(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
         except Exception as e:
             ui_log(f"[판도] [프록시] 실행 실패: {e}")
 
-    def cleanup_and_exit(self):
-        ui_log("[판도] 🧹 종료 작업 수행 중...")
-        self.kill_mitmdump_process()
 
+    def set_tray_icon(self, relative_path: str) -> None:
+        """
+        트레이 아이콘을 교체한다. 존재하지 않으면 기본 아이콘으로 폴백.
+        """
         try:
-            key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
-                winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
-            ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
-            ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
-            ui_log("[판도] 프록시 설정 해제 완료")
+            path = self.get_resource_path(relative_path)
+            if os.path.exists(path):
+                icon = QIcon(path)
+                self.tray.setIcon(icon)
+                # (선택) 메인 윈도우 아이콘도 맞춰서 변경
+                self.setWindowIcon(icon)
+                ui_log(f"[판도] 트레이 아이콘 변경: {relative_path}")
+            else:
+                # 폴백: 시스템 기본 아이콘
+                fallback = self.style().standardIcon(QStyle.SP_ComputerIcon)
+                self.tray.setIcon(fallback)
+                ui_log(f"[판도] 아이콘 파일 없음 → 기본 아이콘 사용: {relative_path}")
         except Exception as e:
-            ui_log(f"[판도] 프록시 해제 실패: {e}")
+            ui_log(f"[판도] 아이콘 변경 실패: {e}")
 
-        user_profile = os.environ.get("USERPROFILE", "")
-        mitm_folder = os.path.join(user_profile, ".mitmproxy")
-        try:
-            subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            if os.path.exists(mitm_folder):
-                subprocess.call(f'rmdir /s /q "{mitm_folder}"', shell=True)
-            ui_log("[판도] 인증서 제거 완료")
-        except Exception as e:
-            ui_log(f"[판도] 인증서 제거 실패: {e}")
-
-        self.close()
-
+    # ─────────────────────────────────────────────────────────────────────────
+    # 창 닫힘/최소화 처리 (트레이로 이동)
     def closeEvent(self, event):
-        self.cleanup_and_exit()
-        event.accept()
+        event.ignore()
+        self.hide()
+        # ✅ 숨길 때 토스트 띄우지 않음
+        if self.tray and self.enable_tray_toast:
+            self.tray.showMessage("PandoP", "트레이로 이동했습니다. 종료는 트레이 아이콘 우클릭 → '종료'.",
+                                  QSystemTrayIcon.Information, 2500)
+        ui_log("[판도] 창이 트레이로 숨겨졌습니다.")
