@@ -80,11 +80,12 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         self.driver = None
 
-
         total_len = len(self.article_result_list)
         self.log_signal_func(f"article_result_list len : {total_len}")
 
-
+        # ✅ 여기서 watcher 시작
+        if self.chrome_macro:
+            self.chrome_macro.start_focus_watcher(interval=1.5)  # 1.5초마다 체크
 
         for ix, article in enumerate(self.article_result_list, start=1):
             self.fetch_article_detail_by_article(article)
@@ -92,7 +93,6 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
             pro_value = (ix / total_len) * 1000000
             self.progress_signal.emit(self.before_pro_value, pro_value)
             self.before_pro_value = pro_value
-
 
         # 엑셀 후처리 및 진행률 마무리
         self.excel_driver.save_obj_list_to_excel(
@@ -707,7 +707,6 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
             copy_wait_each=3.0,
         )
 
-
         # 3) __NEXT_DATA__에서 result 배열만 추출
         real_states = self.parse_target_broker_results(html)  # 원하는 스키마만 필터링
 
@@ -766,6 +765,7 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         # (3) 매크로 준비 (여기서는 close_all 금지)
         self.chrome_macro = ChromeMacro(default_settle=1.0)
+
         # ✅ 포커스 복원 watcher 시작
         self.chrome_macro.start_focus_watcher(interval=1.0)
 
@@ -774,6 +774,7 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
         # 크롬 정리 (선택)
         try:
             if getattr(self, "chrome_macro", None):
+                self.chrome_macro.stop_focus_watcher()   # ✅ watcher 종료
                 self.chrome_macro.close_all()
         except Exception as e:
             self.log_signal_func(f"[경고] 크롬 종료 중 예외: {e}")
