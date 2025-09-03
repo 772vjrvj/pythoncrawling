@@ -49,3 +49,20 @@ def parse_yy_mm_dd(d: str) -> str:
     except Exception:
         return ""
 
+def parse_date_yyyy_mm_dd(s: str):
+    try:
+        return datetime.strptime(s, "%Y-%m-%d").date()
+    except Exception:
+        return None
+
+
+def parse_finish_dt(dt_str: str) -> str:
+    """
+    '2025-08-31 23:59:00.0' → '2025-08-31'
+    """
+    if not dt_str:
+        return ""
+    try:
+        return datetime.strptime(dt_str.split()[0], "%Y-%m-%d").strftime("%Y-%m-%d")
+    except Exception:
+        return ""

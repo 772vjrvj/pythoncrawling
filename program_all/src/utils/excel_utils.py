@@ -1,5 +1,8 @@
 import pandas as pd
 import os
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
+
 
 class ExcelUtils:
     def __init__(self, log_func=None):
@@ -116,6 +119,7 @@ class ExcelUtils:
         - 파일이 존재하면 같은 시트에 '이어쓰기'(header 없이)
         - 파일이 없거나 시트가 없으면 시트를 새로 만들고 header 포함 저장
         - columns 지정 시 해당 컬럼 순서/이름으로 저장
+        - URL 포함된 값은 하이퍼링크로 변환
         """
         if not obj_list:
             return
@@ -129,19 +133,31 @@ class ExcelUtils:
         # 이어쓰기/신규 작성 처리
         if os.path.exists(filename):
             with pd.ExcelWriter(filename, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
-                # 기존 시트 존재 여부 판단
                 ws = writer.sheets.get(sheet_name)
                 if ws is not None:
                     start_row = ws.max_row if ws.max_row is not None else 0
                     df.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=start_row)
                 else:
-                    # 시트가 없으면 새로 만들고 헤더 포함
                     df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
         else:
             with pd.ExcelWriter(filename, engine="openpyxl") as writer:
                 df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
 
+        # === URL 컬럼을 하이퍼링크로 변환 ===
+        wb = load_workbook(filename)
+        if sheet_name in wb.sheetnames:
+            ws = wb[sheet_name]
+
+            for row in ws.iter_rows(min_row=2):  # 1행은 header라 skip
+                for cell in row:
+                    val = str(cell.value) if cell.value else ""
+                    if val.startswith("http://") or val.startswith("https://"):
+                        cell.hyperlink = val
+                        cell.style = "Hyperlink"
+
+        wb.save(filename)
+
         # 원본 리스트 정리 및 로그
         obj_list.clear()
         if self.log_func:
-            self.log_func("excel(객체 리스트) 저장완료")
+            self.log_func("excel(객체 리스트) 저장완료 (URL 하이퍼링크 처리)")

@@ -195,14 +195,16 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                 if not self.running:  # 실행 상태 확인
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
+                
+                # ===== 중복 주석1 시작 =====
+                # raw_num = it.get("complexNumber")
+                # num = str(raw_num) if raw_num is not None else None  # ✅ 통일
 
-                raw_num = it.get("complexNumber")
-                num = str(raw_num) if raw_num is not None else None  # ✅ 통일
-
-                if num is not None:
-                    if num in self.seen_numbers:
-                        continue
-                    self.seen_numbers.add(num)
+                # if num is not None:
+                #     if num in self.seen_numbers:
+                #         continue
+                #     self.seen_numbers.add(num)
+                # ===== 중복 주석1 끝 =====
 
                 # 추적 메타
                 it.setdefault("_meta", {})
@@ -212,8 +214,10 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                 new_count += 1
                 page_count += 1
 
-            tc = result.get("totalCount")
-            self.log_signal_func(f"    · 수집: {page_count}건 / totalCount={tc}, 누적={len(self.complex_result_list)}")
+            # ===== 중복 주석1 시작 =====
+            # tc = result.get("totalCount")
+            # self.log_signal_func(f"    · 수집: {page_count}건 / totalCount={tc}, 누적={len(self.complex_result_list)}")
+            # ===== 중복 주석1 끝 =====
 
             page += 1
             time.sleep(0.35)
@@ -352,36 +356,32 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                 addr   = rep.get("address") or {}
                 broker = rep.get("brokerInfo") or {}
 
-                # --- 브로커 중복 키 정규화 ---
-                city    = (addr.get("city") or "").strip().casefold()
-                division= (addr.get("division") or "").strip().casefold()
-                sector  = (addr.get("sector") or "").strip().casefold()
-                bname   = (broker.get("brokerageName") or "").strip().casefold()
-
-                broker_key = (city, division, sector, bname)
-
-                # --- 아티클 중복 키 ---
-                art_no = rep.get("articleNumber") or rep.get("id")
-                if isinstance(art_no, (int, float)):  # 숫자형 방지
-                    art_no = str(int(art_no))
-                elif art_no is not None:
-                    art_no = str(art_no).strip()
-
-                # ✅ 필요에 따라 두 기준 중 하나만, 혹은 OR/AND로 결정
-                #   - 업소(브로커) 단위만 dedup이면: broker_key 기준만 체크
-                #   - 업소+매물 모두 유일 원하면: (broker_key, art_no) 같이 묶어서 키로
+                # ===== 중복 주석2 시작 =====
+                # city    = (addr.get("city") or "").strip().casefold()
+                # division= (addr.get("division") or "").strip().casefold()
+                # sector  = (addr.get("sector") or "").strip().casefold()
+                # bname   = (broker.get("brokerageName") or "").strip().casefold()
                 #
-                # 여기서는 "부동산 DB 목적"이라고 하셨으므로 broker_key 기준으로만 필터링하되,
-                # art_no도 세트에 넣어 이후 상세조회 중복을 방지합니다.
-                if broker_key in self.seen_broker_keys:
-                    continue
-                self.seen_broker_keys.add(broker_key)
+                # broker_key = (city, division, sector, bname)
+                #
+                # art_no = rep.get("articleNumber") or rep.get("id")
+                # if isinstance(art_no, (int, float)):  # 숫자형 방지
+                #     art_no = str(int(art_no))
+                # elif art_no is not None:
+                #     art_no = str(art_no).strip()
+                #
+                # if broker_key in self.seen_broker_keys:
+                #     continue
+                # self.seen_broker_keys.add(broker_key)
+                #
+                # if art_no:
+                #     if art_no in self.seen_article_numbers:
+                #         continue
+                #     self.seen_article_numbers.add(art_no)
 
-                if art_no:
-                    if art_no in self.seen_article_numbers:
-                        # 이미 같은 매물 상세를 처리한 적이 있으면 스킵
-                        continue
-                    self.seen_article_numbers.add(art_no)
+                # ===== 중복 주석2 끝 =====
+
+
 
                 new_item = {
                     "_meta": {
@@ -399,7 +399,6 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
                     f"city={addr.get('city','')} division={addr.get('division','')} "
                     f"sector={addr.get('sector','')} brokerageName={broker.get('brokerageName','')}"
                 )
-
                 self.article_result_list.append(new_item)
 
             # 페이지네이션

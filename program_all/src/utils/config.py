@@ -1,26 +1,26 @@
 from src.vo.site import Site
 
 SITE_LIST = [
-    Site("공모전 마감 사이트 통합", "CONTEST_DEADLINE", "#D73227", enabled=True, user=False, setting=[
-        {'name': '중복제거',    'code': 'dup','value': False, 'type': 'check'},
-        {'name': 'THINKGOOD', 'code': 'thinkgood','value': 'Y_lDUDfEFsFTgLsbFt-VyefFa_wNrqLAoJIolxPo8ycVd6GOlgXVj7ap50cJxtWOLgFMFsM1kbLnzIZm-i9SszImy2-ricuLrjl9bQDJNig'},
-        {'name': 'LINKAREER', 'code': 'linkareer', 'value': 'f59df641666ef9f55c69ed6a14866bfd2f87fb32c89a80038a466b201ee11422'},
-        ],
-        columns = [
-             {"code": "site",           "value": "사이트",     "checked": True},
-             {"code": "contest_name",   "value": "공모전명",   "checked": True},
-             {"code": "host",           "value": "주최사",     "checked": True},
-             {"code": "url",            "value": "URL",       "checked": True},
-             {"code": "deadline",       "value": "마감일",     "checked": True},
-             {"code": "page",           "value": "페이지",     "checked": True},
-        ],
-         sites = [
-             {"code": "wevity",          "value": "WEVITY",      "checked": True},
-             {"code": "linkareer",       "value": "LINKareer",   "checked": True},
-             {"code": "all_con",         "value": "올콘",         "checked": True},
-             {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
-         ],
-    ),
+    # Site("공모전 마감 사이트 통합", "CONTEST_DEADLINE", "#D73227", enabled=True, user=False, setting=[
+    #     {'name': '중복제거',    'code': 'dup','value': True, 'type': 'check'},
+    #     {'name': 'THINKGOOD', 'code': 'thinkgood','value': 'Y_lDUDfEFsFTgLsbFt-VyefFa_wNrqLAoJIolxPo8ycVd6GOlgXVj7ap50cJxtWOLgFMFsM1kbLnzIZm-i9SszImy2-ricuLrjl9bQDJNig'},
+    #     {'name': 'LINKAREER', 'code': 'linkareer', 'value': 'f59df641666ef9f55c69ed6a14866bfd2f87fb32c89a80038a466b201ee11422'},
+    #     ],
+    #     columns = [
+    #          {"code": "site",           "value": "사이트",     "checked": True},
+    #          {"code": "contest_name",   "value": "공모전명",   "checked": True},
+    #          {"code": "host",           "value": "주최사",     "checked": True},
+    #          {"code": "url",            "value": "URL",       "checked": True},
+    #          {"code": "deadline",       "value": "마감일",     "checked": True},
+    #          {"code": "page",           "value": "페이지",     "checked": True},
+    #     ],
+    #      sites = [
+    #          {"code": "wevity",          "value": "WEVITY",      "checked": True},
+    #          {"code": "linkareer",       "value": "LINKareer",   "checked": True},
+    #          {"code": "all_con",         "value": "올콘",         "checked": True},
+    #          {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
+    #      ],
+    # ),
     # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True, user=False,
     #      setting=[
     #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
@@ -48,63 +48,63 @@ SITE_LIST = [
     #      ],
     #      region = True
     #      ),
-    # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True, user=False,
-    #      setting=[
-    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-    #      ],
-    #      columns = [
-    #          # 메타
-    #          {"code": "article_number",        "value": "번호",   "checked": False},
-    #          {"code": "region",                "value": "지역",   "checked": False},
-    #          {"code": "city",                  "value": "시도",   "checked": True},
-    #          {"code": "division",              "value": "시군구",  "checked": True},
-    #          {"code": "sector",                "value": "읍면동",  "checked": True},
-    #
-    #          # {"code": "item_name",             "value": "매물명",  "checked": True},
-    #
-    #          # 주소/위치
-    #          {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
-    #          {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
-    #          {"code": "keyword",               "value": "키워드",  "checked": True},
-    #          {"code": "complex_name",          "value": "단지명",  "checked": True},
-    #          {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
-    #
-    #          # 중개사
-    #          {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
-    #          {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
-    #          {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
-    #          {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
-    #          {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
-    #
-    #          # 층/방향
-    #          {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
-    #          {"code": "target_floor",          "value": "층(목표)",     "checked": False},
-    #          {"code": "total_floor",           "value": "층(전체)",     "checked": False},
-    #          {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
-    #          # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
-    #          {"code": "direction_standard",    "value": "방향기준",     "checked": False},
-    #
-    #          # 면적
-    #          {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
-    #          {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
-    #          {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
-    #
-    #          # 가격/비용
-    #          {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
-    #          {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
-    #          {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
-    #
-    #          # 유형/일자
-    #          # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
-    #          # {"code": "trade_type",            "value": "거래유형",     "checked": True},
-    #          {"code": "exposure_date",         "value": "노출일",       "checked": False},
-    #          {"code": "confirm_date",          "value": "확인일",       "checked": False},
-    #          {"code": "approval_elapsed_year", "value": "준공연차",     "checked": False},
-    #          {"code": "completion_date",       "value": "준공일",       "checked": False},
-    #      ],
-    #      region = True
-    #      ),
-    #
+    Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True, user=False,
+         setting=[
+             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+         ],
+         columns = [
+             # 메타
+             {"code": "article_number",        "value": "번호",   "checked": False},
+             {"code": "region",                "value": "지역",   "checked": False},
+             {"code": "city",                  "value": "시도",   "checked": True},
+             {"code": "division",              "value": "시군구",  "checked": True},
+             {"code": "sector",                "value": "읍면동",  "checked": True},
+
+             # {"code": "item_name",             "value": "매물명",  "checked": True},
+
+             # 주소/위치
+             {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
+             {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
+             {"code": "keyword",               "value": "키워드",  "checked": True},
+             {"code": "complex_name",          "value": "단지명",  "checked": True},
+             {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
+
+             # 중개사
+             {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
+             {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
+             {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
+             {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
+             {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
+
+             # 층/방향
+             {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
+             {"code": "target_floor",          "value": "층(목표)",     "checked": False},
+             {"code": "total_floor",           "value": "층(전체)",     "checked": False},
+             {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
+             # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
+             {"code": "direction_standard",    "value": "방향기준",     "checked": False},
+
+             # 면적
+             {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
+             {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
+             {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
+
+             # 가격/비용
+             {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
+             {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
+             {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
+
+             # 유형/일자
+             # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
+             # {"code": "trade_type",            "value": "거래유형",     "checked": True},
+             {"code": "exposure_date",         "value": "노출일",       "checked": False},
+             {"code": "confirm_date",          "value": "확인일",       "checked": False},
+             {"code": "approval_elapsed_year", "value": "준공연차",     "checked": False},
+             {"code": "completion_date",       "value": "준공일",       "checked": False},
+         ],
+         region = True
+         ),
+
     # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True, user=False, setting=[]),
     # Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True, user=False, setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False, user=False, setting=[
