@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from src.utils.api_utils import APIClient
 from src.utils.file_utils import FileUtils
 from src.utils.excel_utils import ExcelUtils
-from src.utils.time_utils import parse_yy_mm_dd, parse_date_yyyy_mm_dd
+from src.utils.time_utils import parse_yy_mm_dd, parse_date_yyyy_mm_dd, parse_finish_dt
 from src.workers.api_base_worker import BaseApiWorker
 from difflib import SequenceMatcher  # [ADD]
 
@@ -75,6 +75,12 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
         }
         # 네트워크 탭에서 확보한 값 (사이트 상황에 따라 달라질 수 있음)
         self.THINK_QUERYSTR = "Y_lDUDfEFsFTgLsbFt-VyefFa_wNrqLAoJIolxPo8ycVd6GOlgXVj7ap50cJxtWOLgFMFsM1kbLnzIZm-i9SszImy2-ricuLrjl9bQDJNig"
+
+        # ──────────────── 정규식 Precompile ────────────────────────────────────────────
+        self._WRAP_CHARS = r"""'"`“”‘’‹›«»()[]{}<>「」『』【】〈〉《》¡¿‐-–—―·•∙‧"""
+        self._WRAP_RE = re.compile(f"[{re.escape(self._WRAP_CHARS)}]")
+        self._SPACE_RE = re.compile(r"\s+", re.UNICODE)
+
 
     # 초기화
     def init(self):
@@ -231,10 +237,6 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"[JSON][POST][ERR] {url} → {e}")
             return {}
 
-
-
-
-
     # ──────────────── 공통 Date 유틸 ────────────────────────────────────────────
     # ──────────────── WEVITY ───────────────────────────────────────────────────
     def fetch_wevity(self, start_gp: int = 1, max_gp: Optional[int] = None):
@@ -310,7 +312,7 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
             organ_el = li.select_one("div.organ")
             organ = organ_el.get_text(strip=True) if organ_el else ""
 
-            wevity_obj = {
+            obj = {
                 "사이트": "WEVITY",
                 "공모전명": title,
                 "주최사": organ,
@@ -318,9 +320,9 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
                 "마감일": deadline,   # YYYY-MM-DD 또는 ""
                 "페이지": gp
             }
-            self.log_signal_func(f"[WEVITY] wevity_obj {gp}/{idx} : {wevity_obj}")
+            self.log_signal_func(f"[WEVITY] WEVITY_obj {gp}/{idx} : {obj}")
 
-            rows.append(wevity_obj)
+            rows.append(obj)
         return rows
 
     # ──────────────── ALL-CON ──────────────────────────────────────────────────
@@ -365,7 +367,7 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
     def _alcon_parse_rows(self, data: Dict[str, Any], page: int) -> List[Dict[str, Any]]:
         items: List[Dict[str, Any]] = []
-        for item in data.get("rows", []):
+        for idx, item in enumerate(data.get("rows", []), start=1):
             # cl_title HTML에서 <a> 추출
             soup = BeautifulSoup(item.get("cl_title", "") or "", "html.parser")
             a_tag = soup.find("a")
@@ -397,15 +399,16 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
             if "~" in date_text:
                 end_raw = date_text.split("~")[-1]
                 deadline = parse_yy_mm_dd(end_raw)
-
-            items.append({
+            obj = {
                 "사이트": "ALL-CON",
                 "공모전명": title,
                 "주최사": organ,
                 "URL": full_url,
                 "마감일": deadline,
                 "페이지": int(data.get("currentPage", page) or page),
-            })
+            }
+            items.append(obj)
+            self.log_signal_func(f"[ALL-CON] ALL-CON_obj {page}/{idx} : {obj}")
         return items
 
 
@@ -466,7 +469,7 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
         except Exception:
             nodes = []
 
-        for node in nodes:
+        for idx, node in enumerate(nodes, start=1):
             title = node.get("title")
             organ = node.get("organizationName")
             act_id = node.get("id")
@@ -477,18 +480,18 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
                 try:
                     dt = datetime.fromtimestamp(deadline_ts / 1000)
                     deadline = dt.strftime("%Y-%m-%d")
-
                 except Exception:
                     pass
-
-            rows.append({
+            obj = {
                 "사이트": "LINKAREER",
                 "공모전명": title or "",
                 "주최사": organ or "",
                 "URL": full_url,
                 "마감일": deadline,
                 "페이지": page
-            })
+            }
+            rows.append(obj)
+            self.log_signal_func(f"[LINKAREER] LINKAREER_obj {page}/{idx} : {obj}")
         return rows
 
     # ──────────────── THINKCONTEST ─────────────────────────────────────────────
@@ -541,28 +544,47 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
     def _think_parse_rows(self, data: Dict[str, Any], page: int) -> List[Dict[str, Any]]:
         items: List[Dict[str, Any]] = []
-        for item in data.get("listJsonData", []):
+        for idx, item in enumerate(data.get("listJsonData", []), start=1):  # [MODIFY] enumerate 추가
             title = (item.get("program_nm", "") or "").strip()
             organ = (item.get("host_company", "") or "").strip()
             url = (item.get("hompage_url", "") or "").strip()
             deadline = parse_finish_dt(item.get("finish_dt", ""))
 
-            items.append({
+            obj = {
                 "사이트": "THINKCONTEST",
                 "공모전명": title,
                 "주최사": organ,
                 "URL": url,
                 "마감일": deadline,
                 "페이지": int(item.get("currentPageNo", page) or page)
-            })
+            }
+            items.append(obj)
+
+            # [ADD] 로그 출력 (WEVITY 형식 맞춤)
+            self.log_signal_func(f"[THINKCONTEST] think_obj {page}/{idx} : {obj}")
         return items
 
 
+    def _norm(self, s: str) -> str:
+        s = (s or "").lower()
+        s = self._WRAP_RE.sub("", s)   # ← 전역에서 컴파일된 것 사용
+        s = self._SPACE_RE.sub("", s)
+        return s
+
     # [ADD] 포함 매칭 유틸 (정규화 포함)
-    def _includes_match(self, a: Optional[str], b: Optional[str]) -> bool:
+    def _includes_match(self, a: Optional[str], b: Optional[str], threshold: float = 0.90) -> bool:
         if not a or not b:
             return False
-        return a in b or a in b
+
+        na, nb = self._norm(a), self._norm(b)
+        if not na or not nb:
+            return False
+
+        if na in nb or nb in na:
+            return True
+
+        sim = SequenceMatcher(None, na, nb).ratio()
+        return sim >= threshold
 
 
     # 후처리(정렬 등)
@@ -654,6 +676,7 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
         removed_dup_cnt = len(self.result_list) - len(deduped)
         self.result_list = deduped
         self.log_signal_func(f"중복 제거 완료: {removed_dup_cnt}건 제거")
+
 
     # 드라이버 세팅
     def driver_set(self):
