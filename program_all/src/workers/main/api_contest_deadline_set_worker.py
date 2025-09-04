@@ -65,6 +65,7 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
 
         # [ADD] THINKCONTEST 상수
         self.THINK_URL = "https://www.thinkcontest.com/thinkgood/user/contest/subList.do"
+        self.THINK_DETAIL_URL = "https://www.thinkcontest.com/thinkgood/user/contest/view.do"
         self.THINK_HEADERS = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
             "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -547,14 +548,17 @@ class ApiContestDealineSetLoadWorker(BaseApiWorker):
         for idx, item in enumerate(data.get("listJsonData", []), start=1):  # [MODIFY] enumerate 추가
             title = (item.get("program_nm", "") or "").strip()
             organ = (item.get("host_company", "") or "").strip()
-            url = (item.get("hompage_url", "") or "").strip()
+
+            val = item.get("contest_pk")
+            contest_pk = str(val).strip() if val is not None else ""
+
             deadline = parse_finish_dt(item.get("finish_dt", ""))
 
             obj = {
                 "사이트": "THINKCONTEST",
                 "공모전명": title,
                 "주최사": organ,
-                "URL": url,
+                "URL": f"{self.THINK_DETAIL_URL}?contest_pk={contest_pk}",
                 "마감일": deadline,
                 "페이지": int(item.get("currentPageNo", page) or page)
             }

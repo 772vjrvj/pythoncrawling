@@ -17,8 +17,8 @@
 # from src.workers.main.api_onthespot_set_worker                      import ApiOnthespotSetLoadWorker
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
-from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
-# from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
+# from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
+from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
 
 
 WORKER_CLASS_MAP = {
@@ -41,6 +41,6 @@ WORKER_CLASS_MAP = {
     # "OK_MALL"                           :   ApiOkmallSetLoadWorker,
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
-    "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
-    # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
+    # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
+    "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
 }
