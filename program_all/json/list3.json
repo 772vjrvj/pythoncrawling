@@ -1,0 +1,86 @@
+{
+  'representativeArticleInfo': {
+    'address': {
+      'city': '인천시',
+      'coordinates': {
+        'xCoordinate': 126.658551,
+        'yCoordinate': 37.452312
+      },
+      'division': '미추홀구',
+      'sector': '용현동',
+      'subwayInfo': {}
+    },
+    'articleDetail': {
+      'articleFeatureDescription': '인하대후문  2분 새한아파트 2룸 올수리',
+      'directTrade': False,
+      'direction': 'SS',
+      'directionStandard': '거실 기준',
+      'floorDetailInfo': {
+        'floorType': '10',
+        'groundTotalFloor': '0',
+        'targetFloor': '4',
+        'totalFloor': '5',
+        'undergroundTotalFloor': '0'
+      },
+      'floorInfo': '4/5',
+      'isSafeLessorOfHug': False
+    },
+    'articleMedia': {
+      'imageCount': 20,
+      'imageType': '10',
+      'imageUrl': 'https://landthumb-phinf.pstatic.net/20250829_259/1756448381870UCPvU_JPEG/20250225_101541%281%29.jpg',
+      'isVrExposed': False
+    },
+    'articleMediaDto': {
+      'imageCount': 20,
+      'imageType': '10',
+      'imageUrl': 'https://landthumb-phinf.pstatic.net/20250829_259/1756448381870UCPvU_JPEG/20250225_101541%281%29.jpg',
+      'isVrExposed': False
+    },
+    'articleName': '새한(181-4)',
+    'articleNumber': '2546774317',
+    'brokerInfo': {
+      'brokerName': '부동산써브',
+      'brokerageName': '솔공인중개사사무소',
+      'cpId': 'SERVE',
+      'cpOutLinkType': 'CP_NAME'
+    },
+    'buildingInfo': {
+      'approvalElapsedYear': 43,
+      'buildingConjunctionDate': '19821202',
+      'buildingConjunctionDateType': 'CDY01'
+    },
+    'complexName': '새한(181-4)',
+    'dongName': '나동',
+    'landInfo': {},
+    'priceInfo': {
+      'dealPrice': 130000000,
+      'managementFeeAmount': 60000,
+      'priceChangeStatus': 0,
+      'rentPrice': 0,
+      'warrantyPrice': 0
+    },
+    'realEstateType': 'A01',
+    'spaceInfo': {
+      'contractSpace': 59.23,
+      'exclusiveSpace': 54.52,
+      'exclusiveSpaceName': '54A',
+      'landSpace': 6896,
+      'nameType': 'A',
+      'supplySpace': 59.23,
+      'supplySpaceName': '59A'
+    },
+    'tradeType': 'A1',
+    'verificationInfo': {
+      'articleConfirmDate': '2025-08-29',
+      'exposureStartDate': '2025-08-29',
+      'isAssociationArticle': False,
+      'verificationType': 'NDOC2'
+    }
+  },
+  '_meta': {
+    'complexNumber': '14080',
+    'complexName': '새한(181-4)',
+    'page': 1
+  }
+}
