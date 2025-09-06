@@ -4,8 +4,8 @@ import json
 from mitmproxy import ctx
 from src.utils.logger import log_info, log_error, log_warn  # ✅ 공통 로그 함수 사용
 
-# BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
-BASE_URL = 'https://api.24golf.co.kr'      # 운영환경
+BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
+# BASE_URL = 'https://api.24golf.co.kr'      # 운영환경
 LOCAL_URL = 'http://localhost:32123'       # 운영환경
 
 
