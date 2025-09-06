@@ -1,21 +1,10 @@
-from PyQt5.QtWidgets import QApplication
-from src.app_manager import AppManager
-from src.core.global_state import GlobalState
-
+# main.py
 import sys
-
-
-def main() -> None:
-    app = QApplication(sys.argv)
-
-    state = GlobalState()
-    state.initialize()
-
-    app_manager = AppManager()
-    app_manager.go_to_login()
-
-    sys.exit(app.exec())
-
+from src.ui.main_window import MainWindow
+from PyQt5.QtWidgets import QApplication
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    win = MainWindow()
+    win.show()
+    sys.exit(app.exec_())

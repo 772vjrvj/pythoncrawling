@@ -240,6 +240,7 @@ class MainWindow(QWidget):
         self.tray.show()
         ui_log("[판도] 트레이 아이콘 준비됨")
 
+
     def on_tray_activated(self, reason):
         if reason == QSystemTrayIcon.Trigger:  # 좌클릭
             self.showMainWindow()
