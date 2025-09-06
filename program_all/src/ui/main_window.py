@@ -347,9 +347,6 @@ class MainWindow(QWidget):
             if self.excel_data_list:
                 self.on_demand_worker.set_excel_data_list(self.excel_data_list)
 
-            if self.user:
-                self.on_demand_worker.set_user(self.user)
-
             self.on_demand_worker.start()
 
         else:

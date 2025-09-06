@@ -1,26 +1,26 @@
 from src.vo.site import Site
 
 SITE_LIST = [
-    Site("공모전 마감 사이트 통합", "CONTEST_DEADLINE", "#D73227", enabled=True, user=False, setting=[
-        {'name': '중복제거',    'code': 'dup','value': True, 'type': 'check'},
-        {'name': 'THINKGOOD', 'code': 'thinkgood','value': 'Y_lDUDfEFsFTgLsbFt-VyefFa_wNrqLAoJIolxPo8ycVd6GOlgXVj7ap50cJxtWOLgFMFsM1kbLnzIZm-i9SszImy2-ricuLrjl9bQDJNig'},
-        {'name': 'LINKAREER', 'code': 'linkareer', 'value': 'f59df641666ef9f55c69ed6a14866bfd2f87fb32c89a80038a466b201ee11422'},
-        ],
-        columns = [
-             {"code": "site",           "value": "사이트",     "checked": True},
-             {"code": "contest_name",   "value": "공모전명",   "checked": True},
-             {"code": "host",           "value": "주최사",     "checked": True},
-             {"code": "url",            "value": "URL",       "checked": True},
-             {"code": "deadline",       "value": "마감일",     "checked": True},
-             {"code": "page",           "value": "페이지",     "checked": True},
-        ],
-         sites = [
-             {"code": "wevity",          "value": "WEVITY",      "checked": True},
-             {"code": "linkareer",       "value": "LINKareer",   "checked": True},
-             {"code": "all_con",         "value": "올콘",         "checked": True},
-             {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
-         ],
-    ),
+    # Site("공모전 마감 사이트 통합", "CONTEST_DEADLINE", "#D73227", enabled=True, user=False, setting=[
+    #     {'name': '중복제거',    'code': 'dup','value': True, 'type': 'check'},
+    #     {'name': 'THINKGOOD', 'code': 'thinkgood','value': 'Y_lDUDfEFsFTgLsbFt-VyefFa_wNrqLAoJIolxPo8ycVd6GOlgXVj7ap50cJxtWOLgFMFsM1kbLnzIZm-i9SszImy2-ricuLrjl9bQDJNig'},
+    #     {'name': 'LINKAREER', 'code': 'linkareer', 'value': 'f59df641666ef9f55c69ed6a14866bfd2f87fb32c89a80038a466b201ee11422'},
+    #     ],
+    #     columns = [
+    #          {"code": "site",           "value": "사이트",     "checked": True},
+    #          {"code": "contest_name",   "value": "공모전명",   "checked": True},
+    #          {"code": "host",           "value": "주최사",     "checked": True},
+    #          {"code": "url",            "value": "URL",       "checked": True},
+    #          {"code": "deadline",       "value": "마감일",     "checked": True},
+    #          {"code": "page",           "value": "페이지",     "checked": True},
+    #     ],
+    #      sites = [
+    #          {"code": "wevity",          "value": "WEVITY",      "checked": True},
+    #          {"code": "linkareer",       "value": "LINKareer",   "checked": True},
+    #          {"code": "all_con",         "value": "올콘",         "checked": True},
+    #          {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
+    #      ],
+    # ),
     # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True, user=False,
     #      setting=[
     #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
@@ -59,23 +59,23 @@ SITE_LIST = [
     #          {"code": "city",                  "value": "시도",   "checked": True},
     #          {"code": "division",              "value": "시군구",  "checked": True},
     #          {"code": "sector",                "value": "읍면동",  "checked": True},
-    #
+    # 
     #          # {"code": "item_name",             "value": "매물명",  "checked": True},
-    #
+    # 
     #          # 주소/위치
     #          {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
     #          {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
     #          {"code": "keyword",               "value": "키워드",  "checked": True},
     #          {"code": "complex_name",          "value": "단지명",  "checked": True},
     #          {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
-    #
+    # 
     #          # 중개사
     #          {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
     #          {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
     #          {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
     #          {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
     #          {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
-    #
+    # 
     #          # 층/방향
     #          {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
     #          {"code": "target_floor",          "value": "층(목표)",     "checked": False},
@@ -83,17 +83,17 @@ SITE_LIST = [
     #          {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
     #          # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
     #          {"code": "direction_standard",    "value": "방향기준",     "checked": False},
-    #
+    # 
     #          # 면적
     #          {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
     #          {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
     #          {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
-    #
+    # 
     #          # 가격/비용
     #          {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
     #          {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
     #          {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
-    #
+    # 
     #          # 유형/일자
     #          # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
     #          # {"code": "trade_type",            "value": "거래유형",     "checked": True},
@@ -104,7 +104,25 @@ SITE_LIST = [
     #      ],
     #      region = True
     #      ),
+    Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
+         setting=[],
+         columns = [
+             # 메타
+             {"code": "article_number",        "value": "번호",   "checked": False},
+             {"code": "city",                  "value": "시도",   "checked": True},
+             {"code": "division",              "value": "시군구",  "checked": True},
+             {"code": "sector",                "value": "읍면동",  "checked": True},
 
+             # 중개사
+             {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
+             {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
+             {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
+             {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
+             {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
+
+         ],
+         region = True
+         ),
     # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True, user=False, setting=[]),
     # Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True, user=False, setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False, user=False, setting=[
@@ -11310,3 +11328,23 @@ NAVER_LOC_ALL_REAL = [
 ]
 
 
+NAVER_LOC_ALL_REAL_DETAIL = [
+    {
+        "clusterList_url": "https://m.land.naver.com/cluster/clusterList?view=atcl&cortarNo=1168000000&rletTpCd=APT%3AABYG%3AJGC&tradTpCd=A1%3AB1&z=12&lat=37.517408&lon=127.047313&btm=37.3823551&lft=126.7177232&top=37.6522169&rgt=127.3769028&pCortarNo=",
+        "시도": "서울시",
+        "시군구": "강남구",
+        "읍면동": "압구정동",
+        "lat": "37.517408",
+        "lon": "127.047313",
+        "articleList": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd=APT%3AOPST%3AVL%3AABYG%3AOBYG%3AJGC%3AJWJT%3ADDDGG%3ASGJT%3AHOJT%3AJGB%3AOR%3ASG%3ASMS%3AGJCG%3AGM%3ATJ%3AAPTHGJ&tradTpCd=A1%3AB1%3AB2%3AB3&z=12&lat=37.517408&lon=127.047313&btm=37.3823551&lft=126.7177232&top=37.6522169&rgt=127.3769028&showR0=&totCnt=1&cortarNo=1168000000"
+    },
+    {
+        "clusterList_url": "https://m.land.naver.com/cluster/clusterList?view=atcl&cortarNo=2817700000&rletTpCd=APT%3AABYG%3AJGC&tradTpCd=A1%3AB1&z=12&lat=37.463418&lon=126.650556&btm=37.3282676&lft=126.3209662&top=37.5983245&rgt=126.9801458&pCortarNo=",
+        "시도": "인천시",
+        "시군구": "미추홀구",
+        "읍면동": "용현동",
+        "lat": "37.463418",
+        "lon": "126.650556",
+        "articleList": "https://m.land.naver.com/cluster/ajax/articleList?rletTpCd=APT%3AOPST%3AVL%3AABYG%3AOBYG%3AJGC%3AJWJT%3ADDDGG%3ASGJT%3AHOJT%3AJGB%3AOR%3ASG%3ASMS%3AGJCG%3AGM%3ATJ%3AAPTHGJ&tradTpCd=A1%3AB1%3AB2%3AB3&z=12&lat=37.463418&lon=126.650556&btm=37.3282676&lft=126.3209662&top=37.5983245&rgt=126.9801458&showR0=&totCnt=1&cortarNo=2817700000&page=1"
+    },
+]

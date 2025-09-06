@@ -1,36 +1,36 @@
 {
   "props": {
     "pageProps": {
-      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-      "_sentryTraceData": "d5e22e0fbbc540e399b6a36f7da25e9b-9cc786603694125f-0",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+      "_sentryTraceData": "1f432cb55d15489c8644fc4f5eac883b-ab3227c256b5d606-0",
       "dehydratedState": {
         "mutations": [],
         "queries": [
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
                   "key": {
-                    "complexNumber": 107437,
+                    "complexNumber": 176758,
                     "pyeongTypeNumber": 4,
-                    "buildingNumber": 13
+                    "buildingNumber": 1
                   },
                   "type": {
                     "realEstateType": "A01",
-                    "tradeType": "A1"
+                    "tradeType": "B1"
                   },
                   "address": {
-                    "legalDivisionNumber": "2817710200",
-                    "jibun": "664"
+                    "legalDivisionNumber": "1168010500",
+                    "jibun": "79번지일원"
                   },
                   "isRealEstateAssociationArticle": false,
                   "isArticleImageExist": false
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014728,
+              "dataUpdatedAt": 1757176793493,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -45,21 +45,21 @@
               "GET /article/key",
               {
                 "params": {
-                  "articleNumber": "2546522266"
+                  "articleNumber": "2546000068"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/key\",{\"params\":{\"articleNumber\":\"2546522266\"}}]"
+            "queryHash": "["GET /article/key",{"params":{"articleNumber":"2546000068"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": []
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014751,
+              "dataUpdatedAt": 1757176793506,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -74,22 +74,22 @@
               "GET /article/galleryImages",
               {
                 "params": {
-                  "articleNumber": "2546522266"
+                  "articleNumber": "2546000068"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/galleryImages\",{\"params\":{\"articleNumber\":\"2546522266\"}}]"
+            "queryHash": "["GET /article/galleryImages",{"params":{"articleNumber":"2546000068"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
                   "priceInfo": {
-                    "price": 450000000,
-                    "previousDeposit": 267000000,
-                    "previousMonthlyRent": 0,
+                    "tradeType": "B1",
+                    "warrantyAmount": 2400000000,
+                    "rentAmount": 0,
                     "loan": 0
                   },
                   "detailInfo": {
@@ -98,64 +98,64 @@
                       "security": [],
                       "etc": [],
                       "aircon": [],
-                      "totalParkingCount": 5004,
-                      "parkingCountPerHousehold": 1.26
+                      "entranceType": "10",
+                      "totalParkingCount": 833,
+                      "parkingCountPerHousehold": 1.98
                     },
                     "articleDetailInfo": {
-                      "articleNumber": "2546522266",
-                      "articleName": "인천SK스카이뷰",
-                      "articleFeatureDescription": "O 똑순이 급매물 O 전세안고 매매 O 시스템에어컨2대,갭투자 O",
-                      "articleDescription": "안녕하세요?\r\n인천SK스카이뷰아파트 1게이트 코너자리에 위치한 똑순이부동산입니다.\r\n■ 사무실 032-888-0102\r\n■ 대표 공인중개사 박경진 010-7344-7111\r\n■ 물건 많은 부동산입니다\r\n\r\n■ 인천 SK 스카이뷰 아파트 - 총 3,971세대\r\n다양한 평형대 선택 가능! 고객의 취향과 필요에 맞는 주거 공간을 찾을 수 있는 아파트입니다.\r\n• 59㎡ A, B, C, D 타입: 800세대\r\n• 84㎡ A, B, C 타입: 2,282세대\r\n• 95㎡: 295세대\r\n• 100㎡: 239세대\r\n• 109㎡: 156세대\r\n• 115㎡: 138세대\r\n• 126㎡: 22세대\r\n• 127㎡: 39세대\r\n\r\n■ 인천을 대표하는 대단지와 넓은 녹지\r\n• 총 3,971세대의 대규모 단지\r\n• 인천 최대 규모의 89,000㎡ 단지 내 녹지 공간\r\n• 여유로운 산책로와 자연 속 힐링 공간을 누리세요.\r\n\r\n■ 편리한 단지 내 시설\r\n• 가족 캠핑장, 피트니스센터, 실내 골프 연습장, 사우나, 실내 수영장, 어린이 야외 물놀이장\r\n• 독서실, 어린이 도서관 등 온 가족이 만족할 다양한 편의시설\r\n\r\n■ 최적의 교통 인프라\r\n• 수인선 인하대역 바로 앞으로 출퇴근과 통학이 편리합니다.\r\n• KTX 송도역 복합환승센터 2026년 개통 예정으로 교통 편의성 극대화\r\n\r\n■ 우수한 교육 환경\r\n• 단지 내 용학초등학교 및 병설유치원 위치\r\n• 인근에 용현초, 용현여중, 용현남중, 인항고등학교 등 다양한 교육 시설",
+                      "articleNumber": "2546000068",
+                      "articleName": "아크로삼성",
+                      "articleFeatureDescription": "40 B형 첫입주 한강뷰 청담역역세권",
                       "isAddressExposed": true,
                       "isDirectTrade": false,
                       "isSafeLessorOfHug": false,
-                      "cpId": "rter",
-                      "exposureStartDate": "2025-08-28"
+                      "cpId": "bizmk",
+                      "exposureStartDate": "2025-08-26",
+                      "buildingPrincipalUse": "공동주택"
                     },
                     "movingInInfo": {
                       "movingInNegotiation": false,
-                      "movingInDate": "2027-02-26",
-                      "movingInType": "LATE"
+                      "movingInType": "MV001"
                     },
                     "verificationInfo": {
-                      "verificationType": "OWNER",
+                      "verificationType": "DOC",
                       "isAssociationArticle": false,
-                      "exposureStartDate": "2025-08-28",
-                      "articleConfirmDate": "2025-08-28"
+                      "exposureStartDate": "2025-08-26",
+                      "articleConfirmDate": "2025-08-26"
                     },
                     "spaceInfo": {
                       "floorInfo": {
-                        "targetFloor": "31",
-                        "totalFloor": "40",
+                        "targetFloor": "22",
+                        "totalFloor": "25",
                         "groundTotalFloor": "0",
                         "undergroundTotalFloor": "0",
                         "floorType": "10",
                         "residenceType": "1"
                       },
-                      "roomCount": 3,
+                      "roomCount": 4,
                       "bathRoomCount": 2,
-                      "direction": "WS",
+                      "direction": "EE",
                       "duplex": false,
                       "directionStandard": "거실 기준"
                     },
                     "sizeInfo": {
-                      "supplySpace": 85.31,
-                      "exclusiveSpace": 59.99,
-                      "supplySpaceName": "85C",
-                      "exclusiveSpaceName": "59C",
-                      "pyeongArea": 25.8
+                      "supplySpace": 132.72,
+                      "exclusiveSpace": 104.9,
+                      "supplySpaceName": "132B",
+                      "exclusiveSpaceName": "104B",
+                      "pyeongArea": 40.14
                     }
                   },
                   "communalComplexInfo": {
-                    "complexNumber": 107437,
-                    "complexName": "인천SK스카이뷰",
+                    "complexNumber": 176758,
+                    "complexName": "아크로삼성",
                     "pyeongTypeNumber": 4,
-                    "dongName": "113동"
+                    "dongName": "101동"
                   }
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014762,
+              "dataUpdatedAt": 1757176793528,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -170,16 +170,16 @@
               "GET /article/basicInfo",
               {
                 "params": {
-                  "articleNumber": "2546522266",
+                  "articleNumber": "2546000068",
                   "realEstateType": "A01",
-                  "tradeType": "A1"
+                  "tradeType": "B1"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/basicInfo\",{\"params\":{\"articleNumber\":\"2546522266\",\"realEstateType\":\"A01\",\"tradeType\":\"A1\"}}]"
+            "queryHash": "["GET /article/basicInfo",{"params":{"articleNumber":"2546000068","realEstateType":"A01","tradeType":"B1"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
@@ -187,16 +187,20 @@
                   "typeCode": "02",
                   "criteriaType": "02",
                   "etcDetail": {
-                    "type": "02",
+                    "type": "01",
                     "categoryList": [
+                      "11",
+                      "12",
+                      "14",
+                      "16",
                       "01"
                     ],
-                    "amount": 110000
+                    "amount": 400000
                   }
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014743,
+              "dataUpdatedAt": 1757176793512,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -211,25 +215,23 @@
               "GET /article/maintenanceFee",
               {
                 "params": {
-                  "articleNumber": "2546522266"
+                  "articleNumber": "2546000068"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/maintenanceFee\",{\"params\":{\"articleNumber\":\"2546522266\"}}]"
+            "queryHash": "["GET /article/maintenanceFee",{"params":{"articleNumber":"2546000068"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "detailCode": "success",
                 "message": "",
-                "result": {
-                  "amount": 0
-                }
+                "result": {}
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014745,
+              "dataUpdatedAt": 1757176793506,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -244,65 +246,62 @@
               "GET /article/oldMaintenanceFee",
               {
                 "params": {
-                  "articleNumber": "2546522266"
+                  "articleNumber": "2546000068"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/oldMaintenanceFee\",{\"params\":{\"articleNumber\":\"2546522266\"}}]"
+            "queryHash": "["GET /article/oldMaintenanceFee",{"params":{"articleNumber":"2546000068"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "detailCode": "success",
                 "message": "",
                 "result": {
-                  "name": "인천SK스카이뷰",
+                  "name": "아크로삼성",
                   "type": "A01",
                   "address": {
-                    "legalDivisionNumber": "2817710200",
+                    "legalDivisionNumber": "1168010500",
                     "legalDivisionLevel": "EUP",
-                    "city": "인천시",
-                    "division": "미추홀구",
-                    "sector": "용현동",
-                    "jibun": "664",
-                    "roadName": "용정공원로 33",
-                    "zipCode": "22188"
+                    "city": "서울시",
+                    "division": "강남구",
+                    "sector": "삼성동",
+                    "jibun": "79번지일원"
                   },
                   "coordinates": {
-                    "xCoordinate": 126.645696,
-                    "yCoordinate": 37.449426
+                    "xCoordinate": 127.059651,
+                    "yCoordinate": 37.519965
                   },
-                  "totalHouseholdNumber": 3971,
+                  "totalHouseholdNumber": 419,
                   "leaseHouseholdNumber": 0,
-                  "dongCount": 26,
-                  "hasBuildingHoInfo": true,
-                  "constructionCompany": "에스케이건설(주)",
+                  "dongCount": 4,
+                  "hasBuildingHoInfo": false,
+                  "constructionCompany": "디엘이앤씨(주)",
                   "buildingUse": "공동주택",
                   "isServicedResidence": false,
                   "buildingRatioInfo": {
-                    "floorAreaRatio": 238,
-                    "buildingCoverageRatio": 12
+                    "floorAreaRatio": 0,
+                    "buildingCoverageRatio": 0
                   },
-                  "useApprovalDate": "20160623",
-                  "approvalElapsedYear": 10,
+                  "useApprovalDate": "202502",
+                  "approvalElapsedYear": 1,
                   "parkingInfo": {
-                    "totalParkingCount": 5004,
-                    "parkingCountPerHousehold": 1.26
+                    "totalParkingCount": 833,
+                    "parkingCountPerHousehold": 1.98
                   },
                   "heatingAndCoolingInfo": {
-                    "heatingAndCoolingSystemType": "HT005",
-                    "heatingEnergyType": "HF002"
+                    "heatingAndCoolingSystemType": "HT001",
+                    "heatingEnergyType": "HF001"
                   },
-                  "managementOfficeContact": "032-881-6611",
                   "monopolyRestrictionType": "N",
                   "isRestrictedTransferOfReconstructionAssociationMembership": false,
-                  "isComplexTourExist": true
+                  "isComplexTourExist": false
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014742,
+              "dataUpdatedAt": 1757176793509,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -317,24 +316,77 @@
               "GET /complex",
               {
                 "params": {
-                  "complexNumber": "107437"
+                  "complexNumber": "176758"
                 }
               }
             ],
-            "queryHash": "[\"GET /complex\",{\"params\":{\"complexNumber\":\"107437\"}}]"
+            "queryHash": "["GET /complex",{"params":{"complexNumber":"176758"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
-                  "railList": [],
+                  "railList": [
+                    {
+                      "stationId": 20000003,
+                      "stationName": "청담역(2027년예정)",
+                      "railId": 145,
+                      "railName": "위례신사선",
+                      "openDate": "2027",
+                      "coordinates": {
+                        "xCoordinate": 127.057045,
+                        "yCoordinate": 37.520093
+                      },
+                      "distance": 230,
+                      "walkingTime": 4
+                    },
+                    {
+                      "stationId": 20000004,
+                      "stationName": "봉은사역(2027년예정)",
+                      "railId": 145,
+                      "railName": "위례신사선",
+                      "openDate": "2027",
+                      "coordinates": {
+                        "xCoordinate": 127.060232,
+                        "yCoordinate": 37.514271
+                      },
+                      "distance": 635,
+                      "walkingTime": 10
+                    },
+                    {
+                      "stationId": 20000032,
+                      "stationName": "삼성역(2028년예정)",
+                      "railId": 1,
+                      "railName": "GTX-A(운정동탄)",
+                      "openDate": "2028",
+                      "coordinates": {
+                        "xCoordinate": 127.062476,
+                        "yCoordinate": 37.509976
+                      },
+                      "distance": 1138,
+                      "walkingTime": 17
+                    },
+                    {
+                      "stationId": 20000116,
+                      "stationName": "삼성역(2028년예정)",
+                      "railId": 143,
+                      "railName": "GTX-C(덕정수원)",
+                      "openDate": "2028",
+                      "coordinates": {
+                        "xCoordinate": 127.0631719,
+                        "yCoordinate": 37.50886014
+                      },
+                      "distance": 1273,
+                      "walkingTime": 19
+                    }
+                  ],
                   "jiguList": []
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014751,
+              "dataUpdatedAt": 1757176793513,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -350,33 +402,33 @@
               {
                 "params": {
                   "type": "article",
-                  "itemId": 2546522266
+                  "itemId": 2546000068
                 }
               }
             ],
-            "queryHash": "[\"GET /development\",{\"params\":{\"itemId\":2546522266,\"type\":\"article\"}}]"
+            "queryHash": "["GET /development",{"params":{"itemId":2546000068,"type":"article"}}]"
           },
           {
-            "dehydratedAt": 1757162014762,
+            "dehydratedAt": 1757176793528,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
-                  "brokerageName": "똑순이부동산공인중개사사무소",
-                  "brokerName": "박경진",
-                  "address": "인천광역시 미추홀구 용현동 664 A동 104호",
-                  "businessRegistrationNumber": "28170-2015-07183",
-                  "profileImageUrl": "https://landthumb-phinf.pstatic.net/20180405_293/rltr_profile_1522889499524eKuPh_JPEG/casa1942_cropImage.jpg",
-                  "brokerId": "casa1942",
-                  "ownerConfirmationSaleCount": 162,
+                  "brokerageName": "오성공인중개사",
+                  "brokerName": "조영록",
+                  "address": "서울 강남구 삼성동78-4 청구아파트상가 108호",
+                  "businessRegistrationNumber": "9250-621",
+                  "profileImageUrl": "https://landthumb-phinf.pstatic.net/20150107_127/rltr_profile_1420595981311sWzlW_JPEG/m5420135_cropImage.jpg",
+                  "brokerId": "m5420135",
+                  "ownerConfirmationSaleCount": 7,
                   "phone": {
-                    "brokerage": "032-888-0102",
-                    "mobile": "010-7344-7111"
+                    "brokerage": "02-514-5900",
+                    "mobile": "010-5245-0135"
                   }
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757162014746,
+              "dataUpdatedAt": 1757176793517,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -391,11 +443,11 @@
               "GET /article/agent",
               {
                 "params": {
-                  "articleNumber": "2546522266"
+                  "articleNumber": "2546000068"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/agent\",{\"params\":{\"articleNumber\":\"2546522266\"}}]"
+            "queryHash": "["GET /article/agent",{"params":{"articleNumber":"2546000068"}}]"
           }
         ]
       }
@@ -404,7 +456,7 @@
   },
   "page": "/articles/[articleId]",
   "query": {
-    "articleId": "2546522266"
+    "articleId": "2546000068"
   },
   "buildId": "MrpEAgNhiGFlIVq_eU0zI",
   "assetPrefix": "https://property.pstatic.net/property-web",

@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from src.ui.style.style import create_common_button
-from src.utils.config import NAVER_LOC_ALL
+# from src.utils.config import NAVER_LOC_ALL
+from src.utils.config import NAVER_LOC_ALL_REAL
 
 
 class RegionSetPop(QDialog):
@@ -72,7 +73,7 @@ class RegionSetPop(QDialog):
         region_dict = {}
         selected_set = set((r["시도"], r["시군구"], r["읍면동"]) for r in self.selected_regions)
 
-        for item in NAVER_LOC_ALL:
+        for item in NAVER_LOC_ALL_REAL:
             sido, sigungu, eupmyeondong = item["시도"], item["시군구"], item["읍면동"]
 
             if sido not in region_dict:

@@ -4,7 +4,6 @@ class GlobalState:
     SITE    = "site"
     COLOR   = "color"
     COOKIES = "cookies"
-    USER    = "user"
     SETTING = "setting"
     COLUMNS = "columns"
     REGION  = "region"
@@ -39,7 +38,6 @@ class GlobalState:
                 self.NAME       : "",     # 사용자 이름
                 self.SITE       : "",     # 사이트 코드
                 self.COLOR      : "",    # UI 색상
-                self.USER       : "",     # 로그인 사용자 정보
                 self.SETTING    : "",     # 세팅 정보
                 self.COLUMNS    : "",     # 항목 정보
                 self.REGION     : "",     # 지역 정보
