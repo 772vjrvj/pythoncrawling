@@ -124,15 +124,18 @@ SITE_LIST = [
              {"code": "division",              "value": "시군구",           "checked": True},
              {"code": "sector",                "value": "읍면동",           "checked": True},
              {"code": "jibun",                 "value": "번지",             "checked": True},
-             {"code": "roadName",              "value": "도로명주소",        "checked": True},
+             {"code": "roadName",              "value": "도로명 주소",        "checked": True},
              {"code": "zipCode",               "value": "우편번호",          "checked": True},
+             {"code": "full_addr",              "value": "전체 주소",          "checked": True},
 
              # 중개사
              {"code": "brokerage_name",        "value": "중개사무소 이름",   "checked": True},
              {"code": "broker_name",           "value": "중개사 이름",      "checked": True},
              {"code": "broker_address",        "value": "중개사무소 주소",   "checked": True},
              {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
-             {"code": "phone_mobile",          "value": "중개사 헨드폰번호", "checked": True},
+             {"code": "phone_mobile",          "value": "중개사 핸드폰번호", "checked": True},
+
+             {"code": "url",                    "value": "URL",            "checked": True},
 
              # 부모정보
              {"code": "atclNm",                 "value": "상위매물명",      "checked": True},

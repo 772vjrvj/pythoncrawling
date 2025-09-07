@@ -38,7 +38,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
             self.log_signal_func("종료 완료")
 
         except Exception as e:
-            self.log_signal_func(f"❌ 예외 발생: {e}")
+            self.log_signal_func(f"❌ 예외 발생 BaseApiWorker : {e}")
 
 
     def log_signal_func(self, msg):
