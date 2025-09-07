@@ -2,34 +2,33 @@
   "props": {
     "pageProps": {
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
-      "_sentryTraceData": "3ab175c1637c40a495c5e27ca623cc7d-8606f8fa90ed42c0-0",
+      "_sentryTraceData": "2c46e067146843a8a96ccf384d182b99-a82b6ada8c5e140b-0",
       "dehydratedState": {
         "mutations": [
         ],
         "queries": [
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
                   "key": {
-                    "pnu": "1168010600109190009"
+                    "pnu": "2811013600100290020"
                   },
                   "type": {
-                    "realEstateType": "C03",
-                    "tradeType": "B2"
+                    "realEstateType": "D04",
+                    "tradeType": "A1"
                   },
                   "address": {
-                    "legalDivisionNumber": "1168010600",
-                    "jibun": "919-9"
+                    "legalDivisionNumber": "2811013600"
                   },
                   "isRealEstateAssociationArticle": false,
-                  "isArticleImageExist": true
+                  "isArticleImageExist": false
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774905,
+              "dataUpdatedAt": 1757260768367,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -44,32 +43,22 @@
               "GET /article/key",
               {
                 "params": {
-                  "articleNumber": "2547730762"
+                  "articleNumber": "2547150729"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/key\",{\"params\":{\"articleNumber\":\"2547730762\"}}]"
+            "queryHash": "[\"GET /article/key\",{\"params\":{\"articleNumber\":\"2547150729\"}}]"
           },
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": [
-                  {
-                    "imageId": "2547730762@20250904182703183142",
-                    "imageUrl": "https://landthumb-phinf.pstatic.net/20250904_74/1756978022978pOyhi_JPEG/4c2b3d2b321aee5f38cf1006763f3859.JPG",
-                    "imageType": "SITE",
-                    "vodId": "CERTIFIED",
-                    "sortingOrder": 1,
-                    "isRepresentative": true,
-                    "isVrExposed": true,
-                    "vrTourUrl": "https://fin.land.naver.com/articles/2547730762/tour"
-                  }
                 ]
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774924,
+              "dataUpdatedAt": 1757260768384,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -84,107 +73,86 @@
               "GET /article/galleryImages",
               {
                 "params": {
-                  "articleNumber": "2547730762"
+                  "articleNumber": "2547150729"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/galleryImages\",{\"params\":{\"articleNumber\":\"2547730762\"}}]"
+            "queryHash": "[\"GET /article/galleryImages\",{\"params\":{\"articleNumber\":\"2547150729\"}}]"
           },
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
                   "priceInfo": {
-                    "tradeType": "B2",
-                    "warrantyAmount": 10000000,
-                    "rentAmount": 680000,
+                    "price": 300000000,
+                    "previousDeposit": 0,
+                    "previousMonthlyRent": 0,
                     "loan": 0
                   },
                   "detailInfo": {
                     "facilityInfo": {
                       "life": [
-                        "BED",
-                        "DESK",
-                        "SHOE_RACK",
-                        "REFRIGERATOR",
-                        "WASHING_MACHINE",
-                        "SINK",
-                        "GAS_STOVE"
                       ],
                       "security": [
-                        "VIDEO_PHONE",
-                        "INTER_PHONE",
-                        "CARD_KEY",
-                        "CCTV"
                       ],
                       "etc": [
                       ],
                       "aircon": [
-                        "WALL"
                       ],
                       "buildingConjunctionDateType": "CDY01",
-                      "buildingConjunctionDate": "19950901",
-                      "approvalElapsedYear": 31,
-                      "heatingAndCoolingSystemType": "HT001",
-                      "heatingEnergyType": "HF001",
-                      "totalParkingCount": 4,
-                      "isParkingPossible": false,
-                      "householdNumber": 13
+                      "buildingConjunctionDate": "19850308",
+                      "approvalElapsedYear": 41,
+                      "totalParkingCount": 0
                     },
                     "articleDetailInfo": {
-                      "articleNumber": "2547730762",
-                      "articleName": "다가구",
-                      "articleFeatureDescription": "보안좋고 쾌적한 학원가 좋은집 풀옵션 가격대비최상급 강력추천함",
-                      "articleDescription": "★★대치4동 28년전통 하나부동산 입니다.★★ 대출없는안전한집  \n\n\n\n(명문대 의대합격생 많은집 조용해서 수면하기 좋은집 풀옵션방 쾌적해서 강력추천함)\n\n\n\n하나부동산은 고려대출신 전직하나은행지점장님과 \n\n전직대치동통장이 운영하는 모범부동산입니다. \n\n\n네이버광고의 방사진은 백프로가 실매물 실사진입니다. \n\n광고에 나간 엄선된 집들은 가격대비최상급의 집입니다. \n\n집주변에 씨씨티비가 많이 있어 보안좋고 늦게 귀가해도 안전합니다. \n\n\n학원가 조용한 주택가에 위치하며 생활여건이 쾌적합니다.\n\n주변에 롯데강남점,이마트,재래시장이 도보로 5분입니다. \n\n2호선 선릉역과 분당선 한티역이 도보5~10분거리입니다. \n\n제가 추천하는 집들은 직접답사하여 아래조건을 검증합니다. \n\n1, 등기사항전부증명서에 은행대출이 없거나 비교적 안전합니다. \n2, 구조가 좋고 조용하며 햇빛이 잘 듭니다. \n3, 쾌적한 학원가며 도배 장판 깨끗하고 주인분도 친절하십니다. \n4, 방안 벽면에 결로나 곰팡이 없고 깨끗합니다. \n5, 변기물이 잘 내려가고 수압이 정상입니다.\n6,공과금별도입니다.\n   \n★지도보기에서 검정색화살표시는 집의 실제 위치입니다. \n좋은집만 계약해 드리는 부동산이 ★능력있는 부동산★입니다.\n\n\n★ 대치동 916-67번지 하나부동산 554-5778 지금 전화주세요. ★ \n도곡초등학교 후문지나서 50미터 빨강간판 하나부동산입니다",
+                      "articleNumber": "2547150729",
+                      "articleName": "상가건물",
+                      "articleFeatureDescription": "대로변 미니 상가건물 매매",
+                      "articleDescription": "번호 3011\n\n자세한 문의는 연락주세요 \n친절한 상담해드려요^^\n\n엘림공인중개사 사무소\n공인중개사 김혜원\n032-505-7511, 010-3434-1227",
                       "isAddressExposed": true,
-                      "isJibunAddressExposed": true,
                       "isDirectTrade": false,
                       "isSafeLessorOfHug": false,
-                      "buildingType": "C0302",
-                      "cpId": "hkdotcom",
-                      "exposureStartDate": "2025-09-05",
-                      "buildingUse": "공동주택"
+                      "cpId": "SERVE",
+                      "exposureStartDate": "2025-09-01",
+                      "buildingUse": "제1종 근린생활시설"
                     },
                     "movingInInfo": {
                       "movingInNegotiation": true,
                       "movingInType": "MV001"
                     },
                     "verificationInfo": {
-                      "verificationType": "S_VR",
+                      "verificationType": "DOC",
                       "isAssociationArticle": false,
-                      "exposureStartDate": "2025-09-05",
-                      "articleConfirmDate": "2025-09-04"
+                      "exposureStartDate": "2025-09-01",
+                      "articleConfirmDate": "2025-09-01"
                     },
                     "spaceInfo": {
                       "floorInfo": {
-                        "targetFloor": "2",
-                        "totalFloor": "3",
-                        "groundTotalFloor": "0",
-                        "undergroundTotalFloor": "0",
+                        "targetFloor": "0",
+                        "totalFloor": "null",
+                        "groundTotalFloor": "3",
+                        "undergroundTotalFloor": "-1",
                         "floorType": "00",
-                        "residenceType": "1"
+                        "residenceType": "2"
                       },
-                      "roomCount": 1,
-                      "bathRoomCount": 1,
-                      "direction": "EE",
-                      "duplex": false,
-                      "directionStandard": "안방 기준"
+                      "direction": "WW",
+                      "directionStandard": "주된 출입구 기준"
                     },
                     "sizeInfo": {
-                      "landSpace": 0,
-                      "floorSpace": 0,
+                      "landSpace": 28.5,
+                      "floorSpace": 84.63,
                       "buildingSpace": 0,
-                      "supplySpace": 35,
-                      "exclusiveSpace": 30,
-                      "landShare": 0
+                      "exclusiveSpace": 0,
+                      "floorAreaRatio": 296.95,
+                      "buildingCoverageRatio": 0
                     }
                   }
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774941,
+              "dataUpdatedAt": 1757260768387,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -199,34 +167,24 @@
               "GET /article/basicInfo",
               {
                 "params": {
-                  "articleNumber": "2547730762",
-                  "realEstateType": "C03",
-                  "tradeType": "B2"
+                  "articleNumber": "2547150729",
+                  "realEstateType": "D04",
+                  "tradeType": "A1"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/basicInfo\",{\"params\":{\"articleNumber\":\"2547730762\",\"realEstateType\":\"C03\",\"tradeType\":\"B2\"}}]"
+            "queryHash": "[\"GET /article/basicInfo\",{\"params\":{\"articleNumber\":\"2547150729\",\"realEstateType\":\"D04\",\"tradeType\":\"A1\"}}]"
           },
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
-                "isSuccess": true,
+                "isSuccess": false,
                 "result": {
-                  "typeCode": "02",
-                  "criteriaType": "01",
-                  "etcDetail": {
-                    "type": "01",
-                    "categoryList": [
-                      "15",
-                      "12"
-                    ],
-                    "amount": 70000
-                  }
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774920,
+              "dataUpdatedAt": 1757260768380,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -241,25 +199,24 @@
               "GET /article/maintenanceFee",
               {
                 "params": {
-                  "articleNumber": "2547730762"
+                  "articleNumber": "2547150729"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/maintenanceFee\",{\"params\":{\"articleNumber\":\"2547730762\"}}]"
+            "queryHash": "[\"GET /article/maintenanceFee\",{\"params\":{\"articleNumber\":\"2547150729\"}}]"
           },
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
                 "isSuccess": true,
                 "detailCode": "success",
                 "message": "",
                 "result": {
-                  "amount": 0
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774921,
+              "dataUpdatedAt": 1757260768382,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -274,65 +231,26 @@
               "GET /article/oldMaintenanceFee",
               {
                 "params": {
-                  "articleNumber": "2547730762"
+                  "articleNumber": "2547150729"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/oldMaintenanceFee\",{\"params\":{\"articleNumber\":\"2547730762\"}}]"
+            "queryHash": "[\"GET /article/oldMaintenanceFee\",{\"params\":{\"articleNumber\":\"2547150729\"}}]"
           },
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
                   "railList": [
-                    {
-                      "stationId": 20000116,
-                      "stationName": "삼성역(2028년예정)",
-                      "railId": 143,
-                      "railName": "GTX-C(덕정수원)",
-                      "openDate": "2028",
-                      "coordinates": {
-                        "xCoordinate": 127.0631719,
-                        "yCoordinate": 37.50886014
-                      },
-                      "distance": 1298,
-                      "walkingTime": 20
-                    },
-                    {
-                      "stationId": 20000032,
-                      "stationName": "삼성역(2028년예정)",
-                      "railId": 1,
-                      "railName": "GTX-A(운정동탄)",
-                      "openDate": "2028",
-                      "coordinates": {
-                        "xCoordinate": 127.062476,
-                        "yCoordinate": 37.509976
-                      },
-                      "distance": 1357,
-                      "walkingTime": 20
-                    },
-                    {
-                      "stationId": 20000010,
-                      "stationName": "학여울역(2027년예정)",
-                      "railId": 145,
-                      "railName": "위례신사선",
-                      "openDate": "2027",
-                      "coordinates": {
-                        "xCoordinate": 127.069931,
-                        "yCoordinate": 37.496547
-                      },
-                      "distance": 1499,
-                      "walkingTime": 22
-                    }
                   ],
                   "jiguList": [
                   ]
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774931,
+              "dataUpdatedAt": 1757260768386,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -348,33 +266,33 @@
               {
                 "params": {
                   "type": "article",
-                  "itemId": 2547730762
+                  "itemId": 2547150729
                 }
               }
             ],
-            "queryHash": "[\"GET /development\",{\"params\":{\"itemId\":2547730762,\"type\":\"article\"}}]"
+            "queryHash": "[\"GET /development\",{\"params\":{\"itemId\":2547150729,\"type\":\"article\"}}]"
           },
           {
-            "dehydratedAt": 1757226774941,
+            "dehydratedAt": 1757260768393,
             "state": {
               "data": {
                 "isSuccess": true,
                 "result": {
-                  "brokerageName": "하나공인중개사사무소",
-                  "brokerName": "이종복",
-                  "address": "서울특별시 강남구  대치동 916-67 101호",
-                  "businessRegistrationNumber": "9250-5906",
-                  "profileImageUrl": "https://landthumb-phinf.pstatic.net/20150114_82/rltr_profile_1421226360468n0zgt_JPEG/jongbok71_cropImage.jpg",
-                  "brokerId": "jongbok71",
-                  "ownerConfirmationSaleCount": 391,
+                  "brokerageName": "이즈엘림공인중개사사무소",
+                  "brokerName": "김혜원",
+                  "address": "인천광역시 동구 송림로 25, 105호  (송림동)",
+                  "businessRegistrationNumber": "28140-2025-00004",
+                  "profileImageUrl": "https://landthumb-phinf.pstatic.net/20230703_207/rltr_profile_1688377319349qOEOO_JPEG/505-7511_cropImage.jpg",
+                  "brokerId": "505-7511",
+                  "ownerConfirmationSaleCount": 33,
                   "phone": {
-                    "brokerage": "02-554-5778",
-                    "mobile": "010-9980-1233"
+                    "brokerage": "032-505-7511",
+                    "mobile": "010-3434-1227"
                   }
                 }
               },
               "dataUpdateCount": 1,
-              "dataUpdatedAt": 1757226774934,
+              "dataUpdatedAt": 1757260768393,
               "error": null,
               "errorUpdateCount": 0,
               "errorUpdatedAt": 0,
@@ -389,11 +307,11 @@
               "GET /article/agent",
               {
                 "params": {
-                  "articleNumber": "2547730762"
+                  "articleNumber": "2547150729"
                 }
               }
             ],
-            "queryHash": "[\"GET /article/agent\",{\"params\":{\"articleNumber\":\"2547730762\"}}]"
+            "queryHash": "[\"GET /article/agent\",{\"params\":{\"articleNumber\":\"2547150729\"}}]"
           }
         ]
       }
@@ -402,7 +320,7 @@
   },
   "page": "/articles/[articleId]",
   "query": {
-    "articleId": "2547730762"
+    "articleId": "2547150729"
   },
   "buildId": "MrpEAgNhiGFlIVq_eU0zI",
   "assetPrefix": "https://property.pstatic.net/property-web",

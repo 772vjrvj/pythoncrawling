@@ -118,6 +118,10 @@ SITE_LIST = [
              {"code": "rentAmount",            "value": "월세",            "checked": True},
              {"code": "supplySpace",           "value": "공급면적",         "checked": True},
              {"code": "pyeongArea",            "value": "평수",            "checked": True},
+             {"code": "landSpace",             "value": "대지면적",         "checked": True},
+             {"code": "floorSpace",            "value": "연면적",           "checked": True},
+             {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
+             {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
 
              # 종합 정보 (주소)
              {"code": "city",                  "value": "시도",             "checked": True},

@@ -17,7 +17,6 @@ from src.utils.type_utils import _as_dict, _as_list, _s, ensure_list_attr
 
 from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
-from src.utils.config import NAVER_LOC_ALL_REAL_DETAIL
 
 
 class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
@@ -183,33 +182,36 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
                 self.log_signal_func(f"[STOP] page={page} 결과 없음")
                 break
 
-            # 페이지에서 atclNo 모으기 (중복 없이 추가)
-            page_atcl_nos = [_s(r.get("atclNo")) for r in body if _s(r.get("atclNo"))]
-            for no in page_atcl_nos:
-                if no not in seen:
+            # 이번 페이지에서 atclNo 수집 + 중복 제거
+            deduped_page_atcl_nos = []
+            for r in body:
+                no = _s(r.get("atclNo"))
+                if no and no not in seen:
                     seen.add(no)
                     unique_atcl_nos.append(no)
+                    deduped_page_atcl_nos.append(no)
 
-            self.log_signal_func(f"[COLLECT] page={page}, 매물 번호 수집중 - 수집누계={len(unique_atcl_nos)}")
+            self.log_signal_func(
+                f"[COLLECT] page={page}, 매물 번호 수집 - 이번페이지={len(deduped_page_atcl_nos)}, 누계={len(unique_atcl_nos)}"
+            )
+
+            # ──────────────── 상세 조회 ────────────────
+            for idx, s in enumerate(deduped_page_atcl_nos, start=1):
+                if not self.running:
+                    self.log_signal_func("크롤링이 중지되었습니다.")
+                    break
+                try:
+                    self.get_same_addr_article(s, article)
+                    self.log_signal_func(f"[atcl] {idx}/{len(deduped_page_atcl_nos)} [{len(unique_atcl_nos)}] atclNo={s}")
+                except Exception as e:
+                    self.log_signal_func(f"[ERROR] atclNo={s} 처리 중 오류: {e}")
+            self.log_signal_func("[PROCESS] atclNo 처리 완료")
 
             # 다음 페이지 여부 판단
             if not (resp or {}).get("more"):
                 self.log_signal_func(f"[DONE] more=False, last_page={page}")
                 break
             page += 1
-
-        # ───────────────── 최종 일괄 처리 ─────────────────
-        self.log_signal_func(f"[PROCESS] 총 {len(unique_atcl_nos)}개 atclNo 처리 시작")
-        for idx, s in enumerate(unique_atcl_nos, start=1):
-            if not self.running:
-                self.log_signal_func("크롤링이 중지되었습니다.")
-                break
-            try:
-                self.get_same_addr_article(s, article)
-                self.log_signal_func(f"[atcl] {idx}/{len(unique_atcl_nos)} atclNo={s}")
-            except Exception as e:
-                self.log_signal_func(f"[ERROR] atclNo={s} 처리 중 오류: {e}")
-        self.log_signal_func("[PROCESS] atclNo 처리 완료")
 
 
     def get_same_addr_article(self, atcl_no, article):
@@ -250,6 +252,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         if result_list:
             self.result_data_list.append(result_list)
             self.excel_driver.append_to_csv(self.csv_filename, result_list, self.columns or [])
+
 
     # ========== 상세 ==========
     def extract_addr(self, s):
@@ -377,6 +380,11 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         out_obj["월세"] = _s(priceInfo.get("rentAmount"))
         out_obj["공급면적"] = _s(sizeInfo.get("supplySpace"))
         out_obj["평수"] = _s(sizeInfo.get("pyeongArea"))
+        out_obj["대지면적"] = _s(sizeInfo.get("landSpace"))
+        out_obj["연면적"] = _s(sizeInfo.get("floorSpace"))
+        out_obj["건축면적"] = _s(sizeInfo.get("buildingSpace"))
+        out_obj["전용면적"] = _s(sizeInfo.get("exclusiveSpace"))
+
 
     def get_complex(self, out_obj, results_by_key):
         comp = _as_dict(results_by_key.get("GET /complex"))
