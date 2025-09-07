@@ -107,18 +107,43 @@ SITE_LIST = [
     Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
          setting=[],
          columns = [
-             # 메타
-             {"code": "article_number",        "value": "번호",   "checked": False},
-             {"code": "city",                  "value": "시도",   "checked": True},
-             {"code": "division",              "value": "시군구",  "checked": True},
-             {"code": "sector",                "value": "읍면동",  "checked": True},
+             # 게시정보
+             {"code": "article_number",         "value": "게시번호",        "checked": True},
+
+             # 기본 정보
+             {"code": "complexName",           "value": "단지명",          "checked": True},
+             {"code": "dongName",              "value": "동이름",          "checked": True},
+             {"code": "price",                 "value": "매매가",          "checked": True},
+             {"code": "warrantyAmount",        "value": "보증금",          "checked": True},
+             {"code": "rentAmount",            "value": "월세",            "checked": True},
+             {"code": "supplySpace",           "value": "공급면적",         "checked": True},
+             {"code": "pyeongArea",            "value": "평수",            "checked": True},
+
+             # 종합 정보 (주소)
+             {"code": "city",                  "value": "시도",             "checked": True},
+             {"code": "division",              "value": "시군구",           "checked": True},
+             {"code": "sector",                "value": "읍면동",           "checked": True},
+             {"code": "jibun",                 "value": "번지",             "checked": True},
+             {"code": "roadName",              "value": "도로명주소",        "checked": True},
+             {"code": "zipCode",               "value": "우편번호",          "checked": True},
 
              # 중개사
-             {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
-             {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
-             {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
+             {"code": "brokerage_name",        "value": "중개사무소 이름",   "checked": True},
+             {"code": "broker_name",           "value": "중개사 이름",      "checked": True},
+             {"code": "broker_address",        "value": "중개사무소 주소",   "checked": True},
              {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
-             {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
+             {"code": "phone_mobile",          "value": "중개사 헨드폰번호", "checked": True},
+
+             # 부모정보
+             {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
+             {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
+             {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
+             {"code": "parts",                  "value": "검색 주소",       "checked": True},
+
+             {"code": "rletType",               "value": "매물 유형",       "checked": True},
+             {"code": "tradeType",              "value": "거래 유형",       "checked": True},
+
+
 
          ],
          region = True
