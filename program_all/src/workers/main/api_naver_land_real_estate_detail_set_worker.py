@@ -5,6 +5,11 @@ import random
 import pandas as pd
 from bs4 import BeautifulSoup
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
@@ -26,7 +31,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         self.site_name = "네이버 공인중개사 번호"
         self.before_pro_value = 0.0
 
-        self.naver_loc_all_real_detail = NAVER_LOC_ALL_REAL_DETAIL
+        self.naver_loc_all_real_detail = []
         self.detail_region_article_list = []
         self.result_data_list = []
 
@@ -51,7 +56,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             "A04": "재건축", "C04": "전원주택", "C03": "단독/다가구",
             "D05": "상가주택", "C06": "한옥주택", "F01": "재개발",
             "C01": "원룸", "D02": "상가", "D01": "사무실",
-            "E02": "공장/창고", "D03": "건물", "E03": "토지", "E04": "지식산업센터",
+            "E02": "공장/창고", "D03": "건물", "E03": "토지", "E04": "지식산업센터", "D04": "상가건물", "Z00": "기타"
         }
         self.TRADE_TYPE_MAP = {"A1": "매매", "B1": "전세", "B2": "월세", "B3": "단기임대"}
 
@@ -97,6 +102,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         df = pd.DataFrame(columns=self.columns or [])
         df.to_csv(self.csv_filename, index=False, encoding="utf-8-sig")
 
+        self.naver_loc_all_real_detail = self.file_driver.read_json_array_from_resources("naver_real_estate_data.json")
         self.loc_all_detail_list_set()
 
         for index, article in enumerate(self.detail_region_article_list, start=1):
@@ -144,21 +150,31 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
 
     # ========== 목록/동일주소 ==========
     def fetch_same_article_detail_list_by_article(self, article):
+        """
+        - 페이지를 순회하며 atclNo만 모은 뒤(중복 제거), while 루프 종료 후 일괄 처리
+        - 처리 순서는 '처음 등장한 순서'를 보장
+        """
         url = _s((article or {}).get("articleList"))
         if not url:
             self.log_signal_func("[WARN] article['articleList'] 없음, 스킵")
             return
 
         page = 1
+        # 순서를 유지하며 중복 제거를 위한 자료구조
+        unique_atcl_nos = []
+        seen = set()
+
         while True:
             if not self.running:
                 self.log_signal_func("크롤링이 중지되었습니다.")
                 break
 
             try:
+                self.log_signal_func(f"page : {page}, url : {url}&page={page}")
                 resp = self.api_client.get(url, headers=self.headers, params={"page": page})
             except Exception as e:
                 self.log_signal_func(f"[ERROR] 목록 요청 실패: {e}")
+                # 지금까지 모은 것만으로 후처리 진행
                 break
 
             time.sleep(random.uniform(1, 2))
@@ -167,18 +183,33 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
                 self.log_signal_func(f"[STOP] page={page} 결과 없음")
                 break
 
-            atcl_nos = [_s(r.get("atclNo")) for r in body if _s(r.get("atclNo"))]
-            for s in atcl_nos:
-                if not self.running:
-                    self.log_signal_func("크롤링이 중지되었습니다.")
-                    break
-                self.get_same_addr_article(s, article)
-                self.log_signal_func(f"[atcl] page={page}, atclNo={s}")
+            # 페이지에서 atclNo 모으기 (중복 없이 추가)
+            page_atcl_nos = [_s(r.get("atclNo")) for r in body if _s(r.get("atclNo"))]
+            for no in page_atcl_nos:
+                if no not in seen:
+                    seen.add(no)
+                    unique_atcl_nos.append(no)
 
+            self.log_signal_func(f"[COLLECT] page={page}, 매물 번호 수집중 - 수집누계={len(unique_atcl_nos)}")
+
+            # 다음 페이지 여부 판단
             if not (resp or {}).get("more"):
                 self.log_signal_func(f"[DONE] more=False, last_page={page}")
                 break
             page += 1
+
+        # ───────────────── 최종 일괄 처리 ─────────────────
+        self.log_signal_func(f"[PROCESS] 총 {len(unique_atcl_nos)}개 atclNo 처리 시작")
+        for idx, s in enumerate(unique_atcl_nos, start=1):
+            if not self.running:
+                self.log_signal_func("크롤링이 중지되었습니다.")
+                break
+            try:
+                self.get_same_addr_article(s, article)
+                self.log_signal_func(f"[atcl] {idx}/{len(unique_atcl_nos)} atclNo={s}")
+            except Exception as e:
+                self.log_signal_func(f"[ERROR] atclNo={s} 처리 중 오류: {e}")
+        self.log_signal_func("[PROCESS] atclNo 처리 완료")
 
 
     def get_same_addr_article(self, atcl_no, article):
@@ -236,11 +267,21 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"[ERROR] 드라이버 이동 실패: {e}")
             return {}
 
-        self.driver.implicitly_wait(5)
+        # 1. 문서 로드 완료
+        WebDriverWait(self.driver, 10).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )
+
+        # 2. 주소 요소 등장 대기
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="ArticleComplexInfo_area"]'))
+        )
+
+        # 3. 파싱
         html = self.driver.page_source
         soup = BeautifulSoup(html, "html.parser")
-
         full_addr = self.extract_addr(soup)
+
 
         data_obj = None
         tag = soup.find("script", id="__NEXT_DATA__", type="application/json")

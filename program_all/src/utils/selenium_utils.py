@@ -2,12 +2,12 @@
 """
 SeleniumUtils (2025-09-07 수정판)
 - 기존 인터페이스(start_driver 등) 그대로 유지
-- 내부 동작만 "항상 새로운 브라우저(에페메럴)"로 단순화
-- user / persist_profile_dir 관련 파라미터는 무시
+- 항상 새로운 브라우저(임시 프로필)
+- 창을 왼쪽 절반으로 배치(set_window_rect)
 """
 
 import os, time, glob, shutil, tempfile, uuid
-from typing import Optional
+from typing import Optional, Tuple
 
 import undetected_chromedriver as uc
 from selenium.common.exceptions import (
@@ -17,7 +17,6 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 
 DEFAULT_WIDTH  = 1280
 DEFAULT_HEIGHT = 800
@@ -50,12 +49,52 @@ class SeleniumUtils:
                 except Exception:
                     pass
 
+    # --- 화면 해상도 감지 & 배치 ---
+    def _get_screen_size(self) -> Tuple[int, int]:
+        """
+        기본/대체 순서:
+        1) tkinter로 해상도 조회
+        2) 실패 시 보편적 1920x1080 가정
+        """
+        try:
+            import tkinter as tk
+            root = tk.Tk()
+            root.withdraw()
+            w = root.winfo_screenwidth()
+            h = root.winfo_screenheight()
+            root.destroy()
+            if w and h:
+                return int(w), int(h)
+        except Exception:
+            pass
+        return 1920, 1080  # fallback
+
+    def _place_left_half(self):
+        """
+        브라우저 창을 왼쪽 절반으로 이동/리사이즈
+        (headless면 위치 개념이 없으므로 건너뜀)
+        """
+        if not self.driver or self.headless:
+            return
+        sw, sh = self._get_screen_size()
+        # Windows DPI 스케일링 환경에서도 안정적인 set_window_rect 사용
+        try:
+            self.driver.set_window_rect(x=0, y=0, width=max(600, sw // 2), height=max(600, sh))
+        except Exception:
+            # 일부 환경에서 set_window_rect 미지원이면 size/position 별도 호출
+            try:
+                self.driver.set_window_position(0, 0)
+                self.driver.set_window_size(max(600, sw // 2), max(600, sh // 2))
+            except Exception:
+                pass
+
     # ----- 외부에서 쓰는 함수 -----
     def start_driver(self, timeout: int = 30, **kwargs):
         """
         기존 코드 호환용 함수
         - 항상 새 브라우저(임시 프로필)만 실행
         - user, persist_profile_dir 같은 파라미터는 무시
+        - 생성 직후 창을 왼쪽 절반으로 배치
         """
         # 임시 프로필 생성
         self._tmp_profile = self._new_tmp_profile()
@@ -78,11 +117,17 @@ class SeleniumUtils:
                 self.driver.set_page_load_timeout(timeout)
             except Exception:
                 pass
+
+            # 👉 여기서 창을 왼쪽 절반으로 배치
+            self._place_left_half()
+
             return self.driver
         except SessionNotCreatedException as e:
             self.last_error = e
             time.sleep(0.5)
             self.driver = uc.Chrome(options=opts)
+            # 재시작 후에도 배치 적용
+            self._place_left_half()
             return self.driver
         except Exception as e:
             self.last_error = e

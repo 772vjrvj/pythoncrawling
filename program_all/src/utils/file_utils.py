@@ -135,3 +135,35 @@ class FileUtils:
         except Exception as e:
             self.log_func(f"❌ 이미지 저장 실패: {save_path} / 오류: {e}")
             return None
+
+
+
+    def read_json_array_from_resources(self, filename):
+        """
+        resources 폴더 안에서 지정한 JSON 파일을 읽어 배열(list)로 반환
+
+        :param filename: JSON 파일 이름 (예: 'naver_real_estate_data.json')
+        :return: JSON 배열 (list), 실패 시 []
+        """
+        import json
+
+        # 프로젝트 루트 기준 resources 폴더 경로
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        resources_dir = os.path.join(base_dir, "resources")
+        file_path = os.path.join(resources_dir, filename)
+
+        if not os.path.exists(file_path):
+            self.log_func(f"❌ JSON 파일이 존재하지 않습니다: {file_path}")
+            return []
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if not isinstance(data, list):
+                self.log_func(f"⚠️ JSON 배열 형식이 아님: {file_path}")
+                return []
+            self.log_func(f"📄 JSON 배열 {len(data)}개 읽음: {file_path}")
+            return data
+        except Exception as e:
+            self.log_func(f"❌ JSON 읽기 실패: {file_path} / 오류: {e}")
+            return []

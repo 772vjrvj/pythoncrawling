@@ -38,7 +38,8 @@ pyinstaller main.py `
   --hidden-import sip `
   --hidden-import numpy `
   --collect-all numpy `
-  --collect-all pandas
+  --collect-all pandas `
+  --add-data "resources;resources"
 
 
 2025-08-09
