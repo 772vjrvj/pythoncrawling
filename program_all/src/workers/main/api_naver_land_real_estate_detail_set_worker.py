@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 
 from src.utils.api_utils import APIClient
@@ -254,6 +255,19 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             self.excel_driver.append_to_csv(self.csv_filename, result_list, self.columns or [])
 
 
+    def is_error_page(self, soup):
+        """
+        네이버 부동산 오류 페이지(404 등) 여부 판정
+        - class 이름 뒤 해시 값은 변경 가능성이 있으므로 'Error_article' 포함 여부로만 체크
+        """
+        err_div = soup.select_one("div[class*='Error_article']")
+        if err_div:
+            title = err_div.find("h2")
+            if title and "요청하신 페이지를 찾을 수 없어요" in title.get_text(strip=True):
+                return True
+        return False
+
+
     # ========== 상세 ==========
     def extract_addr(self, s):
         ns = s.select('div[class^="ArticleComplexInfo_area-data"]')
@@ -270,21 +284,39 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"[ERROR] 드라이버 이동 실패: {e}")
             return {}
 
-        # 1. 문서 로드 완료
-        WebDriverWait(self.driver, 10).until(
-            lambda d: d.execute_script("return document.readyState") == "complete"
-        )
+        # 1) 문서 로드 완료(느릴 수 있으니 타임아웃 완만하게)
+        try:
+            WebDriverWait(self.driver, 5).until(
+                lambda d: d.execute_script("return document.readyState") == "complete"
+            )
+        except TimeoutException:
+            self.log_signal_func("[WARN] document.readyState='complete' 대기 타임아웃 — 계속 진행")
 
-        # 2. 주소 요소 등장 대기
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="ArticleComplexInfo_area"]'))
-        )
+
+        # 2) 주소 블록 등장 대기 (없으면 넘어감)
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="ArticleComplexInfo_area"]'))
+            )
+        except TimeoutException:
+            self.log_signal_func("[INFO] 주소 요소 미등장 — 주소 파싱은 스킵하고 다음 단계 진행")
+
 
         # 3. 파싱
         html = self.driver.page_source
         soup = BeautifulSoup(html, "html.parser")
-        full_addr = self.extract_addr(soup)
 
+        if self.is_error_page(soup):
+            self.log_signal_func(f"[INFO] url={url} 오류 페이지 — 스킵")
+            result_data = {
+                "게시번호": _s(article_number),
+                "URL": _s(url),
+                "결과": 'Fail',
+                "에러로그": "오류 페이지 — 스킵"
+            }
+            return result_data
+
+        full_addr = self.extract_addr(soup)
 
         data_obj = None
         tag = soup.find("script", id="__NEXT_DATA__", type="application/json")
