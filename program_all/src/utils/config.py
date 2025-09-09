@@ -123,21 +123,25 @@ SITE_LIST = [
              {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
              {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
 
+             {"code": "articleFeatureDescription",        "value": "매물특징",           "checked": True},
+             {"code": "exposureStartDate",        "value": "매물확인일",           "checked": True},
+             {"code": "buildingPrincipalUse",        "value": "건축물용도",           "checked": True},
+
              # 종합 정보 (주소)
              {"code": "city",                  "value": "시도",             "checked": True},
              {"code": "division",              "value": "시군구",           "checked": True},
              {"code": "sector",                "value": "읍면동",           "checked": True},
              {"code": "jibun",                 "value": "번지",             "checked": True},
-             {"code": "roadName",              "value": "도로명 주소",        "checked": True},
+             {"code": "roadName",              "value": "도로명주소",        "checked": True},
              {"code": "zipCode",               "value": "우편번호",          "checked": True},
-             {"code": "full_addr",              "value": "전체 주소",          "checked": True},
+             {"code": "full_addr",              "value": "전체주소",          "checked": True},
 
              # 중개사
-             {"code": "brokerage_name",        "value": "중개사무소 이름",   "checked": True},
-             {"code": "broker_name",           "value": "중개사 이름",      "checked": True},
-             {"code": "broker_address",        "value": "중개사무소 주소",   "checked": True},
-             {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
-             {"code": "phone_mobile",          "value": "중개사 핸드폰번호", "checked": True},
+             {"code": "brokerage_name",        "value": "중개사무소이름",   "checked": True},
+             {"code": "broker_name",           "value": "중개사이름",      "checked": True},
+             {"code": "broker_address",        "value": "중개사무소주소",   "checked": True},
+             {"code": "phone_brokerage",       "value": "중개사무소번호",   "checked": True},
+             {"code": "phone_mobile",          "value": "중개사핸드폰번호", "checked": True},
 
              {"code": "url",                    "value": "URL",            "checked": True},
 
@@ -145,10 +149,10 @@ SITE_LIST = [
              {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
              {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
              {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
-             {"code": "parts",                  "value": "검색 주소",       "checked": True},
+             {"code": "parts",                  "value": "검색주소",       "checked": True},
 
-             {"code": "rletType",               "value": "매물 유형",       "checked": True},
-             {"code": "tradeType",              "value": "거래 유형",       "checked": True},
+             {"code": "rletType",               "value": "매물유형",       "checked": True},
+             {"code": "tradeType",              "value": "거래유형",       "checked": True},
 
 
 

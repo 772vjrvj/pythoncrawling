@@ -196,6 +196,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
                 f"[COLLECT] page={page}, 매물 번호 수집 - 이번페이지={len(deduped_page_atcl_nos)}, 누계={len(unique_atcl_nos)}"
             )
 
+            # 테스트는 여기에
             # ──────────────── 상세 조회 ────────────────
             for idx, s in enumerate(deduped_page_atcl_nos, start=1):
                 if not self.running:
@@ -310,9 +311,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"[INFO] url={url} 오류 페이지 — 스킵")
             result_data = {
                 "게시번호": _s(article_number),
-                "URL": _s(url),
-                "결과": 'Fail',
-                "에러로그": "오류 페이지 — 스킵"
+                "URL": _s(url)
             }
             return result_data
 
@@ -361,30 +360,42 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             "상위매물명": _s(parent.get("atclNm")),
             "상위매물동": _s(parent.get("bildNm")),
             "상위매물게시번호": _s(parent.get("atclNo")),
-            "검색 주소": " ".join([p for p in parts if p]),
-            "전체 주소": _s(full_addr),
+            "검색주소": " ".join([p for p in parts if p]),
+            "전체주소": _s(full_addr),
         }
 
         self.get_article_agent(result_data, results_by_key)
         self.get_complex(result_data, results_by_key)
         self.get_basic_info(result_data, results_by_key)
         self.get_article_key(result_data, results_by_key)
-        
-        full = _s(result_data.get("전체 주소"))
-        if full:
-            parts = full.split()
+
+        full_addr = result_data.get("전체주소")
+        if full_addr:
+            full_addr_parts = full_addr.split()
         
             # 시도 / 시군구 / 읍면동은 비어있을 때만 채움
-            if len(parts) >= 1 and not _s(result_data.get("시도")):
-                result_data["시도"] = parts[0]
-            if len(parts) >= 2 and not _s(result_data.get("시군구")):
-                result_data["시군구"] = parts[1]
-            if len(parts) >= 3 and not _s(result_data.get("읍면동")):
-                result_data["읍면동"] = parts[2]
+            if len(full_addr_parts) >= 1 and not _s(result_data.get("시도")):
+                result_data["시도"] = full_addr_parts[0]
+            if len(full_addr_parts) >= 2 and not _s(result_data.get("시군구")):
+                result_data["시군구"] = full_addr_parts[1]
+            if len(full_addr_parts) >= 3 and not _s(result_data.get("읍면동")):
+                result_data["읍면동"] = full_addr_parts[2]
+        else:
+            search_addr = _s(result_data.get("검색주소"))
+            search_addr_parts = search_addr.split()
 
+            # 시도 / 시군구 / 읍면동은 비어있을 때만 채움
+            if len(search_addr_parts) >= 1 and not _s(result_data.get("시도")):
+                result_data["시도"] = search_addr_parts[0]
+            if len(search_addr_parts) >= 2 and not _s(result_data.get("시군구")):
+                result_data["시군구"] = search_addr_parts[1]
+            if len(search_addr_parts) >= 3 and not _s(result_data.get("읍면동")):
+                result_data["읍면동"] = search_addr_parts[2]
 
         self.log_signal_func(f"상세 데이터 : {result_data}")
         return result_data
+
+
 
     # ========== 파트 파서 ==========
     def get_basic_info(self, out_obj, results_by_key):
@@ -401,11 +412,13 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         out_obj["단지명"] = _s(communal.get("complexName"))
         out_obj["동이름"] = _s(communal.get("dongName"))
 
-        if not out_obj.get("단지명"):
-            ad = _as_dict(detailInfo.get("articleDetailInfo"))
-            nm = _s(ad.get("articleName"))
-            if nm:
-                out_obj["단지명"] = nm
+        ad = _as_dict(detailInfo.get("articleDetailInfo"))
+        if ad:
+            if not out_obj.get("단지명"):
+                out_obj["단지명"] = _s(ad.get("articleName"))
+            out_obj["매물특징"] = _s(ad.get("articleFeatureDescription"))
+            out_obj["매물확인일"] = _s(ad.get("exposureStartDate"))
+            out_obj["건축물용도"] = _s(ad.get("buildingPrincipalUse"))
 
         out_obj["매매가"] = _s(priceInfo.get("price"))
         out_obj["보증금"] = _s(priceInfo.get("warrantyAmount"))
@@ -429,7 +442,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         out_obj["시군구"] = _s(addr.get("division"))
         out_obj["읍면동"] = _s(addr.get("sector"))
         out_obj["번지"] = _s(addr.get("jibun"))
-        out_obj["도로명 주소"] = _s(addr.get("roadName"))
+        out_obj["도로명주소"] = _s(addr.get("roadName"))
         out_obj["우편번호"] = _s(addr.get("zipCode"))
 
 
@@ -440,11 +453,11 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             return
 
         phone = _as_dict(agent.get("phone"))
-        out_obj["중개사무소 이름"] = _s(agent.get("brokerageName"))
-        out_obj["중개사 이름"] = _s(agent.get("brokerName"))
-        out_obj["중개사무소 주소"] = _s(agent.get("address"))
-        out_obj["중개사무소 번호"] = _s(phone.get("brokerage"))
-        out_obj["중개사 핸드폰번호"] = _s(phone.get("mobile"))
+        out_obj["중개사무소이름"] = _s(agent.get("brokerageName"))
+        out_obj["중개사이름"] = _s(agent.get("brokerName"))
+        out_obj["중개사무소주소"] = _s(agent.get("address"))
+        out_obj["중개사무소번호"] = _s(phone.get("brokerage"))
+        out_obj["중개사핸드폰번호"] = _s(phone.get("mobile"))
 
     def get_article_key(self, out_obj, results_by_key):
         entry = _as_dict(results_by_key.get("GET /article/key"))
@@ -462,9 +475,9 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         trade = _s(t.get("tradeType"))
 
         if rlet:
-            out_obj["매물 유형"] = self.RLET_TYPE_MAP.get(rlet, rlet)
+            out_obj["매물유형"] = self.RLET_TYPE_MAP.get(rlet, rlet)
         if trade:
-            out_obj["거래 유형"] = self.TRADE_TYPE_MAP.get(trade, trade)
+            out_obj["거래유형"] = self.TRADE_TYPE_MAP.get(trade, trade)
 
     # ========== 코드 라벨러 ==========
     def rlet_label(self, code):
