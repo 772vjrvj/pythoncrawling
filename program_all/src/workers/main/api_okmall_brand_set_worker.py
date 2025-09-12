@@ -1,32 +1,25 @@
-import os
-import shutil
-import ssl
 import time
-from urllib.parse import urlparse, parse_qs, unquote, quote, unquote_to_bytes
+from urllib.parse import urlparse, unquote_to_bytes
 
-import pandas as pd
+import re
+import time
+from urllib.parse import quote, unquote
+from urllib.parse import urlparse, unquote_to_bytes
+
 import requests
-from PyQt5.QtCore import QThread, pyqtSignal
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-
-from src.utils.number_utils import calculate_divmod, divide_and_truncate_per
-from src.core.global_state import GlobalState
 
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
+from src.utils.number_utils import divide_and_truncate_per
 from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
-from urllib.parse import quote, unquote
 
-
-
-import re
 
 # API
-class ApiOkmallSetLoadWorker(BaseApiWorker):
+class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
 
     def __init__(self):
         super().__init__()
@@ -72,6 +65,7 @@ class ApiOkmallSetLoadWorker(BaseApiWorker):
                 for k in row.keys()
                 if k.lower() == "url" and row.get(k) and str(row[k]).strip()
             ]
+            # [{'url': '...', 'file': '...'}, {'url': '...', 'file': '...'}, ...]
 
             # 브랜드 리스트 세팅 전체 갯수 조회
             self.brand_init()
@@ -98,9 +92,8 @@ class ApiOkmallSetLoadWorker(BaseApiWorker):
         # 셀레니움 초기화
         self.selenium_driver = SeleniumUtils(headless)
 
-        state = GlobalState()
-        user = state.get("user")
-        self.driver = self.selenium_driver.start_driver(1200, user)
+        # 드라이버 세팅
+        self.driver = self.selenium_driver.start_driver(1200)
 
     # 쿠키세팅
     def set_cookies(self):

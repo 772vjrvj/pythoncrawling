@@ -14,6 +14,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def __init__(self):
         super().__init__()
+        self.user = None
         self.excel_data_list = None
         self.region = None
         self.columns = None
@@ -38,7 +39,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
             self.log_signal_func("종료 완료")
 
         except Exception as e:
-            self.log_signal_func(f"❌ 예외 발생 BaseApiWorker : {e}")
+            self.log_signal_func(f"❌ 예외 발생: {e}")
 
 
     def log_signal_func(self, msg):
@@ -74,6 +75,10 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def set_excel_data_list(self, excel_data_list):
         self.excel_data_list = excel_data_list
+
+
+    def set_user(self, user):
+        self.user = user
 
 
     def set_columns(self, columns):

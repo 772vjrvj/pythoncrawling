@@ -104,61 +104,61 @@ SITE_LIST = [
     #      ],
     #      region = True
     #      ),
-    Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
-         setting=[],
-         columns = [
-             # 게시정보
-             {"code": "article_number",         "value": "게시번호",        "checked": True},
-
-             # 기본 정보
-             {"code": "complexName",           "value": "단지명",          "checked": True},
-             {"code": "dongName",              "value": "동이름",          "checked": True},
-             {"code": "price",                 "value": "매매가",          "checked": True},
-             {"code": "warrantyAmount",        "value": "보증금",          "checked": True},
-             {"code": "rentAmount",            "value": "월세",            "checked": True},
-             {"code": "supplySpace",           "value": "공급면적",         "checked": True},
-             {"code": "pyeongArea",            "value": "평수",            "checked": True},
-             {"code": "landSpace",             "value": "대지면적",         "checked": True},
-             {"code": "floorSpace",            "value": "연면적",           "checked": True},
-             {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
-             {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
-
-             {"code": "articleFeatureDescription",        "value": "매물특징",           "checked": True},
-             {"code": "exposureStartDate",        "value": "매물확인일",           "checked": True},
-             {"code": "buildingPrincipalUse",        "value": "건축물용도",           "checked": True},
-
-             # 종합 정보 (주소)
-             {"code": "city",                  "value": "시도",             "checked": True},
-             {"code": "division",              "value": "시군구",           "checked": True},
-             {"code": "sector",                "value": "읍면동",           "checked": True},
-             {"code": "jibun",                 "value": "번지",             "checked": True},
-             {"code": "roadName",              "value": "도로명주소",        "checked": True},
-             {"code": "zipCode",               "value": "우편번호",          "checked": True},
-             {"code": "full_addr",              "value": "전체주소",          "checked": True},
-
-             # 중개사
-             {"code": "brokerage_name",        "value": "중개사무소이름",   "checked": True},
-             {"code": "broker_name",           "value": "중개사이름",      "checked": True},
-             {"code": "broker_address",        "value": "중개사무소주소",   "checked": True},
-             {"code": "phone_brokerage",       "value": "중개사무소번호",   "checked": True},
-             {"code": "phone_mobile",          "value": "중개사핸드폰번호", "checked": True},
-
-             {"code": "url",                    "value": "URL",            "checked": True},
-
-             # 부모정보
-             {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
-             {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
-             {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
-             {"code": "parts",                  "value": "검색주소",       "checked": True},
-
-             {"code": "rletType",               "value": "매물유형",       "checked": True},
-             {"code": "tradeType",              "value": "거래유형",       "checked": True},
-
-
-
-         ],
-         region = True
-         ),
+    # Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
+    #      setting=[],
+    #      columns = [
+    #          # 게시정보
+    #          {"code": "article_number",         "value": "게시번호",        "checked": True},
+    #
+    #          # 기본 정보
+    #          {"code": "complexName",           "value": "단지명",          "checked": True},
+    #          {"code": "dongName",              "value": "동이름",          "checked": True},
+    #          {"code": "price",                 "value": "매매가",          "checked": True},
+    #          {"code": "warrantyAmount",        "value": "보증금",          "checked": True},
+    #          {"code": "rentAmount",            "value": "월세",            "checked": True},
+    #          {"code": "supplySpace",           "value": "공급면적",         "checked": True},
+    #          {"code": "pyeongArea",            "value": "평수",            "checked": True},
+    #          {"code": "landSpace",             "value": "대지면적",         "checked": True},
+    #          {"code": "floorSpace",            "value": "연면적",           "checked": True},
+    #          {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
+    #          {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
+    #
+    #          {"code": "articleFeatureDescription",        "value": "매물특징",           "checked": True},
+    #          {"code": "exposureStartDate",        "value": "매물확인일",           "checked": True},
+    #          {"code": "buildingPrincipalUse",        "value": "건축물용도",           "checked": True},
+    #
+    #          # 종합 정보 (주소)
+    #          {"code": "city",                  "value": "시도",             "checked": True},
+    #          {"code": "division",              "value": "시군구",           "checked": True},
+    #          {"code": "sector",                "value": "읍면동",           "checked": True},
+    #          {"code": "jibun",                 "value": "번지",             "checked": True},
+    #          {"code": "roadName",              "value": "도로명주소",        "checked": True},
+    #          {"code": "zipCode",               "value": "우편번호",          "checked": True},
+    #          {"code": "full_addr",              "value": "전체주소",          "checked": True},
+    #
+    #          # 중개사
+    #          {"code": "brokerage_name",        "value": "중개사무소이름",   "checked": True},
+    #          {"code": "broker_name",           "value": "중개사이름",      "checked": True},
+    #          {"code": "broker_address",        "value": "중개사무소주소",   "checked": True},
+    #          {"code": "phone_brokerage",       "value": "중개사무소번호",   "checked": True},
+    #          {"code": "phone_mobile",          "value": "중개사핸드폰번호", "checked": True},
+    #
+    #          {"code": "url",                    "value": "URL",            "checked": True},
+    #
+    #          # 부모정보
+    #          {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
+    #          {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
+    #          {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
+    #          {"code": "parts",                  "value": "검색주소",       "checked": True},
+    #
+    #          {"code": "rletType",               "value": "매물유형",       "checked": True},
+    #          {"code": "tradeType",              "value": "거래유형",       "checked": True},
+    #
+    #
+    #
+    #      ],
+    #      region = True
+    #      ),
     # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True, user=False, setting=[]),
     # Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True, user=False, setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False, user=False, setting=[
@@ -195,10 +195,25 @@ SITE_LIST = [
     #      ]),
     # Site("1004YA", "1004YA", "#FB92BA", enabled=True, user=False, setting=[]),
     # Site("APP SENSORTOWER", "APP_SENSORTOWER", "#1F9E8F", enabled=True, user=False, setting=[], popup=True),
-    #     Site("ABC-MART", "ABC_MART", "#ee1c25", enabled=True, user=False, setting=[], popup=True),
+    # Site("ABC-MART", "ABC_MART", "#ee1c25", enabled=True, user=False, setting=[], popup=True),
     # Site("GRAND STAGE", "GRAND_STAGE", "#000", enabled=True, user=False, setting=[], popup=True),
     # Site("On the spot", "ON_THE_SPOT", "#272B44", enabled=True, user=False, setting=[], popup=True),
-    # Site("OK mall", "OK_MALL", "#000000", enabled=True, user=False, setting=[], popup=True),
+    Site("OK mall brand", "OK_MALL_BRAND", "#000000", enabled=True, setting=[], popup=True,
+        columns = [
+            {"code": "prd_link",        "value": "상품링크",   "checked": True},
+            {"code": "brand",           "value": "브랜드",     "checked": True},
+            {"code": "prd_name",        "value": "상품명",     "checked": True},
+            {"code": "price",           "value": "가격",      "checked": True},
+            {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
+        ]),
+    Site("OK mall detail", "OK_MALL_DETAIL", "#000000", enabled=True, setting=[], popup=True,
+         columns = [
+             {"code": "prd_link",        "value": "상품링크",   "checked": True},
+             {"code": "brand",           "value": "브랜드",     "checked": True},
+             {"code": "prd_name",        "value": "상품명",     "checked": True},
+             {"code": "price",           "value": "가격",      "checked": True},
+             {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
+     ])
 ]
 
 # 전역 변수

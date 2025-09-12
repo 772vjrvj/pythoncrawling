@@ -13,13 +13,14 @@
 # from src.workers.main.api_app_sensortower_set_worker                import ApiAppSensertowerSetLoadWorker
 # from src.workers.main.api_abcmart_set_worker                        import ApiAbcmartSetLoadWorker
 # from src.workers.main.api_grandstage_set_worker                     import ApiGrandstageSetLoadWorker
-# from src.workers.main.api_okmall_set_worker                         import ApiOkmallSetLoadWorker
+from src.workers.main.api_okmall_brand_set_worker                   import ApiOkmallBrandSetLoadWorker
+from src.workers.main.api_okmall_detail_set_worker                  import ApiOkmallDetailSetLoadWorker
 # from src.workers.main.api_onthespot_set_worker                      import ApiOnthespotSetLoadWorker
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
 # from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
-from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
+# from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
 
 
 WORKER_CLASS_MAP = {
@@ -39,10 +40,11 @@ WORKER_CLASS_MAP = {
     # "ABC_MART"                          :   ApiAbcmartSetLoadWorker,
     # "GRAND_STAGE"                       :   ApiGrandstageSetLoadWorker,
     # "ON_THE_SPOT"                       :   ApiOnthespotSetLoadWorker,
-    # "OK_MALL"                           :   ApiOkmallSetLoadWorker,
+    "OK_MALL_BRAND"                     :   ApiOkmallBrandSetLoadWorker,
+    "OK_MALL_DETAIL"                    :   ApiOkmallDetailSetLoadWorker,
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
     # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
-    "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
+    # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
 }

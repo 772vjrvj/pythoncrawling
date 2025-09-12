@@ -8,6 +8,14 @@ class ExcelUtils:
     def __init__(self, log_func=None):
         self.log_func = log_func
 
+
+    def init_csv(self, filename, columns):
+        df = pd.DataFrame(columns=columns)
+        df.to_csv(filename, index=False, encoding="utf-8-sig")
+        if self.log_func:
+            self.log_func(f"CSV 초기화 완료: {filename}")
+
+
     def append_to_csv(self, filename, data_list, columns):
 
         if not data_list:
