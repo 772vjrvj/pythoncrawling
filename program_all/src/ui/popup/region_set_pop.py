@@ -5,8 +5,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from src.ui.style.style import create_common_button
-# from src.utils.config import NAVER_LOC_ALL
-from src.utils.config import NAVER_LOC_ALL_REAL
+from src.utils.file_utils import FileUtils
 
 
 class RegionSetPop(QDialog):
@@ -32,6 +31,9 @@ class RegionSetPop(QDialog):
         self.tree.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self._is_select_all_action = False
+
+        self.file_driver = FileUtils(self.log_signal.emit)
+        self.naver_loc_all_real_detail = self.file_driver.read_json_array_from_resources("naver_loc_all.json")
 
         self.init_ui()
 

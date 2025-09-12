@@ -11,11 +11,16 @@
 # from src.workers.main.api_ovreple_set_worker                        import ApiOvrepleSetLoadWorker
 # from src.workers.main.api_1004ya_set_worker                         import Api1004yaSetLoadWorker
 # from src.workers.main.api_app_sensortower_set_worker                import ApiAppSensertowerSetLoadWorker
-# from src.workers.main.api_abcmart_set_worker                        import ApiAbcmartSetLoadWorker
-# from src.workers.main.api_grandstage_set_worker                     import ApiGrandstageSetLoadWorker
+
+from src.workers.main.api_abcmart_brand_set_worker                  import ApiAbcmartBrandSetLoadWorker
+from src.workers.main.api_abcmart_detail_set_worker                 import ApiAbcmartDetailSetLoadWorker
+from src.workers.main.api_grandstage_brand_set_worker               import ApiGrandstageBrandSetLoadWorker
+from src.workers.main.api_grandstage_detail_set_worker               import ApiGrandstageDetailSetLoadWorker
 from src.workers.main.api_okmall_brand_set_worker                   import ApiOkmallBrandSetLoadWorker
 from src.workers.main.api_okmall_detail_set_worker                  import ApiOkmallDetailSetLoadWorker
-# from src.workers.main.api_onthespot_set_worker                      import ApiOnthespotSetLoadWorker
+from src.workers.main.api_onthespot_brand_set_worker                import ApiOnthespotBrandSetLoadWorker
+from src.workers.main.api_onthespot_detail_set_worker                import ApiOnthespotDetailSetLoadWorker
+
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
@@ -37,11 +42,16 @@ WORKER_CLASS_MAP = {
     # "OVREPLE"                           :   ApiOvrepleSetLoadWorker,
     # "1004YA"                            :   Api1004yaSetLoadWorker,
     # "APP_SENSORTOWER"                   :   ApiAppSensertowerSetLoadWorker,
-    # "ABC_MART"                          :   ApiAbcmartSetLoadWorker,
-    # "GRAND_STAGE"                       :   ApiGrandstageSetLoadWorker,
-    # "ON_THE_SPOT"                       :   ApiOnthespotSetLoadWorker,
+
+    "ABC_MART_BRAND"                    :   ApiAbcmartBrandSetLoadWorker,
+    "ABC_MART_DETAIL"                   :   ApiAbcmartDetailSetLoadWorker,
+    "GRAND_STAGE_BRAND"                 :   ApiGrandstageBrandSetLoadWorker,
+    "GRAND_STAGE_DETAIL"                :   ApiGrandstageDetailSetLoadWorker,
+    "ON_THE_SPOT_BRAND"                 :   ApiOnthespotBrandSetLoadWorker,
+    "ON_THE_SPOT_DETAIL"                :   ApiOnthespotDetailSetLoadWorker,
     "OK_MALL_BRAND"                     :   ApiOkmallBrandSetLoadWorker,
     "OK_MALL_DETAIL"                    :   ApiOkmallDetailSetLoadWorker,
+
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,

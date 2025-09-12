@@ -42,7 +42,7 @@ class ApiOkmallDetailSetLoadWorker(BaseApiWorker):
         self.running = True  # 실행 상태 플래그 추가
         self.company_name = "okmall"
         self.site_name = "okmall"
-        self.csv_filename = ""
+        self.excel_filename = ""
         self.product_obj_list = []
         self.total_cnt = 0
         self.current_cnt = 0
@@ -88,14 +88,14 @@ class ApiOkmallDetailSetLoadWorker(BaseApiWorker):
             ]
 
             # csv파일 만들기
-            self.csv_filename = self.file_driver.get_csv_filename(self.site_name)
-            self.excel_driver.init_csv(self.csv_filename, self.columns)
+            self.excel_filename = self.file_driver.get_csv_filename(self.site_name)
+            self.excel_driver.init_csv(self.excel_filename, self.columns)
 
             # 제품 목록 가져오기
             self.call_product_list()
 
             # CSV -> 엑셀 변환
-            self.excel_driver.convert_csv_to_excel_and_delete(self.csv_filename)
+            self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
 
             return True
         except Exception as e:
@@ -144,7 +144,7 @@ class ApiOkmallDetailSetLoadWorker(BaseApiWorker):
                 self.log_signal.emit(f"({num}/{self.total_cnt}) : {obj}")
 
                 if num % 5 == 0:
-                    self.excel_driver.append_to_csv(self.csv_filename, self.product_obj_list, self.columns)
+                    self.excel_driver.append_to_csv(self.excel_filename, self.product_obj_list, self.columns)
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)
@@ -152,7 +152,7 @@ class ApiOkmallDetailSetLoadWorker(BaseApiWorker):
                 time.sleep(1)
 
             if self.product_obj_list:
-                self.excel_driver.append_to_csv(self.csv_filename, self.product_obj_list, self.columns)
+                self.excel_driver.append_to_csv(self.excel_filename, self.product_obj_list, self.columns)
 
     # 브랜드 api_data
     def product_api_data(self, url):

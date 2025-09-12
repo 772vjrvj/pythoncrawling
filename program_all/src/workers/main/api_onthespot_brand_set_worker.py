@@ -17,7 +17,7 @@ from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
 
 # API
-class ApiOnthespotSetLoadWorker(BaseApiWorker):
+class ApiOnthespotBrandSetLoadWorker(BaseApiWorker):
 
     def __init__(self):
         super().__init__()
@@ -61,11 +61,17 @@ class ApiOnthespotSetLoadWorker(BaseApiWorker):
                 if k.lower() == "url" and row.get(k) and str(row[k]).strip()
             ]
 
+            self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
+            self.excel_driver.init_csv(self.excel_filename, self.columns)
+
             # 브랜드 리스트 세팅 전체 갯수 조회
             self.brand_init()
 
             # 제품 목록 가져오기
             self.brand_obj_list_call_product_list()
+
+            # CSV -> 엑셀 변환
+            self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
 
             return True
         except Exception as e:
@@ -86,9 +92,8 @@ class ApiOnthespotSetLoadWorker(BaseApiWorker):
         # 셀레니움 초기화
         self.selenium_driver = SeleniumUtils(headless)
 
-        state = GlobalState()
-        user = state.get("user")
-        self.driver = self.selenium_driver.start_driver(1200, user)
+
+        self.driver = self.selenium_driver.start_driver(1200)
 
     # 쿠키세팅
     def set_cookies(self):
@@ -132,8 +137,6 @@ class ApiOnthespotSetLoadWorker(BaseApiWorker):
                 self.current_cnt += 1
                 prdt_no = get_query_params(product, "prdtNo")
                 prdt_obj_list = self.product_api_data(prdt_no)
-                self.product_obj_list.extend(prdt_obj_list)
-                self.save_to_excel_one_by_one(prdt_obj_list, self.excel_filename)
                 now_per = divide_and_truncate_per(self.current_cnt, self.total_cnt)
 
                 self.log_signal.emit("====================================================================================================")
@@ -142,6 +145,8 @@ class ApiOnthespotSetLoadWorker(BaseApiWorker):
                 self.log_signal.emit(f"현재 브랜드({brand_obj['brand_name_en']}),  현재 페이지({idx}/{brand_obj['total_page']}),  현재 상품({ix}/{brand_obj['total_cnt']})")
                 self.log_signal.emit(f"현재 상품 상세 : {prdt_obj_list}")
                 self.log_signal.emit("====================================================================================================")
+
+                self.excel_driver.append_to_csv(self.excel_filename, prdt_obj_list, self.columns)
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)

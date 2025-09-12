@@ -67,11 +67,17 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
             ]
             # [{'url': '...', 'file': '...'}, {'url': '...', 'file': '...'}, ...]
 
+            self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
+            self.excel_driver.init_csv(self.excel_filename, self.columns)
+
             # 브랜드 리스트 세팅 전체 갯수 조회
             self.brand_init()
 
             # 제품 목록 가져오기
             self.brand_obj_list_call_product_list()
+
+            # CSV -> 엑셀 변환
+            self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
 
             return True
         except Exception as e:
@@ -137,8 +143,6 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
                     break
                 self.current_cnt += 1
                 prdt_obj_list = self.product_api_data(product)
-                self.product_obj_list.extend(prdt_obj_list)
-                self.save_to_excel_one_by_one(prdt_obj_list, self.excel_filename)
                 now_per = divide_and_truncate_per(self.current_cnt, self.total_cnt)
 
                 self.log_signal.emit("====================================================================================================")
@@ -148,32 +152,12 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
                 self.log_signal.emit(f"현재 상품 상세 : {prdt_obj_list}")
                 self.log_signal.emit("====================================================================================================")
 
+                self.excel_driver.append_to_csv(self.excel_filename, prdt_obj_list, self.columns)
+
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)
                 self.before_pro_value = pro_value
                 time.sleep(1)
-
-    # 엑셀 저장
-    def save_to_excel_one_by_one(self, results, file_name, sheet_name='Sheet1'):
-        try:
-            if not results:
-                self.log_signal.emit("결과 데이터가 비어 있습니다.")
-                return
-
-            # results가 dict 리스트라고 가정 → 컬럼 추출
-            columns, seen = [], set()
-            for row in results:
-                if isinstance(row, dict):
-                    for k in row.keys():
-                        if k not in seen:
-                            seen.add(k)
-                            columns.append(k)
-
-            # ExcelUtils 사용
-            self.excel_driver.append_to_excel(file_name, results.copy(), columns, sheet_name=sheet_name)
-
-        except Exception as e:
-            self.log_signal.emit(f'엑셀 에러 발생: {e}')
 
 
     def get_query_params(self, url, name):
@@ -290,7 +274,6 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
     # 브랜드 리스트 초기화
     def brand_init(self):
         if self.url_list:
-            self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             self.brand_obj_list = self.brand_obj_list_get()
             self.total_cnt = sum(int(obj['total_cnt']) for obj in self.brand_obj_list)
