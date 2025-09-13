@@ -67,7 +67,7 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
             ]
             # [{'url': '...', 'file': '...'}, {'url': '...', 'file': '...'}, ...]
 
-            self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
+            self.excel_filename = self.file_driver.get_csv_filename(self.site_name)
             self.excel_driver.init_csv(self.excel_filename, self.columns)
 
             # 브랜드 리스트 세팅 전체 갯수 조회

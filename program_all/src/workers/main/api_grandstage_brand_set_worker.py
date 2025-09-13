@@ -61,7 +61,7 @@ class ApiGrandstageBrandSetLoadWorker(BaseApiWorker):
                 if k.lower() == "url" and row.get(k) and str(row[k]).strip()
             ]
 
-            self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
+            self.excel_filename = self.file_driver.get_csv_filename(self.site_name)
             self.excel_driver.init_csv(self.excel_filename, self.columns)
 
             # 브랜드 리스트 세팅 전체 갯수 조회
@@ -211,7 +211,6 @@ class ApiGrandstageBrandSetLoadWorker(BaseApiWorker):
     # 브랜드 리스트 초기화
     def brand_init(self):
         if self.url_list:
-            self.excel_filename = self.file_driver.get_excel_filename(self.site_name)
             self.log_signal.emit(f"전체 상품수 계산을 시작합니다. 잠시만 기다려주세요.")
             self.brand_obj_list = self.brand_obj_list_get()
             self.total_cnt = sum(int(obj['total_cnt']) for obj in self.brand_obj_list)
