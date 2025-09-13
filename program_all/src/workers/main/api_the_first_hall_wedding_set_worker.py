@@ -66,6 +66,7 @@ class ApiThefirsthallweddingDetailSetLoadWorker(BaseApiWorker):
             # csv파일 만들기
             self.csv_filename = self.file_driver.get_csv_filename(self.site_name)
 
+
             self.excel_driver.init_csv(self.csv_filename, self.columns)
 
             # url 가져오기
@@ -111,6 +112,9 @@ class ApiThefirsthallweddingDetailSetLoadWorker(BaseApiWorker):
         items, seen = [], set()
         self.page = 1
         while True:
+            if not self.running:  # 실행 상태 확인
+                break
+
             url = f"{self.site_review_url}?page={self.page}&category=&cate=&event_type=&desc=&desc2=&list_limit="
 
             try:
@@ -198,7 +202,7 @@ class ApiThefirsthallweddingDetailSetLoadWorker(BaseApiWorker):
 
         if paragraphs:
             for p in paragraphs:
-                txt = p.get_text(" ", strip=True)
+                txt = p.get_text(" ", strip=True) #<p>Hello<b>World</b></p>  "Hello World"
                 txt = str_norm(txt)
                 # <p>&nbsp;</p> 같은 빈 문단 → 빈 줄
                 if txt == "":
@@ -207,13 +211,23 @@ class ApiThefirsthallweddingDetailSetLoadWorker(BaseApiWorker):
                     lines.append(txt)
         else:
             # <p>가 없으면 전체 텍스트를 줄바꿈 기준으로 회수
-            raw = container.get_text("\n", strip=True)
-            raw = str_norm(raw)
-            lines = raw.split("\n")
+
+            # <div class="container">
+            # 안녕하세요&nbsp;세계
+            # <p>첫 번째 문단</p>
+            # <p>두 번째 문단</p>
+            # 세 번째&nbsp;라인
+            # </div>
+
+            raw = container.get_text("\n", strip=True) #"안녕하세요 세계\n첫 번째 문단\n두 번째 문단\n세 번째 라인"
+            raw = str_norm(raw) #"안녕하세요 세계\n첫 번째 문단\n두 번째 문단\n세 번째 라인"
+            lines = raw.split("\n") # # ["안녕하세요 세계", "첫 번째 문단", "두 번째 문단", "세 번째 라인"]
 
         # 연속 빈 줄 1개로 압축
         out = []
         prev_blank = False
+        # 직전 줄이 빈 줄이었는지" 기록
+        # 중복 방지
         for ln in lines:
             if str_norm(ln) == "":
                 if not prev_blank:
@@ -234,6 +248,8 @@ class ApiThefirsthallweddingDetailSetLoadWorker(BaseApiWorker):
         buffer_list = []
 
         for i, obj in enumerate(self.url_obj_list, start=1):
+            if not self.running:  # 실행 상태 확인
+                break
             url = obj.get("url")
             self.current_cnt += 1
             if not url:

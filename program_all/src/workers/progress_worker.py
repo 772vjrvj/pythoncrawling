@@ -23,13 +23,12 @@ class ProgressWorker(QThread):
                 # 20초 동안 진행
                 start_value, end_value = task
                 diff_value = end_value - start_value  # 진행할 단계 수
-                inter_time = 40  # 1초를 40조각으로 나눔
-                parts = 1
+                inter_time = 20  # 1초를 20조각으로 나눔
 
-                div_value = diff_value / (parts * inter_time)
-                millsecond = int(1000 / inter_time)
+                div_value = diff_value / inter_time
+                millsecond = int(500 / inter_time)
 
-                for i in range(1, (parts * inter_time) + 1):
+                for i in range(1, inter_time + 1):
                     if not self.running:
                         break
 

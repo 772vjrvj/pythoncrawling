@@ -1,6 +1,8 @@
 import re
 from urllib.parse import urlparse, parse_qs
 
+NBSP_RE = re.compile(r"[\u00a0\u200b]")  # NBSP, zero-width space
+
 def split_comma_keywords(keyword_str):
     """콤마로 구분된 키워드 문자열을 리스트로 변환"""
     return [k.strip() for k in keyword_str.split(",") if k.strip()]
@@ -20,14 +22,12 @@ def get_query_params(url, name):
     return query_params.get(name, [None])[0]
 
 
-NBSP_RE = re.compile(r"[\u00a0\u200b]")  # NBSP, zero-width space
-
-def str_norm(s: str) -> str:
-    """NBSP/zero-width 제거 후 strip"""
+def str_norm(s):
+    """NBSP/zero-width 제거 후 strip 특수공백을 " " (보통 스페이스)로 바꿔줌. """
     if s is None:
         return ""
     return NBSP_RE.sub(" ", s).strip()
 
 
-def str_clean(s: str) -> str:
+def str_clean(s):
     return (s or "").replace("\u00a0", " ").strip()
