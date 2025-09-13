@@ -34,8 +34,8 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
         self.driver = None
         self.version = ""
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "okmall"
-        self.site_name = "okmall"
+        self.company_name = "okmall_brand"
+        self.site_name = "okmall_brand"
         self.excel_filename = ""
         self.brand_obj_list = []
         self.product_obj_list = []

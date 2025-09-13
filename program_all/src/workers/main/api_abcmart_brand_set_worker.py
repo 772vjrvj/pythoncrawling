@@ -31,8 +31,8 @@ class ApiAbcmartBrandSetLoadWorker(BaseApiWorker):
         self.sess = requests.Session()
         self.url_list = []
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "abcmart"
-        self.site_name = "ABC마트"
+        self.company_name = "abcmart_brand"
+        self.site_name = "abcmart_brand"
         self.excel_filename = ""
         self.brand_obj_list = []
         self.product_obj_list = []

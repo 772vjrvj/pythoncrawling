@@ -27,8 +27,8 @@ class ApiGrandstageDetailSetLoadWorker(BaseApiWorker):
         self.user = None
         self.driver = None
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "grandstage"
-        self.site_name = "grandstage"
+        self.company_name = "grandstage_detail"
+        self.site_name = "grandstage_detail"
         self.csv_filename = ""
         self.product_obj_list = []
         self.total_cnt = 0

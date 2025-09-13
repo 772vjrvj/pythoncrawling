@@ -28,8 +28,8 @@ class ApiGrandstageBrandSetLoadWorker(BaseApiWorker):
         self.base_main_url = "https://grandstage.a-rt.com/"
         self.url_list = []
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "grandstage"
-        self.site_name = "grandstage"
+        self.company_name = "grandstage_brand"
+        self.site_name = "grandstage_brand"
         self.excel_filename = ""
         self.brand_obj_list = []
         self.product_obj_list = []

@@ -29,8 +29,8 @@ class ApiOnthespotBrandSetLoadWorker(BaseApiWorker):
         self.sess = requests.Session()
         self.url_list = []
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "onthespot"
-        self.site_name = "onthespot"
+        self.company_name = "onthespot_brand"
+        self.site_name = "onthespot_brand"
         self.excel_filename = ""
         self.brand_obj_list = []
         self.product_obj_list = []

@@ -27,8 +27,8 @@ class ApiOnthespotDetailSetLoadWorker(BaseApiWorker):
         self.user = None
         self.driver = None
         self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "onthespot"
-        self.site_name = "onthespot"
+        self.company_name = "onthespot_detail"
+        self.site_name = "onthespot_detail"
         self.csv_filename = ""
         self.product_obj_list = []
         self.total_cnt = 0
