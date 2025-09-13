@@ -15,11 +15,13 @@
 from src.workers.main.api_abcmart_brand_set_worker                  import ApiAbcmartBrandSetLoadWorker
 from src.workers.main.api_abcmart_detail_set_worker                 import ApiAbcmartDetailSetLoadWorker
 from src.workers.main.api_grandstage_brand_set_worker               import ApiGrandstageBrandSetLoadWorker
-from src.workers.main.api_grandstage_detail_set_worker               import ApiGrandstageDetailSetLoadWorker
+from src.workers.main.api_grandstage_detail_set_worker              import ApiGrandstageDetailSetLoadWorker
 from src.workers.main.api_okmall_brand_set_worker                   import ApiOkmallBrandSetLoadWorker
 from src.workers.main.api_okmall_detail_set_worker                  import ApiOkmallDetailSetLoadWorker
 from src.workers.main.api_onthespot_brand_set_worker                import ApiOnthespotBrandSetLoadWorker
-from src.workers.main.api_onthespot_detail_set_worker                import ApiOnthespotDetailSetLoadWorker
+from src.workers.main.api_onthespot_detail_set_worker               import ApiOnthespotDetailSetLoadWorker
+
+from src.workers.main.api_the_first_hall_wedding_set_worker         import ApiThefirsthallweddingDetailSetLoadWorker
 
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
@@ -51,6 +53,8 @@ WORKER_CLASS_MAP = {
     "ON_THE_SPOT_DETAIL"                :   ApiOnthespotDetailSetLoadWorker,
     "OK_MALL_BRAND"                     :   ApiOkmallBrandSetLoadWorker,
     "OK_MALL_DETAIL"                    :   ApiOkmallDetailSetLoadWorker,
+
+    "THE_FIRST_HALL_WEDDING"            :   ApiThefirsthallweddingDetailSetLoadWorker,
 
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,

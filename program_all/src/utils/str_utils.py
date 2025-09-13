@@ -20,5 +20,14 @@ def get_query_params(url, name):
     return query_params.get(name, [None])[0]
 
 
+NBSP_RE = re.compile(r"[\u00a0\u200b]")  # NBSP, zero-width space
+
+def str_norm(s: str) -> str:
+    """NBSP/zero-width 제거 후 strip"""
+    if s is None:
+        return ""
+    return NBSP_RE.sub(" ", s).strip()
+
+
 def str_clean(s: str) -> str:
     return (s or "").replace("\u00a0", " ").strip()

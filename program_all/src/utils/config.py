@@ -281,7 +281,17 @@ SITE_LIST = [
              {"code": "price",           "value": "가격",      "checked": True},
              {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
          ]
-     )
+     ),
+    Site("THE FIRST HALL WEDDING", "THE_FIRST_HALL_WEDDING", "#918074", enabled=True, setting=[],
+         columns = [
+             {"code": "url",        "value": "URL",   "checked": True},
+             {"code": "no",         "value": "NO",    "checked": True},
+             {"code": "title",      "value": "제목",   "checked": True},
+             {"code": "content",    "value": "내용",   "checked": True},
+             {"code": "create_dt",  "value": "등록일", "checked": True},
+             {"code": "page",       "value": "PAGE",  "checked": True},
+         ]
+    )
 ]
 
 # 전역 변수
