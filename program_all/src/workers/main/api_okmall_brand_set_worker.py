@@ -257,11 +257,11 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
                                 row_price = int(odigits)
 
                 obj = {
-                    "브랜드명": brand,
+                    "상품링크": url,
+                    "브랜드": brand,
                     "상품명": product_name,
                     "가격": row_price,
-                    "택 사이즈": size,
-                    "상품 링크": url
+                    "택 사이즈": size
                 }
                 product_detail_list.append(obj)
 
@@ -410,7 +410,7 @@ class ApiOkmallBrandSetLoadWorker(BaseApiWorker):
             time.sleep(3)
 
         except Exception as e:
-            log_signal_func(f"[❌ 로그인 자동 입력 오류] {e}")
+            self.log_signal_func(f"[❌ 로그인 자동 입력 오류] {e}")
 
 
     # 마무리

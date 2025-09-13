@@ -220,7 +220,7 @@ class ApiOkmallDetailSetLoadWorker(BaseApiWorker):
             time.sleep(3)
 
         except Exception as e:
-            log_signal_func(f"[❌ 로그인 자동 입력 오류] {e}")
+            self.log_signal_func(f"[❌ 로그인 자동 입력 오류] {e}")
 
 
     # 마무리
