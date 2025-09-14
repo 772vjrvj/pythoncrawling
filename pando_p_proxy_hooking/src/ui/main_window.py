@@ -200,7 +200,7 @@ class MainWindow(QWidget):
         self.tray.setToolTip("PandoP")
         self.set_tray_icon(initial_icon)
 
-        icon_path = self.get_resource_path("assets/pandop.ico")
+        icon_path = self.get_resource_path("assets/pandop_off.ico")
         if os.path.exists(icon_path):
             icon = QIcon(icon_path)
         else:
