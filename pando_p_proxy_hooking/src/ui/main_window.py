@@ -344,10 +344,10 @@ class MainWindow(QWidget):
 
 
     def stop_action(self):
+        ui_log(f"[판도] 🧑‍💻 유저 화면 중지 버튼 클릭")
         """중지(프록시/인증서 정리). 창은 닫지 않음."""
         if not self.is_running:
             return
-
         self._do_cleanup()  # 실제 정리 로직
 
         # 상태 전환: 중지됨
@@ -372,6 +372,7 @@ class MainWindow(QWidget):
 
     def quit_app(self):
         """트레이 '종료'에서 호출: 동작 중이면 정리 후 앱 종료"""
+        ui_log(f"[판도] 🧑‍💻 유저 트레이 종료 버튼 클릭")
         if self.is_running:
             self._do_cleanup()
             self.is_running = False
