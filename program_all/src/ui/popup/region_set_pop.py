@@ -27,13 +27,13 @@ class RegionSetPop(QDialog):
         self.tree = QTreeWidget()
         self.tree.setHeaderHidden(True)
         self.tree.setStyleSheet(self.tree_style())
-        self.tree.setCursor(Qt.PointingHandCursor)  # ✅ 손가락 커서 적용
+        self.tree.setCursor(Qt.PointingHandCursor)
         self.tree.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self._is_select_all_action = False
 
         self.file_driver = FileUtils(self.log_signal.emit)
-        self.naver_loc_all_real_detail = self.file_driver.read_json_array_from_resources("naver_loc_all.json")
+        self.loc_all = self.file_driver.read_json_array_from_resources("naver_loc_all.json") # 여기만 수
 
         self.init_ui()
 
@@ -75,7 +75,7 @@ class RegionSetPop(QDialog):
         region_dict = {}
         selected_set = set((r["시도"], r["시군구"], r["읍면동"]) for r in self.selected_regions)
 
-        for item in NAVER_LOC_ALL_REAL:
+        for item in self.loc_all:
             sido, sigungu, eupmyeondong = item["시도"], item["시군구"], item["읍면동"]
 
             if sido not in region_dict:
