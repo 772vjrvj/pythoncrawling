@@ -59,7 +59,7 @@ pyinstaller .\main.py `
   --workpath build `
   --paths . `
   --windowed `
-  --icon "assets\pandop_off.ico" `
+  --icon "assets\pandop_on.ico" `
   --add-data "assets;assets"
 
 
