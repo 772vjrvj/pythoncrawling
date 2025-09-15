@@ -1,5 +1,6 @@
 import os  # 운영체제 관련 기능을 제공하는 표준 모듈
 from src.utils.time_utils import get_current_yyyymmddhhmmss  # 현재 날짜 및 시간 문자열을 반환하는 유틸 함수 임포트
+import json
 
 class FileUtils:
 
@@ -145,7 +146,6 @@ class FileUtils:
         :param filename: JSON 파일 이름 (예: 'naver_real_estate_data.json')
         :return: JSON 배열 (list), 실패 시 []
         """
-        import json
 
         # 프로젝트 루트 기준 resources 폴더 경로
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
