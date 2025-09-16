@@ -10,7 +10,6 @@ import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
 import requests
 from bs4 import BeautifulSoup
 
-from src.utils.config import NAVER_LOC_ALL
 from src.core.global_state import GlobalState
 from src.utils.api_utils import APIClient
 from src.utils.str_utils import split_comma_keywords
@@ -41,7 +40,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.excel_driver = None
         self.sess = None
         self.api_client = None
-        self.loc_all = NAVER_LOC_ALL
+        self.loc_all = None
         self.saved_ids = set()
 
     # 초기화
@@ -185,6 +184,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
         # 파일 객체 초기화
         self.file_driver = FileUtils(self.log_signal_func)
+        self.loc_all = self.file_driver.read_json_array_from_resources("naver_loc_all.json")
 
         # api
         self.api_client = APIClient(use_cache=False, log_func =self.log_signal_func)

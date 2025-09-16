@@ -21,33 +21,33 @@ SITE_LIST = [
     #          {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
     #      ],
     # ),
-    # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True, 
-    #      setting=[
-    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-    #      ],
-    #      columns = [
-    #          {"code": "id",             "value": "아이디",        "checked": True},
-    #          {"code": "name",           "value": "이름",          "checked": True},
-    #          {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
-    #          {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
-    #          {"code": "category_main",  "value": "대분류",        "checked": True},
-    #          {"code": "category_sub",   "value": "소분류",        "checked": True},
-    #          {"code": "rating",         "value": "별점",          "checked": True},
-    #          {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
-    #          {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
-    #          {"code": "open_time1",     "value": "이용시간1",     "checked": True},
-    #          {"code": "open_time2",     "value": "이용시간2",     "checked": True},
-    #          {"code": "category",       "value": "카테고리",      "checked": True},
-    #          {"code": "url",            "value": "URL",           "checked": True},
-    #          {"code": "map",            "value": "지도",          "checked": True},
-    #          {"code": "amenities",      "value": "편의시설",      "checked": True},
-    #          {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
-    #          {"code": "phone",          "value": "전화번호",      "checked": True},
-    #          {"code": "site",           "value": "사이트",        "checked": True},
-    #          {"code": "region_info",    "value": "주소지정보",    "checked": True},
-    #      ],
-    #      region = True
-    #      ),
+    Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
+         setting=[
+             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+         ],
+         columns = [
+             {"code": "id",             "value": "아이디",        "checked": True},
+             {"code": "name",           "value": "이름",          "checked": True},
+             {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
+             {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
+             {"code": "category_main",  "value": "대분류",        "checked": True},
+             {"code": "category_sub",   "value": "소분류",        "checked": True},
+             {"code": "rating",         "value": "별점",          "checked": True},
+             {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
+             {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
+             {"code": "open_time1",     "value": "이용시간1",     "checked": True},
+             {"code": "open_time2",     "value": "이용시간2",     "checked": True},
+             {"code": "category",       "value": "카테고리",      "checked": True},
+             {"code": "url",            "value": "URL",           "checked": True},
+             {"code": "map",            "value": "지도",          "checked": True},
+             {"code": "amenities",      "value": "편의시설",      "checked": True},
+             {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
+             {"code": "phone",          "value": "전화번호",      "checked": True},
+             {"code": "site",           "value": "사이트",        "checked": True},
+             {"code": "region_info",    "value": "주소지정보",    "checked": True},
+         ],
+         region = True
+         ),
     # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True, 
     #      setting=[
     #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
@@ -195,103 +195,103 @@ SITE_LIST = [
     #      ]),
     # Site("1004YA", "1004YA", "#FB92BA", enabled=True,  setting=[]),
     # Site("APP SENSORTOWER", "APP_SENSORTOWER", "#1F9E8F", enabled=True,  setting=[], popup=True),
-    Site("ABC MART BRAND", "ABC_MART_BRAND", "#ee1c25", enabled=True, setting=[], popup=True,
-         columns = [
-             {"code": "brand_name",        "value": "브랜드명",   "checked": True},
-             {"code": "style_code",        "value": "스타일코드",  "checked": True},
-             {"code": "size",              "value": "사이즈",     "checked": True},
-             {"code": "price",             "value": "가격",      "checked": True},
-             {"code": "prd_link",          "value": "상품 링크",  "checked": True},
-         ]
-    ),
-    Site("ABC MART DETAIL", "ABC_MART_DETAIL", "#ee1c25", enabled=True, setting=[], popup=True,
-         columns = [
-             {"code": "prdtName",            "value": "상품명",         "checked": True},
-             {"code": "product_status",      "value": "상품 상태",       "checked": True},
-             {"code": "brandName",           "value": "브랜드",         "checked": True},
-             {"code": "url",                 "value": "상품상세url",     "checked": True},
-             {"code": "sellAmt",             "value": "판매가",         "checked": True},
-             {"code": "available_options",   "value": "구매 가능한 옵션",  "checked": True},
-             {"code": "sold_out_options",    "value": "품절된 옵션",      "checked": True},
-             {"code": "styleInfo",           "value": "스타일코드",       "checked": True},
-             {"code": "prdtColorInfo",       "value": "색상코드",         "checked": True},
-             {"code": "retailer",            "value": "판매처",           "checked": True},
-         ]
-     ),
-    Site("GRAND STAGE BRAND", "GRAND_STAGE_BRAND", "#03C75A", enabled=True, setting=[], popup=True,
-         columns = [
-             {"code": "brand_name",        "value": "브랜드명",   "checked": True},
-             {"code": "style_code",        "value": "스타일코드",  "checked": True},
-             {"code": "size",              "value": "사이즈",     "checked": True},
-             {"code": "price",             "value": "가격",      "checked": True},
-             {"code": "prd_link",          "value": "상품 링크",  "checked": True},
-         ]
-     ),
-    Site("GRAND STAGE DETAIL", "GRAND_STAGE_DETAIL", "#03C75A", enabled=True, setting=[], popup=True,
-         columns = [
-             {"code": "prdtName",            "value": "상품명",         "checked": True},
-             {"code": "product_status",      "value": "상품 상태",       "checked": True},
-             {"code": "brandName",           "value": "브랜드",         "checked": True},
-             {"code": "url",                 "value": "상품상세url",     "checked": True},
-             {"code": "sellAmt",             "value": "판매가",         "checked": True},
-             {"code": "available_options",   "value": "구매 가능한 옵션",  "checked": True},
-             {"code": "sold_out_options",    "value": "품절된 옵션",      "checked": True},
-             {"code": "styleInfo",           "value": "스타일코드",       "checked": True},
-             {"code": "prdtColorInfo",       "value": "색상코드",         "checked": True},
-             {"code": "retailer",            "value": "판매처",           "checked": True},
-         ]
-    ),
-    Site("ON THE SPOT BRAND", "ON_THE_SPOT_BRAND", "#A63191", enabled=True,  setting=[], popup=True,
-         columns = [
-             {"code": "brand_name",        "value": "브랜드명",   "checked": True},
-             {"code": "style_code",        "value": "스타일코드",  "checked": True},
-             {"code": "size",              "value": "사이즈",     "checked": True},
-             {"code": "price",             "value": "가격",      "checked": True},
-             {"code": "prd_link",          "value": "상품 링크",  "checked": True},
-         ]
-    ),
-    Site("ON THE SPOT DETAIL", "ON_THE_SPOT_DETAIL", "#A63191", enabled=True, setting=[], popup=True,
-         columns = [
-             {"code": "prdtName",            "value": "상품명",         "checked": True},
-             {"code": "product_status",      "value": "상품 상태",       "checked": True},
-             {"code": "brandName",           "value": "브랜드",         "checked": True},
-             {"code": "url",                 "value": "상품상세url",     "checked": True},
-             {"code": "sellAmt",             "value": "판매가",         "checked": True},
-             {"code": "available_options",   "value": "구매 가능한 옵션",  "checked": True},
-             {"code": "sold_out_options",    "value": "품절된 옵션",      "checked": True},
-             {"code": "styleInfo",           "value": "스타일코드",       "checked": True},
-             {"code": "prdtColorInfo",       "value": "색상코드",         "checked": True},
-             {"code": "retailer",            "value": "판매처",           "checked": True},
-         ]
-    ),
-    Site("OK MALL BRAND", "OK_MALL_BRAND", "#000000", enabled=True, setting=[], popup=True,
-        columns = [
-            {"code": "prd_link",        "value": "상품링크",   "checked": True},
-            {"code": "brand",           "value": "브랜드",     "checked": True},
-            {"code": "prd_name",        "value": "상품명",     "checked": True},
-            {"code": "price",           "value": "가격",      "checked": True},
-            {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
-        ]
-    ),
-    Site("OK MALL DETAIL", "OK_MALL_DETAIL", "#000000", enabled=True, setting=[], popup=True,
-         columns = [
-             {"code": "prd_link",        "value": "상품링크",   "checked": True},
-             {"code": "brand",           "value": "브랜드",     "checked": True},
-             {"code": "prd_name",        "value": "상품명",     "checked": True},
-             {"code": "price",           "value": "가격",      "checked": True},
-             {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
-         ]
-     ),
-    Site("THE FIRST HALL WEDDING", "THE_FIRST_HALL_WEDDING", "#918074", enabled=True, setting=[],
-         columns = [
-             {"code": "url",        "value": "URL",   "checked": True},
-             {"code": "no",         "value": "NO",    "checked": True},
-             {"code": "title",      "value": "제목",   "checked": True},
-             {"code": "content",    "value": "내용",   "checked": True},
-             {"code": "create_dt",  "value": "등록일", "checked": True},
-             {"code": "page",       "value": "PAGE",  "checked": True},
-         ]
-    )
+    # Site("ABC MART BRAND", "ABC_MART_BRAND", "#ee1c25", enabled=True, setting=[], popup=True,
+    #      columns = [
+    #          {"code": "brand_name",        "value": "브랜드명",   "checked": True},
+    #          {"code": "style_code",        "value": "스타일코드",  "checked": True},
+    #          {"code": "size",              "value": "사이즈",     "checked": True},
+    #          {"code": "price",             "value": "가격",      "checked": True},
+    #          {"code": "prd_link",          "value": "상품 링크",  "checked": True},
+    #      ]
+    # ),
+    # Site("ABC MART DETAIL", "ABC_MART_DETAIL", "#ee1c25", enabled=True, setting=[], popup=True,
+    #      columns = [
+    #          {"code": "prdtName",            "value": "상품명",         "checked": True},
+    #          {"code": "product_status",      "value": "상품 상태",       "checked": True},
+    #          {"code": "brandName",           "value": "브랜드",         "checked": True},
+    #          {"code": "url",                 "value": "상품상세url",     "checked": True},
+    #          {"code": "sellAmt",             "value": "판매가",         "checked": True},
+    #          {"code": "available_options",   "value": "구매 가능한 옵션",  "checked": True},
+    #          {"code": "sold_out_options",    "value": "품절된 옵션",      "checked": True},
+    #          {"code": "styleInfo",           "value": "스타일코드",       "checked": True},
+    #          {"code": "prdtColorInfo",       "value": "색상코드",         "checked": True},
+    #          {"code": "retailer",            "value": "판매처",           "checked": True},
+    #      ]
+    #  ),
+    # Site("GRAND STAGE BRAND", "GRAND_STAGE_BRAND", "#03C75A", enabled=True, setting=[], popup=True,
+    #      columns = [
+    #          {"code": "brand_name",        "value": "브랜드명",   "checked": True},
+    #          {"code": "style_code",        "value": "스타일코드",  "checked": True},
+    #          {"code": "size",              "value": "사이즈",     "checked": True},
+    #          {"code": "price",             "value": "가격",      "checked": True},
+    #          {"code": "prd_link",          "value": "상품 링크",  "checked": True},
+    #      ]
+    #  ),
+    # Site("GRAND STAGE DETAIL", "GRAND_STAGE_DETAIL", "#03C75A", enabled=True, setting=[], popup=True,
+    #      columns = [
+    #          {"code": "prdtName",            "value": "상품명",         "checked": True},
+    #          {"code": "product_status",      "value": "상품 상태",       "checked": True},
+    #          {"code": "brandName",           "value": "브랜드",         "checked": True},
+    #          {"code": "url",                 "value": "상품상세url",     "checked": True},
+    #          {"code": "sellAmt",             "value": "판매가",         "checked": True},
+    #          {"code": "available_options",   "value": "구매 가능한 옵션",  "checked": True},
+    #          {"code": "sold_out_options",    "value": "품절된 옵션",      "checked": True},
+    #          {"code": "styleInfo",           "value": "스타일코드",       "checked": True},
+    #          {"code": "prdtColorInfo",       "value": "색상코드",         "checked": True},
+    #          {"code": "retailer",            "value": "판매처",           "checked": True},
+    #      ]
+    # ),
+    # Site("ON THE SPOT BRAND", "ON_THE_SPOT_BRAND", "#A63191", enabled=True,  setting=[], popup=True,
+    #      columns = [
+    #          {"code": "brand_name",        "value": "브랜드명",   "checked": True},
+    #          {"code": "style_code",        "value": "스타일코드",  "checked": True},
+    #          {"code": "size",              "value": "사이즈",     "checked": True},
+    #          {"code": "price",             "value": "가격",      "checked": True},
+    #          {"code": "prd_link",          "value": "상품 링크",  "checked": True},
+    #      ]
+    # ),
+    # Site("ON THE SPOT DETAIL", "ON_THE_SPOT_DETAIL", "#A63191", enabled=True, setting=[], popup=True,
+    #      columns = [
+    #          {"code": "prdtName",            "value": "상품명",         "checked": True},
+    #          {"code": "product_status",      "value": "상품 상태",       "checked": True},
+    #          {"code": "brandName",           "value": "브랜드",         "checked": True},
+    #          {"code": "url",                 "value": "상품상세url",     "checked": True},
+    #          {"code": "sellAmt",             "value": "판매가",         "checked": True},
+    #          {"code": "available_options",   "value": "구매 가능한 옵션",  "checked": True},
+    #          {"code": "sold_out_options",    "value": "품절된 옵션",      "checked": True},
+    #          {"code": "styleInfo",           "value": "스타일코드",       "checked": True},
+    #          {"code": "prdtColorInfo",       "value": "색상코드",         "checked": True},
+    #          {"code": "retailer",            "value": "판매처",           "checked": True},
+    #      ]
+    # ),
+    # Site("OK MALL BRAND", "OK_MALL_BRAND", "#000000", enabled=True, setting=[], popup=True,
+    #     columns = [
+    #         {"code": "prd_link",        "value": "상품링크",   "checked": True},
+    #         {"code": "brand",           "value": "브랜드",     "checked": True},
+    #         {"code": "prd_name",        "value": "상품명",     "checked": True},
+    #         {"code": "price",           "value": "가격",      "checked": True},
+    #         {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
+    #     ]
+    # ),
+    # Site("OK MALL DETAIL", "OK_MALL_DETAIL", "#000000", enabled=True, setting=[], popup=True,
+    #      columns = [
+    #          {"code": "prd_link",        "value": "상품링크",   "checked": True},
+    #          {"code": "brand",           "value": "브랜드",     "checked": True},
+    #          {"code": "prd_name",        "value": "상품명",     "checked": True},
+    #          {"code": "price",           "value": "가격",      "checked": True},
+    #          {"code": "tag_size",        "value": "택 사이즈",  "checked": True},
+    #      ]
+    #  ),
+    # Site("THE FIRST HALL WEDDING", "THE_FIRST_HALL_WEDDING", "#918074", enabled=True, setting=[],
+    #      columns = [
+    #          {"code": "url",        "value": "URL",   "checked": True},
+    #          {"code": "no",         "value": "NO",    "checked": True},
+    #          {"code": "title",      "value": "제목",   "checked": True},
+    #          {"code": "content",    "value": "내용",   "checked": True},
+    #          {"code": "create_dt",  "value": "등록일", "checked": True},
+    #          {"code": "page",       "value": "PAGE",  "checked": True},
+    #      ]
+    # )
 ]
 
 # 전역 변수
