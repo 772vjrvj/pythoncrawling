@@ -8,6 +8,7 @@ import winreg
 import sys
 import shutil
 import threading
+import psutil
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
@@ -22,15 +23,17 @@ from src.utils.file_storage import load_data, save_data
 from src.utils.token_manager import start_token
 from src.utils.api import fetch_store_info
 from src.utils.logger import ui_log, init_pando_logger
-
+from src.ui.init_dialog import InitDialog
 
 class MainWindow(QWidget):
     # Signal: background init finished (success flag, info dict or None)
     proxy_ready = pyqtSignal(bool, dict)
 
 
+    # region : 초기 init
     def __init__(self):
         super().__init__()
+        self._init_dialog = None
         self.auto_login_checkbox = None
         self.current_store_id    = None
         self.start_button        = None
@@ -47,11 +50,26 @@ class MainWindow(QWidget):
         self.is_running          = False  # "시작" 후 동작 중 여부
         self.enable_tray_toast = False  # ✅ 알림(풍선) 표시 여부. 기본 False로 OFF
 
-        # --- 신규: 프록시 프로세스 및 로그 파일 핸들 보관 ---
+        # 프록시 프로세스 및 로그 파일 핸들 보관 ---
         self.proxy_proc = None
         self._proxy_log_file = None
 
         self.init_set()
+    # endregion
+
+
+    # region : 초기화
+    def init_set(self):
+        init_pando_logger()
+        self.ui_set()
+        self.create_tray()
+        self.load_store_id()
+        # connect signal for background init completion
+        self.proxy_ready.connect(self.on_proxy_ready)
+        # 자동로그인 설정이면 자동 시작
+        if self.current_store_id and self.store_name_value.text() != "-" and self.branch_value.text() != "-" and self.auto_login_checkbox.isChecked():
+            self.start_action()
+    # endregion ============================================================
 
 
     # region : 공용 경로 유틸
@@ -78,20 +96,6 @@ class MainWindow(QWidget):
         base = self.get_runtime_dir()
         return os.path.join(base, relative_path)
     # endregion
-
-
-    # region : 초기화
-    def init_set(self):
-        init_pando_logger()
-        self.ui_set()
-        self.create_tray()
-        self.load_store_id()
-        # connect signal for background init completion
-        self.proxy_ready.connect(self.on_proxy_ready)
-        # 자동로그인 설정이면 자동 시작
-        if self.current_store_id and self.store_name_value.text() != "-" and self.branch_value.text() != "-" and self.auto_login_checkbox.isChecked():
-            self.start_action()
-    # endregion ============================================================
 
 
     # region : UI 구성
@@ -224,9 +228,11 @@ class MainWindow(QWidget):
         icon_path = self.get_resource_path("assets/pandop_off.ico")
         if os.path.exists(icon_path):
             icon = QIcon(icon_path)
+            self.setWindowIcon(icon)        # 윈도우 아이콘
         else:
             # 아이콘 없으면 기본 아이콘 폴백
             icon = self.style().standardIcon(QStyle.SP_ComputerIcon)
+            self.setWindowIcon(icon)        # 윈도우 아이콘
 
         self.tray = QSystemTrayIcon(icon, self)
         self.tray.setToolTip("PandoP")
@@ -236,6 +242,7 @@ class MainWindow(QWidget):
         act_show = QAction("열기", self)
         act_show.triggered.connect(self.showMainWindow)
         menu.addAction(act_show)
+
         menu.addSeparator()
 
         self.tray_act_start = QAction("시작", self)
@@ -263,52 +270,316 @@ class MainWindow(QWidget):
     # endregion
 
 
-    def on_tray_activated(self, reason):
-        if reason == QSystemTrayIcon.Trigger:  # 좌클릭
-            self.showMainWindow()
-
-
-
-    def showMainWindow(self):
-        self.show()
-        self.raise_()
-        self.activateWindow()
-
-
-    # 설정 저장
-    def on_auto_login_changed(self):
-        auto_login = "T" if self.auto_login_checkbox.isChecked() else "F"
-        data = load_data()
-        data['auto_login'] = auto_login
-        save_data(data)
-
-
-    # 스토어 로드/저장
+    # region : 스토어 로드/저장
     def load_store_id(self):
         data = load_data()
         self.current_store_id = data.get("store_id") or self.current_store_id
         self.store_name_value.setText(data.get("name") or "-")
         self.branch_value.setText(data.get("branch") or "-")
+    # endregion
 
 
+    # region : 트레이 창 닫힘/최소화 처리 (트레이로 이동)
+    def closeEvent(self, event):
+        event.ignore()
+        self.hide()
+        # ✅ 숨길 때 토스트 띄우지 않음
+        if self.tray and self.enable_tray_toast:
+            self.tray.showMessage("PandoP", "트레이로 이동했습니다. 종료는 트레이 아이콘 우클릭 → '종료'.",
+                                  QSystemTrayIcon.Information, 2500)
+        ui_log("[판도] 창이 트레이로 숨겨졌습니다.")
+    # endregion
 
-    def save_store_id(self, store_id):
-        self.current_store_id = store_id
-        data = load_data()
-        data['store_id'] = store_id
-        save_data(data)
+
+    # region : 트래이 화면 최대화
+    def showMainWindow(self):
+        self.show()
+        self.raise_()
+        self.activateWindow()
+    # endregion
 
 
+    # region : 좌클릭(Trigger)시 창 토글
+    def on_tray_activated(self, reason):
+        if reason == QSystemTrayIcon.Trigger:  # 좌클릭
+            self.showMainWindow()
+    # endregion
 
-    def open_store_dialog(self):
-        dialog = StoreDialog(current_store_id=self.current_store_id)
-        if dialog.exec_() == QDialog.Accepted:
-            store_id = dialog.get_data()
-            if store_id is not None:
-                self.save_store_id(store_id)
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # 프록시 대기/시작/중지/종료
+    # region : mitmdump.exe 종료
+    # /F : 강제 종료 (force).
+    # /IM mitmdump.exe : 이미지 이름(프로세스 이름)을 기준으로 종료 대상 지정.
+    # /T : 자식 프로세스들도 함께 종료(트리 종료).
+    # taskkill /F /IM mitmdump.exe /T
+    def kill_mitmdump_process(self):
+        try:
+            res = subprocess.run(["taskkill", "/F", "/IM", "mitmdump.exe", "/T"],
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res.returncode == 0:
+                ui_log("[판도] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)")
+            else:
+                ui_log(f"[판도] taskkill rc={res.returncode}, stdout={res.stdout!r}, stderr={res.stderr!r}")
+        except Exception as e:
+            ui_log(f"[판도] mitmdump.exe 종료 실패: {e}")
+    # endregion
+
+
+    # region : 프록시/인증서 셋업 & 실행
+    def set_windows_gui_proxy(self, host: str = "127.0.0.1", port: int = 8080) -> None:
+        r"""
+        기존의 HKCU(사용자 레벨) 프록시 설정을 수행한 뒤,
+        가능한 경우 WinHTTP(머신/서비스 레벨)와도 동기화한다.
+
+        동작 요약:
+          1) HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings
+             에 ProxyEnable / ProxyServer 값 설정 (사용자 UI/브라우저에 적용)
+          2) WinInet API 호출로 변경 즉시 반영 (InternetSetOptionW SETTINGS_CHANGED + REFRESH)
+          3) self.set_winhttp_proxy() 호출하여 WinHTTP(서비스/머신 레벨)도 동기화 시도
+        주석/로그를 자세히 남기므로 문제 디버깅에 용이함.
+        """
+        key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+        proxy_value = f"{host}:{port}"
+        try:
+            # === 신규 ===: HKCU(현재 로그인 사용자) 레지스트리에 프록시 활성화/서버 저장
+            # HKEY_CURRENT_USER 를 사용하므로 "현재 프로세스를 실행한 사용자"의 설정을 변경함.
+            # 만약 프로세스가 SYSTEM등 다른 계정으로 실행 중이면 UI에 반영되지 않을 수 있음(이 경우 WinHTTP로도 동기화 필요).
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
+                # ProxyEnable = 1 (프록시 사용)
+                winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
+                # ProxyServer = "host:port"
+                winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, proxy_value)
+
+                # === 신규(선택사항) ===
+                # 로컬 주소(예: 127.0.0.1, localhost)나 특정 도메인을 프록시 우회하려면 ProxyOverride를 설정할 수 있음.
+                # 예: winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "<local>;127.0.0.1;localhost")
+                # (현재 코드는 기본적으로 우회 항목을 비워둠 — 필요 시 주석 해제)
+                # winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "<local>;127.0.0.1;localhost")
+
+            # === 신규 ===: WinInet에 설정 변경을 알림 -> 대부분의 앱/브라우저(WinINet 기반)에 즉시 반영
+            # INTERNET_OPTION_SETTINGS_CHANGED = 39, INTERNET_OPTION_REFRESH = 37
+            ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
+            ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
+
+            ui_log(f"[판도] Windows GUI 프록시 설정됨: {proxy_value} (HKCU에 적용)")
+
+            # === 신규 ===: WinHTTP (서비스/머신 레벨)도 동기화 시도
+            # - 과거 권한 문제로 UI에 반영되지 않았던 환경을 보완하기 위해 병행 적용 권장
+            try:
+                ok = self.set_winhttp_proxy(host, port)
+                if not ok:
+                    ui_log("[판도] WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음")
+            except Exception as e:
+                ui_log(f"[판도] WinHTTP 동기화 도중 예외 발생: {e}")
+
+        except Exception as e:
+            # 레지스트리 접근 실패, 권한 문제, 또는 WinInet API 호출 문제 등이 여기로 잡힘
+            ui_log(f"[판도] 프록시 설정 실패: {e}")
+    # endregion
+
+
+    # region : WinHTTP(머신/서비스 레벨) 프록시 설정
+    def set_winhttp_proxy(self, host: str = "127.0.0.1", port: int = 8080) -> bool:
+        """
+        WinHTTP (시스템/서비스 레벨) 프록시를 설정한다.
+        - 우선 현재 사용자(IE/WinINet)의 설정을 WinHTTP로 복사(import)하여 동기화하려 시도한다.
+        - import 실패 시 fallback으로 직접 WinHTTP 프록시를 설정(set)한다.
+        - 반환: 성공(True) / 실패(False)
+        주의: netsh 명령은 관리자 권한 필요. EXE는 --uac-admin으로 빌드되어야 함.
+        """
+        proxy_spec = f"{host}:{port}"
+        try:
+            # === 신규 ===: 우선 HKCU(IE/WinINet) 설정을 WinHTTP로 복사해 동기화
+            # import from IE 는 보통 "UI에서 설정한 값"을 WinHTTP로 옮김 -> WinHTTP를 사용하는 서비스도 동일한 프록시를 사용하게 됨
+            subprocess.run(
+                ["netsh", "winhttp", "import", "proxy", "source=ie"],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            ui_log(f"[판도] winhttp proxy imported from IE (동기화 성공)")
+            return True
+        except subprocess.CalledProcessError as e:
+            # import가 실패하면(예: 현재 IE 설정 없음 등) fallback으로 직접 WinHTTP 프록시를 설정시도
+            ui_log(f"[판도] winhttp import 실패(아마 IE설정 없음) — fallback 시도: {e}")
+        except Exception as e:
+            ui_log(f"[판도] winhttp import 예외: {e}")
+
+        # === 신규 ===: import 실패 시 직접 설정 시도
+        try:
+            subprocess.run(
+                ["netsh", "winhttp", "set", "proxy", proxy_spec],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            ui_log(f"[판도] winhttp proxy set: {proxy_spec} (fallback)")
+            return True
+        except subprocess.CalledProcessError as e:
+            ui_log(f"[판도] winhttp set proxy 실패: rc={e.returncode} / {e}")
+            return False
+        except Exception as e:
+            ui_log(f"[판도] winhttp set proxy 예외: {e}")
+            return False
+    # endregion
+
+
+    # region : 인증서 초기화 및 프록시 서버 시작
+    def init_cert_and_proxy(self):
+        ui_log("[판도] 인증서 초기화 및 프록시 서버 시작 중...")
+
+        # 1. mitmdump.exe process 종료
+        self.kill_mitmdump_process()
+
+        # 2. 프록시/인증서 셋업 & 실행
+        self.set_windows_gui_proxy()
+
+        # 3. 인증서 경로
+        # C:\Users\772vj\.mitmproxy
+        user_profile  = os.environ.get("USERPROFILE", "") #  C:\Users\772vj
+        mitm_folder   = os.path.join(user_profile, ".mitmproxy") # C:\Users\772vj\.mitmproxy
+        cert_path     = os.path.join(mitm_folder, "mitmproxy-ca-cert.cer")
+
+        ui_log("[판도] 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)")
+        # 1) 기존 인증서/폴더 정리 (있으면 삭제)
+        try:
+            if os.path.exists(cert_path):
+                # 기존 루트스토어에 추가된 mitmproxy 인증서 삭제 (출력 캡처)
+                try:
+                    res = subprocess.run(
+                        ["certutil", "-delstore", "Root", "mitmproxy"],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+                    if res.returncode == 0:
+                        ui_log("[판도] certutil -delstore: 삭제 성공(루트 스토어에서 제거됨).")
+                        # 필요하면 res.stdout 내용도 로그로 남길 수 있음
+                        if res.stdout:
+                            ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
+                    else:
+                        ui_log(f"[판도] certutil -delstore 실패: rc={res.returncode}")
+                        if res.stdout:
+                            ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
+                        if res.stderr:
+                            ui_log(f"[판도] certutil stderr: {res.stderr.strip()}")
+                except Exception as e:
+                    ui_log(f"[판도] certutil -delstore 호출 예외: {e}")
+
+            if os.path.exists(mitm_folder):
+                # 기존 폴더 제거 (인증서/설정 초기화)
+                try:
+                    shutil.rmtree(mitm_folder)
+                    ui_log(f"[판도] 기존 .mitmproxy 폴더 삭제: {mitm_folder}")
+                except Exception as e:
+                    ui_log(f"[판도] .mitmproxy 삭제 실패: {e}")
+
+        except Exception as e:
+            ui_log(f"[판도] 기존 인증서/폴더 정리 중 에러: {e}")
+
+
+        ui_log(f"[판도] 🔧 mitmdump 실행 중 (인증서 생성 시작)...")
+        ui_log(f"[판도] 🔧 mitmdump 경로 : {mitm_folder}")
+
+        # 2) mitmdump 실행하여 인증서 생성 시도
+        mitmdump_path = self.get_resource_path("mitmdump.exe")
+        if not os.path.exists(mitmdump_path):
+            ui_log(f"[판도] mitmdump 실행 파일 미발견: {mitmdump_path}")
+            return
+
+        try:
+            proc = subprocess.Popen([mitmdump_path],
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                    creationflags=subprocess.CREATE_NO_WINDOW)
+        except Exception as e:
+            ui_log(f"[판도] mitmdump 실행 실패: {e}")
+            return
+
+        # 3) 인증서 파일 생성 대기 (타임아웃)
+        ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인중...")
+        timeout = 30  # 초
+        interval = 0.5
+        elapsed = 0.0
+        while elapsed < timeout:
+            if os.path.exists(cert_path):
+                break
+            time.sleep(interval)
+            elapsed += interval
+
+        if not os.path.exists(cert_path):
+            ui_log("[판도] 🔧 인증서 파일 생성 타임아웃 (없음): {cert_path}")
+            # mitmdump 프로세스 정리 후 리턴
+            self.kill_mitmdump_process()
+            return
+        else:
+            ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인 완료")
+
+
+        # mitmdump를 잠깐 실행시켜 인증서를 생성한 뒤(생성 확인용 대기), 프로세스를 종료
+        self.kill_mitmdump_process()
+        ui_log("[판도] 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료")
+
+
+        # 4) 생성된 인증서를 루트 스토어에 등록
+        ui_log("[판도] 🔧 mitmdump 인증서 생성 루트 스토어에 등록")
+        # certutil로 루트 인증서 조작은 항상 관리자 권한 필요
+        # === 인증서 파일을 루트 스토어에 등록 (출력 캡처 버전) ===
+        res = subprocess.run(
+            ["certutil", "-addstore", "Root", cert_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        if res.returncode != 0:
+            ui_log(f"[판도] certutil addstore 실패: rc={res.returncode}, stdout={res.stdout}, stderr={res.stderr}")
+            # 필요하면 추가적인 롤백(예: 파일/레지스트리 정리) 수행 후 종료
+            return
+        ui_log("[판도] 인증서 등록 완료!")
+        ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
+
+        self.run_proxy()
+    # endregion
+
+
+    # region : proxy 서버 시작 
+    def run_proxy(self):
+        ui_log("[판도] [프록시] 프록시 실행 준비 중...")
+        mitmdump_path = self.get_resource_path("mitmdump.exe")
+        script_path   = self.get_resource_path("src/server/proxy_server.py")
+        logs_dir      = self.get_resource_path("logs")
+        os.makedirs(logs_dir, exist_ok=True)
+        log_path = os.path.join(logs_dir, "proxy_server.log")
+
+        try:
+            # 이전에 열린 로그 파일 핸들이 있으면 닫아두기 (보호)
+            try:
+                if getattr(self, "_proxy_log_file", None):
+                    try:
+                        self._proxy_log_file.close()
+                    except Exception:
+                        pass
+                    self._proxy_log_file = None
+            except Exception:
+                pass
+
+            # 로그 파일을 열어 핸들을 보관한 채로 프로세스 실행 (나중에 정리 시 닫음)
+            # (with가 아닌 직접 열어 장기간 실행 중에도 파일 핸들이 살아있도록 보장)
+            self._proxy_log_file = open(log_path, "w", encoding="utf-8")
+
+            # 프로세스를 저장(self.proxy_proc) — 이후 종료 시 우아하게 정리 가능
+            self.proxy_proc = subprocess.Popen(
+                [mitmdump_path, "--no-http2", "--ssl-insecure", "-s", script_path],
+                stdout=self._proxy_log_file,
+                stderr=subprocess.STDOUT,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+
+            ui_log(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
+        except Exception as e:
+            ui_log(f"[판도] [프록시] 실행 실패: {e}")
+    # endregion
+
+
+    # region : 프록시 대기/시작/중지/종료
     def wait_for_proxy(self, port=8080, timeout=30):
         start = time.time()
         while time.time() - start < timeout:
@@ -320,30 +591,10 @@ class MainWindow(QWidget):
             time.sleep(0.5)
         ui_log(f"[판도] 프록시 서버가 포트 {port}에서 실행되지 않았습니다.")
         return False
+    # endregion
 
 
-    # region : 시작버튼 클릭시 시작 이벤트
-    def start_action(self):
-        """시작(프록시/토큰/매장정보)"""
-        if self.is_running:
-            return
-
-        if not self.current_store_id:
-            return
-
-        # disable start button to prevent repeated clicks while background thread runs
-        try:
-            self.start_button.setEnabled(False)
-            self.store_button.setEnabled(False)
-        except Exception:
-            pass
-
-        # run init_cert_and_proxy and subsequent token/fetch in background
-        t = threading.Thread(target=self._background_init, daemon=True)
-        t.start()
-    # endregion ====================
-
-
+    # region : background 초기화
     def _background_init(self):
         """
         백그라운드에서 인증서/프록시 초기화 후 프록시 확인, 토큰/매장정보 요청까지 수행.
@@ -398,12 +649,59 @@ class MainWindow(QWidget):
             except Exception:
                 pass
 
+        # MODIFIED: Removed direct dialog close from background thread.
+        # Previously the background thread closed/deleted the dialog here.
+        # That UI action is unsafe from a non-GUI thread and has been moved to on_proxy_ready().
+        # (No code here.)
+    # endregion
 
+
+    # region : tray icon set
+    def set_tray_icon(self, relative_path: str) -> None:
+        """
+        트레이 아이콘을 교체한다. 존재하지 않으면 기본 아이콘으로 폴백.
+        """
+        try:
+            path = self.get_resource_path(relative_path)
+            if os.path.exists(path):
+                icon = QIcon(path)
+                self.tray.setIcon(icon)
+                # (선택) 메인 윈도우 아이콘도 맞춰서 변경
+                self.setWindowIcon(icon)
+                ui_log(f"[판도] 트레이 아이콘 변경: {relative_path}")
+            else:
+                # 폴백: 시스템 기본 아이콘
+                fallback = self.style().standardIcon(QStyle.SP_ComputerIcon)
+                self.tray.setIcon(fallback)
+                self.setWindowIcon(fallback)
+                ui_log(f"[판도] 아이콘 파일 없음 → 기본 아이콘 사용: {relative_path}")
+        except Exception as e:
+            ui_log(f"[판도] 아이콘 변경 실패: {e}")
+    # endregion
+
+
+    # region : proxy 준비
     def on_proxy_ready(self, success: bool, info: dict):
         """
         백그라운드 초기화 완료 콜백 (메인 스레드).
         UI 업데이트 및 상태 전환을 여기서 안전하게 수행.
         """
+
+        # MODIFIED: Close / delete InitDialog here (GUI thread) instead of background thread.
+        try:
+            if getattr(self, "_init_dialog", None):
+                try:
+                    self._init_dialog.close()
+                except Exception:
+                    pass
+                try:
+                    self._init_dialog.deleteLater()
+                except Exception:
+                    pass
+                self._init_dialog = None
+        except Exception:
+            pass
+
         # re-enable start/store in failure case (or adjust when success)
         if not success:
             try:
@@ -455,49 +753,76 @@ class MainWindow(QWidget):
         # ↓↓↓ 알림 off (필요하면 True로 켜고, 메시지 유지)
         if self.tray and self.enable_tray_toast:
             self.tray.showMessage("PandoP", "동작을 시작했습니다. 창을 닫아도 트레이에서 계속 실행됩니다.", QSystemTrayIcon.Information, 2500)
+    # endregion
 
 
-    def stop_action(self):
-        ui_log(f"[판도] 🧑‍💻 유저 화면 중지 버튼 클릭")
-        """중지(프록시/인증서 정리). 창은 닫지 않음."""
-        if not self.is_running:
+    # region : [버튼 이벤트] 자동 시작 저장
+    def on_auto_login_changed(self):
+        auto_login = "T" if self.auto_login_checkbox.isChecked() else "F"
+        data = load_data()
+        data['auto_login'] = auto_login
+        save_data(data)
+    # endregion
+
+
+    # region : [버튼 이벤트] id 저장
+    def save_store_id(self, store_id):
+        self.current_store_id = store_id
+        data = load_data()
+        data['store_id'] = store_id
+        save_data(data)
+    # endregion
+
+
+    # region : [버튼 이벤트] 업장 저장 팝업
+    def open_store_dialog(self):
+        dialog = StoreDialog(current_store_id=self.current_store_id)
+        if dialog.exec_() == QDialog.Accepted:
+            store_id = dialog.get_data()
+            if store_id is not None:
+                self.save_store_id(store_id)
+    # endregion
+
+
+    # region : [버튼 이벤트] 시작버튼 클릭시 시작 이벤트
+    def start_action(self):
+        """시작(프록시/토큰/매장정보)"""
+        if self.is_running:
             return
-        self._do_cleanup()  # 실제 정리 로직
 
-        # 상태 전환: 중지됨
-        self.is_running = False
-        # 중지(대기) 아이콘
-        self.set_tray_icon("assets/pandop_off.ico")
-        self.store_button.show()
-        self.store_button.setEnabled(True)
+        if not self.current_store_id:
+            return
 
+        # disable start button to prevent repeated clicks while background thread runs
         try:
-            self.start_button.clicked.disconnect()
+            self.start_button.setEnabled(False)
+            self.store_button.setEnabled(False)
         except Exception:
             pass
-        self.start_button.setText("시작")
-        self.start_button.clicked.connect(self.start_action)
 
-        if self.tray_act_start: self.tray_act_start.setEnabled(True)
-        if self.tray_act_stop:  self.tray_act_stop.setEnabled(False)
+        self._init_dialog = InitDialog(self)
+        self._init_dialog.show()
 
-        if self.tray and self.enable_tray_toast:
-            self.tray.showMessage("PandoP", "동작을 중지했습니다. 필요 시 다시 시작하세요.",
-                                  QSystemTrayIcon.Information, 2500)
-
+        # run init_cert_and_proxy and subsequent token/fetch in background
+        t = threading.Thread(target=self._background_init, daemon=True)
+        t.start()
+    # endregion ====================
 
 
-    def quit_app(self):
-        """트레이 '종료'에서 호출: 동작 중이면 정리 후 앱 종료"""
-        ui_log(f"[판도] 🧑‍💻 유저 트레이 종료 버튼 클릭")
-        if self.is_running:
-            self._do_cleanup()
-            self.is_running = False
-        # 앱 완전 종료
-        from PyQt5.QtWidgets import QApplication
-        QApplication.instance().quit()
+    # region: mitmdump 프로세스 존재 여부 확인 (tasklist 사용, 외부 의존성 없음)
+    def _is_mitmdump_running(self) -> bool:
+        try:
+            # tasklist 출력에서 mitmdump.exe를 찾음
+            res = subprocess.run(["tasklist", "/FI", "IMAGENAME eq mitmdump.exe"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+            out = (res.stdout or "").lower()
+            return "mitmdump.exe" in out
+        except Exception:
+            # 호출 실패 시 안전하게 True로 두지 않고 False 반환(없는 것으로 간주)
+            return False
+    # endregion
 
 
+    # region : 해제 함수 winhttp proxy reset
     def reset_winhttp_proxy(self) -> bool:
         try:
             subprocess.run(["netsh", "winhttp", "reset", "proxy"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -506,10 +831,10 @@ class MainWindow(QWidget):
         except Exception as e:
             ui_log(f"[판도] winhttp reset 실패: {str(e)}")
             return False
+    # endregion
 
 
-
-    # === 신규 ===: 해제 함수 (HKCU + WinHTTP 모두 롤백)
+    # region: 해제 함수 (HKCU + WinHTTP 모두 롤백)
     def unset_windows_gui_proxy(self):
         key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
         try:
@@ -528,21 +853,10 @@ class MainWindow(QWidget):
             self.reset_winhttp_proxy()
         except Exception as e:
             ui_log(f"[판도] winhttp reset 예외: {str(e)}")
+    # endregion
 
 
-    # === 신규 ===: mitmdump 프로세스 존재 여부 확인 (tasklist 사용, 외부 의존성 없음)
-    def _is_mitmdump_running(self) -> bool:
-        try:
-            # tasklist 출력에서 mitmdump.exe를 찾음
-            res = subprocess.run(["tasklist", "/FI", "IMAGENAME eq mitmdump.exe"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
-            out = (res.stdout or "").lower()
-            return "mitmdump.exe" in out
-        except Exception:
-            # 호출 실패 시 안전하게 True로 두지 않고 False 반환(없는 것으로 간주)
-            return False
-
-
-    # 기존 정리 로직 분리
+    # region : 기존 정리 로직 분리
     def _do_cleanup(self):
         """프록시/인증서 정리 (창 닫지 않음). 기존 cleanup_and_exit의 핵심만 분리."""
         ui_log("[판도] 🧹 정리 작업 수행 중...")
@@ -612,7 +926,7 @@ class MainWindow(QWidget):
         # 2) 인증서 제거 (certutil로 루트스토어에서 제거) 및 .mitmproxy 폴더 삭제
         try:
             # certutil로 루트 스토어에서 'mitmproxy' common name으로 된 항목 삭제 시도
-            # === 신규 ===: certutil 반환값을 체크하여 실패 시 로그 남김
+            # certutil 반환값을 체크하여 실패 시 로그 남김
             result = subprocess.call(["certutil", "-delstore", "Root", "mitmproxy"],
                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if result == 0:
@@ -620,7 +934,7 @@ class MainWindow(QWidget):
             else:
                 ui_log(f"[판도] certutil -delstore 반환값: {result} (삭제 안 됐거나 항목 없음).")
 
-            # === 신규 ===: 폴더 제거는 shutil.rmtree 권장(쉘 호출 회피, 예외처리 가능)
+            # 폴더 제거는 shutil.rmtree 권장(쉘 호출 회피, 예외처리 가능)
             user_profile = os.environ.get("USERPROFILE", "")
             mitm_folder = os.path.join(user_profile, ".mitmproxy")
             if os.path.exists(mitm_folder):
@@ -644,323 +958,48 @@ class MainWindow(QWidget):
             ui_log("[판도] 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).")
         except Exception as e:
             ui_log(f"[판도] 인증서 제거 전체 실패: {e}")
-
-
-
-
-    # (유지) 기존 메서드는 Quit 경로에서만 사용하도록 래핑 가능
-    def cleanup_and_exit(self):
-        """하위호환: 호출되면 정리 후 앱 종료"""
-        self._do_cleanup()
-        self.close()  # closeEvent에서 실제 종료 로직을 가로채지 않도록 아래에서 처리
-
-
-    # region : 프록시/인증서 셋업 & 실행
-    def set_windows_gui_proxy(self, host: str = "127.0.0.1", port: int = 8080) -> None:
-        r"""
-        기존의 HKCU(사용자 레벨) 프록시 설정을 수행한 뒤,
-        가능한 경우 WinHTTP(머신/서비스 레벨)와도 동기화한다.
-
-        동작 요약:
-          1) HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings
-             에 ProxyEnable / ProxyServer 값 설정 (사용자 UI/브라우저에 적용)
-          2) WinInet API 호출로 변경 즉시 반영 (InternetSetOptionW SETTINGS_CHANGED + REFRESH)
-          3) self.set_winhttp_proxy() 호출하여 WinHTTP(서비스/머신 레벨)도 동기화 시도
-        주석/로그를 자세히 남기므로 문제 디버깅에 용이함.
-        """
-        key_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
-        proxy_value = f"{host}:{port}"
-        try:
-            # === 신규 ===: HKCU(현재 로그인 사용자) 레지스트리에 프록시 활성화/서버 저장
-            # HKEY_CURRENT_USER 를 사용하므로 "현재 프로세스를 실행한 사용자"의 설정을 변경함.
-            # 만약 프로세스가 SYSTEM등 다른 계정으로 실행 중이면 UI에 반영되지 않을 수 있음(이 경우 WinHTTP로도 동기화 필요).
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_SET_VALUE) as key:
-                # ProxyEnable = 1 (프록시 사용)
-                winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
-                # ProxyServer = "host:port"
-                winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, proxy_value)
-
-                # === 신규(선택사항) ===
-                # 로컬 주소(예: 127.0.0.1, localhost)나 특정 도메인을 프록시 우회하려면 ProxyOverride를 설정할 수 있음.
-                # 예: winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "<local>;127.0.0.1;localhost")
-                # (현재 코드는 기본적으로 우회 항목을 비워둠 — 필요 시 주석 해제)
-                # winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "<local>;127.0.0.1;localhost")
-
-            # === 신규 ===: WinInet에 설정 변경을 알림 -> 대부분의 앱/브라우저(WinINet 기반)에 즉시 반영
-            # INTERNET_OPTION_SETTINGS_CHANGED = 39, INTERNET_OPTION_REFRESH = 37
-            ctypes.windll.Wininet.InternetSetOptionW(0, 39, 0, 0)
-            ctypes.windll.Wininet.InternetSetOptionW(0, 37, 0, 0)
-
-            ui_log(f"[판도] Windows GUI 프록시 설정됨: {proxy_value} (HKCU에 적용)")
-
-            # === 신규 ===: WinHTTP (서비스/머신 레벨)도 동기화 시도
-            # - 과거 권한 문제로 UI에 반영되지 않았던 환경을 보완하기 위해 병행 적용 권장
-            try:
-                ok = self.set_winhttp_proxy(host, port)
-                if not ok:
-                    ui_log("[판도] WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음")
-            except Exception as e:
-                ui_log(f"[판도] WinHTTP 동기화 도중 예외 발생: {e}")
-
-        except Exception as e:
-            # 레지스트리 접근 실패, 권한 문제, 또는 WinInet API 호출 문제 등이 여기로 잡힘
-            ui_log(f"[판도] 프록시 설정 실패: {e}")
     # endregion
 
 
-
-    # region : WinHTTP(머신/서비스 레벨) 프록시 설정
-    def set_winhttp_proxy(self, host: str = "127.0.0.1", port: int = 8080) -> bool:
-        """
-        WinHTTP (시스템/서비스 레벨) 프록시를 설정한다.
-        - 우선 현재 사용자(IE/WinINet)의 설정을 WinHTTP로 복사(import)하여 동기화하려 시도한다.
-        - import 실패 시 fallback으로 직접 WinHTTP 프록시를 설정(set)한다.
-        - 반환: 성공(True) / 실패(False)
-        주의: netsh 명령은 관리자 권한 필요. EXE는 --uac-admin으로 빌드되어야 함.
-        """
-        proxy_spec = f"{host}:{port}"
-        try:
-            # === 신규 ===: 우선 HKCU(IE/WinINet) 설정을 WinHTTP로 복사해 동기화
-            # import from IE 는 보통 "UI에서 설정한 값"을 WinHTTP로 옮김 -> WinHTTP를 사용하는 서비스도 동일한 프록시를 사용하게 됨
-            subprocess.run(
-                ["netsh", "winhttp", "import", "proxy", "source=ie"],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            ui_log(f"[판도] winhttp proxy imported from IE (동기화 성공)")
-            return True
-        except subprocess.CalledProcessError as e:
-            # import가 실패하면(예: 현재 IE 설정 없음 등) fallback으로 직접 WinHTTP 프록시를 설정시도
-            ui_log(f"[판도] winhttp import 실패(아마 IE설정 없음) — fallback 시도: {e}")
-        except Exception as e:
-            ui_log(f"[판도] winhttp import 예외: {e}")
-
-        # === 신규 ===: import 실패 시 직접 설정 시도
-        try:
-            subprocess.run(
-                ["netsh", "winhttp", "set", "proxy", proxy_spec],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            ui_log(f"[판도] winhttp proxy set: {proxy_spec} (fallback)")
-            return True
-        except subprocess.CalledProcessError as e:
-            ui_log(f"[판도] winhttp set proxy 실패: rc={e.returncode} / {e}")
-            return False
-        except Exception as e:
-            ui_log(f"[판도] winhttp set proxy 예외: {e}")
-            return False
-    # endregion
-
-
-
-    # region : mitmdump.exe 종료
-    # /F : 강제 종료 (force).
-    # /IM mitmdump.exe : 이미지 이름(프로세스 이름)을 기준으로 종료 대상 지정.
-    # /T : 자식 프로세스들도 함께 종료(트리 종료).
-    # taskkill /F /IM mitmdump.exe /T
-    def kill_mitmdump_process(self):
-        try:
-            res = subprocess.run(["taskkill", "/F", "/IM", "mitmdump.exe", "/T"],
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if res.returncode == 0:
-                ui_log("[판도] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)")
-            else:
-                ui_log(f"[판도] taskkill rc={res.returncode}, stdout={res.stdout!r}, stderr={res.stderr!r}")
-        except Exception as e:
-            ui_log(f"[판도] mitmdump.exe 종료 실패: {e}")
-    # endregion
-
-
-    # region : 인증서 초기화 및 프록시 서버 시작
-    def init_cert_and_proxy(self):
-        ui_log("[판도] 인증서 초기화 및 프록시 서버 시작 중...")
-
-        # 1. mitmdump.exe process 종료
-        self.kill_mitmdump_process()
-
-        # 2. 프록시/인증서 셋업 & 실행
-        self.set_windows_gui_proxy()
-
-        # 3. 인증서 경로
-        # C:\Users\772vj\.mitmproxy
-        user_profile  = os.environ.get("USERPROFILE", "") #  C:\Users\772vj
-        mitm_folder   = os.path.join(user_profile, ".mitmproxy") # C:\Users\772vj\.mitmproxy
-        cert_path     = os.path.join(mitm_folder, "mitmproxy-ca-cert.cer")
-
-        ui_log("[판도] 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)")
-        # 1) 기존 인증서/폴더 정리 (있으면 삭제)
-        try:
-            if os.path.exists(cert_path):
-                # 기존 루트스토어에 추가된 mitmproxy 인증서 삭제 (출력 캡처)
-                try:
-                    res = subprocess.run(
-                        ["certutil", "-delstore", "Root", "mitmproxy"],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        text=True,
-                    )
-                    if res.returncode == 0:
-                        ui_log("[판도] certutil -delstore: 삭제 성공(루트 스토어에서 제거됨).")
-                        # 필요하면 res.stdout 내용도 로그로 남길 수 있음
-                        if res.stdout:
-                            ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
-                    else:
-                        ui_log(f"[판도] certutil -delstore 실패: rc={res.returncode}")
-                        if res.stdout:
-                            ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
-                        if res.stderr:
-                            ui_log(f"[판도] certutil stderr: {res.stderr.strip()}")
-                except Exception as e:
-                    ui_log(f"[판도] certutil -delstore 호출 예외: {e}")
-
-
-            if os.path.exists(mitm_folder):
-                # 기존 폴더 제거 (인증서/설정 초기화)
-                try:
-                    shutil.rmtree(mitm_folder)
-                    ui_log(f"[판도] 기존 .mitmproxy 폴더 삭제: {mitm_folder}")
-                except Exception as e:
-                    ui_log(f"[판도] .mitmproxy 삭제 실패: {e}")
-
-
-        except Exception as e:
-            ui_log(f"[판도] 기존 인증서/폴더 정리 중 에러: {e}")
-
-
-        ui_log(f"[판도] 🔧 mitmdump 실행 중 (인증서 생성 시작)...")
-        ui_log(f"[판도] 🔧 mitmdump 경로 : {mitm_folder}")
-
-        # 2) mitmdump 실행하여 인증서 생성 시도
-        mitmdump_path = self.get_resource_path("mitmdump.exe")
-        if not os.path.exists(mitmdump_path):
-            ui_log(f"[판도] mitmdump 실행 파일 미발견: {mitmdump_path}")
+    # region : [버튼 이벤트] 중지 버튼 클릭시 이벤트
+    def stop_action(self):
+        ui_log(f"[판도] 🧑‍💻 유저 화면 중지 버튼 클릭")
+        """중지(프록시/인증서 정리). 창은 닫지 않음."""
+        if not self.is_running:
             return
+        self._do_cleanup()  # 실제 정리 로직
 
-
-        try:
-            proc = subprocess.Popen([mitmdump_path],
-                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                    creationflags=subprocess.CREATE_NO_WINDOW)
-        except Exception as e:
-            ui_log(f"[판도] mitmdump 실행 실패: {e}")
-            return
-
-        # 3) 인증서 파일 생성 대기 (타임아웃)
-        ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인중...")
-        timeout = 30  # 초
-        interval = 0.5
-        elapsed = 0.0
-        while elapsed < timeout:
-            if os.path.exists(cert_path):
-                break
-            time.sleep(interval)
-            elapsed += interval
-
-        if not os.path.exists(cert_path):
-            ui_log("[판도] 🔧 인증서 파일 생성 타임아웃 (없음): {cert_path}")
-            # mitmdump 프로세스 정리 후 리턴
-            self.kill_mitmdump_process()
-            return
-        else:
-            ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인 완료")
-
-
-        # mitmdump를 잠깐 실행시켜 인증서를 생성한 뒤(생성 확인용 대기), 프로세스를 종료
-        self.kill_mitmdump_process()
-        ui_log("[판도] 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료")
-
-
-        # 4) 생성된 인증서를 루트 스토어에 등록
-        ui_log("[판도] 🔧 mitmdump 인증서 생성 루트 스토어에 등록")
-        # certutil로 루트 인증서 조작은 항상 관리자 권한 필요
-        # === 인증서 파일을 루트 스토어에 등록 (출력 캡처 버전) ===
-        res = subprocess.run(
-            ["certutil", "-addstore", "Root", cert_path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        if res.returncode != 0:
-            ui_log(f"[판도] certutil addstore 실패: rc={res.returncode}, stdout={res.stdout}, stderr={res.stderr}")
-            # 필요하면 추가적인 롤백(예: 파일/레지스트리 정리) 수행 후 종료
-            return
-        ui_log("[판도] 인증서 등록 완료!")
-        ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
-
-        self.run_proxy()
-
-
-
-    def run_proxy(self):
-        ui_log("[판도] [프록시] 프록시 실행 준비 중...")
-        mitmdump_path = self.get_resource_path("mitmdump.exe")
-        script_path   = self.get_resource_path("src/server/proxy_server.py")
-        logs_dir      = self.get_resource_path("logs")
-        os.makedirs(logs_dir, exist_ok=True)
-        log_path = os.path.join(logs_dir, "proxy_server.log")
+        # 상태 전환: 중지됨
+        self.is_running = False
+        # 중지(대기) 아이콘
+        self.set_tray_icon("assets/pandop_off.ico")
+        self.store_button.show()
+        self.store_button.setEnabled(True)
 
         try:
-            # 이전에 열린 로그 파일 핸들이 있으면 닫아두기 (보호)
-            try:
-                if getattr(self, "_proxy_log_file", None):
-                    try:
-                        self._proxy_log_file.close()
-                    except Exception:
-                        pass
-                    self._proxy_log_file = None
-            except Exception:
-                pass
+            self.start_button.clicked.disconnect()
+        except Exception:
+            pass
+        self.start_button.setText("시작")
+        self.start_button.clicked.connect(self.start_action)
 
-            # 로그 파일을 열어 핸들을 보관한 채로 프로세스 실행 (나중에 정리 시 닫음)
-            # (with가 아닌 직접 열어 장기간 실행 중에도 파일 핸들이 살아있도록 보장)
-            self._proxy_log_file = open(log_path, "w", encoding="utf-8")
+        if self.tray_act_start: self.tray_act_start.setEnabled(True)
+        if self.tray_act_stop:  self.tray_act_stop.setEnabled(False)
 
-            # 프로세스를 저장(self.proxy_proc) — 이후 종료 시 우아하게 정리 가능
-            self.proxy_proc = subprocess.Popen(
-                [mitmdump_path, "--no-http2", "--ssl-insecure", "-s", script_path],
-                stdout=self._proxy_log_file,
-                stderr=subprocess.STDOUT,
-                creationflags=subprocess.CREATE_NO_WINDOW
-            )
-
-            ui_log(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
-        except Exception as e:
-            ui_log(f"[판도] [프록시] 실행 실패: {e}")
-
-
-
-    def set_tray_icon(self, relative_path: str) -> None:
-        """
-        트레이 아이콘을 교체한다. 존재하지 않으면 기본 아이콘으로 폴백.
-        """
-        try:
-            path = self.get_resource_path(relative_path)
-            if os.path.exists(path):
-                icon = QIcon(path)
-                self.tray.setIcon(icon)
-                # (선택) 메인 윈도우 아이콘도 맞춰서 변경
-                self.setWindowIcon(icon)
-                ui_log(f"[판도] 트레이 아이콘 변경: {relative_path}")
-            else:
-                # 폴백: 시스템 기본 아이콘
-                fallback = self.style().standardIcon(QStyle.SP_ComputerIcon)
-                self.tray.setIcon(fallback)
-                ui_log(f"[판도] 아이콘 파일 없음 → 기본 아이콘 사용: {relative_path}")
-        except Exception as e:
-            ui_log(f"[판도] 아이콘 변경 실패: {e}")
-
-
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # 창 닫힘/최소화 처리 (트레이로 이동)
-    def closeEvent(self, event):
-        event.ignore()
-        self.hide()
-        # ✅ 숨길 때 토스트 띄우지 않음
         if self.tray and self.enable_tray_toast:
-            self.tray.showMessage("PandoP", "트레이로 이동했습니다. 종료는 트레이 아이콘 우클릭 → '종료'.",
+            self.tray.showMessage("PandoP", "동작을 중지했습니다. 필요 시 다시 시작하세요.",
                                   QSystemTrayIcon.Information, 2500)
-        ui_log("[판도] 창이 트레이로 숨겨졌습니다.")
+    # endregion
+
+
+    # region : 트레이 '종료'에서 호출
+    def quit_app(self):
+        """트레이 '종료'에서 호출: 동작 중이면 정리 후 앱 종료"""
+        ui_log(f"[판도] 🧑‍💻 유저 트레이 종료 버튼 클릭")
+        if self.is_running:
+            self._do_cleanup()
+            self.is_running = False
+        # 앱 완전 종료
+        from PyQt5.QtWidgets import QApplication
+        QApplication.instance().quit()
+    # endregion
