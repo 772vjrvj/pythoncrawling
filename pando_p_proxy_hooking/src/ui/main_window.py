@@ -494,9 +494,51 @@ class MainWindow(QWidget):
             ui_log(f"[판도] mitmdump 실행 실패: {e}")
             return
 
+        # --- 방금 수정됨: CPU 상태에 따라 타임아웃을 동적으로 조정 --- (시작)
+        try:
+            # 짧은 간격으로 현재 CPU 사용률 측정
+            try:
+                cpu_percent = psutil.cpu_percent(interval=0.5)
+            except Exception:
+                cpu_percent = 0.0
+
+            # 기본 타임아웃: 60초. CPU 부하가 매우 높으면 더 늘림.
+            timeout = 60
+            if cpu_percent >= 90:
+                timeout = 120
+            elif cpu_percent >= 60:
+                timeout = 45
+
+            # 주석 표시는 변경된 부분을 쉽게 찾기 위함
+            # 방금 수정됨
+            ui_log(f"[판도] CPU 사용률 감지: {cpu_percent:.1f}% -> 인증서 생성 타임아웃 설정 {timeout}s.")
+        except Exception:
+            timeout = 60
+        # --- 방금 수정됨: CPU 상태에 따라 타임아웃을 동적으로 조정 --- (끝)
+
+        # --- 방금 수정됨: mitmdump 프로세스 우선도 낮추기 시도 --- (시작)
+        try:
+            # Windows 전용 상수 사용: psutil.BELOW_NORMAL_PRIORITY_CLASS
+            try:
+                p = psutil.Process(proc.pid)
+                # set to below normal if possible (Windows)
+                if hasattr(psutil, "BELOW_NORMAL_PRIORITY_CLASS"):
+                    p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+                else:
+                    # fallback: set to lower niceness on unix-like (best-effort)
+                    try:
+                        p.nice(10)
+                    except Exception:
+                        pass
+                # 방금 수정됨
+            except Exception as e_nice:
+                ui_log(f"[판도] mitmdump 우선도 설정 실패: {e_nice}")
+        except Exception:
+            pass
+        # --- 방금 수정됨: mitmdump 프로세스 우선도 낮추기 시도 --- (끝)
+
         # 3) 인증서 파일 생성 대기 (타임아웃)
         ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인중...")
-        timeout = 30  # 초
         interval = 0.5
         elapsed = 0.0
         while elapsed < timeout:
@@ -540,7 +582,7 @@ class MainWindow(QWidget):
     # endregion
 
 
-    # region : proxy 서버 시작 
+    # region : proxy 서버 시작
     def run_proxy(self):
         ui_log("[판도] [프록시] 프록시 실행 준비 중...")
         mitmdump_path = self.get_resource_path("mitmdump.exe")
@@ -572,6 +614,23 @@ class MainWindow(QWidget):
                 stderr=subprocess.STDOUT,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
+
+            # --- 방금 수정됨: 실행된 proxy 프로세스 우선도 낮추기 시도 ---
+            try:
+                try:
+                    p2 = psutil.Process(self.proxy_proc.pid)
+                    if hasattr(psutil, "BELOW_NORMAL_PRIORITY_CLASS"):
+                        p2.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+                    else:
+                        try:
+                            p2.nice(10)
+                        except Exception:
+                            pass
+                except Exception as e_proxy_nice:
+                    ui_log(f"[판도] proxy_proc 우선도 설정 실패: {e_proxy_nice}")
+            except Exception:
+                pass
+            # --- 방금 수정됨: 실행된 proxy 프로세스 우선도 낮추기 시도 끝 ---
 
             ui_log(f"[판도] [프록시] mitmdump 실행 완료 (로그: {log_path})")
         except Exception as e:
