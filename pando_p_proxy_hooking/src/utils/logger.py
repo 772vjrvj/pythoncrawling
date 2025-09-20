@@ -25,7 +25,7 @@ def init_pando_logger():
 
     # 💡 오래된 로그 자동 삭제 (pando / proxy)
     clean_old_logs(logs_dir, prefix="pando", days=7)
-    clean_old_logs(logs_dir, prefix="proxy_server", days=3)
+    clean_old_logs(logs_dir, prefix="proxy_server", days=1)
 
     _pando_logger = logging.getLogger("pando")
     _pando_logger.setLevel(logging.INFO)
