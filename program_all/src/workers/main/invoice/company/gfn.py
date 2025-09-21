@@ -217,7 +217,7 @@ class GfnInvoiceParser:
             c_due = ws.cell(row=append_row, column=header_to_col["42 Amount"])
             # row 번호에 맞춰 D열 참조
             c_due.value = f"=D{append_row}*0.98"
-            c_due.number_format = 'mm"월" dd"일"'
+            c_due.number_format = '_-[$EUR]* #,##0.00_-;[Red]-[$USD]* #,##0.00_-;_-[$EUR]* "-"??_-;_-@_-'
 
 
             c_due = ws.cell(row=append_row, column=header_to_col["42 Due"])
