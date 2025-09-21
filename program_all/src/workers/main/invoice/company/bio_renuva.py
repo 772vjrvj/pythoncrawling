@@ -1,112 +1,218 @@
 # -*- coding: utf-8 -*-
-"""
-BioRenuva 인보이스 파서 (3필드, Amount는 숫자만)
-- Invoice no. / Invoice date(YYYY-MM-DD) / Amount(숫자만)
-- 기본 폴더: 수입 선적서류/BioRenuva
-"""
-
 import os, re
+from datetime import datetime
+from pypdf import PdfReader
 
 class BioRenuvaInvoiceParser:
-    def __init__(self, folder="수입 선적서류/BioRenuva", log_func=None):
-        self.folder = folder
-        self.log_func = log_func  # === 신규 ===
 
-    # ---------- 내부 공용 로그 ----------
-    def _log(self, msg):
+    def __init__(self, folder="수입 선적서류/BioRenuva", log_func=print):
+        self.folder, self.log_func = folder, log_func
+
+
+    # region 유틸: 영어 월 → 숫자
+    _MONTHS = {
+        'JANUARY': 1, 'JAN': 1,
+        'FEBRUARY': 2, 'FEB': 2,
+        'MARCH': 3, 'MAR': 3,
+        'APRIL': 4, 'APR': 4,
+        'MAY': 5,
+        'JUNE': 6, 'JUN': 6,
+        'JULY': 7, 'JUL': 7,
+        'AUGUST': 8, 'AUG': 8,
+        'SEPTEMBER': 9, 'SEP': 9, 'SEPT': 9,
+        'OCTOBER': 10, 'OCT': 10,
+        'NOVEMBER': 11, 'NOV': 11,
+        'DECEMBER': 12, 'DEC': 12,
+    }
+    # endregion
+
+
+    # region 날짜 변환1 : January 4, 2024 → YYYY-MM-DD
+    def _to_iso_date_named(self, s: str) -> str:
+        """'January 4, 2024' / 'Jan 4, 2024' / 'Aug. 17, 2023' → 'YYYY-MM-DD'"""
+        if not s:
+            return ""
+        m = re.search(r'(?i)\b([A-Za-z]+)\.?\s+(\d{1,2}),\s*(\d{4})\b', s.strip())
+        if not m:
+            return ""
+        mon_name, day, year = m.group(1), int(m.group(2)), int(m.group(3))
+        mon = self._MONTHS.get(mon_name.strip().upper(), 0)
+        if mon == 0:
+            return ""
         try:
-            if self.log_func:
-                self.log_func(msg)
-            else:
-                print(msg)
-        except:
-            print(msg)
+            return datetime(year, mon, day).strftime('%Y-%m-%d')
+        except ValueError:
+            return ""
+    # endregion
 
-    # ---------- PDF 텍스트 ----------
-    def read_text(self, pdf_path):
+
+    # region 날짜 변환2 : 06/26/2025 → YYYY-MM-DD
+    def _to_iso_date_numeric(self, s: str) -> str:
+        """'06/26/2025' or '6-26-25' → 'YYYY-MM-DD' (2자리 연도도 허용)"""
+        if not s:
+            return ""
+        m = re.search(r'\b(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})\b', s.strip())
+        if not m:
+            return ""
+        mm, dd, yy = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        if yy < 100:
+            yy += 2000 if yy < 70 else 1900
         try:
-            from pypdf import PdfReader  # type: ignore
-        except Exception:
-            from PyPDF2 import PdfReader  # type: ignore
-        r = PdfReader(pdf_path)
-        return "\n".join((p.extract_text() or "") for p in getattr(r, "pages", []))
+            return datetime(yy, mm, dd).strftime('%Y-%m-%d')
+        except ValueError:
+            return ""
 
-    # ---------- 유틸 ----------
-    def _ymd(self, s):
-        s = (s or "").strip()
-        m = re.match(r"^(\d{4})[./-](\d{2})[./-](\d{2})$", s)
-        if m: return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
-        m = re.match(r"^(\d{2})[./-](\d{2})[./-](\d{4})$", s)      # MM/DD/YYYY
-        if m: return f"{m.group(3)}-{m.group(1)}-{m.group(2)}"
-        m = re.match(r"^(\d{2})[.](\d{2})[.](\d{4})$", s)         # DD.MM.YYYY
-        if m: return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
-        return None
+    def _to_iso_date_any(self, s: str) -> str:
+        """영문/숫자 형식 모두 지원"""
+        return self._to_iso_date_named(s) or self._to_iso_date_numeric(s)
+    # endregion
 
-    def _clean_amount(self, num):
-        if not num: return None
-        t = re.sub(r"[^\d,.\-]", "", num.strip()).replace(",", "")
-        try: return float(t)
-        except: return None
 
-    # ---------- 파서 ----------
-    def parse_text(self, raw):
-        u = re.sub(r"[ \t]+", " ", raw)
-        flat = re.sub(r"\s+", " ", u).strip()
+    # region pdf안에 전체 text읽기
+    def read_text(self, path):
+        r = PdfReader(path)
+        for i, p in enumerate(getattr(r, "pages", []), 1):
+            t = p.extract_text() or ""
+            # 디버깅: 페이지별 길이/인덱스 출력
+            # self.log_func(f"[{os.path.basename(path)}] page {i} - {len(t)} chars")
+
+            # 첫 줄 체크: INVOICE/PROFORMA INVOICE 페이지만 사용
+            first_line = t.strip().splitlines()[0] if t.strip() else ""
+            u = first_line.upper()
+            if u.startswith("PROFORMA INVOICE") or u.startswith("INVOICE"):
+                # self.log_func(t)  # 전체 텍스트 확인 원하면 주석 해제
+                return t
+        return ""  # 조건 맞는 페이지가 없으면 빈 문자열
+    # endregion
+
+
+    # region 전용 파서: "Invoice details" 블록 ---
+    def _parse_invoice_details_block(self, page_text: str, res: dict) -> dict:
+        """
+        아래 형태를 우선 정확히 파싱:
+            Invoice details
+            Invoice no.: 1062
+            Terms: Net 30
+            Invoice date: 06/26/2025
+            Due date: 07/26/2025
+        """
+        if not page_text or not re.search(r'(?i)\bInvoice\s+details\b', page_text):
+            return res
 
         # Invoice no.
-        invoice_no = None
-        for pat in (
-                r"Invoice\s*no\.?\s*[:\-]?\s*([A-Za-z0-9\-\/]+)",
-                r"Invoice\s*number\s*[:\-]?\s*([A-Za-z0-9\-\/]+)",
-                r"Invoice\s*#\s*[:\-]?\s*([A-Za-z0-9\-\/]+)",
-        ):
-            m = re.search(pat, u, re.I)
-            if m: invoice_no = m.group(1).strip(); break
+        m_no = re.search(r'(?i)\bInvoice\s*no\.?\s*[:#-]?\s*([A-Za-z0-9\-_/ ]+)', page_text)
+        if m_no:
+            res.setdefault("Invoice no.", m_no.group(1).strip())
+            if not res["Invoice no."]:
+                res["Invoice no."] = m_no.group(1).strip()
 
-        # Invoice date
-        invoice_date = None
-        m = re.search(
-            r"Invoice\s*date\s*[:\-]?\s*("
-            r"[0-9]{2}[./-][0-9]{2}[./-][0-9]{4}|"
-            r"[0-9]{4}[./-][0-9]{2}[./-][0-9]{2}|"
-            r"[0-9]{2}[.][0-9]{2}[.][0-9]{4}"
-            r")", u, re.I
-        )
-        if m: invoice_date = self._ymd(m.group(1))
+        # Invoice date (숫자/영문 다 커버)
+        m_dt_num = re.search(r'(?i)\bInvoice\s*date\b[:#-]?\s*([0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{2,4})', page_text)
+        if m_dt_num:
+            res_date = self._to_iso_date_numeric(m_dt_num.group(1))
+            if res_date:
+                res["Invoice date"] = res_date
 
-        # Amount(총액 키워드 근처의 최대값 택1)
-        cands = []
-        for m in re.finditer(
-                r"(?<![A-Za-z])(Grand\s+Total|Total(?:\s*Amount)?|Total\s+Due)(?![A-Za-z])\s*[:\-]?\s*([A-Z]{3})\s*([$€£]?\s*[0-9][0-9,\.]+)",
-                flat, re.I
-        ):
-            v = self._clean_amount(m.group(3)); cands.append((v, m.start()))
-        for m in re.finditer(
-                r"(?<![A-Za-z])(Grand\s+Total|Total(?:\s*Amount)?|Total\s+Due)(?![A-Za-z])\s*[:\-]?\s*([$€£])\s*([0-9][0-9,\.]+)",
-                flat, re.I
-        ):
-            v = self._clean_amount(m.group(3)); cands.append((v, m.start()))
-        for m in re.finditer(
-                r"(?<![A-Za-z])(Grand\s+Total|Total(?:\s*Amount)?|Total\s+Due)(?![A-Za-z])\s*[:\-]?\s*([0-9][0-9,\.]+)",
-                flat, re.I
-        ):
-            v = self._clean_amount(m.group(2)); cands.append((v, m.start()))
-        amount = max(cands, key=lambda x:(x[0], x[1]))[0] if cands else None
+        # Amount: 기존 Total 규칙 재사용(Subtotal 제외, 마지막 Total)
+        if res.get("Amount") is None:
+            totals = []
+            for m in re.finditer(r'(?is)(?<!sub)\btotal\b[^0-9$]{0,16}\$?\s*([\d,]+(?:\.\d{2})?)', page_text, flags=re.I):
+                val = m.group(1)
+                if val:
+                    try:
+                        totals.append(float(val.replace(",", "")))
+                    except ValueError:
+                        pass
+            if totals:
+                res["Amount"] = totals[-1]
 
-        return {"invoice_no": invoice_no, "invoice_date": invoice_date, "amount": amount}
+        return res
+    # endregion
 
-    def parse_pdf(self, pdf_path):
-        return self.parse_text(self.read_text(pdf_path))
 
-    # ---------- 폴더 실행(내부 처리만, 리턴 없음) ----------
-    def run(self, folder=None):
-        folder = folder or self.folder
-        for fname in os.listdir(folder):
-            if not fname.lower().endswith(".pdf"):
-                continue
-            path = os.path.join(folder, fname)
-            try:
-                d = self.parse_pdf(path)
-                self._log(f"✅ {fname} → No={d.get('invoice_no')}, Date={d.get('invoice_date')}, Amount={d.get('amount')}")
-            except Exception as e:
-                self._log(f"❌ {fname} 파싱 실패: {e}")
+    # region field 추출
+    def parse_fields(self, page_text: str):
+        """
+        page_text에서 3개 필드 추출:
+        - Invoice date (YYYY-MM-DD)
+        - Invoice no.
+        - Amount (마지막 'Total $', Subtotal 제외)
+        """
+        res = {"Invoice date": None, "Invoice no.": None, "Amount": None}
+        if not page_text:
+            return res
+
+        lines = [ln.strip() for ln in page_text.splitlines()]
+
+        # 0) "Invoice details" 블록이 있으면 전용 파서를 먼저 시도
+        if re.search(r'(?i)\bInvoice\s+details\b', page_text):
+            res = self._parse_invoice_details_block(page_text, res)
+
+        # 1) Shipment Information 라인 기준 (기존 규칙) — 아직 비어있으면 보조로 시도
+        if res.get("Invoice no.") is None or res.get("Invoice date") is None:
+            idx_ship = -1
+            for idx, ln in enumerate(lines):
+                if re.fullmatch(r'(?i)\s*Shipment\s+Information\s*', ln or ""):
+                    idx_ship = idx
+                    break
+
+            if idx_ship > 0:
+                up_nonempty = []
+                j = idx_ship - 1
+                while j >= 0 and len(up_nonempty) < 2:
+                    if lines[j]:
+                        up_nonempty.append(lines[j])
+                    j -= 1
+                if len(up_nonempty) >= 1 and res.get("Invoice no.") is None:
+                    res["Invoice no."] = up_nonempty[0]
+                if len(up_nonempty) >= 2 and res.get("Invoice date") is None:
+                    res["Invoice date"] = self._to_iso_date_any(up_nonempty[1])
+
+        # 2) 라벨 기반 보조 매칭(여전히 비어있을 때)
+        if not res.get("Invoice no."):
+            m_no = re.search(r'(?i)\bInvoice\s*no\.?\s*[:#-]?\s*([A-Za-z0-9\-_/ ]+)', page_text)
+            if m_no:
+                res["Invoice no."] = m_no.group(1).strip()
+
+        if not res.get("Invoice date"):
+            m_dt_txt = re.search(r'(?i)\bInvoice\s*date\b[:#-]?\s*([A-Za-z]+\.?\s+\d{1,2},\s*\d{4})', page_text)
+            m_dt_num = re.search(r'(?i)\bInvoice\s*date\b[:#-]?\s*([0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{2,4})', page_text)
+            if m_dt_txt:
+                res["Invoice date"] = self._to_iso_date_named(m_dt_txt.group(1))
+            elif m_dt_num:
+                res["Invoice date"] = self._to_iso_date_numeric(m_dt_num.group(1))
+
+        # 3) Amount: Subtotal 제외, 'Total $ 725.00' 패턴(가장 마지막 Total)
+        if res.get("Amount") is None:
+            totals = []
+            for m in re.finditer(r'(?is)(?<!sub)\btotal\b[^0-9$]{0,16}\$?\s*([\d,]+(?:\.\d{2})?)', page_text, flags=re.I):
+                val = m.group(1)
+                if val:
+                    try:
+                        totals.append(float(val.replace(",", "")))
+                    except ValueError:
+                        pass
+            if totals:
+                res["Amount"] = totals[-1]
+
+        return res
+    # endregion
+
+
+    def run(self):
+        # .pdf 로 끝나는 파일들을 가져옴.
+        files = [f for f in sorted(os.listdir(self.folder)) if f.lower().endswith(".pdf")]
+        total = len(files)
+
+        for idx, fname in enumerate(files, 1):
+            self.log_func(f"[{idx}/{total}] : {fname}")  # === 신규 ===
+
+            fpath = os.path.join(self.folder, fname)
+            txt = self.read_text(fpath)
+            fields = self.parse_fields(txt)
+            self.log_func(
+                f"[RESULT] {fname} -> "
+                f"Invoice date={fields.get('Invoice date')}, "
+                f"Invoice no.={fields.get('Invoice no.')}, "
+                f"Amount={fields.get('Amount')}"
+            )
