@@ -158,7 +158,7 @@ class GfnInvoiceParser:
             if order_no in parsed_map:
                 if cell.comment is not None:
                     cell.comment = None  # 메모 제거
-                # === 신규: 배경색 원복 (기본값) ===
+                # 배경색 원복 (기본값) ===
                 cell.fill = PatternFill(fill_type=None)
 
 
@@ -167,8 +167,8 @@ class GfnInvoiceParser:
             if order_no not in parsed_map:
                 cell = ws.cell(row=row, column=header_to_col["Order no."])
                 cell.comment = Comment("해당 서류가 폴더에서 삭제되었습니다.", "메모")
-                # === 신규: 배경색 빨강 ===
-                cell.fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+                # 배경색 빨강 ===
+                cell.fill = PatternFill(start_color="FFD4D5", end_color="FFD4D5", fill_type="solid")
 
 
         # 2) 신규 추가 (시트에 없는 폴더 항목)

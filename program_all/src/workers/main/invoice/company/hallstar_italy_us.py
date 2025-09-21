@@ -176,12 +176,17 @@ class HallstarInvoiceParser:
             if order_no in parsed_map:
                 if cell.comment is not None:
                     cell.comment = None  # 메모 제거
+                # 배경색 원복 (기본값) ===
+
+                cell.fill = PatternFill(fill_type=None)
 
         # 2) 시트에는 있으나 폴더엔 없는 항목 → 메모 추가 (삭제 표시)  # === 기존+보완 ===
         for order_no, row in existing_map.items():
             if order_no not in parsed_map:
                 cell = ws.cell(row=row, column=header_to_col["Order no."])
                 cell.comment = Comment("해당 서류가 폴더에서 삭제되었습니다.", "메모")
+                # 배경색 빨강 ===
+                cell.fill = PatternFill(start_color="FFD4D5", end_color="FFD4D5", fill_type="solid")
 
 
         # 2) 신규 추가 (시트에 없는 폴더 항목)
