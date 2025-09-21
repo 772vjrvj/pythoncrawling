@@ -247,17 +247,14 @@ class SelcoInvoiceParser:
         # .pdf 로 끝나는 파일들을 가져옴.
         files = [f for f in sorted(os.listdir(self.folder)) if f.lower().endswith(".pdf")]
         total = len(files)
-
-        objs = []  # === 신규 === 결과 객체 배열
+        objs = []
 
         for idx, fname in enumerate(files, 1):
             self.log_func(f"[{idx}/{total}] : {fname}")
             fpath = os.path.join(self.folder, fname)
             txt = self.read_text(fpath)
             fields = self.parse_fields(txt)
-
-            # === 신규 === 결과 객체 생성 (Order no. = fname)
-            order_no = os.path.splitext(fname)[0]  # === 신규: .pdf 제거
+            order_no = os.path.splitext(fname)[0]
 
             obj = {
                 "Order no.": order_no,

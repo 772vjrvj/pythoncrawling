@@ -19,9 +19,9 @@ from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from urllib.parse import urlparse, parse_qs, urljoin
 
-from src.workers.main.invoice.company.GFN import GfnInvoiceParser
+from src.workers.main.invoice.company.gfn import GfnInvoiceParser
 from src.workers.main.invoice.company.Lignopure import LignopureInvoiceParser
-from src.workers.main.invoice.company.Selco import SelcoInvoiceParser
+from src.workers.main.invoice.company.selco import SelcoInvoiceParser
 from src.workers.main.invoice.company.bio_renuva import BioRenuvaInvoiceParser
 from src.workers.main.invoice.company.contipro import ContiproInvoiceParser
 from src.workers.main.invoice.company.evident_ingredients import EvidentInvoiceParser
