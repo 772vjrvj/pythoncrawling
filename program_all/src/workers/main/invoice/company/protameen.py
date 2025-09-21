@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
+# src/workers/main/invoice/company/protameen.py
 import os, re
 from datetime import datetime
 from pypdf import PdfReader
 from openpyxl import load_workbook
 from openpyxl.comments import Comment
-from openpyxl.styles import Alignment, Border, Side
-
+from openpyxl.styles import Alignment, Border, Side, PatternFill
 import pdfplumber, pytesseract, fitz
 from PIL import Image
 from io import BytesIO

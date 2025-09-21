@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-CONTIPRO 인보이스 파서 (3필드 고정)
-- Invoice No. / Date of issue(YYYY-MM-DD) / Total price(EUR → 숫자)
-- 기본 폴더: 수입 선적서류/contipro
-- 동작: run()은 내부 로그 출력만 수행(리턴 없음)
-"""
+# src/workers/main/invoice/company/contipro.py
 from datetime import datetime
 import os, re
 import pdfplumber, pytesseract, fitz

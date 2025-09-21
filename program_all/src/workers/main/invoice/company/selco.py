@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# src/workers/main/invoice/company/selco.py
 import os, re
 from datetime import datetime
 from pypdf import PdfReader
