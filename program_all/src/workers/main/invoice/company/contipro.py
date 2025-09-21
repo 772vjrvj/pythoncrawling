@@ -31,27 +31,6 @@ class ContiproInvoiceParser:
                 pytesseract.pytesseract.tesseract_cmd = _vend
 
 
-    def extract_text(self, path):
-        try:
-            with pdfplumber.open(path) as pdf:
-                t = "\n".join((p.extract_text() or "") for p in pdf.pages)
-                if len((t or "").strip()) > 40:
-                    return t
-        except Exception:
-            pass
-
-        # 스캔 PDF → 300dpi 렌더 후 OCR(첫 페이지만)
-        doc = fitz.open(path)
-        page = doc.load_page(0)
-        pix = page.get_pixmap(dpi=300)
-        img = Image.open(BytesIO(pix.tobytes("png")))
-        try:
-            return pytesseract.image_to_string(img, lang="eng+kor") or ""
-        except Exception:
-            return pytesseract.image_to_string(img, lang="eng") or ""
-
-
-
     def parse_fields(self, page_text: str) -> dict:
         """
         TAX CERTIFICATE 문서 전용 파서
@@ -109,15 +88,19 @@ class ContiproInvoiceParser:
         except Exception:
             pass
 
-        # 스캔 PDF → 300dpi 렌더 후 OCR(첫 페이지만)
         doc = fitz.open(path)
-        page = doc.load_page(0)
-        pix = page.get_pixmap(dpi=300)
-        img = Image.open(BytesIO(pix.tobytes("png")))
-        try:
-            return pytesseract.image_to_string(img, lang="eng+kor") or ""
-        except Exception:
-            return pytesseract.image_to_string(img, lang="eng") or ""
+        texts = []
+        for i in range(len(doc)):
+            page = doc.load_page(i)
+            pix = page.get_pixmap(dpi=300)
+            img = Image.open(BytesIO(pix.tobytes("png")))
+            try:
+                txt = pytesseract.image_to_string(img, lang="eng+kor") or ""
+            except Exception:
+                txt = pytesseract.image_to_string(img, lang="eng") or ""
+            texts.append(txt)
+
+        return "\n".join(texts)
 
 
     # region 엑셀 동기화

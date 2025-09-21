@@ -3,16 +3,29 @@ import os, re
 from datetime import datetime
 from pypdf import PdfReader
 
-# === 신규 ===
 from openpyxl import load_workbook
 from openpyxl.comments import Comment
-# (위쪽 import 근처)  === 신규 ===
 from openpyxl.styles import Alignment, Border, Side
+
+import pdfplumber, pytesseract, fitz
+from PIL import Image
+from io import BytesIO
+
 
 class BioRenuvaInvoiceParser:
 
     def __init__(self, folder="수입 선적서류/BioRenuva", log_func=print):
         self.folder, self.log_func = folder, log_func
+
+        # --- Tesseract 경로 고정(설치·배포 모두 커버) ---
+        _tess = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        if os.path.isfile(_tess):
+            pytesseract.pytesseract.tesseract_cmd = _tess
+        else:
+            _vend = os.path.join(os.getcwd(), "vendor", "bin", "tesseract", "tesseract.exe")
+            if os.path.isfile(_vend):
+                pytesseract.pytesseract.tesseract_cmd = _vend
+
 
 
     # region 유틸: 영어 월 → 숫자
@@ -73,6 +86,7 @@ class BioRenuvaInvoiceParser:
 
     # region pdf안에 전체 text읽기
     def read_text(self, path):
+        result = None
         r = PdfReader(path)
         for i, p in enumerate(getattr(r, "pages", []), 1):
             t = p.extract_text() or ""
@@ -80,8 +94,23 @@ class BioRenuvaInvoiceParser:
             first_line = t.strip().splitlines()[0] if t.strip() else ""
             u = first_line.upper()
             if u.startswith("PROFORMA INVOICE") or u.startswith("INVOICE"):
-                return t
-        return ""
+                result = t
+        if result:
+            return result
+        else:
+            doc = fitz.open(path)
+            texts = []
+            for i in range(len(doc)):
+                page = doc.load_page(i)
+                pix = page.get_pixmap(dpi=300)
+                img = Image.open(BytesIO(pix.tobytes("png")))
+                try:
+                    txt = pytesseract.image_to_string(img, lang="eng+kor") or ""
+                except Exception:
+                    txt = pytesseract.image_to_string(img, lang="eng") or ""
+                texts.append(txt)
+
+            return "\n".join(texts)
     # endregion
 
 
