@@ -1,10 +1,15 @@
 # main.py
 import sys
+from typing import Optional
+
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QSharedMemory, Qt
-from src.ui.main_window import MainWindow
+# === 기존 ===
+from src.app_manager import AppManager
+from src.core.global_state import GlobalState
 
 
+# === 신규: 단일 인스턴스 락 구현 ===
 class SingleInstance:
     """
     QSharedMemory 기반 단일 인스턴스 락.
@@ -33,13 +38,14 @@ class SingleInstance:
             self.shared.detach()
 
 
-def show_already_running_alert():
+# === 신규: 중복 실행 경고창 ===
+def show_already_running_alert(existing_app: Optional[QApplication] = None) -> None:
     """
-    운영 환경에서 콘솔 출력 대신 알림창을 최상단으로 띄움.
-    - 별도의 QApplication이 없으면 임시로 생성 후 사용
+    콘솔 출력 대신 경고 알림창을 최상단으로 띄움.
+    - 기존 QApplication이 없으면 임시 생성 후 표시하고 정리
     """
     app_created = False
-    app = QApplication.instance()
+    app = existing_app or QApplication.instance()
     if app is None:
         app = QApplication(sys.argv)
         app_created = True
@@ -52,30 +58,52 @@ def show_already_running_alert():
     msg.setWindowFlag(Qt.WindowStaysOnTopHint, True)  # 항상 위로
     msg.exec_()
 
-    # 임시로 만든 QApplication이면 정리
     if app_created:
+        # 임시로 만든 QApplication이면 정리
         app.quit()
 
 
-if __name__ == "__main__":
-    lock = SingleInstance("pando_single_instance")
+# === 신규: PyQt5/6 exec 호환 헬퍼 ===
+def qt_exec(app: QApplication) -> int:
+    """
+    PyQt5는 exec_(), PyQt6는 exec() 이므로 둘 다 대응.
+    """
+    if hasattr(app, "exec_"):
+        return app.exec_()  # PyQt5
+    return app.exec()       # PyQt6
 
+
+def main() -> None:
+    # === 신규: 앱 생성 전에 단일 인스턴스 락 확인 (권장) ===
+    lock = SingleInstance("pando_single_instance")
     if lock.already_running():
-        show_already_running_alert()
+        # 아직 QApplication을 만들기 전이므로 임시 생성해서 경고창 표시
+        show_already_running_alert(None)
         sys.exit(0)
 
+    # === 기존: Qt 앱, 상태 초기화, AppManager 진입 ===
     app = QApplication(sys.argv)
 
-    # 첫 인스턴스 유지 중에만 의미가 있으므로 app과 수명 같이 함
-    # (파이썬 GC로 lock이 사라지지 않도록 참조 유지)
+    # (참조 유지: GC로 lock이 해제되지 않게 App 객체에 붙여둠)
     app._single_instance_lock = lock  # noqa: attach
 
-    win = MainWindow()
-    win.show()
+    # 앱 종료 직전에 락 정리
+    def _on_about_to_quit():
+        try:
+            lock.release()
+        except Exception:
+            pass
+    app.aboutToQuit.connect(_on_about_to_quit)
 
-    try:
-        exit_code = app.exec_()
-    finally:
-        # 깔끔한 정리 (첫 인스턴스만 detach 의미 있음)
-        lock.release()
-    sys.exit(exit_code)
+    # === 기존 ===
+    state = GlobalState()
+    state.initialize()
+
+    app_manager = AppManager()
+    app_manager.go_to_login()
+
+    sys.exit(qt_exec(app))
+
+
+if __name__ == "__main__":
+    main()
