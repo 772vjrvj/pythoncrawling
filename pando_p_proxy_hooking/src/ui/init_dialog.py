@@ -12,7 +12,7 @@ class InitDialog(QDialog):
     - show() 로 비차단 방식으로 띄우고, 작업 완료 시 close() 로 닫음.
     """
 
-    def __init__(self, parent=None, message="프로그램 초기화중... 잠시만 기다려주세요.", loader_path=None):
+    def __init__(self, parent=None, message="잠시만 기다려주세요.", loader_path=None):
         super().__init__(parent)
 
         # 윈도우 스타일: 닫기 버튼 등 불필요한 버튼 제거 (타이틀은 유지)
