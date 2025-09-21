@@ -24,8 +24,6 @@ class HallstarInvoiceParser:
                 pytesseract.pytesseract.tesseract_cmd = _vend
 
 
-
-
     # region 날짜 변환2 : 06/26/2025 → YYYY-MM-DD
     def _to_iso_date_numeric(self, s: str) -> str:
         if not s:
@@ -49,7 +47,15 @@ class HallstarInvoiceParser:
     # region pdf안에 전체 text읽기
     def read_text(self, path):
         r = PdfReader(path)
-        result = "\n".join((p.extract_text() or "") for p in getattr(r, "pages", []))
+        raw_text = "\n".join((p.extract_text() or "") for p in getattr(r, "pages", []))
+
+        # 줄 단위로 자르기
+        lines = raw_text.splitlines()
+
+        # 공백 제거 후 내용이 있는 줄만 필터링
+        filter_lines = [ln.strip() for ln in lines if ln.strip()]
+        result = "\n".join(filter_lines)
+
         if result:
             return result
         else:
@@ -111,53 +117,79 @@ class HallstarInvoiceParser:
     # === 신규: Total Amount Due / Invoice No. / Date / Internal No. 전용 파서
     def parse_fields(self, page_text: str) -> dict:
         """
-        - 금액: 'Total Amount Due 52,724.59 USD' → Amount=52724.59 (float)
-        - 송장/날짜: 'Invoice No. / Date / Internal No.: 985 / 03.09.2025 (DD.MM.YYYY) / 35009382'
-            → Invoice no.=985, Invoice date=2025-09-03
+        - Invoice no.: 'Invoice No' 바로 다음 non-empty 라인의 숫자
+        - Invoice date: 'Date ... Order Date' 바로 다음 non-empty 라인의 첫 번째 영문 날짜 → yyyy-mm-dd
+        - Amount: 'Goods value' 바로 다음 non-empty 라인의 금액 (천단위 콤마 제거)
         """
         res = {"Invoice no.": None, "Invoice date": None, "Amount": None}
         if not page_text:
             return res
 
-        # 1) Amount: Total Amount Due 52,724.59 USD
-        #    - 줄/공백 변화 대응
-        amt_inline = re.search(
-            r'(?i)Total\s+Amount\s+Due\s+([$\€]?\s*[\d,]+(?:\.\d+)?)\s*(?:USD|EUR|$)?',
-            page_text
-        )
-        if amt_inline:
-            num = amt_inline.group(1)
-            try:
-                res["Amount"] = float(num.replace(",", "").replace(" ", "").replace("$", "").replace("€", ""))
-            except ValueError:
-                res["Amount"] = None
+        # 줄 단위 + 공백 라인 제거
+        lines = [ln.strip() for ln in page_text.splitlines()]
 
-        # 2) Invoice/Date: 'Invoice No. / Date / Internal No.: 985 / 03.09.2025 (DD.MM.YYYY) / 35009382'
-        #    - 숫자/날짜만 추출
-        #    - 괄호 설명은 무시
-        m_info = re.search(
-            r'(?i)Invoice\s*No\.\s*/\s*Date\s*/\s*Internal\s*No\.\s*:\s*([A-Za-z0-9\-_/]+)\s*/\s*([0-9]{2}\.[0-9]{2}\.[0-9]{4})\s*\(.*?\)\s*/\s*([A-Za-z0-9\-_/]+)',
-            page_text
-        )
-        if m_info:
-            inv_no_raw = m_info.group(1).strip()
-            date_raw   = m_info.group(2).strip()
-            # internal_no = m_info.group(3).strip()  # 필요시 사용
+        # 유틸: 현재 인덱스 다음의 첫 non-empty 라인 얻기
+        def next_nonempty(after_idx: int) -> str | None:
+            for j in range(after_idx + 1, len(lines)):
+                if lines[j].strip():
+                    return lines[j].strip()
+            return None
 
-            # 송장번호: 숫자만 강조(요청이 985 형태)
-            m_num = re.search(r'(\d+)', inv_no_raw)
-            res["Invoice no."] = m_num.group(1) if m_num else inv_no_raw
+        # 1) Invoice No → 다음 라인의 숫자
+        for i, ln in enumerate(lines):
+            if re.fullmatch(r'(?i)invoice\s+no', ln.strip()):
+                nxt = next_nonempty(i)
+                if nxt:
+                    m_inv = re.search(r'(\d+)', nxt)
+                    if m_inv:
+                        res["Invoice no."] = m_inv.group(1)
+                break
 
-            # 날짜 변환
-            m_dt = re.match(r'^\s*(\d{1,2})\.(\d{1,2})\.(\d{4})\s*$', date_raw)
-            if m_dt:
-                dd, mm, yyyy = map(int, m_dt.groups())
-                try:
-                    res["Invoice date"] = datetime(yyyy, mm, dd).strftime("%Y-%m-%d")
-                except ValueError:
-                    res["Invoice date"] = None
+        # 2) Date ... Order Date → 다음 라인의 첫 번째 영문 날짜
+        #   예: "May 14th, 2025   March 26th, 2025"
+        for i, ln in enumerate(lines):
+            if re.search(r'(?i)\bdate\b.*\border\s*date\b', ln):
+                nxt = next_nonempty(i)
+                if nxt:
+                    # 첫 번째 영문 날짜만 추출 (st/nd/rd/th 허용)
+                    m_dt = re.search(r'([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?\s*,\s*(\d{4})', nxt)
+                    if m_dt:
+                        mon_name, day, year = m_dt.group(1), int(m_dt.group(2)), int(m_dt.group(3))
+                        try:
+                            res["Invoice date"] = datetime.strptime(f"{mon_name} {day} {year}", "%B %d %Y").strftime("%Y-%m-%d")
+                        except ValueError:
+                            # 축약형 월명 (e.g., Sep) 대비
+                            try:
+                                res["Invoice date"] = datetime.strptime(f"{mon_name} {day} {year}", "%b %d %Y").strftime("%Y-%m-%d")
+                            except ValueError:
+                                res["Invoice date"] = None
+                break
+
+        # 3) Goods value → 다음 라인의 금액
+        for i, ln in enumerate(lines):
+            if re.fullmatch(r'(?i)goods\s+value', ln.strip()):
+                nxt = next_nonempty(i)
+                if nxt:
+                    # 162,691.20 / 162.691,20 등 잡기
+                    # 우선 1) 1,234.56 형태
+                    m_amt = re.search(r'([\d,]+\.\d{2})', nxt)
+                    if m_amt:
+                        try:
+                            res["Amount"] = float(m_amt.group(1).replace(",", ""))
+                        except ValueError:
+                            res["Amount"] = None
+                    else:
+                        # 2) 유럽식 1.234,56 형태
+                        m_eu = re.search(r'([\d\.]+,\d{2})', nxt)
+                        if m_eu:
+                            try:
+                                res["Amount"] = float(m_eu.group(1).replace(".", "").replace(",", "."))
+                            except ValueError:
+                                res["Amount"] = None
+                break
 
         return res
+
     # endregion
 
 
