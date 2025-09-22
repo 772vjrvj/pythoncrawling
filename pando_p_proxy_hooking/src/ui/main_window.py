@@ -9,11 +9,10 @@ import sys
 import shutil
 import threading
 import psutil
-
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
     QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog, QCheckBox,
-    QSystemTrayIcon, QMenu, QAction, QStyle
+    QSystemTrayIcon, QMenu, QAction, QStyle, QMessageBox
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -33,7 +32,7 @@ class MainWindow(QWidget):
     # region : 초기 init
     def __init__(self):
         super().__init__()
-        self._init_dialog = None
+        self._init_dialog        = None
         self.auto_login_checkbox = None
         self.current_store_id    = None
         self.start_button        = None
@@ -48,11 +47,11 @@ class MainWindow(QWidget):
 
         # 상태 플래그
         self.is_running          = False  # "시작" 후 동작 중 여부
-        self.enable_tray_toast = False  # ✅ 알림(풍선) 표시 여부. 기본 False로 OFF
+        self.enable_tray_toast   = False  # 알림(풍선) 표시 여부. 기본 False로 OFF
 
         # 프록시 프로세스 및 로그 파일 핸들 보관 ---
-        self.proxy_proc = None
-        self._proxy_log_file = None
+        self.proxy_proc          = None
+        self._proxy_log_file     = None
 
         self.init_set()
     # endregion
@@ -484,7 +483,7 @@ class MainWindow(QWidget):
         mitmdump_path = self.get_resource_path("mitmdump.exe")
         if not os.path.exists(mitmdump_path):
             ui_log(f"[판도] mitmdump 실행 파일 미발견: {mitmdump_path}")
-            return
+            return False
 
         try:
             proc = subprocess.Popen([mitmdump_path],
@@ -492,9 +491,9 @@ class MainWindow(QWidget):
                                     creationflags=subprocess.CREATE_NO_WINDOW)
         except Exception as e:
             ui_log(f"[판도] mitmdump 실행 실패: {e}")
-            return
+            return False
 
-        # --- 방금 수정됨: CPU 상태에 따라 타임아웃을 동적으로 조정 --- (시작)
+        # CPU 상태에 따라 타임아웃을 동적으로 조정 --- (시작)
         try:
             # 짧은 간격으로 현재 CPU 사용률 측정
             try:
@@ -502,21 +501,21 @@ class MainWindow(QWidget):
             except Exception:
                 cpu_percent = 0.0
 
-            # 기본 타임아웃: 60초. CPU 부하가 매우 높으면 더 늘림.
-            timeout = 60
+            # 기본 타임아웃: 180초. CPU 부하가 매우 높으면 더 늘림.
+            timeout = 180
             if cpu_percent >= 90:
-                timeout = 120
+                timeout = 600
             elif cpu_percent >= 60:
-                timeout = 45
+                timeout = 300
 
             # 주석 표시는 변경된 부분을 쉽게 찾기 위함
             # 방금 수정됨
             ui_log(f"[판도] CPU 사용률 감지: {cpu_percent:.1f}% -> 인증서 생성 타임아웃 설정 {timeout}s.")
         except Exception:
-            timeout = 60
-        # --- 방금 수정됨: CPU 상태에 따라 타임아웃을 동적으로 조정 --- (끝)
+            timeout = 180
+        # CPU 상태에 따라 타임아웃을 동적으로 조정 --- (끝)
 
-        # --- 방금 수정됨: mitmdump 프로세스 우선도 낮추기 시도 --- (시작)
+        #  mitmdump 프로세스 우선도 낮추기 시도 --- (시작)
         try:
             # Windows 전용 상수 사용: psutil.BELOW_NORMAL_PRIORITY_CLASS
             try:
@@ -535,7 +534,7 @@ class MainWindow(QWidget):
                 ui_log(f"[판도] mitmdump 우선도 설정 실패: {e_nice}")
         except Exception:
             pass
-        # --- 방금 수정됨: mitmdump 프로세스 우선도 낮추기 시도 --- (끝)
+        # mitmdump 프로세스 우선도 낮추기 시도 --- (끝)
 
         # 3) 인증서 파일 생성 대기 (타임아웃)
         ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인중...")
@@ -548,10 +547,10 @@ class MainWindow(QWidget):
             elapsed += interval
 
         if not os.path.exists(cert_path):
-            ui_log("[판도] 🔧 인증서 파일 생성 타임아웃 (없음): {cert_path}")
+            ui_log(f"[판도] 🔧 인증서 파일 생성 타임아웃 (없음): {cert_path}")
             # mitmdump 프로세스 정리 후 리턴
             self.kill_mitmdump_process()
-            return
+            return False
         else:
             ui_log("[판도] 🔧 mitmdump 인증서 파일 생성 확인 완료")
 
@@ -564,7 +563,7 @@ class MainWindow(QWidget):
         # 4) 생성된 인증서를 루트 스토어에 등록
         ui_log("[판도] 🔧 mitmdump 인증서 생성 루트 스토어에 등록")
         # certutil로 루트 인증서 조작은 항상 관리자 권한 필요
-        # === 인증서 파일을 루트 스토어에 등록 (출력 캡처 버전) ===
+        # === 인증서 파일을 루트 스토어에 등록 ===
         res = subprocess.run(
             ["certutil", "-addstore", "Root", cert_path],
             stdout=subprocess.PIPE,
@@ -574,11 +573,12 @@ class MainWindow(QWidget):
         if res.returncode != 0:
             ui_log(f"[판도] certutil addstore 실패: rc={res.returncode}, stdout={res.stdout}, stderr={res.stderr}")
             # 필요하면 추가적인 롤백(예: 파일/레지스트리 정리) 수행 후 종료
-            return
+            return False
         ui_log("[판도] 인증서 등록 완료!")
         ui_log(f"[판도] certutil stdout: {res.stdout.strip()}")
 
         self.run_proxy()
+        return True
     # endregion
 
 
@@ -659,11 +659,9 @@ class MainWindow(QWidget):
         백그라운드에서 인증서/프록시 초기화 후 프록시 확인, 토큰/매장정보 요청까지 수행.
         완료 시 proxy_ready 시그널을 emit 함.
         """
-        try:
-            self.init_cert_and_proxy()
-        except Exception as e:
-            ui_log(f"[판도] init_cert_and_proxy 실행 중 예외: {e}")
-            # signal failure
+        ok = self.init_cert_and_proxy()
+        if not ok:
+            ui_log("[판도] 백그라운드: 프록시/인증서 초기화 실패")
             try:
                 self.proxy_ready.emit(False, {})
             except Exception:
@@ -763,12 +761,25 @@ class MainWindow(QWidget):
 
         # re-enable start/store in failure case (or adjust when success)
         if not success:
+
+            # 실패 시 정리 작업 수행 ===
+            try:
+                self._do_cleanup()
+            except Exception as e:
+                ui_log(f"[판도] cleanup 실행 중 예외: {e}")
+
             try:
                 self.start_button.setEnabled(True)
                 self.store_button.setEnabled(True)
             except Exception:
                 pass
+
+            self._notify_start_failed(
+                "프록시/인증서 초기화에 실패했습니다.\n"
+                "- 관리자 권한 실행 여부, 네트워크 상태, 보안 소프트웨어 차단, 인증서 권한을 확인 후 다시 시도하세요."
+            )
             ui_log("[판도] 프록시 초기화 실패로 인해 시작이 취소되었습니다.")
+
             return
 
         # success: update UI and change states (this runs in main thread via signal)
@@ -845,11 +856,13 @@ class MainWindow(QWidget):
 
     # region : [버튼 이벤트] 시작버튼 클릭시 시작 이벤트
     def start_action(self):
+
         """시작(프록시/토큰/매장정보)"""
         if self.is_running:
             return
 
         if not self.current_store_id:
+            self._notify_start_failed("매장 등록이 필요합니다.\n'등록' 버튼으로 매장 ID를 설정한 뒤 다시 시작하세요.")
             return
 
         # disable start button to prevent repeated clicks while background thread runs
@@ -912,6 +925,24 @@ class MainWindow(QWidget):
             self.reset_winhttp_proxy()
         except Exception as e:
             ui_log(f"[판도] winhttp reset 예외: {str(e)}")
+    # endregion
+
+
+    # region: 오류 알림(팝업/트레이) 유틸
+    def _notify_start_failed(self, msg: str) -> None:
+        """
+        시작/초기화 실패 시 알림창을 띄우고, 실패하면 트레이 풍선으로 폴백.
+        - 절대: 기존 import 라인 수정 없이, 함수 내부에서만 임포트
+        """
+        try:
+            QMessageBox.critical(self, "PandoP - 시작 실패", msg, QMessageBox.Ok)
+        except Exception:
+            try:
+                # 팝업이 불가능한 환경이면 트레이 풍선으로 폴백
+                if getattr(self, "tray", None):
+                    self.tray.showMessage("PandoP - 시작 실패", msg, QSystemTrayIcon.Critical, 4000)
+            except Exception:
+                pass
     # endregion
 
 
