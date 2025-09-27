@@ -1,6 +1,6 @@
 # from src.workers.main.api_albamon_set_worker                        import ApiAlbamonSetLoadWorker
 # from src.workers.main.api_naver_place_set_worker                    import ApiNaverPlaceSetLoadWorker
-# from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
+from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
 # from src.workers.main.api_naver_blog_contents_set_worker            import ApiNaverBlogContentsSetLoadWorker
 # from src.workers.main.api_coupang_set_worker                        import ApiCoupangSetLoadWorker
 # from src.workers.main.api_alba_set_worker                           import ApiAlbaSetLoadWorker
@@ -34,7 +34,7 @@ from src.workers.main.invoice.api_invoice_set_worker                import ApiIn
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
     # "NAVER_PLACE"                       :   ApiNaverPlaceSetLoadWorker,
-    # "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
+    "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
     # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "COUPANG"                           :   ApiCoupangSetLoadWorker,
     # "ALBA"                              :   ApiAlbaSetLoadWorker,
@@ -62,5 +62,5 @@ WORKER_CLASS_MAP = {
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
     # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
-    "INVOICE"                           :   ApiInvoiceSetLoadWorker
+    # "INVOICE"                           :   ApiInvoiceSetLoadWorker
 }

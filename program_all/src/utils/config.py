@@ -21,33 +21,33 @@ SITE_LIST = [
     #          {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
     #      ],
     # ),
-    # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
-    #      setting=[
-    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-    #      ],
-    #      columns = [
-    #          {"code": "id",             "value": "아이디",        "checked": True},
-    #          {"code": "name",           "value": "이름",          "checked": True},
-    #          {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
-    #          {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
-    #          {"code": "category_main",  "value": "대분류",        "checked": True},
-    #          {"code": "category_sub",   "value": "소분류",        "checked": True},
-    #          {"code": "rating",         "value": "별점",          "checked": True},
-    #          {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
-    #          {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
-    #          {"code": "open_time1",     "value": "이용시간1",     "checked": True},
-    #          {"code": "open_time2",     "value": "이용시간2",     "checked": True},
-    #          {"code": "category",       "value": "카테고리",      "checked": True},
-    #          {"code": "url",            "value": "URL",           "checked": True},
-    #          {"code": "map",            "value": "지도",          "checked": True},
-    #          {"code": "amenities",      "value": "편의시설",      "checked": True},
-    #          {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
-    #          {"code": "phone",          "value": "전화번호",      "checked": True},
-    #          {"code": "site",           "value": "사이트",        "checked": True},
-    #          {"code": "region_info",    "value": "주소지정보",    "checked": True},
-    #      ],
-    #      region = True
-    #      ),
+    Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
+         setting=[
+             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+         ],
+         columns = [
+             {"code": "id",             "value": "아이디",        "checked": True},
+             {"code": "name",           "value": "이름",          "checked": True},
+             {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
+             {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
+             {"code": "category_main",  "value": "대분류",        "checked": True},
+             {"code": "category_sub",   "value": "소분류",        "checked": True},
+             {"code": "rating",         "value": "별점",          "checked": True},
+             {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
+             {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
+             {"code": "open_time1",     "value": "이용시간1",     "checked": True},
+             {"code": "open_time2",     "value": "이용시간2",     "checked": True},
+             {"code": "category",       "value": "카테고리",      "checked": True},
+             {"code": "url",            "value": "URL",           "checked": True},
+             {"code": "map",            "value": "지도",          "checked": True},
+             {"code": "amenities",      "value": "편의시설",      "checked": True},
+             {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
+             {"code": "phone",          "value": "전화번호",      "checked": True},
+             {"code": "site",           "value": "사이트",        "checked": True},
+             {"code": "region_info",    "value": "주소지정보",    "checked": True},
+         ],
+         region = True
+         ),
     # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True, 
     #      setting=[
     #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
@@ -292,18 +292,18 @@ SITE_LIST = [
     #          {"code": "page",       "value": "PAGE",  "checked": True},
     #      ]
     # )
-    Site("INVOICE", "INVOICE", "#918074", enabled=True, setting=[],
-         columns = [
-             {"code": "bio_renuva",             "value": "BioRenuva",           "checked": True},
-             {"code": "contipro",               "value": "CONTIPRO",            "checked": True},
-             {"code": "evident_ingredients",    "value": "Evident ingredients", "checked": True},
-             {"code": "gfn",                    "value": "GFN",                 "checked": True},
-             {"code": "hallstar_italy_us",      "value": "HALLSTAR ITALY & US", "checked": True},
-             {"code": "lignopure",              "value": "Lignopure",           "checked": True},
-             {"code": "protameen",              "value": "Protameen",           "checked": True},
-             {"code": "selco",                  "value": "SELCO",               "checked": True},
-         ]
-    )
+    # Site("INVOICE", "INVOICE", "#918074", enabled=True, setting=[],
+    #      columns = [
+    #          {"code": "bio_renuva",             "value": "BioRenuva",           "checked": True},
+    #          {"code": "contipro",               "value": "CONTIPRO",            "checked": True},
+    #          {"code": "evident_ingredients",    "value": "Evident ingredients", "checked": True},
+    #          {"code": "gfn",                    "value": "GFN",                 "checked": True},
+    #          {"code": "hallstar_italy_us",      "value": "HALLSTAR ITALY & US", "checked": True},
+    #          {"code": "lignopure",              "value": "Lignopure",           "checked": True},
+    #          {"code": "protameen",              "value": "Protameen",           "checked": True},
+    #          {"code": "selco",                  "value": "SELCO",               "checked": True},
+    #      ]
+    # )
 ]
 
 # 전역 변수
