@@ -27,8 +27,7 @@ def fetch_token_from_api(store_id: str) -> str:
         return token
 
     except requests.RequestException as err:
-        ui_log(f"[판도] ❌ 토큰 요청 실패: {err}")
-    ui_log("[판도] ⚠️ fallback 토큰 반환")
+        ui_log(f"[판도][에러] ❌ 토큰 요청 실패: {err}")
     return None
 
 

@@ -11,15 +11,14 @@ def get_base_dir():
         return os.path.dirname(sys.executable)
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-DATA_FILE = os.path.join(get_base_dir(), 'data.json')
-
 def load_data():
-    if not os.path.exists(DATA_FILE):
-        ui_log(f"[판도] data.json 없음. 새로 생성합니다: {DATA_FILE}")
+    data_file = os.path.join(get_base_dir(), 'data.json')
+    if not os.path.exists(data_file):
+        ui_log(f"[판도] data.json 없음. 새로 생성합니다: {data_file}")
         save_data({})
         return {}
     try:
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+        with open(data_file, 'r', encoding='utf-8') as f:
             content = f.read().strip()
             if not content:
                 return {}
@@ -29,6 +28,7 @@ def load_data():
         return {}
 
 def save_data(data):
-    ui_log(f"[판도] 저장 중: {DATA_FILE}")
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+    data_file = os.path.join(get_base_dir(), 'data.json')
+    ui_log(f"[판도] 저장 중: {data_file}")
+    with open(data_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
