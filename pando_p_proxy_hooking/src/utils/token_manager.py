@@ -13,7 +13,7 @@ def start_token(data):
         raise Exception("토큰 갱신 실패")  # === 신규 ===
 
     data['token'] = token
-    ui_log(f"[판도] 토큰 갱신 완료 → 저장 예정: {data}")
+    ui_log(f"토큰 갱신 완료 → 저장 예정: {data}")
     save_data(data)
-    ui_log("[판도] 토큰 갱신 + 저장 완료")
+    ui_log("토큰 갱신 + 저장 완료")
     return True

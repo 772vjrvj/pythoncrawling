@@ -212,9 +212,9 @@ class ProxyLogger:
 
         # 로그 초기화
         init_pando_logger()
-        log_info("[판도] 프록시 서버 시작")
-        log_info("[판도] 프록시 서버 로딩 완료 (한글 출력 테스트)")
-        log_info("[판도] 이 줄이 찍히면 최신 코드입니다!")
+        log_info("프록시 서버 시작")
+        log_info("프록시 서버 로딩 완료 (한글 출력 테스트)")
+        log_info("이 줄이 찍히면 최신 코드입니다!")
 
     def request(self, flow: http.HTTPFlow):
         url = flow.request.url
@@ -232,7 +232,7 @@ class ProxyLogger:
         for action, pattern in TARGETS_REQUEST.items():
             if pattern.search(url):
                 if method in ("POST", "PUT"):
-                    log_info("[판도] [request] : URL 매칭됨")
+                    log_info("[request] : URL 매칭됨")
                     parsed_data = None
                     try:
                         if "application/json" in content_type:
@@ -243,14 +243,14 @@ class ProxyLogger:
                         else:
                             log_info(f"⚠️ Unknown content type: {content_type}")
                     except Exception as e:
-                        log_error(f"[판도] [request] : 바디 파싱 실패: {e}")
-                        log_info(f"[판도] [request] : Body (Raw): {raw_text[:500]}")
+                        log_error(f"[request] : 바디 파싱 실패: {e}")
+                        log_info(f"[request] : Body (Raw): {raw_text[:500]}")
 
                     if parsed_data is not None:
                         save_request(action, url, parsed_data)
-                        log_info(f"[판도] [request] : [{method}] {url}")
-                        log_info("[판도] [request] : 파싱 결과\n" + json.dumps(parsed_data, ensure_ascii=False, indent=2))
-                        log_info(f"[판도] [request] : [{action}] 요청 감지됨")
+                        log_info(f"[request] : [{method}] {url}")
+                        log_info("[request] : 파싱 결과\n" + json.dumps(parsed_data, ensure_ascii=False, indent=2))
+                        log_info(f"[request] : [{action}] 요청 감지됨")
                 break
 
     def response(self, flow: http.HTTPFlow):
@@ -304,7 +304,7 @@ class ProxyLogger:
         # ───────── 기존 처리 로직 ─────────
         for action, pattern in TARGETS_RESPONSE.items():
             if pattern.search(url):
-                log_info("[판도] [response] : URL 매칭됨")
+                log_info("[response] : URL 매칭됨")
                 if action == "delete_mobile":
                     destroy = response_json.get("entity", {}).get("destroy")
                     if not (isinstance(destroy, list) and len(destroy) > 0):
@@ -314,11 +314,11 @@ class ProxyLogger:
                 if action != "reseration":
                     response_code = response_json.get("code")
                     if response_code == "FAIL":
-                        log_info(f"[판도] [response] : 처리 중단 응답 code가 FAIL → {url}")
+                        log_info(f"[response] : 처리 중단 응답 code가 FAIL → {url}")
                         return
 
-                log_info(f"[판도] [response] : [{action}] 수신됨")
-                log_info("[판도] [response] : JSON\n" + json.dumps(response_json, ensure_ascii=False, indent=2))
+                log_info(f"[response] : [{action}] 수신됨")
+                log_info("[response] : JSON\n" + json.dumps(response_json, ensure_ascii=False, indent=2))
 
                 match_and_dispatch(action, url, response_json)
                 break
