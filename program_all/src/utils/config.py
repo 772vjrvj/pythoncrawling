@@ -21,11 +21,18 @@ SITE_LIST = [
     #          {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
     #      ],
     # ),
-    Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
+
+    # Site("네이버 플레이스", "NAVER_PLACE", "#03C75A", enabled=True,
+    #      setting=[]
+    #      ),
+    Site("네이버 플레이스 URL", "NAVER_PLACE_URL_ALL", "#03C75A", enabled=True,
          setting=[
-             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+             {'name': '용량(MB) 1 ~ 1000사이 숫자를 입력하세요', 'code': 'image_size',    'value': '1000', 'type': 'input'},
+             {'name': '이미지 압축 여부', 'code': 'zip',    'value': True, 'type': 'check'}
          ],
          columns = [
+             {"code": "url",            "value": "URL",           "checked": True},
+             {"code": "image",          "value": "이미지",          "checked": True},
              {"code": "id",             "value": "아이디",        "checked": True},
              {"code": "name",           "value": "이름",          "checked": True},
              {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
@@ -38,16 +45,43 @@ SITE_LIST = [
              {"code": "open_time1",     "value": "이용시간1",     "checked": True},
              {"code": "open_time2",     "value": "이용시간2",     "checked": True},
              {"code": "category",       "value": "카테고리",      "checked": True},
-             {"code": "url",            "value": "URL",           "checked": True},
              {"code": "map",            "value": "지도",          "checked": True},
              {"code": "amenities",      "value": "편의시설",      "checked": True},
              {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
              {"code": "phone",          "value": "전화번호",      "checked": True},
              {"code": "site",           "value": "사이트",        "checked": True},
-             {"code": "region_info",    "value": "주소지정보",    "checked": True},
+             {"code": "region_info",    "value": "주소지정보",     "checked": True},
          ],
-         region = True
+         region = False,
+         popup=True
          ),
+    # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
+    #      setting=[
+    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+    #      ],
+    #      columns = [
+    #          {"code": "id",             "value": "아이디",        "checked": True},
+    #          {"code": "name",           "value": "이름",          "checked": True},
+    #          {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
+    #          {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
+    #          {"code": "category_main",  "value": "대분류",        "checked": True},
+    #          {"code": "category_sub",   "value": "소분류",        "checked": True},
+    #          {"code": "rating",         "value": "별점",          "checked": True},
+    #          {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
+    #          {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
+    #          {"code": "open_time1",     "value": "이용시간1",     "checked": True},
+    #          {"code": "open_time2",     "value": "이용시간2",     "checked": True},
+    #          {"code": "category",       "value": "카테고리",      "checked": True},
+    #          {"code": "url",            "value": "URL",           "checked": True},
+    #          {"code": "map",            "value": "지도",          "checked": True},
+    #          {"code": "amenities",      "value": "편의시설",      "checked": True},
+    #          {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
+    #          {"code": "phone",          "value": "전화번호",      "checked": True},
+    #          {"code": "site",           "value": "사이트",        "checked": True},
+    #          {"code": "region_info",    "value": "주소지정보",    "checked": True},
+    #      ],
+    #      region = True
+    #      ),
     # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True, 
     #      setting=[
     #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}

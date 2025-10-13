@@ -1,6 +1,7 @@
 # from src.workers.main.api_albamon_set_worker                        import ApiAlbamonSetLoadWorker
 # from src.workers.main.api_naver_place_set_worker                    import ApiNaverPlaceSetLoadWorker
-from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
+# from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
+from src.workers.main.api_naver_place_url_all_set_worker            import ApiNaverPlaceUrlAllSetLoadWorker
 # from src.workers.main.api_naver_blog_contents_set_worker            import ApiNaverBlogContentsSetLoadWorker
 # from src.workers.main.api_coupang_set_worker                        import ApiCoupangSetLoadWorker
 # from src.workers.main.api_alba_set_worker                           import ApiAlbaSetLoadWorker
@@ -28,13 +29,14 @@ from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNa
 # from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
 # from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
-from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
+# from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
     # "NAVER_PLACE"                       :   ApiNaverPlaceSetLoadWorker,
-    "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
+    # "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
+    "NAVER_PLACE_URL_ALL"               :   ApiNaverPlaceUrlAllSetLoadWorker,
     # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "COUPANG"                           :   ApiCoupangSetLoadWorker,
     # "ALBA"                              :   ApiAlbaSetLoadWorker,
