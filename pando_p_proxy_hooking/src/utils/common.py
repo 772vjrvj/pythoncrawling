@@ -11,7 +11,7 @@ def to_iso_kst_format(kst_str: str) -> Optional[str]:
         dt = datetime.strptime(kst_str, "%Y%m%d%H%M%S")
         return dt.strftime("%Y-%m-%dT%H:%M:%S+09:00")
     except Exception as e:
-        log_error(f"[판도] 날짜 변환 오류: {e}")
+        log_error(f"날짜 변환 오류: {e}")
         return None
 
 def compact(obj, always_include=None):
