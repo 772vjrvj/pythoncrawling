@@ -636,74 +636,44 @@ class MainWindow(QWidget):
     # endregion
 
 
-    # region : run_proxy 서버 시작 (운영/개발 분리)
+    # region : proxy 서버 시작
     def run_proxy(self) -> None:
         """
-        운영 모드: 파일 로그 비활성.
-        - stdout/stderr 를 DEVNULL 로 버려서 proxy_server.log 가 생성되지 않습니다.
-        """
-        self._run_proxy_common(dev_mode=False)
-    # endregion
-
-
-    # region : run_proxy_dev 서버 시작 (운영/개발 분리)
-    def run_proxy_dev(self) -> None:
-        """
-        개발 모드: 파일 로그 활성.
-        - logs/proxy_server.log 에 mitmdump 의 stdout/stderr 를 기록합니다.
-        """
-        self._run_proxy_common(dev_mode=True)
-    # endregion
-
-
-    # region : run_proxy run_proxy_dev 서버 시작 (운영/개발 분리)
-    def _run_proxy_common(self, dev_mode: bool = False) -> None:
-        """
-        mitmdump 기반 프록시 실행(공통 구현).
-        - dev_mode=True  : 파일 로그 기록
-        - dev_mode=False : 파일 로그 비활성(운영)
-        - 실행된 프로세스를 self.proxy_proc 에 저장 (정리 시 _do_cleanup 에서 사용)
+        mitmdump 기반 프록시 실행.
+        - 로그 파일을 열어 stdout/stderr를 기록
+        - 실행된 프로세스를 self.proxy_proc에 저장 (나중에 정리 가능)
+        - 실행 실패 시 RuntimeError 발생
         """
         ui_log("[프록시] 프록시 실행 준비 중...")
 
         mitmdump_path = self.get_resource_path("mitmdump.exe")
         script_path   = self.get_resource_path("src/server/proxy_server.py")
+        logs_dir      = self.get_resource_path("logs")
+        os.makedirs(logs_dir, exist_ok=True)
+        log_path = os.path.join(logs_dir, "proxy_server.log")
 
-        # 0) 이전 로그 핸들 닫기 (중요: 파일 잠금/핸들 누수 방지)
-        if getattr(self, "proxy_log_file", None):
+        # --- 1) 이전 로그 핸들 닫기 (치명적이지 않음) ---
+        if self.proxy_log_file:
             try:
                 self.proxy_log_file.close()
             except Exception as e_close:
                 ui_log(f"[프록시] 이전 로그 핸들 닫기 실패: {e_close}")
             self.proxy_log_file = None
 
-        # 1) 프로세스 실행
+        # --- 2) 로그 파일 열기 + 3) 프로세스 실행 (치명적) ---
         try:
-            if dev_mode:
-                # 개발 모드: 로그 파일 경로 준비
-                logs_dir = self.get_resource_path("logs")
-                os.makedirs(logs_dir, exist_ok=True)
-                log_path = os.path.join(logs_dir, "proxy_server.log")
-
-                # 파일로 stdout/stderr 연결
-                self.proxy_log_file = open(log_path, "w", encoding="utf-8")
-                popen_kwargs = dict(stdout=self.proxy_log_file, stderr=subprocess.STDOUT)
-            else:
-                # 운영 모드: 로그 완전 차단
-                log_path = None
-                popen_kwargs = dict(stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
+            self.proxy_log_file = open(log_path, "w", encoding="utf-8")
             self.proxy_proc = subprocess.Popen(
                 [mitmdump_path, "--no-http2", "--ssl-insecure", "-s", script_path],
-                creationflags=subprocess.CREATE_NO_WINDOW,  # Windows에서 콘솔 창 숨김
-                **popen_kwargs,
+                stdout=self.proxy_log_file,
+                stderr=subprocess.STDOUT,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
-
         except Exception as e:
             ui_log(f"[프록시] 실행 실패: {e}")
             raise RuntimeError(f"프록시 실행 실패: {e}") from e
 
-        # 2) 프로세스 우선도 낮추기 (실패해도 치명적이지 않음)
+        # --- 4) 우선도 낮추기 (비치명적) ---
         try:
             p2 = psutil.Process(self.proxy_proc.pid)
             if hasattr(psutil, "BELOW_NORMAL_PRIORITY_CLASS"):
@@ -713,13 +683,10 @@ class MainWindow(QWidget):
         except Exception as e_nice:
             ui_log(f"[프록시] proxy_proc 우선도 설정 실패: {e_nice}")
 
-        # 3) 완료 로그
-        if dev_mode:
-            ui_log(f"[프록시] mitmdump 실행 완료 (개발 모드, 로그: {log_path})")
-        else:
-            ui_log("[프록시] mitmdump 실행 완료 (운영 모드, 파일 로그 비활성)")
-
+        # --- 5) 실행 완료 로그 ---
+        ui_log(f"[프록시] mitmdump 실행 완료 (로그: {log_path})")
     # endregion
+
 
 
     # region : 프록시 대기/시작/중지/종료
@@ -799,7 +766,6 @@ class MainWindow(QWidget):
 
             # 2. proxy 서버 시작
             self.run_proxy()
-            # self.run_proxy_dev()
 
             # 3. 프록시 대기/시작/중지/종료
             self.wait_for_proxy(timeout=30)

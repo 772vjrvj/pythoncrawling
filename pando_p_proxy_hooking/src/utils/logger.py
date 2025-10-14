@@ -3,25 +3,32 @@ import logging
 import os
 import sys
 import time
-import threading
 import shutil
+import threading
 from datetime import datetime, timedelta
 
 _pando_logger = None
 __LOG_MAINTENANCE_STARTED = False
-
+try:
+    from mitmproxy import ctx
+    MITM_AVAILABLE = True
+except ImportError:
+    ctx = None
+    MITM_AVAILABLE = False
 
 # 경로 가져오기
 def get_executable_dir() -> str:
     """
     실행 환경에 따라 기준 디렉토리 반환
-    - 배포(PyInstaller): 실행 파일 폴더 또는 _MEIPASS
+    - 배포(PyInstaller): 실행 파일 폴더
     - 개발(소스 실행): 현재 파일 기준 프로젝트 루트(상위 2단계)
     """
-    if getattr(sys, "frozen", False):
-        base = getattr(sys, "_MEIPASS", None) or os.path.dirname(sys.executable)
-        return os.path.abspath(base)
-    return os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+    if getattr(sys, 'frozen', False):
+        # ✅ 무조건 EXE 폴더 기준으로 고정 (_MEIPASS 사용 금지)
+        return os.path.dirname(sys.executable)
+    # ✅ 개발환경은 src/utils 기준 2단계 상위 (프로젝트 루트)
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+
 
 # 초기화
 def init_pando_logger() -> None:
@@ -37,7 +44,7 @@ def init_pando_logger() -> None:
     os.makedirs(logs_dir, exist_ok=True)
 
     # pando 백업들만 유지기간 체크
-    delete_old_backups(logs_dir, prefix="pando", keep_days=7)  # ← 이렇게 교체
+    delete_old_backups(logs_dir, prefix="pando", keep_days=7)
 
     if _pando_logger is not None and _pando_logger.handlers:
         _start_log_maintenance_background(logs_dir)
@@ -57,6 +64,12 @@ def init_pando_logger() -> None:
     _pando_logger = logger
 
     _start_log_maintenance_background(logs_dir)
+
+    truncate_proxy_log_periodically(
+        os.path.join(logs_dir, "proxy_server.log"),
+        minutes=2,
+        max_lines=5000
+    )
 
 
 
@@ -113,22 +126,33 @@ def _flush_file_handlers() -> None:
     for h in _pando_logger.handlers:
         if isinstance(h, logging.FileHandler):
             try:
-                h.flush()
+                h.acquire()           # 잠깐 핸들러 락
+                h.flush()             # 파이썬 버퍼 → OS
+                # 선택) 절대 유실 방지 필요시 디스크까지 밀어넣기 (비용 큼)
+                # os.fsync(h.stream.fileno())
             except Exception:
                 pass
+            finally:
+                h.release()
 
 
 # 파일 백업 및 초기화
 def backup_and_clear_pando(logs_dir: str) -> None:
     pando_src = os.path.join(logs_dir, "pando.log")
-    backup_dst = _dated_backup_path(logs_dir, "pando", datetime.now())
 
-    _flush_file_handlers()  # ← 추가
+    # ✅ 자정에 실행되므로, 방금 끝난 '어제' 날짜로 백업 파일명 생성
+    date_for_backup = datetime.now() - timedelta(days=1)
+    backup_dst = _dated_backup_path(logs_dir, "pando", date_for_backup)
+
+    _flush_file_handlers()
     did_backup = _backup_if_not_empty(pando_src, backup_dst)
 
     _truncate_current_handler_file()
     if _pando_logger:
-        _pando_logger.info(f"[log] pando.log 자정 처리: 백업={'OK' if did_backup else 'SKIP'}, 원본 초기화")
+        _pando_logger.info(
+            f"[log] pando.log 자정 처리: 날짜={date_for_backup.strftime('%Y-%m-%d')}, "
+            f"백업={'OK' if did_backup else 'SKIP'}, 원본 초기화"
+        )
 
 
 # 7일 경과 파일들 삭제 7개만 보존
@@ -154,7 +178,7 @@ def delete_old_backups(logs_dir: str, prefix: str, keep_days: int) -> None:
 
         path = os.path.join(logs_dir, fname)
         try:
-            if os.path.isfile(path) and os.path.getmtime(path) < cutoff_ts:
+            if os.path.isfile(path) and os.path.getmtime(path) < cutoff_ts: # os.path.getmtime : 해당 파일의 마지막 수정 시간
                 os.remove(path)
         except Exception as e:
             if _pando_logger:
@@ -198,34 +222,87 @@ def _start_log_maintenance_background(logs_dir: str) -> None:
     t.start()
 
 
-# === Public logging helpers ===
-def ui_log(message: str) -> None:
-    if _pando_logger:
-        try:
-            _pando_logger.info(message, stacklevel=2)
-        except TypeError:
-            _pando_logger.info(message)
+def _tail_lines(path, max_lines):
+    """파일의 마지막 max_lines 줄만 효율적으로 읽기"""
+    with open(path, "rb") as f:
+        f.seek(0, os.SEEK_END)
+        pos = f.tell()
+        block_size = 4096
+        data = b""
+        lines = []
+
+        while pos > 0 and len(lines) <= max_lines:
+            read_size = min(block_size, pos)
+            pos -= read_size
+            f.seek(pos)
+            chunk = f.read(read_size)
+            data = chunk + data
+            lines = data.splitlines()
+
+        # 뒤쪽 max_lines만 문자열로 반환
+        return [l.decode("utf-8", "ignore") + "\n" for l in lines[-max_lines:]]
 
 
-def log_info(message: str) -> None:
-    if _pando_logger:
-        try:
-            _pando_logger.info(message, stacklevel=2)
-        except TypeError:
-            _pando_logger.info(message)
+def truncate_proxy_log_periodically(log_path, minutes=2, max_lines=5000):
+    def loop():
+        while True:
+            time.sleep(minutes * 60)
+            try:
+                if not os.path.exists(log_path):
+                    continue
 
+                lines = _tail_lines(log_path, max_lines)
+                with open(log_path, "w", encoding="utf-8") as w:
+                    w.writelines(lines)
 
-def log_warn(message: str) -> None:
-    if _pando_logger:
-        try:
-            _pando_logger.warning(message, stacklevel=2)
-        except TypeError:
-            _pando_logger.warning(message)
+            except Exception as e:
+                if _pando_logger:
+                    _pando_logger.warning(f"[log] proxy 로그 정리 실패: {e}")
 
+    threading.Thread(target=loop, daemon=True).start()
 
-def log_error(message: str) -> None:
-    if _pando_logger:
-        try:
-            _pando_logger.error(message, stacklevel=2)
-        except TypeError:
-            _pando_logger.error(message)
+# 추가
+def _ensure_logger():
+    global _pando_logger
+    if _pando_logger is None:
+        init_pando_logger()
+
+# 아래 4개 공개 API에 첫 줄로 추가
+def ui_log(message):
+    _ensure_logger()
+    try:
+        _pando_logger.info(message, stacklevel=2)
+    except TypeError:
+        _pando_logger.info(message)
+
+def log_info(message):
+    if MITM_AVAILABLE and ctx:
+        try: ctx.log.info(message)
+        except Exception: pass
+    _ensure_logger()
+    try:
+        _pando_logger.info(message, stacklevel=2)
+    except TypeError:
+        _pando_logger.info(message)
+
+def log_warn(message):
+    if MITM_AVAILABLE and ctx:
+        try: ctx.log.warning(message)
+        except Exception:
+            try: ctx.log.warn(message)
+            except Exception: pass
+    _ensure_logger()
+    try:
+        _pando_logger.warning(message, stacklevel=2)
+    except TypeError:
+        _pando_logger.warning(message)
+
+def log_error(message):
+    if MITM_AVAILABLE and ctx:
+        try: ctx.log.error(message)
+        except Exception: pass
+    _ensure_logger()
+    try:
+        _pando_logger.error(message, stacklevel=2)
+    except TypeError:
+        _pando_logger.error(message)
