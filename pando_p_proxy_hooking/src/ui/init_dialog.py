@@ -80,16 +80,16 @@ class InitDialog(QDialog):
             self._start_text_animation()
 
         # 창 가운데 정렬은 부모가 맡도록(부모가 있으면 중앙에 뜸)
-        if parent is not None:
-            try:
-                # center over parent
-                parent_rect = parent.geometry()
-                self.move(
-                    parent_rect.x() + (parent_rect.width() - self.width()) // 2,
-                    parent_rect.y() + (parent_rect.height() - self.height()) // 2
-                )
-            except Exception:
-                pass
+        # if parent is not None:
+        #     try:
+        #         # center over parent
+        #         parent_rect = parent.geometry()
+        #         self.move(
+        #             parent_rect.x() + (parent_rect.width() - self.width()) // 2,
+        #             parent_rect.y() + (parent_rect.height() - self.height()) // 2
+        #         )
+        #     except Exception:
+        #         pass
 
     def _start_text_animation(self):
         """'로딩' + 점 애니메이션 시작"""

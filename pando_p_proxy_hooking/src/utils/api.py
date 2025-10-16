@@ -4,8 +4,8 @@ import requests
 import os
 from src.utils.logger import ui_log
 
-# BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
-BASE_URL = 'https://api.24golf.co.kr'    # 운영환경
+BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
+# BASE_URL = 'https://api.24golf.co.kr'    # 운영환경
 
 MITM_CERT_PATH = os.path.join(os.path.expanduser("~"), ".mitmproxy", "mitmproxy-ca-cert.pem")
 

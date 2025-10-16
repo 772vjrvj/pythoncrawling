@@ -6,15 +6,10 @@ import time
 import shutil
 import threading
 from datetime import datetime, timedelta
+from mitmproxy import ctx
 
 _pando_logger = None
 __LOG_MAINTENANCE_STARTED = False
-try:
-    from mitmproxy import ctx
-    MITM_AVAILABLE = True
-except ImportError:
-    ctx = None
-    MITM_AVAILABLE = False
 
 # 경로 가져오기
 def get_executable_dir() -> str:
@@ -261,48 +256,24 @@ def truncate_proxy_log_periodically(log_path, minutes=2, max_lines=5000):
 
     threading.Thread(target=loop, daemon=True).start()
 
-# 추가
-def _ensure_logger():
-    global _pando_logger
-    if _pando_logger is None:
-        init_pando_logger()
-
-# 아래 4개 공개 API에 첫 줄로 추가
+# 화면 및 설정 로그
 def ui_log(message):
-    _ensure_logger()
-    try:
-        _pando_logger.info(message, stacklevel=2)
-    except TypeError:
-        _pando_logger.info(message)
+    _pando_logger.info(message, stacklevel=2)
 
+# 후킹 로그 info
 def log_info(message):
-    if MITM_AVAILABLE and ctx:
-        try: ctx.log.info(message)
-        except Exception: pass
-    _ensure_logger()
-    try:
+    ctx.log.info(message)
+    if "[proxy_server]" in message:
         _pando_logger.info(message, stacklevel=2)
-    except TypeError:
-        _pando_logger.info(message)
 
+# 후킹 로그 info
 def log_warn(message):
-    if MITM_AVAILABLE and ctx:
-        try: ctx.log.warning(message)
-        except Exception:
-            try: ctx.log.warn(message)
-            except Exception: pass
-    _ensure_logger()
-    try:
+    ctx.log.warning(message)
+    if "[proxy_server]" in message:
         _pando_logger.warning(message, stacklevel=2)
-    except TypeError:
-        _pando_logger.warning(message)
 
+# 후킹 로그 info
 def log_error(message):
-    if MITM_AVAILABLE and ctx:
-        try: ctx.log.error(message)
-        except Exception: pass
-    _ensure_logger()
-    try:
+    ctx.log.error(message)
+    if "[proxy_server]" in message:
         _pando_logger.error(message, stacklevel=2)
-    except TypeError:
-        _pando_logger.error(message)

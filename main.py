@@ -4,8 +4,7 @@ from bs4 import BeautifulSoup
 def main(page_index: int):
     """
     화순군 고시공고 목록 + 상세 내용 크롤러 (단일 함수)
-    사용법:
-        main(1)  # 1페이지 크롤링 + 상세내용 병합 후 JSON 출력
+    반환: [{'not_ancmt_mgt_no', '번호', '고시공고번호', '제목', '담당부서', '등록일', '게재기간', '조회수', '내용'}, ...]
     """
     URL = "https://eminwon.hwasun.go.kr/emwp/gov/mogaha/ntis/web/ofr/action/OfrAction.do"
 
@@ -16,6 +15,7 @@ def main(page_index: int):
         "Cache-Control": "max-age=0",
         "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
+        # "Cookie": "...",  # ← 쿠키 제거
         "Host": "eminwon.hwasun.go.kr",
         "Origin": "https://eminwon.hwasun.go.kr",
         "Referer": URL,
@@ -42,20 +42,23 @@ def main(page_index: int):
             try:
                 r = requests.post(
                     URL, data=data, headers=headers,
-                    timeout=(15, 30),  # === read timeout만 30초로 늘림 ===
+                    timeout=(15, 30),  # connect 15s / read 30s
                     verify=False
                 )
                 r.raise_for_status()
                 return r.text
             except requests.exceptions.ReadTimeout:
-                print(f"[WARN] ({i+1}/{max_retries}) ReadTimeout 발생, 재시도 중...")
-            except Exception as e:
-                print(f"[WARN] ({i+1}/{max_retries}) 기타 오류: {e}")
+                # 필요시 로그 남기고 싶으면 아래 주석 해제
+                # print(f"[WARN] ({i+1}/{max_retries}) ReadTimeout, retry...")
+                pass
+            except Exception:
+                # print(f"[WARN] ({i+1}/{max_retries}) 기타 오류: {e}")
+                pass
             time.sleep(delay * (i + 1))
         return ""
 
-
-    # === 1. 목록 요청 ===
+    # === 1. 목록 요청 (★ 1페이지만 initValue/countYn = Y) ===
+    is_first = (page_index == 1)
     list_payload = {
         "pageIndex": str(page_index),
         "jndinm": "OfrNotAncmtEJB",
@@ -69,8 +72,8 @@ def main(page_index: int):
         "not_ancmt_se_code": "01,02,03,04,05",
         "title": "고시 공고",
         "cha_dep_code_nm": "",
-        "initValue": "Y",
-        "countYn": "Y",
+        "initValue": "Y" if is_first else "N",
+        "countYn": "Y" if is_first else "N",
         "list_gubun": "A",
         "yyyy": "",
         "not_ancmt_sj": ""
@@ -78,13 +81,11 @@ def main(page_index: int):
 
     html = post_retry(list_payload)
     if not html:
-        print("[ERROR] 목록 요청 실패")
         return []
 
     soup = BeautifulSoup(html, "html.parser")
     tables = soup.find_all("table")
     if len(tables) < 5:
-        print("[ERROR] 목록 테이블 구조 예상과 다름")
         return []
 
     table = tables[4]
@@ -115,8 +116,11 @@ def main(page_index: int):
             "조회수": txt(6)
         })
 
-    # === 2. 상세 내용 요청 ===
-    for idx, it in enumerate(items, 1):
+    if not items:
+        return []
+
+    # === 2. 상세 내용 요청 (요청 간 0.25s 지연) ===
+    for it in items:
         no = it["not_ancmt_mgt_no"]
         if not no:
             it["내용"] = ""
@@ -154,28 +158,13 @@ def main(page_index: int):
         else:
             it["내용"] = ""
 
-        print(f"[INFO] ({idx}/{len(items)}) {no} 길이={len(it['내용'])}")
-
-    print(json.dumps(items, ensure_ascii=False, indent=2))
-
-    for i, item in enumerate(items, start=1):
-        print("=" * 80)
-        print(f"[{i}] {item.get('제목')}")
-        print("-" * 80)
-        print(item.get("내용", ""))   # ← 실제 줄바꿈(\r\n)이 엔터로 표시됨
-        print()  # 한 행 띄우기
+        time.sleep(0.25)  # 상세 간 지연
 
     return items
 
 
 # 실행 예시
 if __name__ == "__main__":
-
-
-    # 페이지별 호출
-    main(1)
-
-    # 아래는 전체 가져올때
     all_data = []
     page = 1
 
@@ -183,14 +172,16 @@ if __name__ == "__main__":
         print(f"\n[INFO] === {page}페이지 수집 중 ===")
         result = main(page)
 
-        # 결과가 없으면 종료
         if not result:
             print(f"[INFO] {page}페이지에서 데이터 없음 → 종료")
             break
 
+        print(f"[INFO] {page}페이지 수집 완료 ({len(result)}건)")
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+
         all_data.extend(result)
         page += 1
-        time.sleep(1)  # 서버 부하 방지용 (선택사항)
+        time.sleep(1)  # 서버 부하 방지
 
     print(f"\n[INFO] 총 {len(all_data)}건 수집 완료")
-    print(json.dumps(all_data, ensure_ascii=False, indent=2))
+    # print(json.dumps(all_data, ensure_ascii=False, indent=2))

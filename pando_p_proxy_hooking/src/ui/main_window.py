@@ -12,7 +12,8 @@ import psutil
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
     QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog, QCheckBox,
-    QSystemTrayIcon, QMenu, QAction, QStyle, QMessageBox
+    QSystemTrayIcon, QMenu, QAction, QStyle, QMessageBox,
+    QDesktopWidget  # === 신규 ===
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -70,6 +71,18 @@ class MainWindow(QWidget):
         if self.current_store_id and self.store_name_value.text() != "-" and self.branch_value.text() != "-" and self.auto_login_checkbox.isChecked():
             self.start_action()
     # endregion
+
+
+    # === 신규 === MainWindow 중앙에 자식 다이얼로그 배치 유틸
+    def _center_over_self(self, child: QWidget) -> None:
+        try:
+            # frameGeometry()를 사용해야 윈도우 테두리/그림자까지 포함한 실제 사이즈 기준 정렬 가능
+            parent_fg = self.frameGeometry()
+            child_fg  = child.frameGeometry()
+            child_fg.moveCenter(parent_fg.center())
+            child.move(child_fg.topLeft())
+        except Exception as e:
+            ui_log(f"_center_over_self 실패: {e}")
 
 
     # region : 공용 경로 유틸
@@ -324,12 +337,12 @@ class MainWindow(QWidget):
         )
 
         if res.returncode == 0:
-            ui_log("[판도][info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)")
+            ui_log("[info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)")
             return
 
         # === 신규 ===: 프로세스 없음은 에러가 아님
         if "찾을 수 없습니다" in res.stderr or "not found" in res.stderr.lower():
-            ui_log("[판도][info] mitmdump.exe 프로세스 없음(이미 종료됨)")
+            ui_log("[info] mitmdump.exe 프로세스 없음(이미 종료됨)")
             return
 
         # 실패는 예외로 바로 올림
@@ -730,13 +743,13 @@ class MainWindow(QWidget):
             start_token(data)
             token = data.get("token")
             if not token:
-                ui_log("[판도][error] 토큰 생성 실패: token 없음")
+                ui_log("[error] 토큰 생성 실패: token 없음")
                 raise RuntimeError("토큰 생성 실패")
 
             # 매장 정보 조회
             info = fetch_store_info(token, data["store_id"])
             if not info:
-                ui_log("[판도][error] 매장 정보 조회 실패: 결과 없음")
+                ui_log("[error] 매장 정보 조회 실패: 결과 없음")
                 raise RuntimeError("매장 정보 조회 실패")
 
             # 데이터 갱신 및 저장
@@ -745,10 +758,10 @@ class MainWindow(QWidget):
                 "branch": info.get("branch", "")
             })
             save_data(data)
-            ui_log("[판도][info] 매장 정보 저장 완료")
+            ui_log("[info] 매장 정보 저장 완료")
 
         except Exception as e:
-            ui_log(f"[판도][error] update_store_info 예외: {e}")
+            ui_log(f"[error] update_store_info 예외: {e}")
             raise
     # endregion
 
@@ -898,6 +911,7 @@ class MainWindow(QWidget):
 
         self.init_dialog = InitDialog(self)
         self.init_dialog.show()
+        self._center_over_self(self.init_dialog)  # === 신규 === MainWindow 정중앙에 배치
 
         t = threading.Thread(target=self._background_init, daemon=True)
         t.start()
