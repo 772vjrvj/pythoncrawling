@@ -9,7 +9,8 @@ import pandas as pd
 class PatentDetail:
     def __init__(self, ap, no, ipc):
         self.ap = str(ap).strip()
-        self.no = str(no).zfill(7)  # 7자리 보존
+        # self.no = str(no).zfill(7)  # 7자리 보존
+        self.no = str(no).strip()  # 7자리 보존
         self.ipc = str(ipc).strip()
 
 

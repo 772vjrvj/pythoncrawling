@@ -82,7 +82,7 @@ SITE_LIST = [
     #      ],
     #      region = True
     #      ),
-    # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True, 
+    # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True,
     #      setting=[
     #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
     #      ],
@@ -93,23 +93,23 @@ SITE_LIST = [
     #          {"code": "city",                  "value": "시도",   "checked": True},
     #          {"code": "division",              "value": "시군구",  "checked": True},
     #          {"code": "sector",                "value": "읍면동",  "checked": True},
-    # 
+    #
     #          # {"code": "item_name",             "value": "매물명",  "checked": True},
-    # 
+    #
     #          # 주소/위치
     #          {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
     #          {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
     #          {"code": "keyword",               "value": "키워드",  "checked": True},
     #          {"code": "complex_name",          "value": "단지명",  "checked": True},
     #          {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
-    # 
+    #
     #          # 중개사
     #          {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
     #          {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
     #          {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
     #          {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
     #          {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
-    # 
+    #
     #          # 층/방향
     #          {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
     #          {"code": "target_floor",          "value": "층(목표)",     "checked": False},
@@ -117,17 +117,17 @@ SITE_LIST = [
     #          {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
     #          # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
     #          {"code": "direction_standard",    "value": "방향기준",     "checked": False},
-    # 
+    #
     #          # 면적
     #          {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
     #          {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
     #          {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
-    # 
+    #
     #          # 가격/비용
     #          {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
     #          {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
     #          {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
-    # 
+    #
     #          # 유형/일자
     #          # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
     #          # {"code": "trade_type",            "value": "거래유형",     "checked": True},
@@ -194,7 +194,7 @@ SITE_LIST = [
     #      region = True
     #      ),
     # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True,  setting=[]),
-    Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True,  setting=[], popup=True),
+    # Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True,  setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False,  setting=[
     #     {'name': '블로그 URL', 'code': 'url',        'value': '', 'type': 'button'},
     #     {'name': '게시판 선택', 'code': 'url_select', 'value': '', 'type': 'select'},
@@ -202,10 +202,10 @@ SITE_LIST = [
     #     {'name': '종료 페이지', 'code': 'ed_page',    'value': '', 'type': 'input'}
     # ]),
     # Site("알바몬", "ALBAMON", "#FF6600", enabled=True,  setting=[]),
-    # Site("쿠팡", "COUPANG", "#D73227", enabled=True,  setting=[
-    #     {'name': '제품 딜레이 시간(초)', 'code': 'html_source_delay_time','value': 6},
-    #     {'name': '크롬 재시작 딜레이 시간(초)', 'code': 'chrome_delay_time','value': 3600}
-    # ]),
+    Site("쿠팡", "COUPANG", "#D73227", enabled=True,  setting=[
+        {'name': '제품 딜레이 시간(초)', 'code': 'html_source_delay_time','value': 6},
+        {'name': '크롬 재시작 딜레이 시간(초)', 'code': 'chrome_delay_time','value': 3600}
+    ]),
     # Site("알바천국", "ALBA", "#FFF230", enabled=True,  setting=[
     #     {'name': '감지 대기 딜레이 시간(초)', 'code': 'alba_delay_time','value': 1200}
     # ]),

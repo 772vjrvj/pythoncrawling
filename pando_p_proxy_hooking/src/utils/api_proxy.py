@@ -1,7 +1,6 @@
 # src/utils/api_proxy.py
 import requests
 import json
-from mitmproxy import ctx
 from src.utils.logger import log_info, log_error, log_warn  # ✅ 공통 로그 함수 사용
 
 BASE_URL = 'https://api.dev.24golf.co.kr'  # 개발환경
@@ -35,11 +34,11 @@ def handle_response(response: requests.Response, method_name: str):
         return response.json()
 
     except requests.HTTPError as err:
-        error_msg = f"[proxy_server] [api] : {method_name} 응답 오류 ({response.status_code}): {response.text}"
+        error_msg = f"[proxy_server] [api] [error] : {method_name} 응답 오류 ({response.status_code}): {response.text}"
         log_error(error_msg)
         raise
     except Exception as err:
-        error_msg = f"[proxy_server] [api] : {method_name} 실행 오류: {str(err)}"
+        error_msg = f"[proxy_server] [api] [error] : {method_name} 실행 오류: {str(err)}"
         log_error(error_msg)
         raise
 
@@ -56,7 +55,7 @@ def post(token: str, store_id: str, data: dict, param_type: str = None):
         res = requests.post(url, json=data, headers=headers, proxies={"http": None, "https": None})
         return handle_response(res, 'POST')
     except Exception as e:
-        log_error(f"[proxy_server] [api] : POST 요청 중 예외 발생: {e}")
+        log_error(f"[proxy_server] [api] [error] : POST 요청 중 예외 발생: {e}")
         return None
 
 

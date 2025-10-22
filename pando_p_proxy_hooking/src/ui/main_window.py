@@ -12,8 +12,7 @@ import psutil
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
     QHBoxLayout, QSizePolicy, QFrame, QSpacerItem, QDialog, QCheckBox,
-    QSystemTrayIcon, QMenu, QAction, QStyle, QMessageBox,
-    QDesktopWidget  # === 신규 ===
+    QSystemTrayIcon, QMenu, QAction, QStyle, QMessageBox   # === 신규 ===
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -328,7 +327,7 @@ class MainWindow(QWidget):
         """
         mitmdump 프로세스 강제 종료.
         - 성공: info 로그
-        - 프로세스 없음: info 로그 (에러 아님)
+        - 프로세스 없음(이미 종료): info 로그 (에러 아님)
         - 실패: RuntimeError 발생 (상위로 전파)
         """
         res = subprocess.run(
@@ -336,16 +335,22 @@ class MainWindow(QWidget):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
 
+        # 정상 종료
         if res.returncode == 0:
             ui_log("[info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)")
             return
 
-        # === 신규 ===: 프로세스 없음은 에러가 아님
-        if "찾을 수 없습니다" in res.stderr or "not found" in res.stderr.lower():
-            ui_log("[info] mitmdump.exe 프로세스 없음(이미 종료됨)")
+        # === 신규 ===: 프로세스 없음(이미 종료)도 정상 취급 ===
+        if (
+                res.returncode in (0, 128)
+                or "찾을 수 없습니다" in res.stderr
+                or "no instance" in res.stderr.lower()
+                or "not found" in res.stderr.lower()
+        ):
+            ui_log(f"[info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc={res.returncode})")
             return
 
-        # 실패는 예외로 바로 올림
+        # === 실패 시 ===
         msg = f"mitmdump.exe 에러 taskkill rc={res.returncode}, stdout={res.stdout!r}, stderr={res.stderr!r}"
         ui_log(msg)
         raise RuntimeError(msg)

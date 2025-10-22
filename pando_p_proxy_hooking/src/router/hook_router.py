@@ -1,8 +1,6 @@
 import sys
 import os
-import asyncio
 import json
-from mitmproxy import ctx
 from src.utils.logger import log_info, log_error, log_warn
 
 # 실행 위치 기준으로 data.json 접근을 위해 base_dir 설정
