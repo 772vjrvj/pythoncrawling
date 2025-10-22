@@ -1,0 +1,227 @@
+■ 1. @echo off
+    콘솔창 주석 안보이게
+
+    1-1. echo Hello 결과
+        결과 > echo Hello
+        결과 > Hello
+
+    1-2. @echo off 결과
+        @echo off
+        echo Hello
+        결과 > Hello
+
+
+■ 2. title mitmproxy 후킹 실행기 (UTF-8 지원)
+    콘솔 창의 제목을 설정 (보는 사람이 알아보기 쉽게 표시됨)
+
+
+■ 3. net session >nul 2>&1
+    net session은 현재 PC에 접속한 원격 세션을 확인하는 명령
+    관리자 권한이 아니면 실행할 수 없고 에러 발생
+    >nul 2>&1은 표준 출력과 에러 출력을 모두 숨김 처리
+    즉, 조용히 관리자 권한 여부를 검사하는 용도
+
+    3-1-1. net
+        Windows에서 네트워크 관련 작업을 처리하는 도구입니다.
+
+    3-1-2. session
+        원격 사용자의 세션, 즉 현재 이 컴퓨터에 접속한 다른 컴퓨터 목록을 조회합니다.
+        예를 들어, 누군가 이 PC의 공유 폴더에 접근 중이면, 해당 정보가 표시됩니다.
+
+    3-1-3. net session
+        현재 내 PC에 접속 중인 다른 컴퓨터(세션)의 정보를 보여줘!
+        컴퓨터명        사용자 이름    로그온 시간    유휴 시간
+        \\192.168.0.5   testuser       2025-06-29     00:05:12
+
+    3-2. >nul
+        출력 결과를 숨긴다는 의미입니다.
+        chcp 65001
+        Active code page: 65001
+
+        chcp 65001 >nul
+        (아무것도 안보임)
+
+    3-3. 2>&1
+        &1 : 표준 출력 스트림(1번)**을 가리키는 참조 문법입니다.
+        표준 에러(stderr)을 표준 출력(stdout)과 같은 곳으로 보내라
+        1 : 표준 출력	1	정상 출력 메시지 (예: echo Hello)
+        2 : 표준 에러	2	오류 메시지 출력 (예: 실행 실패 에러)
+        > : 연산자는 리디렉션(출력을 다른 곳으로 보내기)입니다. > 연산자는 리디렉션(출력을 다른 곳으로 보내기)입니다.
+
+        echo A & echo B
+        → A, B 모두 실행됨
+
+        echo A && echo B
+        → A가 성공하면 B 실행
+
+
+■ 4. if %errorlevel% neq 0 (
+        powershell -Command "Start-Process '%~f0' -Verb runAs"
+        exit /b
+     )
+
+    앞 줄의 명령(net session)의 결과 코드(errorlevel)를 검사
+    neq 0 → 0이 아닌 경우, 즉 실패했을 경우 = 관리자 아님
+    그래서 관리자 권한이 아니면 이 블록 안으로 진입
+    현재 BAT 파일을 (%~f0 = 전체 경로)
+    PowerShell을 통해 관리자 권한으로 새로 실행
+    -Verb runAs는 "관리자로 실행하기" (UAC 창 뜸)
+    exit /b 현재 BAT 실행을 종료
+    새로 실행되는 관리자 BAT만 계속 진행하게 하기 위해 여기서 정지
+
+    4-1. if %errorlevel% neq 0 (
+        앞에서 net session 같은 명령을 실행했음. 관리자 권한이 아니면 errorlevel이 0이 아님.
+
+    4-2. powershell -Command "Start-Process '%~f0' -Verb runAs"
+
+        4-2-1. powershell -Command "명령어"
+            PowerShell을 실행할 때, 지정한 명령어를 문자열로 넘겨서 바로 실행하라는 옵션입니다.
+            현재 BAT 파일을 PowerShell을 이용해 관리자 권한으로 다시 실행합니다. ("이 앱이 디바이스를 변경하도록 허용하시겠습니까?") UAC(사용자 계정 컨트롤) 창이 뜹니다.
+
+        4-2-2. Start-Process
+            새 프로세스를 실행하는 PowerShell 명령어
+
+        4-2-3. '%~f0'
+            현재 파일의 전체 경로 출력
+
+        4-2-4. -Verb runAs
+            동사, verb, 	“Run as Administrator”의 줄임말입니다.
+            "관리자 권한으로 실행"**을 의미
+            
+
+    4-3. exit /b
+        "현재 BAT 파일 또는 현재 함수 블록(cmd 스크립트 블록)의 실행을 종료한다"
+        exit	명령 프롬프트(cmd 창 자체 종료)
+        exit /b	BAT 파일 또는 현재 코드 블록만 종료 (cmd 창은 열려 있음)
+
+
+■ 5. cd /d "%~dp0"
+    "이 BAT 파일이 위치한 폴더로 이동해라 (드라이브 문자까지 포함해서)"
+    BAT가 관리자 권한으로 새로 실행된 경우, 현재 작업 디렉토리가 달라질 수 있음
+    이 명령은 BAT 파일이 실제 위치한 경로로 작업 디렉토리 변경
+    /d를 붙여서 드라이브까지 변경 가능하게 함 (C: → D: 등)
+    이유 1: PowerShell은 기본 경로를 바꿔 실행할 수 있음
+    이유 2: BAT 파일이 있는 폴더 기준으로 작업하려고
+    실행 경로가 바뀌었을 수 있으므로, BAT가 있는 폴더로 경로 복구
+
+    ▶ cd
+    디렉토리(폴더)를 변경하는 명령어 (change directory)
+
+    ▶ /d
+    드라이브까지 함께 변경할 때 사용
+
+    예를 들어, 현재 C:에 있는데 D:\scripts로 이동하려면 cd /d 필수
+
+    cd만 쓰면 드라이브는 유지됨
+
+    ▶ "%~dp0"
+    현재 실행 중인 BAT 파일의 경로를 가져오는 특수 변수
+
+    세부 구성은 다음과 같음:
+
+    구문	설명
+    %0	현재 BAT 파일 이름
+    ~d	드라이브 문자만 (D: 등)
+    ~p	경로(path)만 (\folder\sub\)
+    %~dp0	드라이브 + 경로 전체 (D:\folder\sub\)
+    %의 의미: 변수 참조 또는 명령줄 인자 참조
+    ~는 인자 뒤에 붙여서 경로/파일명 조작을 할 때 씁니다.
+    echo 현재 파일: %0
+    echo 첫 번째 인자: %1
+
+
+■ 6. chcp 65001 >nul
+    한글 깨짐 방지
+    65001은 UTF-8 코드 페이지 번호입니다.
+    chcp는 Change Code Page의 약자입니다.
+    코드 페이지란: 콘솔(cmd)이 어떤 문자 인코딩을 사용할지를 지정하는 설정입니다.
+    기본적으로 한국 Windows 콘솔은 949 (euc-kr, CP949) 코드 페이지를 사용합니다.
+ 
+    3-1 >nul
+        출력 결과를 숨긴다는 의미입니다.
+        chcp 65001
+        Active code page: 65001
+
+        chcp 65001 >nul
+        (아무것도 안보임)
+
+
+■ 7. if not exist logs (
+        mkdir logs
+    )
+    현재 디렉토리에 logs 폴더가 없으면, 새로 만든다.
+
+
+■ 8. set PYTHONUTF8=1
+    Python 실행 시, 기본 인코딩을 강제로 UTF-8로 설정합니다.
+
+    8-1. set
+        변수를 만들거나 값을 설정할 때 사용하는 명령어입니다.
+        set NAME=고승현
+        echo %NAME%
+
+
+■ 9. set PYTHONIOENCODING=utf-8
+    **표준 입력(stdin), 표준 출력(stdout), 표준 에러(stderr)**의 인코딩을 UTF-8로 강제로 지정합니다.
+
+    PYTHONUTF8과 PYTHONIOENCODING은 Python이 미리 정의해 놓은 환경변수 이름들이고,
+    당신이 BAT 파일에서 set을 써서 그 값을 설정(= 덮어쓰기) 하는 겁니다.
+
+    set은 현재 PowerShell 세션의 환경 변수를 설정하는 명령어.
+    mitmdump.exe는 파이썬 인터프리터를 내장한 실행파일이며, 실행 시 부모 프로세스(PowerShell)의 환경변수를 그대로 가져갑니다.
+    따라서 mitmdump.exe는 PYTHONUTF8과 PYTHONIOENCODING을 인식하고 그 설정에 맞게 Python 입출력 동작을 합니다.
+
+
+■ 10. netsh winhttp set proxy 127.0.0.1:8080
+
+    “Windows 시스템이 WinHTTP API를 통해 인터넷에 접근할 때, 모든 요청을 현재 내 PC(127.0.0.1)의 8080 포트를 통해 중계하도록 설정하라”는 명령입니다.
+
+    10-1. netsh
+        Network Shell의 줄임말입니다.
+        Windows에서 네트워크 구성(방화벽, 프록시, IP 설정 등)을 관리할 수 있는 CLI 도구입니다.
+        명령 프롬프트나 PowerShell에서 실행 가능.
+
+    10-2. winhttp
+        netsh의 하위 컨텍스트 중 하나입니다.    
+        WinHTTP는 Windows HTTP Services의 약자로, Windows 내부 시스템이나 서비스에서 HTTP 요청을 보낼 때 사용하는 API입니다.
+        예를 들어 Windows Update나 일부 백그라운드 서비스는 이 WinHTTP를 사용해 인터넷과 통신합니다.
+
+    10-3. set proxy 127.0.0.1:8080
+        winhttp 컨텍스트에서 프록시 서버를 설정하는 명령어입니다.
+        여기서 "프록시"란, 클라이언트와 서버 사이에서 요청을 중계하는 중간 서버입니다.
+        set proxy를 쓰면 WinHTTP를 사용하는 모든 요청은 지정한 프록시를 통해 전달됩니다.
+
+
+
+■ 11 .\mitmdump.exe -s src/server/proxy_server.py
+
+    "현재 디렉토리에 있는 mitmdump.exe를 실행하고, src/server/proxy_server.py 스크립트를 연결해서, HTTP(S) 요청을 실시간 후킹 및 처리하도록 작동시켜라."
+    
+    mitmdump는 스크립트를 실행할 때 -s (또는 --script) 옵션을 사용합니다.
+    11-1. .\
+        현재 디렉토리(.)에 있는 mitmdump.exe 실행 파일을 실행합니다.
+        mitmdump는 mitmproxy의 커맨드라인 버전으로, 터미널에서 동작하며 스크립트를 붙여서 자동화하기 좋습니다.
+        .\는 PowerShell 또는 CMD에서 현재 경로를 명시할 때 사용하는 구문입니다.
+
+    11-2. -s
+        --script 옵션의 짧은 형태입니다.
+        mitmdump에 사용자 정의 스크립트를 붙여서 실행할 때 사용하는 옵션입니다.
+        이 스크립트는 mitmproxy가 가로채는 HTTP 요청/응답을 수정하거나 로깅하거나 필터링할 수 있게 해줍니다.
+
+
+
+구분	적용 대상	설정 방법	대표적인 영향 대상
+Windows GUI 프록시 설정
+(설정 > 네트워크 > 프록시)	WinINET (사용자 계층)	브라우저/앱에서 사용하는 프록시	🔹 Chrome, Edge, IE
+🔹 Electron 앱
+🔹 Python requests
+🔹 Node.js 등
+
+netsh winhttp set proxy	WinHTTP (시스템 계층)	CLI 명령어	🔹 Windows Update
+🔹 일부 PowerShell 명령어
+🔹 내부 서비스
+
+
+"브라우저 트래픽만 가로채고 싶다면 netsh winhttp set proxy는 필요 없습니다."
+
+👉 이 경우에는 그냥 Windows GUI에서 프록시를 설정하거나, 브라우저 자체 프록시 설정만 해주면 충분합니다.

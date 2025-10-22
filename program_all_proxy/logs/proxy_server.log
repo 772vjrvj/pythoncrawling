@@ -1,0 +1,24 @@
+[21:25:02.144] Loading script E:\git\pythoncrawling\pando_p_proxy_hooking\src/server/proxy_server.py
+[21:25:02.495] [proxy_server] 프록시 서버 시작
+[21:25:02.495] [proxy_server] 프록시 서버 로딩 완료 (한글 출력 테스트)
+[21:25:02.496] [proxy_server] 이 줄이 찍히면 최신 코드입니다!
+[21:25:02.497] HTTP(S) proxy listening at *:8080.
+[21:25:02.656][127.0.0.1:60689] client connect
+[21:25:02.657][127.0.0.1:60689] client disconnect
+[21:25:02.664][127.0.0.1:60694] client connect
+[21:25:02.678][127.0.0.1:60694] server connect api.dev.24golf.co.kr:443 (13.125.164.226:443)
+[21:25:02.710] [request] : GET https://api.dev.24golf.co.kr/auth/token/stores/687df837ccdd3048647c8e92/role/singleCrawler
+[21:25:02.727] [response] : GET : https://api.dev.24golf.co.kr/auth/token/stores/687df837ccdd3048647c8e92/role/singleCrawler → 200
+[21:25:02.728] [response] : 비JSON 응답 → Content-Type=text/html; charset=utf-8, size=179 bytes
+127.0.0.1:60694: GET https://api.dev.24golf.co.kr/auth/token/stores/687df837…
+              << 200 OK 179b
+[21:25:02.731][127.0.0.1:60694] client disconnect
+[21:25:02.732][127.0.0.1:60694] server disconnect api.dev.24golf.co.kr:443 (13.125.164.226:443)
+[21:25:02.740][127.0.0.1:60696] client connect
+[21:25:02.758][127.0.0.1:60696] server connect api.dev.24golf.co.kr:443 (13.125.164.226:443)
+[21:25:02.774] [request] : GET https://api.dev.24golf.co.kr/stores/687df837ccdd3048647c8e92
+[21:25:02.792] [response] : GET : https://api.dev.24golf.co.kr/stores/687df837ccdd3048647c8e92 → 200
+127.0.0.1:60696: GET https://api.dev.24golf.co.kr/stores/687df837ccdd3048647…
+              << 200 OK 2.3k
+[21:25:02.795][127.0.0.1:60696] client disconnect
+[21:25:02.795][127.0.0.1:60696] server disconnect api.dev.24golf.co.kr:443 (13.125.164.226:443)
