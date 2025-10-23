@@ -75,7 +75,7 @@ def qt_exec(app: QApplication) -> int:
 
 def main() -> None:
     # === 신규: 앱 생성 전에 단일 인스턴스 락 확인 (권장) ===
-    lock = SingleInstance("pando_single_instance")
+    lock = SingleInstance("program_single_instance")
     if lock.already_running():
         # 아직 QApplication을 만들기 전이므로 임시 생성해서 경고창 표시
         show_already_running_alert(None)
