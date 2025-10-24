@@ -52,7 +52,7 @@ class StoreDialog(QDialog):
 
         form_group = QVBoxLayout()  # 입력 필드 그룹 수직 레이아웃
 
-        label = QLabel("매장 ID")  # 매장 ID 라벨
+        label = QLabel("인증 key")  # 매장 ID 라벨
         label.setStyleSheet("font-weight: bold;")
         self.store_id_input = QLineEdit()  # 매장 ID 입력창
         self.store_id_input.setText(self.current_store_id)  # 기본값 설정

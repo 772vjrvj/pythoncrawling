@@ -144,12 +144,12 @@ class MainWindow(QWidget):
         info_layout = QVBoxLayout()
         info_layout.setSpacing(12)
 
-        label_section = QLabel("매장 정보")
+        label_section = QLabel("유저 정보")
         label_section.setStyleSheet("font-weight: bold; background-color: #fafafa;")
         info_layout.addWidget(label_section)
 
         row1 = QHBoxLayout()
-        label1 = QLabel("● 매장명 :")
+        label1 = QLabel("● 유저명 :")
         label1.setFixedWidth(70)
         self.store_name_value = QLabel("-")
         row1.addWidget(label1)
@@ -158,7 +158,7 @@ class MainWindow(QWidget):
         row1.addStretch()
 
         row2 = QHBoxLayout()
-        label2 = QLabel("● 지   점 :")
+        label2 = QLabel("● 등   급 :")
         label2.setFixedWidth(70)
         self.branch_value = QLabel("-")
         row2.addWidget(label2)
@@ -237,7 +237,7 @@ class MainWindow(QWidget):
     # region : 트레이 아이콘/메뉴 구성
     def create_tray(self):
         # 초기 아이콘: 중지 상태(대기)
-        icon_path = self.get_resource_path("assets/pandop_off.ico")
+        icon_path = self.get_resource_path("assets/crawling_off.ico")
         if os.path.exists(icon_path):
             icon = QIcon(icon_path)
             self.setWindowIcon(icon)        # 윈도우 아이콘
@@ -751,11 +751,11 @@ class MainWindow(QWidget):
                 ui_log("[error] 토큰 생성 실패: token 없음")
                 raise RuntimeError("토큰 생성 실패")
 
-            # 매장 정보 조회
+            # 인증키 정보 조회
             info = fetch_store_info(token, data["store_id"])
             if not info:
-                ui_log("[error] 매장 정보 조회 실패: 결과 없음")
-                raise RuntimeError("매장 정보 조회 실패")
+                ui_log("[error] 인증키 정보 조회 실패: 결과 없음")
+                raise RuntimeError("인증키 정보 조회 실패")
 
             # 데이터 갱신 및 저장
             data.update({
@@ -763,7 +763,7 @@ class MainWindow(QWidget):
                 "branch": info.get("branch", "")
             })
             save_data(data)
-            ui_log("[info] 매장 정보 저장 완료")
+            ui_log("[info] 인증키 정보 저장 완료")
 
         except Exception as e:
             ui_log(f"[error] update_store_info 예외: {e}")
@@ -774,7 +774,7 @@ class MainWindow(QWidget):
     # region : background 초기화
     def _background_init(self):
         """
-        백그라운드에서 인증서/프록시 초기화 후 프록시 확인, 토큰/매장정보 요청까지 수행.
+        백그라운드에서 인증서/프록시 초기화 후 프록시 확인, 토큰/인증키 정보 요청까지 수행.
         완료 시 proxy_ready 시그널을 emit 함.
         """
 
@@ -788,7 +788,7 @@ class MainWindow(QWidget):
             # 3. 프록시 대기/시작/중지/종료
             self.wait_for_proxy(timeout=30)
             
-            # 4. 매장 정보 저장
+            # 4. 인증키 정보 저장
             self.update_store_info()
 
             # 5. 화면 갱신
@@ -855,7 +855,7 @@ class MainWindow(QWidget):
         self.branch_value.setText(data.get("branch"))
 
         self.is_running = True
-        self.set_tray_icon("assets/pandop_on.ico")
+        self.set_tray_icon("assets/crawling_on.ico")
         self.store_button.hide()
 
         # 버튼/트레이 상태 동기화
@@ -903,12 +903,12 @@ class MainWindow(QWidget):
     # region : [버튼 이벤트] 시작버튼 클릭시 시작 이벤트
     def start_action(self):
 
-        """시작(프록시/토큰/매장정보)"""
+        """시작(프록시/토큰/인증키 정보)"""
         if self.is_running:
             return
 
         if not self.current_store_id:
-            self._notify_start_failed("매장 등록이 필요합니다.\n'등록' 버튼으로 매장 ID를 설정한 뒤 다시 시작하세요.")
+            self._notify_start_failed("인증키 등록이 필요합니다.\n'등록' 버튼으로 인증키를 설정한 뒤 다시 시작하세요.")
             return
 
         self.start_button.setEnabled(False)
@@ -1086,7 +1086,7 @@ class MainWindow(QWidget):
         # 상태 전환: 중지됨
         self.is_running = False
         # 중지(대기) 아이콘
-        self.set_tray_icon("assets/pandop_off.ico")
+        self.set_tray_icon("assets/crawling_off.ico")
         self.store_button.show()
         self.store_button.setEnabled(True)
 
