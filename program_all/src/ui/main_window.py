@@ -9,7 +9,10 @@ from src.core.global_state import GlobalState
 from src.ui.popup.countdown_pop import CountdownPop
 from src.ui.popup.param_set_pop import ParamSetPop
 from src.ui.popup.column_set_pop import ColumnSetPop
+from src.ui.popup.site_set_pop import SiteSetPop
 from src.ui.popup.region_set_pop import RegionSetPop
+from src.ui.popup.excel_set_pop import ExcelSetPop
+
 from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
@@ -24,13 +27,20 @@ class MainWindow(QWidget):
     def __init__(self, app_manager):
         super().__init__()
 
+        self.user = None
+        self.excel_data_list = None
+        self.right_button_layout = None
         self.region_set_pop = None
         self.column_set_pop = None
+        self.site_set_pop = None
         self.param_set_pop = None
+        self.excel_set_pop = None
+
         self.selected_regions = []
         self.columns = None
+        self.sites = None
         self.region = None
-        self.param_pop = None
+        self.popup = None
         self.setting_button = None
         self.setting = None
         self.name = None
@@ -42,6 +52,8 @@ class MainWindow(QWidget):
         self.collect_button = None
         self.region_setting_button = None
         self.column_setting_button = None
+        self.site_setting_button = None
+        self.excel_setting_button = None
 
         self.task_queue = None
         self.progress_worker = None
@@ -64,7 +76,9 @@ class MainWindow(QWidget):
         self.setting = state.get("setting")
         self.cookies = state.get("cookies")
         self.columns = state.get("columns")
+        self.sites = state.get("sites")
         self.region = state.get("region")
+        self.popup = state.get("popup")
 
     # 재 초기화
     def init_reset(self):
@@ -101,7 +115,7 @@ class MainWindow(QWidget):
                 self.on_demand_worker.progress_end_signal.connect(self.stop)
             else:
                 self.add_log(f"[오류] '{self.site}'에 해당하는 워커가 없습니다.")
-        
+
     # 화면 업데이트
     def ui_set(self):
         if self.layout():
@@ -110,9 +124,57 @@ class MainWindow(QWidget):
             self.log_reset_button.setStyleSheet(main_style(self.color))
             self.collect_button.setStyleSheet(main_style(self.color))
             self.log_out_button.setStyleSheet(main_style(self.color))
-            self.setting_button.setStyleSheet(main_style(self.color))
+
+            # 🔧 기존 오른쪽 버튼 싹 제거 후 다시 구성
+            self._clear_right_buttons()
+
+            if self.setting:
+                self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.setting_button)
+
+            if self.columns:
+                # 오른쪽 버튼 레이아웃
+                self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.column_setting_button)
+
+            if self.sites:
+                # 오른쪽 버튼 레이아웃
+                self.site_setting_button = create_common_button("사이트세팅", self.open_site_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.site_setting_button)
+
+            if self.region:
+                # 오른쪽 버튼 레이아웃
+                self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.region_setting_button)
+
+            if self.popup:
+                # 오른쪽 버튼 레이아웃
+                self.excel_setting_button = create_common_button("엑셀세팅", self.open_excel_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.excel_setting_button)
+
         else:
             self.set_layout()
+
+
+    # ─────────────────────────────────────────────────────────
+    # 기존 오른쪽 버튼들 제거 유틸
+    # ─────────────────────────────────────────────────────────
+    def _clear_right_buttons(self):
+        if not self.right_button_layout:
+            return
+        while self.right_button_layout.count():
+            item = self.right_button_layout.takeAt(0)
+            w = item.widget()
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        # 참조 리셋
+        self.setting_button = None
+        self.column_setting_button = None
+        self.site_setting_button = None
+        self.region_setting_button = None
+        self.excel_setting_button = None
+
 
     # ui 속성 변경
     def update_style_prop(self, item_name, prop, value):
@@ -165,8 +227,8 @@ class MainWindow(QWidget):
         header_layout = QHBoxLayout()
 
         # 왼쪽 버튼들 레이아웃
-        left_button_layout = QHBoxLayout()
-        left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
+        self.left_button_layout = QHBoxLayout()
+        self.left_button_layout.setAlignment(Qt.AlignLeft)  # 왼쪽 정렬
 
         self.site_list_button     = create_common_button("목록", self.go_site_list, self.color, 100)
         self.log_reset_button     = create_common_button("로그리셋", self.log_reset, self.color, 100)
@@ -174,32 +236,44 @@ class MainWindow(QWidget):
         self.log_out_button       = create_common_button("로그아웃", self.on_log_out, self.color, 100)
 
         # 왼쪽 버튼 레이아웃
-        left_button_layout.addWidget(self.site_list_button)
-        left_button_layout.addWidget(self.log_reset_button)
-        left_button_layout.addWidget(self.collect_button)
-        left_button_layout.addWidget(self.log_out_button)
+        self.left_button_layout.addWidget(self.site_list_button)
+        self.left_button_layout.addWidget(self.log_reset_button)
+        self.left_button_layout.addWidget(self.collect_button)
+        self.left_button_layout.addWidget(self.log_out_button)
 
         # 오른쪽 버튼 레이아웃
-        right_button_layout = QHBoxLayout()
-        right_button_layout.setAlignment(Qt.AlignRight)
-        self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
-        right_button_layout.addWidget(self.setting_button)
+        self.right_button_layout = QHBoxLayout()
+        self.right_button_layout.setAlignment(Qt.AlignRight)
+
+        if self.setting:
+            self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.setting_button)
 
         if self.columns:
             # 오른쪽 버튼 레이아웃
             self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
-            right_button_layout.addWidget(self.column_setting_button)
+            self.right_button_layout.addWidget(self.column_setting_button)
+
+        if self.sites:
+            # 오른쪽 버튼 레이아웃
+            self.site_setting_button = create_common_button("사이트세팅", self.open_site_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.site_setting_button)
 
         if self.region:
             # 오른쪽 버튼 레이아웃
             self.region_setting_button = create_common_button("지역세팅", self.open_region_setting, self.color, 100)
-            right_button_layout.addWidget(self.region_setting_button)
+            self.right_button_layout.addWidget(self.region_setting_button)
+
+        if self.popup:
+            # 오른쪽 버튼 레이아웃
+            self.excel_setting_button = create_common_button("엑셀세팅", self.open_excel_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.excel_setting_button)
 
 
         # 레이아웃에 요소 추가
-        header_layout.addLayout(left_button_layout)  # 왼쪽 버튼 레이아웃 추가
+        header_layout.addLayout(self.left_button_layout)  # 왼쪽 버튼 레이아웃 추가
         header_layout.addStretch()  # 가운데 공간 확보
-        header_layout.addLayout(right_button_layout)
+        header_layout.addLayout(self.right_button_layout)
 
         # 헤더에 텍스트 추가
         self.header_label = QLabel(f"{self.name} 데이터 추출")
@@ -258,9 +332,24 @@ class MainWindow(QWidget):
 
             self.progress_bar.setValue(0)
             self.progress_worker.start()
-            self.on_demand_worker.set_setting(self.setting)
-            self.on_demand_worker.set_columns(self.columns)
-            self.on_demand_worker.set_region(self.selected_regions)
+            if self.setting:
+                self.on_demand_worker.set_setting(self.setting)
+
+            if self.columns:
+                self.on_demand_worker.set_columns(self.columns)
+
+            if self.sites:
+                self.on_demand_worker.set_sites(self.sites)
+
+            if self.selected_regions:
+                self.on_demand_worker.set_region(self.selected_regions)
+
+            if self.excel_data_list:
+                self.on_demand_worker.set_excel_data_list(self.excel_data_list)
+
+            if self.user:
+                self.on_demand_worker.set_user(self.user)
+
             self.on_demand_worker.start()
 
         else:
@@ -338,7 +427,7 @@ class MainWindow(QWidget):
     def go_site_list(self):
         self.close()  # 로그인 화면 종료
         self.app_manager.go_to_select()
-    
+
     # 로그아웃
     def on_log_out(self):
         try:
@@ -368,6 +457,12 @@ class MainWindow(QWidget):
             self.column_set_pop.log_signal.connect(self.add_log)
         self.column_set_pop.exec_()
 
+    def open_site_setting(self):
+        if self.site_set_pop is None:
+            self.site_set_pop = SiteSetPop(self)
+            self.site_set_pop.log_signal.connect(self.add_log)
+        self.site_set_pop.exec_()
+
 
     def open_region_setting(self):
         if self.region_set_pop is None:
@@ -385,3 +480,24 @@ class MainWindow(QWidget):
     def show_countdown_popup(self, seconds):
         popup = CountdownPop(seconds)
         popup.exec_()  # 완료될 때까지 block
+
+
+    # 전체 등록 팝업
+    def open_excel_setting(self):
+        self.excel_set_pop = ExcelSetPop(parent=self)  # 부모 객체 전달
+        self.excel_set_pop.updateList.connect(self.excel_data_set_list)
+        self.excel_set_pop.updateUser.connect(self.update_user)
+        self.excel_set_pop.exec_()
+
+
+    # url list 업데이트
+    def excel_data_set_list(self, excel_data_list):
+        self.excel_data_list = excel_data_list
+        self.add_log(f'엑셀 데이터 갯수 : {len(self.excel_data_list)}')
+        for data in excel_data_list:
+            self.add_log(data)
+
+
+    def update_user(self, user):
+        self.user = user
+        self.add_log(f'유저 : {self.user}')

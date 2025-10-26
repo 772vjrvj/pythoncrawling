@@ -1,0 +1,44 @@
+레지스트리(Windows Registry)란?
+
+Windows 운영체제의 중앙 설정 데이터베이스야.
+
+운영체제, 드라이버, 프로그램들이 쓰는 환경 설정, 옵션, 연결 정보 등이 전부 여기 저장돼.
+
+쉽게 말하면, Windows의 커다란 설정 창고라고 보면 돼.
+
+구조
+
+트리(tree) 구조로 되어 있고, 크게 몇 가지 뿌리(루트 키)가 있어:
+
+HKEY_LOCAL_MACHINE (HKLM) → PC 전체 설정 (모든 사용자 공통)
+
+HKEY_CURRENT_USER (HKCU) → 현재 로그인한 사용자 전용 설정
+
+HKEY_CLASSES_ROOT (HKCR) → 파일 연결, COM 클래스 관련
+
+HKEY_USERS (HKU) → PC에 있는 모든 사용자 계정의 개별 설정
+
+HKEY_CURRENT_CONFIG (HKCC) → 현재 하드웨어 프로필
+
+값 저장 방식
+
+레지스트리는 키(Key)와 값(Value)로 이루어져 있어.
+
+예를 들어:
+
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings
+    ProxyEnable   (REG_DWORD) = 1
+    ProxyServer   (REG_SZ)    = "127.0.0.1:8080"
+
+
+여기서 "ProxyEnable"은 이름, REG_DWORD는 데이터 타입, 1은 실제 값이야.
+
+왜 중요하냐?
+
+시스템/앱 설정을 중앙에서 관리하기 때문에, 프로그램이 이걸 바꾸면 Windows 전체 동작에 영향을 줄 수 있어.
+
+예: 프록시 설정, 시작 프로그램 등록, 기본 브라우저 지정, 서비스 동작 방식 등.
+
+✅ 정리:
+레지스트리는 Windows의 뇌 속 메모장 같은 거야.
+모든 설정이 이 안에 저장되고, 우리가 winreg 같은 API로 값을 읽거나 바꾸면 Windows 동작이 바로 달라져.

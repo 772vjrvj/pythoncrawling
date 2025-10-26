@@ -152,6 +152,7 @@ class ParamSetPop(QDialog):
                         image: url(:/icons/check-white.png);  /* ✔ 아이콘 넣을 수도 있음 */
                     }
                 """)
+                checkbox.setCursor(Qt.PointingHandCursor)
 
                 self.input_fields[item["code"]] = checkbox
                 item_layout.addWidget(checkbox)

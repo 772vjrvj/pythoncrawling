@@ -1,0 +1,31 @@
+2025-10-25 01:04:22,276 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-10-25 01:04:22,958 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-10-25 01:04:23,074 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-10-25 01:04:23,095 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-10-25 01:04:23,188 [INFO] main_window.py:429 - winhttp proxy imported from IE (동기화 성공)
+2025-10-25 01:04:23,188 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-10-25 01:04:23,189 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-10-25 01:04:23,702 [INFO] main_window.py:517 - CPU 사용률 감지: 27.6% -> 인증서 생성 타임아웃 설정 180s.
+2025-10-25 01:04:23,702 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-10-25 01:04:25,206 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-10-25 01:04:25,307 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-10-25 01:04:25,307 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-10-25 01:04:25,307 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-10-25 01:04:25,356 [INFO] main_window.py:618 - 인증서 등록 완료!
+2025-10-25 01:04:25,356 [INFO] main_window.py:620 - certutil stdout: Root "신뢰할 수 있는 루트 인증 기관"
+서명이 공개 키와 일치합니다.
+"mitmproxy" 인증서가 저장소에 추가되었습니다.
+CertUtil: -addstore 명령이 성공적으로 완료되었습니다.
+2025-10-25 01:04:25,356 [INFO] main_window.py:665 - [프록시] 프록시 실행 준비 중...
+2025-10-25 01:04:25,370 [INFO] main_window.py:705 - [프록시] mitmdump 실행 완료 (로그: E:\git\pythoncrawling\program_all_proxy\logs\proxy_server.log)
+2025-10-25 01:04:26,909 [INFO] proxy_server.py:36 - 🚀 [proxy_server] 프록시 서버 로딩 완료 (한글 출력 테스트)
+2025-10-25 01:04:26,909 [INFO] proxy_server.py:37 - ✅ [proxy_server] 이 줄이 찍히면 최신 로깅 통합 버전입니다.
+2025-10-25 01:04:27,391 [INFO] main_window.py:719 - 프록시 서버가 포트 8080에서 실행 중입니다.
+2025-10-25 01:04:27,391 [INFO] api.py:58 - 🔑 (더미) 토큰 발급: store_id=test -> dummy-token-00000000000000000000
+2025-10-25 01:04:27,391 [INFO] token_manager.py:14 - 토큰 갱신 완료 → 저장 예정: {'store_id': 'test', 'name': 'test', 'branch': '테스트매장-test', 'token': 'dummy-token-00000000000000000000', 'auto_login': 'T'}
+2025-10-25 01:04:27,392 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-10-25 01:04:27,396 [INFO] token_manager.py:16 - 토큰 갱신 + 저장 완료
+2025-10-25 01:04:27,397 [INFO] api.py:71 - 🏬 (더미) 유저 정보 반환: store_id=test token=dummy-token-00000000000000000000 -> name=test
+2025-10-25 01:04:27,397 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-10-25 01:04:27,400 [INFO] main_window.py:766 - [info] 인증키 정보 저장 완료
+2025-10-25 01:04:27,414 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_on.ico

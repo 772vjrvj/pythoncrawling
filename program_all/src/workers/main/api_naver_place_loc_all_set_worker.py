@@ -10,7 +10,6 @@ import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
 import requests
 from bs4 import BeautifulSoup
 
-from src.utils.config import NAVER_LOC_ALL
 from src.core.global_state import GlobalState
 from src.utils.api_utils import APIClient
 from src.utils.str_utils import split_comma_keywords
@@ -40,9 +39,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         self.file_driver = None
         self.excel_driver = None
         self.sess = None
-        self.before_pro_value = 0
         self.api_client = None
-        self.loc_all = NAVER_LOC_ALL
+        self.loc_all = None
         self.saved_ids = set()
 
     # 초기화
@@ -129,7 +127,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                     self.log_signal_func(f"전국: {locs_index} / {total_locs}, 키워드: {current_query_index} / {total_queries}, 검색어: {query}, 수집: {idx} / {len(new_ids)}, 중복 아이디: {place_id}")
                     continue  # ✅ 이미 수집한 ID는 건너뜀
 
-                time.sleep(random.uniform(1, 2))
+                time.sleep(random.uniform(2, 4))
 
                 place_info = self.fetch_place_info(place_id)
                 if not place_info:
@@ -186,6 +184,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
         # 파일 객체 초기화
         self.file_driver = FileUtils(self.log_signal_func)
+        self.loc_all = self.file_driver.read_json_array_from_resources("naver_loc_all.json")
 
         # api
         self.api_client = APIClient(use_cache=False, log_func =self.log_signal_func)
@@ -341,7 +340,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 'sec-fetch-dest': 'document',
                 'sec-fetch-mode': 'navigate',
                 'sec-fetch-site': 'none',
-                'referer': '',
+                'referer': f"https://m.place.naver.com/place/{place_id}",
                 'sec-fetch-user': '?1',
                 'upgrade-insecure-requests': '1',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'

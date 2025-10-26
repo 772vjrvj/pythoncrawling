@@ -1,0 +1,500 @@
+{
+  "props": {
+    "pageProps": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+      "_sentryTraceData": "9a0b883e518246b398480cb20bb1c2b5-a28f59b29b1d6949-0",
+      "dehydratedState": {
+        "mutations": [
+        ],
+        "queries": [
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "result": {
+                  "key": {
+                    "complexNumber": 141277,
+                    "pyeongTypeNumber": 6,
+                    "buildingNumber": 1
+                  },
+                  "type": {
+                    "realEstateType": "A02",
+                    "tradeType": "B2"
+                  },
+                  "address": {
+                    "legalDivisionNumber": "1168010100",
+                    "jibun": "831-11"
+                  },
+                  "isRealEstateAssociationArticle": false,
+                  "isArticleImageExist": false
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568414,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /article/key",
+              {
+                "params": {
+                  "articleNumber": "2544226806"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /article/key\",{\"params\":{\"articleNumber\":\"2544226806\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "result": [
+                ]
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568430,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /article/galleryImages",
+              {
+                "params": {
+                  "articleNumber": "2544226806"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /article/galleryImages\",{\"params\":{\"articleNumber\":\"2544226806\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "result": {
+                  "priceInfo": {
+                    "tradeType": "B2",
+                    "warrantyAmount": 100000000,
+                    "rentAmount": 5000000,
+                    "loan": 0},
+                  "detailInfo": {
+                    "facilityInfo": {
+                      "life": [
+                        "BED",
+                        "CLOSET",
+                        "BUILT_IN_CLOSET",
+                        "SHOE_RACK",
+                        "REFRIGERATOR",
+                        "WASHING_MACHINE",
+                        "CLOTHES_DRYER",
+                        "BATHTUB",
+                        "SINK",
+                        "INDUCTION_RANGE"
+                      ],
+                      "security": [
+                        "GUARD",
+                        "VIDEO_PHONE",
+                        "INTER_PHONE",
+                        "CARD_KEY",
+                        "CCTV",
+                        "PRIVATE_SECURITY",
+                        "ENTRANCE_SECURITY"
+                      ],
+                      "etc": ["ELEVATOR",
+                        "FIRE_ALARM",
+                        "TERRACE",
+                        "DELIVERY_BOX"
+                      ],
+                      "aircon": [
+                        "CEILING"
+                      ],
+                      "entranceType": "10",
+                      "totalParkingCount": 324,
+                      "parkingCountPerHousehold": 0.96
+                    },
+                    "articleDetailInfo": {
+                      "articleNumber": "2544226806",
+                      "articleName": "루카831",
+                      "articleFeatureDescription": "강남역 초역세권  신축오피. 즉시입주가능",
+                      "isAddressExposed": true,
+                      "isDirectTrade": false,
+                      "isSafeLessorOfHug": false,
+                      "cpId": "bizmk",
+                      "exposureStartDate": "2025-08-16",
+                      "buildingPrincipalUse": "업무시설"
+                    },
+                    "movingInInfo": {
+                      "movingInNegotiation": false,
+                      "movingInType": "MV001"
+                    },
+                    "verificationInfo": {
+                      "verificationType": "OWNER",
+                      "isAssociationArticle": false,
+                      "exposureStartDate": "2025-08-16",
+                      "articleConfirmDate": "2025-08-16"
+                    },
+                    "spaceInfo": {
+                      "floorInfo": {
+                        "targetFloor": "19",
+                        "totalFloor": "29",
+                        "groundTotalFloor": "0",
+                        "undergroundTotalFloor": "0",
+                        "floorType": "10",
+                        "residenceType": "1"
+                      },
+                      "roomCount": 1,
+                      "bathRoomCount": 1,
+                      "direction": "ES",
+                      "duplex": false,
+                      "directionStandard": "거실 기준"
+                    },
+                    "sizeInfo": {
+                      "supplySpace": 124.49,
+                      "exclusiveSpace": 54.56,
+                      "supplySpaceName": "124A4",
+                      "exclusiveSpaceName": "54A4",
+                      "pyeongArea": 37.65
+                    }
+                  },
+                  "communalComplexInfo": {
+                    "complexNumber": 141277,
+                    "complexName": "루카831",
+                    "pyeongTypeNumber": 6,
+                    "dongName": "1동"
+                  }
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568449,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /article/basicInfo",
+              {
+                "params": {
+                  "articleNumber": "2544226806",
+                  "realEstateType": "A02",
+                  "tradeType": "B2"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /article/basicInfo\",{\"params\":{\"articleNumber\":\"2544226806\",\"realEstateType\":\"A02\",\"tradeType\":\"B2\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "result": {
+                  "typeCode": "03",
+                  "criteriaType": "04",
+                  "criteriaDirectInput": "신축오리. 관리비 부과내역 미확인",
+                  "uncheckDetail": {
+                    "type": "03"
+                  }
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568434,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /article/maintenanceFee",
+              {
+                "params": {
+                  "articleNumber": "2544226806"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /article/maintenanceFee\",{\"params\":{\"articleNumber\":\"2544226806\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "detailCode": "success",
+                "message": "",
+                "result": {
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568427,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /article/oldMaintenanceFee",
+              {
+                "params": {
+                  "articleNumber": "2544226806"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /article/oldMaintenanceFee\",{\"params\":{\"articleNumber\":\"2544226806\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "detailCode": "success",
+                "message": "",
+                "result": {
+                  "name": "루카831",
+                  "type": "A02",
+                  "address": {
+                    "legalDivisionNumber": "1168010100",
+                    "legalDivisionLevel": "EUP",
+                    "city": "서울시",
+                    "division": "강남구",
+                    "sector": "역삼동",
+                    "jibun": "831-11",
+                    "roadName": "강남대로 338",
+                    "zipCode": "06242"
+                  },
+                  "coordinates": {
+                    "xCoordinate": 127.030587,
+                    "yCoordinate": 37.493815
+                  },
+                  "totalHouseholdNumber": 337,
+                  "leaseHouseholdNumber": 0,
+                  "dongCount": 1,
+                  "hasBuildingHoInfo": false,
+                  "constructionCompany": "현대엔지니어링(주)",
+                  "buildingUse": "업무시설",
+                  "isServicedResidence": false,
+                  "buildingRatioInfo": {
+                    "floorAreaRatio": 999,
+                    "buildingCoverageRatio": 59
+                  },
+                  "useApprovalDate": "20241115",
+                  "approvalElapsedYear": 1,
+                  "parkingInfo": {
+                    "totalParkingCount": 324,
+                    "parkingCountPerHousehold": 0.96
+                  },
+                  "heatingAndCoolingInfo": {
+                    "heatingAndCoolingSystemType": "HT001",
+                    "heatingEnergyType": "HF001"
+                  },
+                  "monopolyRestrictionType": "N",
+                  "isRestrictedTransferOfReconstructionAssociationMembership": false,
+                  "isComplexTourExist": false
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568424,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /complex",
+              {
+                "params": {
+                  "complexNumber": "141277"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /complex\",{\"params\":{\"complexNumber\":\"141277\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "result": {
+                  "railList": [
+                    {
+                      "stationId": 20000117,
+                      "stationName": "양재역(2028년예정)",
+                      "railId": 143,
+                      "railName": "GTX-C(덕정수원)",
+                      "openDate": "2028",
+                      "coordinates": {
+                        "xCoordinate": 127.0340219,
+                        "yCoordinate": 37.48455729
+                      },
+                      "distance": 1073,
+                      "walkingTime": 16
+                    }
+                  ],
+                  "jiguList": [
+                  ]
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568464,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /development",
+              {
+                "params": {
+                  "type": "article",
+                  "itemId": 2544226806
+                }
+              }
+            ],
+            "queryHash": "[\"GET /development\",{\"params\":{\"itemId\":2544226806,\"type\":\"article\"}}]"
+          },
+          {
+            "dehydratedAt": 1757226568464,
+            "state": {
+              "data": {
+                "isSuccess": true,
+                "result": {
+                  "brokerageName": "하늘부동산 공인중개사사무소",
+                  "brokerName": "윤원석",
+                  "address": "서울 성동구 고산자로 160,1층 103-1호(응봉동,대림강변타운에이상가)",
+                  "businessRegistrationNumber": "11200-2018-00159",
+                  "profileImageUrl": "https://landthumb-phinf.pstatic.net/20180907_189/rltr_profile_1536284747919BM0mH_JPEG/yws23571_cropImage.jpg",
+                  "brokerId": "yws23571",
+                  "ownerConfirmationSaleCount": 56,
+                  "phone": {
+                    "brokerage": "02-2282-2500",
+                    "mobile": "010-3667-8117"
+                  }
+                }
+              },
+              "dataUpdateCount": 1,
+              "dataUpdatedAt": 1757226568442,
+              "error": null,
+              "errorUpdateCount": 0,
+              "errorUpdatedAt": 0,
+              "fetchFailureCount": 0,
+              "fetchFailureReason": null,
+              "fetchMeta": null,
+              "isInvalidated": false,
+              "status": "success",
+              "fetchStatus": "idle"
+            },
+            "queryKey": [
+              "GET /article/agent",
+              {
+                "params": {
+                  "articleNumber": "2544226806"
+                }
+              }
+            ],
+            "queryHash": "[\"GET /article/agent\",{\"params\":{\"articleNumber\":\"2544226806\"}}]"
+          }
+        ]
+      }
+    },
+    "__N_SSP": true
+  },
+  "page": "/articles/[articleId]",
+  "query": {
+    "articleId": "2544226806"
+  },
+  "buildId": "MrpEAgNhiGFlIVq_eU0zI",
+  "assetPrefix": "https://property.pstatic.net/property-web",
+  "runtimeConfig": {
+    "NPAY_URL": {
+      "PROPERTY": "https://fin.land.naver.com",
+      "FINANCE": "https://fin.land.naver.com/finance",
+      "LEGACY_PROPERTY": "https://m.land.naver.com",
+      "LEGACY_PROPERTY_SALE": "https://isale.land.naver.com/NewiSaleMobile/Home",
+      "LEGACY_PROPERTY_SALE_MAP": "https://isale.land.naver.com/iSale/Map",
+      "LEGACY_PROPERTY_NEWS": "https://m2.land.naver.com/news",
+      "LEGACY_MYHOUSE": "https://neo.land.naver.com",
+      "LEGACY_PC": "https://new.land.naver.com",
+      "LEGACY_PC_HOME": "https://land.naver.com",
+      "NAVER": "https://naver.com",
+      "STOCK": "https://m.stock.naver.com",
+      "PAY": "https://new-m.pay.naver.com",
+      "LOAN": "https://new-m.pay.naver.com/loan",
+      "PAY_HOME": "https://home.pay.naver.com",
+      "POINT": "https://point.pay.naver.com",
+      "NID": "https://nid.naver.com",
+      "COMMON_COMMENT": {
+        "RESOURCE": "https://ssl.pstatic.net/static.cbox",
+        "DISCUSS": "https://apis.naver.com/commentBox/cbox12"
+      },
+      "IMG_URL": "https://landthumb-phinf.pstatic.net",
+      "COMPLEX_3D_TOUR_RESOURCE_BASE": "https://xrcomplex.pstatic.net/complex-release/xAQl9qB",
+      "LAND_AD": "https://landad.naver.com"
+    },
+    "ASSETS_PREFIX": "https://property.pstatic.net/property-web",
+    "VOD_ASSETS_PREFIX": "https://financial-vod.pstatic.net/property",
+    "MEDIA_VIEWER_CONFIG": {
+      "VOD_SERVICE_ID": 2014,
+      "ENV_TYPE": "real"
+    },
+    "BANNER": {
+      "PROPERTY_COMMON_BANNER_TYPE_ID": 21,
+      "PROPERTY_COMMON_BANNER_ID": 21
+    },
+    "GLAD_SDK": "https://ssl.pstatic.net/tveta/libs/glad/prod/gfp-core.js",
+    "PAY_APP_PROMOTION": "https://campaign2.naver.com",
+    "STATIC_MAP": "https://simg.pstatic.net/static.map/",
+    "PANORAMA_MAP": "https://panorama.map.naver.com",
+    "MAP": "https://app.map.naver.com",
+    "MOBILE_MAP_LINK": "https://m.map.naver.com",
+    "TALK_TALK": "https://talk.naver.com/ct/",
+    "PROPERTY_THUMBNAIL_URL": "https://property-dthumb.pstatic.net",
+    "LAND_THUMBNAIL_URL": "https://landthumb-phinf.pstatic.net",
+    "PROFILE": "real"
+  },
+  "isFallback": false,
+  "isExperimentalCompile": false,
+  "gssp": true,
+  "appGip": true,
+  "scriptLoader": [
+  ]
+}

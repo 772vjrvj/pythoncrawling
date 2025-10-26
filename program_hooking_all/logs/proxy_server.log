@@ -1,0 +1,29 @@
+[18:39:18.662] Loading script E:\git\pythoncrawling\pando_p_proxy_hooking\src/server/proxy_server.py
+[18:39:19.000] [판도] 프록시 서버 시작
+[18:39:19.000] [판도] 프록시 서버 시작
+[18:39:19.000] [판도] 프록시 서버 로딩 완료 (한글 출력 테스트)
+[18:39:19.000] [판도] 프록시 서버 로딩 완료 (한글 출력 테스트)
+[18:39:19.001] [판도] 이 줄이 찍히면 최신 코드입니다!
+[18:39:19.001] [판도] 이 줄이 찍히면 최신 코드입니다!
+[18:39:19.002] HTTP(S) proxy listening at *:8080.
+[18:39:19.165][127.0.0.1:64878] client connect
+[18:39:19.168][127.0.0.1:64878] client disconnect
+[18:39:19.175][127.0.0.1:64879] client connect
+[18:39:19.213][127.0.0.1:64879] server connect api.dev.24golf.co.kr:443 (43.203.54.151:443)
+[18:39:19.249] [request] : GET https://api.dev.24golf.co.kr/auth/token/stores/687df837ccdd3048647c8e92/role/singleCrawler
+[18:39:19.268] [response] : GET : https://api.dev.24golf.co.kr/auth/token/stores/687df837ccdd3048647c8e92/role/singleCrawler → 200
+[18:39:19.268] [response] : JSON 파싱 실패: Expecting value: line 1 column 1 (char 0)
+[18:39:19.268] [response] : 원본 응답 (일부):
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2RmODM3Y2NkZDMwNDg2NDdjOGU5MiIsInJvbGUiOiJzaW5nbGVDcmF3bGVyIiwiZXhwIjo0OTEyOTExNTU4fQ.FQm1a7tUX5VAzL_erg4MAxtp_zwIjc20nan3J5PRcdM
+127.0.0.1:64879: GET https://api.dev.24golf.co.kr/auth/token/stores/687df837…
+              << 200 OK 179b
+[18:39:19.272][127.0.0.1:64879] client disconnect
+[18:39:19.273][127.0.0.1:64879] server disconnect api.dev.24golf.co.kr:443 (43.203.54.151:443)
+[18:39:19.280][127.0.0.1:64882] client connect
+[18:39:19.308][127.0.0.1:64882] server connect api.dev.24golf.co.kr:443 (43.203.54.151:443)
+[18:39:19.325] [request] : GET https://api.dev.24golf.co.kr/stores/687df837ccdd3048647c8e92
+[18:39:19.346] [response] : GET : https://api.dev.24golf.co.kr/stores/687df837ccdd3048647c8e92 → 200
+127.0.0.1:64882: GET https://api.dev.24golf.co.kr/stores/687df837ccdd3048647…
+              << 200 OK 2.5k
+[18:39:19.349][127.0.0.1:64882] client disconnect
+[18:39:19.350][127.0.0.1:64882] server disconnect api.dev.24golf.co.kr:443 (43.203.54.151:443)

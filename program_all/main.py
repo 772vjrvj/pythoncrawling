@@ -1,111 +1,109 @@
-import pandas as pd
-import requests
-from bs4 import BeautifulSoup
-import html
-import time
+# main.py
+import sys
+from typing import Optional
 
-# 1. 엑셀에서 SHOP_ID 읽기 및 중복 제거
-df = pd.read_excel("vipinfo_all_user_grp.xlsx")
-shop_ids = df["SHOP_ID"].dropna().unique()
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtCore import QSharedMemory, Qt
+# === 기존 ===
+from src.app_manager import AppManager
+from src.core.global_state import GlobalState
 
-# 2. 요청 헤더 (쿠키 제외)
-headers = {
-    "accept": "application/json, text/javascript, */*; q=0.01",
-    "accept-encoding": "gzip, deflate, br, zstd",
-    "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "origin": "https://vipgunma.com",
-    "priority": "u=0, i",
-    "referer": "https://vipgunma.com/bbs/board.php",
-    "sec-ch-ua": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-    "x-requested-with": "XMLHttpRequest"
-}
 
-# 3. 최종 결과 리스트
-review_list = []
+# === 신규: 단일 인스턴스 락 구현 ===
+class SingleInstance:
+    """
+    QSharedMemory 기반 단일 인스턴스 락.
+    - 같은 key로 이미 실행 중이면 attach()가 성공 → 중복 실행
+    - 아니면 create()로 세마포어 역할의 1바이트 메모리를 생성
+    """
+    def __init__(self, key: str = "pando_single_instance"):
+        self.key = key
+        self.shared = QSharedMemory(self.key)
+        self._is_owner = False
 
-# 4. 전체 SHOP_ID 반복
-for shop_index, sid in enumerate(shop_ids, start=1):
-    print(f"\n📦 {shop_index}/{len(shop_ids)} | SHOP_ID {sid} 리뷰 수집 시작...")
+    def already_running(self) -> bool:
+        # 다른 인스턴스가 먼저 띄워둔 공유메모리에 붙을 수 있으면 이미 실행 중
+        if self.shared.attach():
+            return True
+        # 아니면 지금 인스턴스가 주인이 되도록 1바이트 메모리 생성
+        if self.shared.create(1):
+            self._is_owner = True
+            return False
+        # 예외적으로 create 실패 시에도 중복으로 간주
+        return True
 
-    page = 1
-    prev_html = None
+    def release(self):
+        # 종료 시 정리 (첫 인스턴스만 의미 있음)
+        if self._is_owner and self.shared.isAttached():
+            self.shared.detach()
 
-    while True:
-        payload = {
-            "request": "requestRev",
-            "page": str(page),
-            "wr_id": str(sid)
-        }
 
-        response = requests.post(
-            "https://vipgunma.com/bbs/rev.php",
-            headers=headers,
-            data=payload
-        )
+# === 신규: 중복 실행 경고창 ===
+def show_already_running_alert(existing_app: Optional[QApplication] = None) -> None:
+    """
+    콘솔 출력 대신 경고 알림창을 최상단으로 띄움.
+    - 기존 QApplication이 없으면 임시 생성 후 표시하고 정리
+    """
+    app_created = False
+    app = existing_app or QApplication.instance()
+    if app is None:
+        app = QApplication(sys.argv)
+        app_created = True
 
-        if response.status_code != 200:
-            print(f"❌ 요청 실패: SHOP_ID={sid}, page={page}")
-            break
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Warning)
+    msg.setWindowTitle("이미 실행 중")
+    msg.setText("프로그램이 이미 실행 중입니다.\n기존 실행 중인 창을 확인해 주세요.")
+    msg.setStandardButtons(QMessageBox.Ok)
+    msg.setWindowFlag(Qt.WindowStaysOnTopHint, True)  # 항상 위로
+    msg.exec_()
 
+    if app_created:
+        # 임시로 만든 QApplication이면 정리
+        app.quit()
+
+
+# === 신규: PyQt5/6 exec 호환 헬퍼 ===
+def qt_exec(app: QApplication) -> int:
+    """
+    PyQt5는 exec_(), PyQt6는 exec() 이므로 둘 다 대응.
+    """
+    if hasattr(app, "exec_"):
+        return app.exec_()  # PyQt5
+    return app.exec()       # PyQt6
+
+
+def main() -> None:
+    # === 신규: 앱 생성 전에 단일 인스턴스 락 확인 (권장) ===
+    lock = SingleInstance("program_single_instance")
+    if lock.already_running():
+        # 아직 QApplication을 만들기 전이므로 임시 생성해서 경고창 표시
+        show_already_running_alert(None)
+        sys.exit(0)
+
+    # === 기존: Qt 앱, 상태 초기화, AppManager 진입 ===
+    app = QApplication(sys.argv)
+
+    # (참조 유지: GC로 lock이 해제되지 않게 App 객체에 붙여둠)
+    app._single_instance_lock = lock  # noqa: attach
+
+    # 앱 종료 직전에 락 정리
+    def _on_about_to_quit():
         try:
-            json_data = response.json()
-        except Exception as e:
-            print(f"❌ JSON 파싱 실패: {e}")
-            break
+            lock.release()
+        except Exception:
+            pass
+    app.aboutToQuit.connect(_on_about_to_quit)
 
-        raw_html = json_data.get("result_data", {}).get("list", "")
-        if not raw_html.strip() or raw_html == prev_html:
-            break
-        prev_html = raw_html
+    # === 기존 ===
+    state = GlobalState()
+    state.initialize()
 
-        # HTML 문자열 파싱
-        cleaned_html = html.unescape(raw_html)
-        soup = BeautifulSoup(cleaned_html, "html.parser")
-        cards = soup.select("div.reviewCard")
-        if not cards:
-            break
+    app_manager = AppManager()
+    app_manager.go_to_login()
 
-        for review_index, card in enumerate(cards, start=1):
-            try:
-                user_id = card.get("id", "").replace("c_", "")
-                review_nick = card.select_one(".reviewNick").get_text(strip=True)
-                review_date = card.select_one(".reviewDate").get_text(strip=True)
-                review_content = card.select_one(".reviewCardBody").get_text(separator="\n", strip=True)
-
-                # 날짜 보정
-                if len(review_date) == 5 and "-" in review_date:
-                    review_date = f"2025-{review_date}"
+    sys.exit(qt_exec(app))
 
 
-                obj = {
-                    "shop_id": sid,
-                    "user_id": user_id,
-                    "review_nick": review_nick,
-                    "review_date": review_date,
-                    "review_content": review_content
-                }
-
-                review_list.append(obj)
-
-                # ✅ 진행 상태 출력
-                print(f"📍 {shop_index}/{len(shop_ids)} | page : {page} | {review_index}/{len(cards)} | SHOP_ID={sid} | 데이터 : {obj}")
-
-
-            except Exception as e:
-                print(f"⚠️ 파싱 오류: SHOP_ID={sid}, page={page}, index={review_index} | {e}")
-                continue
-
-        page += 1
-        time.sleep(0.3)
-
-# 5. 결과 엑셀 저장
-result_df = pd.DataFrame(review_list)
-result_df.to_excel("vip_review_result.xlsx", index=False)
-print("\n✅ 모든 리뷰 수집 완료 → vip_review_result.xlsx 저장됨")
+if __name__ == "__main__":
+    main()

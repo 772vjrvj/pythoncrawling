@@ -18,7 +18,7 @@ from src.workers.api_base_worker import BaseApiWorker
 
 class ApiCoupangSetLoadWorker(BaseApiWorker):
 
-    def __init__(self, setting):
+    def __init__(self):
         super().__init__()
 
         self.current_detail_url = None
@@ -39,8 +39,8 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
         self.base_url = "https://www.coupang.com"
         self.current_page = 0
         # ✅ 설정값 세팅
-        self.html_source_delay_time = self.get_setting_value(setting, "html_source_delay_time")
-        self.chrome_delay_time = self.get_setting_value(setting, "chrome_delay_time")
+        self.html_source_delay_time = 0
+        self.chrome_delay_time = 0
         self.st_cnt = 0
         self.ed_cnt = 0
         self.st_tm = None
@@ -49,7 +49,10 @@ class ApiCoupangSetLoadWorker(BaseApiWorker):
 
 
     def init(self):
-        
+
+        self.html_source_delay_time = self.get_setting_value(self.setting, "html_source_delay_time")
+        self.chrome_delay_time = self.get_setting_value(self.setting, "chrome_delay_time")
+
         self.log_signal_func("드라이버 세팅 ========================================")
         self.log_signal_func(f"제품 딜레이 : {self.html_source_delay_time}")
         self.log_signal_func(f"크롬 딜레이 : {self.chrome_delay_time}")
