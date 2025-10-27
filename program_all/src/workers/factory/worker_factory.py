@@ -3,7 +3,7 @@
 # from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
 # from src.workers.main.api_naver_place_url_all_set_worker            import ApiNaverPlaceUrlAllSetLoadWorker
 # from src.workers.main.api_naver_blog_contents_set_worker            import ApiNaverBlogContentsSetLoadWorker
-from src.workers.main.api_coupang_set_worker                        import ApiCoupangSetLoadWorker
+# from src.workers.main.api_coupang_set_worker                        import ApiCoupangSetLoadWorker
 # from src.workers.main.api_alba_set_worker                           import ApiAlbaSetLoadWorker
 # from src.workers.main.api_sotong_set_worker                         import ApiSotongSetLoadWorker
 # from src.workers.main.api_seoulfood2025_place_set_worker            import ApiSeoulfood2025PlaceSetLoadWorker
@@ -30,6 +30,7 @@ from src.workers.main.api_coupang_set_worker                        import ApiCo
 # from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
+from src.workers.main.api_kakao_store_food_set_worker  import Api
 
 
 WORKER_CLASS_MAP = {
@@ -38,7 +39,7 @@ WORKER_CLASS_MAP = {
     # "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
     # "NAVER_PLACE_URL_ALL"               :   ApiNaverPlaceUrlAllSetLoadWorker,
     # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
-    "COUPANG"                           :   ApiCoupangSetLoadWorker,
+    # "COUPANG"                           :   ApiCoupangSetLoadWorker,
     # "ALBA"                              :   ApiAlbaSetLoadWorker,
     # "SOTONG"                            :   ApiSotongSetLoadWorker,
     # "SEOUL_FOOD_2025"                   :   ApiSeoulfood2025PlaceSetLoadWorker,
@@ -64,5 +65,6 @@ WORKER_CLASS_MAP = {
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
     # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
-    # "INVOICE"                           :   ApiInvoiceSetLoadWorker
+    # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
+    "INVOICE"                           :   ApiInvoiceSetLoadWorker,
 }
