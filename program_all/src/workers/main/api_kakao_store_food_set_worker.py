@@ -1,242 +1,258 @@
-import os
-import shutil
-import ssl
+# -*- coding: utf-8 -*-
 import time
-from urllib.parse import urlparse, parse_qs, unquote, quote, unquote_to_bytes
-
-import pandas as pd
 import requests
+from datetime import datetime
 from PyQt5.QtCore import QThread, pyqtSignal
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-
-from src.utils.number_utils import calculate_divmod, divide_and_truncate_per
-from src.core.global_state import GlobalState
-
+from src.workers.api_base_worker import BaseApiWorker
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
-from src.utils.selenium_utils import SeleniumUtils
-from src.workers.api_base_worker import BaseApiWorker
-from urllib.parse import quote, unquote
+import random
 
-
-
-import re
-
-# API
-class ApiOkmallDetailSetLoadWorker(BaseApiWorker):
+class ApiKakaoStoreFoodSetLoadWorker(BaseApiWorker):
+    """
+    카카오 스토어 톡딜 푸드 카테고리 수집 워커
+    - 페이지 범위(start_page ~ end_page) 순회
+    - 각 상품 상세 옵션 API 호출하여 옵션별 실가격 계산
+    - 최종 JSON → CSV → Excel 변환
+    """
 
     def __init__(self):
         super().__init__()
-        self.driver = None
-        self.selenium_driver = None
-        self.file_driver = None
-        self.excel_driver = None
-        self.base_main_url = "https://www.okmall.com"
-        self.base_main_url_login = "https://www.okmall.com/members/login"
-        self.url_list = []
-        self.user = None
-        self.driver = None
-        self.running = True  # 실행 상태 플래그 추가
-        self.company_name = "okmall_detail"
-        self.site_name = "okmall_detail"
-        self.excel_filename = ""
-        self.product_obj_list = []
-        self.total_cnt = 0
-        self.current_cnt = 0
+        self.current_cnt = None
         self.before_pro_value = 0
+        self.total_cnt = 0
         self.api_client = APIClient(use_cache=False)
-        self.headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "cache-control": "max-age=0",
-            "connection": "keep-alive",
-            "host": "www.okmall.com",
-            "sec-ch-ua": '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Windows"',
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "none",
-            "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
-        }
+        self.excel_driver = None
+        self.file_driver = None
+        self.running = True
+        self.site_url = "https://store.kakao.com"
+        self.company_name = "kakao_store_food"
+        self.site_name = "kaka_ostore_food"
+        self.csv_filename = ""
+        self.product_obj_list = []
 
-
+    # -----------------------------
     # 초기화
+    # -----------------------------
     def init(self):
-        self.driver_set(False)
-        self.login()
+        self.driver_set()
         return True
 
-    # 메인
+    def driver_set(self):
+        self.log_signal_func("드라이버 세팅 ================================")
+        self.excel_driver = ExcelUtils(self.log_signal_func)
+        self.file_driver = FileUtils(self.log_signal_func)
+
+    # -----------------------------
+    # 메인 실행
+    # -----------------------------
     def main(self):
         try:
-            self.set_cookies()
+            self.log_signal_func("카카오 스토어 푸드 크롤링 시작")
+            self.csv_filename = self.file_driver.get_csv_filename(self.site_name)
+            self.excel_driver.init_csv(self.csv_filename, self.columns)
 
-            self.log_signal.emit("크롤링 시작")
-
-            self.url_list = [
-                str(row[k]).strip()
-                for row in self.excel_data_list
-                for k in row.keys()
-                if k.lower() == "url" and row.get(k) and str(row[k]).strip()
-            ]
-
-            # csv파일 만들기
-            self.excel_filename = self.file_driver.get_csv_filename(self.site_name)
-            self.excel_driver.init_csv(self.excel_filename, self.columns)
-
-            # 제품 목록 가져오기
             self.call_product_list()
 
-            # CSV -> 엑셀 변환
-            self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
-
+            # CSV → Excel 변환
+            self.excel_driver.convert_csv_to_excel_and_delete(self.csv_filename)
+            self.log_signal_func("카카오 스토어 크롤링 완료 ✅")
             return True
+
         except Exception as e:
             self.log_signal_func(f"❌ 전체 실행 중 예외 발생: {e}")
             return False
 
-
-    # 드라이버 세팅
-    def driver_set(self, headless):
-        self.log_signal_func("드라이버 세팅 ========================================")
-
-        # 엑셀 객체 초기화
-        self.excel_driver = ExcelUtils(self.log_signal_func)
-
-        # 파일 객체 초기화
-        self.file_driver = FileUtils(self.log_signal_func)
-
-        # 셀레니움 초기화
-        self.selenium_driver = SeleniumUtils(headless)
-        
-        # 드라이버 세팅
-        self.driver = self.selenium_driver.start_driver(1200)
-
-
-    # 쿠키세팅
-    def set_cookies(self):
-        self.log_signal_func("📢 쿠키 세팅 시작")
-        cookies = {cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}
-
-        for name, value in cookies.items():
-            self.api_client.cookie_set(name, value)
-        self.log_signal_func("📢 쿠키 세팅 완료")
-        time.sleep(2)
-
-
-    # 제품 상세정보
+    # -----------------------------
+    # 상품 목록 수집
+    # -----------------------------
     def call_product_list(self):
-        if self.url_list:
-            self.total_cnt = len(self.url_list)
-            for num, product in enumerate(self.url_list, start=1):
-                if not self.running:  # 실행 상태 확인
-                    break
-                self.current_cnt += 1
-                obj = self.product_api_data(product)
-                self.product_obj_list.append(obj)
-                self.log_signal.emit(f"({num}/{self.total_cnt}) : {obj}")
+        base_url = "https://store.kakao.com/a/f-s/home/tab/talk-deal/products"
 
-                if num % 5 == 0:
-                    self.excel_driver.append_to_csv(self.excel_filename, self.product_obj_list, self.columns)
+        st_page = int(self.get_setting_value(self.setting, "st_page"))-1
+        ed_page = int(self.get_setting_value(self.setting, "ed_page"))-1
+        self.total_cnt = ed_page - st_page + 1
+        for page in range(st_page, ed_page + 1):
+            self.current_cnt = page + 1
+            if not self.running:
+                break
 
+            timestamp = int(time.time() * 1000)
+
+            params = {
+                "page": page,
+                "size": 12,
+                "talkDealTabCategoryName": "FOOD",
+                "preview": "false",
+                "_": timestamp
+            }
+
+            headers = {
+                "authority": "store.kakao.com",
+                "method": "GET",
+                "path": f"/a/f-s/home/tab/talk-deal/products?page={page}&size=12&talkDealTabCategoryName=FOOD&preview=false&_={timestamp}",
+                "scheme": "https",
+                "accept": "application/json, text/plain, */*",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+                "content-type": "application/json",
+                "priority": "u=1, i",
+                "referer": "https://store.kakao.com/home/top/food?fixed=true",
+                "sec-ch-ua": '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Windows"',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+                "x-shopping-referrer": "",
+                "x-shopping-tab-id": "8a4f5f9ed6eb63047e9d35"
+            }
+
+            try:
+                response = self.api_client.get(base_url, headers=headers, params=params)
+                if not response or not response.get("data"):
+                    self.log_signal_func(f"[스킵] 페이지 {page}: 응답 없음")
+                    continue
+
+                products = response["data"].get("products", [])
+                self.log_signal_func(f"페이지 {page + 1} -> {len(products)}건 수집")
+
+                for idx, item in enumerate(products, start= 1):
+                    if not self.running:
+                        break
+                    time.sleep(random.uniform(0.5, 1))
+                    obj = self.make_product_obj(item)
+                    if obj:
+                        self.product_obj_list.append(obj)
+                        self.log_signal_func(f"페이지 {page + 1} ({idx}/{len(products)}) 상품: {obj['상품명']} ({obj['업체명']})")
+
+                # 중간 저장
+                if len(self.product_obj_list) >= 10:
+                    self.excel_driver.append_to_csv(self.csv_filename, self.product_obj_list, self.columns)
+                    self.product_obj_list.clear()
+
+                self.log_signal_func(f"전체 진행수: {self.current_cnt} / {self.total_cnt}")
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)
                 self.before_pro_value = pro_value
-                time.sleep(1)
 
-            if self.product_obj_list:
-                self.excel_driver.append_to_csv(self.excel_filename, self.product_obj_list, self.columns)
+            except Exception as e:
+                self.log_signal_func(f"페이지 {page} 처리 오류: {e}")
 
-    # 브랜드 api_data
-    def product_api_data(self, url):
-        obj = {
-            "상품링크": url,
-            "브랜드": "",
-            "상품명": "",
-            "가격": "",
-            "택 사이즈": [],
-        }
+        # 마지막 잔여 데이터 저장
+        if self.product_obj_list:
+            self.excel_driver.append_to_csv(self.csv_filename, self.product_obj_list, self.columns)
+
+    # -----------------------------
+    # 상품 정보 + 옵션 수집
+    # -----------------------------
+    def make_product_obj(self, p, ):
         try:
-            html = self.api_client.get(url, headers=self.headers)
-            soup = BeautifulSoup(html, "html.parser")
+            product_id = p.get("productId")
+            store_domain = p.get("storeDomain")
+            talkdeal_price = p.get("groupDiscountedPrice") or 0
 
-            # 브랜드
-            if brand := soup.select_one("span.brand_tit"):
-                obj["브랜드"] = brand.get_text(strip=True)
+            # 행사 기간 변환
+            period = p.get("groupDiscountPeriod", {})
+            from_str, to_str = period.get("from"), period.get("to")
+            period_str = None
+            if from_str and to_str:
+                f = datetime.strptime(from_str, "%Y%m%d%H%M%S")
+                t = datetime.strptime(to_str, "%Y%m%d%H%M%S")
+                period_str = f"{f.strftime('%Y-%m-%d %H:%M:%S')} ~ {t.strftime('%Y-%m-%d %H:%M:%S')}"
 
-            # 상품명
-            if name_el := soup.select_one("h3#ProductNameArea .prd_name"):
-                obj["상품명"] = name_el.get_text(strip=True)
+            # 옵션 세부 API 호출
+            options = self.get_product_options(store_domain, product_id, talkdeal_price)
 
-            # 가격
-            if price_el := soup.select_one(".real_price .price"):
-                obj["가격"] = "".join(price_el.stripped_strings)
+            # 옵션명/실가격만 남긴 배열
+            talkdeal_price_list = [
+                {"옵션명": opt.get("value"), "가격": opt.get("realPrice")}
+                for opt in options
+            ]
 
-            # 사이즈
-            size_list = []
-            for row in soup.select('table.shoes_size tr[name="selectOption"]'):
-                tds = row.select("td.t_center")
-                if len(tds) >= 2:
-                    size_list.append(tds[1].get_text(strip=True))
-            obj["택 사이즈"] = size_list
+            obj = {
+                "순번": "",           # 작업자 작성
+                "톡딜 행사기간": period_str,
+                "상품 구매 URL": f"https://store.kakao.com{p.get('linkPath', '')}",
+                "앵콜/산지": "",      # 작업자 작성
+                "카테고리": "",       # 작업자 작성
+                "세부카테고리": "",    # 작업자 작성
+                "상품명": p.get("productName"),
+                "메인가격": talkdeal_price,
+                "옵션별금액": talkdeal_price_list,
+                "쿠폰/이벤트유무": "", # 작업자 작성
+                "1일차": "",         # 작업자 작성
+                "2일차": "",         # 작업자 작성
+                "3일차": "",         # 작업자 작성
+                "4일차": "",         # 작업자 작성
+                "리뷰 개수": f"{p.get('reviewCount', 0):,}",
+                "만족도(%)": p.get("productPositivePercentage"),
+                "업체명": p.get("storeName"),
+                "비고": ""           # 작업자 작성
+            }
 
-        except requests.exceptions.RequestException as e:
-            self.log_signal_func(f"HTTP 요청 에러: {e}")
-        except Exception as e:
-            self.log_signal_func(f"알 수 없는 에러 발생: {e}")
-
-        return obj
-
-
-    # 로그인 쿠키가져오기
-    def login(self):
-        self.driver.get(self.base_main_url_login)
-
-        # 3초 대기
-        time.sleep(2)
-
-        try:
-            # ID 입력
-            id_input = self.driver.find_element(By.NAME, "txt_id")
-            id_input.clear()
-            id_input.send_keys(self.user.get("id", ""))
-
-            # PW 입력
-            pw_input = self.driver.find_element(By.NAME, "txt_pw")
-            pw_input.clear()
-            pw_input.send_keys(self.user.get("pw", ""))
-
-            # 로그인 버튼 클릭
-            login_button = self.driver.find_element(By.CSS_SELECTOR, "button.btn-login-default")
-            login_button.click()
-
-            time.sleep(3)
+            return obj
 
         except Exception as e:
-            self.log_signal_func(f"[❌ 로그인 자동 입력 오류] {e}")
+            self.log_signal_func(f"[make_product_obj] 오류: {e}")
+            return None
 
+    # -----------------------------
+    # 옵션 상세 호출
+    # -----------------------------
+    def get_product_options(self, store_domain, product_id, base_price):
+        try:
+            url = f"https://store.kakao.com/a/f-m/{store_domain}/products/{product_id}/options"
 
-    # 마무리
+            headers = {
+                "authority": "store.kakao.com",
+                "method": "GET",
+                "path": f"/a/f-m/{store_domain}/products/{product_id}/options?_={int(time.time() * 1000)}",
+                "scheme": "https",
+                "accept": "application/json, text/plain, */*",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+                "content-type": "application/json",
+                "priority": "u=1, i",
+                "referer": f"https://store.kakao.com/{store_domain}/products/{product_id}?area=mainp&impression_id=air_shoptab_home_main_talkdeal&ordnum=1",
+                "sec-ch-ua": '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Windows"',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+                "x-shopping-referrer": "",
+                "x-shopping-tab-id": "114c398ab6ac8a540ca5a0"
+            }
+
+            params = {"_": int(time.time() * 1000)}
+            data = self.api_client.get(url, headers=headers, params=params)
+            if not data or not data.get("data"):
+                return []
+
+            options = data["data"].get("options", [])
+            for opt in options:
+                add_price = opt.get("addPrice") or 0
+                opt["realPrice"] = base_price + add_price
+
+            return options
+
+        except Exception as e:
+            self.log_signal_func(f"[get_product_options] 오류: {e}")
+            return []
+
+    # -----------------------------
+    # 종료 처리
+    # -----------------------------
     def destroy(self):
-        self.progress_signal.emit(self.before_pro_value, 1000000)
-        self.log_signal_func("=============== 크롤링 종료중...")
-        time.sleep(5)
+        self.progress_signal.emit(0, 1000000)
+        self.log_signal_func("=============== 카카오 스토어 종료중...")
+        time.sleep(3)
         self.log_signal_func("=============== 크롤링 종료")
         self.progress_end_signal.emit()
 
-    # 프로그램 중단
     def stop(self):
         self.running = False
-        if self.driver:
-            self.driver.quit()
-
-
-
-
