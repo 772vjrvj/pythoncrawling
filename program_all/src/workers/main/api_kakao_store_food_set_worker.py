@@ -148,7 +148,7 @@ class ApiKakaoStoreFoodSetLoadWorker(BaseApiWorker):
     # -----------------------------
     # 상품 정보 + 옵션 수집
     # -----------------------------
-    def make_product_obj(self, p, ):
+    def make_product_obj(self, p):
         try:
             product_id = p.get("productId")
             store_domain = p.get("storeDomain")
@@ -163,34 +163,40 @@ class ApiKakaoStoreFoodSetLoadWorker(BaseApiWorker):
                 t = datetime.strptime(to_str, "%Y%m%d%H%M%S")
                 period_str = f"{f.strftime('%Y-%m-%d %H:%M:%S')} ~ {t.strftime('%Y-%m-%d %H:%M:%S')}"
 
+            # === remainDays 안전 처리 ===
+            remain_days = int(p.get("remainDays") or 0)
+            gcount = p.get("groupDiscountUserCount") or ""
+
             # 옵션 세부 API 호출
             options = self.get_product_options(store_domain, product_id, talkdeal_price)
 
-            # 옵션명/실가격만 남긴 배열
             talkdeal_price_list = [
                 {"옵션명": opt.get("value"), "가격": opt.get("realPrice")}
                 for opt in options
             ]
 
             obj = {
-                "순번": "",           # 작업자 작성
+                "순번": "",
                 "톡딜 행사기간": period_str,
                 "상품 구매 URL": f"https://store.kakao.com{p.get('linkPath', '')}",
-                "앵콜/산지": "",      # 작업자 작성
-                "카테고리": "",       # 작업자 작성
-                "세부카테고리": "",    # 작업자 작성
+                "앵콜/산지": "",
+                "카테고리": "",
+                "세부카테고리": "",
                 "상품명": p.get("productName"),
                 "메인가격": talkdeal_price,
                 "옵션별금액": talkdeal_price_list,
-                "쿠폰/이벤트유무": "", # 작업자 작성
-                "1일차": "",         # 작업자 작성
-                "2일차": "",         # 작업자 작성
-                "3일차": "",         # 작업자 작성
-                "4일차": "",         # 작업자 작성
+                "쿠폰/이벤트유무": "",
+
+                # === remainDays 로직 그대로 반영 ===
+                "1일차": gcount if remain_days >= 3 else "",
+                "2일차": gcount if remain_days == 2 else "",
+                "3일차": gcount if remain_days == 1 else "",
+                "4일차": gcount if remain_days == 0 else "",
+
                 "리뷰 개수": f"{p.get('reviewCount', 0):,}",
                 "만족도(%)": p.get("productPositivePercentage"),
                 "업체명": p.get("storeName"),
-                "비고": ""           # 작업자 작성
+                "비고": ""
             }
 
             return obj
