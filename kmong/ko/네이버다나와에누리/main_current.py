@@ -85,9 +85,9 @@ def scrape_danawa(driver, name, danawa_url, limit_count, on_and_off):
         try:
             if driver.find_elements(By.XPATH, '//*[@id="bundleProductMoreButton"]'):
                 driver.find_element(By.XPATH, '//*[@id="bundleProductMoreButton"]').click()
-                print("다른구성상품을 성공적으로 열었습니다.")
+                print("다른구성상품 더보기 클릭")
             else:
-                print("다른구성상품을 찾을 수 없습니다. 계속 진행합니다.")
+                print("다른구성상품 더보기 없는 상품")
         except ElementNotInteractableException as e:
             # 버튼이 있지만 상호작용이 불가능한 경우에만 넘어감
             print(f"다른구성상품 열기 버튼이 있지만 상호작용이 불가능하여 넘어갑니다: {e}")
@@ -321,9 +321,9 @@ def scrape_enuri(driver, name, enuri_url, limit_count, on_and_off):
         try:
             if len(driver.find_elements(By.CSS_SELECTOR, '#prod_option .adv-search__btn--more')) != 0:
                 driver.find_element(By.CSS_SELECTOR, '#prod_option .adv-search__btn--more').click()
-                print("더보기 버튼을 성공적으로 클릭했습니다.")
+                print("더보기 버튼을 있는 상품.")
             else:
-                print("더보기 버튼을 찾을 수 없습니다. 계속 진행합니다.")
+                print("더보기 버튼을 없는 상품.")
         except ElementNotInteractableException as e:
             # 더보기 버튼이 있지만 상호작용이 불가능한 경우에만 넘어감
             print(f"더보기 버튼이 있지만 상호작용이 불가능하여 넘어갑니다: {e}")
@@ -1183,3 +1183,8 @@ if __name__ == "__main__":
 # 다나와 배송비 클릭진행
 # 다나와 배송비 4,000원 이상 제외, 다나와 상품명 '해외'들어가면 제외
 # 다나와 기준가격 1개 상품에서 좌우 비교하여 가격 작은것
+
+
+# 2027-11-01 ver_13
+# 다나와 에누리 더보기 로그 수정
+# 다나와 수정 다시 원복
