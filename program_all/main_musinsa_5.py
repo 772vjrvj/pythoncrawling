@@ -1,34 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-최종 버전
+1) 정영상 화장품&라이프스타일(Sheet1).csv, (Sheet2).csv 에서
+   A~Z, 1~591 범위 내의 모든 셀에서 유효한 이메일 추출 (공백 제외)
+   → block_emails 집합 생성
 
-1) 정영상 화장품&라이프스타일(Sheet1).csv
-   정영상 화장품&라이프스타일(Sheet2).csv 에서
-   A~Z, 1~591 범위의 모든 셀에서 유효 이메일을 추출하여 block_emails 집합 생성.
+2) 무신사 뷰티 이메일 사이트별 분류.xlsx 로드
+   - 'naver daum' 시트에서 block_emails 에 포함된 이메일이 있는 행 제거
+   - '그외' 시트에서도 동일하게 제거
+   - 다른 시트는 원본 유지
 
-2) 무신사 뷰티 이메일 사이트별 분류.xlsx 에서
-   - 'naver daum' 시트
-   - '그외' 시트
-   - 'gmail' 시트
-   각 행(row)에 block_emails 중 하나라도 포함된 이메일이 있으면 해당 행 제거.
-
-3) 나머지 시트는 그대로 유지하여
-   '무신사 뷰티 이메일 사이트별 분류_최종.xlsx' 로 저장.
+3) 무신사 뷰티 이메일 사이트별 분류_최종.xlsx 로 저장
 """
 
 import pandas as pd
 import re
 
-# ===== 입력/출력 파일 경로 =====
 CSV1_PATH = "정영상 화장품&라이프스타일(Sheet1).csv"
 CSV2_PATH = "정영상 화장품&라이프스타일(Sheet2).csv"
 SRC_XLSX_PATH = "무신사 뷰티 이메일 사이트별 분류.xlsx"
 OUT_XLSX_PATH = "무신사 뷰티 이메일 사이트별 분류_최종.xlsx"
 
-# ===== 대상 시트명 =====
 SHEET_NAVER_DAUM = "naver daum"
 SHEET_ETC = "그외"
-SHEET_GMAIL = "gmail"
 
 
 def read_csv_with_fallback(path: str) -> pd.DataFrame:
@@ -47,7 +40,6 @@ def is_valid_email(email: str) -> bool:
     email = email.strip()
     if not email:
         return False
-    # 기본적인 user@domain.tld 패턴
     pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
     return re.match(pattern, email) is not None
 
@@ -63,24 +55,19 @@ def extract_emails_from_cell(value: str):
     if not text:
         return []
     parts = re.split(r"[,\s;/]+", text)
-    out = []
-    for p in parts:
-        p = p.strip()
-        if is_valid_email(p):
-            out.append(p)
-    return out
+    return [p for p in (s.strip() for s in parts) if is_valid_email(p)]
 
 
 def collect_block_emails_from_csv(paths) -> set:
     """
-    여러 CSV 파일에서 A~Z, 1~591 범위 내 이메일 수집 → set 반환.
-    (A~Z = 0~25 열, 1~591 = iloc[0:591] 행)
+    다수 CSV에서 A~Z, 1~591 범위 내 이메일 수집 → set 반환.
+    (A~Z = 0~25, 1~591 = iloc[0:591])
     """
     emails = set()
     for path in paths:
         df = read_csv_with_fallback(path)
 
-        # 범위 제한: 행 0~590, 열 0~25 (A~Z)
+        # 범위 제한: 행 0~590, 열 0~25
         sub = df.iloc[:591, :26]
 
         for _, row in sub.iterrows():
@@ -94,7 +81,7 @@ def collect_block_emails_from_csv(paths) -> set:
     return emails
 
 
-def row_contains_block_email(row: pd.Series, block_emails: set) -> bool:
+def row_contains_block_email(row, block_emails: set) -> bool:
     """
     한 행(row)에 block_emails 에 속한 이메일이 하나라도 있으면 True.
     - 행의 모든 셀을 검사.
@@ -108,34 +95,11 @@ def row_contains_block_email(row: pd.Series, block_emails: set) -> bool:
     return False
 
 
-def filter_sheet(df: pd.DataFrame, block_emails: set, sheet_label: str) -> pd.DataFrame:
-    """
-    주어진 시트 DataFrame 에서 block_emails 포함 행 제거 후 반환.
-    """
-    if df is None:
-        print(f"[WARN] '{sheet_label}' 시트 DataFrame 이 None 입니다.")
-        return df
-
-    if not block_emails:
-        print(f"[INFO] block_emails 비어있음 → '{sheet_label}' 시트 변경 없음")
-        return df
-
-    original_len = len(df)
-    if original_len == 0:
-        print(f"[INFO] '{sheet_label}' 시트가 비어있음")
-        return df
-
-    # 각 행에 대해 블락 이메일 포함 여부 체크
-    mask_drop = df.apply(lambda row: row_contains_block_email(row, block_emails), axis=1)
-    filtered = df[~mask_drop].reset_index(drop=True)
-
-    print(f"[INFO] '{sheet_label}' 시트: 원본 {original_len}행 → 필터링 후 {len(filtered)}행")
-    return filtered
-
-
 def main():
     # 1) CSV 두 개에서 차단 대상 이메일 수집
     block_emails = collect_block_emails_from_csv([CSV1_PATH, CSV2_PATH])
+    if not block_emails:
+        print("[WARN] 수집된 이메일이 없습니다. 원본 그대로 복사합니다.")
 
     # 2) 기존 엑셀 로드
     try:
@@ -144,37 +108,34 @@ def main():
         print(f"[ERROR] 엑셀 로드 실패: {e}")
         return
 
-    # 3) 모든 시트 로드
     sheets = {}
     for sheet_name in xls.sheet_names:
         sheets[sheet_name] = pd.read_excel(xls, sheet_name=sheet_name, dtype=str)
 
-    # 4) 대상 시트들 필터링
-    # naver daum
-    if SHEET_NAVER_DAUM in sheets:
-        sheets[SHEET_NAVER_DAUM] = filter_sheet(sheets[SHEET_NAVER_DAUM], block_emails, SHEET_NAVER_DAUM)
-    else:
+    # 3) 'naver daum' 시트 필터링
+    if SHEET_NAVER_DAUM in sheets and block_emails:
+        df_nd = sheets[SHEET_NAVER_DAUM]
+        mask_drop = df_nd.apply(lambda row: row_contains_block_email(row, block_emails), axis=1)
+        df_nd_filtered = df_nd[~mask_drop].reset_index(drop=True)
+        print(f"[INFO] 'naver daum' 원본: {len(df_nd)}, 필터링 후: {len(df_nd_filtered)}")
+        sheets[SHEET_NAVER_DAUM] = df_nd_filtered
+    elif SHEET_NAVER_DAUM not in sheets:
         print(f"[WARN] '{SHEET_NAVER_DAUM}' 시트를 찾을 수 없습니다. 시트 목록: {list(sheets.keys())}")
 
-    # 그외
-    if SHEET_ETC in sheets:
-        sheets[SHEET_ETC] = filter_sheet(sheets[SHEET_ETC], block_emails, SHEET_ETC)
-    else:
+    # 4) '그외' 시트 필터링
+    if SHEET_ETC in sheets and block_emails:
+        df_etc = sheets[SHEET_ETC]
+        mask_drop = df_etc.apply(lambda row: row_contains_block_email(row, block_emails), axis=1)
+        df_etc_filtered = df_etc[~mask_drop].reset_index(drop=True)
+        print(f"[INFO] '그외' 원본: {len(df_etc)}, 필터링 후: {len(df_etc_filtered)}")
+        sheets[SHEET_ETC] = df_etc_filtered
+    elif SHEET_ETC not in sheets:
         print(f"[WARN] '{SHEET_ETC}' 시트를 찾을 수 없습니다. 시트 목록: {list(sheets.keys())}")
-
-    # gmail
-    if SHEET_GMAIL in sheets:
-        sheets[SHEET_GMAIL] = filter_sheet(sheets[SHEET_GMAIL], block_emails, SHEET_GMAIL)
-    else:
-        print(f"[WARN] '{SHEET_GMAIL}' 시트를 찾을 수 없습니다. 시트 목록: {list(sheets.keys())}")
 
     # 5) 새 엑셀 저장
     try:
         with pd.ExcelWriter(OUT_XLSX_PATH, engine="openpyxl") as writer:
             for sheet_name, df in sheets.items():
-                # NaN 방지용: 전부 문자열화
-                if df is not None:
-                    df = df.astype(str)
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
         print(f"[OK] 최종 파일 저장 완료 → {OUT_XLSX_PATH}")
     except Exception as e:
