@@ -1,223 +1,120 @@
 # -*- coding: utf-8 -*-
 """
-data_new_20251109_3_out.xlsx 보강 스크립트 (모든 값 문자열 처리)
-
-- data_new_20251109_3_out.xlsx 읽기
-  - 각 행의 "등록번호2" 사용
-- data_result_list_2.json 로드
-  - GN == 등록번호2 인 객체를 찾아 매핑
-- 아래 컬럼(전부 문자열) 채움:
-  출원인
-  최종권리자
-  출원년도
-  심사청구항수
-  피인용(수)
-  출원번호(일자)
-  발명자수
-  패밀리정보(수)
-  법적상태(등록/소멸-등록료불납/존속기간만료)
-  IPC코드
-
-결과: data_new_20251109_3_filled.xlsx
+기존 엑셀 파일에서 '패밀리정보(수)' 열만 opFamilyCnt로 업데이트
+- 비교 키: (출원번호(일자)=applno)  # === 변경: rgstno 조건 제거 ===
+- 전부 문자열 비교 (공백 제거)
+- 다른 셀/행/스타일은 건드리지 않음
+- 멀티스레드 10개
 """
 
 import json
-import re
-from typing import Any, Dict, List
-import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Dict, Tuple, List, Optional
+from openpyxl import load_workbook
 
-EXCEL_PATH_IN = "data_new_20251109_3_out.xlsx"
-JSON_PATH = "data_result_list_2.json"
-EXCEL_PATH_OUT = "data_new_20251109_3_filled.xlsx"
+# ========= 사용자 설정 =========
+EXCEL_PATH  = "요청2.xlsx"
+JSON_PATH   = "data_list.json"
+SHEET_NAME  = None          # None이면 첫 번째 시트 사용, 특정 시트면 문자열로 지정
+THREADS     = 10
+OVERWRITE_ALL = False        # 기존 값이 있어도 덮어쓸지 여부
+PRINT_HIT   = False          # 매칭 성공 로그 출력
+PRINT_MISS  = False          # 매칭 실패 로그 출력
 
-
-# =========================
-# 헬퍼 (모두 문자열 반환)
-# =========================
-def _clean(v: Any) -> str:
+# ========= 유틸 =========
+def _s(v: Any) -> str:
+    """문자열 정규화: 개행/탭/앞뒤 공백 제거 + 중간 공백 제거(정확 매칭용)."""
     if v is None:
         return ""
-    if isinstance(v, float) and pd.isna(v):
-        return ""
-    return str(v).strip()
+    s = str(v).replace("\r", "").replace("\n", "").strip()
+    # === 변경: 공백 제거(전부 문자열 비교 + 공백 제거 요구 반영) ===
+    s = s.replace(" ", "")
+    return s
 
-
-def parse_inventor_count(in_field: Any) -> str:
+def build_mapping(j: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """
-    IN: '이재연|한준석' -> '2'
-        '홍길동' -> '1'
-        빈값/None -> ""
+    JSON → applno 단일 키 매핑.
+    동일 applno가 복수 존재 시, 최초 항목만 유지(필요시 로직 조정 가능).
     """
-    s = _clean(in_field)
-    if not s:
-        return ""
-    return str(s.count("|") + 1)
-
-
-def parse_cited_count(bctc_field: Any) -> str:
-    """
-    BCTC가 숫자면 정수 문자열, 아니면 "".
-    """
-    s = _clean(bctc_field).replace(",", "")
-    return str(int(s)) if s.isdigit() else ""
-
-
-def normalize_ipc_full(ipc_field: Any) -> str:
-    """
-    IPC를 문자열로 정규화.
-    - 리스트/튜플이면 각 요소 문자열화 후 ' | ' 조인
-    - 그 외는 문자열 반환
-    """
-    if ipc_field is None:
-        return ""
-    if isinstance(ipc_field, (list, tuple)):
-        parts: List[str] = []
-        for x in ipc_field:
-            xs = _clean(x)
-            if xs:
-                parts.append(xs)
-        return " | ".join(parts)
-    return _clean(ipc_field)
-
-
-def extract_year_from_fields(item: Dict[str, Any]) -> str:
-    """
-    출원년도(문자열) 추출:
-    - APD, AD 순으로 검사해 YYYY 패턴 찾기
-    - 없으면 AN 에서도 YYYY 패턴 검색
-    - 없으면 "" (전부 문자열 반환)
-    """
-    cand = None
-
-    for key in ("APD", "AD"):
-        v = item.get(key)
-        if v:
-            cand = _clean(v)
-            break
-
-    if not cand:
-        cand = _clean(item.get("AN"))
-
-    if not cand:
-        return ""
-
-    m = re.search(r"(19|20)\d{2}", cand)
-    return m.group(0) if m else ""
-
-
-# =========================
-# JSON 인덱스 (GN → item)
-# =========================
-def load_json_index(path: str) -> Dict[str, Dict[str, Any]]:
-    """
-    GN 기준 인덱스 구성: { GN(정제) : item }
-    동일 GN 여러 개면 첫 번째만 사용.
-    """
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    if not isinstance(data, list):
-        raise ValueError("JSON 최상위 구조는 리스트여야 합니다.")
-
-    index: Dict[str, Dict[str, Any]] = {}
-    for it in data:
-        gn = _clean(it.get("GN"))
-        if not gn:
+    m: Dict[str, Dict[str, Any]] = {}
+    dup = 0
+    for _, val in j.items():
+        applno = _s(val.get("applno"))
+        if not applno:
             continue
-        gn_norm = gn.replace("&nbsp;", "").replace(" ", "")
-        if gn_norm and gn_norm not in index:
-            index[gn_norm] = it
+        if applno in m:
+            dup += 1
+            # 필요 시 최신값으로 덮어쓰려면: m[applno] = val
+            continue
+        m[applno] = val
+    print(f"[INFO] JSON 매핑 수(applno): {len(m):,} (중복 무시: {dup:,})")
+    return m
 
-    print(f"[INFO] JSON 인덱스 GN 개수: {len(index)}")
-    return index
-
-
-# =========================
-# 메인
-# =========================
+# ========= 메인 로직 =========
 def main():
-    # 1) 엑셀 로드
-    try:
-        df = pd.read_excel(EXCEL_PATH_IN)
-    except Exception as e:
-        print(f"[ERROR] 엑셀 로드 실패: {e}")
-        return
+    # 1) JSON 로드 → 매핑(applno 단일 키)
+    with open(JSON_PATH, "r", encoding="utf-8") as f:
+        j = json.load(f)
+    mapping = build_mapping(j)
 
-    if "등록번호2" not in df.columns:
-        print('[ERROR] "등록번호2" 컬럼이 없습니다. 먼저 매칭 스크립트를 수행하세요.')
-        return
+    # 2) 엑셀 로드
+    wb = load_workbook(EXCEL_PATH)
+    ws = wb[SHEET_NAME] if SHEET_NAME else wb.worksheets[0]
 
-    # 2) JSON 인덱스 로드
-    try:
-        gn_index = load_json_index(JSON_PATH)
-    except Exception as e:
-        print(f"[ERROR] JSON 로드/인덱스 실패: {e}")
-        return
+    # 3) 헤더 행 파악 및 컬럼 인덱스 매핑
+    header_row = 1
+    headers: Dict[str, int] = {}
+    for c in range(1, ws.max_column + 1):
+        headers[_s(ws.cell(row=header_row, column=c).value)] = c
 
-    # 3) 결과 컬럼 준비 (문자열용)
-    target_cols = [
-        "출원인",
-        "최종권리자",
-        "출원년도",
-        "심사청구항수",
-        "피인용(수)",
-        "출원번호(일자)",
-        "발명자수",
-        "패밀리정보(수)",
-        "법적상태(등록/소멸-등록료불납/존속기간만료)",
-        "IPC코드",
-    ]
-    for col in target_cols:
-        if col not in df.columns:
-            df[col] = ""
-        else:
-            # 기존 값이 있더라도 문자열화
-            df[col] = df[col].apply(_clean)
+    need = ["출원번호(일자)", "패밀리정보(수)"]  # === 변경: '등록번호' 제거 ===
+    for h in need:
+        if h not in headers:
+            raise ValueError(f"엑셀에 필수 헤더 누락: {h}")
 
-    # 4) 각 행 매핑
-    for idx in range(len(df)):
-        reg2 = _clean(df.at[idx, "등록번호2"])
-        if not reg2:
-            continue
+    col_appl = headers["출원번호(일자)"]
+    col_fam  = headers["패밀리정보(수)"]
 
-        reg2_norm = reg2.replace("&nbsp;", "").replace(" ", "")
+    # 4) 대상 행(2행~max_row)에서 (row_idx, appl) 수집
+    tasks: List[Tuple[int, str]] = []
+    for r in range(header_row + 1, ws.max_row + 1):
+        appl = _s(ws.cell(row=r, column=col_appl).value)
+        tasks.append((r, appl))
 
-        item = gn_index.get(reg2_norm)
-        if not item:
-            print(f"[MISS] row={idx+1}, 등록번호2={reg2_norm} → 매칭 없음")
-            continue
+    # 5) 멀티스레드 매칭 → (row_idx, opFamilyCnt or None)
+    def check_task(t: Tuple[int, str]) -> Tuple[int, Optional[str]]:
+        r, appl = t
+        if not appl:
+            if PRINT_MISS:
+                print(f"[MISS] r={r} (출원번호(일자) 빈 값)")
+            return (r, None)
+        hit = mapping.get(appl)
+        if hit is None:
+            if PRINT_MISS:
+                print(f"[MISS] r={r} applno={appl}")
+            return (r, None)
+        val = _s(hit.get("opFamilyCnt", ""))
+        if PRINT_HIT:
+            print(f"[HIT]  r={r} applno={appl} -> {val}")
+        return (r, val if val != "" else None)
 
-        ap = _clean(item.get("AP"))                   # 출원인
-        trh = _clean(item.get("TRH"))                 # 최종권리자 (필드명은 실제 JSON에 맞게)
-        year = _clean(extract_year_from_fields(item)) # 출원년도
-        bic = _clean(item.get("BIC"))                 # 심사청구항수
-        bctc = parse_cited_count(item.get("BCTC"))    # 피인용(수)
-        an = _clean(item.get("AN"))                   # 출원번호(일자)
-        in_cnt = parse_inventor_count(item.get("IN")) # 발명자수
-        fam = ""                                      # 패밀리정보(수) (현재 규칙상 빈값)
-        lsto = _clean(item.get("LSTO"))               # 법적상태
-        ipc_full = normalize_ipc_full(item.get("IPC"))# IPC코드
+    updated = 0
+    # 엑셀 쓰기는 메인 스레드에서만 수행(경합 방지)
+    with ThreadPoolExecutor(max_workers=THREADS) as ex:
+        futures = [ex.submit(check_task, t) for t in tasks]
+        for f in as_completed(futures):
+            r, val = f.result()
+            if val is None:
+                continue
+            cur = ws.cell(row=r, column=col_fam).value
+            cur_s = _s(cur)
+            if OVERWRITE_ALL or cur_s == "":
+                ws.cell(row=r, column=col_fam, value=val)
+                updated += 1
 
-        df.at[idx, "출원인"] = ap
-        df.at[idx, "최종권리자"] = trh
-        df.at[idx, "출원년도"] = year
-        df.at[idx, "심사청구항수"] = bic
-        df.at[idx, "피인용(수)"] = bctc
-        df.at[idx, "출원번호(일자)"] = an
-        df.at[idx, "발명자수"] = in_cnt
-        df.at[idx, "패밀리정보(수)"] = fam
-        df.at[idx, "법적상태(등록/소멸-등록료불납/존속기간만료)"] = lsto
-        df.at[idx, "IPC코드"] = ipc_full
-
-        print(f"[MATCH] row={idx+1}, 등록번호2={reg2_norm} → GN 매핑 완료")
-
-    # 5) 저장 (엑셀에서도 전부 문자열로 보이도록 object 유지)
-    try:
-        df.to_excel(EXCEL_PATH_OUT, index=False)
-        print(f"[OK] 저장 완료: {EXCEL_PATH_OUT} (rows={len(df)})")
-    except Exception as e:
-        print(f"[ERROR] 엑셀 저장 실패: {e}")
-
+    # 6) 저장(원본만 갱신)
+    wb.save(EXCEL_PATH)
+    print(f"[DONE] 업데이트 완료: {updated:,} 셀 수정 (파일: {EXCEL_PATH})")
 
 if __name__ == "__main__":
     main()

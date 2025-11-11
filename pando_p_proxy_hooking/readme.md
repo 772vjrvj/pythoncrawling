@@ -65,3 +65,8 @@ pyinstaller .\main.py `
 
 
 pyinstaller -y --clean .\main.spec
+
+pyinstaller --onefile --noconsole launcher_agp.py
+pyinstaller --onefile --noconsole launcher_pandop.py
+
+

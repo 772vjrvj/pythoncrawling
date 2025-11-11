@@ -1,184 +1,200 @@
+# launcher_qt.py
 # -*- coding: utf-8 -*-
 """
-최종 버전
-
-1) 정영상 화장품&라이프스타일(Sheet1).csv
-   정영상 화장품&라이프스타일(Sheet2).csv 에서
-   A~Z, 1~591 범위의 모든 셀에서 유효 이메일을 추출하여 block_emails 집합 생성.
-
-2) 무신사 뷰티 이메일 사이트별 분류.xlsx 에서
-   - 'naver daum' 시트
-   - '그외' 시트
-   - 'gmail' 시트
-   각 행(row)에 block_emails 중 하나라도 포함된 이메일이 있으면 해당 행 제거.
-
-3) 나머지 시트는 그대로 유지하여
-   '무신사 뷰티 이메일 사이트별 분류_최종.xlsx' 로 저장.
+PandoP 런처(자기 위치 기준 win-unpacked\PandoP.exe 실행 및 감시)
+- 기본 동작: 런처(exe 혹은 script)가 있는 폴더를 기준으로 win-unpacked\PandoP.exe 를 실행/감시
+- frozen(PyInstaller) / script 둘 다 동작
+- 사용법:
+    python launcher_qt.py --interval 5
+    또는 (원할 경우) python launcher_qt.py --target "C:\... \win-unpacked\PandoP.exe" --interval 5
 """
 
-import pandas as pd
-import re
+import sys
+import time
+import logging
+import subprocess
+import socket
+import argparse
+from pathlib import Path
 
-# ===== 입력/출력 파일 경로 =====
-CSV1_PATH = "정영상 화장품&라이프스타일(Sheet1).csv"
-CSV2_PATH = "정영상 화장품&라이프스타일(Sheet2).csv"
-SRC_XLSX_PATH = "무신사 뷰티 이메일 사이트별 분류.xlsx"
-OUT_XLSX_PATH = "무신사 뷰티 이메일 사이트별 분류_최종.xlsx"
-
-# ===== 대상 시트명 =====
-SHEET_NAVER_DAUM = "naver daum"
-SHEET_ETC = "그외"
-SHEET_GMAIL = "gmail"
+try:
+    import psutil
+except ImportError:
+    print("psutil이 필요합니다. 설치: pip install psutil")
+    sys.exit(1)
 
 
-def read_csv_with_fallback(path: str) -> pd.DataFrame:
-    """utf-8 → cp949 순으로 시도해서 CSV 읽기 (header 없음)."""
+# -----------------------
+# 기본값(필요시 수정)
+# -----------------------
+DEFAULT_CHECK_INTERVAL = 60
+DEFAULT_SINGLE_PORT = 34211
+DEFAULT_MAX_RETRIES = 3
+DEFAULT_RETRY_BACKOFF = 30  # 초
+
+
+# -----------------------
+# 로거 설정
+# -----------------------
+def setup_logger(log_dir: Path):
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_file = log_dir / "launcher.log"
+
+    logger = logging.getLogger("pandop_launcher")
+    logger.setLevel(logging.INFO)
+
+    if not logger.handlers:
+        fh = logging.FileHandler(log_file, encoding="utf-8")
+        fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+        fh.setFormatter(fmt)
+        logger.addHandler(fh)
+
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setFormatter(fmt)
+        logger.addHandler(sh)
+
+    return logger
+
+
+# -----------------------
+# 경로 결정 유틸
+# -----------------------
+def get_base_dir() -> Path:
+    """
+    런처의 '현재 위치(배포된 exe의 폴더 또는 .py 파일의 폴더)'를 반환.
+    - PyInstaller로 빌드한 exe일 때는 sys.executable의 부모
+    - 스크립트로 실행할 때는 __file__의 부모
+    """
+    if getattr(sys, "frozen", False):
+        # PyInstaller로 빌드된 경우
+        return Path(sys.executable).resolve().parent
+    else:
+        # 스크립트로 실행한 경우
+        return Path(__file__).resolve().parent
+
+
+# -----------------------
+# 프로세스 검사 및 시작
+# -----------------------
+def is_running_by_path(target_path: Path) -> bool:
     try:
-        return pd.read_csv(path, header=None, dtype=str, encoding="utf-8")
-    except UnicodeDecodeError:
-        print(f"[WARN] {path} UTF-8 실패 → CP949로 재시도")
-        return pd.read_csv(path, header=None, dtype=str, encoding="cp949")
-
-
-def is_valid_email(email: str) -> bool:
-    """간단한 이메일 형식 검증."""
-    if not isinstance(email, str):
-        return False
-    email = email.strip()
-    if not email:
-        return False
-    # 기본적인 user@domain.tld 패턴
-    pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
-    return re.match(pattern, email) is not None
-
-
-def extract_emails_from_cell(value: str):
-    """
-    셀에서 이메일 후보 추출.
-    콤마, 세미콜론, 공백, 슬래시 등으로 구분된 값들 중 유효 이메일만 반환.
-    """
-    if not isinstance(value, str):
-        return []
-    text = value.strip()
-    if not text:
-        return []
-    parts = re.split(r"[,\s;/]+", text)
-    out = []
-    for p in parts:
-        p = p.strip()
-        if is_valid_email(p):
-            out.append(p)
-    return out
-
-
-def collect_block_emails_from_csv(paths) -> set:
-    """
-    여러 CSV 파일에서 A~Z, 1~591 범위 내 이메일 수집 → set 반환.
-    (A~Z = 0~25 열, 1~591 = iloc[0:591] 행)
-    """
-    emails = set()
-    for path in paths:
-        df = read_csv_with_fallback(path)
-
-        # 범위 제한: 행 0~590, 열 0~25 (A~Z)
-        sub = df.iloc[:591, :26]
-
-        for _, row in sub.iterrows():
-            for val in row:
-                if val is None:
-                    continue
-                for email in extract_emails_from_cell(str(val)):
-                    emails.add(email)
-
-    print(f"[INFO] 차단용 이메일 총 수: {len(emails)}")
-    return emails
-
-
-def row_contains_block_email(row: pd.Series, block_emails: set) -> bool:
-    """
-    한 행(row)에 block_emails 에 속한 이메일이 하나라도 있으면 True.
-    - 행의 모든 셀을 검사.
-    """
-    for val in row:
-        if val is None:
+        target_real = str(target_path.resolve())
+    except Exception:
+        target_real = str(target_path)
+    for proc in psutil.process_iter(['pid', 'exe', 'cmdline']):
+        try:
+            exe = proc.info.get('exe') or ""
+            if exe:
+                if str(Path(exe).resolve()) == target_real:
+                    return True
+            else:
+                cmd = proc.info.get('cmdline') or []
+                if cmd and Path(cmd[0]).exists():
+                    if str(Path(cmd[0]).resolve()) == target_real:
+                        return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
-        for email in extract_emails_from_cell(str(val)):
-            if email in block_emails:
-                return True
     return False
 
 
-def filter_sheet(df: pd.DataFrame, block_emails: set, sheet_label: str) -> pd.DataFrame:
-    """
-    주어진 시트 DataFrame 에서 block_emails 포함 행 제거 후 반환.
-    """
-    if df is None:
-        print(f"[WARN] '{sheet_label}' 시트 DataFrame 이 None 입니다.")
-        return df
-
-    if not block_emails:
-        print(f"[INFO] block_emails 비어있음 → '{sheet_label}' 시트 변경 없음")
-        return df
-
-    original_len = len(df)
-    if original_len == 0:
-        print(f"[INFO] '{sheet_label}' 시트가 비어있음")
-        return df
-
-    # 각 행에 대해 블락 이메일 포함 여부 체크
-    mask_drop = df.apply(lambda row: row_contains_block_email(row, block_emails), axis=1)
-    filtered = df[~mask_drop].reset_index(drop=True)
-
-    print(f"[INFO] '{sheet_label}' 시트: 원본 {original_len}행 → 필터링 후 {len(filtered)}행")
-    return filtered
+def start_target(target_path: Path, logger) -> subprocess.Popen:
+    if not target_path.exists():
+        raise FileNotFoundError(f"Target not found: {target_path}")
+    cwd = str(target_path.parent)
+    # 윈도우에서 콘솔 창을 안 띄우고 싶으면 creationflags 옵션 추가 가능
+    p = subprocess.Popen([str(target_path)], cwd=cwd)
+    logger.info(f"Start requested: {target_path} (pid={p.pid})")
+    return p
 
 
+def ensure_single_instance(port: int, logger) -> socket.socket:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        s.bind(('127.0.0.1', port))
+        s.listen(1)
+        logger.info(f"Single-instance lock acquired on port {port}")
+        return s
+    except OSError:
+        logger.error("Launcher already running (single-instance lock failed). Exiting.")
+        s.close()
+        sys.exit(0)
+
+
+# -----------------------
+# 메인 루프
+# -----------------------
 def main():
-    # 1) CSV 두 개에서 차단 대상 이메일 수집
-    block_emails = collect_block_emails_from_csv([CSV1_PATH, CSV2_PATH])
+    ap = argparse.ArgumentParser(description="PandoP Launcher (watcher) - base on launcher location")
+    ap.add_argument('--target', '-t', required=False,
+                    help='(선택) full path to PandoP.exe. 없으면 런처 위치 기준 win-unpacked\\PandoP.exe 사용')
+    ap.add_argument('--interval', '-i', type=int, default=DEFAULT_CHECK_INTERVAL,
+                    help='체크 주기(초). 테스트용으로 5 사용 가능')
+    ap.add_argument('--logdir', default=None, help='로그 디렉토리(선택). 기본: 런처 위치/launcher_logs')
+    ap.add_argument('--port', type=int, default=DEFAULT_SINGLE_PORT, help='single-instance 포트')
+    ap.add_argument('--max-retries', type=int, default=DEFAULT_MAX_RETRIES, help='연속 재시도 허용 횟수')
+    args = ap.parse_args()
 
-    # 2) 기존 엑셀 로드
+    # 대상 경로 결정: 인수가 있으면 그거, 없으면 런처 위치 기준 win-unpacked\PandoP.exe
+    if args.target:
+        target_path = Path(args.target).resolve()
+    else:
+        base = get_base_dir()
+        target_path = base / "win-unpacked" / "PandoP.exe"
+
+    if not target_path.exists():
+        print(f"[ERROR] 대상 PandoP.exe를 찾을 수 없습니다: {target_path}")
+        print(" - 런처를 PandoP가 설치된 상위 폴더(또는 exe와 같은 폴더)에 두거나")
+        print(" - --target 인수로 경로를 직접 지정하세요.")
+        sys.exit(1)
+
+    log_dir = Path(args.logdir) if args.logdir else target_path.parent / "launcher_logs"
+    logger = setup_logger(log_dir)
+
+    logger.info("Launcher starting...")
+    logger.info(f"Target resolved: {target_path}")
+    lock_sock = ensure_single_instance(args.port, logger)
+
+    retry_count = 0
     try:
-        xls = pd.ExcelFile(SRC_XLSX_PATH)
-    except Exception as e:
-        print(f"[ERROR] 엑셀 로드 실패: {e}")
-        return
+        while True:
+            try:
+                if is_running_by_path(target_path):
+                    logger.debug("Target already running.")
+                    retry_count = 0
+                else:
+                    logger.info("Target not running. Attempting to start...")
+                    try:
+                        start_target(target_path, logger)
+                        time.sleep(2)
+                        if is_running_by_path(target_path):
+                            logger.info("Target started successfully.")
+                            retry_count = 0
+                        else:
+                            retry_count += 1
+                            logger.warning(f"Start attempted but target not found. retry_count={retry_count}")
+                    except Exception as e:
+                        retry_count += 1
+                        logger.exception(f"Failed to start target (attempt {retry_count}): {e}")
 
-    # 3) 모든 시트 로드
-    sheets = {}
-    for sheet_name in xls.sheet_names:
-        sheets[sheet_name] = pd.read_excel(xls, sheet_name=sheet_name, dtype=str)
+                    if retry_count >= args.max_retries:
+                        logger.error(f"Exceeded max retries ({args.max_retries}). Backing off for {DEFAULT_RETRY_BACKOFF}s")
+                        time.sleep(DEFAULT_RETRY_BACKOFF)
+                        retry_count = 0
 
-    # 4) 대상 시트들 필터링
-    # naver daum
-    if SHEET_NAVER_DAUM in sheets:
-        sheets[SHEET_NAVER_DAUM] = filter_sheet(sheets[SHEET_NAVER_DAUM], block_emails, SHEET_NAVER_DAUM)
-    else:
-        print(f"[WARN] '{SHEET_NAVER_DAUM}' 시트를 찾을 수 없습니다. 시트 목록: {list(sheets.keys())}")
-
-    # 그외
-    if SHEET_ETC in sheets:
-        sheets[SHEET_ETC] = filter_sheet(sheets[SHEET_ETC], block_emails, SHEET_ETC)
-    else:
-        print(f"[WARN] '{SHEET_ETC}' 시트를 찾을 수 없습니다. 시트 목록: {list(sheets.keys())}")
-
-    # gmail
-    if SHEET_GMAIL in sheets:
-        sheets[SHEET_GMAIL] = filter_sheet(sheets[SHEET_GMAIL], block_emails, SHEET_GMAIL)
-    else:
-        print(f"[WARN] '{SHEET_GMAIL}' 시트를 찾을 수 없습니다. 시트 목록: {list(sheets.keys())}")
-
-    # 5) 새 엑셀 저장
-    try:
-        with pd.ExcelWriter(OUT_XLSX_PATH, engine="openpyxl") as writer:
-            for sheet_name, df in sheets.items():
-                # NaN 방지용: 전부 문자열화
-                if df is not None:
-                    df = df.astype(str)
-                df.to_excel(writer, sheet_name=sheet_name, index=False)
-        print(f"[OK] 최종 파일 저장 완료 → {OUT_XLSX_PATH}")
-    except Exception as e:
-        print(f"[ERROR] 엑셀 저장 실패: {e}")
+                time.sleep(max(1, args.interval))
+            except KeyboardInterrupt:
+                logger.info("Launcher interrupted by user.")
+                break
+            except Exception as e:
+                logger.exception(f"Unexpected error in loop: {e}")
+                time.sleep(5)
+    finally:
+        try:
+            lock_sock.close()
+        except Exception:
+            pass
+        logger.info("Launcher exiting.")
 
 
 if __name__ == "__main__":
