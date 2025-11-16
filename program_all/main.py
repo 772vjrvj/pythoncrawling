@@ -1,200 +1,279 @@
-# launcher_qt.py
 # -*- coding: utf-8 -*-
 """
-PandoP 런처(자기 위치 기준 win-unpacked\PandoP.exe 실행 및 감시)
-- 기본 동작: 런처(exe 혹은 script)가 있는 폴더를 기준으로 win-unpacked\PandoP.exe 를 실행/감시
-- frozen(PyInstaller) / script 둘 다 동작
-- 사용법:
-    python launcher_qt.py --interval 5
-    또는 (원할 경우) python launcher_qt.py --target "C:\... \win-unpacked\PandoP.exe" --interval 5
+SSG 로그인(Selenium) 후 쿠키를 requests로 넘겨서
+https://pay.ssg.com/myssg/orderInfo.ssg?page=1~5 를 크롤링하는 예제
+
+- Selenium으로 로그인 (팝업 로그인)
+- 로그인 완료 후 driver.get_cookies()를 requests.Session()에 이식
+- 각 페이지 HTML을 BeautifulSoup으로 파싱
+- name="divOrordUnit" 를 돌면서
+    - 숨겨진 input[name="orordNo"] → "주문고유코드"
+    - .codr_dvstate_bg .tx_state em span.notranslate → "택배사"
+    - 같은 em 안의 텍스트 중 "/ 뒤 숫자" → "송장번호"
 """
 
-import sys
+import re
 import time
-import logging
-import subprocess
-import socket
-import argparse
-from pathlib import Path
 
-try:
-    import psutil
-except ImportError:
-    print("psutil이 필요합니다. 설치: pip install psutil")
-    sys.exit(1)
+import requests
+from bs4 import BeautifulSoup
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
-# -----------------------
-# 기본값(필요시 수정)
-# -----------------------
-DEFAULT_CHECK_INTERVAL = 60
-DEFAULT_SINGLE_PORT = 34211
-DEFAULT_MAX_RETRIES = 3
-DEFAULT_RETRY_BACKOFF = 30  # 초
+# =========================
+# 설정
+# =========================
+SSG_MAIN_URL = "https://www.ssg.com/"
+
+LOGIN_ID = "ooos1103"
+LOGIN_PW = "oktech431!@"
+
+# pay.ssg.com 주문내역 URL (page만 바꿔서 사용)
+ORDER_URL_TEMPLATE = (
+    "https://pay.ssg.com/myssg/orderInfo.ssg"
+    "?searchType=6&searchCheckBox=&page={page}"
+    "&searchInfloSiteNo=&searchStartDt=&searchEndDt=&searchKeyword="
+)
+
+# 브라우저/requests 공통 User-Agent
+COMMON_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/142.0.0.0 Safari/537.36"
+)
 
 
-# -----------------------
-# 로거 설정
-# -----------------------
-def setup_logger(log_dir: Path):
-    log_dir.mkdir(parents=True, exist_ok=True)
-    log_file = log_dir / "launcher.log"
-
-    logger = logging.getLogger("pandop_launcher")
-    logger.setLevel(logging.INFO)
-
-    if not logger.handlers:
-        fh = logging.FileHandler(log_file, encoding="utf-8")
-        fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-        fh.setFormatter(fmt)
-        logger.addHandler(fh)
-
-        sh = logging.StreamHandler(sys.stdout)
-        sh.setFormatter(fmt)
-        logger.addHandler(sh)
-
-    return logger
-
-
-# -----------------------
-# 경로 결정 유틸
-# -----------------------
-def get_base_dir() -> Path:
+def selenium_login_and_get_cookies():
     """
-    런처의 '현재 위치(배포된 exe의 폴더 또는 .py 파일의 폴더)'를 반환.
-    - PyInstaller로 빌드한 exe일 때는 sys.executable의 부모
-    - 스크립트로 실행할 때는 __file__의 부모
+    Selenium으로 SSG 로그인 후,
+    driver.get_cookies() 리스트를 반환
     """
-    if getattr(sys, "frozen", False):
-        # PyInstaller로 빌드된 경우
-        return Path(sys.executable).resolve().parent
-    else:
-        # 스크립트로 실행한 경우
-        return Path(__file__).resolve().parent
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    options.add_argument(f"user-agent={COMMON_UA}")
 
+    driver = webdriver.Chrome(options=options)
+    wait = WebDriverWait(driver, 15)
 
-# -----------------------
-# 프로세스 검사 및 시작
-# -----------------------
-def is_running_by_path(target_path: Path) -> bool:
     try:
-        target_real = str(target_path.resolve())
-    except Exception:
-        target_real = str(target_path)
-    for proc in psutil.process_iter(['pid', 'exe', 'cmdline']):
-        try:
-            exe = proc.info.get('exe') or ""
-            if exe:
-                if str(Path(exe).resolve()) == target_real:
-                    return True
-            else:
-                cmd = proc.info.get('cmdline') or []
-                if cmd and Path(cmd[0]).exists():
-                    if str(Path(cmd[0]).resolve()) == target_real:
-                        return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            continue
-    return False
+        # 1. 메인 페이지 접속
+        driver.get(SSG_MAIN_URL)
 
+        # 2. GNB 로그인 버튼 클릭 (id="loginBtn")
+        gnb_login_btn = wait.until(
+            EC.element_to_be_clickable((By.ID, "loginBtn"))
+        )
+        gnb_login_btn.click()
 
-def start_target(target_path: Path, logger) -> subprocess.Popen:
-    if not target_path.exists():
-        raise FileNotFoundError(f"Target not found: {target_path}")
-    cwd = str(target_path.parent)
-    # 윈도우에서 콘솔 창을 안 띄우고 싶으면 creationflags 옵션 추가 가능
-    p = subprocess.Popen([str(target_path)], cwd=cwd)
-    logger.info(f"Start requested: {target_path} (pid={p.pid})")
-    return p
+        # 3. 팝업창으로 전환
+        main_handle = driver.current_window_handle
+        wait.until(lambda d: len(d.window_handles) > 1)
 
-
-def ensure_single_instance(port: int, logger) -> socket.socket:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    try:
-        s.bind(('127.0.0.1', port))
-        s.listen(1)
-        logger.info(f"Single-instance lock acquired on port {port}")
-        return s
-    except OSError:
-        logger.error("Launcher already running (single-instance lock failed). Exiting.")
-        s.close()
-        sys.exit(0)
-
-
-# -----------------------
-# 메인 루프
-# -----------------------
-def main():
-    ap = argparse.ArgumentParser(description="PandoP Launcher (watcher) - base on launcher location")
-    ap.add_argument('--target', '-t', required=False,
-                    help='(선택) full path to PandoP.exe. 없으면 런처 위치 기준 win-unpacked\\PandoP.exe 사용')
-    ap.add_argument('--interval', '-i', type=int, default=DEFAULT_CHECK_INTERVAL,
-                    help='체크 주기(초). 테스트용으로 5 사용 가능')
-    ap.add_argument('--logdir', default=None, help='로그 디렉토리(선택). 기본: 런처 위치/launcher_logs')
-    ap.add_argument('--port', type=int, default=DEFAULT_SINGLE_PORT, help='single-instance 포트')
-    ap.add_argument('--max-retries', type=int, default=DEFAULT_MAX_RETRIES, help='연속 재시도 허용 횟수')
-    args = ap.parse_args()
-
-    # 대상 경로 결정: 인수가 있으면 그거, 없으면 런처 위치 기준 win-unpacked\PandoP.exe
-    if args.target:
-        target_path = Path(args.target).resolve()
-    else:
-        base = get_base_dir()
-        target_path = base / "win-unpacked" / "PandoP.exe"
-
-    if not target_path.exists():
-        print(f"[ERROR] 대상 PandoP.exe를 찾을 수 없습니다: {target_path}")
-        print(" - 런처를 PandoP가 설치된 상위 폴더(또는 exe와 같은 폴더)에 두거나")
-        print(" - --target 인수로 경로를 직접 지정하세요.")
-        sys.exit(1)
-
-    log_dir = Path(args.logdir) if args.logdir else target_path.parent / "launcher_logs"
-    logger = setup_logger(log_dir)
-
-    logger.info("Launcher starting...")
-    logger.info(f"Target resolved: {target_path}")
-    lock_sock = ensure_single_instance(args.port, logger)
-
-    retry_count = 0
-    try:
-        while True:
-            try:
-                if is_running_by_path(target_path):
-                    logger.debug("Target already running.")
-                    retry_count = 0
-                else:
-                    logger.info("Target not running. Attempting to start...")
-                    try:
-                        start_target(target_path, logger)
-                        time.sleep(2)
-                        if is_running_by_path(target_path):
-                            logger.info("Target started successfully.")
-                            retry_count = 0
-                        else:
-                            retry_count += 1
-                            logger.warning(f"Start attempted but target not found. retry_count={retry_count}")
-                    except Exception as e:
-                        retry_count += 1
-                        logger.exception(f"Failed to start target (attempt {retry_count}): {e}")
-
-                    if retry_count >= args.max_retries:
-                        logger.error(f"Exceeded max retries ({args.max_retries}). Backing off for {DEFAULT_RETRY_BACKOFF}s")
-                        time.sleep(DEFAULT_RETRY_BACKOFF)
-                        retry_count = 0
-
-                time.sleep(max(1, args.interval))
-            except KeyboardInterrupt:
-                logger.info("Launcher interrupted by user.")
+        login_handle = None
+        for handle in driver.window_handles:
+            if handle != main_handle:
+                login_handle = handle
                 break
-            except Exception as e:
-                logger.exception(f"Unexpected error in loop: {e}")
-                time.sleep(5)
+
+        if login_handle is None:
+            raise Exception("로그인 팝업 창을 찾지 못했습니다.")
+
+        driver.switch_to.window(login_handle)
+
+        # 4. 로그인 폼 입력
+        # <input type="text" name="mbrLoginId" id="mem_id" ...>
+        # <input type="password" name="password" id="mem_pw" ...>
+        id_input = wait.until(EC.presence_of_element_located((By.ID, "mem_id")))
+        pw_input = wait.until(EC.presence_of_element_located((By.ID, "mem_pw")))
+
+        id_input.clear()
+        id_input.send_keys(LOGIN_ID)
+
+        pw_input.clear()
+        pw_input.send_keys(LOGIN_PW)
+
+        # 5. 팝업 내 로그인 버튼 클릭
+        # <button ... id="loginBtn"><span>로그인</span></button>
+        login_btn_popup = wait.until(
+            EC.element_to_be_clickable((By.ID, "loginBtn"))
+        )
+        login_btn_popup.click()
+
+        # 6. 로그인 완료 기다리기
+        #    - 사이트마다 다르지만, 보통 팝업이 닫히거나
+        #      특정 요소가 뜨는 방식으로 확인.
+        #    여기서는 "창이 1개만 남을 때"까지 대기
+        WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) == 1)
+
+        driver.switch_to.window(main_handle)
+
+        # 혹시 세션/쿠키 전파까지 딜레이 있을 수 있어서 잠깐 대기
+        time.sleep(2)
+
+        # 7. 쿠키 가져오기
+        cookies = driver.get_cookies()  # [{name, value, domain, path, ...}, ...]
+
+        print(f"[INFO] Selenium 쿠키 개수: {len(cookies)}")
+        return cookies, driver
+
+    except Exception as e:
+        # 에러 시 브라우저를 바로 닫지 않고 확인하고 싶으면 여기서 처리
+        print("[ERROR] 로그인 중 오류:", str(e))
+        driver.quit()
+        raise
+
+
+def build_requests_session_from_cookies(cookies):
+    """
+    Selenium 쿠키 리스트를 받아서
+    requests.Session()에 주입한 후 반환
+    """
+    sess = requests.Session()
+
+    # 기본 헤더
+    sess.headers.update({
+        "User-Agent": COMMON_UA,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                  "image/avif,image/webp,image/apng,*/*;q=0.8,"
+                  "application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    })
+
+    # 쿠키 이식
+    for c in cookies:
+        name = c.get("name")
+        value = c.get("value")
+        domain = c.get("domain", "")
+        path = c.get("path", "/")
+
+        # domain이 ".ssg.com" 형태면 "ssg.com"으로 정리
+        if domain.startswith("."):
+            domain = domain[1:]
+
+        # pay.ssg.com에서만 필요한 쿠키만 필터링하고 싶으면 여기서 조건 걸어도 됨
+        # if not domain.endswith("ssg.com"):
+        #     continue
+
+        sess.cookies.set(name, value, domain=domain, path=path)
+
+    return sess
+
+
+def parse_order_page(html):
+    """
+    주문내역 페이지 HTML을 받아서
+    name="divOrordUnit" 단위로 파싱, 결과 리스트 반환
+
+    반환 형식:
+    [
+        {
+            "주문고유코드": "202511068C18D0",
+            "택배사": "천일택배",
+            "송장번호": "81469114484",
+        },
+        ...
+    ]
+    """
+    soup = BeautifulSoup(html, "html.parser")
+
+    results = []
+
+    # name="divOrordUnit"인 요소들 (보통 <div name="divOrordUnit">일 가능성 높음)
+    order_units = soup.find_all(attrs={"name": "divOrordUnit"})
+
+    for unit in order_units:
+        # === 주문고유코드 ===
+        orord_no = None
+        orord_input = unit.find("input", attrs={"name": "orordNo"})
+        if orord_input and orord_input.has_attr("value"):
+            orord_no = orord_input["value"].strip()
+
+        # === 택배사 / 송장번호 ===
+        carrier_name = None
+        invoice_no = None
+
+        dvstate = unit.find("div", class_="codr_dvstate_bg")
+        if dvstate:
+            tx_state = dvstate.find("div", class_="tx_state")
+            if tx_state:
+                em = tx_state.find("em")
+                if em:
+                    # 택배사: <span class="notranslate">천일택배</span>
+                    span_carrier = em.find("span", class_="notranslate")
+                    if span_carrier:
+                        carrier_name = span_carrier.get_text(strip=True)
+
+                    # 송장번호: em 안 텍스트 중 "/ 뒤의 숫자"
+                    em_text = "".join(em.stripped_strings)  # "천일택배/81469114484" 형태 예상
+                    parts = em_text.split("/")
+                    if len(parts) >= 2:
+                        after_slash = parts[1]
+                        m = re.search(r"(\d+)", after_slash)
+                        if m:
+                            invoice_no = m.group(1)
+
+        results.append({
+            "주문고유코드": orord_no,
+            "택배사": carrier_name,
+            "송장번호": invoice_no,
+        })
+
+    return results
+
+
+def main():
+    # 1) Selenium으로 로그인하고 쿠키 획득
+    cookies, driver = selenium_login_and_get_cookies()
+
+    try:
+        # 2) requests.Session으로 쿠키 옮기기
+        sess = build_requests_session_from_cookies(cookies)
+
+        all_data = []
+
+        # 3) page=1~5 순회
+        for page in range(1, 6):
+            url = ORDER_URL_TEMPLATE.format(page=page)
+            # referer는 상황에 맞게 조절 (여기선 예시로 viewType=Ssg 페이지)
+            sess.headers["Referer"] = "https://pay.ssg.com/myssg/orderInfo.ssg?viewType=Ssg"
+
+            print(f"[INFO] 요청: {url}")
+            resp = sess.get(url)
+            resp.raise_for_status()
+
+            page_data = parse_order_page(resp.text)
+            print(f"[INFO] page={page} 에서 {len(page_data)}건 추출")
+
+            all_data.extend(page_data)
+
+            # 서버 부담 줄이기 위해 약간의 딜레이
+            time.sleep(1)
+
+        # 4) 결과 확인 (여기서는 콘솔 출력)
+        print("\n=== 최종 결과 ===")
+        for idx, row in enumerate(all_data, start=1):
+            print(f"{idx}. 주문고유코드={row['주문고유코드']}, "
+                  f"택배사={row['택배사']}, 송장번호={row['송장번호']}")
+
+        # 필요하면 여기서 CSV로 저장도 가능
+        # import csv
+        # with open("ssg_orders.csv", "w", newline="", encoding="utf-8-sig") as f:
+        #     writer = csv.DictWriter(f, fieldnames=["주문고유코드", "택배사", "송장번호"])
+        #     writer.writeheader()
+        #     writer.writerows(all_data)
+
     finally:
+        # Selenium 브라우저 종료
         try:
-            lock_sock.close()
+            driver.quit()
         except Exception:
             pass
-        logger.info("Launcher exiting.")
 
 
 if __name__ == "__main__":
