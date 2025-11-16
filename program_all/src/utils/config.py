@@ -338,30 +338,48 @@ SITE_LIST = [
     #          {"code": "selco",                  "value": "SELCO",               "checked": True},
     #      ]
     # ),
-    Site("카카오 스토어 푸드", "KAKAO_STORE_FOOD", "#FEE500", enabled=True,
+    # Site("카카오 스토어 푸드", "KAKAO_STORE_FOOD", "#FEE500", enabled=True,
+    #      setting=[
+    #          {'name': '시작 페이지(숫자 1부터)', 'code': 'st_page',    'value': '1', 'type': 'input'},
+    #          {'name': '종료 페이지(숫자 12까지)', 'code': 'ed_page',    'value': '12', 'type': 'input'},
+    #      ],
+    #      columns = [
+    #          {"code": "no",                          "value": "순번",            "checked": True},
+    #          {"code": "groupDiscountPeriod",         "value": "톡딜 행사기간",    "checked": True},
+    #          {"code": "linkPath",                    "value": "상품 구매 URL",   "checked": True},
+    #          {"code": "encoreOrigin",                "value": "앵콜/산지",        "checked": True},   # === 신규 ===
+    #          {"code": "category",                    "value": "카테고리",        "checked": True},   # === 신규 ===
+    #          {"code": "subCategory",                 "value": "세부카테고리",     "checked": True},   # === 신규 ===
+    #          {"code": "productName",                 "value": "상품명",          "checked": True},
+    #          {"code": "realPrice",                   "value": "메인가격",        "checked": True},   # === 기존 talkdeal_price
+    #          {"code": "priceOptions",                "value": "옵션별금액",       "checked": True},   # === 신규 ===
+    #          {"code": "couponEvent",                 "value": "쿠폰/이벤트유무",  "checked": True},   # === 신규 ===
+    #          {"code": "day1",                        "value": "1일차",           "checked": True},   # === 신규 ===
+    #          {"code": "day2",                        "value": "2일차",           "checked": True},   # === 신규 ===
+    #          {"code": "day3",                        "value": "3일차",           "checked": True},   # === 신규 ===
+    #          {"code": "day4",                        "value": "4일차",           "checked": True},   # === 신규 ===
+    #          {"code": "reviewCount",                 "value": "리뷰 개수",        "checked": True},
+    #          {"code": "productPositivePercentage",   "value": "만족도(%)",        "checked": True},
+    #          {"code": "storeName",                   "value": "업체명",          "checked": True},
+    #          {"code": "remark",                      "value": "비고",            "checked": True}    # === 신규 ===
+    #      ]
+    # ),
+    Site("오늘의 집", "OHOU_SE_CATEGORY", "#00A1FF", enabled=True, popup=True,
          setting=[
              {'name': '시작 페이지(숫자 1부터)', 'code': 'st_page',    'value': '1', 'type': 'input'},
-             {'name': '종료 페이지(숫자 12까지)', 'code': 'ed_page',    'value': '12', 'type': 'input'},
+             {'name': '종료 페이지(숫자 9999까지)', 'code': 'ed_page',    'value': '9999', 'type': 'input'},
          ],
          columns = [
-             {"code": "no",                          "value": "순번",            "checked": True},
-             {"code": "groupDiscountPeriod",         "value": "톡딜 행사기간",    "checked": True},
-             {"code": "linkPath",                    "value": "상품 구매 URL",   "checked": True},
-             {"code": "encoreOrigin",                "value": "앵콜/산지",        "checked": True},   # === 신규 ===
-             {"code": "category",                    "value": "카테고리",        "checked": True},   # === 신규 ===
-             {"code": "subCategory",                 "value": "세부카테고리",     "checked": True},   # === 신규 ===
-             {"code": "productName",                 "value": "상품명",          "checked": True},
-             {"code": "realPrice",                   "value": "메인가격",        "checked": True},   # === 기존 talkdeal_price
-             {"code": "priceOptions",                "value": "옵션별금액",       "checked": True},   # === 신규 ===
-             {"code": "couponEvent",                 "value": "쿠폰/이벤트유무",  "checked": True},   # === 신규 ===
-             {"code": "day1",                        "value": "1일차",           "checked": True},   # === 신규 ===
-             {"code": "day2",                        "value": "2일차",           "checked": True},   # === 신규 ===
-             {"code": "day3",                        "value": "3일차",           "checked": True},   # === 신규 ===
-             {"code": "day4",                        "value": "4일차",           "checked": True},   # === 신규 ===
-             {"code": "reviewCount",                 "value": "리뷰 개수",        "checked": True},
-             {"code": "productPositivePercentage",   "value": "만족도(%)",        "checked": True},
-             {"code": "storeName",                   "value": "업체명",          "checked": True},
-             {"code": "remark",                      "value": "비고",            "checked": True}    # === 신규 ===
+             {"code": "category",       "value": "카테고리",           "checked": True},
+             {"code": "id",             "value": "아이디",            "checked": True},
+             {"code": "name",           "value": "상품명",            "checked": True},
+             {"code": "company",        "value": "상호",              "checked": True},
+             {"code": "address",        "value": "사업장소재지",       "checked": True},
+             {"code": "cs_phone",       "value": "고객센터 전화번호",   "checked": True},
+             {"code": "email",          "value": "E-mail",           "checked": True},
+             {"code": "license",        "value": "사업자 등록번호",     "checked": True},
+             {"code": "ec_license",     "value": "통신판매업 신고번호",  "checked": True},
+             {"code": "page",           "value": "페이지",             "checked": True},
          ]
     ),
 ]

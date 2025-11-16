@@ -41,7 +41,7 @@ PARAMS_BASE = {
 # =========================
 all_ids = []
 
-for page in range(0, 11):  # 0 ~ 10
+for page in range(999, 1):  # 0 ~ 10
     params = PARAMS_BASE.copy()
     params["page"] = str(page)
 
