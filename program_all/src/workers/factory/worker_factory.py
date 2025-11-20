@@ -31,8 +31,8 @@
 # from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 # from src.workers.main.api_kakao_store_food_set_worker               import ApiKakaoStoreFoodSetLoadWorker
-from src.workers.main.api_ohsu_se_category_set_worker                 import ApiOhsuSeCategorySetLoadWorker
-
+# from src.workers.main.api_ohsu_se_category_set_worker               import ApiOhsuSeCategorySetLoadWorker
+from src.workers.main.api_delivery_content_set_worker                import ApiDeliveryContentSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -68,5 +68,6 @@ WORKER_CLASS_MAP = {
     # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
     # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
     # "KAKAO_STORE_FOOD"                  :   ApiKakaoStoreFoodSetLoadWorker,
-    "OHOU_SE_CATEGORY"                  :   ApiOhsuSeCategorySetLoadWorker
+    # "OHOU_SE_CATEGORY"                  :   ApiOhsuSeCategorySetLoadWorker,
+    "DELIVERY_CONTENT"                  :   ApiDeliveryContentSetLoadWorker
 }

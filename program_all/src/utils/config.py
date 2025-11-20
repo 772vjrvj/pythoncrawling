@@ -364,24 +364,25 @@ SITE_LIST = [
     #          {"code": "remark",                      "value": "비고",            "checked": True}    # === 신규 ===
     #      ]
     # ),
-    Site("오늘의 집", "OHOU_SE_CATEGORY", "#00A1FF", enabled=True, popup=True,
-         setting=[
-             {'name': '시작 페이지(숫자 1부터)', 'code': 'st_page',    'value': '1', 'type': 'input'},
-             {'name': '종료 페이지(숫자 9999까지)', 'code': 'ed_page',    'value': '9999', 'type': 'input'},
-         ],
-         columns = [
-             {"code": "category",       "value": "카테고리",           "checked": True},
-             {"code": "id",             "value": "아이디",            "checked": True},
-             {"code": "name",           "value": "상품명",            "checked": True},
-             {"code": "company",        "value": "상호",              "checked": True},
-             {"code": "address",        "value": "사업장소재지",       "checked": True},
-             {"code": "cs_phone",       "value": "고객센터 전화번호",   "checked": True},
-             {"code": "email",          "value": "E-mail",           "checked": True},
-             {"code": "license",        "value": "사업자 등록번호",     "checked": True},
-             {"code": "ec_license",     "value": "통신판매업 신고번호",  "checked": True},
-             {"code": "page",           "value": "페이지",             "checked": True},
-         ]
-    ),
+    # Site("오늘의 집", "OHOU_SE_CATEGORY", "#00A1FF", enabled=True, popup=True,
+    #      setting=[
+    #          {'name': '시작 페이지(숫자 1부터)', 'code': 'st_page',    'value': '1', 'type': 'input'},
+    #          {'name': '종료 페이지(숫자 9999까지)', 'code': 'ed_page',    'value': '9999', 'type': 'input'},
+    #      ],
+    #      columns = [
+    #          {"code": "category",       "value": "카테고리",           "checked": True},
+    #          {"code": "id",             "value": "아이디",            "checked": True},
+    #          {"code": "name",           "value": "상품명",            "checked": True},
+    #          {"code": "company",        "value": "상호",              "checked": True},
+    #          {"code": "address",        "value": "사업장소재지",       "checked": True},
+    #          {"code": "cs_phone",       "value": "고객센터 전화번호",   "checked": True},
+    #          {"code": "email",          "value": "E-mail",           "checked": True},
+    #          {"code": "license",        "value": "사업자 등록번호",     "checked": True},
+    #          {"code": "ec_license",     "value": "통신판매업 신고번호",  "checked": True},
+    #          {"code": "page",           "value": "페이지",             "checked": True},
+    #      ]
+    # ),
+    Site("송장번호 택배사", "DELIVERY_CONTENT", "#00A1FF", enabled=True, popup=True),
 ]
 
 # 전역 변수
