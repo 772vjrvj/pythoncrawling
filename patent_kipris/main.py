@@ -1,122 +1,120 @@
-# ssg 로그인 (팝업창) 자동화 예제
-# - 메인 페이지 접속
-# - 로그인 버튼 클릭 → 팝업창 전환
-# - ID / PW 입력 후 로그인 버튼 클릭
-# - 이후 원하는 관리자/마이페이지 등으로 이동해서 크롤링하면 됨
+# -*- coding: utf-8 -*-
+"""
+기존 엑셀 파일에서 '패밀리정보(수)' 열만 opFamilyCnt로 업데이트
+- 비교 키: (출원번호(일자)=applno)  # === 변경: rgstno 조건 제거 ===
+- 전부 문자열 비교 (공백 제거)
+- 다른 셀/행/스타일은 건드리지 않음
+- 멀티스레드 10개
+"""
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Dict, Tuple, List, Optional
+from openpyxl import load_workbook
 
+# ========= 사용자 설정 =========
+EXCEL_PATH  = "요청2.xlsx"
+JSON_PATH   = "data_list.json"
+SHEET_NAME  = None          # None이면 첫 번째 시트 사용, 특정 시트면 문자열로 지정
+THREADS     = 10
+OVERWRITE_ALL = False        # 기존 값이 있어도 덮어쓸지 여부
+PRINT_HIT   = False          # 매칭 성공 로그 출력
+PRINT_MISS  = False          # 매칭 실패 로그 출력
 
-SSG_MAIN_URL = "https://www.ssg.com/"
+# ========= 유틸 =========
+def _s(v: Any) -> str:
+    """문자열 정규화: 개행/탭/앞뒤 공백 제거 + 중간 공백 제거(정확 매칭용)."""
+    if v is None:
+        return ""
+    s = str(v).replace("\r", "").replace("\n", "").strip()
+    # === 변경: 공백 제거(전부 문자열 비교 + 공백 제거 요구 반영) ===
+    s = s.replace(" ", "")
+    return s
 
-# 로그인 정보
-LOGIN_ID = "ooos1103"
-LOGIN_PW = "oktech431!@"
+def build_mapping(j: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """
+    JSON → applno 단일 키 매핑.
+    동일 applno가 복수 존재 시, 최초 항목만 유지(필요시 로직 조정 가능).
+    """
+    m: Dict[str, Dict[str, Any]] = {}
+    dup = 0
+    for _, val in j.items():
+        applno = _s(val.get("applno"))
+        if not applno:
+            continue
+        if applno in m:
+            dup += 1
+            # 필요 시 최신값으로 덮어쓰려면: m[applno] = val
+            continue
+        m[applno] = val
+    print(f"[INFO] JSON 매핑 수(applno): {len(m):,} (중복 무시: {dup:,})")
+    return m
 
+# ========= 메인 로직 =========
 def main():
-    # =========================
-    # 1. 드라이버 세팅
-    # =========================
-    options = webdriver.ChromeOptions()
-    options.add_argument("--start-maximized")
-    # 필요하면 user-agent, 헤드리스 등 추가 가능
-    driver = webdriver.Chrome(options=options)
+    # 1) JSON 로드 → 매핑(applno 단일 키)
+    with open(JSON_PATH, "r", encoding="utf-8") as f:
+        j = json.load(f)
+    mapping = build_mapping(j)
 
-    wait = WebDriverWait(driver, 15)
+    # 2) 엑셀 로드
+    wb = load_workbook(EXCEL_PATH)
+    ws = wb[SHEET_NAME] if SHEET_NAME else wb.worksheets[0]
 
-    try:
-        # =========================
-        # 2. 메인 페이지 접속
-        # =========================
-        driver.get(SSG_MAIN_URL)
+    # 3) 헤더 행 파악 및 컬럼 인덱스 매핑
+    header_row = 1
+    headers: Dict[str, int] = {}
+    for c in range(1, ws.max_column + 1):
+        headers[_s(ws.cell(row=header_row, column=c).value)] = c
 
-        # =========================
-        # 3. 상단 GNB 로그인 버튼 클릭
-        #    <div id="loginBtn"> ... </div> 이거 클릭
-        # =========================
-        login_btn_gnb = wait.until(
-            EC.element_to_be_clickable((By.ID, "loginBtn"))
-        )
-        login_btn_gnb.click()
+    need = ["출원번호(일자)", "패밀리정보(수)"]  # === 변경: '등록번호' 제거 ===
+    for h in need:
+        if h not in headers:
+            raise ValueError(f"엑셀에 필수 헤더 누락: {h}")
 
-        # =========================
-        # 4. 팝업창으로 전환
-        # =========================
-        main_handle = driver.current_window_handle
+    col_appl = headers["출원번호(일자)"]
+    col_fam  = headers["패밀리정보(수)"]
 
-        # 새 창(팝업)이 열릴 때까지 기다렸다가, 새 핸들로 전환
-        wait.until(lambda d: len(d.window_handles) > 1)
+    # 4) 대상 행(2행~max_row)에서 (row_idx, appl) 수집
+    tasks: List[Tuple[int, str]] = []
+    for r in range(header_row + 1, ws.max_row + 1):
+        appl = _s(ws.cell(row=r, column=col_appl).value)
+        tasks.append((r, appl))
 
-        login_handle = None
-        for handle in driver.window_handles:
-            if handle != main_handle:
-                login_handle = handle
-                break
+    # 5) 멀티스레드 매칭 → (row_idx, opFamilyCnt or None)
+    def check_task(t: Tuple[int, str]) -> Tuple[int, Optional[str]]:
+        r, appl = t
+        if not appl:
+            if PRINT_MISS:
+                print(f"[MISS] r={r} (출원번호(일자) 빈 값)")
+            return (r, None)
+        hit = mapping.get(appl)
+        if hit is None:
+            if PRINT_MISS:
+                print(f"[MISS] r={r} applno={appl}")
+            return (r, None)
+        val = _s(hit.get("opFamilyCnt", ""))
+        if PRINT_HIT:
+            print(f"[HIT]  r={r} applno={appl} -> {val}")
+        return (r, val if val != "" else None)
 
-        if login_handle is None:
-            raise Exception("로그인 팝업 창을 찾지 못했습니다.")
+    updated = 0
+    # 엑셀 쓰기는 메인 스레드에서만 수행(경합 방지)
+    with ThreadPoolExecutor(max_workers=THREADS) as ex:
+        futures = [ex.submit(check_task, t) for t in tasks]
+        for f in as_completed(futures):
+            r, val = f.result()
+            if val is None:
+                continue
+            cur = ws.cell(row=r, column=col_fam).value
+            cur_s = _s(cur)
+            if OVERWRITE_ALL or cur_s == "":
+                ws.cell(row=r, column=col_fam, value=val)
+                updated += 1
 
-        driver.switch_to.window(login_handle)
-
-        # =========================
-        # 5. 팝업 내 로그인 폼에 ID/PW 입력
-        #    <input type="text" name="mbrLoginId" id="mem_id">
-        #    <input type="password" name="password" id="mem_pw">
-        # =========================
-        id_input = wait.until(
-            EC.presence_of_element_located((By.ID, "mem_id"))
-        )
-        pw_input = wait.until(
-            EC.presence_of_element_located((By.ID, "mem_pw"))
-        )
-
-        id_input.clear()
-        id_input.send_keys(LOGIN_ID)
-
-        pw_input.clear()
-        pw_input.send_keys(LOGIN_PW)
-
-        # =========================
-        # 6. 로그인 버튼 클릭
-        #    <button ... id="loginBtn"><span>로그인</span></button>
-        #    (팝업 안에도 id="loginBtn"일 수 있으니, 현재 창 기준으로 다시 찾음)
-        # =========================
-        login_submit_btn = wait.until(
-            EC.element_to_be_clickable((By.ID, "loginBtn"))
-        )
-        login_submit_btn.click()
-
-        # =========================
-        # 7. 로그인 완료 대기
-        #    - 보통 팝업이 닫히거나, URL/요소 변화로 확인
-        #    - 여기서는 "창이 1개만 남을 때"까지 기다리도록 처리
-        # =========================
-        WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) == 1)
-
-        # 메인 창으로 다시 전환
-        driver.switch_to.window(main_handle)
-
-        # =========================
-        # 8. 이제 로그인된 상태로 관리자/마이페이지 등 이동해서 크롤링
-        # =========================
-        # 예시: 마이페이지 같은 곳으로 이동 (실제 URL로 교체해서 사용)
-        # driver.get("https://www.ssg.com/mypage/main.ssg")
-
-        # 여기서부터는 평소처럼 find_elements 등으로 크롤링
-        # ex)
-        # some_elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "원하는-selector")))
-        # print(some_elem.text)
-
-        print("로그인 절차까지 정상 수행 완료")
-
-    finally:
-        # 개발 중에는 바로 닫기 싫으면 주석 처리해서 확인하면서 쓰면 됨
-        # driver.quit()
-        pass
-
+    # 6) 저장(원본만 갱신)
+    wb.save(EXCEL_PATH)
+    print(f"[DONE] 업데이트 완료: {updated:,} 셀 수정 (파일: {EXCEL_PATH})")
 
 if __name__ == "__main__":
     main()
