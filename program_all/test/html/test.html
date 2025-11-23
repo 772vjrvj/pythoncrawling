@@ -1,0 +1,1918 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+
+<html lang="ko">
+<head>
+
+
+    <!-- Template Common Start -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <title>11번가</title>
+    <meta name="description" content="11번가">
+    <meta name="keywords" content="11번가">
+    <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+
+
+    <script type="text/javascript" src="//www.11st.co.kr/html/experiment/experimentMetaInfo.js"></script>
+    <script type="text/javascript" src="//www.11st.co.kr/js/plab/plab-web-sdk-0.9.1.min.js"></script>
+    <script>
+
+        var plabPageKey = 'null';
+        try{
+
+            var params = {
+                projectKey : "11st_web",
+                domain : "11st.co.kr",
+                onConsole : false,
+                onApiSync : false,
+                onTrackSync : true,
+                onManualVisit : true
+            };
+            plab.initBy(params, experimentMetaInfo);
+
+
+            plab.apply({
+                "key" : plabPageKey,
+                "A" : function () {},
+                "B" : function () { plabPageRedirect(); },
+                "C" : function () { plabPageRedirect(); }
+            });
+
+            function plabPageRedirect(){
+                var param = '';
+                var url = plab.getVariationMeta(plabPageKey).url;
+                if( url == null || url == '' ){
+                    return '';
+                }
+
+                if( plab.getVariationMeta(plabPageKey).isallparam && plab.getVariationMeta(plabPageKey).isallparam == 'Y' ){
+                    param = getPlabParam();
+                }
+                if(  url.indexOf("?") == -1 ){
+                    url = url+"?";
+                }
+
+                if( window.location.search.indexOf("redirect" ) == -1 ){
+                    url = url + "&redirect";
+                    window.location.replace(url+"&"+param);
+                }
+            }
+            function getPlabParam(){
+                var params=[];
+                window.location.search
+                    .replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str,key,value) {
+                            if( key != 'method'){
+                                params.push(key + '=' + value);
+                            }
+                        }
+                    );
+                return params.join('&');
+            }
+        }catch (e) { console.log(e) };
+
+    </script>
+
+
+
+    <script type="text/javascript">
+
+        // Global Var
+        var _IMG_PATH_  = "//www.11st.co.kr";
+        var _UPLOAD_IMG_PATH_  = "http://image.11st.co.kr";
+        var _SSL_UPLOAD_IMG_PATH_ = "https://www.11st.co.kr/is";
+        var _ACTION_CONTEXT_  = "";
+        var _FILE_UPLOAD_PATH_ = "http://image.11st.co.kr";
+        var _GNB_CONTEXT_PATH_ = "http://www.11st.co.kr";
+        var _ACTION_CONTEXT_URL_ = "http://www.11st.co.kr";
+        var _SSL_ACTION_CONTEXT_URL_ = "https://www.11st.co.kr";
+        var _SSL_IMG_PATH_ = "//www.11st.co.kr";
+        var _GLOBAL_CONTEXT_PATH_ = "http://global.11st.co.kr";
+        var _BEAUTY_CONTEXT_PATH_ = "http://beauty.11st.co.kr";
+        var _SOHO_CONTEXT_PATH_ = "http://soho.11st.co.kr";
+        var _JS_PATH_ = "//www.11st.co.kr";
+
+        var _GNB_LOGIN_URL_ = "https://login.11st.co.kr/login/Login.tmall";
+        var _GNB_LOGOUT_URL_ = "https://login.11st.co.kr/login/Logout.tmall";
+        var _PRODUCT_DETAIL_URL_ = "http://www.11st.co.kr/product/SellerProductDetail.tmall?method=getSellerProductDetail&prdNo=";
+
+        var _ENJOY_SEARCH_VAR_ = "NONE";
+        var _ENJOY_SEARCH_KEY_YN_ = "N";
+
+        var _SELLER_SHOP_DOMAIN_ = "http://shop.11st.co.kr";
+
+        // 변경 권고
+        var _CSS_URL_			= "//c.011st.com";
+        var _SSL_CSS_URL_		= "https://www.11st.co.kr";
+        var _IMG_URL_			= "//s.011st.com";
+        var _SSL_IMG_URL_		= "https://www.11st.co.kr";
+        var _UPLOAD_URL_		= "//i.011st.com";
+        var _SSL_UPLOAD_URL_	= "https://www.11st.co.kr/is";
+
+        var _LOGIN_TARGET_URL_ 	= "https://login.11st.co.kr";
+
+        // TZONE Var
+        var _TZONE_URL_			= "http://skt.11st.co.kr";
+        var _TZONE_URL_HOME_	= "http://skt.11st.co.kr/html/tzone/tZoneMain.html";
+        var _SELLER_URL_		= "http://seller.11st.co.kr";
+        var _SOFFICE_URL_		= "http://soffice.11st.co.kr";
+        var _DS_URL_			= "http://ds.11st.co.kr";
+        var _MY11ST_URL_		= "http://buy.11st.co.kr/order/myTmall.tmall?method=getMyTmallMain";
+        var _SHOPPINGCART_URL_ 	= "http://buy.11st.co.kr/cart/CartAction.tmall?method=getCartList";
+        var _MYSELL_URL_ 		= "http://soffice.11st.co.kr";
+        var _CATEGORY_ACTION_URL_ = "http://www.11st.co.kr/browsing/DisplayCategory.tmall";
+        var _NEW_CATEGORY_ACTION_URL_ = "";
+        var _SEARCH_ACTION_URL_ = "";
+
+        // TOWN 11st
+        var _TOWN11ST_URL_ 		= "http://town.11st.co.kr";
+        var _TOWN_PRODUCT_DETAIL_URL_ = "http://town.11st.co.kr/town/TownProductDetail.tmall?method=getTownProductDetail&prdNo=";
+        var _TOWN_SHOP_URL_ 	= "http://town.11st.co.kr/town/TownShopDetail.tmall?method=getTownShopDetail&shopNo=";
+        var _TOWN_DOMAIN_ 		= "http://town.11st.co.kr";
+        var _TOWN_SOFFICE_URL_ 	= "http://town.soffice.11st.co.kr";
+
+
+        // Order 11st
+        var _ORDER_IMG_PATH_ 	= "http://buy.11st.co.kr";
+        var _ORDER_URL_ 	 	= "https://buy.11st.co.kr";
+        var _ORDER_DOMAIN_ 	 	= "https://buy.11st.co.kr";
+        var _SSL_ORDER_URL_  	= "https://buy.11st.co.kr";
+        var _SSL_ORDER_IMG_PATH_ = "//www.11st.co.kr";
+        var _ORDER_HIS_URL_		= "http://buy.11st.co.kr/order/OrderList.tmall";
+
+        var _SRCH_PARAM_DELIMITER_ = "@;";
+        var _TICKET11ST_URL_ = "http://ticket.11st.co.kr";
+        var _SSL_TICKET11ST_URL_ = "https://ticket.11st.co.kr";
+
+    </script>
+
+
+    <script type="text/javascript">
+        //상품 상세 페이지 이동
+        //기존 템플릿에서 include하는 소스에 있던 메소드라  템플릿 상단에 선언함
+        function goProdDetail(prdNo) {
+            location.href= "https://www.11st.co.kr/products/"+prdNo+"?&xfrom=&xzone=";
+        }
+        //이마트 상품상세(배송타입)
+        function goProdDetailDlvTyp(prdNo, deliveryType) {
+            location.href= "https://www.11st.co.kr/products/"+prdNo+"?&xfrom=&xzone=";
+        }
+        //skb
+        function goSkbProdDetail(prdNo) {
+            location.href= "https://phone.11st.co.kr/skbroadband/product.tmall?productNo="+prdNo;
+        }
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="//c.011st.com/css/common/default.css">
+    <link rel="stylesheet" type="text/css" href="//c.011st.com/css/mytmall/mytmall_v2.css">
+    <link rel="shortcut icon" href="//s.011st.com/img/common/icon/favicon.ico">
+    <!-- Template Common End -->
+</head>
+
+<body>
+<div id="skipNavi">
+    <a href="#layBodyWrap"><span>본문 바로가기</span></a>
+</div>
+<div id="wrapBody">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--[if lte IE 7]>
+    <script type="text/javascript" src="//www.11st.co.kr/js/lib/json2.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="//www.11st.co.kr/js/lib/jquery/jquery-1.5.min.js"></script>
+
+    <script type="text/javascript" src="//www.11st.co.kr/js/lib/handlebars/handlebars-v4.0.5.min.js"></script>
+    <script src="//v.011st.com/latest/pc.polyfills.js" nomodule charset="UTF-8"></script>
+    <script src="//v.011st.com/latest/pc.util_l.js" charset="UTF-8"></script>
+    <script src="//v.011st.com/latest/pc.common.js" charset="UTF-8"></script>
+
+    <script type="text/javascript">
+
+        var IS_AD_BNNR = "Y";
+        var IS_LEFT_BNNR = "true";
+        var ISSSL_ACTION_CONTEXT_URL = "http://www.11st.co.kr";
+
+        var PRE_FIX_URL = "";
+        var AD_URL = "";
+        var LEFT_WING_URL = "";
+        var LEFT_WING_UNDER_URL = "";
+
+        if(TMCookieUtil.getSubCookie(0,"TGTYN") == "N"){
+            AD_URL = "http://ds.11st.co.kr/NetInsight/text/11st/11st_sub/sub@subGNB" + getNitmusParam(false) + "";
+            LEFT_WING_URL = "http://ds.11st.co.kr/NetInsight/text/11st/11st_all/11st_all@left_wing" + getNitmusParam(false) + "";
+            LEFT_WING_UNDER_URL = "http://ds.11st.co.kr/NetInsight/text/11st/11st_sub/sub@subwing_under" + getNitmusParam(false) + "";
+        }else{
+            PRE_FIX_URL = ISSSL_ACTION_CONTEXT_URL;
+            AD_URL = "/advert/targeting.tmall?method=getAdBodyContents&invTypeCd=02&uploadUrl=//i.011st.com";
+            LEFT_WING_URL = "/advert/targeting.tmall?method=getAdBodyContents&invTypeCd=09";
+            LEFT_WING_UNDER_URL = "/advert/targeting.tmall?method=getAdBodyContents&invTypeCd=10";
+        }
+        var strLBanner = '';
+        var isLBComplete = false;
+        var isWingBnnr  = true;		//윙 배너
+        var isToastBnnr = true;	//토스트 배너
+        var isToastBnnrAct = false;					//토스트 배너 동작여부
+        var isPopUnder  = true;		//팝 언더
+        var isHTMLGen = false;
+        var isLeftBnnrMove = true;
+        var isMain = false;
+    </script>
+
+
+    <div id="gnb"></div>
+    <script>
+        pcComm.renderGnb(
+            "gnb",
+            {
+
+                "user":{"name":"김옥섭"} ,
+
+
+
+                "type" : "DEFAULT"
+
+
+
+            }
+        )
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+    <div id="layBodyWrap" class="mytmall_bodywrap">
+        <div id="layBody"  >
+            <!--BODY 내용:S-->
+
+            <!-- 마이페이지 랩 -->
+            <div class="mytmall_wrap_v2">
+
+                <!-- 마이페이지 탭 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- //장바구니,나의11번가 tab -->
+                <div class="mytmall_hgroup">
+                    <h2 class="my11st"><a href="https://buy.11st.co.kr/my11st/order/myTmall.tmall?method=getMyTmallMain" data-log-actionid-area="my11st" data-log-actionid-label="logo_my11st">나의 11번가</a></h2>
+                </div>
+
+
+
+
+                <script language="javascript">
+                    <!--
+                    function settingOtherCount() {
+
+
+                        var url = "/my11st/order/myTmallAccount.tmall?method=getOrderOtherCountAjax&isSSL=N";
+
+                        var param = "";
+
+                        var option = {
+                            url:url+param,
+                            dataType:"",
+                            type:"POST",
+                            success:function(response){
+                                // 내용
+                                jQuery("#obj_tabAera").html("");
+                                jQuery("#obj_tabAera").html(response);
+                            },
+                            error:function(){
+                                // 내용
+                                alert('서버와의 통신이 원할하지 않습니다.\n다시 시도해 주십시오.');
+                            }
+                        };
+                        jQuery.ajax(option);
+                    }
+                    settingOtherCount();
+                    -->
+                </script>
+                <!-- //마이페이지 탭 -->
+
+                <!-- 마이페이지 서브메뉴 영역 -->
+                <div class="mytmall_subArea_v2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <script type="text/javascript" src='//www.11st.co.kr/js/common/listPage.js'></script>
+                    <script type="text/javascript" src='/my11st/pw/js/escrow/escrow.js?ver=20190819'></script>
+
+                    <script language="JavaScript">
+
+                        <!--
+                        function fnConfitmWithdrawal() {
+
+                            goMemberWithdrawPages();
+
+                        }
+
+                        function alertOcbOhpoint(){
+                            alert("이메일 인증회원은 OK캐쉬백 사용이 불가합니다.");
+                        }
+
+                        function fnGoMemberInfoPages() {
+
+                            goMemberInfoPages();
+
+                        }
+
+
+
+
+                        //구매등급/클럽지수 펑션
+                        function showLeftGradeArea(strType) {
+
+                            if ( strType == "club" ) {
+
+                                document.getElementById("objLeftGradeLiTag").className = "";
+                                document.getElementById("objLeftClubLiTag").className = "tit_club selected";
+
+                                document.getElementById("objLeftClubArea").style.display = "block";
+                                document.getElementById("objLeftGradeArea1").style.display = "none";
+                            }
+                            else {
+                                document.getElementById("objLeftGradeLiTag").className = "selected";
+                                document.getElementById("objLeftClubLiTag").className = "tit_club";
+
+                                document.getElementById("objLeftClubArea").style.display = "none";
+                                document.getElementById("objLeftGradeArea1").style.display = "block";
+                            }
+                        }
+
+                        // 로그인 관리
+                        function goViewLoginLog()   {
+
+                            var loc = top.location ;
+                            loc.href = "https://www.11st.co.kr/register/viewLoginLogPwdForm.tmall" ;
+
+                        }
+
+                        // 개인통관고유부호 관리
+                        function goViewCustomsPwd()   {
+
+                            var loc = top.location ;
+                            loc.href = "https://buy.11st.co.kr/my11st/order/customsPwdForm.tmall" ;
+
+                        }
+
+                        function fnGoChgApplyForm() {
+
+
+                            $('.mytmall_subArea_v2').addClass('dimmest11_open');
+                            $('#leftSellerChgDim').addClass('dimmest11_on');
+                            $('html').addClass('dimmest11_set');
+
+
+
+                        }
+
+                        function goAddrSearch() {
+
+                            var loc = top.location ;
+                            loc.href = "https://www.11st.co.kr/register/addrSearch.tmall?method=addrSearch&type=dlv&addrCD=01&isSSL=Y&protocol=https" ;
+
+                        }
+
+                        function goPsnInfoSppl() {
+
+                            var loc = top.location ;
+                            loc.href = "https://member.11st.co.kr/policy/privacy" ;
+
+                        }
+
+                        function chgApply() {
+                            var loc = top.location ;
+                            loc.href = "https://www.11st.co.kr/register/chgApplyForm.tmall?method=chgApplyForm&isSSL=Y" ;
+                        }
+
+                        function showAllClubArea() {
+                            document.getElementById("objAllClubArea").style.display = "block";
+                        }
+
+
+
+
+
+                        function alertTicketReservation() {
+                            alert("보다 나은 티켓예매서비스를 제공해 드리기 위해, \n오픈준비중에 있습니다.\n2012.09.30일 까지의 티켓예매내역 확인은 \n[11번가 고객센터 1599-0110]에서 가능하십니다.");
+                        }
+
+                        function alertSellerLoan(){
+                            alert("셀러 정산 지원 서비스 사용중인 경우 회원전환이 불가합니다.");
+                        }
+
+                        function alertOcbOhpoint(){
+                            alert("이메일 인증회원은 제휴포인트를 이용하실 수 없습니다.");
+                        }
+
+                        function alertSpaceCoin() {
+                            if (confirm("본 서비스는 본인(실명) 인증을 완료한 개인 회원에 한해 이용 가능합니다. \n사업자 회원 등은 이용이 불가한 점 양해하여 주시기 바랍니다.")) {
+                                window.location.href = _SSL_ACTION_CONTEXT_URL_ + "/register/bridgeForAuth.tmall?method=bridgeForAuth&type=02";
+                            }
+                        }
+
+                        function alertSpaceCoinNoAgree() {
+                            alert("T 멤버십 서비스 이용 동의 후 사용하실 수 있습니다.\n서비스 이용 동의는 [11번가앱>나의11번가>나의혜택>T 멤버십]에서 하실 수 있습니다.");
+                        }
+
+                        //-->
+                    </script>
+
+                    <!-- 나의정보 -->
+                    <div id="leftMemberInfoArea"></div>
+                    <!-- //나의정보 -->
+
+                    <!-- 서브 메뉴 -->
+                    <div class="mytmall_menu">
+                        <h2 class="skip">서브메뉴</h2>
+                        <div class="mytmall_sub_menu first">
+                            <h3>나의 쇼핑 내역</h3>
+                            <ul>
+                                <li><a href="https://buy.11st.co.kr/my11st/order/OrderList.tmall"  class="select" data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'주문/배송조회'}">주문/배송조회</a></li>
+                                <li><a href="https://buy.11st.co.kr/my11st/order/OrderList.tmall?type=cancelRequest2nd"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'취소/반품/교환 신청'}">취소/반품/교환 신청</a></li>
+                                <li><a href="https://buy.11st.co.kr/my11st/order/CancelStatusList.tmall"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'취소/반품/교환 현황'}">취소/반품/교환 현황</a></li>
+                                <li><a href="https://buy.11st.co.kr/my11st/remittance/refundPayment.tmall?method=displayRefundPayment"  data-log-actionid-area="my_shopping_list"  data-log-actionid-label="menu" data-log-body="{'btn_name':'환불/입금내역'}">환불/입금내역</a></li>
+                                <li><a href="https://buy.11st.co.kr/my11st/remittance/documentaryEvidence.tmall?method=displayDocumentaryEvidenceIssue"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'영수증/소득공제/배송비'}">영수증/소득공제/배송비</a></li>
+                                <li class="special"><a href="https://buy.11st.co.kr/my11st/order/OrderListHp.tmall"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'T공식대리점 주문조회'}">T공식대리점 주문조회</a></li>
+                                <li><a href="https://www.11st.co.kr/vertical/TourReservationSettleList.tmall?method=displayTourReservationSettleList"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'여행 예약결제조회'}">여행 예약결제조회</a></li>
+                                <!-- [17-02-06 jich3898] 항공권 추가 -->
+                                <li><a href="https://www.11st.co.kr/vertical/TourAirReservationSettleList.tmall?method=displayTourAirReservationSettleList"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'항공권 예약결제조회'}">항공권 예약결제조회</a></li>
+                                <li><a href="https://skrdirect.11st.co.kr/cooper/mypage?cooperCd=A57001"  data-log-actionid-area="my_shopping_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'SK렌터카 견적/계약 조회'}">SK렌터카 견적/계약 조회</a></li>
+
+                            </ul>
+                        </div>
+                        <div class="mytmall_sub_menu">
+                            <h3><a href="https://buy.11st.co.kr/my11st/order/GiftBox.tmall?type=received" data-log-actionid-area="present_box" data-log-actionid-label="present_box" data-log-body="{'btn_name':'선물함'}">선물함</a></h3>
+                        </div>
+
+                        <div class="mytmall_sub_menu">
+                            <h3>나의 혜택 관리</h3>
+                            <ul>
+                                <li><a href="https://www.11st.co.kr/loyalty/AuthCouponGiftDtls.tmall"  data-log-actionid-area="my_benefit_management" data-log-actionid-label="menu" data-log-body="{'btn_name':'11번가 쿠폰'}">11번가 쿠폰</a></li>
+                                <li><a href="https://www.11st.co.kr/loyalty/AuthMall11PayPointDtls.tmall?isSSL=Y"  data-log-actionid-area="my_benefit_management" data-log-actionid-label="menu" data-log-body="{'btn_name':'SK pay'}">11pay 포인트/머니</a></li>
+
+                                <li><a href="https://buy.11st.co.kr/loyalty/SpaceCoinDtls.tmall?isSSL=Y"  data-log-actionid-area="my_benefit_management" data-log-actionid-label="menu" data-log-body="{'btn_name':'T멤버십'}">T 멤버십</a></li>
+
+                                <li><a href="https://www.11st.co.kr/loyalty/CyberMoneyWithdraw.tmall?method=mytmallWithdraw&isSSL=Y"  data-log-actionid-area="my_benefit_management" data-log-actionid-label="menu" data-log-body="{'btn_name':'캐시'}">캐시</a></li>
+                                <li><a href="https://www.11st.co.kr/loyalty/AuthOcbPointDtls.tmall?isSSL=Y"  data-log-actionid-area="my_benefit_management" data-log-actionid-label="menu" data-log-body="{'btn_name':'OK캐쉬백'}">OK캐쉬백</a></li>
+
+                                <li><a href="https://buy.11st.co.kr/my11st/order/MoneyBackCrew.tmall"  data-log-actionid-area="my_benefit_management" data-log-actionid-label="menu" data-log-body="{'btn_name':'11번가 머니백'}">11번가 머니백</a></li>
+
+                            </ul>
+                        </div>
+
+                        <div class="mytmall_sub_menu">
+                            <h3>나의 관심 목록</h3>
+                            <ul>
+                                <li><a href="https://www.11st.co.kr/interest/AuthInterestProductAction.tmall?method=getAllInterestProductInfo"  data-log-actionid-area="my_interest_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'찜한 상품'}">찜한 상품</a></li>
+                                <li><a href="https://www.11st.co.kr/interest/AuthInterestProductAction.tmall?method=getMyViewList"  data-log-actionid-area="my_interest_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'최근 본 상품'}">최근 본 상품</a></li>
+
+                                <li><a href="https://www.11st.co.kr/minimall/MyMiniMallAction.tmall?method=getMyMiniMall&tabType=F&clickpram=MY11minimall"  data-log-actionid-area="my_interest_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'찜한스토어'}">찜한<span class="skip">스토어</span></a>/<a href="http://www.11st.co.kr/minimall/MyMiniMallAction.tmall?method=getMyMiniMall&tabType=B&clickpram=MY11minimall"  data-log-actionid-area="my_interest_list" data-log-actionid-label="menu" data-log-body="{'btn_name':'구매스토어'}">구매스토어</a></li>
+
+                            </ul>
+                        </div>
+                        <div class="mytmall_sub_menu">
+                            <h3>나의 쇼핑 지식</h3>
+                            <ul data-log-actionid-area="my_shopping_knowledge" data-log-actionid-label="menu">
+                                <li><a href="https://www.11st.co.kr/product/MyProductQnaAction.tmall?method=getMyProductQnaList"  data-log-body="{'btn_name':'상품 Q&A'}">상품 Q&amp;A</a></li>
+
+                                <li><a href="https://cs.11st.co.kr/page/my-list/inquiry?tab=email"
+                                       data-log-body="{'btn_name':'E-mail 상담내역'}"
+                                       onclick="window.open(this.href, '_blank', 'width=800, height=800, resizable=yes, scrollbars=yes'); return false;">메일상담내역</a></li>
+                                <li><a href="https://cs.11st.co.kr/page/my-list/inquiry?tab=chat"
+                                       data-log-body="{'btn_name':'11챗 상담내역'}"
+                                       onclick="window.open(this.href, '_blank', 'width=800, height=800, resizable=yes, scrollbars=yes'); return false;">채팅상담내역</a></li>
+
+                                <li><a href="https://www.11st.co.kr/order/AblePostScriptList.tmall"  data-log-body="{'btn_name':'나의 상품 평가/리뷰'}">나의 상품 평가/리뷰</a></li>
+
+                            </ul>
+                        </div>
+
+                        <div class="mytmall_sub_menu">
+                            <h3>회원정보</h3>
+                            <ul>
+
+                                <li>
+                                    <a href="javascript:fnGoMemberInfoPages();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'회원정보 변경'}">회원정보 변경</a>/
+                                    <a href="javascript:fnConfitmWithdrawal();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'탈퇴'}">탈퇴</a>
+                                </li>
+
+                                <li><a href="javascript:fnGoChgApplyForm();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'셀러 전환'}">셀러 전환</a></li>
+
+                                <li><a href="javascript:goAddrSearch();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'나의 배송지 관리'}">나의 배송지 관리</a></li>
+                                <li><a href="javascript:goViewLoginLog();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'로그인 관리'}">로그인 관리</a></li>
+                                <li><a href="javascript:goPsnInfoSppl();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'개인정보 이용내역'}">개인정보 이용내역</a></li>
+                                <li><a href="javascript:goViewCustomsPwd();"  data-log-actionid-area="member_information" data-log-actionid-label="menu" data-log-body="{'btn_name':'개인통관고유부호 관리'}">개인통관고유부호 관리</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <!-- //서브메뉴 -->
+
+
+
+                    <div class="dimmest11" id="leftTidDisconnectDim"><!-- 활성화 시 dimmest11_on 클래스 추가 및 html에 dimmest11_set 클래스 추가 -->
+                        <div class="dim_layer ly_tid" style="margin-top: -273px; margin-left: -300px;">
+                            <h1 class="tit">T아이디 연동해제</h1>
+                            <div class="ly_tid_inner">
+                                <p><strong>T아이디 연동 해제 전 다음 사항을 꼭 숙지하시기 바랍니다.<br>관련 문의는 11번가 고객센터(1599-0110)로 연락 주시면 최선을 다하겠습니다.</strong></p>
+                                <strong class="tit_sub">T아이디 연동해제 안내</strong>
+                                <p class="txt">연동해제 시 T아이디 계정으로 11번가를 로그인 할 수 없습니다.</p>
+                                <p class="txt">연동해제는 T아이디로 11번가 로그인이 불가능 한 것이지 11번가 회원탈퇴가 아닙니다.</p>
+                                <p class="txt">연동해제 후 기존 11번가 아이디/비밀번호로 로그인 하실 수 있습니다. (다음 버튼을 클릭하시면 기존 11번가 아이디를 확인하실 수 있습니다.)</p>
+                                <p class="txt">개인셀러회원에서 사업자셀러회원으로 전환을 원하시는 경우에는 반드시 T아이디 연동 해제 후 전환하실 수 있습니다.</p>
+                                <p class="txt">11번가 회원탈퇴를 원하시는 경우 "회원탈퇴" 메뉴에서 진행 가능합니다.</p>
+                                <p class="txt">T아이디 회원탈퇴를 원하시는 경우 T아이디에 연결된 채널을 모두 탈퇴 후 "T아이디"에서 진행 가능합니다.</p>
+                            </div>
+                            <div class="ly_tid_btn">
+                                <button type="button" onclick="$('#leftPopupCloseBtn').trigger('click');" class="btn">취소</button>
+                                <button type="button" onclick="leftTidDisconnect('Y');" class="btn">다음</button>
+                            </div>
+                            <button type="button" id="leftPopupCloseBtn" class="btn_close">닫기</button>
+                        </div>
+                    </div>
+
+                    <div class="dimmest11" id="leftSellerChgDim"><!-- 활성화 시 dimmest11_on 클래스 추가 및 html에 dimmest11_set 클래스 추가 -->
+                        <div class="dim_layer ly_tid" style="margin-top: -273px; margin-left: -300px;">
+                            <h1 class="tit">개인셀러회원 전환 안내</h1>
+                            <div class="ly_tid_inner">
+                                <p><strong>개인셀러회원 전환 전 다음 사항을 꼭 숙지하시기 바랍니다.<br>관련 문의는 11번가 고객센터(1599-0110)로 연락 주시면 최선을 다하겠습니다.</strong></p>
+                                <strong class="tit_sub">개인셀러회원 전환 안내</strong>
+                                <p class="txt">개인셀러회원으로 전환하더라도 T아이디 계정으로 11번가를 로그인 할 수 있습니다.</p>
+                                <p class="txt">단, Seller Office는 11번가 계정으로만 로그인 할 수 있습니다.</p>
+                                <p class="txt">T아이디 연동회원은 기존의 11번가 아이디/비밀번호로 Seller Office를 로그인 하실 수 있습니다. (다음 버튼을 클릭하시면 아이디를 확인하실 수 있습니다.)</p>
+                                <p class="txt">T아이디로 신규가입한 회원은 11번가 아이디/비밀번호 설정 후 Seller Office를 로그인 하실 수 있습니다. (다음 버튼을 클릭하시면 아이디/비밀번호를 설정하실 수 있습니다.)</p>
+                            </div>
+                            <div class="ly_tid_btn">
+                                <button type="button" onclick="$('#leftSellerCloseBtn').trigger('click');" class="btn">취소</button>
+                                <button type="button" onclick="leftTidDisconnect('N');" class="btn">다음</button>
+                            </div>
+                            <button type="button" id="leftSellerCloseBtn" class="btn_close">닫기</button>
+                        </div>
+                    </div>
+                    <form name="leftForm1" method="post" id="leftForm1">
+                        <input type="hidden" name="method" >
+                        <input type="hidden" name="memID" value="ooos1103">
+                    </form>
+                    <!-- 왼쪽 배너 -->
+                    <script language="javascript">
+                        try {
+                            if ( _dsSeverMode ) {
+                                document.write("<ul class=\"mytmall_ban\">");
+                                document.write("    <li><iframe id='myAddIframe' src='" + window.document.location.protocol + "//ds.11st.co.kr/NetInsight/html/11st/11st_my/11st_my@11st_my_left_new"+getNitmusParam(false)+"' width='165' height='600' frameborder='0' scrolling='no' topmargin='0' leftmargin='0' marginwidth='0' marginheight='0' title='광고배너' style='display:none;'></iframe></li>");
+                                document.write("</ul>");
+                                jQuery("#myAddIframe").load(function () {
+                                    jQuery("#myAddIframe").css("display", "block");
+                                });
+                            } else {
+                            }
+                        }catch(e){}
+                    </script>
+                    <!-- //왼쪽 배너 -->
+
+                    <script language="javascript" type="text/javascript">
+                        //검색
+                        function settingLeftCount() {
+
+                            var url = "/my11st/order/myTmallAccount.tmall?method=getMyTmallLeftAjax&isSSL=N";
+                            var param = "";
+
+                            var option = {
+                                url:url+param,
+                                dataType:"",
+                                type:"POST",
+                                success:function(response){
+                                    jQuery("#leftMemberInfoArea").html("");
+                                    jQuery("#leftMemberInfoArea").html(response);
+                                },
+                                error:function(){
+                                    alert('서버와의 통신이 원할하지 않습니다.\n다시 시도해 주십시오.');
+                                }
+                            };
+                            jQuery.ajax(option);
+                        }
+                        settingLeftCount();
+
+                        $('.dimmest11 .btn_close').click(function() {
+                            $('.dimmest11').removeClass('dimmest11_on');
+                            $('.mytmall_subArea_v2').removeClass('dimmest11_open');
+                            $('html').removeClass('dimmest11_set');
+                        });
+
+                        function leftTidDisconnect(type){
+                            $('#leftPopupCloseBtn').trigger('click');
+                            $('#leftSellerCloseBtn').trigger('click');
+                            var winTid = launchCenter('', 'openPopupTID', '420', '436');
+                            var frmObj = document.leftForm1 ;
+                            frmObj.action = "https://www.11st.co.kr/jsp/register/personalinformation/popupTidDisconnect.jsp?returnURL="+encodeURIComponent('https://www.11st.co.kr/register/chgApplyForm.tmall?method=chgApplyForm&isSSL=Y')+"&type="+type+"&method=buy_leftChgApply";
+                            frmObj.target = "openPopupTID";
+                            frmObj.submit();
+                            frmObj.target = "";
+                            winTid.focus();
+                        }
+
+                        function leftChgApply(){
+
+                            document.location.href="https://www.11st.co.kr/register/chgApplyForm.tmall?method=chgApplyForm&isSSL=Y";
+
+                        }
+
+                        function goTidChgAuthMember2(){
+                            window.location.href="https://member.11st.co.kr/tid/personalverification?client_type=WEB&returnURL="+encodeURIComponent('01');
+                        }
+
+
+                    </script>
+                    <!-- //Left영역 -->
+
+                </div>
+                <!-- //마이페이지 서브메뉴 영역 -->
+
+
+                <!-- 마이페이지 컨텐츠 영역 -->
+                <div class="mytmall_contArea">
+                    <!-- //마이페이지 탭 -->
+
+
+
+
+
+                    <!-- 미니지갑 -->
+                    <div id="obj_minipocket"></div>
+                    <!-- //미니지갑 -->
+
+                    <script src="//c.011st.com/js/mini-pocket/bundle.js"></script>
+                    <script type="text/javascript">
+                        jQuery(document).ready(function () {
+                            try{
+                                new MiniPocket({
+                                    target: document.querySelector('div#obj_minipocket'),
+                                });
+                            }catch (e) {
+                                console.log(e);
+                            }
+                        });
+                    </script>
+
+                    <style>
+                        #obj_minipocket {
+                            height: 82px;
+                        }
+                    </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <script type="text/javascript">
+                        var _ONECLICK_FROM_CART_PC = 'sc1pc';
+                        var _ONECLICK_FROM_PRD_PC = 'pdpc';
+                        var _ONECLICK_FROM_PROMOTION_PC = 'pmpc';
+                        var _ONECLICK_FROM_REORDER_PC = 'respc';
+                    </script>
+
+
+
+                    <script type="text/javascript" src="//buy.11st.co.kr/my11st/pw/js/remittance/searchDate.js"></script>
+                    <script type="text/javascript" src="//buy.11st.co.kr/my11st/pw/js/escrow/escrow.js?ver=20190819"></script>
+                    <script type="text/javascript" src="//buy.11st.co.kr/my11st/pw/js/escrow/claim.js"></script>
+                    <script type="text/javascript" src="//buy.11st.co.kr/my11st/pw/js/escrow/oneclick.js"></script>
+                    <script type="text/javascript" src="//www.11st.co.kr/js/common/iframeLayer.js"></script>
+                    <script type="text/javascript" src="//www.11st.co.kr/js/common/requestLayer.js"></script>
+
+                    <script language='javascript'>
+
+                        function openInfoPop(url , title , width , height){
+                            window.open("//buy.11st.co.kr/order/"+url , title , "width="+ width +" ,scrollbars=yes  , height="+ height +"");
+                        }
+                        function closeWinAlwaysBmp(){
+                            TMCookieUtil.add(2,"OLD_BOOK_NOTICE_LAYER","1");
+                            jQuery("#cmn_layrwrap2").hide();
+                        }
+
+                    </script>
+
+
+
+                    <!-- [14-09-04 lsm] 도서안내레이어 -->
+                    <div class="cmn_layrwrap" style="z-index:111;display:none;" id="cmn_layrwrap2"><!-- z-index 지정하여 사용 -->
+                        <div class="cmn_layr" style="top:5px;left:401px;width:390px;"><!-- 위치와 가로값 지정하여 사용 -->
+                            <h3><img src="//s.011st.com/img/mytmall_v2/tit_books.gif" alt="(구)도서11번가 오픈마켓 서비스 통합 안내"></h3>
+                            <div class="content">
+                                항상 저희 11번가를 이용해 주셔서 감사합니다.<br>
+                                구)도서11번가의 더 좋은 서비스와 다양한 상품 제공을 위해<br> 2014년 8월 29일부로 11번가 오픈마켓 서비스와 통합운영하게 되었습니다.
+                                <h4>(구)도서11번가 주문관련 내역 확인</h4>
+                                <div class="ybox">
+                                    나의11번가 &gt; 주문/배송조회 화면의 조회기간 하단에 있는<br> <strong>[(구)도서11번가주문확인]</strong> 버튼 클릭
+                                </div>
+
+                                배송상태, 취소/반품/교환 관련 문의는 고객센터(1599-0110)를 이용해 주시기 바랍니다.
+                            </div>
+                            <div class="btn_wrap">
+                                <a href="javascript:closeWinAlwaysBmp();" class="fl_left"><img src="//s.011st.com/img/common/cmn/chk_today02.gif" alt="앞으로 다시 열지 않기"></a>
+                                <a href="#" class="fl_right" onclick="document.getElementById('cmn_layrwrap2').style.display='none'; return false;"><img src="//s.011st.com/img/common/cmn/btn_close.gif" alt="닫기"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--  11번가 지정반품 신청 중단안내 -->
+
+                    <!--  //11번가 지정반품 신청 중단안내 -->
+
+                    <!-- 주문/배송조회 -->
+                    <div class="mytmall_ttl">
+
+                        <h3 class="t_orderview"><span>주문/배송조회</span></h3>
+
+                    </div>
+
+                    <div class="mytmall_srch_wrap">
+                        <div class="mytmall_srch_v3">
+                            <div class="btn_srh_area">
+                                <div>
+                                    <img src="//s.011st.com/img/cybercenter_new/MyQnA_srch_tit.gif" alt="조회기간">
+                                </div>
+                            </div>
+
+                            <fieldset>
+                                <legend>주문 현황 조회</legend>
+                                <form name="form1" id="form1" method="get" onSubmit="javascript:setReadList(1); ">
+                                    <input type="hidden" name="ordStat">
+                                    <table>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+
+
+
+
+
+
+
+
+
+                                                <div class="QnADate_set">
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20251123','20251123', 'form1');"><span>오늘</span></button>
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20251117','20251123', 'form1');"><span>1주일</span></button>
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20251024','20251123', 'form1');"><span>1개월</span></button>
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20250524','20251123', 'form1');"><span>6개월</span></button>
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20251001','20251031', 'form1');"><span>10월</span></button>
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20250901','20250930', 'form1');"><span>09월</span></button>
+                                                    <button type="button" class="defbtn_sm dtype6" onClick="setDate('20250801','20250831', 'form1');"><span>08월</span></button>
+                                                </div>
+
+
+
+
+                                                <div class="QnADate">
+                                                    <select name="startYY" id="startYY"  onchange="setDD('start', 'form1');">
+                                                        <option value='2025'  selected>2025</option>
+                                                        <option value='2024' >2024</option>
+                                                        <option value='2023' >2023</option>
+                                                        <option value='2022' >2022</option>
+                                                        <option value='2021' >2021</option>
+                                                        <option value='2020' >2020</option>
+                                                        <option value='2019' >2019</option>
+                                                        <option value='2018' >2018</option>
+                                                        <option value='2017' >2017</option>
+                                                        <option value='2016' >2016</option>
+                                                        <option value='2015' >2015</option>
+                                                        <option value='2014' >2014</option>
+                                                        <option value='2013' >2013</option>
+                                                        <option value='2012' >2012</option>
+                                                        <option value='2011' >2011</option>
+                                                        <option value='2010' >2010</option>
+                                                        <option value='2009' >2009</option>
+                                                        <option value='2008' >2008</option>
+                                                        <option value='2007' >2007</option>
+                                                        <option value='2006' >2006</option>
+                                                        <option value='2005' >2005</option>
+
+                                                    </select>
+                                                    <label for="startYY">년</label>
+                                                    <select name="startMM" id="startMM"  onchange="setDD('start', 'form1');">
+                                                        <option value='01' >1</option>
+                                                        <option value='02' >2</option>
+                                                        <option value='03' >3</option>
+                                                        <option value='04' >4</option>
+                                                        <option value='05'  selected>5</option>
+                                                        <option value='06' >6</option>
+                                                        <option value='07' >7</option>
+                                                        <option value='08' >8</option>
+                                                        <option value='09' >9</option>
+                                                        <option value='10' >10</option>
+                                                        <option value='11' >11</option>
+                                                        <option value='12' >12</option>
+
+                                                    </select>
+                                                    <label for="startMM">월</label>
+                                                    <select name="startDD" id="startDD">
+                                                        <option value='01' >1</option>
+                                                        <option value='02' >2</option>
+                                                        <option value='03' >3</option>
+                                                        <option value='04' >4</option>
+                                                        <option value='05' >5</option>
+                                                        <option value='06' >6</option>
+                                                        <option value='07' >7</option>
+                                                        <option value='08' >8</option>
+                                                        <option value='09' >9</option>
+                                                        <option value='10' >10</option>
+                                                        <option value='11' >11</option>
+                                                        <option value='12' >12</option>
+                                                        <option value='13' >13</option>
+                                                        <option value='14' >14</option>
+                                                        <option value='15' >15</option>
+                                                        <option value='16' >16</option>
+                                                        <option value='17' >17</option>
+                                                        <option value='18' >18</option>
+                                                        <option value='19' >19</option>
+                                                        <option value='20' >20</option>
+                                                        <option value='21' >21</option>
+                                                        <option value='22' >22</option>
+                                                        <option value='23' >23</option>
+                                                        <option value='24' >24</option>
+                                                        <option value='25' >25</option>
+                                                        <option value='26' >26</option>
+                                                        <option value='27'  selected>27</option>
+                                                        <option value='28' >28</option>
+                                                        <option value='29' >29</option>
+                                                        <option value='30' >30</option>
+                                                        <option value='31' >31</option>
+
+                                                    </select>
+                                                    <label for="startDD">일</label>&nbsp;~&nbsp;
+                                                    <select name="endYY" id="endYY" onchange="setDD('end', 'form1');">
+                                                        <option value='2025'  selected>2025</option>
+                                                        <option value='2024' >2024</option>
+                                                        <option value='2023' >2023</option>
+                                                        <option value='2022' >2022</option>
+                                                        <option value='2021' >2021</option>
+                                                        <option value='2020' >2020</option>
+                                                        <option value='2019' >2019</option>
+                                                        <option value='2018' >2018</option>
+                                                        <option value='2017' >2017</option>
+                                                        <option value='2016' >2016</option>
+                                                        <option value='2015' >2015</option>
+                                                        <option value='2014' >2014</option>
+                                                        <option value='2013' >2013</option>
+                                                        <option value='2012' >2012</option>
+                                                        <option value='2011' >2011</option>
+                                                        <option value='2010' >2010</option>
+                                                        <option value='2009' >2009</option>
+                                                        <option value='2008' >2008</option>
+                                                        <option value='2007' >2007</option>
+                                                        <option value='2006' >2006</option>
+                                                        <option value='2005' >2005</option>
+
+                                                    </select>
+                                                    <label for="endYY">년</label>
+                                                    <select name="endMM" id="endMM" onchange="setDD('end', 'form1');">
+                                                        <option value='01' >1</option>
+                                                        <option value='02' >2</option>
+                                                        <option value='03' >3</option>
+                                                        <option value='04' >4</option>
+                                                        <option value='05' >5</option>
+                                                        <option value='06' >6</option>
+                                                        <option value='07' >7</option>
+                                                        <option value='08' >8</option>
+                                                        <option value='09' >9</option>
+                                                        <option value='10' >10</option>
+                                                        <option value='11'  selected>11</option>
+                                                        <option value='12' >12</option>
+
+                                                    </select>
+                                                    <label for="endMM">월</label>
+                                                    <select name="endDD" id="endDD" >
+                                                        <option value='01' >1</option>
+                                                        <option value='02' >2</option>
+                                                        <option value='03' >3</option>
+                                                        <option value='04' >4</option>
+                                                        <option value='05' >5</option>
+                                                        <option value='06' >6</option>
+                                                        <option value='07' >7</option>
+                                                        <option value='08' >8</option>
+                                                        <option value='09' >9</option>
+                                                        <option value='10' >10</option>
+                                                        <option value='11' >11</option>
+                                                        <option value='12' >12</option>
+                                                        <option value='13' >13</option>
+                                                        <option value='14' >14</option>
+                                                        <option value='15' >15</option>
+                                                        <option value='16' >16</option>
+                                                        <option value='17' >17</option>
+                                                        <option value='18' >18</option>
+                                                        <option value='19' >19</option>
+                                                        <option value='20' >20</option>
+                                                        <option value='21' >21</option>
+                                                        <option value='22' >22</option>
+                                                        <option value='23'  selected>23</option>
+                                                        <option value='24' >24</option>
+                                                        <option value='25' >25</option>
+                                                        <option value='26' >26</option>
+                                                        <option value='27' >27</option>
+                                                        <option value='28' >28</option>
+                                                        <option value='29' >29</option>
+                                                        <option value='30' >30</option>
+
+                                                    </select>
+                                                    <label for="endDD">일&nbsp;</label>
+
+                                                </div>
+
+
+
+                                                <div class="QnAtxt">
+                                                    <label for="searchBarPrdNm">주문상품명을 입력</label>
+                                                    <input type="text" id="searchBarPrdNm" name="searchBarPrdNm" onClick="javascript:this.value=''" value="주문 상품명을 검색하세요!" class="txtSrh" onkeydown="javascript:if(event.keyCode==13){setReadList('1'); sendSearchRakeLog(); return false;}">
+                                                    <input type="button" class="bt_srh" onClick="setReadList(1); sendSearchRakeLog(); return false;" value="조회하기">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <ul class="order_list">
+                        <li>상품별 결제금액은 주문 시 총 결제금액과 다를 수 있으며, 자세한 정보를 확인하시려면 상세보기 버튼을 클릭하세요.</li>
+                        <li>영문 11번가에서 주문한 정보는 영문 11번가에서 확인 가능합니다.</li>
+                    </ul>
+                    <!-- //주문/배송조회 -->
+
+                    <!--  가주문 완료 리스트 -->
+
+                    <div id="pendingOrderDoneListLoop"></div>
+
+
+                    <div class="mytmall_title marT22">
+
+                        <h3 class="member"><strong>주문내역</strong></h3>
+
+                        <ul class="bt_wrap">
+                            <!-- 2011-10-13 추가 --><!-- <li><a href="http://www.11st.co.kr/event/event.page?evt=appSms1110" target="_new" class="mytmall_bt07"><span>결제금액 110 배 포인트 응모</span></a></li> -->
+                            <!-- 2011-11-28 추가 2013.9.26 제거<li><a href="#" class="mytmall_bt01" onClick="javaScript:priceConfirm();"><span>지금 가격 보장제</span></a></li> -->
+
+
+
+
+                            <li><a href="https://www.11st.co.kr/browsing/AuthChipExchPlace.tmall?method=getTrustBenefitPage&subTabIdx=2" target="_blank"  class="mytmall_bt01 btn_compensation"><span>위조품 110%보상 신청</span></a></li>
+
+                            <!--
+                            <li><a href="http://help.11st.co.kr/11st/mail/MailQuestion.jsp"  class="mytmall_bt01" target="_new"><span>E-Mail상담</span></a></li>
+                            <li><a href="#"  class="mytmall_bt01" onClick="javaScript:goHelpMoible();"><span>댓글상담</span></a></li> -->
+                        </ul>
+                    </div>
+
+
+                    <!--  리스팅 바디 시작 -->
+                    <div id="listLoop"></div>
+                    <!--  리스팅 바디 종료-->
+
+                    <!--  가주문 실패 리스트 -->
+
+                    <div id="pendingOrderFaillistLoop"></div>
+
+
+
+
+
+                    <!-- 알아두세요 -->
+                    <div class="box_caption">
+                        <h3>알아두세요!</h3>
+                        <!-- 공통안내 일때 -->
+                        <div class="process">
+                            <ul role="tablist" class="tab_menu">
+                                <li role="presentation" id="tabMenuId1" class="tab-menu__item tab-menu__item--active"><button type="button" class="tab-menu__button" role="tab" onmouseover="tab_ch(1)" onfocus="tab_ch(1)" aria-selected="true" aria-controls="tabcontent1" data-log-actionid-label="common_info">공통안내</button></li>
+                                <li role="presentation" id="tabMenuId2" class="tab-menu__item"><button type="button" class="tab-menu__button" role="tab" onmouseover="tab_ch(2)" onfocus="tab_ch(2)" aria-selected="false" aria-controls="tabcontent2" data-log-actionid-label="oversea_info">해외배송상품 안내</button></li>
+                            </ul>
+
+                            <div role="tabpanel" aria-labelledby="tabMenuId1" id="tabpanelId1"><!-- 공통안내 일때 --><!-- 2012-07-02 열기 div추가 -->
+                                <div class="detail">
+                                    <ul>
+                                        <li>배송완료 후 구매확정을 하지 않은 경우에는 <strong>배송이 완료된 일로부터 7일 경과 후, 8일째 자동으로 구매확정</strong> 됩니다.
+                                            <br> 단, 화물/퀵배송 등 배송완료 확인이 불가한 경우에는 판매자가 <strong>상품을 발송 처리한 일로부터 28일 경과 후, 29일째 자동으로 구매확정</strong> 됩니다.</li>
+                                        <li>자동 구매확정시에는 구매 적립 혜택을 받지 못할 수도 있으니 주의하시기 바랍니다.</li>
+                                        <li>OK캐쉬백 카드번호가 오등록 되는 경우 카드번호가 자동삭제되며, 11번가 포인트로 적립이 이루어집니다.</li>
+                                        <li>e쿠폰, 모바일상품권 등 SMS로 발송되는 상품은 구매후 <strong>"배송완료"</strong> 상태이며, 오프라인 매장에서 <strong>서비스 이용 후 자동으로 구매확정</strong> 됩니다.</li>
+                                        <li>티켓11번가 주문건중, 공연일이 있는 경우는 "공연일+1일째", 공연일이 없는 경우는 "배송중+29일째" 자동으로 구매확정 됩니다.</li>
+                                    </ul>
+                                </div>
+                            </div><!-- 2012-07-02 닫기 div추가 -->
+
+                            <div role="tabpanel" aria-labelledby="tabMenuId2" id="tabpanelId2" style="display:none;">
+                                <div class="detail">
+                                    <ul>
+                                        <li><strong>해외배송 상품이란?</strong> 상품명 앞에 <span class="ic_plane"><em>비행기</em></span> 아이콘이 붙은 상품은 해외에서 배송되는 항공 배송 상품입니다.</li>
+                                        <li><strong>항공배송 상품의 경우</strong> 해외에서 상품을 배송하여 배송준비중 상태와 배송중 상태가 다소 길어질 수 있습니다.</li>
+                                        <li><strong>배송준비중</strong> : 판매자가 상품의 재고를 확인하고 국내로 배송하기 위해 준비중인 상태입니다. 구매 대행의 경우 해외 쇼핑몰에 주둔이 되어<br> 현지에서 배송을 위해 물류센터로 이동중인 상태가 포함되어 있어 배송준비중 상태가 약 5~10일 가량 유지될 수 있습니다.</li>
+                                        <li><strong>배송중</strong> : 판매자가 해외에서 상품을 국내로 배송한 상태입니다, 물품발송 이후 해외배송을 통해 국내 도착까지는 약 9~20일 가량 소요 될 수 있습니다.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- //알아두세요 -->
+                    <script type="text/javascript">
+                        function tab_ch(par) {
+                            for (var i = 1; i < 4; i++) {
+                                if (i == par) {
+                                    document.getElementById('tabpanelId' + i).style.display = 'block';
+                                    document.getElementById('tabMenuId' + i).className += ' tab-menu__item--active';
+                                    document.getElementById('tabMenuId' + i).children[0].setAttribute('aria-selected', 'true');
+                                } else {
+                                    document.getElementById('tabpanelId' + i).style.display = 'none';
+                                    document.getElementById('tabMenuId' + i).className = 'tab-menu__item';
+                                    document.getElementById('tabMenuId' + i).children[0].setAttribute('aria-selected', 'false');
+                                }
+                            }
+                        }
+                    </script>
+                    <!-- 주의사항 텍스트 박스
+                    <ul class="box_caution">
+                        <li>배송완료 후 구매확정을 하지 않은 경우, <strong>배송완료 후 7일 후 자동으로 구매확정</strong>됩니다.<br>
+                        단, 배송완료 확인이 불가한 택배사를 통해 배송된 경우 <strong>7일~21일 이후에 자동으로 구매확정</strong> 됩니다.</li>
+                        <li>자동 구매 확정시에는 구매 적립 혜택을 받지 못 할 수도 있으니 주의 하시기 바랍니다.</li>
+                    </ul>
+                    -->
+                    <!-- 배송 순서-->
+                    <dl class="t_deliveryorder">
+                        <dt class="t_deliveryorder_bg">배송진행순서</dt>
+                        <dd>1.입금대기중 - 결제를 완료해 주세요</dd>
+                        <dd>2.결제완료 - 판매자가 주문정보를 확인하기 전입니다.</dd>
+                        <dd>3.배송준비중 - 판매자가 주무을 확인하고 배송을 준비중입니다.</dd>
+                        <dd>4.배송중 - 물품이 발송되어 고객님께 배송중입니다.</dd>
+                        <dd>5.배송완료 - 상품수량후 구매확정을 선택하시면 거래가 종료됩니다.</dd>
+                    </dl>
+                    <!-- //배송 순서 -->
+
+                    <!-- 해외쇼핑 배송안내 제거
+
+                    <dl class="box_globaldeliverGuide">
+                        <dt>해외쇼핑 항공배송 상품 배송안내</dt>
+                        <dd><strong>해외배송 상품이란?</strong> 상품명 앞에 <span class="ic_plane"><em>비행기</em></span> 아이콘이 붙은 상품은 해외에서 배송되는 항공 배송 상품입니다.</dd>
+                        <dd><strong>항공배송 상품의 경우</strong> 해외에서 상품을 배송하여 배송준비중 상태와 배송중 상태가 다소 길어질 수 있습니다.</dd>
+                        <dd><strong>배송준비중</strong> : 판매자가 상품의 재고를 확인하고 국내로 배송하기 위해 준비중인 상태입니다. 구매 대행의 경우 해외 쇼핑몰에 주문이 되어 현지에서 배송을 위해 물류센터로 이동중인 상태가 포함되어 있어 배송준비중 상태가 약 5~10일 가량 유지될 수 있습니다.</dd>
+                        <dd><strong>배송중</strong> : 판매자가 해외에서 상품을 국내로 배송한 상태입니다, 물품발송 이후 해외배송을 통해 국내 도착까지는 약 9~20일 가량 소요 될 수 있습니다.</dd>
+                    </dl>
+                    -->
+                    <!-- // 해외쇼핑 배송안내 -->
+
+
+                    <!-- 주의사항 텍스트 박스 -->
+
+
+
+                    <!-- //핫클릭  -->
+                    <!-- //핫클릭  -->
+                    <iframe src="https://www.11st.co.kr/advert/HotClick.tmall?method=getHotClickList&typGubn=E&areaGubn=O23&isSSL=Y&pageID=%2Fmy11st%2Forder_list" class="ifrm_hotclick_wrap" scrolling="no" frameborder="0" title="포커스클릭 광고 영역"></iframe>
+
+                    <!-- 2012-10-15 배너추가 이동규 -->
+
+
+
+
+
+                    <script language="javascript">
+                        try {
+                            if ( _dsSeverMode ) {
+                                document.write("<div class=\"marT20\">");
+                                document.write("    <iframe src='" + window.document.location.protocol + "//ds.11st.co.kr/NetInsight/html/11st/11st_my/11st_my@underbanner"+getNitmusParam(false)+"' style=width:795px;height:120px; frameborder='0' scrolling='no' title='광고배너'></iframe>");
+                                document.write("</div>");
+                            } else {
+                            }
+                        }catch(e){}
+                    </script>
+
+
+                    <div id="historyW_mytmall" class="historyW_mytmall"></div>
+
+                    <form name="hiddenForm" method="post"></form>
+
+                    <form name="excelForm" method="post">
+                        <input type="hidden" name="shDateFrom">
+                        <input type="hidden" name="shDateTo">
+                        <input type="hidden" name="shPrdNm">
+                    </form>
+                    <iframe name="excelFrame" width="0" height="0"></iframe>
+
+                    <script src='/my11st/pw/js/log/my11stLog2.js'></script>
+                    <script type="text/javascript">
+                        $(document).ready(initDefaultButtonLog);
+
+                        //리스팅 바디에 내용을 채워 넣는다.
+                        function goPageList(pageNumber, pageNumberPendingDone, pageNumberPendingFail) {
+                            //로딩중 이미지 표현 2013.11.20
+                            var loadingTag = "<div class=\"t_center\"><img src=\"/img/browsing/jointbuy/loading.gif\" alt=\"잠시만 기다려주세요. 데이터를 로딩중입니다.\"></div>";
+                            jQuery("#listLoop").html(loadingTag);
+
+                            var frm = document.form1;
+                            var dateFrom = frm.startYY.value + frm.startMM.value + frm.startDD.value;
+                            var dateTo = frm.endYY.value + frm.endMM.value + frm.endDD.value;
+                            var shPrdNm = frm.searchBarPrdNm.value;
+                            if ("주문 상품명을 검색하세요!" == shPrdNm) shPrdNm = "";
+
+                            // 캐시문제로 파라미터에 date값을 넣어줌 2011.05.18 KSY
+                            var nDate = new Date();
+
+                            var url = "/my11st/order/BuyManager.tmall?method=getCancelRequestListAjax";
+                            var param = "type=orderList2nd&pageNumber="+pageNumber+"&rows=10&shDateFrom="+dateFrom+"&shDateTo="+dateTo
+                                +"&ver=02"
+                                +"&shPrdNm="+escape(encodeURIComponent(shPrdNm))
+                                +"&shOrdprdStat=,,,,";
+                            param += "&pageNumberPendingFail=" + pageNumberPendingFail;
+                            param += "&pageNumberPendingDone=" + pageNumberPendingDone;
+
+                            var ajaxCallParam = {
+                                url:url,
+                                data:param,
+                                type:"GET",
+                                beforeSend:function(){
+                                    // 내용
+                                },
+                                success:function(response)
+                                {
+                                    //var listLoop   = document.getElementById("listLoop");
+                                    //listLoop.innerHTML = res;
+                                    jQuery('#listLoop').html(response);
+
+
+
+                                },
+                                error:function(){
+                                    // 내용
+                                    alert('서버와의 통신이 원할하지 않습니다.\n다시 시도해 주십시오.');
+                                },
+                                complete:function(){
+                                    // 내용
+                                }
+                            };
+
+                            // jquery ajax 호출
+                            jQuery.ajax(ajaxCallParam);
+
+                        }
+
+                        function goPendingOrderDonePageList(pageNumber, pageNumberPendingDone, pageNumberPendingFail) {
+                            getPendingOrderList("pendingOrderDoneList", pageNumber, pageNumberPendingDone, pageNumberPendingFail);
+                        }
+
+                        function goPendingOrderFailPageList(pageNumber, pageNumberPendingDone, pageNumberPendingFail) {
+                            getPendingOrderList("pendingOrderFailList", pageNumber, pageNumberPendingDone, pageNumberPendingFail);
+                        }
+
+                        function getPendingOrderList(listType, pageNumber, pageNumberPendingDone, pageNumberPendingFail){
+
+                            var loadingTag = "<div class=\"t_center\"><img src=\"/img/browsing/jointbuy/loading.gif\" alt=\"잠시만 기다려주세요. 데이터를 로딩중입니다.\"></div>";
+                            if(listType == "pendingOrderFailList"){
+                                jQuery('#pendingOrderFaillistLoop').html(loadingTag);
+                            }else if(listType == "pendingOrderDoneList"){
+                                jQuery('#pendingOrderDoneListLoop').html(loadingTag);
+                            }
+
+                            var frm = document.form1;
+                            var dateFrom = frm.startYY.value + frm.startMM.value + frm.startDD.value;
+                            var dateTo = frm.endYY.value + frm.endMM.value + frm.endDD.value;
+                            var shPrdNm = frm.searchBarPrdNm.value;
+                            if ("주문 상품명을 검색하세요!" == shPrdNm) shPrdNm = "";
+                            var nDate = new Date();
+
+                            var url = "/my11st/order/BuyManager.tmall?method=getCancelRequestListAjax";
+                            var param = "type="+listType+ "&rows=5&shDateFrom=" + dateFrom + "&shDateTo=" + dateTo
+                                + "&ver=02"
+                                + "&shPrdNm=" + escape(encodeURIComponent(shPrdNm))
+                                + "&shOrdprdStat=,,,,";
+                            param += "&pageNumberPendingFail=" + pageNumberPendingFail;
+                            param += "&pageNumberPendingDone=" + pageNumberPendingDone;
+                            param += "&pageNumber=" + pageNumber;
+
+                            var ajaxCallParam = {
+                                url: url,
+                                data: param,
+                                type: "GET",
+                                beforeSend: function () {
+                                },
+                                success: function (response) {
+                                    if(listType == "pendingOrderFailList"){
+                                        jQuery('#pendingOrderFaillistLoop').html(response);
+                                    }else if(listType == "pendingOrderDoneList"){
+                                        jQuery('#pendingOrderDoneListLoop').html(response);
+                                    }
+                                },
+                                error: function () {
+                                    alert('서버와의 통신이 원할하지 않습니다.\n다시 시도해 주십시오.');
+                                },
+                                complete: function () {
+                                }
+                            };
+                            jQuery.ajax(ajaxCallParam);
+                        }
+
+                        function switchClaimProcessInfo(clmKind)
+                        {
+                            if (clmKind == "01") 			// 취소안내문구
+                            {
+                                $ID('process01').className="first selected";
+                                $ID('process02').className="";
+                                $ID('process03').className="";
+                            }
+                            else if (clmKind == "02") 		// 반품안내문구
+                            {
+                                $ID('process01').className="";
+                                $ID('process02').className="selected";
+                                $ID('process03').className="";
+                            }
+                            else if (clmKind == "03") 		// 교환안내문구
+                            {
+                                $ID('process01').className="";
+                                $ID('process02').className="";
+                                $ID('process03').className="selected";
+                            }
+
+                        }
+
+
+                        function priceConfirm(){
+                            alert("이벤트가 종료되어 보상내역 확인만 가능합니다.");
+
+                            document.hiddenForm.target = "_blank";
+                            document.hiddenForm.action = "https://www.11st.co.kr/event/event.page?evt=stampEvnt";
+                            document.hiddenForm.submit();
+                        }
+
+
+                        function goHelpMoible(){
+
+                            document.hiddenForm.target = "_blank";
+                            document.hiddenForm.action = "http://help.11st.co.kr/11st/mobile/MobileQnaList.jsp";
+                            document.hiddenForm.submit();
+                        }
+
+                        goPageList("1", "1", "1");
+
+                        goPendingOrderDonePageList("1", "1", "1");
+                        goPendingOrderFailPageList("1", "1", "1");
+
+
+                        //상품상세 레이어 팝업 초기화..
+                        jQuery(document).ready( function() { initOrderRequestLayer(); });
+
+
+                        function setReadList(pageNumber, type)
+                        {
+                            var frm = document.form1;
+
+                            var ordPrdStatChkStr = "";
+                            var dateFrom = frm.startYY.value + frm.startMM.value + frm.startDD.value;
+                            var dateTo = frm.endYY.value + frm.endMM.value + frm.endDD.value;
+                            var shPrdNm = frm.searchBarPrdNm.value;
+                            var agoDate = frm.endYY.value-5  + frm.endMM.value + frm.endDD.value;
+
+                            var forPageFrm = document.forPageFrm;
+                            if ("pendingOrderDoneList" == type){
+                                forPageFrm = document.forPageFrmpendingOrderDoneList;
+                            }else if("pendingOrderFailList" == type){
+                                forPageFrm = document.forPageFrmpendingOrderFailList;
+                            }
+
+                            var ordPrdStatChkArr = getForm().shOrdprdStat;
+
+
+                            for(i=0; i<ordPrdStatChkArr.length; i++)
+                            {
+                                if (i==0)
+                                {
+                                    if (ordPrdStatChkArr[i].checked) ordPrdStatChkStr = ordPrdStatChkArr[i].value;
+                                    else ordPrdStatChkStr = "";
+                                }
+                                else
+                                {
+                                    if (ordPrdStatChkArr[i].checked) ordPrdStatChkStr += "," + ordPrdStatChkArr[i].value;
+                                    else ordPrdStatChkStr += ",";
+                                }
+
+                            }
+                            if(dateFrom < agoDate){ //조회기간 설정시 5년 이내로
+                                alert("구매내역은 구매일자 기준 최근 5년까지만 조회됩니다.");
+                                return;
+                            }
+                            if(shPrdNm == "주문 상품명을 검색하세요!")
+                                shPrdNm = "";
+
+                            // 캐시문제로 파라미터에 date값을 넣어줌 2011.05.18 KSY
+                            var nDate = new Date();
+
+
+                            if ("pendingOrderDoneList" == type){
+                                forPageFrm.pageNumberPendingDone.value = pageNumber;
+                            }else if("pendingOrderFailList" == type){
+                                forPageFrm.pageNumberPendingFail.value = pageNumber;
+                            }else{
+                                forPageFrm.pageNumber.value = pageNumber;
+                            }
+
+                            forPageFrm.shDateFrom.value = dateFrom;
+                            forPageFrm.shDateTo.value 	= dateTo;
+                            forPageFrm.shOrdprdStat.value = ordPrdStatChkStr;
+                            forPageFrm.shPrdNm.value = shPrdNm;
+                            // forPageFrm.nDate.value = nDate.toLocaleString('ko-KR', { timeZone: 'UTC' });
+                            forPageFrm.action = "//buy.11st.co.kr/my11st/order/OrderList.tmall";
+                            forPageFrm.submit();
+                        }
+
+                        function pocnfrmDetailsExcel(){
+                            var excelForm = document.excelForm;
+                            var frm = document.form1;
+
+                            var dateFrom = frm.startYY.value + frm.startMM.value + frm.startDD.value;
+                            var dateTo = frm.endYY.value + frm.endMM.value + frm.endDD.value;
+                            var shPrdNm = frm.searchBarPrdNm.value;
+
+                            // 검색기간 1년이상일 시 시작일자 세팅
+                            if(getDifferentMonthCount(dateFrom, dateTo) > 11){
+                                alert("조회 기간 기준, 최대 1년간 구매확정 주문내역이 다운로드 가능합니다.");
+                                return;
+                            }
+
+                            if ("주문 상품명을 검색하세요!" == shPrdNm) shPrdNm = "";
+
+                            excelForm.shDateFrom.value = dateFrom;
+                            excelForm.shDateTo.value = dateTo;
+                            excelForm.shPrdNm.value = shPrdNm;
+
+                            excelForm.method = "post";
+                            excelForm.action = "//buy.11st.co.kr/my11st/order/BuyManager.tmall?method=pocnfrmDetailsExcel";
+                            excelForm.target = "excelFrame";
+                            excelForm.submit();
+                        }
+
+                        // 두 날짜의 차이(개월수)
+                        function getDifferentMonthCount(time1, time2) {
+
+                            var date1 = toTimeObject(time1);
+                            var date2 = toTimeObject(time2);
+                            var years    = date2.getFullYear() - date1.getFullYear();
+                            var months = date2.getMonth() - date1.getMonth();
+                            var days     = date2.getDate() - date1.getDate();
+
+                            return (years * 12 + months + ( days > 0 ? 0 : -1 ) );
+                        }
+
+                        function toTimeObject(time) { //parseTime(time)
+                            var year  = time.substr(0,4);
+                            var month = time.substr(4,2) - 1; // 1월=0,12월=11
+                            var day   = time.substr(6,2);
+
+                            return new Date(year,month,day);
+                        }
+
+                        function initDefaultButtonLog() {
+                            // 로그 정의서 4. 조회하기 버튼
+                            var searchButtonLogParams =  {
+                                area: 'inquiry_period',
+                                label: 'inquiry',
+                                customBodyParams: [ { name: 'search_keyword', getValue: () => $('#searchBarPrdNm')[0].value } ],
+                            };
+                            my11stLog.setLog('.bt_srh', searchButtonLogParams);
+
+                            // 로그 정의서 5. (구) 도서11번가 주문확인 버튼
+                            var book11OrderConfirmLogParams =  {
+                                area: 'book11_order_confirm',
+                                label: 'btn',
+                            };
+                            my11stLog.setLog('.btn_book11_order_confirm', book11OrderConfirmLogParams);
+
+                            // 로그 정의서 6. 보상신청 관련 버튼
+                            var compensationLogParams =  {
+                                area: 'compensation',
+                                label: 'btn',
+                                customBodyParams: [ { name: 'btn_name', getValue: (button) => button.innerText } ],
+                            };
+                            my11stLog.setLog('.btn_compensation', compensationLogParams);
+
+                            // /my11st/order_list 로그 정의서 21 ~ 23
+                            var informationTabLogParams =  {
+                                area: 'information',
+                            };
+                            my11stLog.setLog('[id^="tabMenuId"]', informationTabLogParams);
+
+                            // /my11st/order_list 26 구매 확정내역 다운로드
+                            var confirmListDownloadBtnLogParams =  {
+                                area: 'fix_order_list',
+                                label: 'download',
+                            };
+                            my11stLog.setLog('.btn_confirm_list_down', confirmListDownloadBtnLogParams);
+                        }
+
+                        function sendSearchRakeLog() {
+                            updateDataLogBodyField('.bt_srh', { search_keyword: $('#searchBarPrdNm')[0].value });
+
+                            rakeLog.sendRakeLog($('.bt_srh')[0], 'click');
+                        }
+                    </script>
+
+                </div>
+                <!-- 마이페이지 컨텐츠 영역 -->
+            </div>
+            <!-- //마이페이지 랩 -->
+
+
+            <!--BODY 내용:E-->
+        </div>
+    </div>
+    <!-- [D] 서비스 종료 안내 팝업, 노출시 .active  클래스 추가 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- //[D] 서비스 종료 안내 팝업 -->
+
+    <!-- 뷰티 클럽 모바일 앱 전용 이벤트 레이어-->
+    <div class="dimmest11" id="beauty_club_layer" role="alertdialog" aria-modal="true" aria-hidden="false" aria-labelledby="ar-t_product_alert_02"><!-- 활성화시 dimmest11_on 클래스 및 html에 dimmest11_set 클래스 추가 -->
+        <div class="dim_layer dialog_style2 alert_type">
+            <div class="dialog_title">
+                <h2 class="title" id="ar-t_product_alert_02">APP 전용 프로모션</h2>
+            </div>
+            <div class="dialog_cont">
+                <p class="text">11번가 APP에서 '뷰티클럽'을 검색하고 이 달의 혜택 받아보세요!</p>
+                <div class="button_box">
+                    <button type="button" class="button_type_01" onclick="closeBeautyClub()">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        /* footer 검색창 추가 */
+        var bFooterSearch = 'Y';
+    </script>
+
+    <div id="footer"></div>
+    <script>
+        pcComm.renderFooter("footer", {
+            "myHistory": true,
+            "footerAd": false,
+
+            "floatingBanner" : true
+
+        });
+    </script>
+
+
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-68494772-1', 'auto');
+
+    </script>
+
+    <!-- Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-P3PMQD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','GA_dataLayer','GTM-P3PMQD');
+    </script>
+    <!-- End Google Tag Manager -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        var uid = "-862168822394875988";
+        var gender = "";
+        var age = "";
+        function callCommonAd(action, url, prdInfo){
+            /*
+             * action : cart, zzim
+             * url : 상품상세 url
+             * prdInfo : json 형태로 전달 받음
+             *  - prdNo : 상품번호
+             * 	- prdNm : 상품명
+             *  - lCtgrNo : 대카테고리번호
+             *  - lCtgrNm : 대카테고리명 (가능여부 판단)
+             *  - mCtgrNo : 중카테고리번호
+             *  - mCtgrNm : 중카테고리명 (가능여부 판단)
+             *  - sCtgrNo : 소카테고리번호
+             *  - sCtgrNm : 소카테고리명 (가능여부 판단)
+             *  - selPrc : 판매가
+             *  - imgUrl : 상품이미지 URL
+             *  - selStatCd : 상품판매상태
+             */
+
+            var _conf = {};
+            try{
+                if ( arguments.length ==  1){
+                    _conf = arguments[0];
+                } else {
+                    _conf.action = action;
+                    _conf.url = url;
+                    _conf.prdInfo = prdInfo;
+                }
+                _conf.uid = uid;
+
+                var obj = JSON.parse(_conf.prdInfo);
+
+                var data = new Object();
+                data.site = "2";
+                data.ref = "";
+                data.ref_cd = "";
+                data.url = checkUndefined(_conf.url);
+
+                if(_conf.action == "cart")
+                    data.action = "basket";
+                else if(_conf.action == "zzim")
+                    data.action = "wish";
+                else
+                    data.action = _conf.action;
+
+                data.mid = _conf.uid;
+                data.channel = "7";
+                data.debug = "1";
+                data.gender = gender;
+                data.age = age;
+
+                var prdArray = new Array();
+                var prdObj = new Object();
+                prdObj.id = checkUndefined(obj.prdNo);
+                prdObj.count = "1";
+                prdObj.c1 = checkCtgr(obj.lCtgrNo, obj.lCtgrNm);
+                prdObj.c2 = checkCtgr(obj.mCtgrNo, obj.mCtgrNm);
+                prdObj.c3 = checkCtgr(obj.sCtgrNo, obj.sCtgrNm);
+                prdObj.c4 = checkCtgr(obj.dCtgrNo, obj.dCtgrNm);
+                prdObj.total_sales = checkUndefined(obj.selPrc);
+                prdObj.title = checkUndefined(obj.prdNm);
+                prdObj.img = checkImgUrl(checkUndefined(obj.imgUrl));
+                if(obj.selStatCd == "103")
+                    prdObj.sales_state = "1";
+                else
+                    prdObj.sales_state = "0";
+
+                prdArray.push(prdObj);
+                data.items = prdArray;
+
+                var param = JSON.stringify(data);
+
+                var img = new Image();
+                img.src = "http://idm.skplanet.com/dcd/log.skp"
+                    + "?data=" + encodeURIComponent(param);
+            }catch(ex){
+
+            }
+
+        };
+
+        function checkCtgr(ctgrNo, ctgrNm){
+            if(typeof ctgrNo == "undefined")
+                return "";
+            else{
+                if(typeof ctgrNm == "undefined")
+                    return ctgrNo;
+                else
+                    return ctgrNo + ":" + ctgrNm;
+            }
+
+        };
+
+        function checkUndefined(obj){
+            if(typeof obj == "undefined")
+                return "";
+            else
+                return obj;
+        };
+
+        function checkImgUrl(url){
+            if(url != ""){
+                if(url.indexOf("http") == -1)
+                    return url = "http://image.11st.co.kr" + url;
+                else
+                    return url;
+            }else
+                return url;
+        }
+
+    </script>
+
+
+
+
+
+
+
+    <script src="//c.011st.com/js/rake/shuttle/Log11stClientSentinelShuttle-2.0.6-94.js" charset='EUC-KR'></script>
+    <script>
+        var rakeLog = (function(rakeLog){
+            var empty = function() {};
+
+            rakeLog.refresh = empty;
+            rakeLog.pageView = empty;
+            rakeLog.sendRakeLog = empty;
+            rakeLog.setEnableLog = empty;
+            rakeLog.scrollHandler = empty;
+            rakeLog.getShuttle = function() {
+                if ( LogClientSentinelShuttle ) {
+                    return new LogClientSentinelShuttle();
+                }
+                return {};
+            }
+
+            return rakeLog;
+        }(window.rakeLog || {}));
+    </script>
+
+
+    <script>
+        var rakeLogPageInfo = {"PageInfo":{"page_id":"/my11st/order_list"},"DataMerge":false,"AppSessionId":"","AppSessionIdXsite":"","DeviceId":"","_$RAKE_ENV":"LIVE","_$RAKE_TOKEN":"871e1b1427359b4f70af57f1b03b1b89becc23d8","_$RAKE_TOKEN_NPI":"19df1ef211ac21741c82322a9ffe739b4f5a1519","Switch":{"ImpMW":true,"ImpPC":true,"LogDisable":false}};
+
+        var RakeLoadScript = function() {
+            var path = '//assets.011st.com/MW/js/rake/v1.2.0/rakeLog-pc.js';
+            try {
+                var element = document.createElement('script');
+                element.src = path;
+                element.charset = 'euc-kr';
+                document.head.appendChild(element);
+            } catch(e) {}
+        }
+
+        if (document.addEventListener) {
+            document.addEventListener("DOMContentLoaded", RakeLoadScript);
+        } else {
+            document.attachEvent("onreadystatechange", function() {
+                if (document.readyState !== "loading") {
+                    RakeLoadScript();
+                }
+            });
+        }
+    </script>
+
+
+
+</div>
+</body>
+<div class="c_modal c_modal_dimmed c_modal_mytmall_end" id="ar-modal-end" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="ar-modal-end-title">
+    <div class="modal_inner">
+        <div class="modal_header">
+            <h2 id="ar-modal-end-title" class="title">서비스 종료 안내</h2>
+        </div>
+        <div class="modal_content">
+            <p>
+                <strong>아마존 머니백 서비스가 8월 15일 (월) 종료될 예정입니다.</strong><br>
+                그동안 아마존 머니백을 이용해 주셔서 감사합니다.
+            </p>
+            <p>
+                [머니백 추천코드 적용 기간]<br>
+                8/15(월)까지 결제완료된 주문 건에 한하여<br>
+                12/31(토)까지 구매확정 완료 시 적용
+            </p>
+            <p>
+                곧 추천인에게 더 큰 혜택을 드리는<br>
+                새로워진 아마존 머니백 서비스가 시작될 예정입니다.<br>
+                많은 이용 부탁드립니다. 감사합니다.
+            </p>
+        </div>
+        <p class="modal_footer">
+            <button type="button" class="confirm modal_close">확인</button>
+        </p>
+        <p class="modal_close"><button type="button">닫기</button></p>
+    </div>
+</div>
+</html>
+<script type="text/javascript">
+    $('.c_modal .modal_close').click(function(e){
+        $(this).closest('.c_modal').removeClass('active');
+
+        var expire = new Date();
+        expire.setTime(expire.getTime() + 60 * 24 * 60 * 1000);
+        document.cookie = "arModalEnd=true; path=/; domain=" + document.domain + "; expires=" + expire.toGMTString();
+    });
+</script>

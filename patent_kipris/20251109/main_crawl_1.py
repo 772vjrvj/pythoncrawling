@@ -22,7 +22,7 @@ import threading
 # =========================
 # 설정
 # =========================
-EXCEL_PATH = "data_new_20251109_3.xlsx"
+EXCEL_PATH = "요청2.xlsx"
 URL = "https://www.kipris.or.kr/kpat/resulta.do"
 NUM_PER_PAGE = 90
 REQUEST_TIMEOUT = 30  # sec

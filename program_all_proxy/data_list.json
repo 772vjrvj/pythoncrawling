@@ -1,0 +1,787 @@
+{
+  "0_1020060050995": {
+    "lst_dspsl_desc": "등록결정(일반)",
+    "applno": "1020060050995",
+    "appl_dt": "20060607",
+    "pubno": " ",
+    "pub_dt": "20130605",
+    "opnno": "1020070117157",
+    "opn_dt": "20071212",
+    "rgstno": "1012719330000",
+    "rgst_dt": "20130530",
+    "org_ap_rgst_desc": null,
+    "org_ap_rgstno": " ",
+    "org_ap_rgst_dt": " ",
+    "invnt_ttl": "피로 시험기를 이용한 용접구조물의 피로 특성 평가방법",
+    "invnt_ttl_eng": "METHOD FOR EVALUATING FATIGUE PROPERTY OF WELDING STRUCTURE USING FATIGUE TESTING MACHINE",
+    "exmn_dmnd_dt": "Y(2011.06.07)",
+    "bs_itm_cnt": "1",
+    "trl_dmnd_stcd": "",
+    "rgst_stcd": "소멸 (등록료불납)",
+    "retro_tpcd": "국내출원/신규",
+    "laps": "",
+    "trns_sbmt_dt": " ",
+    "ltrt_id_cd": "B1",
+    "familyJson": "",
+    "opFamilyCnt": "0",
+    "docFamilyCnt": "0",
+    "rgsterInfo": null,
+    "pub_reg": "",
+    "hangjung_nm": "등록특허(등록료불납)",
+    "abstractText": "<summary><P align=\"JUSTIFIED\" indent=\"14\">본 발명은 피로 시험기를 이용한 용접구조물의 피로 특성 평가방법을 제공한다.</P> <P align=\"JUSTIFIED\" indent=\"14\">상기 피로 시험기를 이용한 용접구조물의 피로 특성 평가방법은, 스트레인게이지가 부착된 용접구조물의 시험편을 고정체에 고정하는 단계와, 실린더와 시험편의 중심이 맞추어지도록 배치하여 피로시험으로 준비하는 단계와, 컴퓨터에 입력된 시험조건에 따른 콘트롤러의 제어에 의해 실린더가 동작하여 상기 시험편에 수평방향으로 반복적인 하중을 가하거나, 상부고정대에 의해 실린더를 수직으로 설치하여 상기 시험편에 수직방향으로 반복적인 하중을 가하며, 상기 실린더의 일단에 설치된 거리센서에 의해서 상기 실린더의 이동거리가 제어되는 실린더 동작단계;와, 상기 실린더에 의해 시험편에 가해지는 힘의 변화량을 센서에 의해 측정하고, 실린더의 하중에 의한 시험편의 변화를 시험편에 부착된 스트레인게이지를 통해 측정하여, 시험결과 데이터를 저장 및 모니터링 하는 단계를 포함하되, 상기 실린더 동작단계는 상기 실린더의 반복적인 하중에 의해 상기 시험편의 용접부분이 탈락되거나 시험편의 파단이 발생하면 콘트롤러에 의해 실린더의 동작을 중지시키며, 상기 데이터저장 및 모니터링 단계는 상기 실린더의 동작이 중지되면 중지시의 시험결과 데이터를 저장 및 모니터링 하도록 구성될 수 있다. </P> ",
+    "frontClaimText": "<P align=\"JUSTIFIED\" indent=\"14\">스트레인게이지가 부착된 용접구조물의 시험편을 고정체에 고정하는 단계;</P>\n<P align=\"JUSTIFIED\" indent=\"14\">실린더와 시험편의 중심이 맞추어지도록 배치하여 피로시험으로 준비하는 단계;</P>\n<P align=\"JUSTIFIED\" indent=\"14\">컴퓨터에 입력된 시험조건에 따른 콘트롤러의 제어에 의해 실린더가 동작하여 상기 시험편에 수평방향으로 반복적인 하중을 가하거나, 상부고정대에 의해 실린더를 수직으로 설치하여 상기 시험편에 수직방향으로 반복적인 하중을 가하며, 상기 실린더의 일단에 설치된 거리센서에 의해서 상기 실린더의 이동거리가 제어되는 실린더 동작단계; 및,</P>\n<P align=\"JUSTIFIED\" indent=\"14\">상기 실린더에 의해 시험편에 가해지는 힘의 변화량을 센서에 의해 측정하고, 실린더의 하중에 의한 시험편의 변화를 시험편에 부착된 스트레인게이지를 통해 측정하여, 시험결과 데이터를 저장 및 모니터링 하는 단계;를 포함하되,</P>\n<P align=\"JUSTIFIED\" indent=\"14\">상기 실린더 동작단계는 상기 실린더의 반복적인 하중에 의해 상기 시험편의 용접부분이 탈락되거나 시험편의 파단이 발생하면 콘트롤러에 의해 실린더의 동작을 중지시키며, 상기 데이터저장 및 모니터링 단계는 상기 실린더의 동작이 중지되면 중지시의 시험결과 데이터를 저장 및 모니터링 하는 피로 시험기를 이용한 용접구조물의 피로 특성 평가방법.</P>\n</Claim>\n",
+    "lcns_aprv_hope_fg": "0",
+    "tech_trans_hope_fg": "0",
+    "tech_ld_hope_fg": "0",
+    "abstmap": {
+      "drwCont": "",
+      "abst1": "  CONSTITUTION: In a method for evaluating fatigue fracture of a welded structure(1), a fatigue fracture tester comprises the welded structure, a strain gauge, a cylinder(3), a distance sensor, a sensor(6) and a controller. The welded structure is mounted on a fixing body(8) attached to a base(2). The strain gauge is attached to the welded structure. The cylinder exerts load to the welded structure vertically or horizontally. The distance sensor is configured to one end of the cylinder to measure distance to the cylinder. The sensor is mounted to the other end of the cylinder to detect status of the welded structure. The controller controls and monitors the cylinder after the sensor examines the welded structure. A fixing body enables vertical and horizontal fatigue fracture test directly. Data on fatigue fracture is obtained automatically via the measuring device, when the welded structure is broken.",
+      "abst0": " PURPOSE: A method for evaluating fatigue fracture of a welded structure is provided to measure a breaking point and stress change with regard to the welded structure according to repeated load applied to the welded structure by including a controller and a sensor.",
+      "abst2": "  copyright KIPO 2008 "
+    },
+    "unexaminedFullTextFg": "Y",
+    "examinedFullTextFg": "Y",
+    "facsimileUnExFg": "N",
+    "facsimileExFg": "N",
+    "correctionFg": "N",
+    "rgstInfoFg": "Y",
+    "trl_fg": "N",
+    "unexFileKindCd": "S10221",
+    "unexCaseNo": "7",
+    "exFileKindCd": "S10221",
+    "exCaseNo": "7",
+    "ipclist": [
+      {
+        "clss_cd": "G01N 3/32",
+        "detail_cd": "",
+        "ver_dt": "2006.01.01"
+      }
+    ],
+    "cpclist": [
+      {
+        "cpc_cd": "G01N 3/32",
+        "ver_dt": "(2020.05)"
+      },
+      {
+        "cpc_cd": "G01N 2203/0073",
+        "ver_dt": "(2013.01)"
+      },
+      {
+        "cpc_cd": "G01N 2203/0296",
+        "ver_dt": "(2013.01)"
+      },
+      {
+        "cpc_cd": "G01N 2203/0005",
+        "ver_dt": "(2013.01)"
+      }
+    ],
+    "familylist": [
+      {
+        "reff_applno": null,
+        "tb_kp10Fg": "N",
+        "ltrtno": "",
+        "fmly_cntry_cd": "",
+        "publ_key_link": "",
+        "docdbnum": "",
+        "fmly_link_yn": "",
+        "kpat_applno": "",
+        "nationNameKor": "",
+        "nationNameEng": "",
+        "fmly_pubno_epo": "",
+        "pat_tpcd": "",
+        "check_double": "",
+        "tbkind": "",
+        "nation_Code": "",
+        "fmly_appl_kind": "",
+        "applno": "",
+        "appl_dt": "",
+        "opnno": "",
+        "opn_dt": "",
+        "rgstno": "",
+        "rgst_dt": "",
+        "pubno": "",
+        "pub_dt": ""
+      }
+    ],
+    "dsgnlist": [],
+    "applicantlist": [
+      {
+        "nm_kor_long": "포스코홀딩스 주식회사",
+        "nm_eng_long": "POSCO Holdings Inc.",
+        "apagt_addr": "경상북도 포항시 남구...",
+        "natl_nm": "KR",
+        "apagt_cd": "119980040765",
+        "brgno": "506-81-00017",
+        "rrn": "174611-0000741"
+      }
+    ],
+    "inventorlist": [
+      {
+        "inv_name": "이재호",
+        "inv_name_eng": "LEE Jae-Ho",
+        "inv_addr": "경상북도 포항시 남구...",
+        "natl_nm": "대한민국",
+        "invntr_cd": null,
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      },
+      {
+        "inv_name": "권혁선",
+        "inv_name_eng": "KWON Hyuk Sun",
+        "inv_addr": "경상북도 포항시 남구...",
+        "natl_nm": "대한민국",
+        "invntr_cd": null,
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      },
+      {
+        "inv_name": "한상빈",
+        "inv_name_eng": "HAN Sang Bin",
+        "inv_addr": "경상북도 포항시 남구...",
+        "natl_nm": "대한민국",
+        "invntr_cd": null,
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      }
+    ],
+    "agentlist": [
+      {
+        "nm_kor_long": "특허법인씨엔에스(유)",
+        "nm_eng_long": "C&amp;S Patent and Law Office",
+        "apagt_addr": "서울 강남구 언주로 **길 **, 대림아크로텔 *층(도곡동)",
+        "natl_nm": "KR",
+        "apagt_cd": "920031000651",
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      }
+    ],
+    "patenteelist": [
+      {
+        "nm_kor_long": "포스코홀딩스 주식회사",
+        "patentee_addr": "경상북도 포항시 남구...",
+        "natl_nm": "대한민국",
+        "brgno": "506-81-00017",
+        "rrn": "174611-0000741"
+      }
+    ],
+    "prioritylist": [],
+    "claimlist": [
+      {
+        "seq": "1",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"14\">스트레인게이지가 부착된 용접구조물의 시험편을 고정체에 고정하는 단계;</P>\n<P align=\"JUSTIFIED\" indent=\"14\">실린더와 시험편의 중심이 맞추어지도록 배치하여 피로시험으로 준비하는 단계;</P>\n<P align=\"JUSTIFIED\" indent=\"14\">컴퓨터에 입력된 시험조건에 따른 콘트롤러의 제어에 의해 실린더가 동작하여 상기 시험편에 수평방향으로 반복적인 하중을 가하거나, 상부고정대에 의해 실린더를 수직으로 설치하여 상기 시험편에 수직방향으로 반복적인 하중을 가하며, 상기 실린더의 일단에 설치된 거리센서에 의해서 상기 실린더의 이동거리가 제어되는 실린더 동작단계; 및,</P>\n<P align=\"JUSTIFIED\" indent=\"14\">상기 실린더에 의해 시험편에 가해지는 힘의 변화량을 센서에 의해 측정하고, 실린더의 하중에 의한 시험편의 변화를 시험편에 부착된 스트레인게이지를 통해 측정하여, 시험결과 데이터를 저장 및 모니터링 하는 단계;를 포함하되,</P>\n<P align=\"JUSTIFIED\" indent=\"14\">상기 실린더 동작단계는 상기 실린더의 반복적인 하중에 의해 상기 시험편의 용접부분이 탈락되거나 시험편의 파단이 발생하면 콘트롤러에 의해 실린더의 동작을 중지시키며, 상기 데이터저장 및 모니터링 단계는 상기 실린더의 동작이 중지되면 중지시의 시험결과 데이터를 저장 및 모니터링 하는 피로 시험기를 이용한 용접구조물의 피로 특성 평가방법.</P>\n</Claim>\n"
+      },
+      {
+        "seq": "2",
+        "claim_text": "<AmendStatus status=\"D\">삭제</AmendStatus></Claim>"
+      }
+    ],
+    "hangjunglist": [
+      {
+        "rsno": "1-1-2006-0399918-43",
+        "rs_dt": "2006.06.07",
+        "rs_doc_nm": "특허출원서",
+        "rs_doc_nm_eng": "Patent Application",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "1-1-2011-0367897-40",
+        "rs_dt": "2011.05.18",
+        "rs_doc_nm": "[대리인선임]대리인(대표자)에 관한 신고서",
+        "rs_doc_nm_eng": "[Appointment of Agent] Report on Agent (Representative)",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "1-1-2011-0424036-38",
+        "rs_dt": "2011.06.07",
+        "rs_doc_nm": "[심사청구]심사청구(우선심사신청)서",
+        "rs_doc_nm_eng": "[Request for Examination] Request for Examination (Request for Preferential Examination)",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "9-5-2013-0024575-70",
+        "rs_dt": "2013.01.14",
+        "rs_doc_nm": "의견제출통지서",
+        "rs_doc_nm_eng": "Notification of reason for refusal",
+        "cd_nm": "발송처리완료 (Completion of Transmission) "
+      },
+      {
+        "rsno": "1-1-2013-0222173-72",
+        "rs_dt": "2013.03.14",
+        "rs_doc_nm": "[명세서등 보정]보정서",
+        "rs_doc_nm_eng": "[Amendment to Description, etc.] Amendment",
+        "cd_nm": "보정승인간주 (Regarded as an acceptance of amendment) "
+      },
+      {
+        "rsno": "1-1-2013-0222172-26",
+        "rs_dt": "2013.03.14",
+        "rs_doc_nm": "[거절이유 등 통지에 따른 의견]의견(답변, 소명)서",
+        "rs_doc_nm_eng": "[Opinion according to the Notification of Reasons for Refusal] Written Opinion(Written Reply, Written Substantiation)",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "9-5-2013-0340831-98",
+        "rs_dt": "2013.05.20",
+        "rs_doc_nm": "등록결정서",
+        "rs_doc_nm_eng": "Decision to grant",
+        "cd_nm": "발송처리완료 (Completion of Transmission) "
+      },
+      {
+        "rsno": "4-1-2018-5077322-80",
+        "rs_dt": "2018.04.30",
+        "rs_doc_nm": "출원인정보변경(경정)신고서",
+        "rs_doc_nm_eng": "Notification of change of applicant's information",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "4-1-2019-5200802-82",
+        "rs_dt": "2019.09.25",
+        "rs_doc_nm": "출원인정보변경(경정)신고서",
+        "rs_doc_nm_eng": "Notification of change of applicant's information",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "4-1-2019-5204006-48",
+        "rs_dt": "2019.09.30",
+        "rs_doc_nm": "출원인정보변경(경정)신고서",
+        "rs_doc_nm_eng": "Notification of change of applicant's information",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "4-1-2022-5183575-50",
+        "rs_dt": "2022.08.04",
+        "rs_doc_nm": "특허고객번호 정보변경(경정)신고서·정정신고서",
+        "rs_doc_nm_eng": " ",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "4-1-2023-5014897-62",
+        "rs_dt": "2023.01.18",
+        "rs_doc_nm": "특허고객번호 정보변경(경정)신고서·정정신고서",
+        "rs_doc_nm_eng": " ",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "4-1-2023-5291370-98",
+        "rs_dt": "2023.11.07",
+        "rs_doc_nm": "특허고객번호 정보변경(경정)신고서·정정신고서",
+        "rs_doc_nm_eng": " ",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "4-1-2025-5238833-17",
+        "rs_dt": "2025.08.27",
+        "rs_doc_nm": "특허고객번호 정보변경(경정)신고서·정정신고서",
+        "rs_doc_nm_eng": " ",
+        "cd_nm": "수리 (Accepted) "
+      }
+    ],
+    "precedenceList": [],
+    "docfamilylist": [],
+    "opfamilylist": [],
+    "intergratedList": [],
+    "trlList": [],
+    "correctionList": [],
+    "extList": [],
+    "intnlB": {
+      "intnl_applno": null,
+      "intnl_appl_dt": null,
+      "intnl_opnno": null,
+      "intnl_opn_dt": null,
+      "publ_key": null
+    },
+    "frontDrawB": null,
+    "existTechSelInfo": false,
+    "techSelInfo": null,
+    "extFg": "N",
+    "rndInfolist": [],
+    "doiinfoFg": "Y",
+    "quotationlist": [
+      {
+        "std_applno": "1019830004498",
+        "cntry_nm": "대한민국",
+        "cntry_cd": "KR",
+        "ltrtno": "1019850001613",
+        "ctltr_cd": "B1",
+        "pub_dt": "1985.10.24",
+        "ttl": "대형 구조물용 피로 시험기",
+        "ipc": "G01N 3/36",
+        "appl_dt": ""
+      },
+      {
+        "std_applno": "1020040023632",
+        "cntry_nm": "대한민국",
+        "cntry_cd": "KR",
+        "ltrtno": "1020050098414",
+        "ctltr_cd": "A",
+        "pub_dt": "2005.10.12",
+        "ttl": "교차 스폿 용접된 강판의 피로 특성 평가 방법",
+        "ipc": "G01N 3/08",
+        "appl_dt": ""
+      }
+    ],
+    "quotedlist": [
+      {
+        "std_applno": "",
+        "cntry_nm": "대한민국",
+        "cntry_cd": "KR",
+        "ltrtno": "1020120100837",
+        "ctltr_cd": "",
+        "pub_dt": "",
+        "ttl": "연속주조장치의 몰드 폭가변 유격 측정 장치 및 방법",
+        "ipc": "B22D 11/16",
+        "appl_dt": "2012.09.12"
+      },
+      {
+        "std_applno": "",
+        "cntry_nm": "대한민국",
+        "cntry_cd": "KR",
+        "ltrtno": "1020170068555",
+        "ctltr_cd": "",
+        "pub_dt": "",
+        "ttl": "커넥팅 로드의 파단 시험 시스템",
+        "ipc": "G01N 3/10",
+        "appl_dt": "2017.06.01"
+      }
+    ],
+    "microlist": [],
+    "distlist": [],
+    "rginList": [
+      {
+        "inv_name": "",
+        "inv_name_eng": "",
+        "inv_addr": "",
+        "natl_nm": "",
+        "invntr_cd": "",
+        "name": "이재호",
+        "name_eng": null,
+        "code": null,
+        "addr": "경상북도 포항시 남구...",
+        "addr_eng": null
+      },
+      {
+        "inv_name": "",
+        "inv_name_eng": "",
+        "inv_addr": "",
+        "natl_nm": "",
+        "invntr_cd": "",
+        "name": "권혁선",
+        "name_eng": null,
+        "code": null,
+        "addr": "경상북도 포항시 남구...",
+        "addr_eng": null
+      },
+      {
+        "inv_name": "",
+        "inv_name_eng": "",
+        "inv_addr": "",
+        "natl_nm": "",
+        "invntr_cd": "",
+        "name": "한상빈",
+        "name_eng": null,
+        "code": null,
+        "addr": "경상북도 포항시 남구...",
+        "addr_eng": null
+      }
+    ],
+    "rgagList": [
+      {
+        "nm_kor_long": "",
+        "nm_eng_long": "",
+        "apagt_addr": "",
+        "natl_nm": "",
+        "apagt_cd": "",
+        "name": "특허법인씨엔에스(유)",
+        "name_eng": "C&amp;S Patent and Law Office",
+        "code": "920031000651",
+        "addr": "서울 강남구 언주로 **길 **, 대림아크로텔 *층(도곡동)",
+        "addr_eng": "*th Floor, Daelim Acrotel, ** Eonju-ro **-gil, Gangnam-Gu, Seoul, ***-***, Korea"
+      }
+    ]
+  },
+  "1_1020050089980": {
+    "lst_dspsl_desc": "등록결정(일반)",
+    "applno": "1020050089980",
+    "appl_dt": "20050927",
+    "pubno": " ",
+    "pub_dt": "20120830",
+    "opnno": "1020070035294",
+    "opn_dt": "20070330",
+    "rgstno": "1011764520000",
+    "rgst_dt": "20120817",
+    "org_ap_rgst_desc": null,
+    "org_ap_rgstno": " ",
+    "org_ap_rgst_dt": " ",
+    "invnt_ttl": "냉동사이클",
+    "invnt_ttl_eng": "REFRIGERATING CYCLE",
+    "exmn_dmnd_dt": "Y(2010.07.05)",
+    "bs_itm_cnt": "6",
+    "trl_dmnd_stcd": "",
+    "rgst_stcd": "소멸 (등록료불납)",
+    "retro_tpcd": "국내출원/신규",
+    "laps": "",
+    "trns_sbmt_dt": " ",
+    "ltrt_id_cd": "B1",
+    "familyJson": "",
+    "opFamilyCnt": "0",
+    "docFamilyCnt": "0",
+    "rgsterInfo": null,
+    "pub_reg": "",
+    "hangjung_nm": "등록특허(등록료불납)",
+    "abstractText": "<summary><P align=\"JUSTIFIED\" indent=\"0\">     본 발명은 이산화 탄소를 사용하는 냉동사이클에 관한 것으로, 보다 상세하게는  본 발명에 따른 냉동사이클은 냉매를 압축하는 압축기와, 상기 압축기에서 압축된 냉매를 외부와 열교환시키면서 응축시키는 응축기와, 고압의 냉매를 저압의 냉매로 팽창시키는 팽창기와, 상기 팽창된 냉매를 외부와 열교환시키면서 증발시키는 증발기가 밀폐사이클을 이루도록 연결된 냉동사이클에 있어서, 상기 압축기는 고정 스크롤과 회전 스크롤이 맞물려 압축실을 형성하는 스크롤 압축기이고 또한 상기 팽창기 역시 고정 스크롤과 회전 스크롤이 맞물려 팽창실을 형성하는 스크롤 팽창기로 상기 스크롤 압축기와 상기 스크롤 팽창기는 하나의 하우징 내부의 양측에 고정 설치되어 각각 회전축으로 연결되어 상기 스크롤 팽창기의 출력을 이용하여 압축일을 얻도록 하여 고효율,저소음,저진동 소형 및 경량 특성을 얻을 수 있는 냉동사이클을 제공하는 것을 목적으로 한다. </P> <BR></BR>",
+    "frontClaimText": "<P align=\"JUSTIFIED\" indent=\"0\">     냉매를 압축하는 압축기와, 상기 압축기에서 압축된 냉매를 외부와 열교환시키면서 응축시키는 응축기와, 고압의 냉매를 저압의 냉매로 팽창시키는 팽창기와, 상기 팽창된 냉매를 외부와 열교환시키면서 증발시키는 증발기가 밀폐사이클을 이루도록 연결된 냉동사이클에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">     상기 압축기는 고정 스크롤과 회전 스크롤이 맞물려 압축실을 형성하는 스크롤 압축기이고 또한 상기 팽창기 역시 고정 스크롤과 회전 스크롤이 맞물려 팽창실을 형성하는 스크롤 팽창기이며,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">\t상기 스크롤 압축기와 상기 스크롤 팽창기는 하나의 하우징 내부의 양측에 고정 설치되어 각각 회전축으로 연결되고</P>\n<P align=\"JUSTIFIED\" indent=\"0\">\t상기 압축기의 상기 고정스크롤과 상기 회전스크롤, 상기팽창기의 상기 고정스크롤과 상기회전스크롤이 각각 서로 분리되는 것을 방지하기 위해 트러스트력을 지지하도록 상기 회전축이 관통되는 메인프레임을 포함하며,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">\t상기 스크롤 팽창기의 출력을 이용하여 압축 일을 얻는 것을 특징으로 하는 냉동사이클.  </P>\n</Claim>\n",
+    "lcns_aprv_hope_fg": "0",
+    "tech_trans_hope_fg": "0",
+    "tech_ld_hope_fg": "0",
+    "abstmap": {
+      "drwCont": "",
+      "abst1": "  CONSTITUTION: A refrigerating cycle includes a compressor, a condenser, an expander and an evaporator. The compressor is a scroll compressor forming a compression chamber(50a) with a fixed scroll(20b) and a rotary scroll(30b). The expander is a scroll expander forming an expansion chamber(50b) with the fixed scroll and the rotary scroll. The scroll compressor and the scroll compressor are fixed to both sides of the interior of one housing(11). The scroll compressor and the scroll expander are connected by rotational shafts. A compression work is obtained by using the output of the scroll expander.",
+      "abst0": " PURPOSE: A refrigerating cycle is provided to form an expander integrally in an airtight container to transfer an expansion power to a compressor, thereby realizing high efficiency, low noise and low vibration.",
+      "abst2": "  copyright KIPO 2007 "
+    },
+    "unexaminedFullTextFg": "Y",
+    "examinedFullTextFg": "Y",
+    "facsimileUnExFg": "N",
+    "facsimileExFg": "N",
+    "correctionFg": "N",
+    "rgstInfoFg": "Y",
+    "trl_fg": "N",
+    "unexFileKindCd": "S10231,S10221",
+    "unexCaseNo": "2",
+    "exFileKindCd": "S10221",
+    "exCaseNo": "7",
+    "ipclist": [
+      {
+        "clss_cd": "F25B 1/04",
+        "detail_cd": "",
+        "ver_dt": "2006.01.01"
+      },
+      {
+        "clss_cd": "F25B 9/00",
+        "detail_cd": "",
+        "ver_dt": "2022.01.01"
+      },
+      {
+        "clss_cd": "F25B 1/10",
+        "detail_cd": "",
+        "ver_dt": "2006.01.01"
+      }
+    ],
+    "cpclist": [
+      {
+        "cpc_cd": "F25B 1/04",
+        "ver_dt": "(2013.01)"
+      },
+      {
+        "cpc_cd": "F25B 9/008",
+        "ver_dt": "(2013.01)"
+      },
+      {
+        "cpc_cd": "F25B 1/10",
+        "ver_dt": "(2013.01)"
+      },
+      {
+        "cpc_cd": "F25B 2309/06",
+        "ver_dt": "(2022.01)"
+      }
+    ],
+    "familylist": [
+      {
+        "reff_applno": null,
+        "tb_kp10Fg": "N",
+        "ltrtno": "",
+        "fmly_cntry_cd": "",
+        "publ_key_link": "",
+        "docdbnum": "",
+        "fmly_link_yn": "",
+        "kpat_applno": "",
+        "nationNameKor": "",
+        "nationNameEng": "",
+        "fmly_pubno_epo": "",
+        "pat_tpcd": "",
+        "check_double": "",
+        "tbkind": "",
+        "nation_Code": "",
+        "fmly_appl_kind": "",
+        "applno": "",
+        "appl_dt": "",
+        "opnno": "",
+        "opn_dt": "",
+        "rgstno": "",
+        "rgst_dt": "",
+        "pubno": "",
+        "pub_dt": ""
+      }
+    ],
+    "dsgnlist": [],
+    "applicantlist": [
+      {
+        "nm_kor_long": "삼성전자주식회사",
+        "nm_eng_long": "SAMSUNG ELECTRONICS CO., LTD.",
+        "apagt_addr": "경기도 수원시 영통구...",
+        "natl_nm": "KR",
+        "apagt_cd": "119981042713",
+        "brgno": "124-81-00998",
+        "rrn": "130111-0006246"
+      }
+    ],
+    "inventorlist": [
+      {
+        "inv_name": "조성욱",
+        "inv_name_eng": "CHO,Sung Oug",
+        "inv_addr": "서울특별시 광진구...",
+        "natl_nm": "대한민국",
+        "invntr_cd": null,
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      },
+      {
+        "inv_name": "조경래",
+        "inv_name_eng": "CHO Kyung Rae",
+        "inv_addr": "경기도 수원시 영통구...",
+        "natl_nm": "대한민국",
+        "invntr_cd": null,
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      }
+    ],
+    "agentlist": [
+      {
+        "nm_kor_long": "특허법인세림",
+        "nm_eng_long": "SELIM INTELLECTUAL PROPERTY LAW FIRM",
+        "apagt_addr": "서울특별시 서초구 강남대로 ***, **층, **층(서초동, 태우빌딩)",
+        "natl_nm": "대한민국",
+        "apagt_cd": "920111000418",
+        "name": "",
+        "name_eng": "",
+        "code": "",
+        "addr": "",
+        "addr_eng": ""
+      }
+    ],
+    "patenteelist": [
+      {
+        "nm_kor_long": "삼성전자주식회사",
+        "patentee_addr": "경기도 수원시 영통구...",
+        "natl_nm": "대한민국",
+        "brgno": "124-81-00998",
+        "rrn": "130111-0006246"
+      }
+    ],
+    "prioritylist": [],
+    "claimlist": [
+      {
+        "seq": "1",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"0\">     냉매를 압축하는 압축기와, 상기 압축기에서 압축된 냉매를 외부와 열교환시키면서 응축시키는 응축기와, 고압의 냉매를 저압의 냉매로 팽창시키는 팽창기와, 상기 팽창된 냉매를 외부와 열교환시키면서 증발시키는 증발기가 밀폐사이클을 이루도록 연결된 냉동사이클에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">     상기 압축기는 고정 스크롤과 회전 스크롤이 맞물려 압축실을 형성하는 스크롤 압축기이고 또한 상기 팽창기 역시 고정 스크롤과 회전 스크롤이 맞물려 팽창실을 형성하는 스크롤 팽창기이며,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">\t상기 스크롤 압축기와 상기 스크롤 팽창기는 하나의 하우징 내부의 양측에 고정 설치되어 각각 회전축으로 연결되고</P>\n<P align=\"JUSTIFIED\" indent=\"0\">\t상기 압축기의 상기 고정스크롤과 상기 회전스크롤, 상기팽창기의 상기 고정스크롤과 상기회전스크롤이 각각 서로 분리되는 것을 방지하기 위해 트러스트력을 지지하도록 상기 회전축이 관통되는 메인프레임을 포함하며,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">\t상기 스크롤 팽창기의 출력을 이용하여 압축 일을 얻는 것을 특징으로 하는 냉동사이클.  </P>\n</Claim>\n"
+      },
+      {
+        "seq": "2",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"0\">     제1항에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">     상기 냉동사이클에서 냉매는 이산화탄소를 사용하는 것을 특징으로 하는 냉동사이클.</P>\n</Claim>\n"
+      },
+      {
+        "seq": "3",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"0\">    제1항에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">     상기 회전축의 일단은 상기 스크롤 팽창기에 형성된 회전 스크롤과 연결되고 타단은 상기 스크롤 압축기에 형성된 회전 스크롤에 연결되어 동력을  전달하는 것을 특징으로 하는 냉동사이클.</P>\n</Claim>\n"
+      },
+      {
+        "seq": "4",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"0\">     제1항에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">   상기 스크롤 팽창기의 출력을 이용하여 압축 일을 얻는 스크롤 압축기에서 압축된 냉매를 다시 고온 고압의 냉매로 압축시키는 제2 압축기를 더 포함하는 것을  특징으로 하는 냉동사이클.   </P>\n</Claim>\n"
+      },
+      {
+        "seq": "5",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"0\">     제4항에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">     상기 제2압축기는 스테이터 및 로터로 이루어진 구동모터와, 상기 구동모터에 의해 회전되는 구동축과, 상기 구동축의 회전을 통해 선회 스크롤이 고정 스크롤 내에서 선회 운동하면서 흡입된 냉매를 압축하는 스크롤 압축기인 것을 특징으로 하는 냉동사이클. </P>\n</Claim>\n"
+      },
+      {
+        "seq": "6",
+        "claim_text": "<P align=\"JUSTIFIED\" indent=\"0\">     제 1항에 있어서,</P>\n<P align=\"JUSTIFIED\" indent=\"0\">     상기 회전축의 양단에 슬라이드 부시를 연결하여 선회 스크롤의 랩(wrap)과 팽창 스크롤의 랩(wrap) 사이에 간극을 형성하도록 하여 운전 냉매 유량이 적어서 스크롤 팽창기 출력이 충분하지 않을 경우에도 팽창실 내부에 냉매를 적절한 양으로 흘려 보낼 수 있도록 간극을 형성한 것을 특징으로 하는 냉동사이클.</P>\n</Claim>"
+      }
+    ],
+    "hangjunglist": [
+      {
+        "rsno": "1-1-2005-0542487-43",
+        "rs_dt": "2005.09.27",
+        "rs_doc_nm": "특허출원서",
+        "rs_doc_nm_eng": "Patent Application",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "1-1-2010-0358167-94",
+        "rs_dt": "2010.06.03",
+        "rs_doc_nm": "[대리인해임]대리인(대표자)에 관한 신고서",
+        "rs_doc_nm_eng": "[Dismissal of Sub-agent] Report on Agent (Representative)",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "1-1-2010-0432421-12",
+        "rs_dt": "2010.07.05",
+        "rs_doc_nm": "[심사청구]심사청구(우선심사신청)서",
+        "rs_doc_nm_eng": "[Request for Examination] Request for Examination (Request for Preferential Examination)",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "9-1-9999-9999999-89",
+        "rs_dt": "2012.01.12",
+        "rs_doc_nm": "선행기술조사의뢰서",
+        "rs_doc_nm_eng": "Request for Prior Art Search",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "9-1-2012-0011222-47",
+        "rs_dt": "2012.02.17",
+        "rs_doc_nm": "선행기술조사보고서",
+        "rs_doc_nm_eng": "Report of Prior Art Search",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "9-5-2012-0099506-31",
+        "rs_dt": "2012.02.21",
+        "rs_doc_nm": "의견제출통지서",
+        "rs_doc_nm_eng": "Notification of reason for refusal",
+        "cd_nm": "발송처리완료 (Completion of Transmission) "
+      },
+      {
+        "rsno": "1-1-2012-0323887-19",
+        "rs_dt": "2012.04.23",
+        "rs_doc_nm": "[거절이유 등 통지에 따른 의견]의견(답변, 소명)서",
+        "rs_doc_nm_eng": "[Opinion according to the Notification of Reasons for Refusal] Written Opinion(Written Reply, Written Substantiation)",
+        "cd_nm": "수리 (Accepted) "
+      },
+      {
+        "rsno": "1-1-2012-0323886-63",
+        "rs_dt": "2012.04.23",
+        "rs_doc_nm": "[명세서등 보정]보정서",
+        "rs_doc_nm_eng": "[Amendment to Description, etc.] Amendment",
+        "cd_nm": "보정승인간주 (Regarded as an acceptance of amendment) "
+      },
+      {
+        "rsno": "9-5-2012-0292905-73",
+        "rs_dt": "2012.05.18",
+        "rs_doc_nm": "등록결정서",
+        "rs_doc_nm_eng": "Decision to grant",
+        "cd_nm": "발송처리완료 (Completion of Transmission) "
+      },
+      {
+        "rsno": "4-1-2012-5132663-40",
+        "rs_dt": "2012.06.21",
+        "rs_doc_nm": "출원인정보변경(경정)신고서",
+        "rs_doc_nm_eng": "Notification of change of applicant's information",
+        "cd_nm": "수리 (Accepted) "
+      }
+    ],
+    "precedenceList": [],
+    "docfamilylist": [],
+    "opfamilylist": [],
+    "intergratedList": [],
+    "trlList": [],
+    "correctionList": [],
+    "extList": [],
+    "intnlB": {
+      "intnl_applno": null,
+      "intnl_appl_dt": null,
+      "intnl_opnno": null,
+      "intnl_opn_dt": null,
+      "publ_key": null
+    },
+    "frontDrawB": null,
+    "existTechSelInfo": false,
+    "techSelInfo": null,
+    "extFg": "N",
+    "rndInfolist": [],
+    "doiinfoFg": "Y",
+    "quotationlist": [
+      {
+        "std_applno": "199500217553A0",
+        "cntry_nm": "일본",
+        "cntry_cd": "JP",
+        "ltrtno": "07217553",
+        "ctltr_cd": "A",
+        "pub_dt": "1995.08.15",
+        "ttl": "스크롤형(fish back) 무급유식 유체 기계",
+        "ipc": "F04C 18/02",
+        "appl_dt": ""
+      },
+      {
+        "std_applno": "200400251528A0",
+        "cntry_nm": "일본",
+        "cntry_cd": "JP",
+        "ltrtno": "16251528",
+        "ctltr_cd": "A",
+        "pub_dt": "2004.09.09",
+        "ttl": "냉동 공조장치",
+        "ipc": "F25B1/10",
+        "appl_dt": ""
+      }
+    ],
+    "quotedlist": [
+      {
+        "std_applno": "",
+        "cntry_nm": "대한민국",
+        "cntry_cd": "KR",
+        "ltrtno": "1020190058928",
+        "ctltr_cd": "",
+        "pub_dt": "",
+        "ttl": "전동식 압축 팽창기 및 이를 포함하는 공기 조화 시스템",
+        "ipc": "F25B 9/06",
+        "appl_dt": "2019.05.20"
+      }
+    ],
+    "microlist": [],
+    "distlist": [],
+    "rginList": [
+      {
+        "inv_name": "",
+        "inv_name_eng": "",
+        "inv_addr": "",
+        "natl_nm": "",
+        "invntr_cd": "",
+        "name": "조성욱",
+        "name_eng": null,
+        "code": null,
+        "addr": "서울특별시 광진구...",
+        "addr_eng": null
+      },
+      {
+        "inv_name": "",
+        "inv_name_eng": "",
+        "inv_addr": "",
+        "natl_nm": "",
+        "invntr_cd": "",
+        "name": "조경래",
+        "name_eng": null,
+        "code": null,
+        "addr": "경기도 수원시 영통구...",
+        "addr_eng": null
+      }
+    ],
+    "rgagList": [
+      {
+        "nm_kor_long": "",
+        "nm_eng_long": "",
+        "apagt_addr": "",
+        "natl_nm": "",
+        "apagt_cd": "",
+        "name": "특허법인세림",
+        "name_eng": "SELIM INTELLECTUAL PROPERTY LAW FIRM",
+        "code": "920111000418",
+        "addr": "서울특별시 서초구 강남대로 ***, **층, **층(서초동, 태우빌딩)",
+        "addr_eng": "**F, **F(Seocho-dong, Taewoo Bldg.), *** Gangnam-daero, Seocho-gu, Seoul, ***** Republic of Korea"
+      }
+    ]
+  }
+}

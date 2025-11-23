@@ -382,7 +382,17 @@ SITE_LIST = [
     #          {"code": "page",           "value": "페이지",             "checked": True},
     #      ]
     # ),
-    Site("송장번호 택배사", "DELIVERY_CONTENT", "#00A1FF", enabled=True, popup=True),
+    Site("송장번호 택배사", "DELIVERY_CONTENT", "#00A1FF", enabled=True, popup=True,
+        columns = [
+          {"code": "market",           "value": "마켓",           "checked": True},
+          {"code": "order_date",       "value": "주문일자",        "checked": True},
+          {"code": "id",               "value": "id",            "checked": True},
+          {"code": "password",         "value": "password",      "checked": True},
+          {"code": "order_code",       "value": "주문고유코드",    "checked": True},
+          {"code": "invoice_no",       "value": "송장번호",       "checked": True},
+          {"code": "delivery_company", "value": "택배사",         "checked": True}
+        ]
+    ),
 ]
 
 # 전역 변수

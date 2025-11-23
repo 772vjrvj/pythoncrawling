@@ -12,7 +12,6 @@ def get_current_yyyymmddhhmmss():
     return formatted_datetime
 
 
-
 def parse_timestamp(ymd_hms_text: str) -> int:
     """'YYYY/MM/DD \\nHH:MM:SS' -> epoch seconds"""
     t = str_clean(ymd_hms_text).replace("\n", " ").replace("  ", " ")
@@ -26,7 +25,6 @@ def parse_timestamp(ymd_hms_text: str) -> int:
         return int(dt.timestamp())
     except Exception:
         return 0
-
 
 
 def format_real_date(ts: int) -> str:
@@ -49,6 +47,7 @@ def parse_yy_mm_dd(d: str) -> str:
     except Exception:
         return ""
 
+
 def parse_date_yyyy_mm_dd(s: str):
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
@@ -64,5 +63,44 @@ def parse_finish_dt(dt_str: str) -> str:
         return ""
     try:
         return datetime.strptime(dt_str.split()[0], "%Y-%m-%d").strftime("%Y-%m-%d")
+    except Exception:
+        return ""
+
+
+def parse_datetime_yyyy_mm_dd_hhmmss(s: str):
+    """
+    '2025-11-11 00:00:00' → datetime 또는 None
+    """
+    if not s:
+        return None
+    try:
+        return datetime.strptime(s.strip(), "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return None
+
+
+# === 신규 ===
+def parse_datetime_to_yyyymmdd(s: str) -> str:
+    """
+    '2025-11-11 00:00:00' → '20251111'
+    """
+    if not s:
+        return ""
+    try:
+        dt = datetime.strptime(s.strip(), "%Y-%m-%d %H:%M:%S")
+        return dt.strftime("%Y%m%d")
+    except Exception:
+        return ""
+
+
+def format_yyyymmdd_to_yyyy_mm_dd(s: str) -> str:
+    """
+    '20251123' → '2025-11-23'
+    """
+    if not s:
+        return ""
+    s = s.strip()
+    try:
+        return datetime.strptime(s, "%Y%m%d").strftime("%Y-%m-%d")
     except Exception:
         return ""

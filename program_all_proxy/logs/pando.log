@@ -1,45 +1,95 @@
-2025-11-10 03:18:02,926 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
-2025-11-10 03:18:03,747 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
-2025-11-10 03:18:03,846 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
-2025-11-10 03:18:03,866 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
-2025-11-10 03:18:03,953 [INFO] main_window.py:429 - winhttp proxy imported from IE (동기화 성공)
-2025-11-10 03:18:03,953 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
-2025-11-10 03:18:03,953 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
-2025-11-10 03:18:04,467 [INFO] main_window.py:517 - CPU 사용률 감지: 13.6% -> 인증서 생성 타임아웃 설정 180s.
-2025-11-10 03:18:04,467 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
-2025-11-10 03:18:06,470 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
-2025-11-10 03:18:06,562 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
-2025-11-10 03:18:06,562 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
-2025-11-10 03:18:06,562 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
-2025-11-10 03:18:06,607 [INFO] main_window.py:618 - 인증서 등록 완료!
-2025-11-10 03:18:06,607 [INFO] main_window.py:620 - certutil stdout: Root "신뢰할 수 있는 루트 인증 기관"
+2025-11-20 00:00:00,076 [INFO] logger.py:147 - [log] pando.log 자정 처리: 날짜=2025-11-19, 백업=OK, 원본 초기화
+2025-11-20 01:20:02,062 [INFO] main_window.py:1080 - 🧑‍💻 유저 화면 중지 버튼 클릭
+2025-11-20 01:20:02,063 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-20 01:20:02,063 [INFO] main_window.py:995 - proxy_proc 종료 시도(terminate)
+2025-11-20 01:20:02,067 [INFO] main_window.py:999 - proxy_proc 종료 완료 (rc=1)
+2025-11-20 01:20:02,067 [INFO] main_window.py:1012 - proxy 로그 파일 핸들 닫음
+2025-11-20 01:20:02,192 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-20 01:20:02,326 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-20 01:20:02,341 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-20 01:20:02,403 [INFO] main_window.py:943 - winhttp proxy reset 완료
+2025-11-20 01:20:02,445 [INFO] main_window.py:1047 - 인증서 루트스토어에서 삭제됨 (certutil 반환 0).
+2025-11-20 01:20:02,448 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-20 01:20:02,448 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-20 01:20:02,452 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_off.ico
+2025-11-20 01:20:05,082 [INFO] main_window.py:302 - 창이 트레이로 숨겨졌습니다.
+2025-11-21 01:13:58,154 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-11-21 01:14:01,453 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-21 01:14:02,122 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-21 01:14:02,241 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-21 01:14:02,382 [INFO] main_window.py:429 - winhttp proxy imported from IE (동기화 성공)
+2025-11-21 01:14:02,382 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-21 01:14:02,382 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-21 01:14:03,342 [INFO] main_window.py:517 - CPU 사용률 감지: 19.8% -> 인증서 생성 타임아웃 설정 180s.
+2025-11-21 01:14:03,342 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-21 01:14:06,848 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-21 01:14:06,950 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-21 01:14:06,950 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-21 01:14:06,950 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-21 01:14:07,033 [INFO] main_window.py:618 - 인증서 등록 완료!
+2025-11-21 01:14:07,034 [INFO] main_window.py:620 - certutil stdout: Root "신뢰할 수 있는 루트 인증 기관"
 서명이 공개 키와 일치합니다.
 "mitmproxy" 인증서가 저장소에 추가되었습니다.
 CertUtil: -addstore 명령이 성공적으로 완료되었습니다.
-2025-11-10 03:18:06,607 [INFO] main_window.py:665 - [프록시] 프록시 실행 준비 중...
-2025-11-10 03:18:06,621 [INFO] main_window.py:705 - [프록시] mitmdump 실행 완료 (로그: E:\git\pythoncrawling\program_all_proxy\logs\proxy_server.log)
-2025-11-10 03:18:08,289 [INFO] proxy_server.py:36 - 🚀 [proxy_server] 프록시 서버 로딩 완료 (한글 출력 테스트)
-2025-11-10 03:18:08,290 [INFO] proxy_server.py:37 - ✅ [proxy_server] 이 줄이 찍히면 최신 로깅 통합 버전입니다.
-2025-11-10 03:18:08,649 [INFO] main_window.py:719 - 프록시 서버가 포트 8080에서 실행 중입니다.
-2025-11-10 03:18:08,650 [INFO] api.py:58 - 🔑 (더미) 토큰 발급: store_id=test -> dummy-token-00000000000000000000
-2025-11-10 03:18:08,650 [INFO] token_manager.py:14 - 토큰 갱신 완료 → 저장 예정: {'store_id': 'test', 'name': 'test', 'branch': '테스트매장-test', 'token': 'dummy-token-00000000000000000000', 'auto_login': 'T'}
-2025-11-10 03:18:08,650 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
-2025-11-10 03:18:08,654 [INFO] token_manager.py:16 - 토큰 갱신 + 저장 완료
-2025-11-10 03:18:08,654 [INFO] api.py:71 - 🏬 (더미) 유저 정보 반환: store_id=test token=dummy-token-00000000000000000000 -> name=test
-2025-11-10 03:18:08,654 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
-2025-11-10 03:18:08,657 [INFO] main_window.py:766 - [info] 인증키 정보 저장 완료
-2025-11-10 03:18:08,667 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_on.ico
-2025-11-10 08:19:40,833 [INFO] main_window.py:1080 - 🧑‍💻 유저 화면 중지 버튼 클릭
-2025-11-10 08:19:40,836 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
-2025-11-10 08:19:40,837 [INFO] main_window.py:995 - proxy_proc 종료 시도(terminate)
-2025-11-10 08:19:40,841 [INFO] main_window.py:999 - proxy_proc 종료 완료 (rc=1)
-2025-11-10 08:19:40,842 [INFO] main_window.py:1012 - proxy 로그 파일 핸들 닫음
-2025-11-10 08:19:40,937 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
-2025-11-10 08:19:41,079 [INFO] main_window.py:1028 - mitmdump 종료 확인
-2025-11-10 08:19:41,092 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
-2025-11-10 08:19:41,156 [INFO] main_window.py:943 - winhttp proxy reset 완료
-2025-11-10 08:19:41,202 [INFO] main_window.py:1047 - 인증서 루트스토어에서 삭제됨 (certutil 반환 0).
-2025-11-10 08:19:41,205 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
-2025-11-10 08:19:41,205 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
-2025-11-10 08:19:41,210 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_off.ico
-2025-11-10 08:19:56,510 [INFO] main_window.py:302 - 창이 트레이로 숨겨졌습니다.
+2025-11-21 01:14:07,034 [INFO] main_window.py:665 - [프록시] 프록시 실행 준비 중...
+2025-11-21 01:14:07,054 [INFO] main_window.py:705 - [프록시] mitmdump 실행 완료 (로그: E:\git\pythoncrawling\program_all_proxy\logs\proxy_server.log)
+2025-11-21 01:14:09,075 [INFO] proxy_server.py:36 - 🚀 [proxy_server] 프록시 서버 로딩 완료 (한글 출력 테스트)
+2025-11-21 01:14:09,075 [INFO] proxy_server.py:37 - ✅ [proxy_server] 이 줄이 찍히면 최신 로깅 통합 버전입니다.
+2025-11-21 01:14:09,086 [INFO] main_window.py:719 - 프록시 서버가 포트 8080에서 실행 중입니다.
+2025-11-21 01:14:09,086 [INFO] api.py:58 - 🔑 (더미) 토큰 발급: store_id=test -> dummy-token-00000000000000000000
+2025-11-21 01:14:09,086 [INFO] token_manager.py:14 - 토큰 갱신 완료 → 저장 예정: {'store_id': 'test', 'name': 'test', 'branch': '테스트매장-test', 'token': 'dummy-token-00000000000000000000', 'auto_login': 'T'}
+2025-11-21 01:14:09,086 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-11-21 01:14:09,090 [INFO] token_manager.py:16 - 토큰 갱신 + 저장 완료
+2025-11-21 01:14:09,090 [INFO] api.py:71 - 🏬 (더미) 유저 정보 반환: store_id=test token=dummy-token-00000000000000000000 -> name=test
+2025-11-21 01:14:09,090 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-11-21 01:14:09,093 [INFO] main_window.py:766 - [info] 인증키 정보 저장 완료
+2025-11-21 01:14:09,185 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_on.ico
+2025-11-21 01:18:42,407 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-11-21 01:18:43,047 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-21 01:18:43,155 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-21 01:18:43,191 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-21 01:18:43,242 [INFO] main_window.py:429 - winhttp proxy imported from IE (동기화 성공)
+2025-11-21 01:18:43,242 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-21 01:18:43,282 [INFO] main_window.py:472 - certutil -delstore: 삭제 성공(루트 스토어에서 제거됨).
+2025-11-21 01:18:43,282 [INFO] main_window.py:474 - certutil stdout: Root "신뢰할 수 있는 루트 인증 기관"
+인증서 7 삭제 중: O=mitmproxy, CN=mitmproxy:618627f58be0338c29bdb16d535985cd17df0fe3
+CertUtil: -delstore 명령이 성공적으로 완료되었습니다.
+2025-11-21 01:18:43,284 [INFO] main_window.py:487 - 기존 .mitmproxy 폴더 삭제: C:\Users\772vj\.mitmproxy
+2025-11-21 01:18:43,284 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-21 01:18:43,797 [INFO] main_window.py:517 - CPU 사용률 감지: 33.7% -> 인증서 생성 타임아웃 설정 180s.
+2025-11-21 01:18:43,797 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-21 01:18:45,300 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-21 01:18:45,386 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-21 01:18:45,386 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-21 01:18:45,386 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-21 01:18:45,429 [INFO] main_window.py:618 - 인증서 등록 완료!
+2025-11-21 01:18:45,429 [INFO] main_window.py:620 - certutil stdout: Root "신뢰할 수 있는 루트 인증 기관"
+서명이 공개 키와 일치합니다.
+"mitmproxy" 인증서가 저장소에 추가되었습니다.
+CertUtil: -addstore 명령이 성공적으로 완료되었습니다.
+2025-11-21 01:18:45,429 [INFO] main_window.py:665 - [프록시] 프록시 실행 준비 중...
+2025-11-21 01:18:45,442 [INFO] main_window.py:705 - [프록시] mitmdump 실행 완료 (로그: E:\git\pythoncrawling\program_all_proxy\logs\proxy_server.log)
+2025-11-21 01:18:47,063 [INFO] proxy_server.py:36 - 🚀 [proxy_server] 프록시 서버 로딩 완료 (한글 출력 테스트)
+2025-11-21 01:18:47,064 [INFO] proxy_server.py:37 - ✅ [proxy_server] 이 줄이 찍히면 최신 로깅 통합 버전입니다.
+2025-11-21 01:18:47,471 [INFO] main_window.py:719 - 프록시 서버가 포트 8080에서 실행 중입니다.
+2025-11-21 01:18:47,471 [INFO] api.py:58 - 🔑 (더미) 토큰 발급: store_id=test -> dummy-token-00000000000000000000
+2025-11-21 01:18:47,471 [INFO] token_manager.py:14 - 토큰 갱신 완료 → 저장 예정: {'store_id': 'test', 'name': 'test', 'branch': '테스트매장-test', 'token': 'dummy-token-00000000000000000000', 'auto_login': 'T'}
+2025-11-21 01:18:47,471 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-11-21 01:18:47,476 [INFO] token_manager.py:16 - 토큰 갱신 + 저장 완료
+2025-11-21 01:18:47,476 [INFO] api.py:71 - 🏬 (더미) 유저 정보 반환: store_id=test token=dummy-token-00000000000000000000 -> name=test
+2025-11-21 01:18:47,476 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-11-21 01:18:47,480 [INFO] main_window.py:766 - [info] 인증키 정보 저장 완료
+2025-11-21 01:18:47,487 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_on.ico
+2025-11-21 01:22:26,570 [INFO] main_window.py:1080 - 🧑‍💻 유저 화면 중지 버튼 클릭
+2025-11-21 01:22:26,570 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-21 01:22:26,570 [INFO] main_window.py:995 - proxy_proc 종료 시도(terminate)
+2025-11-21 01:22:26,573 [INFO] main_window.py:999 - proxy_proc 종료 완료 (rc=1)
+2025-11-21 01:22:26,574 [INFO] main_window.py:1012 - proxy 로그 파일 핸들 닫음
+2025-11-21 01:22:26,688 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-21 01:22:26,821 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-21 01:22:26,832 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-21 01:22:26,887 [INFO] main_window.py:943 - winhttp proxy reset 완료
+2025-11-21 01:22:26,927 [INFO] main_window.py:1047 - 인증서 루트스토어에서 삭제됨 (certutil 반환 0).
+2025-11-21 01:22:26,929 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-21 01:22:26,929 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-21 01:22:26,932 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_off.ico
