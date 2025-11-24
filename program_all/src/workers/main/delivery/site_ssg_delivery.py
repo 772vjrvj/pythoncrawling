@@ -34,7 +34,7 @@ class SsgDeliveryCrawler:
         return s[:4] + "-" + s[4:6] + "-" + s[6:8]
 
     # ====================================================
-    # 팝업 전환 유틸
+    # 팝업 전환 유틸 (현재 로그인에서는 사용 안 함)
     # ====================================================
     def _switch_to_new_window(self):
         base = self.driver.current_window_handle
@@ -59,39 +59,57 @@ class SsgDeliveryCrawler:
         raise Exception("[SSG] window_handles count 대기 실패")
 
     # ====================================================
-    # 로그인
+    # 로그인 (popupLogin URL 직접 진입, 창 전환 사용 안 함)
     # ====================================================
     def _login_and_prepare_api_session(self, login_id, login_pw):
         self.log("[SSG] 로그인 시도")
 
-        self.driver.get(self.SSG_MAIN_URL)
-        time.sleep(1)
+        # popupLogin URL로 바로 이동 (하드코딩)
+        login_url = (
+            "https://member.ssg.com/member/popup/popupLogin.ssg"
+            "?originSite=https%3A//www.ssg.com"
+            "&t="
+            "&gnb=login"
+            "&retURL=https%3A%2F%2Fwww.ssg.com%2F"
+        )
 
-        btn = self.selenium.wait_element(By.ID, "loginBtn", timeout=15)
-        if not btn:
-            raise Exception("[SSG] GNB 로그인 버튼 로딩 실패")
-        btn.click()
+        self.driver.get(login_url)
+        time.sleep(2)
 
-        self._wait_window_count(2, timeout=15)
-        self._switch_to_new_window()
-
+        # 로그인 폼 요소 찾기
         id_input = self.selenium.wait_element(By.ID, "mem_id", timeout=15)
         pw_input = self.selenium.wait_element(By.ID, "mem_pw", timeout=15)
+
+        if not id_input or not pw_input:
+            raise Exception("[SSG] 로그인 입력창(mem_id/mem_pw) 로딩 실패")
 
         id_input.clear()
         id_input.send_keys(login_id)
         pw_input.clear()
         pw_input.send_keys(login_pw)
 
+        # 로그인 버튼 클릭
         login_btn = self.selenium.wait_element(By.ID, "loginBtn", timeout=15)
-        login_btn.click()
+        if not login_btn:
+            raise Exception("[SSG] 로그인 버튼(loginBtn) 로딩 실패")
 
-        self._wait_window_count(1, timeout=15)
+        try:
+            login_btn.click()
+        except Exception:
+            # element not interactable 대비 JS 클릭
+            self.driver.execute_script("arguments[0].click();", login_btn)
 
-        main_handle = self.driver.window_handles[0]
-        self.driver.switch_to.window(main_handle)
-        time.sleep(2)
+        self.log("[SSG] 로그인 버튼 클릭 완료")
+        time.sleep(3)  # 로그인 처리 대기
 
+        # 로그인 후 주문내역 페이지로 직접 진입
+        try:
+            self.driver.get(self.ORDER_URL)
+            time.sleep(1.5)
+        except Exception as e:
+            self.log(f"[SSG] ORDER_URL 진입 중 오류(무시 가능): {e}")
+
+        # Selenium 쿠키를 requests.Session으로 복사
         cookies = self.driver.get_cookies()
         sess = self.api.session
 
