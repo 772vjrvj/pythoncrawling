@@ -93,3 +93,150 @@ CertUtil: -addstore 명령이 성공적으로 완료되었습니다.
 2025-11-21 01:22:26,929 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
 2025-11-21 01:22:26,929 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
 2025-11-21 01:22:26,932 [INFO] main_window.py:816 - 트레이 아이콘 변경: assets/crawling_off.ico
+2025-11-26 03:07:17,830 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-11-26 03:07:18,839 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-26 03:07:18,982 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:07:18,998 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-26 03:07:19,130 [INFO] main_window.py:433 - winhttp import 실패(아마 IE설정 없음) — fallback 시도: Command '['netsh', 'winhttp', 'import', 'proxy', 'source=ie']' returned non-zero exit status 1.
+2025-11-26 03:07:19,188 [INFO] main_window.py:448 - winhttp set proxy 실패: rc=1 / Command '['netsh', 'winhttp', 'set', 'proxy', '127.0.0.1:8080']' returned non-zero exit status 1.
+2025-11-26 03:07:19,188 [INFO] main_window.py:401 - WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음
+2025-11-26 03:07:19,188 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-26 03:07:19,189 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-26 03:07:19,745 [INFO] main_window.py:517 - CPU 사용률 감지: 26.9% -> 인증서 생성 타임아웃 설정 180s.
+2025-11-26 03:07:19,745 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-26 03:07:21,748 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-26 03:07:21,823 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-26 03:07:21,823 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-26 03:07:21,824 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-26 03:07:21,877 [INFO] main_window.py:615 - certutil addstore 실패: rc=2147943140, stdout=선택한 옵션을 사용하려면 관리자 권한이 필요합니다. 관리자 명령 프롬프트를 사용하여 작업을 완료하십시오.
+CertUtil: 요청한 작업을 수행하려면 권한 상승이 필요합니다.
+, stderr=
+2025-11-26 03:07:21,877 [INFO] main_window.py:652 - 인증서 초기화 및 프록시 서버 시작 중 오류: certutil addstore 실패: rc=2147943140
+2025-11-26 03:07:21,878 [INFO] main_window.py:798 - 백그라운드 처리 중 예외: certutil addstore 실패: rc=2147943140
+2025-11-26 03:07:21,886 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-26 03:07:21,962 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:07:22,111 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-26 03:07:22,117 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-26 03:07:22,182 [INFO] main_window.py:946 - winhttp reset 실패: Command '['netsh', 'winhttp', 'reset', 'proxy']' returned non-zero exit status 1.
+2025-11-26 03:07:22,221 [INFO] main_window.py:1049 - certutil -delstore 반환값: 2147943140 (삭제 안 됐거나 항목 없음).
+2025-11-26 03:07:22,224 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-26 03:07:22,224 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-26 03:07:25,438 [INFO] main_window.py:850 - 프록시 초기화 실패로 인해 시작이 취소되었습니다.
+2025-11-26 03:07:28,462 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-26 03:07:28,533 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:07:28,546 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-26 03:07:28,605 [INFO] main_window.py:433 - winhttp import 실패(아마 IE설정 없음) — fallback 시도: Command '['netsh', 'winhttp', 'import', 'proxy', 'source=ie']' returned non-zero exit status 1.
+2025-11-26 03:07:28,658 [INFO] main_window.py:448 - winhttp set proxy 실패: rc=1 / Command '['netsh', 'winhttp', 'set', 'proxy', '127.0.0.1:8080']' returned non-zero exit status 1.
+2025-11-26 03:07:28,659 [INFO] main_window.py:401 - WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음
+2025-11-26 03:07:28,659 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-26 03:07:28,659 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-26 03:07:29,170 [INFO] main_window.py:517 - CPU 사용률 감지: 16.4% -> 인증서 생성 타임아웃 설정 180s.
+2025-11-26 03:07:29,171 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-26 03:07:30,172 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-26 03:07:30,246 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-26 03:07:30,246 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-26 03:07:30,247 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-26 03:07:30,282 [INFO] main_window.py:615 - certutil addstore 실패: rc=2147943140, stdout=선택한 옵션을 사용하려면 관리자 권한이 필요합니다. 관리자 명령 프롬프트를 사용하여 작업을 완료하십시오.
+CertUtil: 요청한 작업을 수행하려면 권한 상승이 필요합니다.
+, stderr=
+2025-11-26 03:07:30,282 [INFO] main_window.py:652 - 인증서 초기화 및 프록시 서버 시작 중 오류: certutil addstore 실패: rc=2147943140
+2025-11-26 03:07:30,282 [INFO] main_window.py:798 - 백그라운드 처리 중 예외: certutil addstore 실패: rc=2147943140
+2025-11-26 03:07:30,285 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-26 03:07:30,353 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:07:30,483 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-26 03:07:30,502 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-26 03:07:30,554 [INFO] main_window.py:946 - winhttp reset 실패: Command '['netsh', 'winhttp', 'reset', 'proxy']' returned non-zero exit status 1.
+2025-11-26 03:07:30,585 [INFO] main_window.py:1049 - certutil -delstore 반환값: 2147943140 (삭제 안 됐거나 항목 없음).
+2025-11-26 03:07:30,587 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-26 03:07:30,587 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-26 03:07:37,047 [INFO] main_window.py:850 - 프록시 초기화 실패로 인해 시작이 취소되었습니다.
+2025-11-26 03:07:43,284 [INFO] file_storage.py:32 - 저장 중: E:\git\pythoncrawling\program_all_proxy\data.json
+2025-11-26 03:07:45,791 [INFO] main_window.py:302 - 창이 트레이로 숨겨졌습니다.
+2025-11-26 03:07:54,081 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-11-26 03:07:54,942 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-26 03:07:55,046 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:07:55,068 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-26 03:07:55,140 [INFO] main_window.py:433 - winhttp import 실패(아마 IE설정 없음) — fallback 시도: Command '['netsh', 'winhttp', 'import', 'proxy', 'source=ie']' returned non-zero exit status 1.
+2025-11-26 03:07:55,214 [INFO] main_window.py:448 - winhttp set proxy 실패: rc=1 / Command '['netsh', 'winhttp', 'set', 'proxy', '127.0.0.1:8080']' returned non-zero exit status 1.
+2025-11-26 03:07:55,215 [INFO] main_window.py:401 - WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음
+2025-11-26 03:07:55,216 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-26 03:07:55,217 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-26 03:07:55,737 [INFO] main_window.py:517 - CPU 사용률 감지: 49.2% -> 인증서 생성 타임아웃 설정 180s.
+2025-11-26 03:07:55,737 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-26 03:07:57,742 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-26 03:07:57,823 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-26 03:07:57,823 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-26 03:07:57,823 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-26 03:07:57,859 [INFO] main_window.py:615 - certutil addstore 실패: rc=2147943140, stdout=선택한 옵션을 사용하려면 관리자 권한이 필요합니다. 관리자 명령 프롬프트를 사용하여 작업을 완료하십시오.
+CertUtil: 요청한 작업을 수행하려면 권한 상승이 필요합니다.
+, stderr=
+2025-11-26 03:07:57,860 [INFO] main_window.py:652 - 인증서 초기화 및 프록시 서버 시작 중 오류: certutil addstore 실패: rc=2147943140
+2025-11-26 03:07:57,860 [INFO] main_window.py:798 - 백그라운드 처리 중 예외: certutil addstore 실패: rc=2147943140
+2025-11-26 03:07:57,862 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-26 03:07:57,930 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:07:58,068 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-26 03:07:58,081 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-26 03:07:58,137 [INFO] main_window.py:946 - winhttp reset 실패: Command '['netsh', 'winhttp', 'reset', 'proxy']' returned non-zero exit status 1.
+2025-11-26 03:07:58,173 [INFO] main_window.py:1049 - certutil -delstore 반환값: 2147943140 (삭제 안 됐거나 항목 없음).
+2025-11-26 03:07:58,175 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-26 03:07:58,175 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-26 03:08:00,704 [INFO] main_window.py:850 - 프록시 초기화 실패로 인해 시작이 취소되었습니다.
+2025-11-26 03:08:22,004 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-11-26 03:08:22,849 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-26 03:08:22,970 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:08:22,992 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-26 03:08:23,048 [INFO] main_window.py:433 - winhttp import 실패(아마 IE설정 없음) — fallback 시도: Command '['netsh', 'winhttp', 'import', 'proxy', 'source=ie']' returned non-zero exit status 1.
+2025-11-26 03:08:23,104 [INFO] main_window.py:448 - winhttp set proxy 실패: rc=1 / Command '['netsh', 'winhttp', 'set', 'proxy', '127.0.0.1:8080']' returned non-zero exit status 1.
+2025-11-26 03:08:23,104 [INFO] main_window.py:401 - WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음
+2025-11-26 03:08:23,104 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-26 03:08:23,105 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-26 03:08:23,617 [INFO] main_window.py:517 - CPU 사용률 감지: 23.0% -> 인증서 생성 타임아웃 설정 180s.
+2025-11-26 03:08:23,617 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-26 03:08:25,119 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-26 03:08:25,196 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-26 03:08:25,197 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-26 03:08:25,197 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-26 03:08:25,240 [INFO] main_window.py:615 - certutil addstore 실패: rc=2147943140, stdout=선택한 옵션을 사용하려면 관리자 권한이 필요합니다. 관리자 명령 프롬프트를 사용하여 작업을 완료하십시오.
+CertUtil: 요청한 작업을 수행하려면 권한 상승이 필요합니다.
+, stderr=
+2025-11-26 03:08:25,241 [INFO] main_window.py:652 - 인증서 초기화 및 프록시 서버 시작 중 오류: certutil addstore 실패: rc=2147943140
+2025-11-26 03:08:25,241 [INFO] main_window.py:798 - 백그라운드 처리 중 예외: certutil addstore 실패: rc=2147943140
+2025-11-26 03:08:25,244 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-26 03:08:25,319 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:08:25,449 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-26 03:08:25,463 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-26 03:08:25,518 [INFO] main_window.py:946 - winhttp reset 실패: Command '['netsh', 'winhttp', 'reset', 'proxy']' returned non-zero exit status 1.
+2025-11-26 03:08:25,552 [INFO] main_window.py:1049 - certutil -delstore 반환값: 2147943140 (삭제 안 됐거나 항목 없음).
+2025-11-26 03:08:25,555 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-26 03:08:25,555 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-26 03:08:26,661 [INFO] main_window.py:850 - 프록시 초기화 실패로 인해 시작이 취소되었습니다.
+2025-11-26 03:10:24,678 [INFO] main_window.py:281 - 트레이 아이콘 준비됨
+2025-11-26 03:10:26,065 [INFO] main_window.py:626 - 인증서 초기화 및 프록시 서버 시작 중...
+2025-11-26 03:10:26,369 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:10:26,390 [INFO] main_window.py:395 - Windows GUI 프록시 설정됨: 127.0.0.1:8080 (HKCU에 적용)
+2025-11-26 03:10:26,491 [INFO] main_window.py:433 - winhttp import 실패(아마 IE설정 없음) — fallback 시도: Command '['netsh', 'winhttp', 'import', 'proxy', 'source=ie']' returned non-zero exit status 1.
+2025-11-26 03:10:26,574 [INFO] main_window.py:448 - winhttp set proxy 실패: rc=1 / Command '['netsh', 'winhttp', 'set', 'proxy', '127.0.0.1:8080']' returned non-zero exit status 1.
+2025-11-26 03:10:26,574 [INFO] main_window.py:401 - WinHTTP 동기화 실패 — HKCU(사용자) 설정은 적용되었음
+2025-11-26 03:10:26,574 [INFO] main_window.py:458 - 🔧 mitmdump 기존 인증서/폴더 정리 (있으면 삭제)
+2025-11-26 03:10:26,574 [INFO] main_window.py:529 - 🔧 mitmdump 실행 중 (인증서 생성 시작)...
+2025-11-26 03:10:27,089 [INFO] main_window.py:517 - CPU 사용률 감지: 92.1% -> 인증서 생성 타임아웃 설정 600s.
+2025-11-26 03:10:27,089 [INFO] main_window.py:571 - 🔧 mitmdump 인증서 파일 생성 확인중...
+2025-11-26 03:10:30,606 [INFO] main_window.py:587 - 🔧 mitmdump 인증서 파일 생성 확인 완료
+2025-11-26 03:10:30,684 [INFO] main_window.py:340 - [info] 기존 mitmdump.exe 프로세스 종료됨 (taskkill)
+2025-11-26 03:10:30,685 [INFO] main_window.py:590 - 🔧 mitmdump 인증서 생성 후 mitmdump.exe 종료
+2025-11-26 03:10:30,685 [INFO] main_window.py:601 - 🔧 mitmdump 인증서 생성 루트 스토어에 등록
+2025-11-26 03:10:30,731 [INFO] main_window.py:615 - certutil addstore 실패: rc=2147943140, stdout=선택한 옵션을 사용하려면 관리자 권한이 필요합니다. 관리자 명령 프롬프트를 사용하여 작업을 완료하십시오.
+CertUtil: 요청한 작업을 수행하려면 권한 상승이 필요합니다.
+, stderr=
+2025-11-26 03:10:30,731 [INFO] main_window.py:652 - 인증서 초기화 및 프록시 서버 시작 중 오류: certutil addstore 실패: rc=2147943140
+2025-11-26 03:10:30,732 [INFO] main_window.py:798 - 백그라운드 처리 중 예외: certutil addstore 실패: rc=2147943140
+2025-11-26 03:10:30,735 [INFO] main_window.py:990 - 🧹 정리 작업 수행 중...
+2025-11-26 03:10:30,812 [INFO] main_window.py:350 - [info] mitmdump.exe 프로세스 없음 또는 이미 종료됨 (rc=128)
+2025-11-26 03:10:30,954 [INFO] main_window.py:1028 - mitmdump 종료 확인
+2025-11-26 03:10:30,960 [INFO] main_window.py:961 - Windows GUI 프록시 해제됨
+2025-11-26 03:10:31,021 [INFO] main_window.py:946 - winhttp reset 실패: Command '['netsh', 'winhttp', 'reset', 'proxy']' returned non-zero exit status 1.
+2025-11-26 03:10:31,058 [INFO] main_window.py:1049 - certutil -delstore 반환값: 2147943140 (삭제 안 됐거나 항목 없음).
+2025-11-26 03:10:31,061 [INFO] main_window.py:1060 - .mitmproxy 폴더 삭제됨: C:\Users\772vj\.mitmproxy
+2025-11-26 03:10:31,061 [INFO] main_window.py:1072 - 인증서 제거 작업 완료(루트스토어 및 로컬 폴더).
+2025-11-26 03:10:32,111 [INFO] main_window.py:850 - 프록시 초기화 실패로 인해 시작이 취소되었습니다.
+2025-11-26 03:10:32,723 [INFO] main_window.py:302 - 창이 트레이로 숨겨졌습니다.

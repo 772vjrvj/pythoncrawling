@@ -55,144 +55,63 @@ SITE_LIST = [
     #      region = False,
     #      popup=True
     #      ),
-    # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
-    #      setting=[
-    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-    #      ],
-    #      columns = [
-    #          {"code": "id",             "value": "아이디",        "checked": True},
-    #          {"code": "name",           "value": "이름",          "checked": True},
-    #          {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
-    #          {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
-    #          {"code": "category_main",  "value": "대분류",        "checked": True},
-    #          {"code": "category_sub",   "value": "소분류",        "checked": True},
-    #          {"code": "rating",         "value": "별점",          "checked": True},
-    #          {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
-    #          {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
-    #          {"code": "open_time1",     "value": "이용시간1",     "checked": True},
-    #          {"code": "open_time2",     "value": "이용시간2",     "checked": True},
-    #          {"code": "category",       "value": "카테고리",      "checked": True},
-    #          {"code": "url",            "value": "URL",           "checked": True},
-    #          {"code": "map",            "value": "지도",          "checked": True},
-    #          {"code": "amenities",      "value": "편의시설",      "checked": True},
-    #          {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
-    #          {"code": "phone",          "value": "전화번호",      "checked": True},
-    #          {"code": "site",           "value": "사이트",        "checked": True},
-    #          {"code": "region_info",    "value": "주소지정보",    "checked": True},
-    #      ],
-    #      region = True
-    #      ),
-    # Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True,
-    #      setting=[
-    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-    #      ],
-    #      columns = [
-    #          # 메타
-    #          {"code": "article_number",        "value": "번호",   "checked": False},
-    #          {"code": "region",                "value": "지역",   "checked": False},
-    #          {"code": "city",                  "value": "시도",   "checked": True},
-    #          {"code": "division",              "value": "시군구",  "checked": True},
-    #          {"code": "sector",                "value": "읍면동",  "checked": True},
-    #
-    #          # {"code": "item_name",             "value": "매물명",  "checked": True},
-    #
-    #          # 주소/위치
-    #          {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
-    #          {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
-    #          {"code": "keyword",               "value": "키워드",  "checked": True},
-    #          {"code": "complex_name",          "value": "단지명",  "checked": True},
-    #          {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
-    #
-    #          # 중개사
-    #          {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
-    #          {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
-    #          {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
-    #          {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
-    #          {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
-    #
-    #          # 층/방향
-    #          {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
-    #          {"code": "target_floor",          "value": "층(목표)",     "checked": False},
-    #          {"code": "total_floor",           "value": "층(전체)",     "checked": False},
-    #          {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
-    #          # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
-    #          {"code": "direction_standard",    "value": "방향기준",     "checked": False},
-    #
-    #          # 면적
-    #          {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
-    #          {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
-    #          {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
-    #
-    #          # 가격/비용
-    #          {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
-    #          {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
-    #          {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
-    #
-    #          # 유형/일자
-    #          # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
-    #          # {"code": "trade_type",            "value": "거래유형",     "checked": True},
-    #          {"code": "exposure_date",         "value": "노출일",       "checked": False},
-    #          {"code": "confirm_date",          "value": "확인일",       "checked": False},
-    #          {"code": "approval_elapsed_year", "value": "준공연차",     "checked": False},
-    #          {"code": "completion_date",       "value": "준공일",       "checked": False},
-    #      ],
-    #      region = True
-    #      ),
-    # Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
-    #      setting=[],
-    #      columns = [
-    #          # 게시정보
-    #          {"code": "article_number",         "value": "게시번호",        "checked": True},
-    #
-    #          # 기본 정보
-    #          {"code": "complexName",           "value": "단지명",          "checked": True},
-    #          {"code": "dongName",              "value": "동이름",          "checked": True},
-    #          {"code": "price",                 "value": "매매가",          "checked": True},
-    #          {"code": "warrantyAmount",        "value": "보증금",          "checked": True},
-    #          {"code": "rentAmount",            "value": "월세",            "checked": True},
-    #          {"code": "supplySpace",           "value": "공급면적",         "checked": True},
-    #          {"code": "pyeongArea",            "value": "평수",            "checked": True},
-    #          {"code": "landSpace",             "value": "대지면적",         "checked": True},
-    #          {"code": "floorSpace",            "value": "연면적",           "checked": True},
-    #          {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
-    #          {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
-    #
-    #          {"code": "articleFeatureDescription",        "value": "매물특징",           "checked": True},
-    #          {"code": "exposureStartDate",        "value": "매물확인일",           "checked": True},
-    #          {"code": "buildingPrincipalUse",        "value": "건축물용도",           "checked": True},
-    #
-    #          # 종합 정보 (주소)
-    #          {"code": "city",                  "value": "시도",             "checked": True},
-    #          {"code": "division",              "value": "시군구",           "checked": True},
-    #          {"code": "sector",                "value": "읍면동",           "checked": True},
-    #          {"code": "jibun",                 "value": "번지",             "checked": True},
-    #          {"code": "roadName",              "value": "도로명주소",        "checked": True},
-    #          {"code": "zipCode",               "value": "우편번호",          "checked": True},
-    #          {"code": "full_addr",              "value": "전체주소",          "checked": True},
-    #
-    #          # 중개사
-    #          {"code": "brokerage_name",        "value": "중개사무소이름",   "checked": True},
-    #          {"code": "broker_name",           "value": "중개사이름",      "checked": True},
-    #          {"code": "broker_address",        "value": "중개사무소주소",   "checked": True},
-    #          {"code": "phone_brokerage",       "value": "중개사무소번호",   "checked": True},
-    #          {"code": "phone_mobile",          "value": "중개사핸드폰번호", "checked": True},
-    #
-    #          {"code": "url",                    "value": "URL",            "checked": True},
-    #
-    #          # 부모정보
-    #          {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
-    #          {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
-    #          {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
-    #          {"code": "parts",                  "value": "검색주소",       "checked": True},
-    #
-    #          {"code": "rletType",               "value": "매물유형",       "checked": True},
-    #          {"code": "tradeType",              "value": "거래유형",       "checked": True},
-    #
-    #
-    #
-    #      ],
-    #      region = True
-    #      ),
+
+     Site("네이버 부동산업체 전국 번호", "NAVER_LAND_REAL_ESTATE_LOC_ALL", "#03C75A", enabled=True,
+          setting=[
+              {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+          ],
+          columns = [
+              # 메타
+              {"code": "article_number",        "value": "번호",   "checked": False},
+              {"code": "region",                "value": "지역",   "checked": False},
+              {"code": "city",                  "value": "시도",   "checked": True},
+              {"code": "division",              "value": "시군구",  "checked": True},
+              {"code": "sector",                "value": "읍면동",  "checked": True},
+
+              # {"code": "item_name",             "value": "매물명",  "checked": True},
+
+              # 주소/위치
+              {"code": "latitude",              "value": "위도",         "checked": False},   # yCoordinate
+              {"code": "longitude",             "value": "경도",         "checked": False},   # xCoordinate
+              {"code": "keyword",               "value": "키워드",  "checked": True},
+              {"code": "complex_name",          "value": "단지명",  "checked": True},
+              {"code": "complex_dong_name",     "value": "동(단지)",     "checked": True},
+
+              # 중개사
+              {"code": "brokerage_name",        "value": "중개사무소 이름",      "checked": True},
+              {"code": "broker_name",           "value": "중개사 이름",        "checked": True},
+              {"code": "broker_address",        "value": "중개사무소 주소",         "checked": True},
+              {"code": "phone_brokerage",       "value": "중개사무소 번호",   "checked": True},
+              {"code": "phone_mobile",          "value": "중개사 헨드폰번호",   "checked": True},
+                  # 층/방향
+              {"code": "floor_info",            "value": "층",           "checked": False},   # 예: "2/6" 또는 "고/8"
+              {"code": "target_floor",          "value": "층(목표)",     "checked": False},
+              {"code": "total_floor",           "value": "층(전체)",     "checked": False},
+              {"code": "direction_ko",          "value": "방향",         "checked": False},   # self._direction_to_ko 적용값
+              # {"code": "direction_raw",         "value": "방향(원문)",   "checked": True},
+              {"code": "direction_standard",    "value": "방향기준",     "checked": False},
+
+              # 면적
+              {"code": "exclusive_sqm_pyeong",  "value": "전용(㎡/평)",  "checked": False},
+              {"code": "supply_sqm_pyeong",     "value": "공급(㎡/평)",  "checked": False},
+              {"code": "contract_sqm_pyeong",   "value": "계약(㎡/평)",  "checked": False},
+
+              # 가격/비용
+              {"code": "deal_price_fmt",        "value": "매매가",       "checked": False},   # 예: "8억"
+              {"code": "deal_price",            "value": "매매가(원)",   "checked": False},
+              {"code": "maintenance_fee",       "value": "관리비",       "checked": False},
+
+              # 유형/일자
+              # {"code": "real_estate_type",      "value": "부동산종류",   "checked": True},
+           # {"code": "trade_type",            "value": "거래유형",     "checked": True},
+              {"code": "exposure_date",         "value": "노출일",       "checked": False},
+             {"code": "confirm_date",          "value": "확인일",       "checked": False},
+              {"code": "approval_elapsed_year", "value": "준공연차",     "checked": False},
+              {"code": "completion_date",       "value": "준공일",       "checked": False},
+          ],
+          region = True
+          ),
+
     # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True,  setting=[]),
     # Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True,  setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False,  setting=[
@@ -382,17 +301,17 @@ SITE_LIST = [
     #          {"code": "page",           "value": "페이지",             "checked": True},
     #      ]
     # ),
-    Site("송장번호 택배사", "DELIVERY_CONTENT", "#00A1FF", enabled=True, popup=True,
-        columns = [
-          {"code": "market",           "value": "마켓",           "checked": True},
-          {"code": "order_date",       "value": "주문일자",        "checked": True},
-          {"code": "id",               "value": "id",            "checked": True},
-          {"code": "password",         "value": "password",      "checked": True},
-          {"code": "order_code",       "value": "주문고유코드",    "checked": True},
-          {"code": "invoice_no",       "value": "송장번호",       "checked": True},
-          {"code": "delivery_company", "value": "택배사",         "checked": True}
-        ]
-    ),
+    #Site("송장번호 택배사", "DELIVERY_CONTENT", "#00A1FF", enabled=True, popup=True,
+    #    columns = [
+    #     {"code": "market",           "value": "마켓",           "checked": True},
+    #     {"code": "order_date",       "value": "주문일자",        "checked": True},
+    #     {"code": "id",               "value": "id",            "checked": True},
+    #     {"code": "password",         "value": "password",      "checked": True},
+    #     {"code": "order_code",       "value": "주문고유코드",    "checked": True},
+    #      {"code": "invoice_no",       "value": "송장번호",       "checked": True},
+    #      {"code": "delivery_company", "value": "택배사",         "checked": True}
+    #   ]
+    #),
 ]
 
 # 전역 변수

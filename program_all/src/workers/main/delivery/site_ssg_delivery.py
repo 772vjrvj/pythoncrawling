@@ -95,8 +95,9 @@ class SsgDeliveryCrawler:
 
         try:
             login_btn.click()
-        except Exception:
+        except Exception as e:
             # element not interactable 대비 JS 클릭
+            self.log(f"[SSG] loginBtn.click() 오류, JS 클릭으로 재시도: {e}")
             self.driver.execute_script("arguments[0].click();", login_btn)
 
         self.log("[SSG] 로그인 버튼 클릭 완료")

@@ -777,7 +777,7 @@ class ApiNaverLandRealEstateLocAllSetLoadWorker(BaseApiWorker):
 
         state = GlobalState()
         user = state.get("user")
-        self.driver = self.selenium_driver.start_driver(1200, user)
+        self.driver = self.selenium_driver.start_driver(1200)
 
         # (3) 매크로 준비 (여기서는 close_all 금지)
         self.chrome_macro = ChromeMacro(default_settle=1.0)

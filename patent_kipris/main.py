@@ -1,158 +1,82 @@
 # -*- coding: utf-8 -*-
-import requests
 import pandas as pd
-from bs4 import BeautifulSoup
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import time
-import threading
-from datetime import datetime
 
-EXCEL_IN = "kipris_input_list_result_dedup.xlsx"
-EXCEL_OUT = "kipris_input_list_result_dedup_filled.xlsx"
+# ========================
+# 1) 정규화 함수
+# ========================
+def normalize(df):
+    for col in df.columns:
+        df[col] = (
+            df[col]
+            .astype(str)
+            .fillna("")
+            .str.replace("\n", "", regex=False)
+            .str.replace("\r", "", regex=False)
+            .str.strip()
+        )
+    return df
 
-URL = "https://kopd.kipo.go.kr:8888/family.do"
+# ========================
+# 2) 데이터 로드 + 정규화
+# ========================
+df_main = normalize(pd.read_csv("Sheet1.csv", dtype=str))
+df_match = normalize(pd.read_csv("매칭조건.csv", dtype=str))
 
-# ============================
-# === 신규: 요청 헤더 ===
-# ============================
-HEADERS = {
-    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-    "accept-encoding": "gzip, deflate, br, zstd",
-    "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-    "cache-control": "max-age=0",
-    "connection": "keep-alive",
-    "content-type": "application/x-www-form-urlencoded",
-    "origin": "https://kopd.kipo.go.kr:8888",
-    "referer": "https://kopd.kipo.go.kr:8888/index.do",
-    "sec-fetch-dest": "document",
-    "sec-fetch-mode": "navigate",
-    "sec-fetch-site": "same-origin",
-    "upgrade-insecure-requests": "1",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
-}
+print("[INFO] Sheet1 =", len(df_main))
+print("[INFO] 매칭조건 =", len(df_match))
 
-print_lock = threading.Lock()
+# ========================
+# 3) 매칭조건 중복 제거 (매우 중요!)
+# ========================
 
+df_match1 = df_match.drop_duplicates(subset=["출원년도", "출원인", "IPC1"])
+df_match2 = df_match.drop_duplicates(subset=["출원년도", "출원인", "IPC2"])
 
-# ============================
-# === 신규: 로그 출력 함수 ===
-# ============================
-def safe_log(*msg):
-    with print_lock:
-        print(*msg)
+print("[INFO] 매칭조건 IPC1 dedup =", len(df_match1))
+print("[INFO] 매칭조건 IPC2 dedup =", len(df_match2))
 
+# ========================
+# 4) 조건1 매칭
+# ========================
+merge1 = pd.merge(
+    df_main,
+    df_match1[["특허NO", "출원년도", "출원인", "IPC1"]],
+    how="left",
+    left_on=["출원년도", "출원인", "IPC1"],
+    right_on=["출원년도", "출원인", "IPC1"]
+)
 
-# ============================
-# === 신규: family 조회 함수 ===
-# ============================
-def fetch_family_count(idx, ori_number: str, cookies: str) -> (int, int):
-    """
-    ori_number → familyTable tr 개수
-    return: (rowIndex, count)
-    """
+merge1.rename(columns={"특허NO": "조건1"}, inplace=True)
 
-    core = ori_number[2:]  # 1020040090349 → 20040090349
-    docdb_number = f"KR.{core}.A"
+# ========================
+# 5) 조건2 매칭
+# ========================
+merge2 = pd.merge(
+    merge1,
+    df_match2[["특허NO", "출원년도", "출원인", "IPC2"]],
+    how="left",
+    left_on=["출원년도", "출원인", "IPC2"],
+    right_on=["출원년도", "출원인", "IPC2"],
+    suffixes=("", "_cond2")
+)
 
-    payload = {
-        "numberType1": "original",
-        "ori_country": "KR",
-        "ori_numberType": "U1301",
-        "ori_number": ori_number,
-        "docdb_numberType": "U1301",
-        "docdb_number": docdb_number
-    }
+merge2.rename(columns={"특허NO": "조건2"}, inplace=True)
 
-    headers = HEADERS.copy()
-    headers["cookie"] = cookies
+# 매칭 중복열 제거
+df_final = merge2.drop(columns=[c for c in merge2.columns if c.endswith("_cond2")])
 
-    for attempt in range(1, 4):  # retry 3회
-        try:
-            resp = requests.post(URL, headers=headers, data=payload, timeout=15)
+# ========================
+# 6) 결과 저장
+# ========================
+df_final.to_csv("output.csv", index=False, encoding="utf-8-sig")
+print("[INFO] output.csv 저장 완료")
 
-            if resp.status_code != 200:
-                safe_log(f"[{idx}] 응답코드 {resp.status_code} (시도 {attempt}/3)")
-                time.sleep(1)
-                continue
+# ========================
+# 7) 행 수 검증
+# ========================
+print("[INFO] 최종 행수 =", len(df_final))
 
-            soup = BeautifulSoup(resp.text, "html.parser")
-            table = soup.find("table", id="familyTable")
-
-            if not table:
-                safe_log(f"[{idx}] familyTable 없음 (시도 {attempt}/3)")
-                return idx, 0
-
-            tbody = table.find("tbody")
-            rows = tbody.find_all("tr") if tbody else []
-
-            return idx, len(rows)
-
-        except Exception as e:
-            safe_log(f"[{idx}] 예외 발생 (시도 {attempt}/3):", str(e))
-            time.sleep(1)
-
-    return idx, 0
-
-
-# ============================
-# ============ MAIN ==========
-# ============================
-def main():
-    safe_log("\n=== 엑셀 로드 ===")
-    df = pd.read_excel(EXCEL_IN)
-
-    if "출원번호(일자)" not in df.columns:
-        raise Exception("엑셀에 '출원번호(일자)' 컬럼이 없음")
-
-    total = len(df)
-    safe_log(f"총 {total}건 처리 예정\n")
-
-    safe_log("JSESSIONID 포함된 cookie 입력:")
-    cookies = "JSESSIONID=sCRH3C8kgW78V3qyajTXnPkb1OiesQwkbveYQf0Pex4uvA8HtHor3C7fkwYDPytr.opdcws1_servlet_engine3; searchHistory=2025-11-24%01*33*05^KR^original%#application&^1020040090349^$2025-11-24%01*13*00^KR^original%#application&^1020040090349^$2025-11-24%01*10*25^KR^original%#application&^1020040090349^$2025-11-24%01*10*08^KR^original%#application&^1020040090349^$2025-11-24%01*09*44^KR^original%#application&^1020040090349^$2025-11-24%01*09*30^KR^original%#application&^1020040090349^"
-
-    results = []
-    completed = 0
-    start_time = datetime.now()
-
-    safe_log(f"\n=== 멀티스레드 시작 (8 workers) ===")
-    safe_log(f"시작시간: {start_time}\n")
-
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        futures = {}
-
-        for idx, row in df.iterrows():
-            ori_number = str(row["출원번호(일자)"]).strip()
-            print(f'ori_number : {ori_number}')
-
-            if not ori_number or ori_number.lower() == 'nan':
-                futures[executor.submit(lambda: (idx, 0))] = idx
-                continue
-
-            futures[executor.submit(fetch_family_count, idx, ori_number, cookies)] = idx
-
-        for future in as_completed(futures):
-            idx, count = future.result()
-            completed += 1
-
-            progress = (completed / total) * 100
-            safe_log(f"[{completed}/{total}] ({progress:.2f}%) idx={idx} → 패밀리정보 {count}건")
-
-            results.append((idx, count))
-
-    safe_log("\n=== 엑셀 업데이트 중 ===")
-
-    df["패밀리정보 (수)"] = 0
-    for idx, count in results:
-        df.at[idx, "패밀리정보 (수)"] = count
-
-    df.to_excel(EXCEL_OUT, index=False)
-
-    end_time = datetime.now()
-    safe_log("\n=== 완료 ===")
-    safe_log("저장:", EXCEL_OUT)
-    safe_log(f"종료시간: {end_time}")
-    safe_log(f"총 소요시간: {end_time - start_time}")
-
-
-if __name__ == "__main__":
-    main()
+if len(df_final) != len(df_main):
+    print("[ERROR] ❌ 행 수가 증가/감소함 → 매칭키 불일치 또는 CSV 구조 오류")
+else:
+    print("[INFO] ✅ 행 수 정상 (113,439 유지됨)")

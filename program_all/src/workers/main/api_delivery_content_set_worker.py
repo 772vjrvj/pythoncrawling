@@ -1,3 +1,6 @@
+# src/workers/main/delivery/api_delivery_content_set_load_worker.py
+# -*- coding: utf-8 -*-
+
 import json
 import random
 import threading
@@ -22,6 +25,7 @@ from src.workers.main.delivery.site_11st_delivery import ElevenstDeliveryCrawler
 from src.workers.main.delivery.site_ssg_delivery import SsgDeliveryCrawler
 from datetime import datetime, timedelta
 
+
 class ApiDeliveryContentSetLoadWorker(BaseApiWorker):
 
     def __init__(self):
@@ -45,6 +49,7 @@ class ApiDeliveryContentSetLoadWorker(BaseApiWorker):
 
     # 초기화
     def init(self):
+        # 기존처럼 한 번 호출해서 excel_driver, file_driver, selenium_driver, driver 세팅
         self.driver_set(False)
         return True
 
@@ -77,6 +82,28 @@ class ApiDeliveryContentSetLoadWorker(BaseApiWorker):
             normalized.append(row)
 
         return normalized
+
+    # === 신규: 마켓별로 독립적인 WebDriver 생성 유틸 ===
+    def _create_driver_for_market(self, headless=False):
+        """
+        마켓마다 완전히 독립된 브라우저 세션을 사용하기 위해
+        기존 드라이버를 정리하고 새로 생성한다.
+        """
+        # 이전 마켓에서 사용하던 드라이버 정리
+        if self.driver:
+            try:
+                self.driver.quit()
+            except Exception as e:
+                self.log_signal_func(f"[공통] 이전 드라이버 quit 중 오류 (무시): {e}")
+            finally:
+                self.driver = None
+
+        # SeleniumUtils 새로 생성
+        self.selenium_driver = SeleniumUtils(headless)
+
+        # 새 WebDriver 시작
+        self.driver = self.selenium_driver.start_driver(1200)
+        self.log_signal_func("[공통] 마켓용 브라우저 새로 생성 완료")
 
     def main(self):
         try:
@@ -128,17 +155,31 @@ class ApiDeliveryContentSetLoadWorker(BaseApiWorker):
             for market in groups:
                 self.current_cnt += 1
                 self.log_signal_func(f"[마켓] {market}")
+
+                # === 신규: 마켓 시작마다 브라우저 새로 띄우기 ===
+                self._create_driver_for_market(headless=False)
+
                 for uid in groups[market]:
                     rows = groups[market][uid]
                     self.log_signal_func(f"  [ID] {uid} / row {len(rows)}건")
 
                     if market == "11번가":
-                        crawler = ElevenstDeliveryCrawler(self.driver, self.log_signal_func, self.api_client, self.selenium_driver)
+                        crawler = ElevenstDeliveryCrawler(
+                            self.driver,
+                            self.log_signal_func,
+                            self.api_client,
+                            self.selenium_driver,
+                        )
                         result_rows = crawler.fetch_delivery_rows(rows)
                         all_result_rows.extend(result_rows)
 
                     elif market == "SSG":
-                        crawler = SsgDeliveryCrawler(self.driver, self.log_signal_func, self.api_client, self.selenium_driver)
+                        crawler = SsgDeliveryCrawler(
+                            self.driver,
+                            self.log_signal_func,
+                            self.api_client,
+                            self.selenium_driver,
+                        )
                         result_rows = crawler.fetch_delivery_rows(rows)
                         all_result_rows.extend(result_rows)
 
@@ -148,6 +189,16 @@ class ApiDeliveryContentSetLoadWorker(BaseApiWorker):
                             self.log_signal_func(
                                 f"    [날짜] {r.get('주문일자')} → row: {r}"
                             )
+
+                # === 신규: 마켓 처리 끝나면 브라우저 정리 ===
+                if self.driver:
+                    try:
+                        self.driver.quit()
+                        self.log_signal_func(f"[마켓] {market} 브라우저 종료")
+                    except Exception as e:
+                        self.log_signal_func(f"[마켓] {market} 브라우저 종료 중 오류 (무시): {e}")
+                    finally:
+                        self.driver = None
 
                 pro_value = (self.current_cnt / self.total_cnt) * 1000000
                 self.progress_signal.emit(self.before_pro_value, pro_value)
@@ -191,6 +242,16 @@ class ApiDeliveryContentSetLoadWorker(BaseApiWorker):
         self.log_signal_func("=============== 크롤링 종료중...")
         time.sleep(5)
         self.log_signal_func("=============== 크롤링 종료")
+
+        # === 신규: 남아 있는 드라이버 정리 ===
+        if self.driver:
+            try:
+                self.driver.quit()
+            except Exception as e:
+                self.log_signal_func(f"[공통] destroy 중 드라이버 종료 오류 (무시): {e}")
+            finally:
+                self.driver = None
+
         self.progress_end_signal.emit()
 
     # 프로그램 중단

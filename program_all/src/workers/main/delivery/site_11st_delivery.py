@@ -1,4 +1,4 @@
-# src/workers/site_11st_delivery.py
+# src/workers/main/delivery/site_11st_delivery.py
 # -*- coding: utf-8 -*-
 
 import re
@@ -61,7 +61,6 @@ class ElevenstDeliveryCrawler:
 
         # 로그인 페이지 이동
         self.driver.get(self.LOGIN_URL)
-
         time.sleep(3)
 
         # ID 입력
@@ -82,10 +81,15 @@ class ElevenstDeliveryCrawler:
         login_btn = self.selenium.wait_element(By.ID, "loginButton", timeout=20)
         if not login_btn:
             raise Exception("loginButton 요소를 찾지 못했습니다.")
-        login_btn.click()
+
+        # === 신규: element not interactable 대비 JS 클릭 보강 ===
+        try:
+            login_btn.click()
+        except Exception as e:
+            self.log(f"[11번가] loginButton.click() 오류, JS 클릭으로 재시도: {e}")
+            self.driver.execute_script("arguments[0].click();", login_btn)
 
         time.sleep(3)
-
 
         # 공용 PC 팝업 → "다음에 할게요" 닫기 (있으면 닫고, 없으면 로그만)
         close_btn = self.selenium.wait_element(
@@ -131,7 +135,7 @@ class ElevenstDeliveryCrawler:
         except Exception as e:
             self.log(f"[11번가] 로그아웃 중 오류: {e}")
 
-    def _get_request_list_html(self, page_number, date_from,date_to):
+    def _get_request_list_html(self, page_number, date_from, date_to):
         params = {
             "method": "getCancelRequestListAjax",
             "type": "orderList2nd",
@@ -164,20 +168,10 @@ class ElevenstDeliveryCrawler:
             return None
         return html
 
-
     def parse_list_for_pairs(self, html):
         """
         취소요청 리스트 HTML 조각에서
         (주문고유코드, dlvNo) 튜플 목록 추출
-
-        - 주문번호:
-            td.first 안의 a.bt_detailview 의 href
-            javascript:goOrderDetail('20251109012348664');
-            또는 "(20251109012348664)" 텍스트
-
-        - dlvNo:
-            td.td-center 안의
-            a[href^="javascript:goDeliveryTracking('2650634166', ..."]
         """
         soup = BeautifulSoup(html, "html.parser")
 
@@ -218,7 +212,6 @@ class ElevenstDeliveryCrawler:
 
         return pairs
 
-
     def _parse_trace_page(self, html):
         """
         배송조회 페이지에서 택배사 / 송장번호 파싱
@@ -250,13 +243,11 @@ class ElevenstDeliveryCrawler:
 
         return result
 
-
     def _all_delivery_filled(self, excel_rows):
         for row in excel_rows:
             if not str(row.get("delivery_no") or "").strip():
                 return False
         return True
-
 
     def _fetch_trace_info(self, dlv_no):
         """
@@ -304,9 +295,6 @@ class ElevenstDeliveryCrawler:
         date_from = excel_rows[-1].get("_parsed_dt", "")
         date_to   = excel_rows[0].get("_parsed_dt", "")
 
-        # =======================
-        # 로그인 ~ 데이터 수집 ~ 로그아웃
-        # =======================
         try:
             # 1) 로그인 + APIClient 세션 준비
             self._login_and_prepare_api_session(login_id, login_pw)
@@ -326,11 +314,12 @@ class ElevenstDeliveryCrawler:
                     self.log(f"[11번가] page={page_number} HTML 없음 → 중단")
                     break
 
-                # [('주문고유코드', 'dlvNo'), ...] 형식이라고 가정
                 list_for_pairs = self.parse_list_for_pairs(html)
                 if not list_for_pairs:
                     self.log(f"[11번가] page={page_number} 더 이상 주문 없음 → 중단")
                     break
+
+                self.log(f"[11번가] page={page_number} 더 이상 주문 없음 → 중단")
 
                 # 페이지에서 가져온 (order_no, dlv_no)를 excel_rows 에 즉시 매핑
                 for order_no, dlv_no in list_for_pairs:
