@@ -33,8 +33,8 @@ class RegionSetPop(QDialog):
         self._is_select_all_action = False
 
         self.file_driver = FileUtils(self.log_signal.emit)
-        self.loc_all = self.file_driver.read_json_array_from_resources("naver_loc_all.json") # 여기만 수
-
+        self.loc_all = self.file_driver.read_json_array_from_resources("naver_loc_all_real.json") # 여기만 수
+        # self.loc_all = self.file_driver.read_json_array_from_resources("naver_loc_all.json") # 여기만 수
         self.init_ui()
 
     def init_ui(self):

@@ -168,49 +168,28 @@ class ElevenstDeliveryCrawler:
             return None
         return html
 
+
     def parse_list_for_pairs(self, html):
-        """
-        취소요청 리스트 HTML 조각에서
-        (주문고유코드, dlvNo) 튜플 목록 추출
-        """
         soup = BeautifulSoup(html, "html.parser")
-
         pairs = []
-        current_order_no = None
 
-        # 조각이라 form/table이 없을 수도 있어서 그냥 tr 전체 순회
-        for tr in soup.find_all("tr"):
-            # (1) 주문번호 갱신 (td.first)
-            td_first = tr.find("td", class_="first")
-            if td_first:
-                a = td_first.find("a", class_="bt_detailview")
-                order_no = None
+        # 배송조회 버튼만 골라서 파싱
+        for a in soup.find_all("a", href=True, attrs={"ord-no": True}):
+            href = a["href"]
 
-                if a:
-                    href = a.get("href", "")
-                    m = re.search(r"goOrderDetail\('(\d+)'\)", href)
-                    if m:
-                        order_no = m.group(1)
+            # 배송번호 추출
+            m = re.search(r"goDeliveryTracking\('(\d+)'", href)
+            if not m:
+                continue
 
-                if not order_no:
-                    text = td_first.get_text(" ", strip=True)
-                    m = re.search(r"\((\d+)\)", text)
-                    if m:
-                        order_no = m.group(1)
+            dlv_no = m.group(1)
+            order_no = a["ord-no"]
 
-                if order_no:
-                    current_order_no = order_no
-
-            # (2) 배송조회 버튼에서 dlvNo 추출
-            a_dlv = tr.find("a", href=re.compile(r"goDeliveryTracking\("))
-            if a_dlv and current_order_no:
-                href = a_dlv.get("href", "")
-                m = re.search(r"goDeliveryTracking\('(\d+)'", href)
-                if m:
-                    dlv_no = m.group(1)
-                    pairs.append((current_order_no, dlv_no))
+            pairs.append((order_no, dlv_no))
+            self.log(f"[pair] {order_no} - {dlv_no}")
 
         return pairs
+
 
     def _parse_trace_page(self, html):
         """
@@ -240,6 +219,8 @@ class ElevenstDeliveryCrawler:
                     result["택배사"] = val_text
             elif title == "송장번호":
                 result["송장번호"] = val_text.strip()
+
+        self.log(f"result={result})")
 
         return result
 
@@ -316,7 +297,7 @@ class ElevenstDeliveryCrawler:
 
                 list_for_pairs = self.parse_list_for_pairs(html)
                 if not list_for_pairs:
-                    self.log(f"[11번가] page={page_number} 더 이상 주문 없음 → 중단")
+                    self.log(f"[11번가] list_for_pairs page={page_number} 더 이상 주문 없음 → 중단")
                     break
 
                 self.log(f"[11번가] page={page_number} 더 이상 주문 없음 → 중단")
@@ -352,25 +333,33 @@ class ElevenstDeliveryCrawler:
                 f"delivery_no 채워진 건수: {filled_cnt}건"
             )
 
-            # 3) 실제 배송조회 페이지 호출
             for r in excel_rows:
                 order_no = str(r.get("주문고유코드") or "").strip()
                 dlv_no = str(r.get("delivery_no") or "").strip()
 
                 if not order_no:
-                    self.log("[11번가] 주문고유코드가 비어 있어 delivery_no 조회 대상 아님")
+                    self.log("[11번가] 주문고유코드가 비어 있어 delivery_no 조회 대상 아님 → 결제완료 처리")
+                    r["송장번호"] = "결제완료"
+                    r["택배사"] = "결제완료"
                     continue
+
                 if not dlv_no:
-                    self.log(f"[11번가] 주문고유코드 {order_no} 에 대한 delivery_no 미존재")
+                    self.log(f"[11번가] 주문고유코드 {order_no} : delivery_no 미존재 → 결제완료 처리")
+                    r["송장번호"] = "결제완료"
+                    r["택배사"] = "결제완료"
                     continue
 
                 self.log(f"[11번가] 배송조회 호출: 주문고유코드={order_no}, dlvNo={dlv_no}")
 
                 info = self._fetch_trace_info(dlv_no)
+
                 if not info:
+                    self.log(f"[11번가] 배송조회 실패: 주문고유코드={order_no}, dlvNo={dlv_no} → 결제완료 처리")
+                    r["송장번호"] = "결제완료"
+                    r["택배사"] = "결제완료"
                     continue
 
-                # === excel_rows 에 직접 채우기 ===
+                # === 배송정보 성공 ===
                 r["송장번호"] = info.get("송장번호")
                 r["택배사"] = info.get("택배사")
 

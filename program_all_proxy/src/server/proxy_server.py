@@ -50,7 +50,8 @@ class ProxyLogger:
             log_error(f"[request] : 요청 정보 취득 실패: {str(e)}")
             return
 
-        if "kipris.or.kr" in host and "/kpat/dynaPath" in url:
+        # if "kipris.or.kr" in host and "/kpat/dynaPath" in url:
+        if True:
             # === 신규: URL + 메서드 ===
             log_info(f"[request] : dynaPath 요청 → {method} {url}")
 
@@ -104,8 +105,8 @@ class ProxyLogger:
             log_error(f"[response] : 응답/요청 정보 취득 실패: {str(e)}")
             return
 
-        if not ("kipris.or.kr" in host and "/kpat/dynaPath" in url):
-            return
+        # if not ("kipris.or.kr" in host and "/kpat/dynaPath" in url):
+        #     return
 
         log_info(f"[response] : dynaPath 응답 탐지 → {url} (status={status})")
 
@@ -118,9 +119,9 @@ class ProxyLogger:
         body_head = body_bytes.strip()[:1] if body_bytes else b""
         is_json = ("application/json" in content_type) or (body_head in (b"{", b"["))
 
-        if not is_json:
-            log_info(f"[response] : dynaPath 응답 (비JSON) → Content-Type={content_type or '-'}, size={len(body_bytes)} bytes")
-            return
+        # if not is_json:
+        #     log_info(f"[response] : dynaPath 응답 (비JSON) → Content-Type={content_type or '-'}, size={len(body_bytes)} bytes")
+        #     return
 
         # === JSON 파싱 ===
         data = None
@@ -134,7 +135,7 @@ class ProxyLogger:
                 log_error(f"[response] : dynaPath JSON 파싱 실패: {str(e)}")
                 try:
                     raw_text = body_bytes.decode("utf-8", errors="replace")
-                    log_info(f"[response] : 원본 응답 (일부)\n{raw_text[:800]}")
+                    log_info(f"[response] : 원본 응답 (일부)\n{raw_text}")
                 except Exception as de:
                     log_error(f"[response] : 원본 디코딩도 실패: {str(de)}")
                 return

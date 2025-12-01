@@ -66,15 +66,11 @@ class SsgDeliveryCrawler:
 
         # popupLogin URL로 바로 이동 (하드코딩)
         login_url = (
-            "https://member.ssg.com/member/popup/popupLogin.ssg"
-            "?originSite=https%3A//www.ssg.com"
-            "&t="
-            "&gnb=login"
-            "&retURL=https%3A%2F%2Fwww.ssg.com%2F"
+            "https://member.ssg.com/member/popup/popupLogin.ssg?originSite=https%3A//www.ssg.com&t=&gnb=login&retURL=https%3A%2F%2Fwww.ssg.com%2F"
         )
 
         self.driver.get(login_url)
-        time.sleep(2)
+        time.sleep(3)
 
         # 로그인 폼 요소 찾기
         id_input = self.selenium.wait_element(By.ID, "mem_id", timeout=15)
@@ -95,6 +91,7 @@ class SsgDeliveryCrawler:
 
         try:
             login_btn.click()
+            self.log(f"[SSG] 로그인 버튼 클릭")
         except Exception as e:
             # element not interactable 대비 JS 클릭
             self.log(f"[SSG] loginBtn.click() 오류, JS 클릭으로 재시도: {e}")
@@ -103,12 +100,39 @@ class SsgDeliveryCrawler:
         self.log("[SSG] 로그인 버튼 클릭 완료")
         time.sleep(3)  # 로그인 처리 대기
 
+
         # 로그인 후 주문내역 페이지로 직접 진입
         try:
-            self.driver.get(self.ORDER_URL)
-            time.sleep(1.5)
+            self.driver.get(self.SSG_MAIN_URL)
+            time.sleep(2)
         except Exception as e:
             self.log(f"[SSG] ORDER_URL 진입 중 오류(무시 가능): {e}")
+
+
+
+        # === 신규 === '오늘 하루 보지 않기' 팝업 처리
+        try:
+            popup_btns = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                ".common_dialog_button_content.clickable"
+            )
+
+            if not popup_btns:
+                self.log("[SSG] 팝업 없음 (common_dialog_button_content 클릭 불필요)")
+            else:
+                # 정상적으로 2개 나오지만, 1개 이상이면 첫 번째 클릭
+                first_btn = popup_btns[0]
+                try:
+                    first_btn.click()
+                    self.log("[SSG] '오늘 하루 보지 않기' 팝업 자동 처리 완료")
+                except Exception as e:
+                    self.log(f"[SSG] 팝업 클릭 실패(무시)")
+
+                time.sleep(1)
+
+        except Exception as e:
+            self.log(f"[SSG] 팝업 처리 블록 오류(무시): {e}")
+
 
         # Selenium 쿠키를 requests.Session으로 복사
         cookies = self.driver.get_cookies()

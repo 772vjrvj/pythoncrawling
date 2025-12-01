@@ -26,13 +26,14 @@
 
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
-from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
-# from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
+# from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
+# from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 # from src.workers.main.api_kakao_store_food_set_worker               import ApiKakaoStoreFoodSetLoadWorker
 # from src.workers.main.api_ohsu_se_category_set_worker               import ApiOhsuSeCategorySetLoadWorker
-# from src.workers.main.api_delivery_content_set_worker                import ApiDeliveryContentSetLoadWorker
+from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
+from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -63,11 +64,12 @@ WORKER_CLASS_MAP = {
 
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
-     "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
-    # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
+    # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
+    # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
     # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
     # "KAKAO_STORE_FOOD"                  :   ApiKakaoStoreFoodSetLoadWorker,
     # "OHOU_SE_CATEGORY"                  :   ApiOhsuSeCategorySetLoadWorker,
-    #"DELIVERY_CONTENT"                  :   ApiDeliveryContentSetLoadWorker
+    "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
+    "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker
 }
