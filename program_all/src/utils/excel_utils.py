@@ -45,7 +45,7 @@ class ExcelUtils:
         self.log_func("excel 저장완료")
 
 
-    def convert_csv_to_excel_and_delete(self, csv_filename, sheet_name="Sheet1", numeric_columns=None):
+    def convert_csv_to_excel_and_delete(self, csv_filename, sheet_name="Sheet1"):
         """
         CSV 파일을 엑셀 파일로 변환 후 CSV 삭제.
         numeric_columns: 숫자로 변환하고 싶은 컬럼 이름 리스트
@@ -63,43 +63,24 @@ class ExcelUtils:
                     self.log_func(f"⚠️ CSV에 데이터가 없습니다: {csv_filename}")
                 return
 
-            # === 신규 === 특정 컬럼을 숫자로 변환
-            if numeric_columns:
-                for col in numeric_columns:
-                    if col in df.columns:
-                        # 공백/콤마 제거 후 숫자로 변환 (예: "1,234" → 1234)
-                        df[col] = (
-                            df[col]
-                            .astype(str)
-                            .str.replace(",", "", regex=False)
-                            .str.strip()
-                        )
-                        df[col] = pd.to_numeric(df[col], errors="coerce")
+            # === 모든 컬럼을 문자열(str)로 강제 ===
+            for col in df.columns:
+                df[col] = df[col].apply(
+                    lambda v: "" if pd.isna(v) else str(v).strip()
+                )
 
             excel_filename = os.path.splitext(csv_filename)[0] + ".xlsx"
 
-            # 저장 + number_format 적용
+            # 문자열 그대로 저장
             with pd.ExcelWriter(excel_filename, engine="openpyxl") as writer:
                 df.to_excel(writer, index=False, sheet_name=sheet_name)
 
-                if numeric_columns:
-                    wb = writer.book
-                    ws = writer.sheets[sheet_name]
-
-                    # 컬럼 인덱스 매핑 (1-based)
-                    col_index_map = {name: idx + 1 for idx, name in enumerate(df.columns)}
-
-                    for col in numeric_columns:
-                        if col not in col_index_map:
-                            continue
-                        col_idx = col_index_map[col]
-
-                        # 헤더는 1행, 데이터는 2행부터
-                        for row_idx in range(2, len(df) + 2):
-                            cell = ws.cell(row=row_idx, column=col_idx)
-                            # 값이 None/NaN이 아니고 숫자면 number_format 지정
-                            if isinstance(cell.value, (int, float)):
-                                cell.number_format = "0"  # 정수형; 필요하면 "0.00" 등으로 변경 가능
+                ws = writer.sheets[sheet_name]
+                # === 엑셀 셀에 문자열 그대로 넣기 (숫자 자동 변환 방지) ===
+                for r in ws.iter_rows(min_row=2, max_row=len(df) + 1):
+                    for cell in r:
+                        if cell.value is not None:
+                            cell.value = str(cell.value)  # 무조건 문자열로 기록
 
             os.remove(csv_filename)
 
@@ -110,6 +91,7 @@ class ExcelUtils:
         except Exception as e:
             if self.log_func:
                 self.log_func(f"❌ 변환 중 오류 발생: {e}")
+
 
 
     # 일반 객체 리스트인 경우

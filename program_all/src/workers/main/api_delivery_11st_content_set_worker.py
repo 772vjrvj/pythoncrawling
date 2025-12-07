@@ -198,10 +198,7 @@ class ApiDelivery11stContentSetLoadWorker(BaseApiWorker):
 
             # CSV -> 엑셀 변환
             # === 신규: 주문고유코드는 문자열로 유지 (숫자 변환 X) ===
-            self.excel_driver.convert_csv_to_excel_and_delete(
-                self.excel_filename,
-                numeric_columns=["송장번호"]   # ★ 주문고유코드 제거
-            )
+            self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
 
             return True
 
