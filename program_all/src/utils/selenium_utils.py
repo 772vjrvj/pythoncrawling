@@ -49,6 +49,20 @@ class SeleniumUtils:
                 except Exception:
                     pass
 
+    # === 신규: ChromeOptions 생성 전용 헬퍼 ===
+    def _build_options(self):
+        opts = uc.ChromeOptions()
+        opts.add_argument("--disable-blink-features=AutomationControlled")
+        if self._tmp_profile:
+            opts.add_argument(f"--user-data-dir={self._tmp_profile}")
+        opts.add_argument(f"--window-size={DEFAULT_WIDTH},{DEFAULT_HEIGHT}")
+        opts.add_argument("--lang=ko-KR")
+        if self.headless:
+            opts.add_argument("--headless=new")
+            opts.add_argument("--no-sandbox")
+            opts.add_argument("--disable-dev-shm-usage")
+        return opts
+
     # --- 화면 해상도 감지 & 배치 ---
     def _get_screen_size(self) -> Tuple[int, int]:
         """
@@ -101,15 +115,8 @@ class SeleniumUtils:
         self._wipe_locks(self._tmp_profile)
         time.sleep(SLEEP_AFTER_PROFILE)
 
-        opts = uc.ChromeOptions()
-        opts.add_argument("--disable-blink-features=AutomationControlled")
-        opts.add_argument(f"--user-data-dir={self._tmp_profile}")
-        opts.add_argument(f"--window-size={DEFAULT_WIDTH},{DEFAULT_HEIGHT}")
-        opts.add_argument("--lang=ko-KR")
-        if self.headless:
-            opts.add_argument("--headless=new")
-            opts.add_argument("--no-sandbox")
-            opts.add_argument("--disable-dev-shm-usage")
+        # === 신규: options는 매번 새로 생성 (재사용 금지) ===
+        opts = self._build_options()
 
         try:
             self.driver = uc.Chrome(options=opts)
@@ -122,13 +129,27 @@ class SeleniumUtils:
             self._place_left_half()
 
             return self.driver
+
         except SessionNotCreatedException as e:
+            # 크롬/드라이버 버전 안맞아서 첫 시도 실패한 경우 등
             self.last_error = e
             time.sleep(0.5)
-            self.driver = uc.Chrome(options=opts)
+
+            # === 신규: 프로필 락 다시 정리 후, options 새로 만들어 재시도 ===
+            self._wipe_locks(self._tmp_profile)
+            time.sleep(0.2)
+            opts_retry = self._build_options()   # ★ 여기서 새 ChromeOptions 객체 생성
+
+            self.driver = uc.Chrome(options=opts_retry)
+            try:
+                self.driver.set_page_load_timeout(timeout)
+            except Exception:
+                pass
+
             # 재시작 후에도 배치 적용
             self._place_left_half()
             return self.driver
+
         except Exception as e:
             self.last_error = e
             self.quit()
