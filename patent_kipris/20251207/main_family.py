@@ -45,14 +45,13 @@ def safe_log(*msg):
 # ============================
 # === 신규: family 조회 함수 ===
 # ============================
-def fetch_family_count(idx, ori_number: str, cookies: str):
+def fetch_family_count(idx, ori_number: str, cookies: str) -> (int, int):
     """
     ori_number → familyTable → countryCode 목록을 찾아
-    - 중복 제거 없음
-    - KR 제거 없음
-    - count는 빈값만 제외한 개수
-    - countryCode 가 오직 'KR' 1개이면 memo = '국내'
-    return: (rowIndex, count, memo)
+    - KR 제거
+    - 중복 제거
+    후 count 리턴
+    return: (rowIndex, count)
     """
 
     core = ori_number[2:]  # 1020040090349 → 20040090349
@@ -84,31 +83,27 @@ def fetch_family_count(idx, ori_number: str, cookies: str):
 
             if not table:
                 safe_log(f"[{idx}] familyTable 없음 (시도 {attempt}/3)")
-                return idx, 0, ""
+                return idx, 0
 
-            # ===== 변경: countryCode input 모두 찾기 (중복 / KR 제거 없음) =====
+            # ===== 신규 변경: countryCode input 모두 찾기 =====
             inputs = table.find_all("input", {"name": "countryCode"})
-            country_list = [(inp.get("value") or "").strip() for inp in inputs]
+            country_list = [inp.get("value", "").strip() for inp in inputs]
 
-            # 빈값을 제외한 실제 값들만 사용
-            non_empty = [c for c in country_list if c]
+            # KR 제거, 빈값 제거
+            filtered = [c for c in country_list if c and c != "KR"]
 
-            # KR만 1건인 경우: 메모 "국내"
-            memo = ""
-            if len(non_empty) == 1 and non_empty[0] == "KR":
-                memo = "국내"
+            # 중복 제거
+            unique = set(filtered)
 
-            # count는 중복 제거 없이, 빈값만 제외한 개수
-            count = len(non_empty)
-
-            return idx, count, memo
+            return idx, len(unique)
 
         except Exception as e:
             safe_log(f"[{idx}] 예외 발생 (시도 {attempt}/3): {str(e)}")
             time.sleep(1)
 
-    # 실패 시 0 / 메모 없음
-    return idx, 0, ""
+    # 실패 시 0
+    return idx, 0
+
 
 
 # ============================
@@ -116,9 +111,7 @@ def fetch_family_count(idx, ori_number: str, cookies: str):
 # ============================
 def main():
     safe_log("\n=== 엑셀 로드 ===")
-
-    # === 신규: 출원번호(일자)를 문자열로 강제 읽기 → 1.02e+12 방지 ===
-    df = pd.read_excel(EXCEL_IN, dtype={"출원번호(일자)": str})
+    df = pd.read_excel(EXCEL_IN)
 
     if "출원번호(일자)" not in df.columns:
         raise Exception("엑셀에 '출원번호(일자)' 컬럼이 없음")
@@ -140,46 +133,29 @@ def main():
         futures = {}
 
         for idx, row in df.iterrows():
-            ori_number = (row.get("출원번호(일자)") or "").strip()
-
-            # 혹시 모를 공백/이상값 방지용
-            if not ori_number or ori_number.lower() == 'nan':
-                futures[executor.submit(lambda i=idx: (i, 0, ""))] = idx
-                continue
-
-            # 로깅용 출력
+            ori_number = str(row["출원번호(일자)"]).strip()
             print(f'ori_number : {ori_number}')
+
+            if not ori_number or ori_number.lower() == 'nan':
+                futures[executor.submit(lambda: (idx, 0))] = idx
+                continue
 
             futures[executor.submit(fetch_family_count, idx, ori_number, cookies)] = idx
 
         for future in as_completed(futures):
-            idx, count, memo = future.result()
+            idx, count = future.result()
             completed += 1
 
-            progress = (completed / total) * 100.0
-            safe_log(f"[{completed}/{total}] "
-                     f"({progress:.2f}%) idx={idx} → 패밀리정보 {count}건, 메모='{memo}'")
+            progress = (completed / total) * 100
+            safe_log(f"[{completed}/{total}] ({progress:.2f}%) idx={idx} → 패밀리정보 {count}건")
 
-            results.append((idx, count, memo))
+            results.append((idx, count))
 
     safe_log("\n=== 엑셀 업데이트 중 ===")
 
-    # 패밀리정보 (수) 컬럼 초기화
-    if "패밀리정보 (수)" not in df.columns:
-        df["패밀리정보 (수)"] = 0
-    else:
-        df["패밀리정보 (수)"] = df["패밀리정보 (수)"].fillna(0)
-
-    # 메모 컬럼 초기화
-    if "메모" not in df.columns:
-        df["메모"] = ""
-    else:
-        df["메모"] = df["메모"].fillna("")
-
-    for idx, count, memo in results:
+    df["패밀리정보 (수)"] = 0
+    for idx, count in results:
         df.at[idx, "패밀리정보 (수)"] = count
-        if memo:
-            df.at[idx, "메모"] = memo
 
     df.to_excel(EXCEL_OUT, index=False)
 
