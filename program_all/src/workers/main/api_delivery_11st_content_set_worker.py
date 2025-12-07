@@ -71,11 +71,6 @@ class ApiDelivery11stContentSetLoadWorker(BaseApiWorker):
                 if yyyymmdd:
                     row["주문일자"] = format_yyyymmdd_to_yyyy_mm_dd(yyyymmdd)
 
-            # 송장번호 숫자만
-            inv = str(row.get("송장번호") or "")
-            inv_digits = re.sub(r"\D", "", inv)
-            row["송장번호"] = inv_digits
-
             normalized.append(row)
 
         return normalized

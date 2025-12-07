@@ -188,7 +188,6 @@ class MainWindow(QWidget):
 
     # 프로그램 일시 중지 (동일한 아이디로 로그인시)
     def handle_api_failure(self, error_message):
-        self.collect_button.setEnabled(False)  # 버튼 비활성화
         self.collect_button.setStyleSheet(main_style(self.color))
         self.collect_button.repaint()
 

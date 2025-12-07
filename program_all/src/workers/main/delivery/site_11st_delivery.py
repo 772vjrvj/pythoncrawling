@@ -173,22 +173,50 @@ class ElevenstDeliveryCrawler:
         soup = BeautifulSoup(html, "html.parser")
         pairs = []
 
-        # 배송조회 버튼만 골라서 파싱
-        for a in soup.find_all("a", href=True, attrs={"ord-no": True}):
-            href = a["href"]
+        # td.td-center 전부 대상으로 순회
+        td_list = soup.find_all("td", class_="td-center")
+        if not td_list:
+            self.log("[11번가] td.td-center 를 찾지 못했습니다.")
+            return pairs
 
-            # 배송번호 추출
-            m = re.search(r"goDeliveryTracking\('(\d+)'", href)
-            if not m:
+        for td in td_list:
+            order_status = None
+            ord_no = None
+            dlv_no = None
+
+            # 0. span 첫번째값의 텍스트 → order_status
+            span = td.find("span")
+            if span:
+                order_status = span.get_text(strip=True)
+
+            # 1, 2를 위해 td 안의 a 태그 전부 순회
+            for a in td.find_all("a", href=True):
+                href = a["href"]
+
+                # 1) goQnaWrite(...) 에서 첫 번째 인자 → ord_no
+                #    예: javascript:sellerQnaWrite('20251205020758199', '5925154481', ...);
+                if ord_no is None:
+                    m_qna = re.search(r"sellerQnaWrite\('(\d+)'", href)
+                    if m_qna:
+                        ord_no = m_qna.group(1)
+
+                # 2) goDeliveryTracking(...) 에서 첫 번째 인자 → dlv_no
+                #    예: javascript:goDeliveryTracking('2657658989', '00027');
+                if dlv_no is None:
+                    m_dlv = re.search(r"goDeliveryTracking\('(\d+)'", href)
+                    if m_dlv:
+                        dlv_no = m_dlv.group(1)
+
+            if not ord_no:
+                # 주문번호 못 찾으면 이 td-center는 스킵
+                self.log("[11번가] 주문번호(ord_no) 파싱 실패 → td-center 스킵")
                 continue
 
-            dlv_no = m.group(1)
-            order_no = a["ord-no"]
-
-            pairs.append((order_no, dlv_no))
-            self.log(f"[pair] {order_no} - {dlv_no}")
+            pairs.append((ord_no, order_status, dlv_no))
+            self.log(f"[pair] order_no={ord_no}, status={order_status}, dlv_no={dlv_no}")
 
         return pairs
+
 
 
     def _parse_trace_page(self, html):
@@ -224,11 +252,16 @@ class ElevenstDeliveryCrawler:
 
         return result
 
+
     def _all_delivery_filled(self, excel_rows):
         for row in excel_rows:
-            if not str(row.get("delivery_no") or "").strip():
+            delivery_no = str(row.get("delivery_no") or "").strip()
+            invoice_no  = str(row.get("송장번호") or "").strip()
+            # 둘 다 없으면 아직 미완료
+            if not delivery_no and not invoice_no:
                 return False
         return True
+
 
     def _fetch_trace_info(self, dlv_no):
         """
@@ -300,19 +333,26 @@ class ElevenstDeliveryCrawler:
                     self.log(f"[11번가] list_for_pairs page={page_number} 더 이상 주문 없음 → 중단")
                     break
 
-                self.log(f"[11번가] page={page_number} 더 이상 주문 없음 → 중단")
-
                 # 페이지에서 가져온 (order_no, dlv_no)를 excel_rows 에 즉시 매핑
-                for order_no, dlv_no in list_for_pairs:
-                    if not order_no or not dlv_no:
+                for order_no, order_status, dlv_no in list_for_pairs:
+                    # 주문번호는 반드시 있어야 매핑 가능
+                    if not order_no:
                         continue
+
                     order_no_str = str(order_no).strip()
-                    dlv_no_str = str(dlv_no).strip()
+                    dlv_no_str = str(dlv_no).strip() if dlv_no else ""
 
                     for row in excel_rows:
                         excel_order_no = str(row.get("주문고유코드") or "").strip()
-                        if excel_order_no == order_no_str:
+                        if excel_order_no != order_no_str:
+                            continue
+
+                        # 1순위: dlv_no 가 있으면 기존처럼 delivery_no 세팅
+                        if dlv_no_str:
                             row["delivery_no"] = dlv_no_str
+                        # 2순위: dlv_no 가 없으면 송장번호 칸에 주문상태(order_status) 기록
+                        elif order_status:
+                            row["송장번호"] = order_status
 
                 # 모든 주문에 delivery_no 가 채워졌으면 조기 종료
                 if self._all_delivery_filled(excel_rows):
@@ -335,33 +375,25 @@ class ElevenstDeliveryCrawler:
 
             for r in excel_rows:
                 order_no = str(r.get("주문고유코드") or "").strip()
-                dlv_no = str(r.get("delivery_no") or "").strip()
+                dlv_no   = str(r.get("delivery_no") or "").strip()
 
+                # 주문번호 없으면 의미 없는 row → 기존처럼 스킵/결제완료 처리 유지할지 결정
                 if not order_no:
-                    self.log("[11번가] 주문고유코드가 비어 있어 delivery_no 조회 대상 아님 → 결제완료 처리")
-                    r["송장번호"] = "결제완료"
-                    r["택배사"] = "결제완료"
+                    self.log("[11번가] 주문고유코드가 비어 있어 delivery_no 조회 대상 아님")
                     continue
 
+                # dlv_no 없는 경우: 앞 단계에서 order_status 를 송장번호에 넣었을 수 있으니
+                # 여기서는 배송조회 스킵하고 그대로 둔다
                 if not dlv_no:
-                    self.log(f"[11번가] 주문고유코드 {order_no} : delivery_no 미존재 → 결제완료 처리")
-                    r["송장번호"] = "결제완료"
-                    r["택배사"] = "결제완료"
+                    self.log(f"[11번가] 주문고유코드 {order_no} : delivery_no 미존재 → 배송조회 스킵 (현재 송장번호='{r.get('송장번호')}')")
                     continue
 
                 self.log(f"[11번가] 배송조회 호출: 주문고유코드={order_no}, dlvNo={dlv_no}")
-
                 info = self._fetch_trace_info(dlv_no)
-
-                if not info:
-                    self.log(f"[11번가] 배송조회 실패: 주문고유코드={order_no}, dlvNo={dlv_no} → 결제완료 처리")
-                    r["송장번호"] = "결제완료"
-                    r["택배사"] = "결제완료"
-                    continue
 
                 # === 배송정보 성공 ===
                 r["송장번호"] = info.get("송장번호")
-                r["택배사"] = info.get("택배사")
+                r["택배사"]   = info.get("택배사")
 
                 time.sleep(0.3)
 

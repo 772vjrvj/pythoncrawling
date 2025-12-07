@@ -56,7 +56,7 @@ class ExcelUtils:
             return
 
         try:
-            df = pd.read_csv(csv_filename, encoding="utf-8-sig")
+            df = pd.read_csv(csv_filename, encoding="utf-8-sig", dtype=str)
 
             if df.empty:
                 if self.log_func:
