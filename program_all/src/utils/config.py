@@ -353,27 +353,46 @@ SITE_LIST = [
     #          {"code": "page",           "value": "페이지",             "checked": True},
     #      ]
     # ),
-    Site("배송정보 11번가", "DELIVERY_11ST_CONTENT", "#FF003E", enabled=True, popup=True,
-       columns = [
-        {"code": "id",               "value": "id",            "checked": True},
-        {"code": "password",         "value": "password",      "checked": True},
-        {"code": "market",           "value": "마켓",           "checked": True},
-        {"code": "order_date",       "value": "주문일자",        "checked": True},
-        {"code": "order_code",       "value": "주문고유코드",    "checked": True},
-         {"code": "invoice_no",       "value": "송장번호",       "checked": True},
-         {"code": "delivery_company", "value": "택배사",         "checked": True}
-      ],
-    ),
-     Site("배송정보 SSG", "DELIVERY_SSG_CONTENT", "#F12972", enabled=True, popup=True,
-          columns = [
-              {"code": "id",               "value": "id",            "checked": True},
-              {"code": "password",         "value": "password",      "checked": True},
-              {"code": "market",           "value": "마켓",           "checked": True},
-              {"code": "order_date",       "value": "주문일자",        "checked": True},
-              {"code": "order_code",       "value": "주문고유코드",    "checked": True},
-              {"code": "invoice_no",       "value": "송장번호",       "checked": True},
-              {"code": "delivery_company", "value": "택배사",         "checked": True}
-          ]
+    # Site("배송정보 11번가", "DELIVERY_11ST_CONTENT", "#FF003E", enabled=True, popup=True,
+    #    columns = [
+    #     {"code": "id",               "value": "id",            "checked": True},
+    #     {"code": "password",         "value": "password",      "checked": True},
+    #     {"code": "market",           "value": "마켓",           "checked": True},
+    #     {"code": "order_date",       "value": "주문일자",        "checked": True},
+    #     {"code": "order_code",       "value": "주문고유코드",    "checked": True},
+    #      {"code": "invoice_no",       "value": "송장번호",       "checked": True},
+    #      {"code": "delivery_company", "value": "택배사",         "checked": True}
+    #   ],
+    # ),
+    #  Site("배송정보 SSG", "DELIVERY_SSG_CONTENT", "#F12972", enabled=True, popup=True,
+    #       columns = [
+    #           {"code": "id",               "value": "id",            "checked": True},
+    #           {"code": "password",         "value": "password",      "checked": True},
+    #           {"code": "market",           "value": "마켓",           "checked": True},
+    #           {"code": "order_date",       "value": "주문일자",        "checked": True},
+    #           {"code": "order_code",       "value": "주문고유코드",    "checked": True},
+    #           {"code": "invoice_no",       "value": "송장번호",       "checked": True},
+    #           {"code": "delivery_company", "value": "택배사",         "checked": True}
+    #       ]
+    # ),
+    Site("피치힐26", "PEACHCHILL26", "#121212", enabled=True,
+         columns = [
+             {"code": "product_code", "value": "상품코드", "checked": True},
+             {"code": "product_name", "value": "상품명", "checked": True},
+             {"code": "product_price","value": "상품가격", "checked": True},
+             {"code": "detail_url",   "value": "상품 상세 정보 URL", "checked": True},
+             {"code": "list_image_urls",  "value": "상품 목록 이미지 URL", "checked": True},
+             {"code": "list_image_names", "value": "상품 목록 이미지명", "checked": True},
+             {"code": "thumbnail_image_urls",  "value": "썸네일 이미지 URL", "checked": True},
+             {"code": "thumbnail_image_names", "value": "썸네일 이미지명", "checked": True},
+             {"code": "youtube_url", "value": "YOUTUBE URL", "checked": True},
+             {"code": "detail_image_urls",  "value": "상품 상세정보 이미지 URL", "checked": True},
+             {"code": "detail_image_names", "value": "상품 상세정보 이미지명", "checked": True},
+         ],
+         setting=[
+             {'name': '시작 페이지', 'code': 'st_page',    'value': '', 'type': 'input'},
+             {'name': '종료 페이지', 'code': 'ed_page',    'value': '', 'type': 'input'}
+         ]
     ),
 ]
 

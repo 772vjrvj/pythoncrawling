@@ -7,14 +7,14 @@ import time
 import threading
 from datetime import datetime
 
-EXCEL_IN = "251207_패밀리사이즈의뢰.xlsx"
-EXCEL_OUT = "251207_패밀리사이즈의뢰_filled.xlsx"
+# ============================
+# === 설정값 ===
+# ============================
+EXCEL_IN = "kipris_match_result2.xlsx"
+EXCEL_OUT = "kipris_match_result_filled.xlsx"
 
 URL = "https://kopd.kipo.go.kr:8888/family.do"
 
-# ============================
-# === 신규: 요청 헤더 ===
-# ============================
 HEADERS = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
     "accept-encoding": "gzip, deflate, br, zstd",
@@ -34,28 +34,24 @@ HEADERS = {
 print_lock = threading.Lock()
 
 
-# ============================
-# === 신규: 로그 출력 함수 ===
-# ============================
 def safe_log(*msg):
     with print_lock:
         print(*msg)
 
 
-# ============================
-# === 신규: family 조회 함수 ===
-# ============================
-def fetch_family_count(idx, ori_number: str, cookies: str):
+def fetch_family_info(idx: int, ori_number: str, cookies: str):
     """
-    ori_number → familyTable → countryCode 목록을 찾아
-    - 중복 제거 없음
-    - KR 제거 없음
-    - count는 빈값만 제외한 개수
-    - countryCode 가 오직 'KR' 1개이면 memo = '국내'
-    return: (rowIndex, count, memo)
-    """
+    ori_number → familyTable → countryCode 목록 추출 후
 
-    core = ori_number[2:]  # 1020040090349 → 20040090349
+    - country_list: 전체 국가 코드 리스트 (빈값 제외)
+    - all_codes = set(country_list)
+    - 패밀리정보 (수) = len(all_codes)      # KR 포함, 중복 제거
+    - 국내여부 = all_codes가 KR만 있으면 "국내", 아니면 ""
+
+    return: (rowIndex, family_count, domestic_flag)
+    """
+    # 예: 1020040090349 → 20040090349 → KR.20040090349.A
+    core = ori_number[2:]
     docdb_number = f"KR.{core}.A"
 
     payload = {
@@ -64,7 +60,7 @@ def fetch_family_count(idx, ori_number: str, cookies: str):
         "ori_numberType": "U1301",
         "ori_number": ori_number,
         "docdb_numberType": "U1301",
-        "docdb_number": docdb_number
+        "docdb_number": docdb_number,
     }
 
     headers = HEADERS.copy()
@@ -86,39 +82,38 @@ def fetch_family_count(idx, ori_number: str, cookies: str):
                 safe_log(f"[{idx}] familyTable 없음 (시도 {attempt}/3)")
                 return idx, 0, ""
 
-            # ===== 변경: countryCode input 모두 찾기 (중복 / KR 제거 없음) =====
             inputs = table.find_all("input", {"name": "countryCode"})
-            country_list = [(inp.get("value") or "").strip() for inp in inputs]
+            country_list = [
+                (inp.get("value") or "").strip()
+                for inp in inputs
+                if inp.get("value")
+            ]
 
-            # 빈값을 제외한 실제 값들만 사용
-            non_empty = [c for c in country_list if c]
+            if not country_list:
+                # 국가코드 자체가 없으면 패밀리 없음 취급
+                return idx, 0, ""
 
-            # KR만 1건인 경우: 메모 "국내"
-            memo = ""
-            if len(non_empty) == 1 and non_empty[0] == "KR":
-                memo = "국내"
+            # === 중복 제거된 전체 국가 수 (KR 포함) ===
+            all_codes = set(country_list)
+            family_count = len(all_codes)
 
-            # count는 중복 제거 없이, 빈값만 제외한 개수
-            count = len(non_empty)
+            # === 국내여부 판단 ===
+            # 전체 국가코드가 KR만 있으면 "국내"
+            domestic_flag = "국내" if all_codes and all_codes.issubset({"KR"}) else ""
 
-            return idx, count, memo
+            return idx, family_count, domestic_flag
 
         except Exception as e:
             safe_log(f"[{idx}] 예외 발생 (시도 {attempt}/3): {str(e)}")
             time.sleep(1)
 
-    # 실패 시 0 / 메모 없음
+    # 3회 실패 시
     return idx, 0, ""
 
 
-# ============================
-# ============ MAIN ==========
-# ============================
 def main():
     safe_log("\n=== 엑셀 로드 ===")
-
-    # === 신규: 출원번호(일자)를 문자열로 강제 읽기 → 1.02e+12 방지 ===
-    df = pd.read_excel(EXCEL_IN, dtype={"출원번호(일자)": str})
+    df = pd.read_excel(EXCEL_IN)
 
     if "출원번호(일자)" not in df.columns:
         raise Exception("엑셀에 '출원번호(일자)' 컬럼이 없음")
@@ -126,8 +121,11 @@ def main():
     total = len(df)
     safe_log(f"총 {total}건 처리 예정\n")
 
-    safe_log("JSESSIONID 포함된 cookie 입력:")
-    cookies = "JSESSIONID=sCRH3C8kgW78V3qyajTXnPkb1OiesQwkbveYQf0Pex4uvA8HtHor3C7fkwYDPytr.opdcws1_servlet_engine3; searchHistory=2025-11-24%01*33*05^KR^original%#application&^1020040090349^$2025-11-24%01*13*00^KR^original%#application&^1020040090349^$2025-11-24%01*10*25^KR^original%#application&^1020040090349^$2025-11-24%01*10*08^KR^original%#application&^1020040090349^$2025-11-24%01*09*44^KR^original%#application&^1020040090349^$2025-11-24%01*09*30^KR^original%#application&^1020040090349^"
+    # 실제 사용할 cookie (JSESSIONID 포함해서 최신으로 교체해서 사용)
+    cookies = (
+        "JSESSIONID=...;"  # TODO: 여기 브라우저에서 복사한 최신 쿠키 문자열로 교체
+        " searchHistory=..."
+    )
 
     results = []
     completed = 0
@@ -140,46 +138,40 @@ def main():
         futures = {}
 
         for idx, row in df.iterrows():
-            ori_number = (row.get("출원번호(일자)") or "").strip()
+            ori_number = str(row["출원번호(일자)"]).strip()
 
-            # 혹시 모를 공백/이상값 방지용
-            if not ori_number or ori_number.lower() == 'nan':
-                futures[executor.submit(lambda i=idx: (i, 0, ""))] = idx
+            # NaN 또는 빈값 처리
+            if not ori_number or ori_number.lower() == "nan":
+                fut = executor.submit(lambda i=idx: (i, 0, ""))
+                futures[fut] = idx
                 continue
 
-            # 로깅용 출력
-            print(f'ori_number : {ori_number}')
-
-            futures[executor.submit(fetch_family_count, idx, ori_number, cookies)] = idx
+            fut = executor.submit(fetch_family_info, idx, ori_number, cookies)
+            futures[fut] = idx
 
         for future in as_completed(futures):
-            idx, count, memo = future.result()
+            idx, count, domestic_flag = future.result()
             completed += 1
 
-            progress = (completed / total) * 100.0
-            safe_log(f"[{completed}/{total}] "
-                     f"({progress:.2f}%) idx={idx} → 패밀리정보 {count}건, 메모='{memo}'")
+            progress = (completed / total) * 100
+            safe_log(
+                f"[{completed}/{total}] ({progress:.2f}%) "
+                f"idx={idx} → 패밀리정보 {count}건, 국내여부='{domestic_flag}'"
+            )
 
-            results.append((idx, count, memo))
+            results.append((idx, count, domestic_flag))
 
     safe_log("\n=== 엑셀 업데이트 중 ===")
 
-    # 패밀리정보 (수) 컬럼 초기화
+    # 컬럼이 없으면 새로 만들고, 있으면 덮어씀
     if "패밀리정보 (수)" not in df.columns:
         df["패밀리정보 (수)"] = 0
-    else:
-        df["패밀리정보 (수)"] = df["패밀리정보 (수)"].fillna(0)
+    if "국내여부" not in df.columns:
+        df["국내여부"] = ""
 
-    # 메모 컬럼 초기화
-    if "메모" not in df.columns:
-        df["메모"] = ""
-    else:
-        df["메모"] = df["메모"].fillna("")
-
-    for idx, count, memo in results:
+    for idx, count, domestic_flag in results:
         df.at[idx, "패밀리정보 (수)"] = count
-        if memo:
-            df.at[idx, "메모"] = memo
+        df.at[idx, "국내여부"] = domestic_flag
 
     df.to_excel(EXCEL_OUT, index=False)
 

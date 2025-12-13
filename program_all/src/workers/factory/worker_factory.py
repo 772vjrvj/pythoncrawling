@@ -32,8 +32,9 @@
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 # from src.workers.main.api_kakao_store_food_set_worker               import ApiKakaoStoreFoodSetLoadWorker
 # from src.workers.main.api_ohsu_se_category_set_worker               import ApiOhsuSeCategorySetLoadWorker
-from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
-from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
+# from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
+# from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
+from src.workers.main.api_peachchill26_set_worker                   import ApiPeachhill26SetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -70,6 +71,7 @@ WORKER_CLASS_MAP = {
     # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
     # "KAKAO_STORE_FOOD"                  :   ApiKakaoStoreFoodSetLoadWorker,
     # "OHOU_SE_CATEGORY"                  :   ApiOhsuSeCategorySetLoadWorker,
-    "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
-    "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker
+    # "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
+    # "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker,
+    "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
 }
