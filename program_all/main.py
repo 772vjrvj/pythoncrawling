@@ -74,26 +74,22 @@ def qt_exec(app: QApplication) -> int:
 
 
 def main() -> None:
-    # === 신규: 앱 생성 전에 단일 인스턴스 락 확인 (권장) ===
-    lock = SingleInstance("program_single_instance")
-    if lock.already_running():
-        # 아직 QApplication을 만들기 전이므로 임시 생성해서 경고창 표시
-        show_already_running_alert(None)
-        sys.exit(0)
+    # lock = SingleInstance("program_single_instance") # 중복 실행 가능 주석
+    # if lock.already_running(): # 중복 실행 가능 주석
+    #     show_already_running_alert(None) # 중복 실행 가능 주석
+    #     sys.exit(0) # 중복 실행 가능 주석
 
-    # === 기존: Qt 앱, 상태 초기화, AppManager 진입 ===
     app = QApplication(sys.argv)
 
-    # (참조 유지: GC로 lock이 해제되지 않게 App 객체에 붙여둠)
-    app._single_instance_lock = lock  # noqa: attach
+    # app._single_instance_lock = lock  # noqa: attach # 중복 실행 가능 주석
 
     # 앱 종료 직전에 락 정리
-    def _on_about_to_quit():
-        try:
-            lock.release()
-        except Exception:
-            pass
-    app.aboutToQuit.connect(_on_about_to_quit)
+    # def _on_about_to_quit():   # 중복 실행 가능 주석
+    #     try:   # 중복 실행 가능 주석
+    #         lock.release()     # 중복 실행 가능 주석
+    #     except Exception:  # 중복 실행 가능 주석
+    #         pass   # 중복 실행 가능 주석
+    # app.aboutToQuit.connect(_on_about_to_quit)     # 중복 실행 가능 주석
 
     # === 기존 ===
     state = GlobalState()

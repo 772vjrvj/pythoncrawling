@@ -22,9 +22,47 @@ SITE_LIST = [
     #      ],
     # ),
     #
-    # Site("네이버 플레이스", "NAVER_PLACE", "#03C75A", enabled=True,
-    #      setting=[]
-    #      ),
+    Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
+         setting=[
+             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+         ],
+         columns = [
+            {"code": "id",             "value": "아이디",        "checked": True},
+            {"code": "name",           "value": "이름",          "checked": True},
+            {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
+            {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
+            {"code": "category_main",  "value": "대분류",        "checked": True},
+            {"code": "category_sub",   "value": "소분류",        "checked": True},
+            {"code": "rating",         "value": "별점",          "checked": True},
+            {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
+            {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
+            {"code": "open_time1",     "value": "이용시간1",     "checked": True},
+            {"code": "open_time2",     "value": "이용시간2",     "checked": True},
+            {"code": "category",       "value": "카테고리",      "checked": True},
+            {"code": "url",            "value": "URL",           "checked": True},
+            {"code": "map",            "value": "지도",          "checked": True},
+            {"code": "amenities",      "value": "편의시설",      "checked": True},
+            {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
+            {"code": "phone",          "value": "전화번호",      "checked": True},
+            {"code": "site",           "value": "사이트",        "checked": True},
+            {"code": "region_info",    "value": "주소지정보",    "checked": True},
+            {"code": "city",           "value": "시도(검색)",    "checked": True},
+            {"code": "division",       "value": "시군구(검색)",  "checked": True},
+            {"code": "sector",         "value": "읍면동(검색)",  "checked": True},
+            {"code": "keyword",        "value": "키워드(검색)",  "checked": True},
+            {"code": "all_keyword",    "value": "전체 검색어",  "checked": True},
+
+            # === 신규 === 대행사 정보
+            {"code": "agency_name",    "value": "대행사 상호",          "checked": True},
+            {"code": "agency_ceo",     "value": "대행사 대표자명",      "checked": True},
+            {"code": "agency_address", "value": "대행사 소재지",        "checked": True},
+            {"code": "agency_bizno",   "value": "대행사 사업자번호",    "checked": True},
+            {"code": "agency_mailno",  "value": "대행사 통신판매업번호","checked": True},
+            {"code": "agency_phone",   "value": "대행사 연락처",        "checked": True},
+            {"code": "agency_site",    "value": "대행사 홈페이지",      "checked": True},
+            ],
+         region = True
+         ),
     # Site("네이버 플레이스 URL", "NAVER_PLACE_URL_ALL", "#03C75A", enabled=True,
     #      setting=[
     #          {'name': '용량(MB) 1 ~ 1000사이 숫자를 입력하세요', 'code': 'image_size',    'value': '1000', 'type': 'input'},
@@ -375,25 +413,25 @@ SITE_LIST = [
     #           {"code": "delivery_company", "value": "택배사",         "checked": True}
     #       ]
     # ),
-    Site("피치힐26", "PEACHCHILL26", "#121212", enabled=True,
-         columns = [
-             {"code": "product_code", "value": "상품코드", "checked": True},
-             {"code": "product_name", "value": "상품명", "checked": True},
-             {"code": "product_price","value": "상품가격", "checked": True},
-             {"code": "detail_url",   "value": "상품 상세 정보 URL", "checked": True},
-             {"code": "list_image_urls",  "value": "상품 목록 이미지 URL", "checked": True},
-             {"code": "list_image_names", "value": "상품 목록 이미지명", "checked": True},
-             {"code": "thumbnail_image_urls",  "value": "썸네일 이미지 URL", "checked": True},
-             {"code": "thumbnail_image_names", "value": "썸네일 이미지명", "checked": True},
-             {"code": "youtube_url", "value": "YOUTUBE URL", "checked": True},
-             {"code": "detail_image_urls",  "value": "상품 상세정보 이미지 URL", "checked": True},
-             {"code": "detail_image_names", "value": "상품 상세정보 이미지명", "checked": True},
-         ],
-         setting=[
-             {'name': '시작 페이지', 'code': 'st_page',    'value': '', 'type': 'input'},
-             {'name': '종료 페이지', 'code': 'ed_page',    'value': '', 'type': 'input'}
-         ]
-    ),
+    # Site("피치힐26", "PEACHCHILL26", "#121212", enabled=True,
+    #      columns = [
+    #          {"code": "product_code", "value": "상품코드", "checked": True},
+    #          {"code": "product_name", "value": "상품명", "checked": True},
+    #          {"code": "product_price","value": "상품가격", "checked": True},
+    #          {"code": "detail_url",   "value": "상품 상세 정보 URL", "checked": True},
+    #          {"code": "list_image_urls",  "value": "상품 목록 이미지 URL", "checked": True},
+    #          {"code": "list_image_names", "value": "상품 목록 이미지명", "checked": True},
+    #          {"code": "thumbnail_image_urls",  "value": "썸네일 이미지 URL", "checked": True},
+    #          {"code": "thumbnail_image_names", "value": "썸네일 이미지명", "checked": True},
+    #          {"code": "youtube_url", "value": "YOUTUBE URL", "checked": True},
+    #          {"code": "detail_image_urls",  "value": "상품 상세정보 이미지 URL", "checked": True},
+    #          {"code": "detail_image_names", "value": "상품 상세정보 이미지명", "checked": True},
+    #      ],
+    #      setting=[
+    #          {'name': '시작 페이지', 'code': 'st_page',    'value': '', 'type': 'input'},
+    #          {'name': '종료 페이지', 'code': 'ed_page',    'value': '', 'type': 'input'}
+    #      ]
+    # ),
 ]
 
 # 전역 변수

@@ -86,16 +86,16 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
             name = f'{loc["시도"]} {loc["시군구"]} {loc["읍면동"]} '
 
-            for idx, query in enumerate(self.keyword_list, start=1):
+            for idx, query_keyword in enumerate(self.keyword_list, start=1):
                 if not self.running:  # 실행 상태 확인
                     self.log_signal_func("크롤링이 중지되었습니다.")
                     break
-                full_name = name + query
+                full_name = name + query_keyword
                 self.log_signal_func(f"전국: {index} / {loc_all_len}, 키워드: {idx} / {keyword_list_len}, 검색어: {full_name}")
-                self.loc_all_keyword_list_detail(full_name, keyword_list_len, idx, loc_all_len, index)
+                self.loc_all_keyword_list_detail(full_name, keyword_list_len, idx, loc_all_len, index, loc, query_keyword)
 
     # 전국 상세
-    def loc_all_keyword_list_detail(self, query, total_queries, current_query_index, total_locs, locs_index):
+    def loc_all_keyword_list_detail(self, query, total_queries, current_query_index, total_locs, locs_index, loc, query_keyword):
         try:
             page = 1
             result_ids = []
@@ -129,7 +129,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
                 time.sleep(random.uniform(2, 4))
 
-                place_info = self.fetch_place_info(place_id)
+                place_info = self.fetch_place_info(place_id, loc, query_keyword, query)
                 if not place_info:
                     self.log_signal_func(f"⚠️ ID {place_id}의 상세 정보를 가져오지 못했습니다.")
                     continue
@@ -159,7 +159,12 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 self.log_signal_func("크롤링이 중지되었습니다.")
                 break
 
-            obj = self.fetch_place_info(place_id)
+            loc = {
+                '시도': '',
+                '시군구': '',
+                '읍면동': '',
+            }
+            obj = self.fetch_place_info(place_id, loc, '', '')
             result_list.append(obj)
             if index % 5 == 0:
                 self.excel_driver.append_to_csv(self.csv_filename, result_list, self.columns)
@@ -322,8 +327,124 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
         except (ValueError, TypeError):
             return ""
 
-    # 상세조회
-    def fetch_place_info(self, place_id):
+
+    # === 신규 === placeDetail ROOT_QUERY key 유연하게 찾기 (pc/mobile/checkRedirect 변화 대응)
+    def _find_place_detail_key(self, root_query: dict, place_id: str) -> str:
+        if not isinstance(root_query, dict):
+            return ""
+
+        candidates = [
+            f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})',
+            f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})',
+            f'placeDetail({{"input":{{"deviceType":"mobile","id":"{place_id}","isNx":false}}}})',
+            f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"mobile","id":"{place_id}","isNx":false}}}})',
+        ]
+        for k in candidates:
+            if k in root_query:
+                return k
+
+        needle = f'"id":"{place_id}"'
+        for k in root_query.keys():
+            if isinstance(k, str) and k.startswith("placeDetail(") and needle in k:
+                return k
+
+        return ""
+
+    # === 신규 === placeDetail 객체에서 bookingBusinessId 추출 (bookingType 키 문자열 변화 대응)
+    def _extract_booking_business_id(self, place_detail_obj: dict) -> str:
+        if not isinstance(place_detail_obj, dict):
+            return ""
+
+        v = place_detail_obj.get('naverBooking({"bookingType":"accommodation"})')
+        if isinstance(v, dict) and v.get("bookingBusinessId"):
+            return str(v.get("bookingBusinessId"))
+
+        for k, vv in place_detail_obj.items():
+            if not isinstance(k, str):
+                continue
+            if k.startswith("naverBooking(") and isinstance(vv, dict):
+                bid = vv.get("bookingBusinessId")
+                if bid:
+                    return str(bid)
+
+        return ""
+
+    def fetch_booking_agency_info(self, booking_business_id: str) -> dict:
+        try:
+            if not booking_business_id:
+                return {}
+
+            url = f"https://booking.naver.com/booking/3/bizes/{booking_business_id}"
+            headers = {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+                "referer": "https://booking.naver.com/",
+            }
+
+            html = self.api_client.get(url=url, headers=headers)
+            if not html:
+                return {}
+
+            soup = BeautifulSoup(html, "html.parser")
+
+            # window.__APOLLO_STATE__ 포함 script 찾기
+            script_tag = soup.find("script", string=re.compile(r"window\.__APOLLO_STATE__"))
+            if not script_tag or not script_tag.string:
+                return {}
+
+            text = script_tag.string
+
+            # === 핵심 수정 ===
+            # - 세미콜론 없어도 됨(;? )
+            # - 줄바꿈/대용량 JSON 대응(re.S)
+            m = re.search(r'window\.__APOLLO_STATE__\s*=\s*(\{.*\})\s*;?', text, flags=re.S)
+            if not m:
+                # 디버깅 필요하면 이거 잠깐 찍어보면 바로 감 잡힘
+                # self.log_signal_func(f"[DEBUG] APOLLO script head: {text[:300]}")
+                return {}
+
+            raw_json = m.group(1).strip()
+
+            try:
+                data = json.loads(raw_json)
+            except Exception as e:
+                self.log_signal_func(f"⚠️ booking JSON decode 실패: {e}")
+                # self.log_signal_func(f"[DEBUG] raw_json head: {raw_json[:500]}")
+                return {}
+
+            business_key = f"Business:{booking_business_id}"
+            biz = data.get(business_key, {})
+            if not isinstance(biz, dict):
+                return {}
+
+            agencies = biz.get("agencies") or []
+            if not isinstance(agencies, list) or not agencies:
+                return {}
+
+            ag0 = agencies[0] or {}
+            if not isinstance(ag0, dict):
+                return {}
+
+            return {
+                "대행사 상호": ag0.get("name", "") or "",
+                "대행사 대표자명": ag0.get("reprName", "") or "",
+                "대행사 소재지": ag0.get("address", "") or "",
+                "대행사 사업자번호": ag0.get("bizNumber", "") or "",
+                "대행사 통신판매업번호": ag0.get("cbizNumber", "") or "",
+                "대행사 연락처": ag0.get("phone", "") or "",
+                "대행사 홈페이지": ag0.get("websiteUrl", "") or "",
+            }
+
+        except Exception as e:
+            self.log_signal_func(f"[에러] fetch_booking_agency_info 실패: {e}")
+            return {}
+
+
+
+    # 상세조회 (=== 수정본: self.columns에 대행사 컬럼이 1개라도 있을 때만 booking 호출 ===)
+    def fetch_place_info(self, place_id, loc, query_keyword, query):
         try:
             url = f"https://m.place.naver.com/place/{place_id}"
             headers = {
@@ -397,22 +518,26 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
             # 영업시간 정보
             root_query = data.get("ROOT_QUERY", {})
-            place_detail_key = f'placeDetail({{"input":{{"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
 
-            if place_detail_key not in root_query:
-                place_detail_key = f'placeDetail({{"input":{{"checkRedirect":true,"deviceType":"pc","id":"{place_id}","isNx":false}}}})'
+            # === 신규 === pc/mobile/checkRedirect 포함 placeDetail key 찾기
+            place_detail_key = self._find_place_detail_key(root_query, place_id)
+            if not place_detail_key:
+                self.log_signal_func(f"⚠️ Place ID {place_id} placeDetail key를 찾지 못했습니다.")
+                return None
 
-            business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
+            place_detail_obj = root_query.get(place_detail_key, {}) or {}
+
+            business_hours = place_detail_obj.get("businessHours({\"source\":[\"tpirates\",\"shopWindow\"]})", [])
             if not business_hours:
-                business_hours = root_query.get(place_detail_key, {}).get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
+                business_hours = place_detail_obj.get("businessHours({\"source\":[\"tpirates\",\"jto\",\"shopWindow\"]})", [])
 
-            new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours", [])
+            new_business_hours_json = place_detail_obj.get("newBusinessHours", [])
             if not new_business_hours_json:
-                new_business_hours_json = root_query.get(place_detail_key, {}).get("newBusinessHours({\"format\":\"restaurant\"})", [])
+                new_business_hours_json = place_detail_obj.get("newBusinessHours({\"format\":\"restaurant\"})", [])
 
             # 사이트 URL 정보
             urls = []
-            homepages = root_query.get(place_detail_key, {}).get('shopWindow', {}).get("homepages", "")
+            homepages = place_detail_obj.get('shopWindow', {}).get("homepages", "")
             if homepages:
                 for item in homepages.get("etc", []):
                     urls.append(item.get("url", ""))
@@ -446,8 +571,38 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 "가상번호": virtualPhone,
                 "전화번호": phone,
                 "사이트": urls,
-                "주소지정보": road
+                "주소지정보": road,
+                "시도(검색)": loc["시도"],
+                "시군구(검색)": loc["시군구"],
+                "읍면동(검색)": loc["읍면동"],
+                "키워드(검색)": query_keyword,
+                "전체 검색어": query
             }
+
+            # === 신규 === self.columns(list)에 대행사 컬럼이 1개라도 있을 때만 booking 호출
+            AGENCY_COLS = [
+                "대행사 상호",
+                "대행사 대표자명",
+                "대행사 소재지",
+                "대행사 사업자번호",
+                "대행사 통신판매업번호",
+                "대행사 연락처",
+                "대행사 홈페이지",
+            ]
+
+            want_agency = any(col in self.columns for col in AGENCY_COLS)
+
+            if want_agency:
+                booking_business_id = self._extract_booking_business_id(place_detail_obj)
+                if booking_business_id:
+                    agency_info = self.fetch_booking_agency_info(booking_business_id)
+
+                    if isinstance(agency_info, dict):
+                        # self.columns에 있는 컬럼만 result에 추가
+                        for col in AGENCY_COLS:
+                            if col in self.columns:
+                                result[col] = agency_info.get(col, "")
+
 
             return result
 
@@ -457,6 +612,8 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"❌ 처리 중 에러: Place ID {place_id}: {e}")
 
         return None
+
+
 
     # 영업시간 함수1
     def format_business_hours(self, business_hours):
