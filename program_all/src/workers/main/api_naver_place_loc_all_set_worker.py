@@ -595,6 +595,7 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
             if want_agency:
                 booking_business_id = self._extract_booking_business_id(place_detail_obj)
                 if booking_business_id:
+                    time.sleep(random.uniform(2, 4))
                     agency_info = self.fetch_booking_agency_info(booking_business_id)
 
                     if isinstance(agency_info, dict):
