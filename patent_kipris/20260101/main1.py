@@ -76,7 +76,8 @@ def _read_sheet_with_auto_header(path: str, sheet_name: str) -> pd.DataFrame:
     # 3) 컬럼명 정리
     df.columns = [_clean_col_name(c) for c in df.columns]
 
-    # 4) 필수 컬럼 존재 검증
+    # 4) 혹시 중복 컬럼/Unnamed 제거는 최소만 (필요하면 확장 가능)
+    #    여기선 필수 컬럼만 확실히 존재하는지 검증
     cols = set(df.columns)
     missing = [c for c in [COL_GUBUN, COL_T1, COL_T2, COL_IPC] if c not in cols]
     if missing:
@@ -96,8 +97,8 @@ def _attach_counts_by_gubun(
 ) -> pd.DataFrame:
     """
     (구분, 시점, 대표IPC) 기준:
-      - 분자: 해당 구분(기부/비기부) 건수  (구분+시점+IPC)
-      - 분모: 시트 전체 row 수 (df 전체 행 수)
+      - 분자: 해당 구분(기부/비기부) 건수
+      - 분모: 전체(기부+비기부) 건수  (구분 무시)
     """
     t0 = time.time()
 
@@ -107,32 +108,34 @@ def _attach_counts_by_gubun(
         "_ipc": _norm_series(df[COL_IPC]),
     })
 
-    # === 신규 === 시트 전체 분모
-    sheet_total = int(len(tmp))
+    # 분모: (시점, IPC) 전체건수
+    total = (
+        tmp.groupby(["_t", "_ipc"], dropna=False)
+        .size()
+        .reset_index(name="_total")
+    )
 
-    # === 분자 === (구분, 시점, IPC) 건수
+    # 분자: (구분, 시점, IPC) 건수
     part = (
         tmp.groupby(["_g", "_t", "_ipc"], dropna=False)
         .size()
         .reset_index(name="_part")
     )
-    part["_part"] = part["_part"].fillna(0).astype("int64")
 
-    # === pct === (시트 전체 분모)
-    if sheet_total > 0:
-        part["_pct"] = part["_part"] / sheet_total * 100.0
-    else:
-        part["_pct"] = 0.0
+    agg = part.merge(total, on=["_t", "_ipc"], how="left")
+    agg["_part"] = agg["_part"].fillna(0).astype("int64")
+    agg["_total"] = agg["_total"].fillna(0).astype("int64")
 
-    # === 원본 row 유지하며 붙이기 ===
+    agg["_pct"] = (agg["_part"] / agg["_total"] * 100.0).where(agg["_total"] > 0, 0.0)
+
+    # 원본 row 유지하며 붙이기
     key_df = pd.DataFrame({
         "_g": tmp["_g"],
         "_t": tmp["_t"],
         "_ipc": tmp["_ipc"],
     })
-
     merged = key_df.merge(
-        part[["_g", "_t", "_ipc", "_part", "_pct"]],
+        agg[["_g", "_t", "_ipc", "_part", "_pct"]],
         on=["_g", "_t", "_ipc"],
         how="left"
     )
@@ -140,7 +143,7 @@ def _attach_counts_by_gubun(
     df[out_cnt_col] = merged["_part"].fillna(0).astype("int64")
     df[out_pct_col] = merged["_pct"].fillna(0.0).astype("float64")
 
-    log(f"[{sheet_name}] {time_col} 집계/머지 완료 (분모=시트전체 {sheet_total:,}건, 소요 {time.time() - t0:.2f}s)")
+    log(f"[{sheet_name}] {time_col} 집계/머지 완료 (소요 {time.time() - t0:.2f}s)")
     return df
 
 
@@ -154,22 +157,10 @@ def _fill_sheet_fast(df: pd.DataFrame, sheet_name: str) -> pd.DataFrame:
             df[c] = None
 
     log(f"[{sheet_name}] 시점1 처리 시작")
-    df = _attach_counts_by_gubun(
-        df,
-        time_col=COL_T1,
-        out_cnt_col=COL_T1_CNT,
-        out_pct_col=COL_T1_PCT,
-        sheet_name=sheet_name
-    )
+    df = _attach_counts_by_gubun(df, time_col=COL_T1, out_cnt_col=COL_T1_CNT, out_pct_col=COL_T1_PCT, sheet_name=sheet_name)
 
     log(f"[{sheet_name}] 시점2 처리 시작")
-    df = _attach_counts_by_gubun(
-        df,
-        time_col=COL_T2,
-        out_cnt_col=COL_T2_CNT,
-        out_pct_col=COL_T2_PCT,
-        sheet_name=sheet_name
-    )
+    df = _attach_counts_by_gubun(df, time_col=COL_T2, out_cnt_col=COL_T2_CNT, out_pct_col=COL_T2_PCT, sheet_name=sheet_name)
 
     log(f"[{sheet_name}] 시트 완료 (총 {time.time() - t0:.2f}s)")
     return df
