@@ -1,6 +1,9 @@
+# ============================================
+# 1) ./src/utils/excel_utils.py
+# ============================================
 import pandas as pd
 import os
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook   # ✅ 이렇게 맨 위로
 from openpyxl.utils import get_column_letter
 
 
@@ -8,13 +11,11 @@ class ExcelUtils:
     def __init__(self, log_func=None):
         self.log_func = log_func
 
-
     def init_csv(self, filename, columns):
         df = pd.DataFrame(columns=columns)
         df.to_csv(filename, index=False, encoding="utf-8-sig")
         if self.log_func:
             self.log_func(f"CSV 초기화 완료: {filename}")
-
 
     def append_to_csv(self, filename, data_list, columns):
 
@@ -24,8 +25,8 @@ class ExcelUtils:
         df = pd.DataFrame(data_list, columns=columns)
         df.to_csv(filename, mode='a', header=False, index=False, encoding="utf-8-sig")
         data_list.clear()
-        self.log_func("csv 저장완료")
-
+        if self.log_func:
+            self.log_func("csv 저장완료")
 
     def append_to_excel(self, filename, data_list, columns, sheet_name="Sheet1"):
         if not data_list:
@@ -42,8 +43,8 @@ class ExcelUtils:
                 df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
 
         data_list.clear()
-        self.log_func("excel 저장완료")
-
+        if self.log_func:
+            self.log_func("excel 저장완료")
 
     def convert_csv_to_excel_and_delete(self, csv_filename, sheet_name="Sheet1"):
         """
@@ -92,15 +93,12 @@ class ExcelUtils:
             if self.log_func:
                 self.log_func(f"❌ 변환 중 오류 발생: {e}")
 
-
-
     # 일반 객체 리스트인 경우
     def obj_to_row(self, o, cols):
         if isinstance(o, dict):
             return {c: o.get(c) for c in cols}
         # 객체 속성에서 추출
         return {c: getattr(o, c, None) for c in cols}
-
 
     def obj_list_to_dataframe(self, obj_list, columns=None):
         """
@@ -133,7 +131,6 @@ class ExcelUtils:
         cols = [k for k in dir(first) if not k.startswith("_") and not callable(getattr(first, k, None))]
         rows = [self.obj_to_row(o, cols) for o in obj_list]
         return pd.DataFrame(rows, columns=cols)
-
 
     def save_obj_list_to_excel(self, filename, obj_list, columns=None, sheet_name="Sheet1"):
         """
@@ -183,3 +180,45 @@ class ExcelUtils:
         obj_list.clear()
         if self.log_func:
             self.log_func("excel(객체 리스트) 저장완료 (URL 하이퍼링크 처리)")
+
+    # ==========================================================
+    # === 신규 === (방금 KRX/NEXTRADE 작업에서 쓰던 엑셀 저장 로직)
+    #   - rows(dict) 리스트를 columns 순서대로 1행씩 append
+    #   - 모든 셀을 텍스트(number_format="@")로 강제
+    #   - 여기서는 '원->억' 변환 같은 도메인 로직 절대 안함
+    # ==========================================================
+    def append_rows_text_excel(self, filename, rows, columns, sheet_name="Sheet1"):
+        if not rows:
+            if self.log_func:
+                self.log_func("[EXCEL] 저장할 데이터 없음")
+            return
+
+        if os.path.exists(filename):
+            wb = load_workbook(filename)
+            ws = wb[sheet_name] if sheet_name in wb.sheetnames else wb.active
+            if self.log_func:
+                self.log_func(f"[EXCEL] 기존 파일 로드: {filename}")
+        else:
+            wb = Workbook()
+            ws = wb.active
+            ws.title = sheet_name
+            ws.append(columns)
+            if self.log_func:
+                self.log_func(f"[EXCEL] 신규 파일 생성: {filename}")
+
+        saved = 0
+        for r in rows:
+            out = {}
+            for c in columns:
+                out[c] = r.get(c, "")
+
+            ws.append([str(out.get(c, "")) for c in columns])
+
+            for col in range(1, len(columns) + 1):
+                ws.cell(ws.max_row, col).number_format = "@"
+
+            saved += 1
+
+        wb.save(filename)
+        if self.log_func:
+            self.log_func(f"[EXCEL] 저장 완료 (추가 {saved}건)")

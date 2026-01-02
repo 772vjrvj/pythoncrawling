@@ -1,3 +1,6 @@
+# ============================================
+# 2) ./src/utils/number_utils.py  (이름은 예시)
+# ============================================
 from math import floor
 import re
 
@@ -34,3 +37,18 @@ def to_int_digits(s: str) -> int:
     return int("".join(nums)) if nums else 0
 
 
+# ==========================================================
+# === 신규 === KRX/NEXTRADE에서 쓰던 변환 유틸도 여기에 추가
+# ==========================================================
+def to_int(v):
+    try:
+        return int(str(v).replace(",", ""))
+    except Exception:
+        return 0
+
+
+def to_float(v):
+    try:
+        return float(str(v).replace(",", ""))
+    except Exception:
+        return None

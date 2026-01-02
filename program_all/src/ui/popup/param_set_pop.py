@@ -249,4 +249,8 @@ class ParamSetPop(QDialog):
         frame_geometry = self.frameGeometry()
         center_point = self.screen().availableGeometry().center()
         frame_geometry.moveCenter(center_point)
+
+        # === 신규 === 중앙에서 위로 60px 이동 (원하는 값으로 조절)
+        frame_geometry.moveTop(frame_geometry.top() - 200)
+
         self.move(frame_geometry.topLeft())

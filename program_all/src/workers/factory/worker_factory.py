@@ -1,6 +1,6 @@
 # from src.workers.main.api_albamon_set_worker                        import ApiAlbamonSetLoadWorker
 # from src.workers.main.api_naver_place_set_worker                    import ApiNaverPlaceSetLoadWorker
-from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
+# from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
 # from src.workers.main.api_naver_place_url_all_set_worker            import ApiNaverPlaceUrlAllSetLoadWorker
 # from src.workers.main.api_naver_blog_contents_set_worker            import ApiNaverBlogContentsSetLoadWorker
 # from src.workers.main.api_coupang_set_worker                        import ApiCoupangSetLoadWorker
@@ -35,11 +35,13 @@ from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNa
 # from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
 # from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
 # from src.workers.main.api_peachchill26_set_worker                   import ApiPeachhill26SetLoadWorker
+from src.workers.main.api_krx_nextrade_brand_set_worker import ApiKrxNextradeSetLoadWorker
+
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
     # "NAVER_PLACE"                       :   ApiNaverPlaceSetLoadWorker,
-    "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
+    # "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
     # "NAVER_PLACE_URL_ALL"               :   ApiNaverPlaceUrlAllSetLoadWorker,
     # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "COUPANG"                           :   ApiCoupangSetLoadWorker,
@@ -74,4 +76,5 @@ WORKER_CLASS_MAP = {
     # "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
     # "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker,
     # "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
+    "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
 }

@@ -97,7 +97,7 @@ def _attach_counts_by_gubun(
     """
     (구분, 시점, 대표IPC) 기준:
       - 분자: 해당 구분(기부/비기부) 건수  (구분+시점+IPC)
-      - 분모: 시트 전체 row 수 (df 전체 행 수)
+      - 분모: "해당 시점(년도)" 전체 row 수 = (기부+비기부) 합계  (시점만으로 집계)
     """
     t0 = time.time()
 
@@ -107,8 +107,13 @@ def _attach_counts_by_gubun(
         "_ipc": _norm_series(df[COL_IPC]),
     })
 
-    # === 신규 === 시트 전체 분모
-    sheet_total = int(len(tmp))
+    # === 신규 === 분모: 시점(년도)별 전체 건수 (기부+비기부 전체)
+    denom = (
+        tmp.groupby(["_t"], dropna=False)
+        .size()
+        .reset_index(name="_denom")
+    )
+    denom["_denom"] = denom["_denom"].fillna(0).astype("int64")
 
     # === 분자 === (구분, 시점, IPC) 건수
     part = (
@@ -118,11 +123,18 @@ def _attach_counts_by_gubun(
     )
     part["_part"] = part["_part"].fillna(0).astype("int64")
 
-    # === pct === (시트 전체 분모)
-    if sheet_total > 0:
-        part["_pct"] = part["_part"] / sheet_total * 100.0
-    else:
-        part["_pct"] = 0.0
+    # === 신규 === part에 분모(년도 전체) 붙이기
+    part = part.merge(
+        denom[["_t", "_denom"]],
+        on=["_t"],
+        how="left"
+    )
+
+    # === pct === (해당 시점(년도) 분모)
+    # 분모 0이면 0.0 처리
+    part["_pct"] = 0.0
+    nz = part["_denom"].fillna(0).astype("int64") > 0
+    part.loc[nz, "_pct"] = (part.loc[nz, "_part"] / part.loc[nz, "_denom"]) * 100.0
 
     # === 원본 row 유지하며 붙이기 ===
     key_df = pd.DataFrame({
@@ -140,7 +152,10 @@ def _attach_counts_by_gubun(
     df[out_cnt_col] = merged["_part"].fillna(0).astype("int64")
     df[out_pct_col] = merged["_pct"].fillna(0.0).astype("float64")
 
-    log(f"[{sheet_name}] {time_col} 집계/머지 완료 (분모=시트전체 {sheet_total:,}건, 소요 {time.time() - t0:.2f}s)")
+    # === 신규 === 로그(분모 정책 명확히)
+    # 시점 종류 수 / 예시 분모 일부 찍기(너무 길면 앞 5개만)
+    denom_preview = denom.head(5).to_dict(orient="records")
+    log(f"[{sheet_name}] {time_col} 집계/머지 완료 (분모=해당시점(년도) 전체, 시점종류={len(denom):,}, 예시={denom_preview}, 소요 {time.time() - t0:.2f}s)")
     return df
 
 
