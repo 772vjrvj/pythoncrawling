@@ -15,7 +15,8 @@ class ColumnSetPop(QDialog):
         self.cancel_btn = None
         self.parent = parent
         self.setWindowTitle("컬럼 선택")
-        self.resize(1200, 450)
+        self.resize(600, 450)
+        # self.resize(1200, 450)
         self.setMinimumWidth(700)
         self.setStyleSheet("background-color: white;")
         self.checkbox_map = {}
