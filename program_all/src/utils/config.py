@@ -445,7 +445,7 @@ SITE_LIST = [
             {'name': '일 등락률(%)(숫자) 이상(▲)', 'code': 'rate','value': '0', 'type': 'input'},
             {'name': '날짜(YYYYMMDD) 시작', 'code': 'fr_date','value': '20260101', 'type': 'input'},
             {'name': '날짜(YYYYMMDD) 종료', 'code': 'to_date','value': '20260101', 'type': 'input'},
-            {'name': '자동 리포트 여부',            'code': 'auto_yn','value': True, 'type': 'check'},
+            {'name': '자동 리포트 여부(날짜 작업할 땐 체크 해재 하세요)',            'code': 'auto_yn','value': True, 'type': 'check'},
             {'name': '자동 리포트 시간(기본 20시)',   'code': 'auto_time','value': '20', 'type': 'input'},
         ]
    ),
