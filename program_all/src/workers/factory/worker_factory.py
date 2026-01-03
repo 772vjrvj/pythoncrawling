@@ -12,7 +12,6 @@
 # from src.workers.main.api_ovreple_set_worker                        import ApiOvrepleSetLoadWorker
 # from src.workers.main.api_1004ya_set_worker                         import Api1004yaSetLoadWorker
 # from src.workers.main.api_app_sensortower_set_worker                import ApiAppSensertowerSetLoadWorker
-
 # from src.workers.main.api_abcmart_brand_set_worker                  import ApiAbcmartBrandSetLoadWorker
 # from src.workers.main.api_abcmart_detail_set_worker                 import ApiAbcmartDetailSetLoadWorker
 # from src.workers.main.api_grandstage_brand_set_worker               import ApiGrandstageBrandSetLoadWorker
@@ -21,9 +20,7 @@
 # from src.workers.main.api_okmall_detail_set_worker                  import ApiOkmallDetailSetLoadWorker
 # from src.workers.main.api_onthespot_brand_set_worker                import ApiOnthespotBrandSetLoadWorker
 # from src.workers.main.api_onthespot_detail_set_worker               import ApiOnthespotDetailSetLoadWorker
-
 # from src.workers.main.api_the_first_hall_wedding_set_worker         import ApiThefirsthallweddingDetailSetLoadWorker
-
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
@@ -35,8 +32,8 @@
 # from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
 # from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
 # from src.workers.main.api_peachchill26_set_worker                   import ApiPeachhill26SetLoadWorker
-from src.workers.main.api_krx_nextrade_brand_set_worker import ApiKrxNextradeSetLoadWorker
-
+# from src.workers.main.api_krx_nextrade_brand_set_worker             import ApiKrxNextradeSetLoadWorker
+from src.workers.main.api_coco_label_set_worker import ApiCocoLabelSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -76,5 +73,6 @@ WORKER_CLASS_MAP = {
     # "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
     # "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker,
     # "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
-    "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
+    # "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
+    "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
 }
