@@ -1,0 +1,94 @@
+[
+  {
+    "name": "베스트",
+    "value": "10",
+    "children": [
+      { "name": "가방", "value": "1010" },
+      { "name": "지갑", "value": "1020" },
+      { "name": "의류", "value": "1030" },
+      { "name": "신발", "value": "1040" },
+      { "name": "시계", "value": "1050" },
+      { "name": "잡화", "value": "1060" },
+      { "name": "남성", "value": "1070" }
+    ]
+  },
+  {
+    "name": "시계",
+    "value": "50",
+    "children": [
+      { "name": "여성 시계", "value": "5010" },
+      { "name": "롤렉스", "value": "5020" },
+      { "name": "파텍필립", "value": "5030" },
+      { "name": "오데마피게", "value": "5040" },
+      { "name": "브라이틀링", "value": "5050" },
+      { "name": "까르띠에", "value": "5060" },
+      { "name": "오메가", "value": "5070" },
+      { "name": "파네라이", "value": "5080" },
+      { "name": "위블로", "value": "5090" },
+      { "name": "샤넬", "value": "50a0" },
+      { "name": "IWC", "value": "50b0" },
+      { "name": "반클리프 알페", "value": "50c0" },
+      { "name": "에르메스", "value": "50d0" },
+      { "name": "기타 브랜드", "value": "50e0" }
+    ]
+  },
+  {
+    "name": "잡화",
+    "value": "60",
+    "children": [
+      { "name": "모자/비니", "value": "6010" },
+      { "name": "벨트", "value": "6020" },
+      { "name": "키링/백참", "value": "6030" },
+      { "name": "팔찌", "value": "6040" },
+      { "name": "목걸이", "value": "6050" },
+      { "name": "반지", "value": "6060" },
+      { "name": "머플러/스카프", "value": "6070" },
+      { "name": "기타 잡화", "value": "6080" }
+    ]
+  },
+  {
+    "name": "남성",
+    "value": "70",
+    "children": [
+      { "name": "남성 가방", "value": "7010" },
+      { "name": "남성 신발", "value": "7020" },
+      { "name": "남성 의류", "value": "7030" },
+      { "name": "남성 지갑", "value": "7040" },
+      { "name": "남성 패션 잡화", "value": "7050" },
+      { "name": "크롬 하츠", "value": "7060" }
+    ]
+  },
+  {
+    "name": "에르메스 프리미엄",
+    "value": "80",
+    "children": [
+      { "name": "켈리 백", "value": "8010" },
+      { "name": "버킨 백", "value": "8020" },
+      { "name": "콘스탄스 백", "value": "8030" },
+      { "name": "24/24 백", "value": "8040" },
+      { "name": "에블린 백", "value": "8050" },
+      { "name": "린디 백", "value": "8060" }
+    ]
+  },
+  {
+    "name": "샤넬 프리미엄",
+    "value": "90",
+    "children": [
+      { "name": "클래식&플랩백", "value": "9010" },
+      { "name": "22 백", "value": "9020" },
+      { "name": "미니백 WOC", "value": "9030" },
+      { "name": "백팩", "value": "9040" },
+      { "name": "19 백", "value": "9050" },
+      { "name": "보이 샤넬 백", "value": "9060" },
+      { "name": "2.55 핸드백", "value": "9070" },
+      { "name": "코코 핸들백", "value": "9080" },
+      { "name": "호보백", "value": "9090" },
+      { "name": "베니티백", "value": "90a0" },
+      { "name": "트렌디 CC", "value": "90b0" },
+      { "name": "쇼퍼백", "value": "90c0" },
+      { "name": "24C 크루즈", "value": "90d0" },
+      { "name": "23FW 켈리백", "value": "90e0" },
+      { "name": "Others", "value": "90f0" }
+    ]
+  }
+]
