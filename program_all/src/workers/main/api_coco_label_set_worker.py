@@ -6,6 +6,7 @@ import time
 import os
 from PIL import Image
 from io import BytesIO
+import sys
 
 from urllib.parse import urlparse, unquote
 
@@ -256,11 +257,33 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
             category_name = base_obj.get('하위카테고리', '')
 
             if not category_code:
-                self.log_signal_func(f"[보류] 하위카테고리코드 없음: {category_name} / url={base_obj.get('url')}")
 
+                self.log_signal_func(f"하위카테고리코드 없음: {category_name} / url={base_obj.get('url')}")
 
+                url = f"{self.shop_url}{base_obj['href']}"
+                response = self.api_client.get(url=url, headers=self.headers)
+                soup = BeautifulSoup(response, 'html.parser')
+                items = soup.select('.shop-item')
 
+                if not items:
+                    self.log_signal_func(f"[종료] 아이템 없음: {category_name}")
+                    break
 
+                for item in items:
+
+                    product_prop = item.get('data-product-properties') or ''
+                    try:
+                        idx_number = str(json.loads(product_prop).get('idx', '')).strip()
+                    except Exception:
+                        idx_number = ''
+
+                    row = self._crawl_one_product(base_obj, category_name, idx_number)
+                    if not row:
+                        continue
+
+                    self.result.append(row)
+                    # === 신규 === 누적 전체가 아니라 1건만 append (중복 폭증 방지)
+                    self.excel_driver.append_to_csv(self.excel_filename, [row], self.columns)
 
             else:
                 stop = False
@@ -308,9 +331,8 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
                         "x-requested-with": "XMLHttpRequest",
 
-                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+                        "user-agent": self.headers.get("user-agent", ""),
                     }
-
 
                     # ✅ /ajax/get_shop_list_view.cm 은 JSON 응답( { html: "..." } )
                     data = self.api_client.get(url=self.shop_detail_url, params=params, headers=headers_ajax)
@@ -351,135 +373,156 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
                         idx_number_list.add(idx_number)
 
-
-                        headers_oms = {
-                            "authority": "coco-label.com",
-                            "method": "GET",
-                            "path": "/ajax/oms/OMS_get_products.cm",
-                            "scheme": "https",
-
-                            "accept": "*/*",
-                            "accept-encoding": "gzip, deflate, br, zstd",
-                            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-
-                            "priority": "u=1, i",
-                            "referer": f"https://coco-label.com{base_obj['href']}/?idx={idx_number}",
-
-                            "sec-ch-ua": '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
-                            "sec-ch-ua-mobile": "?0",
-                            "sec-ch-ua-platform": '"Windows"',
-
-                            "sec-fetch-dest": "empty",
-                            "sec-fetch-mode": "cors",
-                            "sec-fetch-site": "same-origin",
-
-                            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
-                        }
-
-                        # ✅ 상세 JSON
-                        detail_url = f"{self.shop_url}/ajax/oms/OMS_get_product.cm?prod_idx={idx_number}"
-                        detail_text = self.api_client.get(url=detail_url, headers=headers_oms)
-
-                        try:
-                            data = detail_text.get('data', {})
-                        except Exception as e:
-                            self.log_signal_func(f"[에러] detail json 파싱 실패: idx={idx_number} / {e}")
+                        row = self._crawl_one_product(base_obj, category_name, idx_number)
+                        if not row:
                             continue
 
-                        name = data.get('name', '')
-                        price = data.get('price', '')
-                        price_org = data.get('price_org', '')
-                        brand = data.get('brand', '')
-
-                        self.log_signal_func(f"[{category_name}] 크롤링중: {idx_number} / {brand} / {name}")
-
-                        # =========================
-                        # 이미지 저장(썸네일 + 상세)
-                        # =========================
-                        brand_dir = f"{brand}_images" if brand else "NO_BRAND_images"
-                        product_dir = f"{idx_number}_images"
-
-                        thumb_excel_link = ''
-                        images = data.get('images') or []
-                        image_url = data.get('image_url') or {}
-
-                        if images:
-                            first_code = images[0]
-                            thumb_link = image_url.get(first_code, '')
-                            if thumb_link:
-                                thumb_paths = self.download_images([thumb_link], brand_dir, product_dir, idx_number, 1)
-                                if thumb_paths:
-                                    thumb_excel_link = thumb_paths[0]
-
-                        # 상세 이미지 링크들
-                        content_html = data.get('content') or ''
-                        content_soup = BeautifulSoup(content_html, 'html.parser')
-                        detail_img_links = []
-                        for img in content_soup.find_all('img'):
-                            src = img.get('src')
-                            if src:
-                                detail_img_links.append(src)
-
-                        detail_img_paths = []
-                        if detail_img_links:
-                            detail_img_paths = self.download_images(detail_img_links, brand_dir, product_dir, idx_number, 2)
-
-                        img_html = []
-                        for p in detail_img_paths:
-                            img_html.append(f'<img src="https://plena.kr/data/item/{p}">')
-                        final_img_html = "".join(img_html)
-
-                        # =========================
-                        # 옵션
-                        # =========================
-                        value_map = {}
-                        for opt in (data.get('options') or []):
-                            value_list = opt.get('value_list') or {}
-                            for k, v in value_list.items():
-                                value_map[k] = v
-
-                        combined_options_list = []
-
-                        if data.get('options_detail'):
-                            for detail in (data.get('options_detail') or []):
-                                codes = detail.get('value_code_list') or []
-                                temp = ""
-                                for c in codes:
-                                    if c in value_map:
-                                        temp += str(value_map[c]).replace(" ", "")
-                                if temp:
-                                    combined_options_list.append(temp)
-
-                            final_option_content = ",".join(combined_options_list)
-                        else:
-                            final_option_content = str(data.get('simple_content_plain', '')).replace(" ", "")
-
-                        # =========================
-                        # ✅ base_obj 복사해서 값 채우기
-                        # =========================
-                        row = dict(base_obj)  # shallow copy
-
-                        row['상품코드'] = idx_number
-                        row['상품명'] = name
-                        row['브랜드'] = brand
-                        row['시중가격'] = price_org
-                        row['판매가격'] = price
-                        row['상품설명'] = final_img_html
-                        row['모바일상품설명'] = final_img_html
-                        row['이미지1'] = thumb_excel_link
-                        row['옵션'] = final_option_content
-
                         self.result.append(row)
-
-                        # 필요하면 즉시 CSV 저장 (원하면 켜줄게)
-                        self.excel_driver.append_to_csv(self.excel_filename, self.result, self.columns)
+                        # === 신규 === 누적 전체가 아니라 1건만 append (중복 폭증 방지)
+                        self.excel_driver.append_to_csv(self.excel_filename, [row], self.columns)
 
                 self.log_signal_func(f"[완료] {category_name} 처리 끝. 수집={len(idx_number_list)}")
 
 
+    def _crawl_one_product(self, base_obj, category_name, idx_number):
+        # === 신규 === 상품 1건 상세 + 이미지 + 옵션 + row 생성 (중복 제거용)
+
+        if not idx_number:
+            return None
+
+        headers_oms = {
+            "authority": "coco-label.com",
+            "method": "GET",
+            "path": "/ajax/oms/OMS_get_products.cm",
+            "scheme": "https",
+
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+
+            "priority": "u=1, i",
+            "referer": f"https://coco-label.com{base_obj['href']}/?idx={idx_number}",
+
+            "sec-ch-ua": '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
+
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+
+            "user-agent": self.headers.get("user-agent", ""),
+        }
+
+        # ✅ 상세 JSON
+        detail_url = f"{self.shop_url}/ajax/oms/OMS_get_product.cm?prod_idx={idx_number}"
+        detail_text = self.api_client.get(url=detail_url, headers=headers_oms)
+
+        try:
+            data = detail_text.get('data', {})
+        except Exception as e:
+            self.log_signal_func(f"[에러] detail json 파싱 실패: idx={idx_number} / {e}")
+            return None
+
+        name = data.get('name', '')
+        price = data.get('price', '')
+        price_org = data.get('price_org', '')
+        brand = data.get('brand', '')
+
+        self.log_signal_func(f"[{category_name}] 크롤링중: {idx_number} / {brand} / {name}")
+
+        # =========================
+        # 이미지 저장(썸네일 + 상세)
+        # =========================
+        brand_dir = f"{brand}_images" if brand else "NO_BRAND_images"
+        product_dir = f"{idx_number}_images"
+
+        thumb_excel_link = ''
+        images = data.get('images') or []
+        image_url = data.get('image_url') or {}
+
+        if images:
+            first_code = images[0]
+            thumb_link = image_url.get(first_code, '')
+            if thumb_link:
+                thumb_paths = self.download_images([thumb_link], brand_dir, product_dir, idx_number, 1)
+                if thumb_paths:
+                    thumb_excel_link = thumb_paths[0]
+
+        # 상세 이미지 링크들
+        content_html = data.get('content') or ''
+        content_soup = BeautifulSoup(content_html, 'html.parser')
+        detail_img_links = []
+        for img in content_soup.find_all('img'):
+            src = img.get('src')
+            if src:
+                detail_img_links.append(src)
+
+        detail_img_paths = []
+        if detail_img_links:
+            detail_img_paths = self.download_images(detail_img_links, brand_dir, product_dir, idx_number, 2)
+
+        img_html = []
+        for p in detail_img_paths:
+            img_html.append(f'<img src="https://plena.kr/data/item/{p}">')
+        final_img_html = "".join(img_html)
+
+        # =========================
+        # 옵션
+        # =========================
+        value_map = {}
+        for opt in (data.get('options') or []):
+            value_list = opt.get('value_list') or {}
+            for k, v in value_list.items():
+                value_map[k] = v
+
+        combined_options_list = []
+
+        if data.get('options_detail'):
+            for detail in (data.get('options_detail') or []):
+                codes = detail.get('value_code_list') or []
+                temp = ""
+                for c in codes:
+                    if c in value_map:
+                        temp += str(value_map[c]).replace(" ", "")
+                if temp:
+                    combined_options_list.append(temp)
+
+            final_option_content = ",".join(combined_options_list)
+        else:
+            final_option_content = str(data.get('simple_content_plain', '')).replace(" ", "")
+
+        # =========================
+        # ✅ base_obj 복사해서 값 채우기
+        # =========================
+        row = dict(base_obj)  # shallow copy
+
+        row['상품코드'] = idx_number
+        row['상품명'] = name
+        row['브랜드'] = brand
+        row['시중가격'] = price_org
+        row['판매가격'] = price
+        row['상품설명'] = final_img_html
+        row['모바일상품설명'] = final_img_html
+        row['이미지1'] = thumb_excel_link
+        row['옵션'] = final_option_content
+
+        return row
+
+
     def download_images(self, image_links, brand_dir, product_dir, idx_number, t):
         # root/src/workers/main/api_coco_label_set_worker.py 기준 -> root/image
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+
+
+
+        # === 신규 === PyInstaller(onefile/onedir) 빌드에서도 안전한 저장 경로
+        if getattr(sys, "frozen", False):
+            # exe가 있는 폴더 기준 (권한/상대경로 문제 방지)
+            root_dir = os.path.dirname(sys.executable)
+        else:
+            # 기존 개발 경로 유지
+            root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+
         base_main_dir = os.path.join(root_dir, "image")
 
         target_full_path = os.path.join(base_main_dir, brand_dir, product_dir)
@@ -491,11 +534,14 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         parent_dir = os.path.basename(os.path.normpath(brand_dir))
         second_parent_dir = os.path.basename(os.path.normpath(product_dir))
 
+        # === 신규 === UA만이라도 넣어서 차단/리턴불량 줄임 (동작은 동일)
+        img_headers = {"User-Agent": self.headers.get("user-agent", "")}
+
         # 썸네일 이미지
         if t == 1:
             for url in image_links:
                 try:
-                    r = requests.get(url, timeout=40)
+                    r = requests.get(url, headers=img_headers, timeout=40)
                     if r.status_code != 200:
                         continue
 
@@ -518,7 +564,7 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         # 상세 이미지
         for i, url in enumerate(image_links):
             try:
-                r = requests.get(url, timeout=20)
+                r = requests.get(url, headers=img_headers, timeout=20)
                 if r.status_code != 200:
                     continue
 
@@ -550,7 +596,7 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         self.file_driver = FileUtils(self.log_signal_func)
 
         # api
-        self.api_client = APIClient(use_cache=False, log_func =self.log_signal_func)
+        self.api_client = APIClient(use_cache=False, log_func=self.log_signal_func)
 
     # 마무리
     def destroy(self):
@@ -565,4 +611,3 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
     # 정지
     def stop(self):
         self.running = False
-
