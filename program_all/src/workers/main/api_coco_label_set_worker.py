@@ -24,9 +24,9 @@ from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
 from src.utils.config import server_url  # 서버 URL 및 설정 정보
 
+
 class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
-    # 초기화
     def __init__(self):
         super().__init__()
 
@@ -80,8 +80,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         self.main_category_obj_filter_list = []
         self.main_sub_category_obj_list = []
 
-
-    # 초기화
     def init(self):
         self.driver_set()
         self.coco_label_admin_list = self.file_driver.read_json_array_from_resources("coco_label_admin_list.json")
@@ -93,26 +91,21 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         self.log_signal_func(f"사이트 목록 : {self.coco_label_site_list}")
         return True
 
-
     def main(self):
         self.log_signal_func("크롤링 시작.")
         self.excel_filename = self.file_driver.get_csv_filename(self.site_name)
         self.excel_driver.init_csv(self.excel_filename, self.columns)
 
         self.main_category_list()
-
         self.map_category()
-
         self.filter_by_keywords()
 
         self.log_signal_func(f"main_category_obj_filter_list : {self.main_category_obj_filter_list}")
 
         self.sub_category_list()
-
         self.get_product_detail()
 
         return True
-
 
     def main_category_list(self):
         response = self.api_client.get(url=self.shop_url, headers=self.headers)
@@ -148,7 +141,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
                 self.main_category_obj_list.append(obj)
 
-
     def map_category(self):
         for main_category_obj in self.main_category_obj_list:
             main_name = main_category_obj.get("name", "").replace(" ", "")
@@ -173,30 +165,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
                                     break
                     break
 
-
-
-        #
-        #
-        # self.main_category_obj_list = []
-        # for index, keyword in enumerate(self.keyword_list, start=1):
-        #     main_category = self.find_by_key(keyword)
-        #     url = f"{self.shop_url}/{main_category["value"]}"
-        #     response = self.api_client.get(url=url, headers=self.headers2)
-        #     soup = BeautifulSoup(response, 'html.parser')
-        #     items = soup.select('._item.item_gallary')
-        #     main_obj = {
-        #         'main_category_obj': main_category,
-        #         'main_category_key': main_category["key"],
-        #         'main_category_url': url,
-        #         'sub_category_obj_list': items,
-        #     }
-        #     self.log_signal_func(f"key : {main_category["key"]}")
-        #     self.main_category_obj_list.append(main_obj)
-        #
-        # self.log_signal_func(f"main_list : {len(self.main_category_obj_list)}")
-        # self.sub_category_list()
-
-
     def filter_by_keywords(self):
         self.main_category_obj_filter_list = []
         for main_category_obj in self.main_category_obj_list:
@@ -207,11 +175,8 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
                     self.main_category_obj_filter_list.append(main_category_obj)
                     break
 
-
     def sub_category_list(self):
-
         for main_category_obj_filter in self.main_category_obj_filter_list:
-
             sub_category_obj_list = main_category_obj_filter['children']
 
             for sub_category_obj in sub_category_obj_list:
@@ -233,25 +198,31 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
                     '상품코드': '',
                     '기본분류': main_category_obj_filter['value'],
-                    '분류2': sub_category_obj['value'],
+                    '분류2': sub_category_obj.get('value', ''),
                     '상품명': '',
                     '브랜드': '',
                     '상품설명': '',
                     '모바일상품설명': '',
                     '시중가격': '',
                     '판매가격': '',
-                    '판매가능': 1, # 고정
-                    '재고수량': 999, # 고정
-                    '이미지1': '', # 고정
-                    '옵션': '', # 고정
+                    '판매가능': 1,  # 고정
+                    '재고수량': 999,  # 고정
+                    '이미지1': '',  # 고정
+                    '옵션': '',  # 고정
                 }
                 self.log_signal_func(f"obj : {obj}")
                 self.main_sub_category_obj_list.append(obj)
 
-
     def get_product_detail(self):
+        self.total_cnt = len(self.main_sub_category_obj_list)
+        if self.total_cnt <= 0:
+            self.total_cnt = 1
+        self.current_cnt = 0
 
         for base_obj in self.main_sub_category_obj_list:
+
+            if not self.running:
+                return
 
             category_code = base_obj.get('하위카테고리코드', '')
             category_name = base_obj.get('하위카테고리', '')
@@ -270,6 +241,9 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
                     break
 
                 for item in items:
+
+                    if not self.running:
+                        return
 
                     product_prop = item.get('data-product-properties') or ''
                     try:
@@ -330,14 +304,11 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
                         "sec-fetch-site": "same-origin",
 
                         "x-requested-with": "XMLHttpRequest",
-
                         "user-agent": self.headers.get("user-agent", ""),
                     }
 
-                    # ✅ /ajax/get_shop_list_view.cm 은 JSON 응답( { html: "..." } )
                     data = self.api_client.get(url=self.shop_detail_url, params=params, headers=headers_ajax)
 
-                    # 🔧 여기 추가 (str → dict)
                     try:
                         data = json.loads(data)
                     except Exception as e:
@@ -356,6 +327,9 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
                         break
 
                     for item in items:
+
+                        if not self.running:
+                            return
 
                         product_prop = item.get('data-product-properties') or ''
                         try:
@@ -383,6 +357,12 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
                 self.log_signal_func(f"[완료] {category_name} 처리 끝. 수집={len(idx_number_list)}")
 
+            # === 진행률: main_sub_category_obj_list 1개(base_obj) 처리 끝날 때마다 ===
+            self.current_cnt += 1
+
+            pro_value = (self.current_cnt / self.total_cnt) * 1000000
+            self.progress_signal.emit(self.before_pro_value, pro_value)
+            self.before_pro_value = pro_value
 
     def _crawl_one_product(self, base_obj, category_name, idx_number):
         # === 신규 === 상품 1건 상세 + 이미지 + 옵션 + row 생성 (중복 제거용)
@@ -414,7 +394,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
             "user-agent": self.headers.get("user-agent", ""),
         }
 
-        # ✅ 상세 JSON
         detail_url = f"{self.shop_url}/ajax/oms/OMS_get_product.cm?prod_idx={idx_number}"
         detail_text = self.api_client.get(url=detail_url, headers=headers_oms)
 
@@ -449,7 +428,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
                 if thumb_paths:
                     thumb_excel_link = thumb_paths[0]
 
-        # 상세 이미지 링크들
         content_html = data.get('content') or ''
         content_soup = BeautifulSoup(content_html, 'html.parser')
         detail_img_links = []
@@ -493,9 +471,9 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
             final_option_content = str(data.get('simple_content_plain', '')).replace(" ", "")
 
         # =========================
-        # ✅ base_obj 복사해서 값 채우기
+        # base_obj 복사해서 값 채우기
         # =========================
-        row = dict(base_obj)  # shallow copy
+        row = dict(base_obj)
 
         row['상품코드'] = idx_number
         row['상품명'] = name
@@ -509,18 +487,13 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
         return row
 
-
     def download_images(self, image_links, brand_dir, product_dir, idx_number, t):
         # root/src/workers/main/api_coco_label_set_worker.py 기준 -> root/image
 
-
-
         # === 신규 === PyInstaller(onefile/onedir) 빌드에서도 안전한 저장 경로
         if getattr(sys, "frozen", False):
-            # exe가 있는 폴더 기준 (권한/상대경로 문제 방지)
-            root_dir = os.path.dirname(sys.executable)
+            root_dir = os.path.dirname(sys.executable)  # exe가 있는 폴더 기준
         else:
-            # 기존 개발 경로 유지
             root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
         base_main_dir = os.path.join(root_dir, "image")
@@ -584,8 +557,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
 
         return result_paths
 
-
-    # 드라이버 세팅
     def driver_set(self):
         self.log_signal_func("드라이버 세팅 ========================================")
 
@@ -598,7 +569,6 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         # api
         self.api_client = APIClient(use_cache=False, log_func=self.log_signal_func)
 
-    # 마무리
     def destroy(self):
         self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
         self.progress_signal.emit(self.before_pro_value, 1000000)
@@ -608,6 +578,5 @@ class ApiCocoLabelSetLoadWorker(BaseApiWorker):
         if self.running:
             self.progress_end_signal.emit()
 
-    # 정지
     def stop(self):
         self.running = False
