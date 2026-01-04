@@ -32,8 +32,8 @@
 # from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
 # from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
 # from src.workers.main.api_peachchill26_set_worker                   import ApiPeachhill26SetLoadWorker
-# from src.workers.main.api_krx_nextrade_brand_set_worker             import ApiKrxNextradeSetLoadWorker
-from src.workers.main.api_coco_label_set_worker import ApiCocoLabelSetLoadWorker
+from src.workers.main.api_krx_nextrade_brand_set_worker             import ApiKrxNextradeSetLoadWorker
+# from src.workers.main.api_coco_label_set_worker import ApiCocoLabelSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -73,6 +73,6 @@ WORKER_CLASS_MAP = {
     # "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
     # "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker,
     # "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
-    # "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
-    "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
+    "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
+    # "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
 }
