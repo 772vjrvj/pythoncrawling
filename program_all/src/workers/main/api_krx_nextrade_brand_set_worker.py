@@ -79,6 +79,11 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             "x-requested-with": "XMLHttpRequest",
         }
 
+        # === 신규 ===
+        # 조건별 시트명 (요구사항: 조건1/조건2를 엑셀 시트 2개로 분리)
+        self.sheet_cond1 = "Sheet1"
+        self.sheet_cond2 = "Sheet2"
+
     # =========================
     # init / main
     # =========================
@@ -123,17 +128,14 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"날짜 시작일 : {fr_date}")
             self.log_signal_func(f"날짜 종료일 : {to_date}")
 
-            # === 신규 === 조건1/조건2 입력값 읽기
             min_sum_uk1 = int(self.get_setting_value(self.setting, "price_sum1"))
             min_rate1 = float(self.get_setting_value(self.setting, "rate1"))
             min_sum_uk2 = int(self.get_setting_value(self.setting, "price_sum2"))
             min_rate2 = float(self.get_setting_value(self.setting, "rate2"))
 
-            # === 신규 === 억 -> 원(비교용)
             min_sum_won1 = min_sum_uk1 * 100000000
             min_sum_won2 = min_sum_uk2 * 100000000
 
-            # === 신규 === 로그 출력(조건1/2)
             self.log_signal_func(f"[조건1] 거래대금 이상(억) : {min_sum_uk1}")
             self.log_signal_func(f"[조건1] 거래대금 이상(원) : {min_sum_won1}")
             self.log_signal_func(f"[조건1] 등락률 이상(%) : {min_rate1}")
@@ -151,14 +153,17 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             if auto_yn:
                 self.output_xlsx = self.output_xlsx_auto
                 self.log_signal_func(f"[AUTO] 누적 저장 파일: {self.output_xlsx}")
-                # === 신규 === 조건1/조건2 전달
                 self.auto_loop(auto_time, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
             else:
                 self.output_xlsx = f"krx_nextrade_{fr_date}_{to_date}.xlsx"
                 self.log_signal_func(f"[RUN] 저장 파일: {self.output_xlsx}")
 
                 dates = self.make_dates(fr_date, to_date)
-                all_rows = []
+
+                # === 신규 ===
+                # 조건별 분리 누적
+                all_rows_c1 = []
+                all_rows_c2 = []
 
                 self.log_signal_func(f"[RUN] 기간 처리 시작: {dates[0]} ~ {dates[-1]} (총 {len(dates)}일)")
 
@@ -169,11 +174,17 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
                     self.log_signal_func(f"[DAY {idx}/{len(dates)}] {ymd} 처리 시작")
 
-                    # === 신규 === 조건1/조건2 전달
-                    rows = self.process_one_day(ymd, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
-                    all_rows.extend(rows)
+                    # === 수정(요구사항) ===
+                    # 조건1 / 조건2를 분리해서 받는다
+                    rows_c1, rows_c2 = self.process_one_day(ymd, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
 
-                    self.log_signal_func(f"[DAY {idx}/{len(dates)}] {ymd} 완료 (조건 통과 {len(rows)}건)")
+                    all_rows_c1.extend(rows_c1)
+                    all_rows_c2.extend(rows_c2)
+
+                    # === 신규 ===
+                    self.log_signal_func(
+                        f"[DAY {idx}/{len(dates)}] {ymd} 완료 (조건1 {len(rows_c1)}건 / 조건2 {len(rows_c2)}건)"
+                    )
 
                     pro = (idx / len(dates)) * 1000000
                     self.progress_signal.emit(self.before_pro_value, pro)
@@ -182,8 +193,14 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
                     # === 랜덤 슬립 (1~2초) ===
                     time.sleep(random.uniform(1, 2))
 
-                self.log_signal_func(f"[RUN] 엑셀 저장 시작 (총 {len(all_rows)}건)")
-                self.append_excel(all_rows)
+                # === 수정(요구사항) ===
+                # 조건1/조건2를 서로 다른 시트에 저장
+                self.log_signal_func(f"[RUN] 엑셀 저장 시작 (조건1 {len(all_rows_c1)}건 / 조건2 {len(all_rows_c2)}건)")
+
+                # === 신규 ===
+                self.append_excel_sheet(all_rows_c1, self.sheet_cond1)
+                self.append_excel_sheet(all_rows_c2, self.sheet_cond2)
+
                 self.log_signal_func(f"[RUN] 엑셀 저장 완료: {self.output_xlsx}")
 
             return True
@@ -221,7 +238,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
     # =========================
     # auto
     # =========================
-    # === 신규 === 조건1/조건2 파라미터 추가
     def auto_loop(self, auto_time, min_rate1, min_sum_won1, min_rate2, min_sum_won2):
         hour, minute = self.parse_auto_hour(auto_time)
 
@@ -229,7 +245,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
         while self.running:
             try:
-                # === 신규 === 10초마다 로그인 연장 버튼 클릭
                 now_ts = time.time()
                 if now_ts - self._last_keepalive >= 10:
                     self._last_keepalive = now_ts
@@ -253,12 +268,16 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
                         self.output_xlsx = self.output_xlsx_auto
                         self.log_signal_func(f"[AUTO] {today} 자동 리포트 실행 시작 (파일: {self.output_xlsx})")
 
-                        # === 신규 === 조건1/조건2 전달
-                        rows = self.process_one_day(today, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
-                        self.append_excel(rows)
+                        # === 수정(요구사항) ===
+                        # 조건1/조건2 분리
+                        rows_c1, rows_c2 = self.process_one_day(today, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
+
+                        # === 신규 ===
+                        self.append_excel_sheet(rows_c1, self.sheet_cond1)
+                        self.append_excel_sheet(rows_c2, self.sheet_cond2)
 
                         self.last_auto_date = today
-                        self.log_signal_func(f"[AUTO] {today} 자동 리포트 완료 (저장 {len(rows)}건)")
+                        self.log_signal_func(f"[AUTO] {today} 자동 리포트 완료 (조건1 {len(rows_c1)}건 / 조건2 {len(rows_c2)}건)")
 
                     except Exception as e:
                         self.log_signal_func(f"[AUTO] 실행 오류: {e}")
@@ -274,7 +293,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
     # =========================
     # core
     # =========================
-    # === 신규 === 조건1/조건2 파라미터 추가
     def process_one_day(self, ymd, min_rate1, min_sum_won1, min_rate2, min_sum_won2):
         self.log_signal_func(f"[{ymd}] 데이터 수집 시작 (KRX / NEXTRADE)")
 
@@ -320,8 +338,12 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         # 거래대금 내림차순 정렬(원 기준)
         merged.sort(key=lambda x: x.get("거래대금합계_원", 0), reverse=True)
 
+        # === 수정(요구사항) ===
+        # 조건별 시트 분리용 리스트
+        rows_c1 = []
+        rows_c2 = []
+
         # 조건 필터 + 순위 부여
-        rows = []
         rank = 1
         for m in merged:
             m["순위"] = rank
@@ -333,7 +355,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             trade_won = m.get("거래대금합계_원", 0)
             rate_val = m.get("등락률", 0)
 
-            # === 신규 === 조건1 또는 조건2 만족하면 통과
             ok1 = False
             ok2 = False
 
@@ -349,13 +370,19 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             # === rows 들어가기 전에 억 단위로 변환(8자리 버림) ===
             m["거래대금합계"] = str(int(trade_won) // 100000000)
 
-            # === 신규 === 어떤 조건으로 통과했는지(원하면 컬럼에 포함 가능)
-            # m["통과조건"] = "1" if ok1 and not ok2 else ("2" if ok2 and not ok1 else "1,2")
+            # === 수정(요구사항) ===
+            # 조건1/조건2 각각 시트로 분리 저장
+            mapped = self.map_columns(m)
 
-            rows.append(self.map_columns(m))
+            if ok1:
+                rows_c1.append(mapped)
+            if ok2:
+                rows_c2.append(mapped)
 
-        self.log_signal_func(f"[{ymd}] 조건 통과 종목 수: {len(rows)}")
-        return rows
+        # === 수정(요구사항) ===
+        self.log_signal_func(f"[{ymd}] 조건 통과 종목 수: 조건1 {len(rows_c1)}건 / 조건2 {len(rows_c2)}건")
+
+        return rows_c1, rows_c2
 
     # =========================
     # fetch
@@ -431,11 +458,26 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
     # excel
     # =========================
     def append_excel(self, rows):
+        # (기존 유지) 기본은 Sheet1
         self.excel_driver.append_rows_text_excel(
             filename=self.output_xlsx,
             rows=rows,
             columns=self.columns,
             sheet_name="Sheet1"
+        )
+
+    # === 신규 ===
+    # 조건별 시트 저장 함수 (람다 X / 외부함수(클래스 메서드)로만 추가)
+    def append_excel_sheet(self, rows, sheet_name):
+        # === 신규 === rows None 방어만 유지
+        if not rows:
+            return
+
+        self.excel_driver.append_rows_text_excel(
+            filename=self.output_xlsx,
+            rows=rows,
+            columns=self.columns,
+            sheet_name=sheet_name
         )
 
     # =========================
