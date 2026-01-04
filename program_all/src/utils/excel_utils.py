@@ -182,10 +182,10 @@ class ExcelUtils:
             self.log_func("excel(객체 리스트) 저장완료 (URL 하이퍼링크 처리)")
 
     # ==========================================================
-    # === 신규 === (방금 KRX/NEXTRADE 작업에서 쓰던 엑셀 저장 로직)
-    #   - rows(dict) 리스트를 columns 순서대로 1행씩 append
-    #   - 모든 셀을 텍스트(number_format="@")로 강제
-    #   - 여기서는 '원->억' 변환 같은 도메인 로직 절대 안함
+    # === 신규/수정 ===
+    #   - sheet_name이 없으면 새 시트 생성
+    #   - 새 시트면 헤더(columns) 1행 추가
+    #   - 기존 시트면 그대로 append
     # ==========================================================
     def append_rows_text_excel(self, filename, rows, columns, sheet_name="Sheet1"):
         if not rows:
@@ -195,9 +195,18 @@ class ExcelUtils:
 
         if os.path.exists(filename):
             wb = load_workbook(filename)
-            ws = wb[sheet_name] if sheet_name in wb.sheetnames else wb.active
+
+            # === 신규 === sheet_name 없으면 생성해서 그 시트를 사용
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                ws = wb.create_sheet(title=sheet_name)
+                ws.append(columns)  # === 신규 === 새 시트는 헤더부터
+
             if self.log_func:
                 self.log_func(f"[EXCEL] 기존 파일 로드: {filename}")
+                self.log_func(f"[EXCEL] 대상 시트: {sheet_name}")  # === 신규 === 디버깅용
+
         else:
             wb = Workbook()
             ws = wb.active
@@ -205,6 +214,7 @@ class ExcelUtils:
             ws.append(columns)
             if self.log_func:
                 self.log_func(f"[EXCEL] 신규 파일 생성: {filename}")
+                self.log_func(f"[EXCEL] 대상 시트: {sheet_name}")  # === 신규 ===
 
         saved = 0
         for r in rows:
@@ -212,6 +222,7 @@ class ExcelUtils:
             for c in columns:
                 out[c] = r.get(c, "")
 
+            # (기존 유지) 텍스트로 저장
             ws.append([str(out.get(c, "")) for c in columns])
 
             for col in range(1, len(columns) + 1):
@@ -221,4 +232,4 @@ class ExcelUtils:
 
         wb.save(filename)
         if self.log_func:
-            self.log_func(f"[EXCEL] 저장 완료 (추가 {saved}건)")
+            self.log_func(f"[EXCEL] 저장 완료 ({sheet_name}) (추가 {saved}건)")  # === 신규 ===
