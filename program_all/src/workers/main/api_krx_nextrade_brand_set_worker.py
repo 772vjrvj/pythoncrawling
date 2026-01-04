@@ -50,7 +50,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         self.krx_referer = "https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101"
         self.krx_url_login = "https://data.krx.co.kr/contents/MDC/COMS/client/MDCCOMS001.cmd"
 
-
         self.nx_url = "https://www.nextrade.co.kr/brdinfoTime/brdinfoTimeList.do"
         self.nx_referer = "https://www.nextrade.co.kr/menu/transactionStatusMain/menuList.do"
 
@@ -98,9 +97,7 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         # 로그인 열기
         self.driver.get(self.krx_url_login)
 
-
         return True
-
 
     def driver_set(self, headless):
         self.log_signal_func("드라이버 세팅 ========================================")
@@ -114,13 +111,10 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         # 셀레니움 초기화
         self.selenium_driver = SeleniumUtils(headless)
 
-
         self.driver = self.selenium_driver.start_driver(1200)
-
 
     def main(self):
         try:
-
             self.wait_for_user_confirmation()
 
             fr_date = self.get_setting_value(self.setting, "fr_date")
@@ -129,15 +123,24 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"날짜 시작일 : {fr_date}")
             self.log_signal_func(f"날짜 종료일 : {to_date}")
 
-            min_sum_uk = int(self.get_setting_value(self.setting, "price_sum"))
-            min_rate = float(self.get_setting_value(self.setting, "rate"))
+            # === 신규 === 조건1/조건2 입력값 읽기
+            min_sum_uk1 = int(self.get_setting_value(self.setting, "price_sum1"))
+            min_rate1 = float(self.get_setting_value(self.setting, "rate1"))
+            min_sum_uk2 = int(self.get_setting_value(self.setting, "price_sum2"))
+            min_rate2 = float(self.get_setting_value(self.setting, "rate2"))
 
-            # 억 -> 원(비교용)
-            min_sum_won = min_sum_uk * 100000000
+            # === 신규 === 억 -> 원(비교용)
+            min_sum_won1 = min_sum_uk1 * 100000000
+            min_sum_won2 = min_sum_uk2 * 100000000
 
-            self.log_signal_func(f"거래대금 이상(억) : {min_sum_uk}")
-            self.log_signal_func(f"거래대금 이상(원) : {min_sum_won}")
-            self.log_signal_func(f"등락률 이상(%) : {min_rate}")
+            # === 신규 === 로그 출력(조건1/2)
+            self.log_signal_func(f"[조건1] 거래대금 이상(억) : {min_sum_uk1}")
+            self.log_signal_func(f"[조건1] 거래대금 이상(원) : {min_sum_won1}")
+            self.log_signal_func(f"[조건1] 등락률 이상(%) : {min_rate1}")
+
+            self.log_signal_func(f"[조건2] 거래대금 이상(억) : {min_sum_uk2}")
+            self.log_signal_func(f"[조건2] 거래대금 이상(원) : {min_sum_won2}")
+            self.log_signal_func(f"[조건2] 등락률 이상(%) : {min_rate2}")
 
             auto_yn = str(self.get_setting_value(self.setting, "auto_yn")).lower() in ("1", "true", "y")
             auto_time = str(self.get_setting_value(self.setting, "auto_time"))
@@ -148,7 +151,8 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             if auto_yn:
                 self.output_xlsx = self.output_xlsx_auto
                 self.log_signal_func(f"[AUTO] 누적 저장 파일: {self.output_xlsx}")
-                self.auto_loop(auto_time, min_rate, min_sum_won)
+                # === 신규 === 조건1/조건2 전달
+                self.auto_loop(auto_time, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
             else:
                 self.output_xlsx = f"krx_nextrade_{fr_date}_{to_date}.xlsx"
                 self.log_signal_func(f"[RUN] 저장 파일: {self.output_xlsx}")
@@ -165,7 +169,8 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
                     self.log_signal_func(f"[DAY {idx}/{len(dates)}] {ymd} 처리 시작")
 
-                    rows = self.process_one_day(ymd, min_rate, min_sum_won)
+                    # === 신규 === 조건1/조건2 전달
+                    rows = self.process_one_day(ymd, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
                     all_rows.extend(rows)
 
                     self.log_signal_func(f"[DAY {idx}/{len(dates)}] {ymd} 완료 (조건 통과 {len(rows)}건)")
@@ -186,7 +191,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         except Exception as e:
             self.log_signal_func(f"❌ 오류: {e}")
             return False
-
 
     def wait_for_user_confirmation(self):
         self.log_signal_func("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
@@ -214,18 +218,17 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
         self.log_signal_func("🚀 작업 완료!")
 
-
     # =========================
     # auto
     # =========================
-    def auto_loop(self, auto_time, min_rate, min_sum_won):
+    # === 신규 === 조건1/조건2 파라미터 추가
+    def auto_loop(self, auto_time, min_rate1, min_sum_won1, min_rate2, min_sum_won2):
         hour, minute = self.parse_auto_hour(auto_time)
 
         self.log_signal_func(f"[AUTO] 자동 리포트 시간: {hour:02d}:{minute:02d}")
 
         while self.running:
             try:
-
                 # === 신규 === 10초마다 로그인 연장 버튼 클릭
                 now_ts = time.time()
                 if now_ts - self._last_keepalive >= 10:
@@ -250,7 +253,8 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
                         self.output_xlsx = self.output_xlsx_auto
                         self.log_signal_func(f"[AUTO] {today} 자동 리포트 실행 시작 (파일: {self.output_xlsx})")
 
-                        rows = self.process_one_day(today, min_rate, min_sum_won)
+                        # === 신규 === 조건1/조건2 전달
+                        rows = self.process_one_day(today, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
                         self.append_excel(rows)
 
                         self.last_auto_date = today
@@ -270,7 +274,8 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
     # =========================
     # core
     # =========================
-    def process_one_day(self, ymd, min_rate, min_sum_won):
+    # === 신규 === 조건1/조건2 파라미터 추가
+    def process_one_day(self, ymd, min_rate1, min_sum_won1, min_rate2, min_sum_won2):
         self.log_signal_func(f"[{ymd}] 데이터 수집 시작 (KRX / NEXTRADE)")
 
         krx = self.fetch_krx(ymd)
@@ -324,13 +329,28 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
             if m.get("등락률") is None:
                 continue
-            if m.get("거래대금합계_원", 0) < min_sum_won:
-                continue
-            if m.get("등락률", 0) < min_rate:
+
+            trade_won = m.get("거래대금합계_원", 0)
+            rate_val = m.get("등락률", 0)
+
+            # === 신규 === 조건1 또는 조건2 만족하면 통과
+            ok1 = False
+            ok2 = False
+
+            if trade_won >= min_sum_won1 and rate_val >= min_rate1:
+                ok1 = True
+
+            if trade_won >= min_sum_won2 and rate_val >= min_rate2:
+                ok2 = True
+
+            if not (ok1 or ok2):
                 continue
 
             # === rows 들어가기 전에 억 단위로 변환(8자리 버림) ===
-            m["거래대금합계"] = str(int(m.get("거래대금합계_원", 0)) // 100000000)
+            m["거래대금합계"] = str(int(trade_won) // 100000000)
+
+            # === 신규 === 어떤 조건으로 통과했는지(원하면 컬럼에 포함 가능)
+            # m["통과조건"] = "1" if ok1 and not ok2 else ("2" if ok2 and not ok1 else "1,2")
 
             rows.append(self.map_columns(m))
 
@@ -461,7 +481,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             return hour, minute
 
         raise ValueError("auto_time은 HHMM 형식(예: 2000, 0930, 929, 28)으로 입력하세요")
-
 
     def destroy(self):
         self.progress_signal.emit(self.before_pro_value, 1000000)
