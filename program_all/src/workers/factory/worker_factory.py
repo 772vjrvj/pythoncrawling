@@ -50,7 +50,6 @@ WORKER_CLASS_MAP = {
     # "OVREPLE"                           :   ApiOvrepleSetLoadWorker,
     # "1004YA"                            :   Api1004yaSetLoadWorker,
     # "APP_SENSORTOWER"                   :   ApiAppSensertowerSetLoadWorker,
-
     # "ABC_MART_BRAND"                    :   ApiAbcmartBrandSetLoadWorker,
     # "ABC_MART_DETAIL"                   :   ApiAbcmartDetailSetLoadWorker,
     # "GRAND_STAGE_BRAND"                 :   ApiGrandstageBrandSetLoadWorker,
@@ -59,9 +58,7 @@ WORKER_CLASS_MAP = {
     # "ON_THE_SPOT_DETAIL"                :   ApiOnthespotDetailSetLoadWorker,
     # "OK_MALL_BRAND"                     :   ApiOkmallBrandSetLoadWorker,
     # "OK_MALL_DETAIL"                    :   ApiOkmallDetailSetLoadWorker,
-
     # "THE_FIRST_HALL_WEDDING"            :   ApiThefirsthallweddingDetailSetLoadWorker,
-
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,

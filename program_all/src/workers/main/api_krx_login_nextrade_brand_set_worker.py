@@ -4,27 +4,36 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import os
 import time
 import datetime
 import random
 import json
+import threading
+import pyautogui
 
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from src.workers.api_base_worker import BaseApiWorker
 from src.utils.number_utils import to_int, to_float
+from src.utils.selenium_utils import SeleniumUtils
 
 
 class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
     def __init__(self):
         super().__init__()
-
+        self.driver = None
+        self.selenium_driver = None
         self.file_driver = None
         self.excel_driver = None
         self.api_client = APIClient(use_cache=False)
 
+        # =========================
+        # output
+        # =========================
+        # === 자동 리포트는 항상 누적 ===
         self.output_xlsx_auto = "krx_nextrade.xlsx"
         self.output_xlsx = self.output_xlsx_auto
 
@@ -32,26 +41,28 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         self.before_pro_value = 0
         self.last_auto_date = None
 
-        self._last_keepalive = 0  # (기존 유지 - 필요시 활용)
+        self._last_keepalive = 0
 
-        self.krx_url = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd?screenId=MDCEASY016&locale=ko_KR&kosdaqGlobalYn=1"
-        self.krx_api_url = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
+        # =========================
+        # KRX / NEXTRADE URL + REFERER
+        # =========================
+        self.krx_url = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
+        self.krx_referer = "https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101"
+        self.krx_url_login = "https://data.krx.co.kr/contents/MDC/COMS/client/MDCCOMS001.cmd"
 
         self.nx_url = "https://www.nextrade.co.kr/brdinfoTime/brdinfoTimeList.do"
+        self.nx_referer = "https://www.nextrade.co.kr/menu/transactionStatusMain/menuList.do"
 
         # =========================
         # headers
         # =========================
         self.krx_headers = {
-            "Accept": "application/json, text/javascript, */*; q=0.01",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Origin": "https://data.krx.co.kr",
-            "Referer": self.krx_url,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
-            "X-Requested-With": "XMLHttpRequest",
-            "Cookie": "__smVisitorID=Q42GehS1puT; JSESSIONID=5wafab71O0Kcnas9131lDy65a3Vaa6EA0TxBoGtinroP1PKmtikR9OQCQXn145qQ.bWRjX2RvbWFpbi9tZGNvd2FwMS1tZGNhcHAwMQ=="
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "origin": "https://data.krx.co.kr",
+            "referer": self.krx_referer,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "x-requested-with": "XMLHttpRequest"
         }
 
         self.nx_headers = {
@@ -59,7 +70,7 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
             "content-type": "application/x-www-form-urlencoded",
             "origin": "https://www.nextrade.co.kr",
-            "referer": "https://www.nextrade.co.kr/menu/transactionStatusMain/menuList.do",
+            "referer": self.nx_referer,
             "user-agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -73,17 +84,28 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         self.sheet_cond1 = "Sheet1"
         self.sheet_cond2 = "Sheet2"
 
-        # =========================
-        # columns (외부에서 주입/설정되는 구조라면 기존대로 유지)
-        # =========================
-        # self.columns 는 BaseApiWorker 또는 setting에서 이미 세팅된다고 가정
-        # 없으면 map_columns에서 키가 비어버리므로, 반드시 세팅돼 있어야 함
-
     # =========================
     # init / main
     # =========================
     def init(self):
-        self.log_signal_func("드라이버 세팅 ==========================")
+        self.driver_set(False)
+
+        # 현재 모니터 해상도 가져오기
+        screen_width, screen_height = pyautogui.size()
+
+        # 창 크기를 너비 절반, 높이 전체로 설정
+        self.driver.set_window_size(screen_width // 2, screen_height)
+
+        # 창 위치를 왼쪽 상단에 배치
+        self.driver.set_window_position(0, 0)
+
+        # 로그인 열기
+        self.driver.get(self.krx_url_login)
+
+        return True
+
+    def driver_set(self, headless):
+        self.log_signal_func("드라이버 세팅 ========================================")
 
         # 엑셀 객체 초기화
         self.excel_driver = ExcelUtils(self.log_signal_func)
@@ -91,10 +113,15 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         # 파일 객체 초기화
         self.file_driver = FileUtils(self.log_signal_func)
 
-        return True
+        # 셀레니움 초기화
+        self.selenium_driver = SeleniumUtils(headless)
+
+        self.driver = self.selenium_driver.start_driver(1200)
 
     def main(self):
         try:
+            self.wait_for_user_confirmation()
+
             fr_date = self.get_setting_value(self.setting, "fr_date")
             to_date = self.get_setting_value(self.setting, "to_date")
 
@@ -127,7 +154,6 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
                 self.output_xlsx = self.output_xlsx_auto
                 self.log_signal_func(f"[AUTO] 누적 저장 파일: {self.output_xlsx}")
                 self.auto_loop(auto_time, min_rate1, min_sum_won1, min_rate2, min_sum_won2)
-
             else:
                 self.output_xlsx = f"krx_nextrade_{fr_date}_{to_date}.xlsx"
                 self.log_signal_func(f"[RUN] 저장 파일: {self.output_xlsx}")
@@ -183,6 +209,32 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
             self.log_signal_func(f"❌ 오류: {e}")
             return False
 
+    def wait_for_user_confirmation(self):
+        self.log_signal_func("크롤링 사이트 인증을 시도중입니다. 잠시만 기다려주세요.")
+
+        event = threading.Event()  # OK 버튼 누를 때까지 대기할 이벤트 객체
+
+        # 사용자에게 메시지 창 요청
+        self.msg_signal.emit("로그인 후  후 OK를 눌러주세요", "info", event)
+
+        # 사용자가 OK를 누를 때까지 대기
+        self.log_signal_func("📢 사용자 입력 대기 중...")
+        event.wait()  # 사용자가 OK를 누르면 해제됨
+
+        # 쿠키 설정
+        cookies = {cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}
+        for name, value in cookies.items():
+            self.api_client.cookie_set(name, value)
+
+        # 사용자가 OK를 눌렀을 경우 실행
+        self.log_signal_func("✅ 사용자가 확인 버튼을 눌렀습니다. 다음 작업 진행 중...")
+
+        self.driver.get(self.krx_referer)
+
+        time.sleep(2)  # 예제용
+
+        self.log_signal_func("🚀 작업 완료!")
+
     # =========================
     # auto
     # =========================
@@ -193,6 +245,17 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
         while self.running:
             try:
+                now_ts = time.time()
+                if now_ts - self._last_keepalive >= 10:
+                    self._last_keepalive = now_ts
+                    try:
+                        btn = self.driver.find_element("id", "jsExtendLoginBtn")
+                        if btn.is_displayed():
+                            btn.click()
+                            self.log_signal_func("[KEEPALIVE] 로그인 연장 클릭")
+                    except Exception:
+                        pass
+
                 now = datetime.datetime.now()
                 today = now.strftime("%Y%m%d")
 
@@ -336,7 +399,7 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
         }
 
         self.log_signal_func(f"[KRX {ymd}] POST 요청 시작")
-        resp = self.api_client.post(self.krx_api_url, headers=self.krx_headers, data=payload)
+        resp = self.api_client.post(self.krx_url, headers=self.krx_headers, data=payload)
         time.sleep(random.uniform(1, 2))
 
         data = json.loads(resp)
@@ -470,3 +533,5 @@ class ApiKrxNextradeSetLoadWorker(BaseApiWorker):
 
     def stop(self):
         self.running = False
+        if self.selenium_driver:
+            self.selenium_driver.quit()

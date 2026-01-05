@@ -451,64 +451,64 @@ SITE_LIST = [
             {'name': '자동 리포트 시간(기본 20시 [HHMM으로])',   'code': 'auto_time','value': '2000', 'type': 'input'},
         ]
    ),
-    # Site("COCO LABEL", "COCO_LABEL", "#121212", enabled=True,
-    #      columns = [
-    #          {"code": "product_code",        "value": "상품코드",        "checked": True},
-    #          {"code": "category_main",       "value": "기본분류",        "checked": True},
-    #          {"code": "category_2",          "value": "분류2",           "checked": True},
-    #          {"code": "category_3",          "value": "분류3",           "checked": True},
-    #          {"code": "product_name",        "value": "상품명",          "checked": True},
-    #          {"code": "manufacturer",        "value": "제조사",          "checked": True},
-    #          {"code": "origin",              "value": "원산지",          "checked": True},
-    #          {"code": "brand",               "value": "브랜드",          "checked": True},
-    #          {"code": "model",               "value": "모델",            "checked": True},
-    #
-    #          {"code": "product_type_1",      "value": "상품유형1",       "checked": True},
-    #          {"code": "product_type_2",      "value": "상품유형2",       "checked": True},
-    #          {"code": "product_type_3",      "value": "상품유형3",       "checked": True},
-    #          {"code": "product_type_4",      "value": "상품유형4",       "checked": True},
-    #          {"code": "product_type_5",      "value": "상품유형5",       "checked": True},
-    #
-    #          {"code": "basic_description",   "value": "기본설명",        "checked": True},
-    #          {"code": "description",         "value": "상품설명",        "checked": True},
-    #          {"code": "mobile_description",  "value": "모바일상품설명",  "checked": True},
-    #
-    #          {"code": "market_price",        "value": "시중가격",        "checked": True},
-    #          {"code": "sale_price",          "value": "판매가격",        "checked": True},
-    #          {"code": "phone_inquiry",        "value": "전화문의",        "checked": True},
-    #
-    #          {"code": "point",               "value": "포인트",          "checked": True},
-    #          {"code": "point_type",          "value": "포인트타입",      "checked": True},
-    #
-    #          {"code": "seller_email",        "value": "판매자이메일",    "checked": True},
-    #          {"code": "is_sale",             "value": "판매가능",        "checked": True},
-    #
-    #          {"code": "stock_qty",           "value": "재고수량",        "checked": True},
-    #          {"code": "stock_alert_qty",     "value": "재고통보수량",    "checked": True},
-    #
-    #          {"code": "min_order_qty",       "value": "최소구매수량",    "checked": True},
-    #          {"code": "max_order_qty",       "value": "최대구매수량",    "checked": True},
-    #
-    #          {"code": "tax_type",            "value": "과세유형",        "checked": True},
-    #          {"code": "sort_order",          "value": "정렬순서",        "checked": True},
-    #
-    #          {"code": "image_1",             "value": "이미지1",         "checked": True},
-    #          {"code": "image_2",             "value": "이미지2",         "checked": True},
-    #          {"code": "image_3",             "value": "이미지3",         "checked": True},
-    #          {"code": "image_4",             "value": "이미지4",         "checked": True},
-    #          {"code": "image_5",             "value": "이미지5",         "checked": True},
-    #          {"code": "image_6",             "value": "이미지6",         "checked": True},
-    #          {"code": "image_7",             "value": "이미지7",         "checked": True},
-    #          {"code": "image_8",             "value": "이미지8",         "checked": True},
-    #          {"code": "image_9",             "value": "이미지9",         "checked": True},
-    #          {"code": "image_10",            "value": "이미지10",        "checked": True},
-    #
-    #          {"code": "options",             "value": "옵션",            "checked": True},
-    #      ],
-    #       setting=[
-    #           {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '베스트, 시계, 잡화, 남성, 에르메스프리미엄, 샤넬 프리미엄', 'type': 'input'}
-    #       ],
-    # ),
+   #  Site("COCO LABEL", "COCO_LABEL", "#121212", enabled=True,
+   #       columns = [
+   #           {"code": "product_code",        "value": "상품코드",        "checked": True},
+   #           {"code": "category_main",       "value": "기본분류",        "checked": True},
+   #           {"code": "category_2",          "value": "분류2",           "checked": True},
+   #           {"code": "category_3",          "value": "분류3",           "checked": True},
+   #           {"code": "product_name",        "value": "상품명",          "checked": True},
+   #           {"code": "manufacturer",        "value": "제조사",          "checked": True},
+   #           {"code": "origin",              "value": "원산지",          "checked": True},
+   #           {"code": "brand",               "value": "브랜드",          "checked": True},
+   #           {"code": "model",               "value": "모델",            "checked": True},
+   #
+   #           {"code": "product_type_1",      "value": "상품유형1",       "checked": True},
+   #           {"code": "product_type_2",      "value": "상품유형2",       "checked": True},
+   #           {"code": "product_type_3",      "value": "상품유형3",       "checked": True},
+   #           {"code": "product_type_4",      "value": "상품유형4",       "checked": True},
+   #           {"code": "product_type_5",      "value": "상품유형5",       "checked": True},
+   #
+   #           {"code": "basic_description",   "value": "기본설명",        "checked": True},
+   #           {"code": "description",         "value": "상품설명",        "checked": True},
+   #           {"code": "mobile_description",  "value": "모바일상품설명",  "checked": True},
+   #
+   #           {"code": "market_price",        "value": "시중가격",        "checked": True},
+   #           {"code": "sale_price",          "value": "판매가격",        "checked": True},
+   #           {"code": "phone_inquiry",        "value": "전화문의",        "checked": True},
+   #
+   #           {"code": "point",               "value": "포인트",          "checked": True},
+   #           {"code": "point_type",          "value": "포인트타입",      "checked": True},
+   #
+   #           {"code": "seller_email",        "value": "판매자이메일",    "checked": True},
+   #           {"code": "is_sale",             "value": "판매가능",        "checked": True},
+   #
+   #           {"code": "stock_qty",           "value": "재고수량",        "checked": True},
+   #           {"code": "stock_alert_qty",     "value": "재고통보수량",    "checked": True},
+   #
+   #           {"code": "min_order_qty",       "value": "최소구매수량",    "checked": True},
+   #           {"code": "max_order_qty",       "value": "최대구매수량",    "checked": True},
+   #
+   #           {"code": "tax_type",            "value": "과세유형",        "checked": True},
+   #           {"code": "sort_order",          "value": "정렬순서",        "checked": True},
+   #
+   #           {"code": "image_1",             "value": "이미지1",         "checked": True},
+   #           {"code": "image_2",             "value": "이미지2",         "checked": True},
+   #           {"code": "image_3",             "value": "이미지3",         "checked": True},
+   #           {"code": "image_4",             "value": "이미지4",         "checked": True},
+   #           {"code": "image_5",             "value": "이미지5",         "checked": True},
+   #           {"code": "image_6",             "value": "이미지6",         "checked": True},
+   #           {"code": "image_7",             "value": "이미지7",         "checked": True},
+   #           {"code": "image_8",             "value": "이미지8",         "checked": True},
+   #           {"code": "image_9",             "value": "이미지9",         "checked": True},
+   #           {"code": "image_10",            "value": "이미지10",        "checked": True},
+   #
+   #           {"code": "options",             "value": "옵션",            "checked": True},
+   #       ],
+   #        setting=[
+   #            {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '베스트, 시계, 잡화, 남성, 에르메스프리미엄, 샤넬 프리미엄', 'type': 'input'}
+   #        ],
+   #  ),
 ]
 
 # 전역 변수
