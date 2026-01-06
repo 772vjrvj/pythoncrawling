@@ -552,7 +552,9 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
             main_category = category_list[0] if len(category_list) > 0 else ""
             sub_category = category_list[1] if len(category_list) > 1 else ""
 
-            zipCode = self.fetch_zipcode_by_addr(address, roadAddress)
+            zipCode = ""
+            if "우편번호" in self.columns:
+                zipCode = self.fetch_zipcode_by_addr(address, roadAddress)
 
             result = {
                 "아이디": place_id,
@@ -620,9 +622,12 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
     def fetch_zipcode_by_addr(self, addr_jibun, addr_road):
         """
-        1) addr_jibun(지번)으로 POST
-        2) 없으면 addr_road(도로명)으로 POST
-        응답 HTML: div.line > ul > li > p 텍스트(우편번호 5자리) 추출
+        1) 지번 주소로 조회
+        2) 실패 시 도로명 주소로 조회
+        - 네이버 event HTML 파싱
+        - 우편번호는 문자열로만 처리
+        - 4자리면 앞에 0 붙여 5자리로 복원
+        - 6자리는 구우편번호로 판단 → 무시
         """
         try:
             url = "https://event.naver.com/personalInfo/zipCode"
@@ -638,37 +643,59 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
             }
 
-            def _try_one(keyword):
+            def extract_zip(html):
+                soup = BeautifulSoup(html, "html.parser")
+
+                for li in soup.select("div.line ul li"):
+                    # 1) p 태그 텍스트
+                    p = li.find("p")
+                    if p:
+                        text = p.get_text(" ", strip=True)
+                        m = re.search(r"\b(\d{4,6})\b", text)
+                        if m:
+                            z = m.group(1)
+                            if len(z) == 4:
+                                return "0" + z
+                            if len(z) == 5:
+                                return z
+                            # 6자리는 구우편번호 → 무시
+
+                    # 2) a.copy의 roadZipCode 속성
+                    a = li.select_one("a.copy[roadZipCode]")
+                    if a:
+                        z = (a.get("roadZipCode") or "").strip()
+                        if z.isdigit():
+                            if len(z) == 4:
+                                return "0" + z
+                            if len(z) == 5:
+                                return z
+                            # 6자리는 무시
+
+                return ""
+
+            def try_one(keyword):
                 if not keyword:
                     return ""
                 kw = str(keyword).strip()
                 if not kw:
                     return ""
 
-                # 쿠키는 절대 넣지 않음
                 html = self.api_client.post(url=url, headers=headers, data={"keyword": kw})
                 if not html or not isinstance(html, str):
                     return ""
 
-                soup = BeautifulSoup(html, "html.parser")
-                p = soup.select_one("div.line ul li p")
-                if not p:
-                    return ""
+                return extract_zip(html)
 
-                z = p.get_text(strip=True)
-                if z and z.isdigit() and len(z) == 5:
-                    return z
-                return ""
-
-            zc = _try_one(addr_jibun)
+            zc = try_one(addr_jibun)
             if zc:
                 return zc
 
-            return _try_one(addr_road)
+            return try_one(addr_road)
 
         except Exception as e:
             self.log_signal_func(f"우편번호 조회 실패: {e}")
             return ""
+
 
 
     # 영업시간 함수1
