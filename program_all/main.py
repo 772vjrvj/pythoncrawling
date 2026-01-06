@@ -74,22 +74,22 @@ def qt_exec(app: QApplication) -> int:
 
 
 def main() -> None:
-    lock = SingleInstance("program_single_instance") # 중복 실행 가능 주석
-    if lock.already_running(): # 중복 실행 가능 주석
-        show_already_running_alert(None) # 중복 실행 가능 주석
-        sys.exit(0) # 중복 실행 가능 주석
+    # lock = SingleInstance("program_single_instance") # 중복 실행 가능 주석
+    # if lock.already_running(): # 중복 실행 가능 주석
+    #     show_already_running_alert(None) # 중복 실행 가능 주석
+    #     sys.exit(0) # 중복 실행 가능 주석
 
     app = QApplication(sys.argv)
 
-    app._single_instance_lock = lock  # noqa: attach # 중복 실행 가능 주석
+    # app._single_instance_lock = lock  # noqa: attach # 중복 실행 가능 주석
 
     # 앱 종료 직전에 락 정리
-    def _on_about_to_quit():   # 중복 실행 가능 주석
-        try:   # 중복 실행 가능 주석
-            lock.release()     # 중복 실행 가능 주석
-        except Exception:  # 중복 실행 가능 주석
-            pass   # 중복 실행 가능 주석
-    app.aboutToQuit.connect(_on_about_to_quit)     # 중복 실행 가능 주석
+    # def _on_about_to_quit():   # 중복 실행 가능 주석
+    #     try:   # 중복 실행 가능 주석
+    #         lock.release()     # 중복 실행 가능 주석
+    #     except Exception:  # 중복 실행 가능 주석
+    #         pass   # 중복 실행 가능 주석
+    # app.aboutToQuit.connect(_on_about_to_quit)     # 중복 실행 가능 주석
 
     # === 기존 ===
     state = GlobalState()

@@ -552,11 +552,14 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
             main_category = category_list[0] if len(category_list) > 0 else ""
             sub_category = category_list[1] if len(category_list) > 1 else ""
 
+            zipCode = self.fetch_zipcode_by_addr(address, roadAddress)
+
             result = {
                 "아이디": place_id,
                 "이름": name,
                 "주소(지번)": address,
                 "주소(도로명)": roadAddress,
+                "우편번호": zipCode,
                 "대분류": main_category,
                 "소분류": sub_category,
                 "별점": visitorReviewsScore,
@@ -614,6 +617,58 @@ class ApiNaverPlaceLocAllSetLoadWorker(BaseApiWorker):
 
         return None
 
+
+    def fetch_zipcode_by_addr(self, addr_jibun, addr_road):
+        """
+        1) addr_jibun(지번)으로 POST
+        2) 없으면 addr_road(도로명)으로 POST
+        응답 HTML: div.line > ul > li > p 텍스트(우편번호 5자리) 추출
+        """
+        try:
+            url = "https://event.naver.com/personalInfo/zipCode"
+            headers = {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+                "cache-control": "max-age=0",
+                "content-type": "application/x-www-form-urlencoded",
+                "origin": "https://event.naver.com",
+                "referer": "https://event.naver.com/personalInfo/zipCode",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+            }
+
+            def _try_one(keyword):
+                if not keyword:
+                    return ""
+                kw = str(keyword).strip()
+                if not kw:
+                    return ""
+
+                # 쿠키는 절대 넣지 않음
+                html = self.api_client.post(url=url, headers=headers, data={"keyword": kw})
+                if not html or not isinstance(html, str):
+                    return ""
+
+                soup = BeautifulSoup(html, "html.parser")
+                p = soup.select_one("div.line ul li p")
+                if not p:
+                    return ""
+
+                z = p.get_text(strip=True)
+                if z and z.isdigit() and len(z) == 5:
+                    return z
+                return ""
+
+            zc = _try_one(addr_jibun)
+            if zc:
+                return zc
+
+            return _try_one(addr_road)
+
+        except Exception as e:
+            self.log_signal_func(f"우편번호 조회 실패: {e}")
+            return ""
 
 
     # 영업시간 함수1
