@@ -21,50 +21,49 @@ SITE_LIST = [
     #          {"code": "thinkcontest",    "value": "Thinkgood",   "checked": True},
     #      ],
     # ),
-
-    Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
-         setting=[
-             {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
-         ],
-         columns = [
-            {"code": "id",             "value": "아이디",        "checked": True},
-            {"code": "name",           "value": "이름",          "checked": True},
-            {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
-            {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
-            {"code": "category_main",  "value": "대분류",        "checked": True},
-            {"code": "category_sub",   "value": "소분류",        "checked": True},
-            {"code": "rating",         "value": "별점",          "checked": True},
-            {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
-            {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
-            {"code": "open_time1",     "value": "이용시간1",     "checked": True},
-            {"code": "open_time2",     "value": "이용시간2",     "checked": True},
-            {"code": "category",       "value": "카테고리",      "checked": True},
-            {"code": "url",            "value": "URL",           "checked": True},
-            {"code": "map",            "value": "지도",          "checked": True},
-            {"code": "amenities",      "value": "편의시설",      "checked": True},
-            {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
-            {"code": "phone",          "value": "전화번호",      "checked": True},
-            {"code": "site",           "value": "사이트",        "checked": True},
-            {"code": "region_info",    "value": "주소지정보",    "checked": True},
-            {"code": "city",           "value": "시도(검색)",    "checked": True},
-            {"code": "division",       "value": "시군구(검색)",  "checked": True},
-            {"code": "sector",         "value": "읍면동(검색)",  "checked": True},
-            {"code": "keyword",        "value": "키워드(검색)",  "checked": True},
-            {"code": "all_keyword",    "value": "전체 검색어",  "checked": True},
-
-            {"code": "zip_code",       "value": "우편번호",          "checked": True},
-
-            # 행사 정보
-            {"code": "agency_name",    "value": "대행사 상호",          "checked": False},
-            {"code": "agency_ceo",     "value": "대행사 대표자명",      "checked": False},
-            {"code": "agency_address", "value": "대행사 소재지",        "checked": False},
-            {"code": "agency_bizno",   "value": "대행사 사업자번호",    "checked": False},
-            {"code": "agency_mailno",  "value": "대행사 통신판매업번호","checked": False},
-            {"code": "agency_phone",   "value": "대행사 연락처",        "checked": False},
-            {"code": "agency_site",    "value": "대행사 홈페이지",      "checked": False},
-            ],
-         region = True
-         ),
+    # Site("네이버 플레이스 전국", "NAVER_PLACE_LOC_ALL", "#03C75A", enabled=True,
+    #      setting=[
+    #          {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '', 'type': 'input'}
+    #      ],
+    #      columns = [
+    #         {"code": "id",             "value": "아이디",        "checked": True},
+    #         {"code": "name",           "value": "이름",          "checked": True},
+    #         {"code": "addr_jibun",     "value": "주소(지번)",    "checked": True},
+    #         {"code": "addr_road",      "value": "주소(도로명)",  "checked": True},
+    #         {"code": "category_main",  "value": "대분류",        "checked": True},
+    #         {"code": "category_sub",   "value": "소분류",        "checked": True},
+    #         {"code": "rating",         "value": "별점",          "checked": True},
+    #         {"code": "review_visitors","value": "방문자리뷰수",  "checked": True},
+    #         {"code": "review_blogs",   "value": "블로그리뷰수",  "checked": True},
+    #         {"code": "open_time1",     "value": "이용시간1",     "checked": True},
+    #         {"code": "open_time2",     "value": "이용시간2",     "checked": True},
+    #         {"code": "category",       "value": "카테고리",      "checked": True},
+    #         {"code": "url",            "value": "URL",           "checked": True},
+    #         {"code": "map",            "value": "지도",          "checked": True},
+    #         {"code": "amenities",      "value": "편의시설",      "checked": True},
+    #         {"code": "virtual_phone",  "value": "가상번호",      "checked": True},
+    #         {"code": "phone",          "value": "전화번호",      "checked": True},
+    #         {"code": "site",           "value": "사이트",        "checked": True},
+    #         {"code": "region_info",    "value": "주소지정보",    "checked": True},
+    #         {"code": "city",           "value": "시도(검색)",    "checked": True},
+    #         {"code": "division",       "value": "시군구(검색)",  "checked": True},
+    #         {"code": "sector",         "value": "읍면동(검색)",  "checked": True},
+    #         {"code": "keyword",        "value": "키워드(검색)",  "checked": True},
+    #         {"code": "all_keyword",    "value": "전체 검색어",  "checked": True},
+    #
+    #         {"code": "zip_code",       "value": "우편번호",          "checked": True},
+    #
+    #         # 행사 정보
+    #         {"code": "agency_name",    "value": "대행사 상호",          "checked": False},
+    #         {"code": "agency_ceo",     "value": "대행사 대표자명",      "checked": False},
+    #         {"code": "agency_address", "value": "대행사 소재지",        "checked": False},
+    #         {"code": "agency_bizno",   "value": "대행사 사업자번호",    "checked": False},
+    #         {"code": "agency_mailno",  "value": "대행사 통신판매업번호","checked": False},
+    #         {"code": "agency_phone",   "value": "대행사 연락처",        "checked": False},
+    #         {"code": "agency_site",    "value": "대행사 홈페이지",      "checked": False},
+    #         ],
+    #      region = True
+    #      ),
     # Site("네이버 플레이스 URL", "NAVER_PLACE_URL_ALL", "#03C75A", enabled=True,
     #      setting=[
     #          {'name': '용량(MB) 1 ~ 1000사이 숫자를 입력하세요', 'code': 'image_size',    'value': '1000', 'type': 'input'},
@@ -511,6 +510,16 @@ SITE_LIST = [
    #            {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '베스트, 시계, 잡화, 남성, 에르메스프리미엄, 샤넬 프리미엄', 'type': 'input'}
    #        ],
    #  ),
+   Site("네이버 주식 번호", "NAVER_STOCK_PHONE", "#03C75A", enabled=True, popup=True,
+      columns = [
+         {"code": "company_name",     "value": "기업명",           "checked": True},
+         {"code": "market_division",  "value": "시장 구분",        "checked": True},
+         {"code": "stock_code",       "value": "종목코드",         "checked": True},
+         {"code": "main_phone",       "value": "대표전화",         "checked": True},
+         {"code": "ir_phone",         "value": "IR전화",          "checked": True},
+         {"code": "home_page",        "value": "홈페이지",          "checked": True},
+     ]
+   )
 ]
 
 # 전역 변수
