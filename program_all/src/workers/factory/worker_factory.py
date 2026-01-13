@@ -34,7 +34,8 @@
 # from src.workers.main.api_peachchill26_set_worker                   import ApiPeachhill26SetLoadWorker
 # from src.workers.main.api_krx_nextrade_brand_set_worker             import ApiKrxNextradeSetLoadWorker
 # from src.workers.main.api_coco_label_set_worker                     import ApiCocoLabelSetLoadWorker
-from src.workers.main.api_naver_stock_phone_set_worker              import ApiNaverStockPhoneSetLoadWorker
+# from src.workers.main.api_naver_stock_phone_set_worker              import ApiNaverStockPhoneSetLoadWorker
+from src.workers.main.api_hohoyoga_set_worker                       import ApiHohoyogaSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -73,5 +74,6 @@ WORKER_CLASS_MAP = {
     # "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
     # "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
     # "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
-    "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
+    # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
+    "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
 }

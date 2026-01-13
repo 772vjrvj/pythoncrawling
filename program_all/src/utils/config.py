@@ -510,15 +510,34 @@ SITE_LIST = [
    #            {'name': '1. 키워드(콤마(,)로 구분해주세요)', 'code': 'keyword',    'value': '베스트, 시계, 잡화, 남성, 에르메스프리미엄, 샤넬 프리미엄', 'type': 'input'}
    #        ],
    #  ),
-   Site("네이버 주식 번호", "NAVER_STOCK_PHONE", "#03C75A", enabled=True, popup=True,
-      columns = [
-         {"code": "company_name",     "value": "기업명",           "checked": True},
-         {"code": "market_division",  "value": "시장 구분",        "checked": True},
-         {"code": "stock_code",       "value": "종목코드",         "checked": True},
-         {"code": "main_phone",       "value": "대표전화",         "checked": True},
-         {"code": "ir_phone",         "value": "IR전화",          "checked": True},
-         {"code": "home_page",        "value": "홈페이지",          "checked": True},
-     ]
+   # Site("네이버 주식 번호", "NAVER_STOCK_PHONE", "#03C75A", enabled=True, popup=True,
+   #    columns = [
+   #       {"code": "company_name",     "value": "기업명",           "checked": True},
+   #       {"code": "market_division",  "value": "시장 구분",        "checked": True},
+   #       {"code": "stock_code",       "value": "종목코드",         "checked": True},
+   #       {"code": "main_phone",       "value": "대표전화",         "checked": True},
+   #       {"code": "ir_phone",         "value": "IR전화",          "checked": True},
+   #       {"code": "home_page",        "value": "홈페이지",          "checked": True},
+   #   ]
+   # ),
+   Site("호호요가", "HOHOYOGA", "#2BAAB1", enabled=True,
+        columns = [
+           {"code": "recruit_yn",               "value": "모집여부",        "checked": True},
+           {"code": "company_nm",               "value": "업체명",          "checked": True},
+           {"code": "deadline_dt",              "value": "마감날짜",        "checked": True},
+           {"code": "region",                   "value": "지역",           "checked": True},
+           {"code": "wage",                     "value": "임금",            "checked": True},
+           {"code": "address",                  "value": "주소",            "checked": True},
+           {"code": "contact",                  "value": "연락처",          "checked": True},
+           {"code": "email",                    "value": "이메일주소",       "checked": True},
+           {"code": "profile_required_yn",      "value": "프로필 필수여부",   "checked": True},
+        ],
+        setting=[
+            {'name': '아이디', 'code': 'id',           'value': 'feelgood2',   'type': 'input'},
+            {'name': '아이디', 'code': 'password',     'value': 'dyddks123!',  'type': 'input'},
+            {'name': '아이디', 'code': 'start_page',   'value': '',           'type': 'input'},
+            {'name': '아이디', 'code': 'end_page',     'value': '',         'type': 'input'},
+        ],
    )
 ]
 
