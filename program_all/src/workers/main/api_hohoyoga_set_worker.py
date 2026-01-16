@@ -21,6 +21,9 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
         self.start_page = None
         self.end_page = None
 
+        self.local_name = None
+        self.local_code = None
+
         self.site_name = "hohoyoga_seoul_"
         self.running = True
 
@@ -91,17 +94,16 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
             "_filter": "search",
             "mid": self.mid,
             "pageUnit": "1000",
-            "search_keyword": "서울",
+            "search_keyword": self.local_name,
             "search_target": "extra_vars4",
             "page": str(page),
         }
 
     def _detail_params(self, page, srl):
-        # ✅ 브라우저 네트워크 캡쳐 기준: index.php + document_srl
         return {
             "_filter": "search",
             "mid": self.mid,
-            "search_keyword": "서울",
+            "search_keyword": self.local_name,
             "search_target": "extra_vars4",
             "page": str(page),
             "document_srl": str(srl),
@@ -150,6 +152,9 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
             if self.end_page is not None and self.end_page < 1:
                 self.end_page = None
 
+            self.local_name = self.get_setting_value(self.setting, "local_name")
+            self.local_code = self.get_setting_value(self.setting, "local_code")
+            self.mid = self.local_code
             self.log_signal_func(
                 f"📄 페이지 범위 설정: start={self.start_page}, end={self.end_page or '∞'}"
             )
