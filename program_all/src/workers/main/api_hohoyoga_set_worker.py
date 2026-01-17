@@ -2,6 +2,8 @@ import re
 import time
 import random
 import urllib.parse
+import pandas as pd
+
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
@@ -10,7 +12,7 @@ from src.utils.file_utils import FileUtils
 from src.utils.api_utils import APIClient
 from src.utils.selenium_utils import SeleniumUtils
 from src.workers.api_base_worker import BaseApiWorker
-
+from pathlib import Path
 
 class ApiHohoyogaSetLoadWorker(BaseApiWorker):
 
@@ -91,20 +93,13 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
 
     def _list_params(self, page):
         return {
-            "_filter": "search",
             "mid": self.mid,
-            "pageUnit": "1000",
-            "search_keyword": self.local_name,
-            "search_target": "extra_vars4",
             "page": str(page),
         }
 
     def _detail_params(self, page, srl):
         return {
-            "_filter": "search",
             "mid": self.mid,
-            "search_keyword": self.local_name,
-            "search_target": "extra_vars4",
             "page": str(page),
             "document_srl": str(srl),
         }
@@ -177,7 +172,20 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
 
             self.crawl_pages_and_save()
 
+            # CSV -> XLSX (원본)
             self.excel_driver.convert_csv_to_excel_and_delete(self.excel_filename)
+
+            # =========================
+            # === 신규 === 중복 제거본 XLSX 추가 생성
+            # =========================
+            origin_xlsx = self.excel_filename.replace(".csv", ".xlsx")
+            dedup_xlsx = origin_xlsx.replace(".xlsx", "_dedup.xlsx")
+            self._remove_duplicate_by_contact(
+                input_filename=origin_xlsx,
+                output_filename=dedup_xlsx,
+                contact_col="연락처"
+            )
+
             return True
 
         except Exception as e:
@@ -226,6 +234,9 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
     def crawl_pages_and_save(self):
         page = self.start_page or 1
 
+        # === 신규 === srls 0 연속 카운터
+        zero_srl_streak = 0
+
         while True:
             if not self.running:
                 self.log_signal_func("⛔ 사용자 중단")
@@ -240,6 +251,16 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
 
             srls, dup_found = self._fetch_srls_of_page(page)
 
+            # === 신규 === srls=0 연속 10회면 중지
+            if not srls:
+                zero_srl_streak += 1
+                self.log_signal_func(f"⚠️ page={page} srls=0 (streak={zero_srl_streak}/10)")
+                if zero_srl_streak >= 10:
+                    self.log_signal_func("🛑 srls=0 이 10번 연속 발생 → 크롤링 종료")
+                    break
+            else:
+                zero_srl_streak = 0
+
             self.log_signal_func(
                 f"📦 page={page} 수집된 srl 수: {len(srls)}, dup_found={dup_found}"
             )
@@ -247,12 +268,6 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
             if dup_found:
                 self.log_signal_func("🛑 중복 srl 발견 → 크롤링 종료")
                 break
-
-            if not srls:
-                self.log_signal_func("⚠️ srl 없음 → 다음 페이지로")
-                page += 1
-                time.sleep(0.5)
-                continue
 
             results = []
             for srl in srls:
@@ -278,6 +293,7 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
 
             page += 1
             time.sleep(0.5)
+
 
     def _fetch_srls_of_page(self, page):
         headers = self._list_headers(page)
@@ -391,6 +407,51 @@ class ApiHohoyogaSetLoadWorker(BaseApiWorker):
 
         m = re.search(r"document_srl=(\d+)", href)
         return m.group(1) if m else ""
+
+    # =========================
+    # === 신규 === 최종 엑셀 중복 제거 (pandas)
+    # =========================
+    def _remove_duplicate_by_contact(
+            self,
+            input_filename: str,
+            output_filename: str,
+            contact_col: str = "연락처"
+    ):
+
+
+        base_dir = Path.cwd()
+
+        input_path = base_dir / input_filename
+        output_path = base_dir / output_filename
+
+        if not input_path.exists():
+            self.log_signal_func(f"❌ 중복제거 실패: 엑셀 파일이 없습니다: {input_path}")
+            return
+
+        # 엑셀 읽기
+        df = pd.read_excel(input_path)
+
+        if contact_col not in df.columns:
+            self.log_signal_func(f"❌ 중복제거 실패: '{contact_col}' 컬럼이 존재하지 않습니다")
+            return
+
+        before = len(df)
+
+        # === 핵심 === 연락처 기준 중복 제거 (첫 번째 row 유지)
+        dedup_df = df.drop_duplicates(
+            subset=[contact_col],
+            keep="first"
+        )
+
+        after = len(dedup_df)
+
+        # 엑셀로 저장
+        dedup_df.to_excel(output_path, index=False)
+
+        self.log_signal_func("처리 완료")
+        self.log_signal_func(f"- 원본 행 수: {before}")
+        self.log_signal_func(f"- 중복 제거 후 행 수: {after}")
+        self.log_signal_func(f"- 저장 경로: {output_path}")
 
     # -------------------------
     # 드라이버 세팅
