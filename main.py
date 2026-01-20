@@ -1,380 +1,316 @@
-# thairath_crawl.py
 # -*- coding: utf-8 -*-
+"""
+Matichon Google CSE(JSONP) 수집기 (싱글 스레드)
+
+- URL: https://cse.google.com/cse/element/v1
+- start=0,10,20... 페이징
+- results에서 title, url, richSnippet.cseImage.src, metatags.articleModifiedTime 추출
+- articleModifiedTime -> Asia/Seoul(KST) "YYYY-MM-DD HH:MM:SS" 변환
+- 기간 [START_DATE, END_DATE]만 CSV 저장, 나머지 SKIP
+- sort=date(최신->과거) 가정: 페이지 내 oldest < START_DATE 이면 중지
+- 403/429 방어: 랜덤 딜레이 + 쿨다운 + 재시도 + 연속 empty/fail 종료
+- ✅ 쿠키는 아래 COOKIES 빈값 dict에 직접 넣어서 사용
+"""
 
 import csv
+import json
+import random
 import time
-import re
-import os
-import hashlib
+from datetime import datetime, date, timezone, timedelta
+from urllib.parse import urlencode
+
 import requests
-from datetime import datetime, timezone
+
 
 # =========================
-# 설정
+# 1) 기간
 # =========================
-BASE_URL = "https://api.thairath.co.th/tr-api/v1.1/thairath-online/search"
-OUT_CSV = "thairath_until_2022_05.csv"
+START_DATE = "2022.01.01"
+END_DATE   = "2026.01.19"
+OUT_CSV = "matichon_cse_2022-01-01_to_2025-05-31.csv"
 
-# ✅ (1) 시작 날짜를 "날짜"로 지정 가능하게
-# - START_DT_UTC: 이 날짜(포함)부터 "과거로 내려가며" 수집 시작
-# - None이면 기존 START_TS 값 사용
-START_DT_UTC = datetime(2026, 1, 15, 0, 0, 0, tzinfo=timezone.utc)  # 예: 2025-01-01부터 시작
-START_TS = 1766124023000  # 최신 ts (START_DT_UTC가 None일 때만 사용)
+# =========================
+# 2) URL + payload(params)
+# =========================
+CSE_URL = "https://cse.google.com/cse/element/v1"
 
-# ✅ (2) 종료(컷오프) 날짜
-CUTOFF_DT = datetime(2026, 1, 14, 0, 0, 0, tzinfo=timezone.utc)
-
-# ✅ 이미지 다운로드 폴더 (실행 경로 기준)
-IMAGE_DIR = "image"
-
-# ✅ 이미지 파일명 규칙: YYYYMMDD_기사제목
-# 너무 길거나/특수문자/중복 대비 옵션
-MAX_TITLE_LEN = 80  # 파일명용 제목 최대 길이(너무 길면 잘라냄)
-
-PARAMS_FIXED = {
-    "q": "ชายแดนไทย",
-    "type": "all",
-    "sort": "recent",
-    "path": "search",
+BASE_PARAMS = {
+    "rsz": "filtered_cse",
+    "num": "10",
+    "hl": "th",
+    "source": "gcsc",
+    "start": "0",  # 루프에서 변경
+    "cselibv": "f71e4ed980f4c082",
+    "cx": "31cd9c819eaa64215",
+    "q": "ชายแดนภาคใต้",
+    "safe": "off",
+    "cse_tok": "AEXjvhIhTiYbPsXu-AY2cCY74XIS:1768783191616",
+    "lr": "",
+    "cr": "",
+    "gl": "",
+    "filter": "0",
+    "sort": "date",
+    "as_oq": "",
+    "as_sitesearch": "",
+    "exp": "cc,apo",
+    # callback은 고정해도 OK (파서는 함수명 무시)
+    "callback": "google.search.cse.api7078",
+    "rurl": "https://www.matichon.co.th/search?q=%E0%B8%8A%E0%B8%B2%E0%B8%A2%E0%B9%81%E0%B8%94%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%84%E0%B9%83%E0%B8%95%E0%B9%89#gsc.tab=0&gsc.q=%E0%B8%8A%E0%B8%B2%E0%B8%A2%E0%B9%81%E0%B8%94%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%84%E0%B9%83%E0%B8%95%E0%B9%89&gsc.page=1",
 }
 
-# ✅ 전체 헤더 (브라우저 그대로)
-HEADERS = {
-    "accept": "application/json, text/plain, */*",
-    "accept-encoding": "gzip, deflate, br, zstd",
-    "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-    "origin": "https://www.thairath.co.th",
-    "referer": "https://www.thairath.co.th/",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
-    "sec-ch-ua": '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-site",
-    "cache-control": "no-cache",
-    "pragma": "no-cache",
-}
-
-# ❗ 쿠키는 여기만 채워라
+# =========================
+# 3) 쿠키(여기에만 넣어서 쓰면 됨)
+# =========================
 COOKIES = {
-    # "__cf_bm": "",
-    # "_cfuvid": "",
+    # 예) "NID": "",
+    # 예) "__Secure-ENID": "",
+    # 예) "CONSENT": "",
 }
 
-# ✅ CSV 필드 확장 (image_file, image_path 추가)
-FIELDS = ["id", "image", "publishTime", "canonical", "title", "image_file", "image_path"]
+# =========================
+# 4) 차단 완화 옵션
+# =========================
+SLEEP_MIN = 2.5
+SLEEP_MAX = 6.5
+
+COOLDOWN_MIN = 120
+COOLDOWN_MAX = 420
+
+MAX_RETRIES_PER_PAGE = 6
+TIMEOUT_SEC = 25
+
+MAX_CONSECUTIVE_EMPTY = 3
+MAX_CONSECUTIVE_FAIL  = 5
+
+KST = timezone(timedelta(hours=9))
 
 
 # =========================
-# 유틸
+# utils
 # =========================
-def parse_dt(iso_z):
-    if not iso_z:
-        return None
-    s = iso_z.replace("Z", "+00:00")
+def parse_date_any(s: str) -> date:
+    s2 = (s or "").strip().replace("/", "-").replace(".", "-")
+    return datetime.strptime(s2, "%Y-%m-%d").date()
+
+
+def parse_jsonp(text: str) -> dict:
+    """
+    /*O_o*/
+    google.search.cse.api7078({ ... });
+    """
+    s = (text or "").strip()
+
+    # 1) /* ... */ 주석 제거
+    if s.startswith("/*"):
+        end = s.find("*/")
+        if end != -1:
+            s = s[end + 2 :].lstrip()
+
+    # 2) 첫 '(' 와 마지막 ')' 사이를 JSON으로 본다
+    lp = s.find("(")
+    rp = s.rfind(")")
+    if lp == -1 or rp == -1 or rp <= lp:
+        raise ValueError("JSONP parse failed: cannot find (...)")
+
+    payload = s[lp + 1 : rp].strip()
+    return json.loads(payload)
+
+
+def iso_to_kst(iso_str: str) -> tuple[str, date | None]:
+    """
+    '2026-01-18T22:47:16+07:00' -> KST(+09) 변환 후 텍스트
+    return (yyyy-mm-dd hh:mm:ss, date_obj)
+    """
+    if not iso_str:
+        return "", None
     try:
-        return datetime.fromisoformat(s)
+        fixed = iso_str.replace("Z", "+00:00")
+        dt_obj = datetime.fromisoformat(fixed)
+        if dt_obj.tzinfo is None:
+            dt_obj = dt_obj.replace(tzinfo=KST)
+        dt_kst = dt_obj.astimezone(KST)
+        return dt_kst.strftime("%Y-%m-%d %H:%M:%S"), dt_kst.date()
     except Exception:
-        return None
+        return "", None
 
 
-def get_items(data):
-    if not data:
-        return []
-    if "items" not in data:
-        return []
-    if "result" not in data["items"]:
-        return []
-    if "items" not in data["items"]["result"]:
-        return []
-    return data["items"]["result"]["items"]
+def human_sleep(a=SLEEP_MIN, b=SLEEP_MAX):
+    time.sleep(random.uniform(a, b))
 
 
-def ensure_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path, exist_ok=True)
+def cooldown():
+    t = random.uniform(COOLDOWN_MIN, COOLDOWN_MAX)
+    print(f"[COOLDOWN] {t:.1f}s")
+    time.sleep(t)
 
 
-def safe_filename(text):
-    """
-    파일명으로 안전하게 변환 (윈도우 기준)
-    """
-    if text is None:
-        text = ""
-    s = str(text).strip()
-
-    # 공백/개행 정리
-    s = re.sub(r"\s+", " ", s)
-
-    # 윈도우 금지문자 제거: \ / : * ? " < > |
-    s = re.sub(r'[\\/:*?"<>|]', "", s)
-
-    # 기타 특수문자 조금 정리
-    s = re.sub(r"[\u200b-\u200f]", "", s)  # 제로폭 등
-    s = s.strip(" .")
-
-    if len(s) > MAX_TITLE_LEN:
-        s = s[:MAX_TITLE_LEN].rstrip()
-
-    if not s:
-        s = "untitled"
-
-    return s
-
-
-def pick_image_url(item):
-    """
-    API item에서 이미지 URL 후보를 안전하게 선택
-    - image_large 있으면 우선
-    - 없으면 image
-    """
-    if not isinstance(item, dict):
-        return ""
-    url = item.get("image_large") or item.get("image") or ""
-    if not url:
-        return ""
-    return str(url)
-
-
-def guess_ext_from_url(url):
-    """
-    URL에서 확장자 추정. 애매하면 jpg
-    """
-    if not url:
-        return "jpg"
-    u = url.split("?")[0].split("#")[0].lower()
-    for ext in ("jpg", "jpeg", "png", "webp", "gif"):
-        if u.endswith("." + ext):
-            return "jpg" if ext == "jpeg" else ext
-    return "jpg"
-
-
-def download_image(session, url, out_path):
-    """
-    이미지 다운로드 (스트리밍)
-    """
-    if not url:
-        return False
-    try:
-        r = session.get(url, stream=True, timeout=30)
-        r.raise_for_status()
-
-        # content-type 기반 확장자 보정(가능하면)
-        ct = (r.headers.get("content-type") or "").lower()
-        # 확장자 확인용만 참고 (강제 변경은 안 하고, out_path가 이미 정해졌으면 그대로 저장)
-        with open(out_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024 * 64):
-                if chunk:
-                    f.write(chunk)
-        return True
-    except Exception:
-        return False
-
-
-def extract_rows(items):
+def extract_rows(results: list[dict]) -> tuple[list[dict], date | None]:
     rows = []
-    i = 0
-    while i < len(items):
-        it = items[i]
-        if isinstance(it, dict):
-            rows.append({
-                "id": it.get("id"),
-                "image": it.get("image"),
-                "publishTime": it.get("publishTime"),
-                "canonical": it.get("canonical"),
-                "title": it.get("title"),
-                "image_large": it.get("image_large"),
+    dates = []
 
-                # ✅ 신규 필드(초기값)
-                "image_file": "",
-                "image_path": "",
-            })
-        i += 1
-    return rows
+    for r in results:
+        rich = r.get("richSnippet") or {}
+        img = rich.get("cseImage") or {}
+        meta = rich.get("metatags") or {}
 
+        title = r.get("titleNoFormatting") or r.get("title") or ""
+        url = r.get("unescapedUrl") or r.get("url") or ""
+        image_src = img.get("src") or ""
 
-def fetch(session, ts):
-    params = dict(PARAMS_FIXED)
-    params["ts"] = ts
-    r = session.get(BASE_URL, params=params, timeout=20)
-    r.raise_for_status()
-    return r.json()
+        mod_iso = meta.get("articleModifiedTime") or ""
+        mod_kst, mod_date = iso_to_kst(mod_iso)
 
+        if mod_date:
+            dates.append(mod_date)
 
-def write_csv(path, rows):
-    f = open(path, "w", newline="", encoding="utf-8-sig")
-    try:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        w.writeheader()
-        i = 0
-        while i < len(rows):
-            w.writerow(rows[i])
-            i += 1
-    finally:
-        f.close()
+        rows.append({
+            "title": title,
+            "url": url,
+            "image_src": image_src,
+            "article_modified_kst": mod_kst,
+            "article_modified_iso": mod_iso,
+            "_modified_date": mod_date,
+        })
+
+    oldest = min(dates) if dates else None
+    return rows, oldest
 
 
-def dt_to_ts_ms(dt_utc):
-    """
-    datetime(UTC) -> epoch ms
-    """
-    if dt_utc is None:
-        return None
-    if dt_utc.tzinfo is None:
-        dt_utc = dt_utc.replace(tzinfo=timezone.utc)
-    return int(dt_utc.timestamp() * 1000)
+def fetch_page(sess: requests.Session, params: dict) -> dict:
+    last_err = None
+
+    for attempt in range(1, MAX_RETRIES_PER_PAGE + 1):
+        try:
+            resp = sess.get(CSE_URL, params=params, timeout=TIMEOUT_SEC)
+
+            if resp.status_code in (403, 429):
+                raise requests.HTTPError(f"HTTP {resp.status_code}", response=resp)
+
+            resp.raise_for_status()
+            return parse_jsonp(resp.text)
+
+        except Exception as e:
+            last_err = e
+            print(f"[RETRY] attempt={attempt}/{MAX_RETRIES_PER_PAGE} err={e}")
+
+            if isinstance(e, requests.HTTPError) and getattr(e, "response", None) is not None:
+                sc = e.response.status_code
+                if sc in (403, 429):
+                    cooldown()
+                else:
+                    time.sleep(random.uniform(2.0, 5.0))
+            else:
+                time.sleep(random.uniform(2.0, 5.0))
+
+    raise last_err
 
 
-def make_image_filename(publish_dt, title, ext, canonical=""):
-    """
-    YYYYMMDD_기사제목.ext
-    - 동일 제목/날짜 충돌 대비: canonical 기반 짧은 해시 suffix
-    """
-    ymd = "00000000"
-    if publish_dt:
-        ymd = publish_dt.strftime("%Y%m%d")
+def crawl():
+    sd = parse_date_any(START_DATE)
+    ed = parse_date_any(END_DATE)
+    if sd > ed:
+        raise ValueError(f"START_DATE({sd}) > END_DATE({ed})")
 
-    safe_title = safe_filename(title)
+    sess = requests.Session()
+    sess.headers.update({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        "Accept": "*/*",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": "https://www.matichon.co.th/",
+        "DNT": "1",
+        "Connection": "keep-alive",
+    })
 
-    base = f"{ymd}_{safe_title}"
-    # 충돌 방지: canonical 있으면 6자리 해시
-    if canonical:
-        h = hashlib.md5(canonical.encode("utf-8")).hexdigest()[:6]
-        base = f"{base}_{h}"
+    # ✅ 쿠키 주입(빈 dict면 아무것도 안 들어감)
+    if COOKIES:
+        sess.cookies.update(COOKIES)
 
-    return f"{base}.{ext}"
+    num = int(BASE_PARAMS.get("num", "10") or "10")
+    start = int(BASE_PARAMS.get("start", "0") or "0")
 
-
-# =========================
-# 크롤러
-# =========================
-def crawl(start_ts, download_images=True):
-    session = requests.Session()
-    session.headers.update(HEADERS)
-    session.cookies.update(COOKIES)
-
-    # 이미지 요청도 같은 세션 사용
-    img_session = session
-
-    ensure_dir(IMAGE_DIR)
-
+    wrote = 0
     seen = set()
-    out = []
 
-    ts = start_ts
-    page = 0
+    consecutive_empty = 0
+    consecutive_fail = 0
 
-    while True:
-        page += 1
-        data = fetch(session, ts)
-        items = get_items(data)
+    with open(OUT_CSV, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=[
+            "title", "url", "image_src", "article_modified_kst", "article_modified_iso"
+        ])
+        w.writeheader()
 
-        if not items:
-            print("[STOP] no items")
-            break
+        page_no = 1
+        while True:
+            params = dict(BASE_PARAMS)
+            params["start"] = str(start)
 
-        rows = extract_rows(items)
+            print(f"[REQ] page={page_no} start={start} url={CSE_URL}?{urlencode(params)}")
 
-        oldest_ts = None
-        stop = False
-
-        i = 0
-        while i < len(items):
-            it = items[i]
-            i += 1
-
-            pts = it.get("publishTs")
-            if isinstance(pts, int):
-                if oldest_ts is None or pts < oldest_ts:
-                    oldest_ts = pts
-
-        i = 0
-        added = 0
-        while i < len(rows):
-            r = rows[i]
-            i += 1
-
-            key = r.get("canonical")
-            if not key or key in seen:
+            try:
+                data = fetch_page(sess, params)
+                consecutive_fail = 0
+            except Exception as e:
+                consecutive_fail += 1
+                print(f"[FAIL] page={page_no} start={start} err={e}")
+                if consecutive_fail >= MAX_CONSECUTIVE_FAIL:
+                    break
+                human_sleep(8.0, 15.0)
                 continue
 
-            dt = parse_dt(r.get("publishTime"))
-            if dt and dt < CUTOFF_DT:
-                stop = True
+            results = data.get("results") or []
+            if not results:
+                consecutive_empty += 1
+                print(f"[EMPTY] page={page_no} start={start}")
+                if consecutive_empty >= MAX_CONSECUTIVE_EMPTY:
+                    break
+                human_sleep(10.0, 20.0)
                 continue
+            else:
+                consecutive_empty = 0
 
-            # ✅ 이미지 다운로드 및 파일명/경로 저장
-            if download_images:
-                img_url = pick_image_url(r)  # rows에는 image_large도 들어있음
-                ext = guess_ext_from_url(img_url)
-                fname = make_image_filename(dt, r.get("title"), ext, canonical=key)
-                fpath = os.path.join(IMAGE_DIR, fname)
+            rows, oldest = extract_rows(results)
 
-                ok = False
-                # 이미 존재하면 스킵(재실행 대비)
-                if os.path.exists(fpath) and os.path.getsize(fpath) > 0:
-                    ok = True
-                else:
-                    ok = download_image(img_session, img_url, fpath)
+            stop = (oldest is not None and oldest < sd)
 
-                if ok:
-                    r["image_file"] = fname
-                    r["image_path"] = os.path.abspath(fpath)
-                else:
-                    r["image_file"] = ""
-                    r["image_path"] = ""
+            for row in rows:
+                md = row["_modified_date"]
+                if md is None:
+                    continue
+                if md < sd or md > ed:
+                    continue
 
-            seen.add(key)
-            out.append(r)
-            added += 1
+                u = row["url"] or ""
+                if u and u in seen:
+                    continue
+                if u:
+                    seen.add(u)
 
-            # === 결과 로그 ===
-            print(
-                "  [ADD]",
-                r.get("id"),
-                "|",
-                r.get("publishTime"),
-                "|",
-                r.get("title"),
-                "|",
-                r.get("image"),
-                "|",
-                r.get("canonical"),
-                "|",
-                r.get("image_file")
-            )
+                w.writerow({
+                    "title": row["title"],
+                    "url": row["url"],
+                    "image_src": row["image_src"],
+                    "article_modified_kst": row["article_modified_kst"],
+                    "article_modified_iso": row["article_modified_iso"],
+                })
+                wrote += 1
 
-        print("[PAGE]", page, "added=", added, "total=", len(out))
+            # ✅ 여기 추가 (페이지 1회 처리 끝나면 즉시 저장)
+            f.flush()
 
-        if stop:
-            print("[STOP] reached cutoff:", CUTOFF_DT.isoformat())
-            break
+            print(f"[PAGE] {page_no} start={start} fetched={len(results)} wrote={wrote} oldest={oldest}")
 
-        if oldest_ts is None:
-            print("[STOP] no publishTs")
-            break
+            if stop:
+                break
 
-        ts = oldest_ts - 1
-        time.sleep(0.5)
-
-    return out
+            page_no += 1
+            start += num
+            human_sleep()
 
 
-# =========================
-# main
-# =========================
-def main():
-    # ✅ START_DT_UTC가 있으면 날짜로 start_ts 계산
-    if START_DT_UTC is not None:
-        start_ts = dt_to_ts_ms(START_DT_UTC)
-    else:
-        start_ts = START_TS
-
-    rows = crawl(start_ts, download_images=True)
-    write_csv(OUT_CSV, rows)
-    print("[DONE]", OUT_CSV, "rows=", len(rows), "| image_dir=", os.path.abspath(IMAGE_DIR))
+    print(f"[DONE] wrote={wrote} file={OUT_CSV}")
 
 
 if __name__ == "__main__":
-    main()
+    crawl()
