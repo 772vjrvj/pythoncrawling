@@ -520,29 +520,30 @@ SITE_LIST = [
    #       {"code": "home_page",        "value": "홈페이지",          "checked": True},
    #   ]
    # ),
-   Site("호호요가", "HOHOYOGA", "#2BAAB1", enabled=True,
-        columns = [
-           {"code": "recruit_yn",               "value": "모집여부",        "checked": True},
-           {"code": "company_nm",               "value": "업체명",          "checked": True},
-           {"code": "deadline_dt",              "value": "마감날짜",        "checked": True},
-           {"code": "region",                   "value": "지역",           "checked": True},
-           {"code": "wage",                     "value": "임금",            "checked": True},
-           {"code": "address",                  "value": "주소",            "checked": True},
-           {"code": "contact",                  "value": "연락처",          "checked": True},
-           {"code": "email",                    "value": "이메일주소",       "checked": True},
-           {"code": "profile_required_yn",      "value": "프로필 필수여부",   "checked": True},
-            {"code": "local_name",      "value": "지역이름",   "checked": True},
-            {"code": "local_code",      "value": "지역코드",   "checked": True},
-        ],
-        setting=[
-            {'name': '아이디', 'code': 'id',           'value': 'feelgood2',   'type': 'input'},
-            {'name': '비밀번호', 'code': 'password',     'value': 'dyddks123!',  'type': 'input'},
-            {'name': '시작번호', 'code': 'start_page',   'value': '',           'type': 'input'},
-            {'name': '끝번호', 'code': 'end_page',     'value': '',         'type': 'input'},
-            {'name': '지역이름', 'code': 'local_name',     'value': '',         'type': 'input'},
-            {'name': '지역코드', 'code': 'local_code',     'value': '',         'type': 'input'},
-        ],
-   )
+   # Site("호호요가", "HOHOYOGA", "#2BAAB1", enabled=True,
+   #      columns = [
+   #         {"code": "recruit_yn",               "value": "모집여부",        "checked": True},
+   #         {"code": "company_nm",               "value": "업체명",          "checked": True},
+   #         {"code": "deadline_dt",              "value": "마감날짜",        "checked": True},
+   #         {"code": "region",                   "value": "지역",           "checked": True},
+   #         {"code": "wage",                     "value": "임금",            "checked": True},
+   #         {"code": "address",                  "value": "주소",            "checked": True},
+   #         {"code": "contact",                  "value": "연락처",          "checked": True},
+   #         {"code": "email",                    "value": "이메일주소",       "checked": True},
+   #         {"code": "profile_required_yn",      "value": "프로필 필수여부",   "checked": True},
+   #          {"code": "local_name",      "value": "지역이름",   "checked": True},
+   #          {"code": "local_code",      "value": "지역코드",   "checked": True},
+   #      ],
+   #      setting=[
+   #          {'name': '아이디', 'code': 'id',           'value': 'feelgood2',   'type': 'input'},
+   #          {'name': '비밀번호', 'code': 'password',     'value': 'dyddks123!',  'type': 'input'},
+   #          {'name': '시작번호', 'code': 'start_page',   'value': '',           'type': 'input'},
+   #          {'name': '끝번호', 'code': 'end_page',     'value': '',         'type': 'input'},
+   #          {'name': '지역이름', 'code': 'local_name',     'value': '',         'type': 'input'},
+   #          {'name': '지역코드', 'code': 'local_code',     'value': '',         'type': 'input'},
+   #      ],
+   # ),
+    Site("룰루레몬", "LULULEMON", "#140F0F", enabled=True, popup=True)
 ]
 
 # 전역 변수
