@@ -30,7 +30,7 @@ START_TS = 1766124023000  # 최신 ts (START_DT_UTC가 None일 때만 사용)
 CUTOFF_DT = datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
 
 # ✅ 이미지 다운로드 폴더 (실행 경로 기준)
-IMAGE_DIR = "image"
+IMAGE_DIR = "../../image"
 
 # ✅ 이미지 파일명 규칙: YYYYMMDD_기사제목
 # 너무 길거나/특수문자/중복 대비 옵션

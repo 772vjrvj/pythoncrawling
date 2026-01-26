@@ -56,6 +56,15 @@ def init_logger():
     # ✅ original_print를 다른 모듈에서도 사용 가능하게 전역 등록
     globals()["original_print"] = original_print
 
+# === 신규 === None 방어용 텍스트 유틸
+def safe_text(el, default=""):
+    return el.get_text(strip=True) if el else default
+
+# === 신규 === soup.find() 결과 None 방어
+def safe_find_text(soup, tag, class_=None, default=""):
+    el = soup.find(tag, class_=class_)
+    return safe_text(el, default=default)
+
 
 class ARTVEE:
     def __init__(self) -> None:
@@ -283,7 +292,8 @@ class ARTVEE:
         while 1:
             url = f"{artistUrl}page/{i}?&per_page=70"
             try:
-                res = requests.get(url,headers=self.headers)
+                # === 신규 === 쿠키 유지(sess)로 요청 (requests.get -> self.sess.get)
+                res = self.sess.get(url,headers=self.headers,timeout=30)
             except:
                 time.sleep(10)
                 print(f"사이트 오류로 인한 넘김 : {url}")
@@ -296,19 +306,50 @@ class ARTVEE:
             if soup.find("div",class_="entry-content") != None or str(soup).find("Sorry, we can't seem to find the page you're looking for") != -1:
                 break
             i += 1
-            artistName = soup.find("h1",class_="entry-title").text.strip()
-            abdate = soup.find("div", class_="abdate").text.strip().split(",")
-            country = abdate[0].strip()
-            artistDescription = soup.find("div",class_="term-description").text.strip()
+
+            # === 신규 === NoneType 방어 (특정 작가 페이지에서 요소 누락되는 케이스)
+            artistName = safe_find_text(soup, "h1", class_="entry-title", default="작가명 없음")
+
+            abdate_txt = safe_find_text(soup, "div", class_="abdate", default="")
+            if abdate_txt:
+                abdate = abdate_txt.strip().split(",")
+                country = abdate[0].strip() if len(abdate) > 0 else ""
+            else:
+                country = ""
+
+            artistDescription = safe_find_text(soup, "div", class_="term-description", default="")
+
             infoList = soup.find_all("div",class_="pbm")
 
-            total = soup.find("p",class_="woocommerce-result-count").text.replace("items","").strip()
+            total_txt = safe_find_text(soup, "p", class_="woocommerce-result-count", default="")
+            total = total_txt.replace("items","").strip() if total_txt else ""
+
+            # === 신규 === 리스트 자체가 비었으면(차단/구조 변경/비정상) 다음 페이지로 넘김
+            if not infoList:
+                print(f"infoList 없음(차단/구조변경 가능) : {url}")
+                continue
+
             for infoData in infoList:
-                field = infoData.find("div",class_="woodmart-product-cats").text.strip()
+                # === 신규 === woodmart-product-cats 없을 수 있음
+                field = safe_text(infoData.find("div",class_="woodmart-product-cats"), default="").strip()
+
                 data = infoData.find("div")
+                # === 신규 === data-id / data-sk 누락 방어
+                if data is None or data.get("data-id") is None or data.get("data-sk") is None:
+                    print(f"data-id 또는 data-sk 누락 : {url}")
+                    continue
+
                 idData = data["data-id"].strip()
-                sizeData = json.loads(data["data-sk"])
-                imgInfo = sizeData["sk"]
+
+                # === 신규 === JSON 파싱 실패 방어
+                try:
+                    sizeData = json.loads(data["data-sk"])
+                except:
+                    print(f"data-sk JSON 파싱 실패 : {url} / id={idData}")
+                    continue
+
+                imgInfo = sizeData.get("sk", "")
+
                 try:
                     standard = sizeData["sdlimagesize"].split("px")[0].split("x")
                     standardX = standard[0].strip()
@@ -323,8 +364,16 @@ class ARTVEE:
                 except:
                     maxX = "정보없음"
                     maxY = "정보없음"
-                pieceUrl = str(infoData.find("a")["href"])
-                pieceInfo = infoData.find("h3",class_="product-title").text.strip()
+
+                # === 신규 === a 태그 누락 방어
+                a_tag = infoData.find("a")
+                pieceUrl = str(a_tag["href"]) if a_tag and a_tag.get("href") else ""
+
+                pieceInfo = safe_text(infoData.find("h3",class_="product-title"), default="").strip()
+                if pieceInfo == "":
+                    # === 신규 === 제목 없으면 스킵
+                    continue
+
                 title = pieceInfo.split("(")[0].strip()
                 if len(pieceInfo.split("(")) == 1:
                     birth = "없음"
@@ -338,6 +387,7 @@ class ARTVEE:
                     birth = "없음"
                 if title == "":
                     title = "("+pieceInfo.split("(")[1].split("(")[0].strip()
+
                 df_info = pd.DataFrame.from_dict([{
                     "페이지":page,
                     "작가순서":artistTotalCount,
@@ -369,6 +419,8 @@ class ARTVEE:
         }])
         df_data = pd.concat([df_data,df_data_info])
         return [df,df_data,totalImageInfoList]
+
+
 
 
 def main()->None:
@@ -504,6 +556,10 @@ def main()->None:
 
 def translatorFromExcel()->None:
     currentPath = os.getcwd().replace("\\","/")
+
+    os.makedirs(f"{currentPath}/result/excel", exist_ok=True)
+    os.makedirs(f"{currentPath}/result/image", exist_ok=True)
+
     excelPath = f"{currentPath}/result/excel"
     fileList = os.listdir(path=excelPath)
     translator = GoogleTranslator(source='auto', target='ko')
