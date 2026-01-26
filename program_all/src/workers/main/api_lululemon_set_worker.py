@@ -44,6 +44,9 @@ class ApiLululemonSetLoadWorker(BaseApiWorker):
         self.out_dir = os.path.join(os.getcwd(), "output_lululemon")
         os.makedirs(self.out_dir, exist_ok=True)
 
+        # === 정렬 캐시용 ===
+        self._size_rank = {}
+
     # -----------------------------------------------------
     # 초기화
     # -----------------------------------------------------
@@ -170,6 +173,13 @@ class ApiLululemonSetLoadWorker(BaseApiWorker):
             resp.raise_for_status()
 
             soup = BeautifulSoup(resp.text, "html.parser")
+
+            # =========================================================
+            # ✅ __NEXT_DATA__ → allSize 기반 사이즈 순서 세팅 (신규)
+            # =========================================================
+            size_order = self.extract_all_size_order(soup)
+            self._size_rank = self.build_size_rank(size_order)
+
             scripts = soup.find_all("script", type="application/ld+json")
 
             productgroup = None
@@ -241,7 +251,10 @@ class ApiLululemonSetLoadWorker(BaseApiWorker):
                 if min_price is None or p < min_price:
                     min_price = p
 
-            rows.sort(key=lambda r: (r["color"], int(r["size"]) if str(r["size"]).isdigit() else 9999))
+            # =========================================================
+            # ✅ 컬러별 묶음 유지 + 사이즈는 allSize 순서대로 정렬 (lambda 제거)
+            # =========================================================
+            self.sort_rows_by_color_and_size(rows)
 
             out = []
             for r in rows:
@@ -271,7 +284,65 @@ class ApiLululemonSetLoadWorker(BaseApiWorker):
             self.log_signal.emit(f"[SKIP] 처리 실패: {url} / {e}")
             return [], "product"
 
+    # -----------------------------------------------------
+    # __NEXT_DATA__에서 allSize 순서 추출
+    # -----------------------------------------------------
+    def extract_all_size_order(self, soup: BeautifulSoup):
+        size_order = []
 
+        sc = soup.find("script", id="__NEXT_DATA__")
+        if not sc or not sc.string:
+            return size_order
+
+        try:
+            nd = json.loads(sc.string)
+            all_size = (
+                nd.get("props", {})
+                .get("pageProps", {})
+                .get("allSize", [])
+            )
+            for it in all_size:
+                sz = it.get("size")
+                if sz:
+                    size_order.append(str(sz).strip())
+        except Exception:
+            pass
+
+        return size_order
+
+    # -----------------------------------------------------
+    # size_order → rank 맵 생성
+    # -----------------------------------------------------
+    def build_size_rank(self, size_order):
+        rank = {}
+        idx = 0
+        for s in size_order:
+            if s and s not in rank:
+                rank[s] = idx
+                idx += 1
+        return rank
+
+    # -----------------------------------------------------
+    # rows 정렬 실행 (내부함수/람다 없이)
+    # -----------------------------------------------------
+    def sort_rows_by_color_and_size(self, rows):
+        # rows에 캐시 키 박아두고, class 메서드 key로 정렬
+        for r in rows:
+            sz = r.get("size", "")
+            if sz in self._size_rank:
+                r["_size_order"] = self._size_rank[sz]
+            else:
+                r["_size_order"] = 9999
+
+        rows.sort(key=self.sort_key_with_cached_order)
+
+        # 정렬 후 임시 키 제거
+        for r in rows:
+            if "_size_order" in r:
+                del r["_size_order"]
+
+    def sort_key_with_cached_order(self, row):
+        return (row.get("color", "") or "", row.get("_size_order", 9999))
 
     # -----------------------------------------------------
     # 컬러명 25자 제한 축약
