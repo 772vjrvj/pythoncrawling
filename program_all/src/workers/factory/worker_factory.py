@@ -36,7 +36,8 @@
 # from src.workers.main.api_coco_label_set_worker                     import ApiCocoLabelSetLoadWorker
 # from src.workers.main.api_naver_stock_phone_set_worker              import ApiNaverStockPhoneSetLoadWorker
 # from src.workers.main.api_hohoyoga_set_worker                       import ApiHohoyogaSetLoadWorker
-from src.workers.main.api_lululemon_set_worker                      import ApiLululemonSetLoadWorker
+# from src.workers.main.api_lululemon_set_worker                      import ApiLululemonSetLoadWorker
+from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -77,5 +78,6 @@ WORKER_CLASS_MAP = {
     # "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
     # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
     # "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
-    "LULULEMON"                          :   ApiLululemonSetLoadWorker,
+    # "LULULEMON"                         :   ApiLululemonSetLoadWorker,
+    "THUMNAIL_MAKE"                         :   ApiThumnailMakeSetLoadWorker,
 }

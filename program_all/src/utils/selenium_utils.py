@@ -1,22 +1,32 @@
+# SeleniumUtils.py
 # -*- coding: utf-8 -*-
-"""
-SeleniumUtils (2025-09-07 수정판)
-- 기존 인터페이스(start_driver 등) 그대로 유지
-- 항상 새로운 브라우저(임시 프로필)
-- 창을 왼쪽 절반으로 배치(set_window_rect)
-"""
 
-import os, time, glob, shutil, tempfile, uuid
+import os
+import time
+import glob
+import shutil
+import tempfile
+import uuid
+import subprocess
+import re
 from typing import Optional, Tuple
 
 import undetected_chromedriver as uc
+from undetected_chromedriver.patcher import Patcher  # === 신규 ===
+
 from selenium.common.exceptions import (
-    NoSuchElementException, StaleElementReferenceException, TimeoutException,
-    ElementClickInterceptedException, ElementNotInteractableException,
-    InvalidSelectorException, WebDriverException, SessionNotCreatedException,
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+    ElementClickInterceptedException,
+    ElementNotInteractableException,
+    InvalidSelectorException,
+    WebDriverException,
+    SessionNotCreatedException,
 )
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 
 DEFAULT_WIDTH  = 1280
 DEFAULT_HEIGHT = 800
@@ -49,27 +59,72 @@ class SeleniumUtils:
                 except Exception:
                     pass
 
-    # === 신규: ChromeOptions 생성 전용 헬퍼 ===
     def _build_options(self):
         opts = uc.ChromeOptions()
         opts.add_argument("--disable-blink-features=AutomationControlled")
+        opts.add_argument("--lang=ko-KR")
+        opts.add_argument(f"--window-size={DEFAULT_WIDTH},{DEFAULT_HEIGHT}")
         if self._tmp_profile:
             opts.add_argument(f"--user-data-dir={self._tmp_profile}")
-        opts.add_argument(f"--window-size={DEFAULT_WIDTH},{DEFAULT_HEIGHT}")
-        opts.add_argument("--lang=ko-KR")
         if self.headless:
             opts.add_argument("--headless=new")
             opts.add_argument("--no-sandbox")
             opts.add_argument("--disable-dev-shm-usage")
         return opts
 
-    # --- 화면 해상도 감지 & 배치 ---
+    def _detect_chrome_major(self) -> Optional[int]:
+        try:
+            out = subprocess.check_output(
+                ["chrome", "--version"],
+                stderr=subprocess.STDOUT,
+                shell=True,
+                text=True
+            )
+            m = re.search(r"(\d+)\.", out)
+            if m:
+                return int(m.group(1))
+        except Exception:
+            pass
+        return None
+
+    def _parse_major_from_error(self, e: Exception) -> Optional[int]:
+        msg = str(e)
+        m = re.search(r"Current browser version is (\d+)", msg)
+        if m:
+            return int(m.group(1))
+        return None
+
+    # === 신규 === uc 캐시 폴더에서 드라이버 정리(꼬였을 때)
+    def _wipe_uc_driver_cache(self):
+        # 보통 여기들 중 하나에 깔림(환경마다 다름)
+        candidates = [
+            os.path.join(os.path.expanduser("~"), ".local", "share", "undetected_chromedriver"),
+            os.path.join(os.path.expanduser("~"), "AppData", "Roaming", "undetected_chromedriver"),
+            os.path.join(os.path.expanduser("~"), "AppData", "Local", "undetected_chromedriver"),
+        ]
+        for base in candidates:
+            try:
+                if os.path.isdir(base):
+                    # chromedriver* 파일들만 정리 (폴더 전체 삭제는 부담될 수 있어 최소만)
+                    for p in glob.glob(os.path.join(base, "**", "chromedriver*.exe"), recursive=True):
+                        try: os.remove(p)
+                        except Exception: pass
+                    for p in glob.glob(os.path.join(base, "**", "chromedriver*"), recursive=True):
+                        # mac/linux도 대비
+                        if os.path.isfile(p):
+                            try: os.remove(p)
+                            except Exception: pass
+            except Exception:
+                pass
+
+    # === 신규 === 원하는 메이저로 패치해서 "드라이버 경로를 강제 확보"
+    def _get_driver_path_for_major(self, major: int) -> str:
+        patcher = Patcher(version_main=major)
+        patcher.auto()  # 드라이버 다운로드/패치
+        return patcher.executable_path
+
+    # --- 화면 배치 ---
     def _get_screen_size(self) -> Tuple[int, int]:
-        """
-        기본/대체 순서:
-        1) tkinter로 해상도 조회
-        2) 실패 시 보편적 1920x1080 가정
-        """
         try:
             import tkinter as tk
             root = tk.Tk()
@@ -81,79 +136,102 @@ class SeleniumUtils:
                 return int(w), int(h)
         except Exception:
             pass
-        return 1920, 1080  # fallback
+        return 1920, 1080
 
     def _place_left_half(self):
-        """
-        브라우저 창을 왼쪽 절반으로 이동/리사이즈
-        (headless면 위치 개념이 없으므로 건너뜀)
-        """
         if not self.driver or self.headless:
             return
         sw, sh = self._get_screen_size()
-        # Windows DPI 스케일링 환경에서도 안정적인 set_window_rect 사용
         try:
             self.driver.set_window_rect(x=0, y=0, width=max(600, sw // 2), height=max(600, sh))
         except Exception:
-            # 일부 환경에서 set_window_rect 미지원이면 size/position 별도 호출
-            try:
-                self.driver.set_window_position(0, 0)
-                self.driver.set_window_size(max(600, sw // 2), max(600, sh // 2))
-            except Exception:
-                pass
+            pass
+
+    def _safe_quit_driver(self):
+        try:
+            if self.driver:
+                self.driver.quit()
+        except Exception:
+            pass
+        finally:
+            self.driver = None
 
     # ----- 외부에서 쓰는 함수 -----
-    def start_driver(self, timeout: int = 30, **kwargs):
-        """
-        기존 코드 호환용 함수
-        - 항상 새 브라우저(임시 프로필)만 실행
-        - user, persist_profile_dir 같은 파라미터는 무시
-        - 생성 직후 창을 왼쪽 절반으로 배치
-        """
-        # 임시 프로필 생성
+    def start_driver(self, timeout: int = 30):
         self._tmp_profile = self._new_tmp_profile()
         self._wipe_locks(self._tmp_profile)
         time.sleep(SLEEP_AFTER_PROFILE)
 
-        # === 신규: options는 매번 새로 생성 (재사용 금지) ===
-        opts = self._build_options()
+        major = self._detect_chrome_major()
+        try_chain = []
+        if major:
+            try_chain.append(major)
+        try_chain.append(None)  # fallback
 
-        try:
-            self.driver = uc.Chrome(options=opts)
+        last = None
+
+        for m in try_chain:
             try:
-                self.driver.set_page_load_timeout(timeout)
-            except Exception:
-                pass
+                opts = self._build_options()  # ✅ 매 시도마다 새 options
 
-            # 👉 여기서 창을 왼쪽 절반으로 배치
-            self._place_left_half()
+                if m:
+                    driver_path = self._get_driver_path_for_major(m)
+                    self.driver = uc.Chrome(
+                        options=opts,
+                        driver_executable_path=driver_path
+                    )
+                else:
+                    self.driver = uc.Chrome(options=opts)
 
-            return self.driver
+                try:
+                    self.driver.set_page_load_timeout(timeout)
+                except Exception:
+                    pass
 
-        except SessionNotCreatedException as e:
-            # 크롬/드라이버 버전 안맞아서 첫 시도 실패한 경우 등
-            self.last_error = e
-            time.sleep(0.5)
+                self._place_left_half()
+                return self.driver
 
-            # === 신규: 프로필 락 다시 정리 후, options 새로 만들어 재시도 ===
-            self._wipe_locks(self._tmp_profile)
-            time.sleep(0.2)
-            opts_retry = self._build_options()   # ★ 여기서 새 ChromeOptions 객체 생성
+            except SessionNotCreatedException as e:
+                last = e
 
-            self.driver = uc.Chrome(options=opts_retry)
-            try:
-                self.driver.set_page_load_timeout(timeout)
-            except Exception:
-                pass
+                # ✅ 신규: 실패한 드라이버/크롬 잔여 정리 후 재시도
+                self._safe_quit_driver()
 
-            # 재시작 후에도 배치 적용
-            self._place_left_half()
-            return self.driver
+                parsed = self._parse_major_from_error(e)
+                if parsed:
+                    try:
+                        opts = self._build_options()  # ✅ 재시도도 새 options
+                        self._wipe_uc_driver_cache()
 
-        except Exception as e:
-            self.last_error = e
-            self.quit()
-            raise
+                        driver_path = self._get_driver_path_for_major(parsed)
+                        self.driver = uc.Chrome(
+                            options=opts,
+                            driver_executable_path=driver_path
+                        )
+
+                        try:
+                            self.driver.set_page_load_timeout(timeout)
+                        except Exception:
+                            pass
+
+                        self._place_left_half()
+                        return self.driver
+
+                    except Exception as e2:
+                        last = e2
+                        # ✅ 신규: 재시도 실패도 정리
+                        self._safe_quit_driver()
+                        continue
+
+            except Exception as e:
+                last = e
+                # ✅ 신규: 기타 예외도 정리
+                self._safe_quit_driver()
+                continue
+
+        self.last_error = last
+        raise last
+
 
     def quit(self):
         try:

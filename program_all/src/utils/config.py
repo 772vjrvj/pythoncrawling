@@ -543,7 +543,50 @@ SITE_LIST = [
    #          {'name': '지역코드', 'code': 'local_code',     'value': '',         'type': 'input'},
    #      ],
    # ),
-    Site("룰루레몬", "LULULEMON", "#140F0F", enabled=True, popup=True)
+   #  Site("룰루레몬", "LULULEMON", "#140F0F", enabled=True, popup=True)
+    Site("썸네일 자동 다운 및 수정 프로그램", "THUMNAIL_MAKE", "#121212", enabled=True, popup=True,
+         columns = [
+             {"code": "url",             "value": "이미지 URL",      "checked": True},
+             {"code": "result_filename", "value": "결과 파일명",     "checked": True},
+             {"code": "edit_filename",   "value": "수정 파일명",     "checked": True},
+             {"code": "status",          "value": "상태",             "checked": True},
+             {"code": "message",         "value": "메모",             "checked": True},
+             {"code": "result_path",     "value": "결과 파일 경로",  "checked": True},
+             {"code": "edit_path",       "value": "수정 파일 경로",  "checked": True},
+         ],
+         setting = [
+             # =========================
+             # 썸네일 기본 변환
+             # =========================
+             {'name': '■ 썸네일 가로 크기(px)',      'code': 'thumb_width',     'value': '1000', 'type': 'input'},
+             {'name': '■ 썸네일 세로 크기(px)',      'code': 'thumb_height',    'value': '1000', 'type': 'input'},
+             {'name': '■ 썸네일 회전 각도(°)',       'code': 'thumb_rotate_deg','value': '0',    'type': 'input'},
+             {'name': '■ 썸네일 확대/축소 비율(%)',  'code': 'thumb_scale_pct', 'value': '100',  'type': 'input'},  # 기본은 100 권장
+             {'name': '■ 썸네일 확장자명',           'code': 'thumb_ext',       'value': 'jpg',  'type': 'input'},
+             {'name': '■ 썸네일 딜레이(초)',         'code': 'thumb_delay_sec', 'value': '5',    'type': 'input'},
+
+             # =========================
+             # 워터마크
+             # =========================
+             {'name': '■ 워터마크 사용 여부(Y/N)',    'code': 'wm_enabled',     'value': True,    'type': 'check'},
+             {'name': '■ 워터마크 파일 선택', 'code': 'wm_file', 'value': '', 'type': 'file',
+              'filter': 'PNG (*.png);;All Files (*)',
+              'dialog_title': '워터마크 이미지 선택',
+              'button_text': '워터마크 선택',
+              'placeholder': 'watermark.png 경로 또는 파일 선택'
+              }
+             # {'name': '■ 워터마크 파일명(기본: watermark.png)', 'code': 'wm_file', 'value': 'watermark.png', 'type': 'input'},
+             # {'name': '■ 워터마크 가로 크기(px)', 'code': 'wm_width',       'value': '35',   'type': 'input'},
+             # {'name': '■ 워터마크 세로 크기(px)', 'code': 'wm_height',      'value': '35',   'type': 'input'},
+             # {'name': '■ 워터마크 투명도(%)', 'code': 'wm_opacity_pct', 'value': '15',   'type': 'input'},
+             # {'name': '■ 워터마크 위치(br, bl, tr, tl)', 'code': 'wm_anchor',      'value': 'br',   'type': 'input'},  # br=오른쪽아래
+             # {'name': '■ 워터마크 패딩(px)',          'code': 'wm_padding',     'value': '20',   'type': 'input'},
+             #
+             # # (선택) 미세 위치 보정. 필요 없으면 지워도 됨.
+             # {'name': '■ 워터마크 X 오프셋(px)',      'code': 'wm_x_offset',    'value': '0',    'type': 'input'},
+             # {'name': '■ 워터마크 Y 오프셋(px)',      'code': 'wm_y_offset',    'value': '0',    'type': 'input'},
+         ]
+    )
 ]
 
 # 전역 변수

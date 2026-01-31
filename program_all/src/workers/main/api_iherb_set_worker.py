@@ -64,6 +64,8 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
         # 로그인 열기
         self.driver.get(self.base_main_url)
 
+        return True
+
     # 국가 통화 설정
     def selected_country(self):
         wait = WebDriverWait(self.driver, 10)
@@ -314,10 +316,7 @@ class ApiIherbSetLoadWorker(BaseApiWorker):
         # 셀레니움 초기화
         self.selenium_driver = SeleniumUtils(headless)
 
-        state = GlobalState()
-        user = state.get("user")
-        mode = "undetected"
-        self.driver = self.selenium_driver.start_driver(1200, user, mode)
+        self.driver = self.selenium_driver.start_driver(1200)
 
     # 마무리
     def destroy(self):

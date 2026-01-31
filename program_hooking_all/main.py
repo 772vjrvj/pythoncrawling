@@ -1,4 +1,4 @@
-# main.py
+# main_new.py
 import sys
 from src.ui.main_window import MainWindow
 from PyQt5.QtWidgets import QApplication

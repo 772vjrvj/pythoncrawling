@@ -1,4 +1,4 @@
-# main.py
+# main_new.py
 import sys
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QSharedMemory, Qt

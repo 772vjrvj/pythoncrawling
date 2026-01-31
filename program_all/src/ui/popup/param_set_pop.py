@@ -1,6 +1,8 @@
+import os
+
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QComboBox, QCheckBox
+    QPushButton, QSizePolicy, QComboBox, QCheckBox, QFileDialog
 )
 
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QIcon
@@ -16,7 +18,6 @@ class ParamSetPop(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.confirm_button = None
-        self.cancel_button = None
         self.cancel_button = None
         self.parent = parent
         self.input_fields = {}
@@ -128,7 +129,6 @@ class ParamSetPop(QDialog):
                 """)
                 btn.setCursor(Qt.PointingHandCursor)
                 btn.clicked.connect(lambda _, c=item["code"]: self.on_button_clicked(c))  # ✅ 여기 중요
-
                 item_layout.addWidget(btn)
 
             elif item_type == "check":
@@ -149,7 +149,7 @@ class ParamSetPop(QDialog):
                     }
                     QCheckBox::indicator:checked {
                         background-color: black;
-                        image: url(:/icons/check-white.png);  /* ✔ 아이콘 넣을 수도 있음 */
+                        image: url(:/icons/check-white.png);
                     }
                 """)
                 checkbox.setCursor(Qt.PointingHandCursor)
@@ -157,6 +157,33 @@ class ParamSetPop(QDialog):
                 self.input_fields[item["code"]] = checkbox
                 item_layout.addWidget(checkbox)
 
+            # === 신규 === file 타입: 파일 선택(워터마크 이미지 등)
+            elif item_type == "file":
+                line_edit = QLineEdit(self)
+                line_edit.setText(str(item.get("value", "")))
+                line_edit.setPlaceholderText(item.get("placeholder", "파일을 선택하세요"))
+                line_edit.setFixedHeight(40)
+                line_edit.setStyleSheet("""
+                    border-radius: 10%;
+                    border: 2px solid #888888;
+                    padding: 10px;
+                    font-size: 14px;
+                    color: #333333;
+                """)
+                self.input_fields[item["code"]] = line_edit
+                item_layout.addWidget(line_edit)
+
+                btn = QPushButton(item.get("button_text", "파일 선택"), self)
+                btn.setFixedHeight(40)
+                btn.setStyleSheet("""
+                    background-color: black;
+                    color: white;
+                    border-radius: 10%;
+                    font-size: 14px;
+                """)
+                btn.setCursor(Qt.PointingHandCursor)
+                btn.clicked.connect(lambda _, c=item["code"], it=item: self.on_file_pick_clicked(c, it))
+                item_layout.addWidget(btn)
 
             # ✅ 최종적으로 popup_layout에 묶은 item_layout 추가
             popup_layout.addLayout(item_layout)
@@ -165,9 +192,7 @@ class ParamSetPop(QDialog):
         button_layout = QHBoxLayout()
 
         self.cancel_button = create_common_button("취소", self.reject, "#cccccc", 140)
-
         self.confirm_button = create_common_button("확인", self.on_confirm, "black", 140)
-
 
         button_layout.setContentsMargins(0, 15, 0, 0)  # top에만 20px
         button_layout.addWidget(self.cancel_button)
@@ -176,7 +201,6 @@ class ParamSetPop(QDialog):
         popup_layout.addLayout(button_layout)
 
         self.center_window()
-
 
     def on_button_clicked(self, code):
         # 1. 입력값 가져오기
@@ -215,6 +239,23 @@ class ParamSetPop(QDialog):
         except Exception as e:
             self.log_signal.emit(f"[{code}] 실행 중 오류: {e}")
 
+    # === 신규 === file 타입: 파일 선택 버튼 클릭
+    def on_file_pick_clicked(self, code, item):
+        w = self.input_fields.get(code)
+        if not isinstance(w, QLineEdit):
+            self.log_signal.emit(f"[{code}] 파일 경로 입력 필드를 찾을 수 없습니다.")
+            return
+
+        title = item.get("dialog_title", "파일 선택")
+        file_filter = item.get("filter", "All Files (*);;PNG (*.png);;JPG (*.jpg *.jpeg);;WEBP (*.webp)")
+        start_dir = item.get("start_dir", os.getcwd())
+
+        path, _ = QFileDialog.getOpenFileName(self, title, start_dir, file_filter)
+        if not path:
+            return
+
+        w.setText(path)
+        self.log_signal.emit(f"[{code}] 파일 선택: {path}")
 
     def on_confirm(self):
         for item in self.parent.setting:
@@ -224,26 +265,32 @@ class ParamSetPop(QDialog):
             if widget is None:
                 continue
 
+            item_type = item.get("type", "input")
+
             # QLineEdit
             if isinstance(widget, QLineEdit):
                 text = widget.text()
-                try:
-                    item["value"] = int(text)
-                except ValueError:
+
+                # === 신규 === file 타입은 무조건 문자열로 저장
+                if item_type == "file":
                     item["value"] = text
+                else:
+                    try:
+                        item["value"] = int(text)
+                    except ValueError:
+                        item["value"] = text
+
             # QComboBox
             elif isinstance(widget, QComboBox):
                 value = widget.currentData()  # 실제 값 (value)
                 item["value"] = value
 
-            # ✅ QCheckBox 처리 추가
+            # QCheckBox
             elif isinstance(widget, QCheckBox):
                 item["value"] = widget.isChecked()
 
-
         self.log_signal.emit(f'setting : {self.parent.setting}')
         self.accept()
-
 
     def center_window(self):
         frame_geometry = self.frameGeometry()

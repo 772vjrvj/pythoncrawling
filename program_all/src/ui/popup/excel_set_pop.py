@@ -4,12 +4,14 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QPushButton, QTableWidgetItem, QDesktopWidget,
     QDialog, QTableWidget, QHeaderView, QAbstractItemView
 )
-from src.ui.popup.excel_drag_drop_label import ExcelDragDropLabel
 from pathlib import Path
 
+from src.ui.popup.excel_drag_drop_label import ExcelDragDropLabel
+
+
 class ExcelSetPop(QDialog):
-    updateList = pyqtSignal(object)   # list[dict] 안전 전달
-    updateUser = pyqtSignal(object)   # dict 안전 전달
+    updateList = pyqtSignal(object)
+    updateUser = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -23,19 +25,16 @@ class ExcelSetPop(QDialog):
 
         self.layout = QVBoxLayout(self)
 
-        # 드래그&드롭 라벨
         self.drag_drop_label = ExcelDragDropLabel()
         self.drag_drop_label.fileDropped.connect(self.load_excel)
         self.layout.addWidget(self.drag_drop_label)
 
-        # 테이블 (QScrollArea 없이 직접 추가)
         self.table_widget = QTableWidget(self)
-        self.table_widget.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 읽기 전용
+        self.table_widget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_widget.setAlternatingRowColors(True)
         self.layout.addWidget(self.table_widget)
 
-        # 확인 버튼
         button_layout = QHBoxLayout()
         self.confirm_button = QPushButton("확인", self)
         self.confirm_button.setStyleSheet("""
@@ -55,27 +54,40 @@ class ExcelSetPop(QDialog):
 
         self.center_window()
 
-
     def load_excel(self, file_paths):
         try:
             dfs = []
             self.user = {}
 
             for file in file_paths:
-                base = Path(file).stem  # "A.xlsx" -> "A"
+                base = Path(file).stem
 
                 if file.lower().endswith(".csv"):
                     df = pd.read_csv(file, dtype=str).fillna("")
-                    df["file"] = base                   # ← 파일명 컬럼 추가
+                    df["file"] = base
+
+                    # === 신규 === 원본 파일 경로/행번호 저장(원본 반영용)
+                    df["__excel_path"] = file
+                    df["__sheet_idx"] = 0
+                    df["__row_idx"] = df.index + 2  # 1행 헤더 가정
+
                     dfs.append(df)
+
                 else:
                     excel_file = pd.ExcelFile(file)
+
                     # 시트1: 데이터
                     df1 = excel_file.parse(sheet_name=0, dtype=str).fillna("")
-                    df1["file"] = base                  # ← 파일명 컬럼 추가
+                    df1["file"] = base
+
+                    # === 신규 === 원본 파일 경로/행번호 저장(원본 반영용)
+                    df1["__excel_path"] = file
+                    df1["__sheet_idx"] = 0
+                    df1["__row_idx"] = df1.index + 2  # 1행 헤더 가정
+
                     dfs.append(df1)
 
-                    # 시트2: 사용자(ID/PW)
+                    # 시트2: 사용자(ID/PW) (기존 유지)
                     if len(excel_file.sheet_names) >= 2:
                         df2 = excel_file.parse(sheet_name=1, dtype=str).fillna("")
                         if not df2.empty and "ID" in df2.columns and "PW" in df2.columns:
@@ -85,11 +97,11 @@ class ExcelSetPop(QDialog):
                 raise ValueError("로드할 수 있는 파일이 없습니다.")
 
             combined_df = pd.concat(dfs, ignore_index=True, sort=False).fillna("")
-            combined_df = combined_df.astype(str)  # 표시/시그널 일관성
+            combined_df = combined_df.astype(str)
+
             headers = [str(c) for c in combined_df.columns]
             rows = combined_df.values.tolist()
 
-            # 테이블 갱신(안전한 순서)
             self.table_widget.setUpdatesEnabled(False)
             self.table_widget.clear()
             self.table_widget.setRowCount(0)
@@ -106,14 +118,14 @@ class ExcelSetPop(QDialog):
             header = self.table_widget.horizontalHeader()
             header.setSectionResizeMode(QHeaderView.Interactive)
             header.setStretchLastSection(True)
+
             self.table_widget.setUpdatesEnabled(True)
 
             self.drag_drop_label.setText(
-                f"총 {len(file_paths)}개 파일, {len(rows)}행 {len(headers)}열 로드 완료 (file 컬럼 포함)"
+                f"총 {len(file_paths)}개 파일, {len(rows)}행 {len(headers)}열 로드 완료"
             )
             self.drag_drop_label.setStyleSheet("background-color: lightgreen;")
 
-            # 전체 테이블을 dict 리스트로 보관
             self.data_list = combined_df.to_dict(orient="records")
 
         except Exception as e:
@@ -124,7 +136,6 @@ class ExcelSetPop(QDialog):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
-
 
     def on_confirm(self):
         self.updateList.emit(self.data_list)
