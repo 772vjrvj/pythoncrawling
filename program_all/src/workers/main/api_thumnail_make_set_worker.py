@@ -1,14 +1,19 @@
 # /src/workers/api_thumnail_make_set_load_worker.py
 import os
 import time
-from urllib.parse import urlparse
+import shutil
+from datetime import datetime
+from urllib.parse import urlparse  # (기존 유지)
 
 from PIL import Image, ImageEnhance
+from openpyxl import load_workbook
 
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from src.workers.api_base_worker import BaseApiWorker
+from src.utils.str_utils import to_str
+from src.utils.number_utils import to_int
 
 
 class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
@@ -25,27 +30,294 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
 
         self.api_client = APIClient(use_cache=False)
 
+        # === 신규(DB.xlsx 직접 업데이트용) ===
+        self.db_dir = os.path.join(os.getcwd(), "DB")
+        self.db_path = os.path.join(self.db_dir, "DB.xlsx")
+        self.db_wb = None
+        self.db_ws = None
+        self.db_cols = {}           # {"이미지 URL": col_idx, ...}
+        self.db_sheet_name = ""     # active 시트명
+        self.dirty_cnt = 0
+        self.save_every = 200       # ✅ 200건마다 저장
+        self._stopped = False
+
     def init(self):
         self.excel_driver = ExcelUtils(self.log_signal_func)
-        self.file_driver = FileUtils(self.log_signal_func)
+        self.file_driver = FileUtils(self.log_signal_func, api_client=self.api_client)  # === 변경 ===
         return True
 
-    # =========================================================
-    # helpers
-    # =========================================================
-    def _to_int(self, v, default=0):
+    def main(self):
         try:
-            if v is None or v == "":
-                return default
-            return int(float(str(v).strip()))
-        except Exception:
-            return default
+            self.log_signal_func("작업 시작(DB.xlsx 직접 업데이트)")
+            self.log_signal_func(f"세팅 항목: {self.setting}")
+            self.log_signal_func(f"컬럼 항목: {self.columns}")
 
-    def _to_str(self, v, default=""):
-        if v is None:
-            return default
-        s = str(v).strip()
-        return s if s else default
+            # 0) DB 오픈 + rows 로드
+            self._open_db()
+            db_rows = self._read_db_rows()
+
+            if not db_rows:
+                self.log_signal_func("❌ DB.xlsx 데이터 없음(2행~)")
+                return False
+
+            self.total_cnt = len(db_rows)
+            self.current_cnt = 0
+
+            # 폴더 준비
+            origin_dir = self.file_driver.create_folder("이미지 저장")
+            edit_dir = self.file_driver.create_folder("이미지 수정")
+
+            # setting
+            tw = to_int(self.get_setting_value(self.setting, "thumb_width"), 1000)
+            th = to_int(self.get_setting_value(self.setting, "thumb_height"), 1000)
+            rotate_deg = to_int(self.get_setting_value(self.setting, "thumb_rotate_deg"), 0)
+            scale_pct = to_int(self.get_setting_value(self.setting, "thumb_scale_pct"), 100)
+            ext = to_str(self.get_setting_value(self.setting, "thumb_ext"), "jpg").lower().strip(".")
+            delay_sec = to_int(self.get_setting_value(self.setting, "thumb_delay_sec"), 0)
+
+            wm_enabled = bool(self.get_setting_value(self.setting, "wm_enabled"))
+            wm_file = to_str(self.get_setting_value(self.setting, "wm_file"), "watermark.png")
+            wm_width = to_int(self.get_setting_value(self.setting, "wm_width"), 35)
+            wm_height = to_int(self.get_setting_value(self.setting, "wm_height"), 35)
+            # wm_opacity = to_int(self.get_setting_value(self.setting, "wm_opacity_pct"), 15)
+            wm_opacity = to_int(self.get_setting_value(self.setting, "wm_opacity_pct"), 100)
+            wm_anchor = to_str(self.get_setting_value(self.setting, "wm_anchor"), "br")
+            wm_padding = to_int(self.get_setting_value(self.setting, "wm_padding"), 20)
+            wm_x_offset = to_int(self.get_setting_value(self.setting, "wm_x_offset"), 0)
+            wm_y_offset = to_int(self.get_setting_value(self.setting, "wm_y_offset"), 0)
+
+            wm_path = self._resolve_wm_path(wm_file)
+            if wm_enabled:
+                if wm_path and os.path.exists(wm_path):
+                    self.log_signal_func(f"워터마크 사용: {wm_path}")
+                else:
+                    self.log_signal_func(f"⚠️ 워터마크 ON 이지만 파일 없음: {wm_path} (워터마크 스킵)")
+
+            # 1) 루프
+            for idx, (excel_row_idx, row) in enumerate(db_rows, start=1):
+                if not self.running:
+                    self._stopped = True
+                    self.log_signal_func("⛔ 사용자 중단 요청 감지(저장 후 종료)")
+                    break
+
+                self.current_cnt += 1
+
+                try:
+                    # 성공이면 스킵
+                    status = to_str(row.get("상태"), "").strip()
+                    if status == "성공":
+                        self.log_signal_func(f"↩️ 스킵(성공): {idx}/{self.total_cnt}")
+                        continue
+
+                    # URL
+                    url = to_str(row.get("이미지 URL"), "").strip()
+                    if not url:
+                        raise Exception("이미지 URL 없음")
+
+                    # 결과 파일명
+                    result_filename = to_str(row.get("결과 파일명"), "").strip()
+                    result_filename = self._safe_filename(result_filename)
+                    if not result_filename:
+                        result_filename = f"{idx}.{ext}"
+                    else:
+                        result_filename = self._ensure_ext(result_filename, ext)
+
+                    # 수정 파일명
+                    edit_filename = to_str(row.get("수정 파일명"), "").strip()
+                    edit_filename = self._safe_filename(edit_filename)
+                    if not edit_filename:
+                        base, _ = os.path.splitext(result_filename)
+                        edit_filename = f"{base}_edit.{ext}"
+                    else:
+                        edit_filename = self._ensure_ext(edit_filename, ext)
+
+                    # 1) 원본 다운로드
+                    origin_path = self.file_driver.save_image(origin_dir, result_filename, url)
+                    if not origin_path:
+                        raise Exception("원본 이미지 저장 실패")
+
+                    # 2) 수정본 생성 (cover+crop)
+                    edit_path = os.path.join(edit_dir, edit_filename)
+                    edit_path = self._make_edit_image(
+                        src_path=origin_path,
+                        dst_path=edit_path,
+                        tw=tw,
+                        th=th,
+                        rotate_deg=rotate_deg,
+                        scale_pct=scale_pct,
+                        ext=ext,
+                    )
+
+                    # 3) 워터마크 (수정본에 합성)
+                    if wm_enabled and wm_path and os.path.exists(wm_path):
+                        edit_path = self._apply_watermark(
+                            base_path=edit_path,
+                            wm_path=wm_path,
+                            wm_w=wm_width,
+                            wm_h=wm_height,
+                            opacity_pct=wm_opacity,
+                            anchor=wm_anchor,
+                            padding=wm_padding,
+                            x_off=wm_x_offset,
+                            y_off=wm_y_offset,
+                        )
+
+                    # row 업데이트 (dict)
+                    row["이미지 URL"] = url
+                    row["결과 파일명"] = result_filename
+                    row["수정 파일명"] = edit_filename
+                    row["결과 파일 경로"] = origin_path
+                    row["수정 파일 경로"] = edit_path
+                    row["상태"] = "성공"
+                    row["메모"] = ""
+
+                    # DB.xlsx(메모리) 반영
+                    self._write_db_row(excel_row_idx, row)
+
+                    self.log_signal_func(f"✅ 완료: {idx}/{self.total_cnt}  {result_filename}")
+
+                except Exception as e:
+                    row["상태"] = "실패"
+                    row["메모"] = str(e)
+                    # 실패도 DB.xlsx에 반영(재시도/로그 목적)
+                    self._write_db_row(excel_row_idx, row)
+                    self.log_signal_func(f"❌ 실패: {idx}/{self.total_cnt}  {e}")
+
+                # progress
+                pro_value = (self.current_cnt / self.total_cnt) * 1000000
+                self.progress_signal.emit(self.before_pro_value, pro_value)
+                self.before_pro_value = pro_value
+
+                if delay_sec > 0:
+                    time.sleep(delay_sec)
+
+            # 2) 마지막 저장 (중간에 멈췄든, 끝났든 무조건 flush)
+            self._flush_db()
+
+            if self._stopped:
+                self.log_signal_func("🧾 사용자 중단 처리 완료(저장 완료)")
+            else:
+                self.log_signal_func("🧾 전체 처리 완료(저장 완료)")
+
+            return True
+
+        except Exception as e:
+            # 예외 시에도 혹시 변경된 게 있으면 저장 시도
+            try:
+                self._flush_db()
+            except Exception:
+                pass
+            self.log_signal_func(f"❌ 전체 실행 중 예외 발생: {e}")
+            return False
+
+    def destroy(self):
+        # 종료 시점 flush 저장
+        try:
+            self._flush_db()
+        except Exception:
+            pass
+
+        self.progress_signal.emit(self.before_pro_value, 1000000)
+        self.log_signal_func("=============== 작업 종료")
+        self.progress_end_signal.emit()
+
+    def stop(self):
+        # UI에서 중지 눌렀을 때: 즉시 저장하고 종료
+        self.running = False
+        self._stopped = True
+        try:
+            self._flush_db()
+        except Exception:
+            pass
+
+        if self.driver:
+            self.driver.quit()
+
+    def _ensure_db_exists(self):
+        os.makedirs(self.db_dir, exist_ok=True)
+        if not os.path.exists(self.db_path):
+            raise Exception(f"DB.xlsx 없음: {self.db_path}")
+
+    def _backup_db(self):
+        """
+        DB/DB.xlsx -> DB/bak/DB_YYYYMMDD_HHMMSS.xlsx
+        """
+        try:
+            bak_dir = os.path.join(self.db_dir, "bak")
+            os.makedirs(bak_dir, exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            bak_path = os.path.join(bak_dir, f"DB_{ts}.xlsx")
+            shutil.copy2(self.db_path, bak_path)
+            self.log_signal_func(f"[DB] 백업 생성: {bak_path}")
+        except Exception as e:
+            # 백업 실패는 치명적이진 않지만 알림은 필요
+            self.log_signal_func(f"[DB] 백업 실패: {e}")
+
+    def _open_db(self):
+        self._ensure_db_exists()
+        self._backup_db()
+
+        self.db_wb = load_workbook(self.db_path)
+        self.db_ws = self.db_wb.active
+        self.db_sheet_name = self.db_ws.title
+
+        # 1행 헤더 매핑
+        header = [str(c.value or "").strip() for c in self.db_ws[1]]
+        self.db_cols = {name: i + 1 for i, name in enumerate(header) if name}
+
+        for k in (self.columns or []):
+            if k not in self.db_cols:
+                raise Exception(f"DB.xlsx 헤더에 컬럼 없음: {k}")
+
+        self.log_signal_func(f"[DB] 로드 완료: {self.db_path} (sheet={self.db_sheet_name})")
+
+    def _read_db_rows(self):
+        """
+        DB.xlsx의 데이터(2행~)를 dict로 읽어서 (excel_row_idx, row_dict) 리스트로 반환
+        """
+        out = []
+        ws = self.db_ws
+
+        max_row = ws.max_row or 1
+        if max_row <= 1:
+            return out
+
+        col = self.db_cols
+
+        for r in range(2, max_row + 1):
+            row = {}
+            for k in (self.columns or []):
+                row[k] = to_str(ws.cell(r, col[k]).value, "").strip()
+            out.append((r, row))
+        return out
+
+    def _write_db_row(self, excel_row_idx: int, row: dict):
+        """
+        메모리 워크북에만 반영 (저장은 _flush_db에서)
+        """
+        ws = self.db_ws
+        col = self.db_cols
+        for k in (self.columns or []):
+            ws.cell(excel_row_idx, col[k]).value = row.get(k, "")
+
+        self.dirty_cnt += 1
+        if self.dirty_cnt >= self.save_every:
+            self._flush_db()
+
+    def _flush_db(self):
+        """
+        파일 저장. stop/destroy에서도 호출됨.
+        """
+        if not self.db_wb:
+            return
+        if self.dirty_cnt <= 0:
+            return
+        try:
+            self.db_wb.save(self.db_path)
+            self.log_signal_func(f"[DB] 저장 완료 (+{self.dirty_cnt}건)")
+            self.dirty_cnt = 0
+        except Exception as e:
+            self.log_signal_func(f"[DB] 저장 실패: {e}")
 
     def _safe_filename(self, name: str) -> str:
         name = (name or "").strip()
@@ -68,6 +340,16 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
         return f"{base}.{ext}"
 
     def _center_crop(self, img: Image.Image, tw: int, th: int) -> Image.Image:
+        #
+        # +---------------------------+
+        # |   잘림   |               |   잘림   |
+        # |----------|   남는 영역   |----------|
+        # |          |   (tw x th)   |          |
+        # |----------|               |----------|
+        # |   잘림   |               |   잘림   |
+        # +---------------------------+
+        # 중앙 빼고 잘림
+    
         w, h = img.size
         left = (w - tw) // 2
         top = (h - th) // 2
@@ -105,9 +387,11 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
             img = img.rotate(-rotate_deg, expand=True)
 
         # 3) center crop
+        # “최종 결과 이미지는 무조건 tw × th 크기여야 한다.”
+        # (비율 유지 + 잘라내기 OK)
+        # 늘려지는게 아니고 빈 부분의 픽셀이 채워짐 흰색으로
         w, h = img.size
         if w < tw or h < th:
-            # 혹시라도 작아지면 다시 cover로 키움
             cover2 = max(tw / w, th / h)
             img = img.resize(
                 (max(1, int(w * cover2)), max(1, int(h * cover2))),
@@ -170,6 +454,7 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
         x = max(0, min(W - w, x))
         y = max(0, min(H - h, y))
 
+        # 덮어쓰기(합성)
         base.paste(wm, (x, y), wm)
 
         ext = os.path.splitext(base_path)[1].lower()
@@ -191,186 +476,3 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
         if os.path.isabs(wm_file):
             return wm_file
         return os.path.join(os.getcwd(), wm_file)
-
-    # =========================================================
-    # main
-    # =========================================================
-    def main(self):
-        try:
-            self.log_signal_func("크롤링 시작")
-            self.log_signal_func(f"엑셀 리스트: {self.excel_data_list}")
-            self.log_signal_func(f"엑셀 세팅 항목: {self.setting}")
-            self.log_signal_func(f"엑셀 컬럼 항목: {self.columns}")
-
-            rows = self.excel_data_list or []
-            if not rows:
-                self.log_signal_func("❌ 엑셀 데이터 없음")
-                return False
-
-            self.total_cnt = len(rows)
-            self.current_cnt = 0
-
-            # 폴더 준비
-            origin_dir = self.file_driver.create_folder("이미지 저장")
-            edit_dir = self.file_driver.create_folder("이미지 수정")
-
-            # setting
-            tw = self._to_int(self.get_setting_value(self.setting, "thumb_width"), 1000)
-            th = self._to_int(self.get_setting_value(self.setting, "thumb_height"), 1000)
-            rotate_deg = self._to_int(self.get_setting_value(self.setting, "thumb_rotate_deg"), 0)
-            scale_pct = self._to_int(self.get_setting_value(self.setting, "thumb_scale_pct"), 100)
-            ext = self._to_str(self.get_setting_value(self.setting, "thumb_ext"), "jpg").lower().strip(".")
-            delay_sec = self._to_int(self.get_setting_value(self.setting, "thumb_delay_sec"), 0)
-
-            wm_enabled = bool(self.get_setting_value(self.setting, "wm_enabled"))
-            wm_file = self._to_str(self.get_setting_value(self.setting, "wm_file"), "watermark.png")
-            wm_width = self._to_int(self.get_setting_value(self.setting, "wm_width"), 35)
-            wm_height = self._to_int(self.get_setting_value(self.setting, "wm_height"), 35)
-            wm_opacity = self._to_int(self.get_setting_value(self.setting, "wm_opacity_pct"), 15)
-            wm_anchor = self._to_str(self.get_setting_value(self.setting, "wm_anchor"), "br")
-            wm_padding = self._to_int(self.get_setting_value(self.setting, "wm_padding"), 20)
-            wm_x_offset = self._to_int(self.get_setting_value(self.setting, "wm_x_offset"), 0)
-            wm_y_offset = self._to_int(self.get_setting_value(self.setting, "wm_y_offset"), 0)
-
-            wm_path = self._resolve_wm_path(wm_file)
-            if wm_enabled:
-                if wm_path and os.path.exists(wm_path):
-                    self.log_signal_func(f"워터마크 사용: {wm_path}")
-                else:
-                    self.log_signal_func(f"⚠️ 워터마크 ON 이지만 파일 없음: {wm_path} (워터마크 스킵)")
-
-            # loop
-            for idx, row in enumerate(rows, start=1):
-                if not self.running:
-                    self.log_signal_func("⛔ 사용자 중단")
-                    break
-
-                self.current_cnt += 1
-
-                try:
-                    # URL
-                    url = (row.get("이미지 URL") or row.get("url") or "").strip()
-                    if not url:
-                        raise Exception("이미지 URL 없음")
-
-                    # 결과 파일명
-                    result_filename = (row.get("결과 파일명") or row.get("result_filename") or "").strip()
-                    result_filename = self._safe_filename(result_filename)
-                    if not result_filename:
-                        result_filename = f"{idx}.{ext}"
-                    else:
-                        result_filename = self._ensure_ext(result_filename, ext)
-
-                    # 수정 파일명
-                    edit_filename = (row.get("수정 파일명") or row.get("edit_filename") or "").strip()
-                    edit_filename = self._safe_filename(edit_filename)
-                    if not edit_filename:
-                        base, _ = os.path.splitext(result_filename)
-                        edit_filename = f"{base}_edit.{ext}"
-                    else:
-                        edit_filename = self._ensure_ext(edit_filename, ext)
-
-                    # 1) 원본 다운로드
-                    origin_path = self.file_driver.save_image(origin_dir, result_filename, url)
-                    if not origin_path:
-                        raise Exception("원본 이미지 저장 실패")
-
-                    # 2) 수정본 생성 (cover+crop)
-                    edit_path = os.path.join(edit_dir, edit_filename)
-                    edit_path = self._make_edit_image(
-                        src_path=origin_path,
-                        dst_path=edit_path,
-                        tw=tw,
-                        th=th,
-                        rotate_deg=rotate_deg,
-                        scale_pct=scale_pct,
-                        ext=ext,
-                    )
-
-                    # 3) 워터마크 (수정본에 합성)
-                    if wm_enabled and wm_path and os.path.exists(wm_path):
-                        edit_path = self._apply_watermark(
-                            base_path=edit_path,
-                            wm_path=wm_path,
-                            wm_w=wm_width,
-                            wm_h=wm_height,
-                            opacity_pct=wm_opacity,
-                            anchor=wm_anchor,
-                            padding=wm_padding,
-                            x_off=wm_x_offset,
-                            y_off=wm_y_offset,
-                        )
-
-                    # 결과 반영 (엑셀 헤더 기준)
-                    row["이미지 URL"] = url
-                    row["결과 파일명"] = result_filename
-                    row["수정 파일명"] = edit_filename
-                    row["결과 파일 경로"] = origin_path
-                    row["수정 파일 경로"] = edit_path
-                    row["상태"] = "성공"
-                    row["메모"] = ""
-
-                    self.log_signal_func(f"✅ 완료: {idx}/{self.total_cnt}  {result_filename}")
-
-                except Exception as e:
-                    row["상태"] = "실패"
-                    row["메모"] = str(e)
-                    self.log_signal_func(f"❌ 실패: {idx}/{self.total_cnt}  {e}")
-
-                # progress
-                pro_value = (self.current_cnt / self.total_cnt) * 1000000
-                self.progress_signal.emit(self.before_pro_value, pro_value)
-                self.before_pro_value = pro_value
-
-                if delay_sec > 0:
-                    time.sleep(delay_sec)
-
-            # =========================================================
-            # ✅ 신규 엑셀 저장 (columns 체크된 것만)
-            # =========================================================
-            try:
-                save_cols = self.columns or [
-                    "이미지 URL",
-                    "결과 파일명",
-                    "수정 파일명",
-                    "상태",
-                    "메모",
-                    "결과 파일 경로",
-                    "수정 파일 경로",
-                ]
-
-                # 컬럼 누락 방지: rows에 키가 없으면 빈칸으로 넣어줌
-                for r in rows:
-                    for c in save_cols:
-                        if c not in r:
-                            r[c] = ""
-
-                result_excel_path = self.file_driver.get_excel_filename("썸네일_결과")
-
-                self.excel_driver.append_rows_text_excel(
-                    filename=result_excel_path,
-                    rows=rows,
-                    columns=save_cols,
-                    sheet_name="RESULT"
-                )
-
-                self.log_signal_func(f"📊 결과 엑셀 저장 완료: {result_excel_path}")
-
-            except Exception as e:
-                self.log_signal_func(f"❌ 결과 엑셀 저장 실패: {e}")
-
-            return True
-
-        except Exception as e:
-            self.log_signal_func(f"❌ 전체 실행 중 예외 발생: {e}")
-            return False
-
-    def destroy(self):
-        self.progress_signal.emit(self.before_pro_value, 1000000)
-        self.log_signal_func("=============== 크롤링 종료")
-        self.progress_end_signal.emit()
-
-    def stop(self):
-        self.running = False
-        if self.driver:
-            self.driver.quit()

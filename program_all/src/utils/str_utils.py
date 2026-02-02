@@ -1,7 +1,9 @@
+# ./src/utils/str_utils.py
 import re
 from urllib.parse import urlparse, parse_qs
 
 NBSP_RE = re.compile(r"[\u00a0\u200b]")  # NBSP, zero-width space
+
 
 def split_comma_keywords(keyword_str):
     """콤마로 구분된 키워드 문자열을 리스트로 변환"""
@@ -13,7 +15,7 @@ def extract_numbers(text):
     문자열에서 모든 숫자(연속된 숫자 덩어리)를 리스트로 반환
     예: "in total 352 albums and 12 tracks" → [352, 12]
     """
-    return [int(num) for num in re.findall(r'\d+', text)]
+    return [int(num) for num in re.findall(r"\d+", text)]
 
 
 def get_query_params(url, name):
@@ -31,3 +33,11 @@ def str_norm(s):
 
 def str_clean(s):
     return (s or "").replace("\u00a0", " ").strip()
+
+
+def to_str(v, default=""):
+    """None/빈문자열이면 default"""
+    if v is None:
+        return default
+    s = str(v).strip()
+    return s if s else default

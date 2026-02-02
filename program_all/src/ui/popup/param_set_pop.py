@@ -95,12 +95,22 @@ class ParamSetPop(QDialog):
                     }
                     QComboBox::drop-down { border: none; }
                 """)
-                options = [
-                    {"key": "▼ 선택 ▼", "value": ""}
-                ]
-                for opt in options:
-                    combo.addItem(opt["key"], opt["value"])
-                combo.setCurrentIndex(0)
+
+                opts = item.get("options") or []
+                combo.addItem("▼ 선택 ▼", "")
+
+                selected_value = str(item.get("value", "") or "")
+                selected_index = 0
+
+                for i, opt in enumerate(opts, start=1):
+                    k = str(opt.get("key", "") or "")
+                    v = str(opt.get("value", "") or "")
+                    combo.addItem(k, v)
+                    if v == selected_value:
+                        selected_index = i
+
+                combo.setCurrentIndex(selected_index)
+
                 self.input_fields[item["code"]] = combo
                 item_layout.addWidget(combo)
 

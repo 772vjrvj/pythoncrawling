@@ -22,7 +22,9 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
     def __init__(self):
         super().__init__()
         self.search_trade_labels = []
+        self.search_trade_codes = []
         self.search_rlet_labels = []
+        self.search_rlet_codes = []
 
         self.csv_filename = None
         self.current_cnt = 0
@@ -231,7 +233,9 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         trad_joined = self._join_codes(trad_list)
 
         self.search_rlet_labels = [self.RLET_TYPE_MAP.get(c, c) for c in rlet_list]
+        self.search_rlet_codes = rlet_list
         self.search_trade_labels = [self.TRADE_TYPE_MAP.get(c, c) for c in trad_list]
+        self.search_trade_codes = trad_list
 
         if rlet_joined:
             url = self._replace_query_params(url, rletTpCd=rlet_joined)
@@ -311,8 +315,11 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
                 break
 
             detail_url = f"{self.fin_land_article_url}/{same_no}"
-            self.log_signal_func(f"{same_no} {_s(first.get('atclNm'))} {_s(first.get('bildNm'))} {idx}/{len(atcl_list)}")
 
+            if not self._should_fetch_detail(first):
+                continue
+
+            self.log_signal_func(f"{same_no} {_s(first.get('atclNm'))} {_s(first.get('bildNm'))} {idx}/{len(atcl_list)}")
             data = self._fetch_detail(detail_url, first, same_no, article)
             time.sleep(random.uniform(1, 2))
 
@@ -322,6 +329,37 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
         if out_rows:
             self.result_data_list.append(out_rows)
             self.excel_driver.append_to_csv(self.csv_filename, out_rows, self.columns or [])
+
+    def _should_fetch_detail(self, first: dict) -> bool:
+        trad = _s((first or {}).get("tradTpCd"))
+        rlet = _s((first or {}).get("rletTpCd"))
+
+        trade_ok = trad in (self.search_trade_codes or [])
+        rlet_ok = rlet in (self.search_rlet_codes or [])
+
+        # 1) 거래유형 X, 매물유형 O
+        if not trade_ok and rlet_ok:
+            self.log_signal_func(
+                f"[SKIP] 거래유형 불일치: trad={trad}, allow={self.search_trade_codes}"
+            )
+            return False
+
+        # 2) 거래유형 O, 매물유형 X
+        if trade_ok and not rlet_ok:
+            self.log_signal_func(
+                f"[SKIP] 매물유형 불일치: rlet={rlet}, allow={self.search_rlet_codes}"
+            )
+            return False
+
+        # 3) 거래유형 X, 매물유형 X
+        if not trade_ok and not rlet_ok:
+            self.log_signal_func(
+                f"[SKIP] 거래/매물유형 모두 불일치: trad={trad}, rlet={rlet}"
+            )
+            return False
+
+        # 4) 둘 다 만족 → 상세 호출
+        return True
 
     def _fetch_detail(self, url, parent, article_number, article):
         try:

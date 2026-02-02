@@ -1,16 +1,12 @@
-import os  # 운영체제 관련 기능을 제공하는 표준 모듈
-from src.utils.time_utils import get_current_yyyymmddhhmmss  # 현재 날짜 및 시간 문자열을 반환하는 유틸 함수 임포트
+import os
+from src.utils.time_utils import get_current_yyyymmddhhmmss
 import json
+import requests
 
 class FileUtils:
-
-    def __init__(self, log_func):
-        """
-        FileUtils 클래스 생성자
-
-        :param log_func: 로그 출력을 위한 함수. 문자열을 인자로 받아 출력 (ex: print 또는 사용자 정의 로깅 함수)
-        """
-        self.log_func = log_func  # 전달받은 로그 출력 함수를 인스턴스 변수로 저장
+    def __init__(self, log_func, api_client=None):
+        self.log_func = log_func
+        self.api_client = api_client  # === 신규 ===
 
     def create_folder(self, folder_name):
         """
@@ -81,7 +77,6 @@ class FileUtils:
     def get_excel_filename(self, prefix):
         return self.get_timestamped_filepath(prefix, "xlsx", "Excel")
 
-
     def read_numbers_from_file(self, file_path):
         """
         숫자가 한 줄씩 저장된 텍스트 파일을 읽어 정수 리스트로 반환
@@ -110,34 +105,29 @@ class FileUtils:
         self.log_func(f"📄 숫자 {len(numbers)}개 읽음: {file_path}")
         return numbers
 
-
     def save_image(self, folder_path, filename, image_url, headers=None):
         """
         지정된 폴더에 이미지 저장
-
-        :param folder_path: 저장할 폴더 경로
-        :param filename: 저장할 파일 이름 (예: product_1.jpg)
-        :param image_url: 이미지 URL
-        :param headers: requests 헤더 (선택)
-        :return: 저장된 파일 경로
+        - api_client가 있으면 api_client로 다운로드
+        - 없으면 requests로 다운로드(기존 동작 유지)
         """
-        import requests
-
         save_path = os.path.join(folder_path, filename)
+
         try:
-            response = requests.get(image_url, headers=headers)
-            response.raise_for_status()
+            resp = self.api_client.get(image_url, headers=headers, return_bytes=True)
+            content = getattr(resp, "content", None)
+            if content is None:
+                content = resp
 
             with open(save_path, "wb") as f:
-                f.write(response.content)
+                f.write(content)
 
             self.log_func(f"🖼️ 이미지 저장 완료: {save_path}")
             return save_path
+
         except Exception as e:
             self.log_func(f"❌ 이미지 저장 실패: {save_path} / 오류: {e}")
             return None
-
-
 
     def read_json_array_from_resources(self, filename):
         """
