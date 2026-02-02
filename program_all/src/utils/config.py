@@ -151,58 +151,100 @@ SITE_LIST = [
     #      ],
     #      region = True
     #      ),
-    # Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
-    #      setting=[],
-    #      columns = [
-    #          # 게시정보
-    #          {"code": "article_number",         "value": "게시번호",        "checked": True},
-    #
-    #          # 기본 정보
-    #          {"code": "complexName",           "value": "단지명",          "checked": True},
-    #          {"code": "dongName",              "value": "동이름",          "checked": True},
-    #          {"code": "price",                 "value": "매매가",          "checked": True},
-    #          {"code": "warrantyAmount",        "value": "보증금",          "checked": True},
-    #          {"code": "rentAmount",            "value": "월세",            "checked": True},
-    #          {"code": "supplySpace",           "value": "공급면적",         "checked": True},
-    #          {"code": "pyeongArea",            "value": "평수",            "checked": True},
-    #          {"code": "landSpace",             "value": "대지면적",         "checked": True},
-    #          {"code": "floorSpace",            "value": "연면적",           "checked": True},
-    #          {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
-    #          {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
-    #
-    #          {"code": "articleFeatureDescription",        "value": "매물특징",           "checked": True},
-    #          {"code": "exposureStartDate",        "value": "매물확인일",           "checked": True},
-    #          {"code": "buildingPrincipalUse",        "value": "건축물용도",           "checked": True},
-    #
-    #          # 종합 정보 (주소)
-    #          {"code": "city",                  "value": "시도",             "checked": True},
-    #          {"code": "division",              "value": "시군구",           "checked": True},
-    #          {"code": "sector",                "value": "읍면동",           "checked": True},
-    #          {"code": "jibun",                 "value": "번지",             "checked": True},
-    #          {"code": "roadName",              "value": "도로명주소",        "checked": True},
-    #          {"code": "zipCode",               "value": "우편번호",          "checked": True},
-    #          {"code": "full_addr",              "value": "전체주소",          "checked": True},
-    #
-    #          # 중개사
-    #          {"code": "brokerage_name",        "value": "중개사무소이름",   "checked": True},
-    #          {"code": "broker_name",           "value": "중개사이름",      "checked": True},
-    #          {"code": "broker_address",        "value": "중개사무소주소",   "checked": True},
-    #          {"code": "phone_brokerage",       "value": "중개사무소번호",   "checked": True},
-    #          {"code": "phone_mobile",          "value": "중개사핸드폰번호", "checked": True},
-    #
-    #          {"code": "url",                    "value": "URL",            "checked": True},
-    #
-    #          # 부모정보
-    #          {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
-    #          {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
-    #          {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
-    #          {"code": "parts",                  "value": "검색주소",       "checked": True},
-    #
-    #          {"code": "rletType",               "value": "매물유형",       "checked": True},
-    #          {"code": "tradeType",              "value": "거래유형",       "checked": True},
-    #      ],
-    #      region = True
-    #      ),
+    Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
+         setting=[],
+         setting_detail = [
+             # =========================
+             # RLET_TYPE_MAP (상세 매물유형)
+             # =========================
+             {"code": "A01", "value": "아파트",         "checked": True, "type": "rlet_types"},
+             {"code": "A02", "value": "오피스텔",       "checked": True, "type": "rlet_types"},
+             {"code": "C02", "value": "빌라",           "checked": True, "type": "rlet_types"},
+             {"code": "A06", "value": "다세대/연립",     "checked": True, "type": "rlet_types"},
+
+             {"code": "B01", "value": "아파트 분양권",   "checked": True, "type": "rlet_types"},
+             {"code": "B02", "value": "오피스텔분양권", "checked": True, "type": "rlet_types"},
+
+             {"code": "A04", "value": "재건축",         "checked": True, "type": "rlet_types"},
+             {"code": "C04", "value": "전원주택",       "checked": True, "type": "rlet_types"},
+             {"code": "C03", "value": "단독/다가구",    "checked": True, "type": "rlet_types"},
+
+             {"code": "D05", "value": "상가주택",       "checked": True, "type": "rlet_types"},
+             {"code": "C06", "value": "한옥주택",       "checked": True, "type": "rlet_types"},
+             {"code": "F01", "value": "재개발",         "checked": True, "type": "rlet_types"},
+
+             {"code": "C01", "value": "원룸",           "checked": True, "type": "rlet_types"},
+             {"code": "D02", "value": "상가",           "checked": True, "type": "rlet_types"},
+             {"code": "D01", "value": "사무실",         "checked": True, "type": "rlet_types"},
+
+             {"code": "E02", "value": "공장/창고",      "checked": True, "type": "rlet_types"},
+             {"code": "D03", "value": "건물",           "checked": True, "type": "rlet_types"},
+             {"code": "E03", "value": "토지",           "checked": True, "type": "rlet_types"},
+             {"code": "E04", "value": "지식산업센터",   "checked": True, "type": "rlet_types"},
+             {"code": "D04", "value": "상가건물",       "checked": True, "type": "rlet_types"},
+             {"code": "Z00", "value": "기타",           "checked": True, "type": "rlet_types"},
+
+
+             # =========================
+             # TRADE_TYPE_MAP (거래유형)
+             # =========================
+             {"code": "A1", "value": "매매",     "checked": True, "type": "trade_types"},
+             {"code": "B1", "value": "전세",     "checked": True, "type": "trade_types"},
+             {"code": "B2", "value": "월세",     "checked": True, "type": "trade_types"},
+             {"code": "B3", "value": "단기임대", "checked": True, "type": "trade_types"},
+         ],
+         columns = [
+             # 게시정보
+             {"code": "article_number",         "value": "게시번호",        "checked": True},
+
+             # 기본 정보
+             {"code": "complexName",           "value": "단지명",          "checked": True},
+             {"code": "dongName",              "value": "동이름",          "checked": True},
+             {"code": "price",                 "value": "매매가",          "checked": True},
+             {"code": "warrantyAmount",        "value": "보증금",          "checked": True},
+             {"code": "rentAmount",            "value": "월세",            "checked": True},
+             {"code": "supplySpace",           "value": "공급면적",         "checked": True},
+             {"code": "pyeongArea",            "value": "평수",            "checked": True},
+             {"code": "landSpace",             "value": "대지면적",         "checked": True},
+             {"code": "floorSpace",            "value": "연면적",           "checked": True},
+             {"code": "buildingSpace",         "value": "건축면적",           "checked": True},
+             {"code": "exclusiveSpace",        "value": "전용면적",           "checked": True},
+
+             {"code": "articleFeatureDescription",        "value": "매물특징",           "checked": True},
+             {"code": "exposureStartDate",        "value": "매물확인일",           "checked": True},
+             {"code": "buildingPrincipalUse",        "value": "건축물용도",           "checked": True},
+             {"code": "floorText",        "value": "층정보",           "checked": True},
+
+             # 종합 정보 (주소)
+             {"code": "city",                  "value": "시도",             "checked": True},
+             {"code": "division",              "value": "시군구",           "checked": True},
+             {"code": "sector",                "value": "읍면동",           "checked": True},
+             {"code": "jibun",                 "value": "번지",             "checked": True},
+             {"code": "roadName",              "value": "도로명주소",        "checked": True},
+             {"code": "zipCode",               "value": "우편번호",          "checked": True},
+             {"code": "full_addr",              "value": "전체주소",          "checked": True},
+
+             # 중개사
+             {"code": "brokerage_name",        "value": "중개사무소이름",   "checked": True},
+             {"code": "broker_name",           "value": "중개사이름",      "checked": True},
+             {"code": "broker_address",        "value": "중개사무소주소",   "checked": True},
+             {"code": "phone_brokerage",       "value": "중개사무소번호",   "checked": True},
+             {"code": "phone_mobile",          "value": "중개사핸드폰번호", "checked": True},
+
+             {"code": "url",                    "value": "URL",            "checked": True},
+
+             # 부모정보
+             {"code": "atclNm",                 "value": "상위매물명",      "checked": True},
+             {"code": "bildNm",                 "value": "상위매물동",      "checked": True},
+             {"code": "atclNo",                 "value": "상위매물게시번호", "checked": True},
+             {"code": "rletType",               "value": "매물유형",       "checked": True},
+             {"code": "tradeType",              "value": "거래유형",       "checked": True},
+             {"code": "parts",                  "value": "검색 주소",       "checked": True},
+             {"code": "search_rletType",        "value": "검색 매물유형",       "checked": True},
+             {"code": "search_tradeType",       "value": "검색 거래유형",       "checked": True},
+         ],
+         region = True
+         ),
     # Site("NH Bank", "NH_BANK", "#03C75A", enabled=True,  setting=[]),
     # Site("네이버 카페", "NAVER_CAFE_CTT_CNT_ONLY", "#03C75A", enabled=True,  setting=[], popup=True),
     # Site("네이버 블로그 글조회", "NAVER_BLOG_CTT", "#03C75A", enabled=False,  setting=[
@@ -544,49 +586,49 @@ SITE_LIST = [
    #      ],
    # ),
    #  Site("룰루레몬", "LULULEMON", "#140F0F", enabled=True, popup=True)
-    Site("썸네일 자동 다운 및 수정 프로그램", "THUMNAIL_MAKE", "#121212", enabled=True, popup=True,
-         columns = [
-             {"code": "url",             "value": "이미지 URL",      "checked": True},
-             {"code": "result_filename", "value": "결과 파일명",     "checked": True},
-             {"code": "edit_filename",   "value": "수정 파일명",     "checked": True},
-             {"code": "status",          "value": "상태",             "checked": True},
-             {"code": "message",         "value": "메모",             "checked": True},
-             {"code": "result_path",     "value": "결과 파일 경로",  "checked": True},
-             {"code": "edit_path",       "value": "수정 파일 경로",  "checked": True},
-         ],
-         setting = [
-             # =========================
-             # 썸네일 기본 변환
-             # =========================
-             {'name': '■ 썸네일 가로 크기(px)',      'code': 'thumb_width',     'value': '1000', 'type': 'input'},
-             {'name': '■ 썸네일 세로 크기(px)',      'code': 'thumb_height',    'value': '1000', 'type': 'input'},
-             {'name': '■ 썸네일 회전 각도(°)',       'code': 'thumb_rotate_deg','value': '0',    'type': 'input'},
-             {'name': '■ 썸네일 확대/축소 비율(%)',  'code': 'thumb_scale_pct', 'value': '100',  'type': 'input'},  # 기본은 100 권장
-             {'name': '■ 썸네일 확장자명',           'code': 'thumb_ext',       'value': 'jpg',  'type': 'input'},
-             {'name': '■ 썸네일 딜레이(초)',         'code': 'thumb_delay_sec', 'value': '5',    'type': 'input'},
-
-             # =========================
-             # 워터마크
-             # =========================
-             {'name': '■ 워터마크 사용 여부(Y/N)',    'code': 'wm_enabled',     'value': True,    'type': 'check'},
-             {'name': '■ 워터마크 파일 선택', 'code': 'wm_file', 'value': '', 'type': 'file',
-              'filter': 'PNG (*.png);;All Files (*)',
-              'dialog_title': '워터마크 이미지 선택',
-              'button_text': '워터마크 선택',
-              'placeholder': 'watermark.png 경로 또는 파일 선택'
-              }
-             # {'name': '■ 워터마크 파일명(기본: watermark.png)', 'code': 'wm_file', 'value': 'watermark.png', 'type': 'input'},
-             # {'name': '■ 워터마크 가로 크기(px)', 'code': 'wm_width',       'value': '35',   'type': 'input'},
-             # {'name': '■ 워터마크 세로 크기(px)', 'code': 'wm_height',      'value': '35',   'type': 'input'},
-             # {'name': '■ 워터마크 투명도(%)', 'code': 'wm_opacity_pct', 'value': '15',   'type': 'input'},
-             # {'name': '■ 워터마크 위치(br, bl, tr, tl)', 'code': 'wm_anchor',      'value': 'br',   'type': 'input'},  # br=오른쪽아래
-             # {'name': '■ 워터마크 패딩(px)',          'code': 'wm_padding',     'value': '20',   'type': 'input'},
-             #
-             # # (선택) 미세 위치 보정. 필요 없으면 지워도 됨.
-             # {'name': '■ 워터마크 X 오프셋(px)',      'code': 'wm_x_offset',    'value': '0',    'type': 'input'},
-             # {'name': '■ 워터마크 Y 오프셋(px)',      'code': 'wm_y_offset',    'value': '0',    'type': 'input'},
-         ]
-    )
+   #  Site("썸네일 자동 다운 및 수정 프로그램", "THUMNAIL_MAKE", "#121212", enabled=True, popup=True,
+   #       columns = [
+   #           {"code": "url",             "value": "이미지 URL",      "checked": True},
+   #           {"code": "result_filename", "value": "결과 파일명",     "checked": True},
+   #           {"code": "edit_filename",   "value": "수정 파일명",     "checked": True},
+   #           {"code": "status",          "value": "상태",             "checked": True},
+   #           {"code": "message",         "value": "메모",             "checked": True},
+   #           {"code": "result_path",     "value": "결과 파일 경로",  "checked": True},
+   #           {"code": "edit_path",       "value": "수정 파일 경로",  "checked": True},
+   #       ],
+   #       setting = [
+   #           # =========================
+   #           # 썸네일 기본 변환
+   #           # =========================
+   #           {'name': '■ 썸네일 가로 크기(px)',      'code': 'thumb_width',     'value': '1000', 'type': 'input'},
+   #           {'name': '■ 썸네일 세로 크기(px)',      'code': 'thumb_height',    'value': '1000', 'type': 'input'},
+   #           {'name': '■ 썸네일 회전 각도(°)',       'code': 'thumb_rotate_deg','value': '0',    'type': 'input'},
+   #           {'name': '■ 썸네일 확대/축소 비율(%)',  'code': 'thumb_scale_pct', 'value': '100',  'type': 'input'},  # 기본은 100 권장
+   #           {'name': '■ 썸네일 확장자명',           'code': 'thumb_ext',       'value': 'jpg',  'type': 'input'},
+   #           {'name': '■ 썸네일 딜레이(초)',         'code': 'thumb_delay_sec', 'value': '5',    'type': 'input'},
+   #
+   #           # =========================
+   #           # 워터마크
+   #           # =========================
+   #           {'name': '■ 워터마크 사용 여부(Y/N)',    'code': 'wm_enabled',     'value': True,    'type': 'check'},
+   #           {'name': '■ 워터마크 파일 선택', 'code': 'wm_file', 'value': '', 'type': 'file',
+   #            'filter': 'PNG (*.png);;All Files (*)',
+   #            'dialog_title': '워터마크 이미지 선택',
+   #            'button_text': '워터마크 선택',
+   #            'placeholder': 'watermark.png 경로 또는 파일 선택'
+   #            }
+   #           # {'name': '■ 워터마크 파일명(기본: watermark.png)', 'code': 'wm_file', 'value': 'watermark.png', 'type': 'input'},
+   #           # {'name': '■ 워터마크 가로 크기(px)', 'code': 'wm_width',       'value': '35',   'type': 'input'},
+   #           # {'name': '■ 워터마크 세로 크기(px)', 'code': 'wm_height',      'value': '35',   'type': 'input'},
+   #           # {'name': '■ 워터마크 투명도(%)', 'code': 'wm_opacity_pct', 'value': '15',   'type': 'input'},
+   #           # {'name': '■ 워터마크 위치(br, bl, tr, tl)', 'code': 'wm_anchor',      'value': 'br',   'type': 'input'},  # br=오른쪽아래
+   #           # {'name': '■ 워터마크 패딩(px)',          'code': 'wm_padding',     'value': '20',   'type': 'input'},
+   #           #
+   #           # # (선택) 미세 위치 보정. 필요 없으면 지워도 됨.
+   #           # {'name': '■ 워터마크 X 오프셋(px)',      'code': 'wm_x_offset',    'value': '0',    'type': 'input'},
+   #           # {'name': '■ 워터마크 Y 오프셋(px)',      'code': 'wm_y_offset',    'value': '0',    'type': 'input'},
+   #       ]
+   #  )
 ]
 
 # 전역 변수

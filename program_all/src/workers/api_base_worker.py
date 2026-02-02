@@ -14,6 +14,7 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def __init__(self):
         super().__init__()
+        self.setting_detail = None
         self.user = None
         self.excel_data_list = None
         self.region = None
@@ -71,6 +72,9 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def set_setting(self, setting_list):
         self.setting = setting_list
+    
+    def set_setting_detail(self, setting_detail):
+        self.setting_detail = setting_detail
 
 
     def set_excel_data_list(self, excel_data_list):

@@ -24,7 +24,7 @@
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
 # from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
 # from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
-# from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
+from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
 # from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 # from src.workers.main.api_kakao_store_food_set_worker               import ApiKakaoStoreFoodSetLoadWorker
@@ -37,7 +37,7 @@
 # from src.workers.main.api_naver_stock_phone_set_worker              import ApiNaverStockPhoneSetLoadWorker
 # from src.workers.main.api_hohoyoga_set_worker                       import ApiHohoyogaSetLoadWorker
 # from src.workers.main.api_lululemon_set_worker                      import ApiLululemonSetLoadWorker
-from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
+# from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -66,7 +66,7 @@ WORKER_CLASS_MAP = {
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
-    # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
+    "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
     # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
     # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
     # "KAKAO_STORE_FOOD"                  :   ApiKakaoStoreFoodSetLoadWorker,
@@ -79,5 +79,5 @@ WORKER_CLASS_MAP = {
     # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
     # "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
     # "LULULEMON"                         :   ApiLululemonSetLoadWorker,
-    "THUMNAIL_MAKE"                         :   ApiThumnailMakeSetLoadWorker,
+    # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
 }

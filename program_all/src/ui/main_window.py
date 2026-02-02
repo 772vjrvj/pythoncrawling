@@ -12,6 +12,7 @@ from src.ui.popup.column_set_pop import ColumnSetPop
 from src.ui.popup.site_set_pop import SiteSetPop
 from src.ui.popup.region_set_pop import RegionSetPop
 from src.ui.popup.excel_set_pop import ExcelSetPop
+from src.ui.popup.detail_set_pop import DetailSetPop   # 상단 import 추가
 
 from src.ui.style.style import create_common_button, main_style, LOG_STYLE, HEADER_TEXT_STYLE
 from src.utils.config import server_name  # 서버 URL 및 설정 정보
@@ -35,14 +36,16 @@ class MainWindow(QWidget):
         self.site_set_pop = None
         self.param_set_pop = None
         self.excel_set_pop = None
+        self.detail_set_pop = None
 
         self.selected_regions = []
         self.columns = None
         self.sites = None
         self.region = None
         self.popup = None
-        self.setting_button = None
         self.setting = None
+        self.setting_detail = None
+
         self.name = None
         self.header_label = None
 
@@ -54,6 +57,8 @@ class MainWindow(QWidget):
         self.column_setting_button = None
         self.site_setting_button = None
         self.excel_setting_button = None
+        self.setting_button = None
+        self.detail_setting_button = None
 
         self.task_queue = None
         self.progress_worker = None
@@ -79,6 +84,7 @@ class MainWindow(QWidget):
         self.sites = state.get("sites")
         self.region = state.get("region")
         self.popup = state.get("popup")
+        self.setting_detail = state.get("setting_detail")   # === 신규 ===
 
     # 재 초기화
     def init_reset(self):
@@ -132,6 +138,10 @@ class MainWindow(QWidget):
                 self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
                 self.right_button_layout.addWidget(self.setting_button)
 
+            if self.setting_detail:
+                self.detail_setting_button = create_common_button("상세세팅", self.open_detail_setting, self.color, 100)
+                self.right_button_layout.addWidget(self.detail_setting_button)
+
             if self.columns:
                 # 오른쪽 버튼 레이아웃
                 self.column_setting_button = create_common_button("항목세팅", self.open_column_setting, self.color, 100)
@@ -174,6 +184,7 @@ class MainWindow(QWidget):
         self.site_setting_button = None
         self.region_setting_button = None
         self.excel_setting_button = None
+        self.detail_setting_button = None
 
 
     # ui 속성 변경
@@ -247,6 +258,10 @@ class MainWindow(QWidget):
         if self.setting:
             self.setting_button = create_common_button("기본세팅", self.open_setting, self.color, 100)
             self.right_button_layout.addWidget(self.setting_button)
+
+        if self.setting_detail:
+            self.detail_setting_button = create_common_button("상세세팅", self.open_detail_setting, self.color, 100)
+            self.right_button_layout.addWidget(self.detail_setting_button)
 
         if self.columns:
             # 오른쪽 버튼 레이아웃
@@ -333,6 +348,9 @@ class MainWindow(QWidget):
             self.progress_worker.start()
             if self.setting:
                 self.on_demand_worker.set_setting(self.setting)
+
+            if self.setting_detail:
+                self.on_demand_worker.set_setting_detail(self.setting_detail)  # === 신규 ===
 
             if self.columns:
                 self.on_demand_worker.set_columns(self.columns)
@@ -448,6 +466,12 @@ class MainWindow(QWidget):
             self.param_set_pop = ParamSetPop(self)
             self.param_set_pop.log_signal.connect(self.add_log)
         self.param_set_pop.exec_()
+
+    def open_detail_setting(self):
+        if self.detail_set_pop is None:
+            self.detail_set_pop = DetailSetPop(self)
+            self.detail_set_pop.log_signal.connect(self.add_log)
+        self.detail_set_pop.exec_()
 
 
     def open_column_setting(self):

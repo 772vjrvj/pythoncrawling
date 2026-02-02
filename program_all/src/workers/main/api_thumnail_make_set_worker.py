@@ -1,3 +1,4 @@
+# /src/workers/api_thumnail_make_set_load_worker.py
 import os
 import time
 from urllib.parse import urlparse
@@ -94,7 +95,10 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
         if scale_pct and scale_pct != 100:
             s = scale_pct / 100.0
             w, h = img.size
-            img = img.resize((max(1, int(w * s)), max(1, int(h * s))), Image.LANCZOS)
+            img = img.resize(
+                (max(1, int(w * s)), max(1, int(h * s))),
+                Image.LANCZOS
+            )
 
         # 2) 회전 (expand=True)
         if rotate_deg:
@@ -105,7 +109,10 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
         if w < tw or h < th:
             # 혹시라도 작아지면 다시 cover로 키움
             cover2 = max(tw / w, th / h)
-            img = img.resize((max(1, int(w * cover2)), max(1, int(h * cover2))), Image.LANCZOS)
+            img = img.resize(
+                (max(1, int(w * cover2)), max(1, int(h * cover2))),
+                Image.LANCZOS
+            )
 
         out_img = self._center_crop(img, tw, th)
 
@@ -294,7 +301,8 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
                             y_off=wm_y_offset,
                         )
 
-                    # 결과 반영
+                    # 결과 반영 (엑셀 헤더 기준)
+                    row["이미지 URL"] = url
                     row["결과 파일명"] = result_filename
                     row["수정 파일명"] = edit_filename
                     row["결과 파일 경로"] = origin_path
@@ -318,20 +326,38 @@ class ApiThumnailMakeSetLoadWorker(BaseApiWorker):
                     time.sleep(delay_sec)
 
             # =========================================================
-            # === 신규 === 원본 엑셀에 write-back
+            # ✅ 신규 엑셀 저장 (columns 체크된 것만)
             # =========================================================
-            by_file = {}
-            for r in rows:
-                excel_path = r.get("__excel_path")
-                if not excel_path:
-                    continue
-                by_file.setdefault(excel_path, []).append(r)
+            try:
+                save_cols = self.columns or [
+                    "이미지 URL",
+                    "결과 파일명",
+                    "수정 파일명",
+                    "상태",
+                    "메모",
+                    "결과 파일 경로",
+                    "수정 파일 경로",
+                ]
 
-            for excel_path, rlist in by_file.items():
-                try:
-                    self.excel_driver.update_rows_in_place(excel_path, rlist, sheet_index=0, header_row=1)
-                except Exception as e:
-                    self.log_signal_func(f"[EXCEL] 반영 실패: {excel_path} / {e}")
+                # 컬럼 누락 방지: rows에 키가 없으면 빈칸으로 넣어줌
+                for r in rows:
+                    for c in save_cols:
+                        if c not in r:
+                            r[c] = ""
+
+                result_excel_path = self.file_driver.get_excel_filename("썸네일_결과")
+
+                self.excel_driver.append_rows_text_excel(
+                    filename=result_excel_path,
+                    rows=rows,
+                    columns=save_cols,
+                    sheet_name="RESULT"
+                )
+
+                self.log_signal_func(f"📊 결과 엑셀 저장 완료: {result_excel_path}")
+
+            except Exception as e:
+                self.log_signal_func(f"❌ 결과 엑셀 저장 실패: {e}")
 
             return True
 

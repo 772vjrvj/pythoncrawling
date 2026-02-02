@@ -333,6 +333,7 @@ class SelectWindow(QWidget):
         state.set(GlobalState.SITE, site.key)          # 내부 키
         state.set(GlobalState.COLOR, site.color)       # 테마 색상
         state.set(GlobalState.SETTING, site.setting)   # 설정 정보
+        state.set(GlobalState.SETTING_DETAIL, site.setting_detail)   # 설정 정보
         state.set(GlobalState.COLUMNS, site.columns)   # 컬럼/필드 구성
         state.set(GlobalState.REGION, site.region)     # 리전/지역 등
         state.set(GlobalState.POPUP, site.popup)     # 리전/지역 등

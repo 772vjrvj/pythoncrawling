@@ -5,6 +5,7 @@ class GlobalState:
     COLOR   = "color"
     COOKIES = "cookies"
     SETTING = "setting"
+    SETTING_DETAIL = "setting_detail"
     COLUMNS = "columns"
     REGION  = "region"
     POPUP   = "popup"
@@ -39,6 +40,7 @@ class GlobalState:
                 self.SITE       : "",     # 사이트 코드
                 self.COLOR      : "",    # UI 색상
                 self.SETTING    : "",     # 세팅 정보
+                self.SETTING_DETAIL    : "",     # 세팅 정보
                 self.COLUMNS    : "",     # 항목 정보
                 self.REGION     : "",     # 지역 정보
                 self.POPUP      : "",     # 팝업 정보
