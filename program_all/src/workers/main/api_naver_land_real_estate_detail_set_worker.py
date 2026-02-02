@@ -364,7 +364,7 @@ class ApiNaverLandRealEstateDetailSetLoadWorker(BaseApiWorker):
             "상위매물명": _s((parent or {}).get("atclNm")),
             "상위매물동": _s((parent or {}).get("bildNm")),
             "상위매물게시번호": _s((parent or {}).get("atclNo")),
-            "검색주소": " ".join([p for p in parts if p]),
+            "검색 주소": " ".join([p for p in parts if p]),
         }
 
         try:
