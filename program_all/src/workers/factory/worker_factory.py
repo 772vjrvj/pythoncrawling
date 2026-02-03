@@ -37,7 +37,8 @@
 # from src.workers.main.api_naver_stock_phone_set_worker              import ApiNaverStockPhoneSetLoadWorker
 # from src.workers.main.api_hohoyoga_set_worker                       import ApiHohoyogaSetLoadWorker
 # from src.workers.main.api_lululemon_set_worker                      import ApiLululemonSetLoadWorker
-from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
+# from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
+from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -79,5 +80,6 @@ WORKER_CLASS_MAP = {
     # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
     # "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
     # "LULULEMON"                         :   ApiLululemonSetLoadWorker,
-    "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
+    # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
+    "457DEEP"                           :   Api457deepDetailSetLoadWorker,
 }

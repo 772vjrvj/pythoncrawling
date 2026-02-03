@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QCheckBox, QPushButton,
-    QHBoxLayout, QSizePolicy, QWidget, QGridLayout
+    QDialog, QVBoxLayout, QLabel, QCheckBox, QHBoxLayout,
+    QSizePolicy, QWidget, QGridLayout
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from src.ui.style.style import create_common_button
@@ -9,16 +9,13 @@ from src.ui.style.style import create_common_button
 class DetailSetPop(QDialog):
     log_signal = pyqtSignal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, title="상세세팅"):
         super().__init__(parent)
-        self.confirm_btn = None
-        self.cancel_btn = None
         self.parent = parent
-        self.setWindowTitle("상세세팅")
+        self.setWindowTitle(title)
         self.resize(700, 520)
-        # self.resize(1200, 450)
-        # self.setMinimumWidth(700)
         self.setStyleSheet("background-color: white;")
+
         self.checkbox_map = {}
         self.all_checkbox = None
 
@@ -29,45 +26,62 @@ class DetailSetPop(QDialog):
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(10)
 
-        title_label = QLabel("상세세팅 (매물유형 / 거래유형)")
-        title_label.setStyleSheet("""
-            font-size: 18px;
-            font-weight: bold;
-        """)
+        title_label = QLabel(self.windowTitle())
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         layout.addWidget(title_label)
 
-        # ✅ 전체 선택 체크박스
         self.all_checkbox = QCheckBox("전체 선택")
         self.all_checkbox.setCursor(Qt.PointingHandCursor)
         self.all_checkbox.setStyleSheet(self.checkbox_style())
         self.all_checkbox.stateChanged.connect(self.handle_all_checkbox_click)
         layout.addWidget(self.all_checkbox)
 
-        # ✅ 초기 상태 설정
         grid_widget = QWidget()
         grid_layout = QGridLayout(grid_widget)
         grid_layout.setSpacing(10)
         grid_layout.setContentsMargins(0, 0, 0, 0)
 
         rows = getattr(self.parent, "setting_detail", None) or []
-        # 2그룹으로 나눠서 UI 배치
-        rlet_rows = [x for x in rows if x.get("type") == "rlet_types"]
-        trad_rows = [x for x in rows if x.get("type") == "trade_types"]
 
-        # --- 매물유형 ---
-        grid_layout.addWidget(self._make_section_label("매물유형"), 0, 0, 1, 5)
-        self._add_checkboxes(grid_layout, rlet_rows, start_row=1, col_per_row=5)
+        # === 신규 === 부모/자식 분리 파싱
+        sections = [r for r in rows if r.get("row_type") == "section"]
+        items = [r for r in rows if r.get("row_type") != "section"]  # 호환: 기존 row는 item으로 취급
 
-        # --- 거래유형 ---
-        base_row = 1 + ((len(rlet_rows) + 4) // 5) + 1
-        grid_layout.addWidget(self._make_section_label("거래유형"), base_row, 0, 1, 5)
-        self._add_checkboxes(grid_layout, trad_rows, start_row=base_row + 1, col_per_row=5)
+        # === 신규 === 기존 구조 호환: row_type이 없다면 type을 parent_id로 간주
+        for it in items:
+            if "parent_id" not in it and it.get("type"):
+                it["parent_id"] = it.get("type")
+
+        # === 신규 === 섹션이 아예 없으면(기존 데이터) type 기준으로 섹션 자동 생성
+        if not sections:
+            seen = []
+            for it in items:
+                pid = it.get("parent_id") or "default"
+                if pid in seen:
+                    continue
+                seen.append(pid)
+                sections.append({"id": pid, "title": pid, "col_per_row": 5})
+
+        cur_row = 0
+        for sec in sections:
+            sec_id = sec.get("id")
+            sec_title = sec.get("title") or str(sec_id)
+            col_per_row = int(sec.get("col_per_row") or 5)
+
+            grid_layout.addWidget(self._make_section_label(sec_title), cur_row, 0, 1, col_per_row)
+            cur_row += 1
+
+            sec_items = [x for x in items if x.get("parent_id") == sec_id]
+            self._add_checkboxes(grid_layout, sec_items, start_row=cur_row, col_per_row=col_per_row, sec_id=sec_id)
+
+            # 섹션이 차지한 행 수만큼 증가
+            cur_row += (len(sec_items) + col_per_row - 1) // col_per_row
+            cur_row += 1  # 섹션 간 여백
 
         layout.addWidget(grid_widget)
 
-        # 버튼
         btn_layout = QHBoxLayout()
         btn_layout.setContentsMargins(0, 15, 0, 0)
         cancel_btn = create_common_button("취소", self.reject, "#cccccc", 140)
@@ -84,7 +98,7 @@ class DetailSetPop(QDialog):
         lb.setStyleSheet("font-size: 15px; font-weight: bold; margin-top: 6px;")
         return lb
 
-    def _add_checkboxes(self, grid_layout, rows, start_row, col_per_row=5):
+    def _add_checkboxes(self, grid_layout, rows, start_row, col_per_row=5, sec_id=None):
         for idx, row in enumerate(rows):
             cb = QCheckBox(row.get("value") or "")
             cb.setChecked(bool(row.get("checked", True)))
@@ -92,7 +106,7 @@ class DetailSetPop(QDialog):
             cb.setStyleSheet(self.checkbox_style())
             cb.stateChanged.connect(self.update_all_checkbox_state)
 
-            key = (row.get("type"), row.get("code"))
+            key = (sec_id or row.get("parent_id"), row.get("code"))
             self.checkbox_map[key] = cb
 
             r = start_row + (idx // col_per_row)
@@ -121,16 +135,18 @@ class DetailSetPop(QDialog):
         self.all_checkbox.blockSignals(False)
 
     def confirm_selection(self):
-        # parent.setting_detail에 checked 반영
         rows = getattr(self.parent, "setting_detail", None) or []
         for row in rows:
-            t = row.get("type")
-            if t not in ("rlet_types", "trade_types"):
+            if row.get("row_type") == "section":
                 continue
-            key = (t, row.get("code"))
+
+            # 호환: parent_id 없고 type 있으면 type을 parent_id로 봄
+            pid = row.get("parent_id") or row.get("type")
+            key = (pid, row.get("code"))
             cb = self.checkbox_map.get(key)
             if cb:
                 row["checked"] = cb.isChecked()
+
         self.accept()
 
     def checkbox_style(self):

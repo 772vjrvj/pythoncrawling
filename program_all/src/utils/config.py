@@ -154,44 +154,38 @@ SITE_LIST = [
     # Site("네이버 공인중개사 번호", "NAVER_LAND_REAL_ESTATE_DETAIL", "#03C75A", enabled=True,
     #      setting=[],
     #      setting_detail = [
-    #          # =========================
+    #          # 부모(섹션) row
+    #          {"row_type": "section", "id": "rlet_types",  "title": "매물유형", "col_per_row": 5},
+    #          {"row_type": "section", "id": "trade_types", "title": "거래유형", "col_per_row": 5},
+    #
     #          # RLET_TYPE_MAP (상세 매물유형)
-    #          # =========================
-    #          {"code": "A01", "value": "아파트",         "checked": True, "type": "rlet_types"},
-    #          {"code": "A02", "value": "오피스텔",       "checked": True, "type": "rlet_types"},
-    #          {"code": "C02", "value": "빌라",           "checked": True, "type": "rlet_types"},
-    #          {"code": "A06", "value": "다세대/연립",     "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "A01", "value": "아파트",         "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "A02", "value": "오피스텔",       "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "C02", "value": "빌라",           "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "A06", "value": "다세대/연립",     "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "B01", "value": "아파트 분양권",   "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "B02", "value": "오피스텔분양권", "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "A04", "value": "재건축",         "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "C04", "value": "전원주택",       "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "C03", "value": "단독/다가구",    "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "D05", "value": "상가주택",       "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "C06", "value": "한옥주택",       "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "F01", "value": "재개발",         "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "C01", "value": "원룸",           "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "D02", "value": "상가",           "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "D01", "value": "사무실",         "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "E02", "value": "공장/창고",      "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "D03", "value": "건물",           "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "E03", "value": "토지",           "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "E04", "value": "지식산업센터",   "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "D04", "value": "상가건물",       "checked": True, "type": "rlet_types"},
+    #          {"row_type": "item", "parent_id": "rlet_types", "code": "Z00", "value": "기타",           "checked": True, "type": "rlet_types"},
     #
-    #          {"code": "B01", "value": "아파트 분양권",   "checked": True, "type": "rlet_types"},
-    #          {"code": "B02", "value": "오피스텔분양권", "checked": True, "type": "rlet_types"},
-    #
-    #          {"code": "A04", "value": "재건축",         "checked": True, "type": "rlet_types"},
-    #          {"code": "C04", "value": "전원주택",       "checked": True, "type": "rlet_types"},
-    #          {"code": "C03", "value": "단독/다가구",    "checked": True, "type": "rlet_types"},
-    #
-    #          {"code": "D05", "value": "상가주택",       "checked": True, "type": "rlet_types"},
-    #          {"code": "C06", "value": "한옥주택",       "checked": True, "type": "rlet_types"},
-    #          {"code": "F01", "value": "재개발",         "checked": True, "type": "rlet_types"},
-    #
-    #          {"code": "C01", "value": "원룸",           "checked": True, "type": "rlet_types"},
-    #          {"code": "D02", "value": "상가",           "checked": True, "type": "rlet_types"},
-    #          {"code": "D01", "value": "사무실",         "checked": True, "type": "rlet_types"},
-    #
-    #          {"code": "E02", "value": "공장/창고",      "checked": True, "type": "rlet_types"},
-    #          {"code": "D03", "value": "건물",           "checked": True, "type": "rlet_types"},
-    #          {"code": "E03", "value": "토지",           "checked": True, "type": "rlet_types"},
-    #          {"code": "E04", "value": "지식산업센터",   "checked": True, "type": "rlet_types"},
-    #          {"code": "D04", "value": "상가건물",       "checked": True, "type": "rlet_types"},
-    #          {"code": "Z00", "value": "기타",           "checked": True, "type": "rlet_types"},
-    #
-    #
-    #          # =========================
     #          # TRADE_TYPE_MAP (거래유형)
-    #          # =========================
-    #          {"code": "A1", "value": "매매",     "checked": True, "type": "trade_types"},
-    #          {"code": "B1", "value": "전세",     "checked": True, "type": "trade_types"},
-    #          {"code": "B2", "value": "월세",     "checked": True, "type": "trade_types"},
-    #          {"code": "B3", "value": "단기임대", "checked": True, "type": "trade_types"},
+    #          {"row_type": "item", "parent_id": "trade_types", "code": "A1", "value": "매매",     "checked": True, "type": "trade_types"},
+    #          {"row_type": "item", "parent_id": "trade_types", "code": "B1", "value": "전세",     "checked": True, "type": "trade_types"},
+    #          {"row_type": "item", "parent_id": "trade_types", "code": "B2", "value": "월세",     "checked": True, "type": "trade_types"},
+    #          {"row_type": "item", "parent_id": "trade_types", "code": "B3", "value": "단기임대", "checked": True, "type": "trade_types"},
     #      ],
     #      columns = [
     #          # 게시정보
@@ -586,55 +580,197 @@ SITE_LIST = [
    #      ],
    # ),
    #  Site("룰루레몬", "LULULEMON", "#140F0F", enabled=True, popup=True)
-    Site("썸네일 자동 다운 및 수정 프로그램", "THUMNAIL_MAKE", "#121212",
-         enabled=True,
-         # popup=True,
-         columns = [
-             {"code": "url",             "value": "이미지 URL",      "checked": True},
-             {"code": "result_filename", "value": "결과 파일명",     "checked": True},
-             {"code": "edit_filename",   "value": "수정 파일명",     "checked": True},
-             {"code": "status",          "value": "상태",             "checked": True},
-             {"code": "message",         "value": "메모",             "checked": True},
-             {"code": "result_path",     "value": "결과 파일 경로",  "checked": True},
-             {"code": "edit_path",       "value": "수정 파일 경로",  "checked": True},
-         ],
-         setting = [
+   #  Site("썸네일 자동 다운 및 수정 프로그램", "THUMNAIL_MAKE", "#121212",
+   #       enabled=True,
+   #       # popup=True,
+   #       columns = [
+   #           {"code": "url",             "value": "이미지 URL",      "checked": True},
+   #           {"code": "result_filename", "value": "결과 파일명",     "checked": True},
+   #           {"code": "edit_filename",   "value": "수정 파일명",     "checked": True},
+   #           {"code": "status",          "value": "상태",             "checked": True},
+   #           {"code": "message",         "value": "메모",             "checked": True},
+   #           {"code": "result_path",     "value": "결과 파일 경로",  "checked": True},
+   #           {"code": "edit_path",       "value": "수정 파일 경로",  "checked": True},
+   #       ],
+   #       setting = [
+   #           # =========================
+   #           # 썸네일 기본 변환
+   #           # =========================
+   #           {'name': '■ 썸네일 가로 크기(px)',      'code': 'thumb_width',     'value': '1000', 'type': 'input'},
+   #           {'name': '■ 썸네일 세로 크기(px)',      'code': 'thumb_height',    'value': '1000', 'type': 'input'},
+   #           {'name': '■ 썸네일 회전 각도(°)',       'code': 'thumb_rotate_deg','value': '0',    'type': 'input'},
+   #           {'name': '■ 썸네일 확대/축소 비율(%)',  'code': 'thumb_scale_pct', 'value': '100',  'type': 'input'},  # 기본은 100 권장
+   #           {'name': '■ 썸네일 확장자명', 'code': 'thumb_ext', 'value': 'jpg', 'type': 'select',
+   #            'options': [
+   #                {'key': 'JPG', 'value': 'jpg'},
+   #                {'key': 'PNG', 'value': 'png'},
+   #            ]},
+   #           {'name': '■ 썸네일 딜레이(초)',         'code': 'thumb_delay_sec', 'value': '5',    'type': 'input'},
+   #
+   #           # =========================
+   #           # 워터마크
+   #           # =========================
+   #           {'name': '■ 워터마크 사용 여부(Y/N)',    'code': 'wm_enabled',     'value': True,    'type': 'check'},
+   #           {'name': '■ 워터마크 파일 선택', 'code': 'wm_file', 'value': '', 'type': 'file',
+   #            'filter': 'PNG (*.png);;All Files (*)',
+   #            'dialog_title': '워터마크 이미지 선택',
+   #            'button_text': '워터마크 선택',
+   #            'placeholder': 'watermark 경로 또는 파일 선택'
+   #            }
+   #           # {'name': '■ 워터마크 파일명(기본: watermark.png)', 'code': 'wm_file', 'value': 'watermark.png', 'type': 'input'},
+   #           # {'name': '■ 워터마크 가로 크기(px)', 'code': 'wm_width',       'value': '35',   'type': 'input'},
+   #           # {'name': '■ 워터마크 세로 크기(px)', 'code': 'wm_height',      'value': '35',   'type': 'input'},
+   #           # {'name': '■ 워터마크 투명도(%)', 'code': 'wm_opacity_pct', 'value': '15',   'type': 'input'},
+   #           # {'name': '■ 워터마크 위치(br, bl, tr, tl)', 'code': 'wm_anchor',      'value': 'br',   'type': 'input'},  # br=오른쪽아래
+   #           # {'name': '■ 워터마크 패딩(px)',          'code': 'wm_padding',     'value': '20',   'type': 'input'},
+   #           #
+   #           # # (선택) 미세 위치 보정. 필요 없으면 지워도 됨.
+   #           # {'name': '■ 워터마크 X 오프셋(px)',      'code': 'wm_x_offset',    'value': '0',    'type': 'input'},
+   #           # {'name': '■ 워터마크 Y 오프셋(px)',      'code': 'wm_y_offset',    'value': '0',    'type': 'input'},
+   #       ]
+   #  )
+    Site("457DEEP", "457DEEP", "#000000", enabled=True,
+         setting=[],
+         setting_detail = [
              # =========================
-             # 썸네일 기본 변환
+             # 1. 합격후기
              # =========================
-             {'name': '■ 썸네일 가로 크기(px)',      'code': 'thumb_width',     'value': '1000', 'type': 'input'},
-             {'name': '■ 썸네일 세로 크기(px)',      'code': 'thumb_height',    'value': '1000', 'type': 'input'},
-             {'name': '■ 썸네일 회전 각도(°)',       'code': 'thumb_rotate_deg','value': '0',    'type': 'input'},
-             {'name': '■ 썸네일 확대/축소 비율(%)',  'code': 'thumb_scale_pct', 'value': '100',  'type': 'input'},  # 기본은 100 권장
-             {'name': '■ 썸네일 확장자명', 'code': 'thumb_ext', 'value': 'jpg', 'type': 'select',
-              'options': [
-                  {'key': 'JPG', 'value': 'jpg'},
-                  {'key': 'PNG', 'value': 'png'},
-              ]},
-             {'name': '■ 썸네일 딜레이(초)',         'code': 'thumb_delay_sec', 'value': '5',    'type': 'input'},
+             {"row_type": "section", "id": "pass_review", "title": "합격후기", "col_per_row": 5},
+
+             {"row_type": "item", "parent_id": "pass_review",
+              "code": "success-story", "value": "합격 후기",
+              "list_url": "https://457deep.com/community/success-story", "checked": True},
+
+             {"row_type": "item", "parent_id": "pass_review",
+              "code": "resume-review", "value": "필기 후기",
+              "list_url": "https://457deep.com/community/resume-review", "checked": True},
+
+             {"row_type": "item", "parent_id": "pass_review",
+              "code": "interview-review", "value": "면접 후기",
+              "list_url": "https://457deep.com/community/interview-review", "checked": True},
+
+             {"row_type": "item", "parent_id": "pass_review",
+              "code": "request-board", "value": "요청 게시판",
+              "list_url": "https://457deep.com/community/request-board", "checked": True},
+
+             {"row_type": "item", "parent_id": "pass_review",
+              "code": "notice", "value": "공지사항",
+              "list_url": "https://457deep.com/community/notice", "checked": True},
+
 
              # =========================
-             # 워터마크
+             # 2. 자소서실전
              # =========================
-             {'name': '■ 워터마크 사용 여부(Y/N)',    'code': 'wm_enabled',     'value': True,    'type': 'check'},
-             {'name': '■ 워터마크 파일 선택', 'code': 'wm_file', 'value': '', 'type': 'file',
-              'filter': 'PNG (*.png);;All Files (*)',
-              'dialog_title': '워터마크 이미지 선택',
-              'button_text': '워터마크 선택',
-              'placeholder': 'watermark 경로 또는 파일 선택'
-              }
-             # {'name': '■ 워터마크 파일명(기본: watermark.png)', 'code': 'wm_file', 'value': 'watermark.png', 'type': 'input'},
-             # {'name': '■ 워터마크 가로 크기(px)', 'code': 'wm_width',       'value': '35',   'type': 'input'},
-             # {'name': '■ 워터마크 세로 크기(px)', 'code': 'wm_height',      'value': '35',   'type': 'input'},
-             # {'name': '■ 워터마크 투명도(%)', 'code': 'wm_opacity_pct', 'value': '15',   'type': 'input'},
-             # {'name': '■ 워터마크 위치(br, bl, tr, tl)', 'code': 'wm_anchor',      'value': 'br',   'type': 'input'},  # br=오른쪽아래
-             # {'name': '■ 워터마크 패딩(px)',          'code': 'wm_padding',     'value': '20',   'type': 'input'},
-             #
-             # # (선택) 미세 위치 보정. 필요 없으면 지워도 됨.
-             # {'name': '■ 워터마크 X 오프셋(px)',      'code': 'wm_x_offset',    'value': '0',    'type': 'input'},
-             # {'name': '■ 워터마크 Y 오프셋(px)',      'code': 'wm_y_offset',    'value': '0',    'type': 'input'},
-         ]
-    )
+             {"row_type": "section", "id": "essay", "title": "자소서실전", "col_per_row": 5},
+
+             {"row_type": "item", "parent_id": "essay",
+              "code": "corporate-personal-statement", "value": "기업 자소서 풀이",
+              "list_url": "https://457deep.com/essay/corporate-personal-statement", "checked": True},
+
+             {"row_type": "item", "parent_id": "essay",
+              "code": "personal-statement", "value": "합격 자소서",
+              "list_url": "https://457deep.com/essay/personal-statement", "checked": True},
+
+             {"row_type": "item", "parent_id": "essay",
+              "code": "mid-statement", "value": "강소기업 합격 자소서",
+              "list_url": "https://457deep.com/essay/mid-statement", "checked": True},
+
+             {"row_type": "item", "parent_id": "essay",
+              "code": "ncs", "value": "NCS 강의",
+              "list_url": "https://457deep.com/essay/ncs", "checked": True},
+
+
+             # =========================
+             # 3. 면접실전
+             # =========================
+             {"row_type": "section", "id": "interview", "title": "면접실전", "col_per_row": 5},
+
+             {"row_type": "item", "parent_id": "interview",
+              "code": "corporate", "value": "사기업 면접",
+              "list_url": "https://457deep.com/interview/corporate", "checked": True},
+
+             {"row_type": "item", "parent_id": "interview",
+              "code": "public", "value": "공공기관 면접",
+              "list_url": "https://457deep.com/interview/public", "checked": True},
+
+             {"row_type": "item", "parent_id": "interview",
+              "code": "specific", "value": "기업 특화 면접",
+              "list_url": "https://457deep.com/interview/specific", "checked": True},
+
+             {"row_type": "item", "parent_id": "interview",
+              "code": "pt", "value": "PT/토론 면접",
+              "list_url": "https://457deep.com/interview/pt", "checked": True},
+
+
+             # =========================
+             # 4. 취업입문
+             # =========================
+             {"row_type": "section", "id": "beginner", "title": "취업입문", "col_per_row": 5},
+
+             {"row_type": "item", "parent_id": "beginner",
+              "code": "series", "value": "취린이 시리즈",
+              "list_url": "https://457deep.com/beginner/series", "checked": True},
+
+             {"row_type": "item", "parent_id": "beginner",
+              "code": "beginner-ps", "value": "자소서 강의",
+              "list_url": "https://457deep.com/beginner/personal-statement", "checked": True},
+
+             {"row_type": "item", "parent_id": "beginner",
+              "code": "beginner-interview", "value": "면접 강의",
+              "list_url": "https://457deep.com/beginner/interview", "checked": True},
+
+
+             # =========================
+             # 5. 취업자료
+             # =========================
+             {"row_type": "section", "id": "resources", "title": "취업자료", "col_per_row": 5},
+
+             {"row_type": "item", "parent_id": "resources",
+              "code": "all", "value": "전체",
+              "list_url": "https://457deep.com/resources/all", "checked": True},
+
+             {"row_type": "item", "parent_id": "resources",
+              "code": "corporate-analysis", "value": "기업 분석",
+              "list_url": "https://457deep.com/resources/corporate-analysis", "checked": True},
+
+             {"row_type": "item", "parent_id": "resources",
+              "code": "job-analysis", "value": "직무 분석",
+              "list_url": "https://457deep.com/resources/job-analysis", "checked": True},
+
+             {"row_type": "item", "parent_id": "resources",
+              "code": "other", "value": "취업 TIP",
+              "list_url": "https://457deep.com/resources/other", "checked": True},
+
+             {"row_type": "item", "parent_id": "resources",
+              "code": "qna", "value": "Q&A",
+              "list_url": "https://457deep.com/resources/qna", "checked": True},
+
+             {"row_type": "item", "parent_id": "resources",
+              "code": "current-issues", "value": "시사 이슈",
+              "list_url": "https://457deep.com/resources/current-issues", "checked": True},
+         ],
+         columns = [
+             {"code": "id",            "value": "아이디",      "checked": True},
+             {"code": "url",           "value": "URL",      "checked": True},
+             {"code": "createdAt",     "value": "등록일",      "checked": True},
+             {"code": "updatedAt",     "value": "수정일",      "checked": True},
+
+             {"code": "userId",        "value": "유저아이디",   "checked": True},
+             {"code": "userName",      "value": "유저명",      "checked": True},
+
+             {"code": "categoryTitle", "value": "카테고리",    "checked": True},
+
+             {"code": "title",         "value": "제목",        "checked": True},
+             {"code": "content",       "value": "내용",        "checked": True},
+
+             {"code": "sequence",      "value": "순서",        "checked": True},
+
+             {"code": "likeCount",     "value": "좋아요",      "checked": True},
+             {"code": "commentCount",  "value": "댓글수",      "checked": True},
+             {"code": "viewCount",     "value": "조회수",      "checked": True},
+         ],
+         region = False
+         ),
 ]
 
 # 전역 변수
