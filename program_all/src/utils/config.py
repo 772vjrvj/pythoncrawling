@@ -751,26 +751,23 @@ SITE_LIST = [
          ],
          columns = [
              {"code": "id",            "value": "아이디",      "checked": True},
-             {"code": "url",           "value": "URL",      "checked": True},
+             {"code": "url",           "value": "URL",        "checked": True},
              {"code": "createdAt",     "value": "등록일",      "checked": True},
              {"code": "updatedAt",     "value": "수정일",      "checked": True},
-
              {"code": "userId",        "value": "유저아이디",   "checked": True},
              {"code": "userName",      "value": "유저명",      "checked": True},
-
              {"code": "categoryTitle", "value": "카테고리",    "checked": True},
-
              {"code": "title",         "value": "제목",        "checked": True},
              {"code": "content",       "value": "내용",        "checked": True},
-
              {"code": "sequence",      "value": "순서",        "checked": True},
-
              {"code": "likeCount",     "value": "좋아요",      "checked": True},
              {"code": "commentCount",  "value": "댓글수",      "checked": True},
              {"code": "viewCount",     "value": "조회수",      "checked": True},
+             {"code": "image",         "value": "이미지",      "checked": True},
+             {"code": "imagePath",     "value": "이미지 경로",  "checked": True},
          ],
          region = False
-         ),
+    ),
 ]
 
 # 전역 변수
