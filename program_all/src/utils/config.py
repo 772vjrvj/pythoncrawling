@@ -631,7 +631,8 @@ SITE_LIST = [
    #  )
     Site("457DEEP", "457DEEP", "#000000", enabled=True,
          setting=[],
-         setting_detail = [
+         setting_detail=[
+
              # =========================
              # 1. 합격후기
              # =========================
@@ -639,23 +640,33 @@ SITE_LIST = [
 
              {"row_type": "item", "parent_id": "pass_review",
               "code": "success-story", "value": "합격 후기",
-              "list_url": "https://457deep.com/community/success-story", "checked": True},
+              "list_url": "https://457deep.com/community/success-story",
+              "detail_url": "https://457deep.com/community/success-story/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "pass_review",
               "code": "resume-review", "value": "필기 후기",
-              "list_url": "https://457deep.com/community/resume-review", "checked": True},
+              "list_url": "https://457deep.com/community/resume-review",
+              "detail_url": "https://457deep.com/community/resume-review/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "pass_review",
               "code": "interview-review", "value": "면접 후기",
-              "list_url": "https://457deep.com/community/interview-review", "checked": True},
+              "list_url": "https://457deep.com/community/interview-review",
+              "detail_url": "https://457deep.com/community/interview-review/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "pass_review",
               "code": "request-board", "value": "요청 게시판",
-              "list_url": "https://457deep.com/community/request-board", "checked": True},
+              "list_url": "https://457deep.com/community/request-board",
+              "detail_url": "https://457deep.com/community/request-board/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "pass_review",
               "code": "notice", "value": "공지사항",
-              "list_url": "https://457deep.com/community/notice", "checked": True},
+              "list_url": "https://457deep.com/community/notice",
+              "detail_url": "https://457deep.com/community/notice/detail",
+              "checked": True},
 
 
              # =========================
@@ -665,19 +676,27 @@ SITE_LIST = [
 
              {"row_type": "item", "parent_id": "essay",
               "code": "corporate-personal-statement", "value": "기업 자소서 풀이",
-              "list_url": "https://457deep.com/essay/corporate-personal-statement", "checked": True},
+              "list_url": "https://457deep.com/essay/corporate-personal-statement",
+              "detail_url": "https://457deep.com/essay/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "essay",
               "code": "personal-statement", "value": "합격 자소서",
-              "list_url": "https://457deep.com/essay/personal-statement", "checked": True},
+              "list_url": "https://457deep.com/essay/personal-statement",
+              "detail_url": "https://457deep.com/essay/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "essay",
               "code": "mid-statement", "value": "강소기업 합격 자소서",
-              "list_url": "https://457deep.com/essay/mid-statement", "checked": True},
+              "list_url": "https://457deep.com/essay/mid-statement",
+              "detail_url": "https://457deep.com/essay/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "essay",
               "code": "ncs", "value": "NCS 강의",
-              "list_url": "https://457deep.com/essay/ncs", "checked": True},
+              "list_url": "https://457deep.com/essay/ncs",
+              "detail_url": "https://457deep.com/essay/detail",
+              "checked": True},
 
 
              # =========================
@@ -687,19 +706,27 @@ SITE_LIST = [
 
              {"row_type": "item", "parent_id": "interview",
               "code": "corporate", "value": "사기업 면접",
-              "list_url": "https://457deep.com/interview/corporate", "checked": True},
+              "list_url": "https://457deep.com/interview/corporate",
+              "detail_url": "https://457deep.com/interview/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "interview",
               "code": "public", "value": "공공기관 면접",
-              "list_url": "https://457deep.com/interview/public", "checked": True},
+              "list_url": "https://457deep.com/interview/public",
+              "detail_url": "https://457deep.com/interview/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "interview",
               "code": "specific", "value": "기업 특화 면접",
-              "list_url": "https://457deep.com/interview/specific", "checked": True},
+              "list_url": "https://457deep.com/interview/specific",
+              "detail_url": "https://457deep.com/interview/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "interview",
               "code": "pt", "value": "PT/토론 면접",
-              "list_url": "https://457deep.com/interview/pt", "checked": True},
+              "list_url": "https://457deep.com/interview/pt",
+              "detail_url": "https://457deep.com/interview/detail",
+              "checked": True},
 
 
              # =========================
@@ -709,15 +736,21 @@ SITE_LIST = [
 
              {"row_type": "item", "parent_id": "beginner",
               "code": "series", "value": "취린이 시리즈",
-              "list_url": "https://457deep.com/beginner/series", "checked": True},
+              "list_url": "https://457deep.com/beginner/series",
+              "detail_url": "https://457deep.com/beginner/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "beginner",
               "code": "beginner-ps", "value": "자소서 강의",
-              "list_url": "https://457deep.com/beginner/personal-statement", "checked": True},
+              "list_url": "https://457deep.com/beginner/personal-statement",
+              "detail_url": "https://457deep.com/beginner/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "beginner",
               "code": "beginner-interview", "value": "면접 강의",
-              "list_url": "https://457deep.com/beginner/interview", "checked": True},
+              "list_url": "https://457deep.com/beginner/interview",
+              "detail_url": "https://457deep.com/beginner/detail",
+              "checked": True},
 
 
              # =========================
@@ -727,27 +760,39 @@ SITE_LIST = [
 
              {"row_type": "item", "parent_id": "resources",
               "code": "all", "value": "전체",
-              "list_url": "https://457deep.com/resources/all", "checked": True},
+              "list_url": "https://457deep.com/resources/all",
+              "detail_url": "https://457deep.com/resources/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "resources",
               "code": "corporate-analysis", "value": "기업 분석",
-              "list_url": "https://457deep.com/resources/corporate-analysis", "checked": True},
+              "list_url": "https://457deep.com/resources/corporate-analysis",
+              "detail_url": "https://457deep.com/resources/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "resources",
               "code": "job-analysis", "value": "직무 분석",
-              "list_url": "https://457deep.com/resources/job-analysis", "checked": True},
+              "list_url": "https://457deep.com/resources/job-analysis",
+              "detail_url": "https://457deep.com/resources/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "resources",
               "code": "other", "value": "취업 TIP",
-              "list_url": "https://457deep.com/resources/other", "checked": True},
+              "list_url": "https://457deep.com/resources/other",
+              "detail_url": "https://457deep.com/resources/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "resources",
               "code": "qna", "value": "Q&A",
-              "list_url": "https://457deep.com/resources/qna", "checked": True},
+              "list_url": "https://457deep.com/resources/qna",
+              "detail_url": "https://457deep.com/resources/detail",
+              "checked": True},
 
              {"row_type": "item", "parent_id": "resources",
               "code": "current-issues", "value": "시사 이슈",
-              "list_url": "https://457deep.com/resources/current-issues", "checked": True},
+              "list_url": "https://457deep.com/resources/current-issues",
+              "detail_url": "https://457deep.com/resources/detail",
+              "checked": True},
          ],
          columns = [
              {"code": "id",            "value": "아이디",      "checked": True},
@@ -766,8 +811,9 @@ SITE_LIST = [
              {"code": "image",         "value": "이미지",      "checked": True},
              {"code": "imagePath",     "value": "이미지 경로",  "checked": True},
          ],
-         region = False
-    ),
+         region=False
+         )
+
 ]
 
 # 전역 변수

@@ -5,18 +5,24 @@ import random
 import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin, urlparse
-from src.utils.selenium_utils import SeleniumUtils
 
 import httpx
 import pandas as pd
 from bs4 import BeautifulSoup
 
+from src.utils.selenium_utils import SeleniumUtils
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
 from src.workers.api_base_worker import BaseApiWorker
+
 import threading
 import pyautogui  # 현재 모니터 해상도 가져오기 위해 사용
+import base64
+
+
+# rhdygksv3@gmail.com / kyh2050!
+
 
 class Api457deepDetailSetLoadWorker(BaseApiWorker):
     def __init__(self):
@@ -45,8 +51,15 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
         self.before_pro_value = 0.0
 
         self.login_url = "https://457deep.com/start?next=/"
-        self.login_cookies = {}   # {name: value}
+        self.login_cookies = {}  # {name: value}
 
+        # === 신규 === 나중에 서버 생기면 여기만 바꾸면 됨
+        self.asset_base_url = "testurl"
+
+        # === 신규 === 내용 저장 폴더명
+        self.content_base_dir_name = "내용"
+        self.image_base_dir_name = "이미지"
+        self.img_timeout = httpx.Timeout(connect=5.0, read=8.0, write=8.0, pool=5.0)
 
     def stop(self):
         self.log_signal_func("⛔ 중지 요청됨 (저장 후 종료합니다.)")
@@ -66,9 +79,7 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
 
         # 로그인 열기
         self.driver.get(self.login_url)
-
         self.wait_for_user_login_and_store_cookies()
-
         return True
 
     def driver_set(self):
@@ -116,6 +127,8 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
                 return True
 
             with httpx.Client(http2=True, timeout=30) as client:
+                client.cookies.update(self.login_cookies or {})  # === 신규 === 쿠키 한번만 주입
+
                 for sec in sections:
                     if not self.running:
                         self.log_signal_func("⛔ 중지 감지 (섹션) → 저장 후 종료")
@@ -158,7 +171,11 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
                             if idx == 1 or (idx % 100 == 0) or (idx == total_posts):
                                 self.log_signal_func(f"[{context}] 📥 상세 {idx}/{total_posts}")
 
-                            post2, detail_url = self.fetch_post(client, list_url, post, context)
+                            post["_category_path"] = " > ".join([p.strip() for p in str(context).split(">") if p.strip()])
+
+                            detail_base = it.get("detail_url") or (list_url.rstrip("/") + "/detail")
+                            post2, detail_url = self.fetch_post(client, detail_base, post, context)
+
                             if not post2:
                                 continue
 
@@ -168,9 +185,9 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
                             if len(self.buffer) >= self.flush_size:
                                 self.flush_buffer(context)
 
-                            time.sleep(random.uniform(0.15, 0.35))
-
-                        self.log_signal_func(f"[{context}] ✅ 카테고리 완료 / saved={cat_saved} / total_saved={self.total_saved}")
+                        self.log_signal_func(
+                            f"[{context}] ✅ 카테고리 완료 / saved={cat_saved} / total_saved={self.total_saved}"
+                        )
 
                         # progress: 자식 item 1개 끝날 때마다
                         self.current_cnt += 1
@@ -188,7 +205,6 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
         self.log_signal_func("=============== 작업 종료")
         self.progress_end_signal.emit()
 
-
     def wait_for_user_login_and_store_cookies(self):
         self.log_signal_func("로그인 창을 열었습니다. 로그인 후 OK를 눌러주세요.")
 
@@ -205,7 +221,6 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
         self.login_cookies = cookies
 
         self.log_signal_func(f"✅ 쿠키 저장 완료: {len(self.login_cookies)}개")
-
 
     def _apply_login_cookies(self):
         if not self.login_cookies:
@@ -232,7 +247,9 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
         n = len(self.buffer)
         self.excel_driver.append_to_csv(self.csv_filename, self.buffer, self.columns)
         self.total_saved += n
-        self.log_signal_func(f"[{context}] 💾 CSV 저장 +{n} (누적 {self.total_saved})" if context else f"💾 CSV 저장 +{n} (누적 {self.total_saved})")
+        self.log_signal_func(
+            f"[{context}] 💾 CSV 저장 +{n} (누적 {self.total_saved})" if context else f"💾 CSV 저장 +{n} (누적 {self.total_saved})"
+        )
         self.buffer = []
 
     def finalize_export(self):
@@ -261,6 +278,19 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
 
             df = df.fillna("").astype(str)
 
+            # === 신규 === openpyxl 금지 문자 제거 (0x00~0x1F 중 \t,\n,\r 제외)
+            def _clean_excel_text(s: str) -> str:
+                if not s:
+                    return ""
+                out = []
+                for ch in str(s):
+                    o = ord(ch)
+                    if o >= 32 or ch in ("\t", "\n", "\r"):
+                        out.append(ch)
+                return "".join(out)
+
+            df = df.applymap(_clean_excel_text)
+
             with pd.ExcelWriter(excel_filename, engine="openpyxl") as writer:
                 df.to_excel(writer, index=False, sheet_name=sheet_name)
                 ws = writer.sheets[sheet_name]
@@ -269,6 +299,7 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
                         if cell.value is not None:
                             cell.value = str(cell.value)
                             cell.number_format = "@"
+
         except Exception as e:
             self.log_signal_func(f"❌ XLSX 변환 오류: {e}")
 
@@ -315,7 +346,6 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
         return out
 
     def fetch_posts(self, client, list_url, page, context):
-        self._apply_login_cookies()
         url = list_url + ("&page=" if "?" in list_url else "?page=") + str(page)
         headers = self.make_headers(list_url)
         try:
@@ -327,39 +357,107 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             return []
 
     def extract_posts(self, text):
+        # =========================
+        # 1) 기존: "posts":[...] 파싱
+        # =========================
         i = text.find('"posts":')
-        if i < 0:
-            return []
-        i = text.find('[', i)
-        if i < 0:
+        if i >= 0:
+            i = text.find("[", i)
+            if i < 0:
+                return []
+
+            d = 0
+            for j in range(i, len(text)):
+                ch = text[j]
+                if ch == "[":
+                    d += 1
+                elif ch == "]":
+                    d -= 1
+                    if d == 0:
+                        try:
+                            return json.loads(text[i : j + 1])
+                        except Exception:
+                            return []
             return []
 
-        depth = 0
-        for j in range(i, len(text)):
-            ch = text[j]
-            if ch == '[':
-                depth += 1
-            elif ch == ']':
-                depth -= 1
-                if depth == 0:
-                    try:
-                        return json.loads(text[i:j + 1])
-                    except Exception:
-                        return []
-        return []
+        # =========================
+        # 2) posts 없으면: "N:[...]" 덩어리들을 전부 훑어서
+        #    {"content":{...},"isAdmin":...} content만 수집
+        # =========================
+        def _load_arrays_containing_isadmin(s: str):
+            roots = []
+            pos = 0
+            while True:
+                k = s.find(":[", pos)  # N:[  형태의 시작점(콜론+배열)
+                if k < 0:
+                    break
+
+                # 근처에 "isAdmin"이 없으면 굳이 파싱 안 함(속도용, 싫으면 이 if 삭제)
+                if '"isAdmin"' not in s[k : k + 50000]:
+                    pos = k + 2
+                    continue
+
+                i2 = s.find("[", k)
+                d2 = 0
+                for j2 in range(i2, len(s)):
+                    ch2 = s[j2]
+                    if ch2 == "[":
+                        d2 += 1
+                    elif ch2 == "]":
+                        d2 -= 1
+                        if d2 == 0:
+                            try:
+                                roots.append(json.loads(s[i2 : j2 + 1]))
+                            except Exception:
+                                pass
+                            pos = j2 + 1
+                            break
+                else:
+                    break
+            return roots
+
+        roots = _load_arrays_containing_isadmin(text)
+        if not roots:
+            return []
+
+        out = []
+
+        def walk(x):
+            if isinstance(x, dict):
+                c = x.get("content")
+                if c and "isAdmin" in x and isinstance(c, dict):
+                    out.append(c)
+                for v in x.values():
+                    walk(v)
+            elif isinstance(x, list):
+                for v in x:
+                    walk(v)
+
+        for r in roots:
+            walk(r)
+
+        # id 중복 제거
+        seen, posts = set(), []
+        for p in out:
+            pid = p.get("id")
+            if not pid or pid in seen:
+                continue
+            seen.add(pid)
+            posts.append(p)
+
+        return posts
 
     # =========================
     # detail fetch
     # =========================
-    def fetch_post(self, client, list_url, post, context):
+    def fetch_post(self, client, detail_base, post, context):
         post_id = post.get("id")
-        detail_url = list_url.rstrip("/") + "/detail/" + str(post_id)
+        seq = post.get("sequence")
 
-        # isAdmin 스킵
-        v = (post.get("user") or {}).get("isAdmin")
-        if str(v).strip().lower() == "true":
-            self.log_signal_func(f"[{context}] ⏭ user.isAdmin 스킵 id={post_id} val={repr(v)}")
-            return None, detail_url
+        seq_str = f"{int(seq):03d}" if str(seq).isdigit() else "000"
+        folder_key = f"{seq_str}_{post_id}"
+
+        detail_url = f"{detail_base}/{post_id}"
 
         self._apply_login_cookies()
 
@@ -383,36 +481,52 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             "sec-fetch-user": "?1",
             "upgrade-insecure-requests": "1",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referer": list_url,
+            "referer": detail_url,
         }
 
-        html = self.api_client.get(url=detail_url, headers=html_headers) or ""
-        if isinstance(html, bytes):
-            html = html.decode("utf-8", "replace")
-        else:
-            html = str(html)
-
-        div_html, img_urls, should_skip = self._extract_tiptap_div_and_imgs(html, detail_url, post)
-        if should_skip:
+        try:
+            r = client.get(
+                detail_url,
+                headers=html_headers,
+                timeout=httpx.Timeout(connect=8.0, read=15.0, write=15.0, pool=5.0),
+            )
+            r.raise_for_status()
+            html = r.text
+        except Exception as e:
+            self.log_signal_func(f"[{context}] ❌ 상세 HTML 실패: {e}")
             return None, detail_url
 
-        if div_html:
-            post["content"] = div_html
 
-        if img_urls:
-            img_names, img_dir = self._download_post_images(
-                client=client,
-                detail_url=detail_url,
-                context=context,
-                category_path=context,
-                post_id=post_id,
-                img_urls=img_urls
-            )
+
+        # === 변경 === div 파싱 + 이미지(일반 URL + base64) 저장 + img src 교체까지 한 번에
+        div_html, img_names, img_dir_abs = self._process_tiptap_div_and_images(
+            client=client,
+            html=html,
+            detail_url=detail_url,
+            context=context,
+            category_path=context,
+            folder_id=folder_key,
+            post_id=post_id,
+        )
+
+        if img_names:
             post["_images"] = img_names
-            post["_image_dir"] = img_dir
+            post["_image_dir"] = img_dir_abs.replace("\\", "/")  # ✅ 슬래시 변환
+
+        # === 신규 === 내용은 1개 파일로 저장(폴더는 카테고리 구조만)
+        if div_html:
+            rel_content_path = self._save_content_html(
+                category_path=context,
+                filename_no_ext=folder_key,  # 이미지와 동일: 001_id.html
+                html_text=div_html,
+            )
+            post["_content_path"] = rel_content_path or ""
+
+        if img_names:
+            post["_images"] = img_names
+            post["_image_dir"] = img_dir_abs
 
         return post, detail_url
-
 
     def make_headers(self, list_url):
         path = "/"
@@ -420,88 +534,228 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             s = list_url.split("://", 1)[1]
             idx = s.find("/")
             if idx >= 0:
-                path = "/" + s[idx + 1:]
+                path = "/" + s[idx + 1 :]
         except Exception:
             path = "/"
 
         return {"rsc": "1", "next-url": path, "referer": list_url, "user-agent": "Mozilla/5.0"}
 
     # =========================
-    # HTML parse + image download
+    # content html save (1 file)
     # =========================
-    def _extract_tiptap_div_and_imgs(self, html, base_url, post):
+    def _build_content_dir_and_rel(self, category_path, create_dir=True):
+        parts = [p.strip() for p in (category_path or "").split(">") if p.strip()]
+        if not parts:
+            parts = ["category"]
+
+        bad = '<>:"/\\|?*\n\r\t'
+
+        def clean(s: str) -> str:
+            s = s.replace(" ", "")
+            out = []
+            for ch in s:
+                out.append("_" if ch in bad else ch)
+            s2 = "".join(out)
+            return s2[:120] or "category"
+
+        safe_parts = [clean(p) for p in parts]
+
+        # rel: 457deep/내용/자소서풀이/해석
+        rel_dir = "/".join([self.site_name, self.content_base_dir_name] + safe_parts)
+        out_dir = os.path.join(os.getcwd(), self.site_name, self.content_base_dir_name, *safe_parts)
+
+        if create_dir:
+            os.makedirs(out_dir, exist_ok=True)
+
+        return out_dir, rel_dir
+
+    def _save_content_html(self, category_path, filename_no_ext, html_text):
+        """
+        - 내용은 1개 파일만 저장
+        - 폴더는 카테고리 구조만 사용
+        - 파일명은 이미지와 동일하게(001_id.html)
+        return: rel_path (CSV에 저장할 경로)
+        """
+        if not html_text:
+            return ""
+
+        save_dir, rel_dir = self._build_content_dir_and_rel(category_path, create_dir=True)
+        filename = f"{filename_no_ext}.html"
+
+        abs_path = os.path.join(save_dir, filename)
+        with open(abs_path, "w", encoding="utf-8") as f:
+            f.write(str(html_text))
+
+        return f"{rel_dir}/{filename}"
+
+    # =========================
+    # HTML parse + image download (URL + base64) + img src rewrite
+    # =========================
+    def _process_tiptap_div_and_images(self, client, html, detail_url, context, category_path, folder_id, post_id):
         soup = BeautifulSoup(html, "html.parser")
         div = soup.select_one("div.typo.tiptap.p-4")
         if not div:
-            return "", [], False
+            return "", [], ""
 
-        div_html = str(div)
-        img_urls = []
+        save_dir = None
+        rel_dir = None
 
-        for img in div.find_all("img"):
-            src = (img.get("src") or img.get("data-src") or "")
-            src_norm = str(src).strip().lower()
-
-            # === 신규 === src="undefined" 같은 케이스는 이미지로 취급하지 않고 스킵
-            if not src_norm or src_norm == "undefined":
-                self.log_signal_func(
-                    f"[undefined] ⛔ undefined 발견 → 이미지만 스킵, title={post.get('title','')}, id={post.get('id','')}"
-                )
-                continue
-
-            if "base64" in src_norm or "data:image" in src_norm:
-                self.log_signal_func(
-                    f"[BASE64] ⛔ base64 발견 → 이미지만 스킵, title={post.get('title','')}, id={post.get('id','')}"
-                )
-                continue
-
-            img_urls.append(urljoin(base_url, src))
-
-        # 중복 제거
-        seen = set()
-        out = []
-        for u in img_urls:
-            if u in seen:
-                continue
-            seen.add(u)
-            out.append(u)
-
-        return div_html, out, False
-
-
-    def _build_image_dir(self, category_path, post_id):
-        cat_dir = (category_path or "").replace(">", "_").replace("/", "_").strip()
-        bad = '<>:"/\\|?*\n\r\t'
-        cat_dir = "".join("_" if ch in bad else ch for ch in cat_dir)[:120] or "category"
-        out_dir = os.path.join(os.getcwd(), self.site_name, cat_dir, str(post_id))
-        os.makedirs(out_dir, exist_ok=True)
-        return out_dir
-
-    def _download_post_images(self, client, detail_url, context, category_path, post_id, img_urls):
-        save_dir = self._build_image_dir(category_path, post_id)
+        def ensure_dir():
+            nonlocal save_dir, rel_dir
+            if save_dir is None:
+                save_dir, rel_dir = self._build_image_dir_and_rel(category_path, folder_id, create_dir=True)
 
         saved_names = []
-        for idx, img_url in enumerate(img_urls, start=1):
-            try:
-                ext = self._guess_ext(img_url) or "jpg"
-                filename = f"{post_id}_{idx}.{ext}"
-                save_path = os.path.join(save_dir, filename)
+        idx = 0
 
-                if os.path.exists(save_path) and os.path.getsize(save_path) > 0:
+        for img in div.find_all("img"):
+
+            # -------------------------
+            # src 후보 추출 (lazy 대응)
+            # -------------------------
+            src = (
+                    img.get("src")
+                    or img.get("data-src")
+                    or img.get("data-original")
+                    or img.get("data-origin")
+                    or ""
+            ).strip()
+
+            # -------------------------
+            # srcset 있으면 가장 큰 이미지 사용
+            # -------------------------
+            srcset = img.get("srcset")
+            if srcset:
+                try:
+                    src = srcset.split(",")[-1].split(" ")[0].strip()
+                except Exception:
+                    pass
+
+            # 🔥 매우 중요 (srcset 반영 후 다시 계산)
+            src_norm = src.lower().strip()
+
+            # -------------------------
+            # undefined 제거
+            # -------------------------
+            if not src_norm or src_norm == "undefined":
+                img.decompose()
+                continue
+
+            idx += 1
+
+            # =====================================================
+            # base64 이미지
+            # =====================================================
+            if src_norm.startswith("data:image"):
+                try:
+                    ext, b = self._decode_data_image(src)
+
+                    ensure_dir()
+
+                    filename = f"{post_id}_{idx}.{ext}"
+                    save_path = os.path.join(save_dir, filename)
+
+                    if not (os.path.exists(save_path) and os.path.getsize(save_path) > 0):
+                        with open(save_path, "wb") as f:
+                            f.write(b)
+
                     saved_names.append(filename)
+
+                    # src rewrite
+                    img["src"] = self._join_url(self.asset_base_url, rel_dir, filename)
+
+                except Exception as e:
+                    self.log_signal_func(f"[{context}] ❌ base64 이미지 저장 실패: {e}")
+                    img.decompose()
                     continue
 
-                rr = client.get(img_url, headers={"referer": detail_url, "user-agent": "Mozilla/5.0"})
-                rr.raise_for_status()
+            # =====================================================
+            # 일반 URL 이미지
+            # =====================================================
+            else:
+                try:
+                    img_url = urljoin(detail_url, src)
+                    ext = self._guess_ext(img_url) or "jpg"
 
-                with open(save_path, "wb") as f:
-                    f.write(rr.content)
+                    ensure_dir()
 
-                saved_names.append(filename)
-            except Exception as e:
-                self.log_signal_func(f"[{context}] ❌ 이미지 다운로드 실패: {img_url} / {e}")
+                    filename = f"{post_id}_{idx}.{ext}"
+                    save_path = os.path.join(save_dir, filename)
 
-        return saved_names, save_dir
+                    if not (os.path.exists(save_path) and os.path.getsize(save_path) > 0):
+                        rr = client.get(
+                            img_url,
+                            headers={"referer": detail_url, "user-agent": "Mozilla/5.0"},
+                            timeout=self.img_timeout,  # === 신규 === 이미지 전용 짧은 타임아웃
+                        )
+                        rr.raise_for_status()
+
+                        with open(save_path, "wb") as f:
+                            f.write(rr.content)
+
+                    saved_names.append(filename)
+
+                    # src rewrite
+                    img["src"] = self._join_url(self.asset_base_url, rel_dir, filename)
+
+                except Exception as e:
+                    self.log_signal_func(f"[{context}] ❌ 이미지 다운로드 실패: {src} / {e}")
+                    img.decompose()
+                    continue
+
+            # -------------------------
+            # 불필요 속성 제거 (HTML 정리)
+            # -------------------------
+            for k in ("data-src", "data-original", "data-origin", "srcset"):
+                if img.get(k) is not None:
+                    del img[k]
+
+        # 이미지 하나도 없으면 폴더 생성 안됨
+        return str(div), saved_names, (save_dir or "")
+
+    def _build_image_dir_and_rel(self, category_path, post_id, create_dir=True):
+        parts = [p.strip() for p in (category_path or "").split(">") if p.strip()]
+        if not parts:
+            parts = ["category"]
+
+        bad = '<>:"/\\|?*\n\r\t'
+
+        def clean(s: str) -> str:
+            s = s.replace(" ", "")  # 공백 유지 원하면 이 줄 삭제
+            out = []
+            for ch in s:
+                out.append("_" if ch in bad else ch)
+            s2 = "".join(out)
+            return s2[:120] or "category"
+
+        safe_parts = [clean(p) for p in parts]
+
+        rel_dir = "/".join([self.site_name, self.image_base_dir_name] + safe_parts + [str(post_id)])
+        out_dir = os.path.join(os.getcwd(), self.site_name, self.image_base_dir_name, *safe_parts, str(post_id))
+
+
+        if create_dir:
+            os.makedirs(out_dir, exist_ok=True)
+
+        return out_dir, rel_dir
+
+    def _decode_data_image(self, data_uri):
+        # data:image/png;base64,AAAA....
+        head, b64 = data_uri.split(",", 1)
+        mime = head.split(";", 1)[0].split(":", 1)[1]  # image/png
+        ext = mime.split("/", 1)[1].lower() if "/" in mime else "png"
+        if ext == "jpeg":
+            ext = "jpg"
+        b = base64.b64decode(b64)
+        return ext, b
+
+    def _join_url(self, base, rel_dir, filename):
+        b = (base or "").rstrip("/")
+        r = (rel_dir or "").strip("/")
+
+        if r:
+            return f"{b}/{r}/{filename}"
+        return f"{b}/{filename}"
 
     def _guess_ext(self, url):
         try:
@@ -522,17 +776,23 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             s = str(v or "").strip()
             if not s:
                 return ""
+
             if s.startswith("$D"):
                 s = s[2:]
+
             if s.endswith("Z"):
                 s = s[:-1] + "+00:00"
 
             dt = datetime.fromisoformat(s)
+
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
 
             dt2 = dt.astimezone(timezone(timedelta(hours=9)))
+
+            # ⭐ yyyy-mm-dd hh:mm:ss (zero padding 자동)
             return dt2.strftime("%Y-%m-%d %H:%M:%S")
+
         except Exception:
             return str(v) if v is not None else ""
 
@@ -549,7 +809,11 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             row["아이디"] = post.get("id", "")
 
         if "등록일" in row:
-            row["등록일"] = self._to_kst_dt(post.get("createdAt", ""))
+            pub = post.get("publishedAt")
+            created = post.get("createdAt")
+
+            row["등록일"] = self._to_kst_dt(pub or created)
+
         if "수정일" in row:
             row["수정일"] = self._to_kst_dt(post.get("updatedAt", ""))
 
@@ -560,7 +824,8 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             row["제목"] = post.get("title", "")
 
         if "내용" in row:
-            row["내용"] = post.get("content", "")
+            # === 변경 === HTML 원문 대신 내용 파일 경로 저장
+            row["내용"] = post.get("_content_path", "") or ""
 
         if "순서" in row:
             row["순서"] = post.get("sequence", "")
@@ -577,8 +842,7 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
             row["유저명"] = profile.get("name") or ""
 
         if "카테고리" in row:
-            cat = post.get("category") or {}
-            row["카테고리"] = cat.get("title") or post.get("imwebCategoryTitle") or ""
+            row["카테고리"] = post.get("_category_path", "") or ""
 
         if "이미지" in row:
             row["이미지"] = json.dumps(post.get("_images") or [], ensure_ascii=False)
