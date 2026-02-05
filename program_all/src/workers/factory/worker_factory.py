@@ -29,8 +29,8 @@
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 # from src.workers.main.api_kakao_store_food_set_worker               import ApiKakaoStoreFoodSetLoadWorker
 # from src.workers.main.api_ohsu_se_category_set_worker               import ApiOhsuSeCategorySetLoadWorker
-# from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
-# from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
+from src.workers.main.api_delivery_11st_content_set_worker          import ApiDelivery11stContentSetLoadWorker
+from src.workers.main.api_delivery_ssg_content_set_worker           import ApiDeliverySsgContentSetLoadWorker
 # from src.workers.main.api_peachchill26_set_worker                   import ApiPeachhill26SetLoadWorker
 # from src.workers.main.api_krx_nextrade_brand_set_worker             import ApiKrxNextradeSetLoadWorker
 # from src.workers.main.api_coco_label_set_worker                     import ApiCocoLabelSetLoadWorker
@@ -38,7 +38,7 @@
 # from src.workers.main.api_hohoyoga_set_worker                       import ApiHohoyogaSetLoadWorker
 # from src.workers.main.api_lululemon_set_worker                      import ApiLululemonSetLoadWorker
 # from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
-from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
+# from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
@@ -72,8 +72,8 @@ WORKER_CLASS_MAP = {
     # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
     # "KAKAO_STORE_FOOD"                  :   ApiKakaoStoreFoodSetLoadWorker,
     # "OHOU_SE_CATEGORY"                  :   ApiOhsuSeCategorySetLoadWorker,
-    # "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
-    # "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker,
+    "DELIVERY_11ST_CONTENT"             :   ApiDelivery11stContentSetLoadWorker,
+    "DELIVERY_SSG_CONTENT"              :   ApiDeliverySsgContentSetLoadWorker,
     # "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
     # "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
     # "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
@@ -81,5 +81,5 @@ WORKER_CLASS_MAP = {
     # "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
     # "LULULEMON"                         :   ApiLululemonSetLoadWorker,
     # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
-    "457DEEP"                           :   Api457deepDetailSetLoadWorker,
+    # "457DEEP"                           :   Api457deepDetailSetLoadWorker,
 }

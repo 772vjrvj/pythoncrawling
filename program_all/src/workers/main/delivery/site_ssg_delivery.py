@@ -11,7 +11,7 @@ class SsgDeliveryCrawler:
 
     def __init__(self, driver, log_func, api_client, selenium_driver):
         self.driver = driver
-        self.log = log_func
+        self._log_func = log_func  # === 신규 === 원본 로거 보관
         self.api = api_client
         self.selenium = selenium_driver
 
@@ -23,6 +23,33 @@ class SsgDeliveryCrawler:
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/142.0.0.0 Safari/537.36"
         )
+
+    # ====================================================
+    # === 신규 === 고객 로그용 스택트레이스 제거 + 로그 래핑
+    # ====================================================
+    def _strip_stacktrace(self, text):
+        if not text:
+            return ""
+
+        text = str(text)
+
+        if "Stacktrace:" in text:
+            text = text.split("Stacktrace:")[0]
+
+        if "(Session info:" in text:
+            text = text.split("(Session info:")[0]
+
+        if "Symbols not available" in text:
+            text = text.split("Symbols not available")[0]
+
+        return " ".join(text.split()).strip()
+
+    def log(self, msg):
+        try:
+            msg = self._strip_stacktrace(msg)
+        except Exception:
+            pass
+        self._log_func(msg)
 
     # ====================================================
     # 내부 유틸: 날짜 포맷 변환 (yyyymmdd -> yyyy-mm-dd)
@@ -100,15 +127,12 @@ class SsgDeliveryCrawler:
         self.log("[SSG] 로그인 버튼 클릭 완료")
         time.sleep(3)  # 로그인 처리 대기
 
-
         # 로그인 후 주문내역 페이지로 직접 진입
         try:
             self.driver.get(self.SSG_MAIN_URL)
             time.sleep(2)
         except Exception as e:
             self.log(f"[SSG] ORDER_URL 진입 중 오류(무시 가능): {e}")
-
-
 
         # === 신규 === '오늘 하루 보지 않기' 팝업 처리
         try:
@@ -133,7 +157,6 @@ class SsgDeliveryCrawler:
         except Exception as e:
             self.log(f"[SSG] 팝업 처리 블록 오류(무시): {e}")
 
-
         # Selenium 쿠키를 requests.Session으로 복사
         cookies = self.driver.get_cookies()
         sess = self.api.session
@@ -154,6 +177,7 @@ class SsgDeliveryCrawler:
     # 로그아웃
     # ====================================================
     def _logout(self):
+        # === 신규 === 로그아웃은 best-effort (실패해도 무시)
         try:
             self.driver.get(self.SSG_MAIN_URL)
             time.sleep(1)
@@ -164,12 +188,21 @@ class SsgDeliveryCrawler:
                 timeout=10
             )
             if logout_btn:
-                logout_btn.click()
-                time.sleep(1)
+                try:
+                    logout_btn.click()
+                    time.sleep(1)
+                except Exception as e:
+                    self.log(f"[SSG] 로그아웃 클릭 실패(무시): {e}")
 
             self.log("[SSG] 로그아웃 완료")
         except Exception as e:
-            self.log(f"[SSG] 로그아웃 오류: {e}")
+            self.log(f"[SSG] 로그아웃 실패(무시): {e}")
+        finally:
+            # === 신규 === 다음 계정 영향 최소화
+            try:
+                self.driver.delete_all_cookies()
+            except Exception:
+                pass
 
     # ====================================================
     # 주문내역 한 페이지 호출 (url + headers + params + api.get)

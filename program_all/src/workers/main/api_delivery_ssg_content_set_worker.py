@@ -44,6 +44,42 @@ class ApiDeliverySsgContentSetLoadWorker(BaseApiWorker):
         self.before_pro_value = 0
         self.api_client = APIClient(use_cache=False)
 
+    # === 신규: selenium 스택트레이스 제거 ===
+    def _strip_stacktrace(self, text):
+        if not text:
+            return ""
+
+        text = str(text)
+
+        if "Stacktrace:" in text:
+            text = text.split("Stacktrace:")[0]
+
+        if "(Session info:" in text:
+            text = text.split("(Session info:")[0]
+
+        if "Symbols not available" in text:
+            text = text.split("Symbols not available")[0]
+
+        return " ".join(text.split()).strip()
+
+
+    # === 신규: 고객용 짧은 에러 메시지 ===
+    def _user_err_msg(self, e):
+        msg = self._strip_stacktrace(e)
+
+        low = msg.lower()
+
+        if "element not interactable" in low:
+            return "페이지 상태 변경으로 버튼 클릭 불가 (무시 가능)"
+
+        if "unexpected alert open" in low:
+            return "팝업 발생으로 작업 중단 (무시 가능)"
+
+        if msg:
+            return msg
+
+        return "작업 중 오류 발생"
+
     # 초기화
     def init(self):
         self.driver_set(False)
@@ -164,7 +200,8 @@ class ApiDeliverySsgContentSetLoadWorker(BaseApiWorker):
                             all_result_rows.extend(result_rows)
 
                         except Exception as e:
-                            self.log_signal_func(f"[SSG] ID {uid} 처리 오류: {e}")
+                            # === 신규: 고객 로그에는 요약만 ===
+                            self.log_signal_func(f"[SSG] ID {uid} 처리 오류(요약): {self._user_err_msg(e)}")
 
                         finally:
                             if self.driver:
@@ -200,7 +237,8 @@ class ApiDeliverySsgContentSetLoadWorker(BaseApiWorker):
             return True
 
         except Exception as e:
-            self.log_signal_func(f"❌ 전체 실행 중 예외 발생: {e}")
+            # === 신규: 고객 로그에는 요약만 ===
+            self.log_signal_func(f"❌ 전체 실행 중 예외 발생(요약): {self._user_err_msg(e)}")
             return False
 
 

@@ -79,18 +79,23 @@ def parse_datetime_yyyy_mm_dd_hhmmss(s: str):
         return None
 
 
-# === 신규 ===
 def parse_datetime_to_yyyymmdd(s: str) -> str:
     """
+    '2025-11-11' → '20251111'
     '2025-11-11 00:00:00' → '20251111'
     """
     if not s:
         return ""
-    try:
-        dt = datetime.strptime(s.strip(), "%Y-%m-%d %H:%M:%S")
-        return dt.strftime("%Y%m%d")
-    except Exception:
-        return ""
+
+    s = s.strip()
+
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(s, fmt).strftime("%Y%m%d")
+        except ValueError:
+            continue
+
+    return ""
 
 
 def format_yyyymmdd_to_yyyy_mm_dd(s: str) -> str:
