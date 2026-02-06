@@ -428,28 +428,28 @@ SITE_LIST = [
     #          {"code": "page",           "value": "페이지",             "checked": True},
     #      ]
     # ),
-    Site("배송정보 11번가", "DELIVERY_11ST_CONTENT", "#FF003E", enabled=True, popup=True,
-       columns = [
-        {"code": "id",               "value": "id",            "checked": True},
-        {"code": "password",         "value": "password",      "checked": True},
-        {"code": "market",           "value": "마켓",           "checked": True},
-        {"code": "order_date",       "value": "주문일자",        "checked": True},
-        {"code": "order_code",       "value": "주문고유코드",    "checked": True},
-         {"code": "invoice_no",       "value": "송장번호",       "checked": True},
-         {"code": "delivery_company", "value": "택배사",         "checked": True}
-      ],
-    ),
-     Site("배송정보 SSG", "DELIVERY_SSG_CONTENT", "#F12972", enabled=True, popup=True,
-          columns = [
-              {"code": "id",               "value": "id",            "checked": True},
-              {"code": "password",         "value": "password",      "checked": True},
-              {"code": "market",           "value": "마켓",           "checked": True},
-              {"code": "order_date",       "value": "주문일자",        "checked": True},
-              {"code": "order_code",       "value": "주문고유코드",    "checked": True},
-              {"code": "invoice_no",       "value": "송장번호",       "checked": True},
-              {"code": "delivery_company", "value": "택배사",         "checked": True}
-          ]
-    ),
+    # Site("배송정보 11번가", "DELIVERY_11ST_CONTENT", "#FF003E", enabled=True, popup=True,
+    #    columns = [
+    #     {"code": "id",               "value": "id",            "checked": True},
+    #     {"code": "password",         "value": "password",      "checked": True},
+    #     {"code": "market",           "value": "마켓",           "checked": True},
+    #     {"code": "order_date",       "value": "주문일자",        "checked": True},
+    #     {"code": "order_code",       "value": "주문고유코드",    "checked": True},
+    #      {"code": "invoice_no",       "value": "송장번호",       "checked": True},
+    #      {"code": "delivery_company", "value": "택배사",         "checked": True}
+    #   ],
+    # ),
+    #  Site("배송정보 SSG", "DELIVERY_SSG_CONTENT", "#F12972", enabled=True, popup=True,
+    #       columns = [
+    #           {"code": "id",               "value": "id",            "checked": True},
+    #           {"code": "password",         "value": "password",      "checked": True},
+    #           {"code": "market",           "value": "마켓",           "checked": True},
+    #           {"code": "order_date",       "value": "주문일자",        "checked": True},
+    #           {"code": "order_code",       "value": "주문고유코드",    "checked": True},
+    #           {"code": "invoice_no",       "value": "송장번호",       "checked": True},
+    #           {"code": "delivery_company", "value": "택배사",         "checked": True}
+    #       ]
+    # ),
     # Site("피치힐26", "PEACHCHILL26", "#121212", enabled=True,
     #      columns = [
     #          {"code": "product_code", "value": "상품코드", "checked": True},
@@ -813,7 +813,33 @@ SITE_LIST = [
    #       ],
    #       region=False
    #       )
-
+   #  Site("기본", "BASE", "#888888", enabled=True, popup=True,
+   #     columns = [
+   #        {"code": "company_name",     "value": "기업명",           "checked": True},
+   #        {"code": "market_division",  "value": "시장 구분",        "checked": True},
+   #        {"code": "stock_code",       "value": "종목코드",         "checked": True},
+   #        {"code": "main_phone",       "value": "대표전화",         "checked": True},
+   #        {"code": "ir_phone",         "value": "IR전화",          "checked": True},
+   #        {"code": "home_page",        "value": "홈페이지",          "checked": True},
+   #    ]
+   #  ),
+    Site("KMONG", "KMONG_DETAIL", "#888888", enabled=True, popup=True,
+        setting=[
+            {'name': '검색어', 'code': 'keyword', 'value': '', 'type': 'input'}
+        ],
+        columns = [
+            {"checked": True, "code": "id",                "value": "아이디"},
+            {"checked": True, "code": "url",               "value": "URL"},
+            {"checked": True, "code": "nickName",          "value": "판매자"},
+            {"checked": True, "code": "title",             "value": "제목"},
+            {"checked": True, "code": "score",             "value": "평점"},
+            {"checked": True, "code": "commentCount",      "value": "댓글수"},
+            {"checked": True, "code": "contentJsonPath",   "value": "상세페이지 JSON 경로"},
+            {"checked": True, "code": "contentHtmlPath",   "value": "상세페이지 HTML 경로"},
+            {"checked": True, "code": "imagePath",         "value": "이미지 경로"},
+            {"checked": True, "code": "image",             "value": "이미지"},
+        ],
+    ),
 ]
 
 # 전역 변수

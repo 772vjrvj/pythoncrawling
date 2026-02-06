@@ -1,7 +1,12 @@
-import os
-from src.utils.time_utils import get_current_yyyymmddhhmmss
 import json
-import requests
+import os
+import re
+from urllib.parse import urlparse
+
+import httpx
+
+from src.utils.time_utils import get_current_yyyymmddhhmmss
+
 
 class FileUtils:
     def __init__(self, log_func, api_client=None):
@@ -105,28 +110,58 @@ class FileUtils:
         self.log_func(f"📄 숫자 {len(numbers)}개 읽음: {file_path}")
         return numbers
 
-    def save_image(self, folder_path, filename, image_url, headers=None):
+    def save_image(self, folder_path, filename, image_url, headers=None, timeout=30):
         """
-        지정된 폴더에 이미지 저장
-        - api_client가 있으면 api_client로 다운로드
-        - 없으면 requests로 다운로드(기존 동작 유지)
+        image_url에서 바이너리 받아서 folder_path/filename 으로 저장
+        실패하면 None 반환
         """
-        save_path = os.path.join(folder_path, filename)
-
         try:
-            resp = self.api_client.get(image_url, headers=headers, return_bytes=True)
-            content = getattr(resp, "content", None)
-            if content is None:
-                content = resp
+            if not folder_path:
+                return None
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+
+            save_path = os.path.join(folder_path, filename)
+
+            # === 신규 === headers None 방어 + zstd 제거(디코딩 이슈 방지)
+            h = {}
+            if isinstance(headers, dict):
+                h.update(headers)
+
+            # 너무 공격적인 accept-encoding(zstd) 제거(간헐적으로 클라 디코더 문제나는 케이스 방지)
+            ae = h.get("accept-encoding") or h.get("Accept-Encoding") or ""
+            if "zstd" in ae:
+                ae = ae.replace("zstd", "").replace(",,", ",").strip(" ,")
+                if ae:
+                    h["accept-encoding"] = ae
+                else:
+                    h.pop("accept-encoding", None)
+                    h.pop("Accept-Encoding", None)
+
+            with httpx.Client(follow_redirects=True, timeout=timeout) as client:
+                r = client.get(image_url, headers=h)
+
+            # === 신규 === 응답 None/실패 방어
+            if r is None:
+                self.log_func(f"❌ 이미지 응답 None: {image_url}")
+                return None
+
+            if r.status_code != 200:
+                self.log_func(f"❌ 이미지 HTTP {r.status_code}: {image_url}")
+                return None
+
+            content = r.content
+            if not content:
+                self.log_func(f"❌ 이미지 content 비었음: {image_url}")
+                return None
 
             with open(save_path, "wb") as f:
                 f.write(content)
 
-            self.log_func(f"🖼️ 이미지 저장 완료: {save_path}")
             return save_path
 
         except Exception as e:
-            self.log_func(f"❌ 이미지 저장 실패: {save_path} / 오류: {e}")
+            self.log_func(f"❌ 이미지 저장 실패: {os.path.join(folder_path, filename)} / 오류: {str(e)}")
             return None
 
     def read_json_array_from_resources(self, filename):
@@ -157,3 +192,24 @@ class FileUtils:
         except Exception as e:
             self.log_func(f"❌ JSON 읽기 실패: {file_path} / 오류: {e}")
             return []
+
+    def safe_name(self, s, max_len=40):
+        s = "" if s is None else str(s)
+        s = s.strip()
+        s = re.sub(r'[\\/:*?"<>|]', "_", s)
+        s = re.sub(r"\s+", "_", s)
+        if max_len and len(s) > max_len:
+            s = s[:max_len]
+        return s or "noname"
+
+    def guess_ext(self, url):
+        path = urlparse(url).path.lower()
+        if path.endswith(".png"):
+            return "png"
+        if path.endswith(".jpg") or path.endswith(".jpeg"):
+            return "jpg"
+        if path.endswith(".webp"):
+            return "webp"
+        if path.endswith(".gif"):
+            return "gif"
+        return "jpg"

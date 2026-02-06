@@ -8,11 +8,11 @@ LOG_STYLE = """
 """
 
 HEADER_TEXT_STYLE = """
-    font-size: 18px; 
+    font-size: 16px; 
     font-weight: bold; 
     background-color: white; 
     color: black; 
-    padding: 10px;
+    padding: 20px;
 """
 
 def apply_common_button_style(

@@ -26,21 +26,24 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
     def run(self):
         try:
-            if self.init():
-                self.log_signal_func("초기화 성공")
-            else:
-                self.log_signal_func("초기화 실패")
+            if not self.init():
+                self.log_signal_func("초기화 실패 → 종료")
+                self.destroy()
+                return
 
-            if self.main():
-                self.log_signal_func("메인 성공")
-            else:
+            self.log_signal_func("초기화 성공")
+
+            if not self.main():
                 self.log_signal_func("메인 실패")
+            else:
+                self.log_signal_func("메인 성공")
 
             self.destroy()
             self.log_signal_func("종료 완료")
 
         except Exception as e:
-            self.log_signal_func(f"❌ 예외 발생: {e}")
+            self.log_signal_func("❌ 예외 발생: " + str(e))
+            self.destroy()
 
 
     def log_signal_func(self, msg):
@@ -86,19 +89,18 @@ class BaseApiWorker(QThread, metaclass=QThreadABCMeta):
 
 
     def set_columns(self, columns):
-        # ✅ 체크된 항목들의 'value'만 추출해서 저장
+        self.columns = []
         if columns:
             self.columns = [col["value"] for col in columns if col.get("checked", False)]
 
 
     def set_sites(self, sites):
-        # ✅ 체크된 항목들의 'value'만 추출해서 저장
+        self.sites = []
         if sites:
             self.sites = [col["value"] for col in sites if col.get("checked", False)]
 
 
     def set_region(self, region):
-        # ✅ 체크된 항목들의 'value'만 추출해서 저장
         self.region = region
 
 

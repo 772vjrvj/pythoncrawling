@@ -5,7 +5,7 @@ import pandas as pd
 import os
 from openpyxl import load_workbook, Workbook   # ✅ 이렇게 맨 위로
 from openpyxl.utils import get_column_letter
-
+import csv
 
 class ExcelUtils:
     def __init__(self, log_func=None):
@@ -93,7 +93,6 @@ class ExcelUtils:
             if self.log_func:
                 self.log_func(f"❌ 변환 중 오류 발생: {e}")
 
-    # 일반 객체 리스트인 경우
     def obj_to_row(self, o, cols):
         if isinstance(o, dict):
             return {c: o.get(c) for c in cols}
@@ -181,12 +180,6 @@ class ExcelUtils:
         if self.log_func:
             self.log_func("excel(객체 리스트) 저장완료 (URL 하이퍼링크 처리)")
 
-    # ==========================================================
-    # === 신규/수정 ===
-    #   - sheet_name이 없으면 새 시트 생성
-    #   - 새 시트면 헤더(columns) 1행 추가
-    #   - 기존 시트면 그대로 append
-    # ==========================================================
     def append_rows_text_excel(self, filename, rows, columns, sheet_name="Sheet1"):
         if not rows:
             if self.log_func:
@@ -233,3 +226,19 @@ class ExcelUtils:
         wb.save(filename)
         if self.log_func:
             self.log_func(f"[EXCEL] 저장 완료 ({sheet_name}) (추가 {saved}건)")  # === 신규 ===
+
+    def append_row_to_csv(self, csv_filename, item, columns):
+        if not columns:
+            return
+
+        row = {}
+        for c in columns:
+            v = item.get(c)
+            row[c] = "" if v is None else str(v)
+
+        with open(csv_filename, "a", newline="", encoding="utf-8-sig") as f:
+            writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
+            writer.writerow(row)
+
+        if self.log_func:
+            self.log_func("csv 1행 저장완료")
