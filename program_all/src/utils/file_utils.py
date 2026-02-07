@@ -114,6 +114,10 @@ class FileUtils:
         """
         image_url에서 바이너리 받아서 folder_path/filename 으로 저장
         실패하면 None 반환
+
+        ✅ 개선:
+        - Content-Type 로그 출력
+        - 실제 Content-Type 기반 확장자 자동 교정(파일명 변경)
         """
         try:
             if not folder_path:
@@ -121,14 +125,11 @@ class FileUtils:
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
 
-            save_path = os.path.join(folder_path, filename)
-
-            # === 신규 === headers None 방어 + zstd 제거(디코딩 이슈 방지)
+            # headers None 방어 + zstd 제거(디코딩 이슈 방지)
             h = {}
             if isinstance(headers, dict):
                 h.update(headers)
 
-            # 너무 공격적인 accept-encoding(zstd) 제거(간헐적으로 클라 디코더 문제나는 케이스 방지)
             ae = h.get("accept-encoding") or h.get("Accept-Encoding") or ""
             if "zstd" in ae:
                 ae = ae.replace("zstd", "").replace(",,", ",").strip(" ,")
@@ -141,7 +142,9 @@ class FileUtils:
             with httpx.Client(follow_redirects=True, timeout=timeout) as client:
                 r = client.get(image_url, headers=h)
 
-            # === 신규 === 응답 None/실패 방어
+            # ✅ 여기서 로그 찍는다 (원인 확정용)
+            self.log_func(f"[IMG] url={image_url} status={r.status_code} ctype={r.headers.get('Content-Type')}")
+
             if r is None:
                 self.log_func(f"❌ 이미지 응답 None: {image_url}")
                 return None
@@ -154,6 +157,39 @@ class FileUtils:
             if not content:
                 self.log_func(f"❌ 이미지 content 비었음: {image_url}")
                 return None
+
+            # ✅ Content-Type 검사
+            ctype = (r.headers.get("Content-Type") or "").lower()
+            if "image/" not in ctype:
+                head = content[:200]
+                try:
+                    head_text = head.decode("utf-8", errors="replace")
+                except Exception:
+                    head_text = str(head)
+                self.log_func(f"❌ 이미지 아님 Content-Type={ctype}: {image_url} / head={head_text[:120]}")
+                return None
+
+            # ✅ Content-Type 기반 확장자 교정
+            # (URL은 png여도 실제는 webp/avif로 오는 케이스 대응)
+            ext_map = {
+                "image/png": "png",
+                "image/jpeg": "jpg",
+                "image/jpg": "jpg",
+                "image/webp": "webp",
+                "image/avif": "avif",
+                "image/gif": "gif",
+            }
+            real_ext = ext_map.get(ctype.split(";")[0].strip(), None)
+
+            save_path = os.path.join(folder_path, filename)
+
+            if real_ext:
+                base, old_ext = os.path.splitext(filename)
+                old_ext = (old_ext or "").lower().lstrip(".")
+                if old_ext and old_ext != real_ext:
+                    # 파일명 확장자 자동 교정
+                    filename = f"{base}.{real_ext}"
+                    save_path = os.path.join(folder_path, filename)
 
             with open(save_path, "wb") as f:
                 f.write(content)

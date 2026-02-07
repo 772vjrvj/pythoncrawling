@@ -581,12 +581,33 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
 
         save_dir, rel_dir = self._build_content_dir_and_rel(category_path, create_dir=True)
         filename = f"{filename_no_ext}.html"
-
         abs_path = os.path.join(save_dir, filename)
+
+        # === 신규 === local:// 경로를 HTML 파일 기준 상대경로로 치환
+        try:
+            soup = BeautifulSoup(str(html_text), "html.parser")
+
+            for img in soup.find_all("img"):
+                src = (img.get("src") or "").strip()
+                if not src.startswith("local://"):
+                    continue
+
+                rel_img = src[len("local://"):].lstrip("/")  # 예: 457deep/이미지/.../postid/file.jpg
+                abs_img = os.path.join(os.getcwd(), *rel_img.split("/"))
+
+                # HTML 파일 폴더(save_dir) 기준 상대경로
+                rel_from_html = os.path.relpath(abs_img, start=save_dir).replace("\\", "/")
+                img["src"] = rel_from_html
+
+            html_text = str(soup)
+        except Exception as e:
+            self.log_signal_func(f"❌ local 이미지 src 치환 실패: {e}")
+
         with open(abs_path, "w", encoding="utf-8") as f:
             f.write(str(html_text))
 
         return f"{rel_dir}/{filename}"
+
 
     # =========================
     # HTML parse + image download (URL + base64) + img src rewrite
@@ -661,8 +682,8 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
 
                     saved_names.append(filename)
 
-                    # src rewrite
-                    img["src"] = self._join_url(self.asset_base_url, rel_dir, filename)
+                    # === 변경 === (오프라인 보기용) local:// 토큰으로 저장
+                    img["src"] = f"local://{rel_dir}/{filename}"
 
                 except Exception as e:
                     self.log_signal_func(f"[{context}] ❌ base64 이미지 저장 실패: {e}")
@@ -695,8 +716,8 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
 
                     saved_names.append(filename)
 
-                    # src rewrite
-                    img["src"] = self._join_url(self.asset_base_url, rel_dir, filename)
+                    # === 변경 === (오프라인 보기용) local:// 토큰으로 저장
+                    img["src"] = f"local://{rel_dir}/{filename}"
 
                 except Exception as e:
                     self.log_signal_func(f"[{context}] ❌ 이미지 다운로드 실패: {src} / {e}")
@@ -712,6 +733,8 @@ class Api457deepDetailSetLoadWorker(BaseApiWorker):
 
         # 이미지 하나도 없으면 폴더 생성 안됨
         return str(div), saved_names, (save_dir or "")
+
+
 
     def _build_image_dir_and_rel(self, category_path, post_id, create_dir=True):
         parts = [p.strip() for p in (category_path or "").split(">") if p.strip()]

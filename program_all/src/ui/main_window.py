@@ -475,10 +475,18 @@ class MainWindow(QWidget):
 
 
     def open_column_setting(self):
-        if self.column_set_pop is None:
-            self.column_set_pop = ColumnSetPop(self)
-            self.column_set_pop.log_signal.connect(self.add_log)
+        try:
+            if self.column_set_pop is not None:
+                self.column_set_pop.close()
+                self.column_set_pop.deleteLater()
+        except Exception:
+            pass
+        self.column_set_pop = None
+
+        self.column_set_pop = ColumnSetPop(self)
+        self.column_set_pop.log_signal.connect(self.add_log)
         self.column_set_pop.exec_()
+
 
     def open_site_setting(self):
         if self.site_set_pop is None:
