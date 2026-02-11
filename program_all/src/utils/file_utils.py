@@ -139,7 +139,7 @@ class FileUtils:
                     h.pop("accept-encoding", None)
                     h.pop("Accept-Encoding", None)
 
-            with httpx.Client(follow_redirects=True, timeout=timeout) as client:
+            with httpx.Client(follow_redirects=True, timeout=timeout, http2=True) as client:
                 r = client.get(image_url, headers=h)
 
             # ✅ 여기서 로그 찍는다 (원인 확정용)

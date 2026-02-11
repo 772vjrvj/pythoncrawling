@@ -38,8 +38,9 @@
 # from src.workers.main.api_hohoyoga_set_worker                       import ApiHohoyogaSetLoadWorker
 # from src.workers.main.api_lululemon_set_worker                      import ApiLululemonSetLoadWorker
 # from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
-from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
-from src.workers.main.api_kmong_detail_set_worker                    import ApiKmongDetailSetLoadWorker
+# from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
+# from src.workers.main.api_kmong_detail_set_worker                    import ApiKmongDetailSetLoadWorker
+from src.workers.main.api_naver_blog_html_set_worker            import ApiNaverBlogHtmlSetLoadWorker
 
 # from src.workers.main.api_base_detail_set_worker                    import ApiBaseDetailSetLoadWorker
 
@@ -86,8 +87,9 @@ WORKER_CLASS_MAP = {
     # "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
     # "LULULEMON"                         :   ApiLululemonSetLoadWorker,
     # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
-    "457DEEP"                           :   Api457deepDetailSetLoadWorker,
-    "KMONG_DETAIL"                      :   ApiKmongDetailSetLoadWorker,
+    # "457DEEP"                           :   Api457deepDetailSetLoadWorker,
+    # "KMONG_DETAIL"                      :   ApiKmongDetailSetLoadWorker,
+    "BLOG_HTML"                         :   ApiNaverBlogHtmlSetLoadWorker,
 
     # "BASE"                              :   ApiBaseDetailSetLoadWorker,
 }

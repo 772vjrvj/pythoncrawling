@@ -1,133 +1,210 @@
-import asyncio
+# PlaywrightUtils.py
+# -*- coding: utf-8 -*-
+
 import os
-import psutil
-import traceback
-import requests
-from pathlib import Path
-from playwright.async_api import async_playwright
+import time
+import glob
+import shutil
+import tempfile
+import uuid
+from typing import Optional, Tuple
+
+from playwright.sync_api import sync_playwright, TimeoutError as PWTimeoutError
+
+
+DEFAULT_WIDTH  = 1280
+DEFAULT_HEIGHT = 800
+SLEEP_AFTER_PROFILE = 0.2
 
 
 class PlaywrightUtils:
-    def __init__(self, headless=True):
-        self.playwright = None
+    def __init__(self, headless: bool = False):
+        self.headless = headless
+
+        self._pw = None
         self.browser = None
         self.context = None
         self.page = None
-        self.session = requests.Session()
-        self.headless = headless
-        self.auth_state_path = "auth_state.json"
 
-    async def _launch_browser(self):
-        self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch(
-            headless=self.headless,
-            args=[
-                "--disable-http2",  # ✅ HTTP/2 비활성화
-                "--disable-gpu",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-software-rasterizer",
-                "--disable-blink-features=AutomationControlled",
-                "--start-maximized"
+        self._tmp_profile: Optional[str] = None
+        self.last_error: Optional[Exception] = None
+
+    # ----- 내부 유틸 -----
+    def _new_tmp_profile(self) -> str:
+        base = os.path.join(tempfile.gettempdir(), "playwright_profiles")
+        os.makedirs(base, exist_ok=True)
+        path = os.path.join(base, f"profile_{uuid.uuid4().hex}")
+        os.makedirs(path, exist_ok=True)
+        return path
+
+    def _wipe_locks(self, path: str):
+        # chromium user-data-dir 잔여 락 파일 정리(드물지만 방어)
+        for pat in ["Singleton*", "LOCK", "LockFile", "DevToolsActivePort", "lockfile"]:
+            for p in glob.glob(os.path.join(path, pat)):
+                try:
+                    if os.path.isdir(p):
+                        shutil.rmtree(p, ignore_errors=True)
+                    else:
+                        os.remove(p)
+                except Exception:
+                    pass
+
+    def _get_screen_size(self) -> Tuple[int, int]:
+        try:
+            import tkinter as tk
+            root = tk.Tk()
+            root.withdraw()
+            w = root.winfo_screenwidth()
+            h = root.winfo_screenheight()
+            root.destroy()
+            if w and h:
+                return int(w), int(h)
+        except Exception:
+            pass
+        return 1920, 1080
+
+    # ----- 외부에서 쓰는 함수 -----
+    def start_driver(self, timeout: int = 30):
+        """
+        selenium의 start_driver()처럼 main에서 바로 쓸 수 있게 page를 반환
+        """
+        self._tmp_profile = self._new_tmp_profile()
+        self._wipe_locks(self._tmp_profile)
+        time.sleep(SLEEP_AFTER_PROFILE)
+
+        try:
+            self._pw = sync_playwright().start()
+
+            # ✅ chromium 사용
+            # - user_data_dir 사용하면 'persistent context'로 뜸
+            # - headless, window-size 설정 가능
+            args = [
+                f"--window-size={DEFAULT_WIDTH},{DEFAULT_HEIGHT}",
+                "--lang=ko-KR",
             ]
-        )
+            if self.headless:
+                args += ["--no-sandbox", "--disable-dev-shm-usage"]
 
-    async def set_browser(self):
-        try:
-            await self._launch_browser()
-
-            # ✅ 로그인 상태 재사용 여부 확인
-            if Path(self.auth_state_path).exists():
-                self.context = await self.browser.new_context(
-                    storage_state=self.auth_state_path,
-                    viewport={"width": 1920, "height": 1080},
-                    user_agent=(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/114.0.0.0 Safari/537.36"
-                    ),
-                    locale="ko-KR"
-                )
-            else:
-                self.context = await self.browser.new_context(
-                    viewport={"width": 1920, "height": 1080},
-                    user_agent=(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/114.0.0.0 Safari/537.36"
-                    ),
-                    locale="ko-KR"
-                )
-
-            self.page = await self.context.new_page()
-
-            await self._bypass_bot_detection()
-
-        except Exception as e:
-            print(f"❌ Browser launch failed: {e}")
-            traceback.print_exc()
-
-    async def set_browser_with_user_profile(self):
-        try:
-            self._close_chrome_processes()
-            await self._launch_browser()
-
-            self.context = await self.browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                           "AppleWebKit/537.36 (KHTML, like Gecko) "
-                           "Chrome/114.0.0.0 Safari/537.36",
-                viewport={"width": 1920, "height": 1080},
-                locale="ko-KR"
+            self.context = self._pw.chromium.launch_persistent_context(
+                user_data_dir=self._tmp_profile,
+                headless=self.headless,
+                viewport={"width": DEFAULT_WIDTH, "height": DEFAULT_HEIGHT},
+                args=args,
             )
 
-            self.page = await self.context.new_page()
-            await self._bypass_bot_detection()
+            self.page = self.context.new_page()
+            self.page.set_default_timeout(timeout * 1000)
+
+            # 화면 배치(좌측 반) - headless면 의미 없음
+            if not self.headless:
+                try:
+                    sw, sh = self._get_screen_size()
+                    # playwright는 set_window_rect 같은 API가 없어서 viewport로만 충분히 처리
+                    # (실제 윈도우 위치 제어는 OS별로 번거로워서 생략)
+                except Exception:
+                    pass
+
+            return self.page
+
         except Exception as e:
-            print(f"❌ User profile launch failed: {e}")
-            traceback.print_exc()
+            self.last_error = e
+            self.quit()
+            raise
 
-    async def _bypass_bot_detection(self):
-        await self.context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-            window.navigator.chrome = { runtime: {} };
-            Object.defineProperty(navigator, 'languages', { get: () => ['ko-KR', 'ko'] });
-            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-        """)
+    def quit(self):
+        try:
+            if self.context:
+                self.context.close()
+        except Exception:
+            pass
+        try:
+            if self._pw:
+                self._pw.stop()
+        except Exception:
+            pass
+        finally:
+            self._pw = None
+            self.browser = None
+            self.context = None
+            self.page = None
 
-    def _close_chrome_processes(self):
-        for proc in psutil.process_iter(['pid', 'name']):
+            if self._tmp_profile and os.path.isdir(self._tmp_profile):
+                try:
+                    shutil.rmtree(self._tmp_profile, ignore_errors=True)
+                except Exception:
+                    pass
+            self._tmp_profile = None
+
+    # ----- 헬퍼 -----
+    def goto(self, url: str, wait_until: str = "networkidle"):
+        """
+        wait_until: 'load' | 'domcontentloaded' | 'networkidle'
+        네이버 블로그는 networkidle + selector 대기 조합이 안정적
+        """
+        try:
+            self.page.goto(url, wait_until=wait_until)
+            return True
+        except Exception as e:
+            self.last_error = e
+            return False
+
+    def wait_selector(self, selector: str, timeout: int = 10):
+        try:
+            self.page.wait_for_selector(selector, timeout=timeout * 1000)
+            return True
+        except PWTimeoutError as e:
+            self.last_error = e
+            return False
+        except Exception as e:
+            self.last_error = e
+            return False
+
+    def get_html(self) -> str:
+        try:
+            return self.page.content()
+        except Exception as e:
+            self.last_error = e
+            return ""
+
+    def get_html_from_mainframe(self) -> str:
+        """
+        네이버 블로그 구형/일부 스킨에서 본문이 iframe#mainFrame에 들어감
+        - 있으면 frame html 반환
+        - 없으면 그냥 page html 반환
+        """
+        try:
+            # frame(name='mainFrame') 또는 frame with url includes 'PostView' 등의 케이스가 있음
+            frame = None
+
+            # 1) name 기준
             try:
-                if 'chrome' in proc.info['name'].lower():
-                    proc.kill()
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                continue
+                frame = self.page.frame(name="mainFrame")
+            except Exception:
+                frame = None
 
-    async def save_storage_state(self):
-        """로그인 후 상태 저장"""
-        if self.context:
-            await self.context.storage_state(path=self.auth_state_path)
-            print(f"✅ 로그인 상태 저장됨: {self.auth_state_path}")
+            # 2) id=mainFrame 요소 기반
+            if frame is None:
+                try:
+                    el = self.page.query_selector("iframe#mainFrame")
+                    if el:
+                        frame = el.content_frame()
+                except Exception:
+                    frame = None
 
-    def reset_auth_state(self):
-        """로그인 상태 초기화"""
-        if Path(self.auth_state_path).exists():
-            os.remove(self.auth_state_path)
-            print("🔄 로그인 상태 초기화 완료")
+            if frame:
+                return frame.content()
+            return self.page.content()
 
-    async def start_browser(self, use_user_profile=False):
-        if use_user_profile:
-            await self.set_browser_with_user_profile()
-        else:
-            await self.set_browser()
-        return self.page
+        except Exception as e:
+            self.last_error = e
+            try:
+                return self.page.content()
+            except Exception:
+                return ""
 
-    def get_session(self):
-        return self.session
-
-    async def quit(self):
-        if self.context:
-            await self.context.close()
-        if self.browser:
-            await self.browser.close()
-        if self.playwright:
-            await self.playwright.stop()
+    @staticmethod
+    def explain_exception(context: str, e: Exception) -> str:
+        msg = str(e)
+        if "Timeout" in msg:
+            return f"⏱️ {context}: 시간 초과"
+        return f"❗ {context}: {msg}"
