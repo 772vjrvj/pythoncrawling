@@ -501,173 +501,173 @@ class ApiNaverBlogHtmlSetLoadWorker(BaseApiWorker):
     # ----------------------------
     # index (offline search)
     # ----------------------------
-def build_index_html(self, posts):
-    js_posts = json.dumps(posts, ensure_ascii=False)
+    def build_index_html(self, posts):
+        js_posts = json.dumps(posts, ensure_ascii=False)
 
-    index_html = f"""<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>블로그 아카이브 - {self.blog_id}</title>
-
-  <style>
-    body{{
-      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-      margin:0;
-      background:#f6f7f9;
-    }}
-
-    .wrap{{
-      max-width:1100px;
-      margin:0 auto;
-      padding:18px;
-    }}
-
-    .card{{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:10px;
-      padding:14px;
-    }}
-
-    .top{{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-bottom:12px;
-    }}
-
-    input{{
-      flex:1;
-      padding:10px 12px;
-      border:1px solid #d1d5db;
-      border-radius:8px;
-      font-size:14px;
-    }}
-
-    .row{{
-      display:flex;
-      gap:10px;
-      padding:10px 8px;
-      border-bottom:1px solid #eef2f7;
-    }}
-
-    .row:last-child{{
-      border-bottom:none;
-    }}
-
-    .no{{
-      width:60px;
-      color:#6b7280;
-      font-variant-numeric: tabular-nums;
-    }}
-
-    .meta{{
-      width:110px;
-      color:#6b7280;
-    }}
-
-    a{{
-      color:#111827;
-      text-decoration:none;
-    }}
-
-    a:hover{{
-      text-decoration:underline;
-    }}
-
-    .title{{
-      flex:1;
-    }}
-
-    .small{{
-      color:#6b7280;
-      font-size:12px;
-      margin-top:4px;
-    }}
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <input id="q" placeholder="검색: 제목 또는 본문(내용)" />
-        <div class="small" id="stat"></div>
-      </div>
-      <div id="list"></div>
-    </div>
-  </div>
-
-<script>
-const POSTS = {js_posts};
-
-function esc(s){{
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
-}}
-
-function norm(s){{ return (s ?? "").toString().toLowerCase(); }}
-
-function imgCountFrom(p){{
-  const s = p?.["이미지목록"] ?? "[]";
-  try {{
-    const arr = JSON.parse(s);
-    return Array.isArray(arr) ? arr.length : 0;
-  }} catch(e) {{
-    return 0;
-  }}
-}}
-
-function render(items){{
-  const el = document.getElementById("list");
-  const stat = document.getElementById("stat");
-  stat.textContent = items.length + " / " + POSTS.length;
-
-  let html = "";
-  for(const p of items){{
-    const fileName = p?.["파일명"] || "";
-    const href = "posts/" + fileName;
-
-    html += `
-      <div class="row">
-        <div class="no">${{esc(p?.["번호"] || "")}}</div>
-        <div class="meta">${{esc(p?.["작성일"] || "")}}</div>
-        <div class="title">
-          <a href="${{href}}">${{esc(p?.["제목"] || "")}}</a>
-          <div class="small">logNo: ${{esc(p?.["로그번호"] || "")}} / imgs: ${{imgCountFrom(p)}}</div>
-        </div>
-      </div>
-    `;
-  }}
-  el.innerHTML = html;
-}}
-
-const input = document.getElementById("q");
-input.addEventListener("input", () => {{
-  const q = norm(input.value).trim();
-  if(!q) return render(POSTS);
-
-  const filtered = POSTS.filter(p => {{
-    const t = norm(p?.["제목"]);
-    const c = norm(p?.["내용"]);
-    return t.includes(q) || c.includes(q);
-  }});
-  render(filtered);
-}});
-
-render(POSTS);
-</script>
-
-</body>
-</html>"""
-    return index_html
-
+        index_html = f"""
+        <!doctype html>
+        <html lang="ko">
+        <head>
+          <meta charset="utf-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1"/>
+          <title>블로그 아카이브 - {self.blog_id}</title>
+        
+          <style>
+            body{{
+              font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+              margin:0;
+              background:#f6f7f9;
+            }}
+        
+            .wrap{{
+              max-width:1100px;
+              margin:0 auto;
+              padding:18px;
+            }}
+        
+            .card{{
+              background:#fff;
+              border:1px solid #e5e7eb;
+              border-radius:10px;
+              padding:14px;
+            }}
+        
+            .top{{
+              display:flex;
+              gap:10px;
+              align-items:center;
+              margin-bottom:12px;
+            }}
+        
+            input{{
+              flex:1;
+              padding:10px 12px;
+              border:1px solid #d1d5db;
+              border-radius:8px;
+              font-size:14px;
+            }}
+        
+            .row{{
+              display:flex;
+              gap:10px;
+              padding:10px 8px;
+              border-bottom:1px solid #eef2f7;
+            }}
+        
+            .row:last-child{{
+              border-bottom:none;
+            }}
+        
+            .no{{
+              width:60px;
+              color:#6b7280;
+              font-variant-numeric: tabular-nums;
+            }}
+        
+            .meta{{
+              width:110px;
+              color:#6b7280;
+            }}
+        
+            a{{
+              color:#111827;
+              text-decoration:none;
+            }}
+        
+            a:hover{{
+              text-decoration:underline;
+            }}
+        
+            .title{{
+              flex:1;
+            }}
+        
+            .small{{
+              color:#6b7280;
+              font-size:12px;
+              margin-top:4px;
+            }}
+          </style>
+        </head>
+                            
+        <body>
+          <div class="wrap">
+            <div class="card">
+              <div class="top">
+                <input id="q" placeholder="검색: 제목 또는 본문(내용)" />
+                <div class="small" id="stat"></div>
+              </div>
+              <div id="list"></div>
+            </div>
+          </div>
+        
+        <script>
+        const POSTS = {js_posts};
+        
+        function esc(s){{
+          return String(s ?? "")
+            .replaceAll("&","&amp;")
+            .replaceAll("<","&lt;")
+            .replaceAll(">","&gt;")
+            .replaceAll('"',"&quot;")
+            .replaceAll("'","&#39;");
+        }}
+        
+        function norm(s){{ return (s ?? "").toString().toLowerCase(); }}
+        
+        function imgCountFrom(p){{
+          const s = p?.["이미지목록"] ?? "[]";
+          try {{
+            const arr = JSON.parse(s);
+            return Array.isArray(arr) ? arr.length : 0;
+          }} catch(e) {{
+            return 0;
+          }}
+        }}
+        
+        function render(items){{
+          const el = document.getElementById("list");
+          const stat = document.getElementById("stat");
+          stat.textContent = items.length + " / " + POSTS.length;
+        
+          let html = "";
+          for(const p of items){{
+            const fileName = p?.["파일명"] || "";
+            const href = "posts/" + fileName;
+        
+            html += `
+              <div class="row">
+                <div class="no">${{esc(p?.["번호"] || "")}}</div>
+                <div class="meta">${{esc(p?.["작성일"] || "")}}</div>
+                <div class="title">
+                  <a href="${{href}}">${{esc(p?.["제목"] || "")}}</a>
+                  <div class="small">logNo: ${{esc(p?.["로그번호"] || "")}} / imgs: ${{imgCountFrom(p)}}</div>
+                </div>
+              </div>
+            `;
+          }}
+          el.innerHTML = html;
+        }}
+        
+        const input = document.getElementById("q");
+        input.addEventListener("input", () => {{
+          const q = norm(input.value).trim();
+          if(!q) return render(POSTS);
+        
+          const filtered = POSTS.filter(p => {{
+            const t = norm(p?.["제목"]);
+            const c = norm(p?.["내용"]);
+            return t.includes(q) || c.includes(q);
+          }});
+          render(filtered);
+        }});
+        
+        render(POSTS);
+        </script>
+        </body>
+        </html>
+        """
+        return index_html
 
     def main(self):
         self.running = True

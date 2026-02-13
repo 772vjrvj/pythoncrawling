@@ -81,6 +81,25 @@ class APIClient:
         if name and value:
             self.session.cookies.set(name, value)
 
+    def cookie_set_dict(self, c):
+        # c: selenium driver.get_cookies()의 원소(dict)
+        if not c:
+            return
+        name = c.get("name")
+        value = c.get("value")
+        if not name or value is None:
+            return
+
+        domain = c.get("domain") or ".band.us"
+        path = c.get("path") or "/"
+
+        # domain 앞에 점(.) 없으면 서브도메인 공유가 안 될 수 있어서 보정
+        if domain and not domain.startswith(".") and domain.endswith("band.us"):
+            domain = "." + domain
+
+        self.session.cookies.set(name, value, domain=domain, path=path)
+
+
     def cookie_get(self, name=None, domain=None, path=None, as_dict=False):
         """
         세션 쿠키 필터링 반환.
