@@ -40,7 +40,8 @@
 # from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
 # from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
 # from src.workers.main.api_kmong_detail_set_worker                    import ApiKmongDetailSetLoadWorker
-from src.workers.main.api_naver_blog_html_set_worker            import ApiNaverBlogHtmlSetLoadWorker
+# from src.workers.main.api_naver_blog_html_set_worker            import ApiNaverBlogHtmlSetLoadWorker
+from src.workers.main.api_naver_band_member_set_worker            import ApiNaverBandMemberSetLoadWorker
 
 # from src.workers.main.api_base_detail_set_worker                    import ApiBaseDetailSetLoadWorker
 
@@ -48,10 +49,6 @@ from src.workers.main.api_naver_blog_html_set_worker            import ApiNaverB
 
 WORKER_CLASS_MAP = {
     # "ALBAMON"                           :   ApiAlbamonSetLoadWorker,
-    # "NAVER_PLACE"                       :   ApiNaverPlaceSetLoadWorker,
-    # "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
-    # "NAVER_PLACE_URL_ALL"               :   ApiNaverPlaceUrlAllSetLoadWorker,
-    # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "COUPANG"                           :   ApiCoupangSetLoadWorker,
     # "ALBA"                              :   ApiAlbaSetLoadWorker,
     # "SOTONG"                            :   ApiSotongSetLoadWorker,
@@ -71,9 +68,16 @@ WORKER_CLASS_MAP = {
     # "OK_MALL_DETAIL"                    :   ApiOkmallDetailSetLoadWorker,
     # "THE_FIRST_HALL_WEDDING"            :   ApiThefirsthallweddingDetailSetLoadWorker,
     # "NH_BANK"                           :   ApiNhBankSetLoadWorker,
+    # "NAVER_PLACE"                       :   ApiNaverPlaceSetLoadWorker,
+    # "NAVER_PLACE_LOC_ALL"               :   ApiNaverPlaceLocAllSetLoadWorker,
+    # "NAVER_PLACE_URL_ALL"               :   ApiNaverPlaceUrlAllSetLoadWorker,
+    # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
+    # "NAVER_BLOG_HTML"                   :   ApiNaverBlogHtmlSetLoadWorker,
+    # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
+    # "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
     # "CONTEST_DEADLINE"                  :   ApiContestDealineSetLoadWorker,
     # "INVOICE"                           :   ApiInvoiceSetLoadWorker,
     # "KAKAO_STORE_FOOD"                  :   ApiKakaoStoreFoodSetLoadWorker,
@@ -83,13 +87,12 @@ WORKER_CLASS_MAP = {
     # "PEACHCHILL26"                      :   ApiPeachhill26SetLoadWorker,
     # "KRX_NEXTRADE"                      :   ApiKrxNextradeSetLoadWorker,
     # "COCO_LABEL"                        :   ApiCocoLabelSetLoadWorker,
-    # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
     # "HOHOYOGA"                          :   ApiHohoyogaSetLoadWorker,
     # "LULULEMON"                         :   ApiLululemonSetLoadWorker,
     # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
     # "457DEEP"                           :   Api457deepDetailSetLoadWorker,
     # "KMONG_DETAIL"                      :   ApiKmongDetailSetLoadWorker,
-    "BLOG_HTML"                         :   ApiNaverBlogHtmlSetLoadWorker,
+    "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
 
     # "BASE"                              :   ApiBaseDetailSetLoadWorker,
 }

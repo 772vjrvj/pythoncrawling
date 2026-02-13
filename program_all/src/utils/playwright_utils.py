@@ -16,6 +16,9 @@ DEFAULT_WIDTH  = 1280
 DEFAULT_HEIGHT = 800
 SLEEP_AFTER_PROFILE = 0.2
 
+# ✅ 밴드/네이버 계열 로그인 안정용 UA (네가 준 UA 그대로)
+DEFAULT_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+
 
 class PlaywrightUtils:
     def __init__(self, headless: bool = False):
@@ -66,50 +69,58 @@ class PlaywrightUtils:
     # ----- 외부에서 쓰는 함수 -----
     def start_driver(self, timeout: int = 30):
         """
-        selenium의 start_driver()처럼 main에서 바로 쓸 수 있게 page를 반환
+        ✅ 고수 세팅(밴드/네이버 로그인 안정 최우선)
+        - 로컬 Chrome 사용(channel="chrome")
+        - 자동화 전용 "고정 프로필"을 LOCALAPPDATA에 저장 (내 크롬 프로필 아님)
+          → 캡차/재로그인 빈도 크게 감소, 앱 재설치/업데이트해도 로그인 유지
+        - start-maximized + viewport=None (사람 브라우저 느낌)
+        - AutomationControlled 등 탐지 완화 옵션
         """
-        self._tmp_profile = self._new_tmp_profile()
+        # === 신규 === 자동화 전용 고정 프로필(로컬 크롬 프로필과 완전 별개)
+        base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+        profile_dir = os.path.join(base, "MyCrawlerProfile", "pw_profile")
+        os.makedirs(profile_dir, exist_ok=True)
+
+        self._tmp_profile = profile_dir
         self._wipe_locks(self._tmp_profile)
         time.sleep(SLEEP_AFTER_PROFILE)
 
         try:
             self._pw = sync_playwright().start()
 
-            # ✅ chromium 사용
-            # - user_data_dir 사용하면 'persistent context'로 뜸
-            # - headless, window-size 설정 가능
             args = [
-                f"--window-size={DEFAULT_WIDTH},{DEFAULT_HEIGHT}",
+                "--start-maximized",  # 창 최대화(사람 느낌)
                 "--lang=ko-KR",
+                "--disable-blink-features=AutomationControlled",  # 자동화 탐지 완화
+                "--disable-dev-shm-usage",  # 로딩 멈춤/스핀 방지(안정)
+                "--no-first-run",  # 첫 실행 안내 제거
+                "--no-default-browser-check",  # 기본 브라우저 확인 제거
             ]
             if self.headless:
-                args += ["--no-sandbox", "--disable-dev-shm-usage"]
+                args += ["--no-sandbox"]
 
             self.context = self._pw.chromium.launch_persistent_context(
                 user_data_dir=self._tmp_profile,
                 headless=self.headless,
-                viewport={"width": DEFAULT_WIDTH, "height": DEFAULT_HEIGHT},
+                viewport=None,  # 최대화 적용 위해 고정 viewport 제거
                 args=args,
+
+                channel="chrome",  # ✅ 로컬 Chrome 사용(밴드/네이버 로그인 호환 최강)
+
+                locale="ko-KR",
+                timezone_id="Asia/Seoul",
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             )
 
             self.page = self.context.new_page()
             self.page.set_default_timeout(timeout * 1000)
-
-            # 화면 배치(좌측 반) - headless면 의미 없음
-            if not self.headless:
-                try:
-                    sw, sh = self._get_screen_size()
-                    # playwright는 set_window_rect 같은 API가 없어서 viewport로만 충분히 처리
-                    # (실제 윈도우 위치 제어는 OS별로 번거로워서 생략)
-                except Exception:
-                    pass
-
             return self.page
 
         except Exception as e:
             self.last_error = e
             self.quit()
             raise
+
 
     def quit(self):
         try:
@@ -139,7 +150,6 @@ class PlaywrightUtils:
     def goto(self, url: str, wait_until: str = "networkidle"):
         """
         wait_until: 'load' | 'domcontentloaded' | 'networkidle'
-        네이버 블로그는 networkidle + selector 대기 조합이 안정적
         """
         try:
             self.page.goto(url, wait_until=wait_until)
@@ -173,7 +183,6 @@ class PlaywrightUtils:
         - 없으면 그냥 page html 반환
         """
         try:
-            # frame(name='mainFrame') 또는 frame with url includes 'PostView' 등의 케이스가 있음
             frame = None
 
             # 1) name 기준

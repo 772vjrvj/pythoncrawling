@@ -10,6 +10,7 @@ class GlobalState:
     REGION  = "region"
     POPUP   = "popup"
     SITES   = "sites"
+    HOOKING = "hooking"
 
     # 싱글톤 인스턴스를 저장할 변수
     _instance = None
@@ -45,6 +46,7 @@ class GlobalState:
                 self.REGION     : "",     # 지역 정보
                 self.POPUP      : "",     # 팝업 정보
                 self.SITES      : "",     # 사이트 정보
+                self.HOOKING    : "",     # 후킹
             }
             self._initialized = True  # 초기화 완료 표시
 

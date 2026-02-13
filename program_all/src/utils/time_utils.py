@@ -109,3 +109,9 @@ def format_yyyymmdd_to_yyyy_mm_dd(s: str) -> str:
         return datetime.strptime(s, "%Y%m%d").strftime("%Y-%m-%d")
     except Exception:
         return ""
+
+def ms_to_yyyy_mm_dd(ms):
+    try:
+        return datetime.fromtimestamp(int(ms) / 1000).strftime("%Y-%m-%d")
+    except:
+        return ""

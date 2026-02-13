@@ -856,16 +856,18 @@ SITE_LIST = [
    #       ],
    #  ),
     Site("네이버 밴드 멤버", "NAVER_BAND_MEMBER", "#03C75A", enabled=True, popup=False,
-          setting=[
-              {'name': '밴드ID', 'code': 'band_id',    'value': '', 'type': 'input'}
-          ],
+         hooking='NAVER_BAND_MEMBER',
+         setting=[
+              {'name': '밴드ID', 'code': 'band_id',    'value': '4877094', 'type': 'input'}
+         ],
          columns = [
-             {"checked": True, "code": "user_no",           "value": "사용자번호"},
-             {"checked": True, "code": "name",              "value": "이름"},
-             {"checked": True, "code": "description",       "value": "설명"},
-             {"checked": True, "code": "profile_image_url", "value": "프로필이미지URL"},
-             {"checked": True, "code": "role",              "value": "권한"},
-             {"checked": True, "code": "created_at",        "value": "생성일시"},
+             {"checked": True, "code": "band_name",     "value": "밴드명"},
+             {"checked": True, "code": "user_no",       "value": "유저번호"},
+             {"checked": True, "code": "role",          "value": "직책"},
+             {"checked": True, "code": "created_at",    "value": "등록일"},
+             {"checked": True, "code": "name",          "value": "이름"},
+             {"checked": True, "code": "description",   "value": "설명"},
+             {"checked": True, "code": "phone",         "value": "전화번호"},
          ]
     ),
 ]
