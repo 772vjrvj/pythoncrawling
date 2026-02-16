@@ -3,6 +3,10 @@
 # from src.workers.main.api_naver_place_loc_all_set_worker            import ApiNaverPlaceLocAllSetLoadWorker
 # from src.workers.main.api_naver_place_url_all_set_worker            import ApiNaverPlaceUrlAllSetLoadWorker
 # from src.workers.main.api_naver_blog_contents_set_worker            import ApiNaverBlogContentsSetLoadWorker
+# from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
+# from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
+from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
+# from src.workers.main.api_naver_blog_html_set_worker            import ApiNaverBlogHtmlSetLoadWorker
 # from src.workers.main.api_coupang_set_worker                        import ApiCoupangSetLoadWorker
 # from src.workers.main.api_alba_set_worker                           import ApiAlbaSetLoadWorker
 # from src.workers.main.api_sotong_set_worker                         import ApiSotongSetLoadWorker
@@ -22,9 +26,6 @@
 # from src.workers.main.api_onthespot_detail_set_worker               import ApiOnthespotDetailSetLoadWorker
 # from src.workers.main.api_the_first_hall_wedding_set_worker         import ApiThefirsthallweddingDetailSetLoadWorker
 # from src.workers.main.api_nh_bank_set_worker                        import ApiNhBankSetLoadWorker
-# from src.workers.main.api_naver_cafe_count_only_set_worker          import ApiNaverCafeCountOnlySetLoadWorker
-# from src.workers.main.api_naver_land_real_estate_loc_all_set_worker import ApiNaverLandRealEstateLocAllSetLoadWorker
-# from src.workers.main.api_naver_land_real_estate_detail_set_worker  import ApiNaverLandRealEstateDetailSetLoadWorker
 # from src.workers.main.api_contest_deadline_set_worker               import ApiContestDealineSetLoadWorker
 # from src.workers.main.invoice.api_invoice_set_worker                import ApiInvoiceSetLoadWorker
 # from src.workers.main.api_kakao_store_food_set_worker               import ApiKakaoStoreFoodSetLoadWorker
@@ -40,7 +41,6 @@
 # from src.workers.main.api_thumnail_make_set_worker                  import ApiThumnailMakeSetLoadWorker
 # from src.workers.main.api_457deep_detail_set_worker                 import Api457deepDetailSetLoadWorker
 # from src.workers.main.api_kmong_detail_set_worker                    import ApiKmongDetailSetLoadWorker
-# from src.workers.main.api_naver_blog_html_set_worker            import ApiNaverBlogHtmlSetLoadWorker
 from src.workers.main.api_naver_band_member_set_worker            import ApiNaverBandMemberSetLoadWorker
 
 # from src.workers.main.api_base_detail_set_worker                    import ApiBaseDetailSetLoadWorker
@@ -74,7 +74,7 @@ WORKER_CLASS_MAP = {
     # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
-    # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
+    "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
     # "NAVER_BLOG_HTML"                   :   ApiNaverBlogHtmlSetLoadWorker,
     # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
     # "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
@@ -92,7 +92,7 @@ WORKER_CLASS_MAP = {
     # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
     # "457DEEP"                           :   Api457deepDetailSetLoadWorker,
     # "KMONG_DETAIL"                      :   ApiKmongDetailSetLoadWorker,
-    "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
+    # "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
 
     # "BASE"                              :   ApiBaseDetailSetLoadWorker,
 }
