@@ -1,15 +1,13 @@
-# main_new.py
+# main.py
 import sys
 from typing import Optional
 
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QSharedMemory, Qt
-# === 기존 ===
 from src.app_manager import AppManager
 from src.core.global_state import GlobalState
 
 
-# === 신규: 단일 인스턴스 락 구현 ===
 class SingleInstance:
     """
     QSharedMemory 기반 단일 인스턴스 락.
@@ -38,7 +36,6 @@ class SingleInstance:
             self.shared.detach()
 
 
-# === 신규: 중복 실행 경고창 ===
 def show_already_running_alert(existing_app: Optional[QApplication] = None) -> None:
     """
     콘솔 출력 대신 경고 알림창을 최상단으로 띄움.

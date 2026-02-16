@@ -9,12 +9,11 @@ import tempfile
 import uuid
 import subprocess
 import re
-import winreg  # === 신규 ===
-import socket
-from typing import Optional, Tuple
+import winreg
+from typing import Optional, Tuple, Dict, Any
 
 import undetected_chromedriver as uc
-from undetected_chromedriver.patcher import Patcher  # === 신규 ===
+from undetected_chromedriver.patcher import Patcher
 
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -30,7 +29,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-DEFAULT_WIDTH  = 1280
+DEFAULT_WIDTH = 1280
 DEFAULT_HEIGHT = 800
 SLEEP_AFTER_PROFILE = 0.3
 
@@ -42,19 +41,23 @@ class SeleniumUtils:
         self._tmp_profile: Optional[str] = None
         self.last_error: Optional[Exception] = None
 
-        # === 신규 ===
         if debug is None:
             debug = os.environ.get("SELENIUMUTILS_DEBUG", "").strip().lower() in ("1", "true", "y", "yes")
         self.debug = bool(debug)
 
-        # === 신규 === 최근 start_driver 환경 기록
-        self.last_start_env = {}
+        # 최근 start_driver 환경 기록 (디버깅용)
+        self.last_start_env: Dict[str, Any] = {}
 
-    # ----- 내부 유틸 -----
+    # =========================================================
+    # log
+    # =========================================================
     def _log(self, *args):
         if self.debug:
             print("[SeleniumUtils]", *args)
 
+    # =========================================================
+    # profile
+    # =========================================================
     def _new_tmp_profile(self) -> str:
         base = os.path.join(tempfile.gettempdir(), "selenium_profiles")
         os.makedirs(base, exist_ok=True)
@@ -63,11 +66,6 @@ class SeleniumUtils:
         return path
 
     def _wipe_locks(self, path: str):
-        """
-        크롬 프로필 락 관련 파일/디렉토리 제거.
-        ⚠️ 프로필이 실제로 사용 중일 때 지우면 손상 위험이 있으니,
-        start_driver()에서 in-use 체크 후에만 호출하도록 구성.
-        """
         for pat in ["Singleton*", "LOCK", "LockFile", "DevToolsActivePort", "lockfile"]:
             for p in glob.glob(os.path.join(path, pat)):
                 try:
@@ -78,88 +76,6 @@ class SeleniumUtils:
                 except Exception:
                     pass
 
-    # === 신규 === Windows: 크롬 경로 찾기
-    def _find_chrome_exe_windows(self) -> Optional[str]:
-        """
-        PATH에 chrome이 없더라도 레지스트리/기본 설치 위치에서 chrome.exe 경로를 최대한 찾는다.
-        """
-        # 1) uc 내장 탐색 시도
-        try:
-            p = uc.find_chrome_executable()
-            if p and os.path.isfile(p):
-                return p
-        except Exception:
-            pass
-
-        # 2) 레지스트리 탐색
-        reg_candidates = [
-            (winreg.HKEY_CURRENT_USER, r"Software\Google\Chrome\BLBeacon", "version"),
-            (winreg.HKEY_LOCAL_MACHINE, r"Software\Google\Chrome\BLBeacon", "version"),
-            (winreg.HKEY_LOCAL_MACHINE, r"Software\WOW6432Node\Google\Chrome\BLBeacon", "version"),
-        ]
-
-        path_candidates = []
-        pf = os.environ.get("ProgramFiles")
-        pf86 = os.environ.get("ProgramFiles(x86)")
-        local = os.environ.get("LOCALAPPDATA")
-
-        if pf:
-            path_candidates.append(os.path.join(pf, "Google", "Chrome", "Application", "chrome.exe"))
-        if pf86:
-            path_candidates.append(os.path.join(pf86, "Google", "Chrome", "Application", "chrome.exe"))
-        if local:
-            path_candidates.append(os.path.join(local, "Google", "Chrome", "Application", "chrome.exe"))
-
-        # 3) App Paths
-        app_paths = [
-            (winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", ""),
-            (winreg.HKEY_LOCAL_MACHINE, r"Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", ""),
-        ]
-        for hive, subkey, value_name in app_paths:
-            try:
-                with winreg.OpenKey(hive, subkey) as k:
-                    v, _ = winreg.QueryValueEx(k, value_name)
-                    if v and os.path.isfile(v):
-                        return v
-            except Exception:
-                pass
-
-        # 4) 후보 경로 직접 확인
-        for p in path_candidates:
-            if p and os.path.isfile(p):
-                return p
-
-        # 5) 레지스트리 확인(버전만) 후에도 못 찾으면 None
-        for hive, subkey, value_name in reg_candidates:
-            try:
-                with winreg.OpenKey(hive, subkey) as k:
-                    _v, _ = winreg.QueryValueEx(k, value_name)
-                    break
-            except Exception:
-                pass
-
-        return None
-
-    def _wait_proxy(self, host, port, timeout_sec=5.0):
-        end = time.time() + timeout_sec
-        while time.time() < end:
-            s = None
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(0.2)
-                s.connect((host, int(port)))
-                try: s.close()
-                except Exception: pass
-                return True
-            except Exception:
-                try:
-                    if s: s.close()
-                except Exception:
-                    pass
-                time.sleep(0.1)
-        return False
-
-    # === 신규 === 프로필이 실제로 사용 중인지(락 잡힘) 대략 판단
     def _is_profile_in_use(self, profile_dir: str) -> bool:
         lock_path = os.path.join(profile_dir, "SingletonLock")
         if not os.path.exists(lock_path):
@@ -182,36 +98,47 @@ class SeleniumUtils:
         except Exception:
             return True
 
-    def _build_options(self):
-        opts = uc.ChromeOptions()
+    # =========================================================
+    # chrome exe / version
+    # =========================================================
+    def _find_chrome_exe_windows(self) -> Optional[str]:
+        try:
+            p = uc.find_chrome_executable()
+            if p and os.path.isfile(p):
+                return p
+        except Exception:
+            pass
 
-        # 기본
-        opts.add_argument("--disable-blink-features=AutomationControlled")
-        opts.add_argument("--lang=ko-KR")
-        opts.add_argument("--start-maximized")
+        pf = os.environ.get("ProgramFiles")
+        pf86 = os.environ.get("ProgramFiles(x86)")
+        local = os.environ.get("LOCALAPPDATA")
 
-        # 안정성
-        opts.add_argument("--disable-dev-shm-usage")
-        opts.add_argument("--no-first-run")
-        opts.add_argument("--no-default-browser-check")
+        path_candidates = []
+        if pf:
+            path_candidates.append(os.path.join(pf, "Google", "Chrome", "Application", "chrome.exe"))
+        if pf86:
+            path_candidates.append(os.path.join(pf86, "Google", "Chrome", "Application", "chrome.exe"))
+        if local:
+            path_candidates.append(os.path.join(local, "Google", "Chrome", "Application", "chrome.exe"))
 
-        # === 신규 === 프록시/후킹
-        opts.add_argument("--proxy-server=http=127.0.0.1:8888;https=127.0.0.1:8888")
-        opts.add_argument("--disable-quic")
+        app_paths = [
+            (winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", ""),
+            (winreg.HKEY_LOCAL_MACHINE, r"Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", ""),
+        ]
+        for hive, subkey, value_name in app_paths:
+            try:
+                with winreg.OpenKey(hive, subkey) as k:
+                    v, _ = winreg.QueryValueEx(k, value_name)
+                    if v and os.path.isfile(v):
+                        return v
+            except Exception:
+                pass
 
-        # === 신규 === 프록시에서 구글 백그라운드가 폭주/지연 만드는걸 최대 억제
-        # (너무 많이 넣으면 오히려 깨지는 옵션도 있어서 “안전한 범위”만)
-        opts.add_argument("--disable-features=Translate,OptimizationHints,MediaRouter")
-        opts.add_argument("--disable-component-update")
+        for p in path_candidates:
+            if p and os.path.isfile(p):
+                return p
 
-        # 프로필
-        if self._tmp_profile:
-            opts.add_argument(f"--user-data-dir={self._tmp_profile}")
-
-        if self.headless:
-            opts.add_argument("--headless=new")
-
-        return opts
+        return None
 
     def _get_chrome_version_text(self) -> Optional[str]:
         chrome_exe = self._find_chrome_exe_windows()
@@ -225,7 +152,7 @@ class SeleniumUtils:
                 text=True,
                 shell=False
             )
-            return out.strip()
+            return (out or "").strip()
         except Exception:
             return None
 
@@ -284,7 +211,32 @@ class SeleniumUtils:
         patcher.auto()
         return patcher.executable_path
 
-    # --- 화면 배치 ---
+    # =========================================================
+    # options
+    # =========================================================
+    def _build_options(self):
+        opts = uc.ChromeOptions()
+
+        opts.add_argument("--disable-blink-features=AutomationControlled")
+        opts.add_argument("--lang=ko-KR")
+        opts.add_argument("--start-maximized")
+
+        opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--no-first-run")
+        opts.add_argument("--no-default-browser-check")
+        opts.add_argument("--disable-quic")
+
+        if self._tmp_profile:
+            opts.add_argument(f"--user-data-dir={self._tmp_profile}")
+
+        if self.headless:
+            opts.add_argument("--headless=new")
+
+        return opts
+
+    # =========================================================
+    # window place / quit
+    # =========================================================
     def _get_screen_size(self) -> Tuple[int, int]:
         try:
             import tkinter as tk
@@ -329,7 +281,6 @@ class SeleniumUtils:
         except Exception:
             pass
 
-    # === 신규 === 드라이버 생성 공통
     def _create_uc_driver(self, opts, major: Optional[int]):
         if major:
             driver_path = self._get_driver_path_for_major(major)
@@ -337,24 +288,21 @@ class SeleniumUtils:
             return uc.Chrome(
                 options=opts,
                 driver_executable_path=driver_path,
-                use_subprocess=False,   # ✅ 핵심: 빈 창/잔존 창 방지
+                use_subprocess=False,
             )
-        else:
-            self._log("using driver major: None (uc auto)")
-            return uc.Chrome(
-                options=opts,
-                use_subprocess=False,   # ✅ 핵심: 빈 창/잔존 창 방지
-            )
+        self._log("using driver major: None (uc auto)")
+        return uc.Chrome(options=opts, use_subprocess=False)
 
-    # ----- 외부에서 쓰는 함수 -----
+    # =========================================================
+    # public
+    # =========================================================
     def start_driver(self, timeout: int = 30):
         """
-        Windows 기준 안정화 버전:
-        - chrome.exe 경로 탐색 + --version으로 major 확보
+        Windows 기준 안정화:
         - 고정 프로필 기본 사용(캡차/로그인 유지)
-        - 프로필이 사용 중으로 판단되면 임시 프로필로 안전 fallback
-        - SessionNotCreatedException 시 UC 캐시 wipe + major 재시도
-        - ✅ UC가 남긴 빈 크롬 창 정리
+        - 프로필이 사용 중이면 임시 프로필로 fallback
+        - Chrome major 감지 후 그 major로 uc patcher 적용
+        - SessionNotCreatedException 시 캐시 wipe 후 재시도
         """
 
         fixed_profile_dir = os.path.join(
@@ -370,6 +318,7 @@ class SeleniumUtils:
             "fixed_profile_dir": fixed_profile_dir,
         }
 
+        # 1) 프로필 선택
         use_profile = fixed_profile_dir
         if self._is_profile_in_use(fixed_profile_dir):
             tmp = self._new_tmp_profile()
@@ -381,17 +330,18 @@ class SeleniumUtils:
 
         self._tmp_profile = use_profile
 
+        # 2) 락 제거(고정 프로필일 때만)
         if self._tmp_profile == fixed_profile_dir:
             self._wipe_locks(self._tmp_profile)
             time.sleep(SLEEP_AFTER_PROFILE)
 
+        # 3) 크롬 major 감지
         major = self._detect_chrome_major()
         self.last_start_env["chrome_major"] = major
         self.last_start_env["chrome_version_text"] = self._get_chrome_version_text()
 
+        # 4) 드라이버 생성
         try:
-            self._wait_proxy("127.0.0.1", 8888, 6.0)
-
             opts = self._build_options()
             self.driver = self._create_uc_driver(opts, major)
 
@@ -401,16 +351,12 @@ class SeleniumUtils:
                 pass
 
             self._place_left_half()
-
-            # === 신규 === UC가 남긴 빈 창 정리(성공 케이스)
-            self._kill_empty_chrome_windows()
-
             return self.driver
 
         except SessionNotCreatedException as e:
             self._safe_quit_driver()
-
             self._wipe_uc_driver_cache()
+
             parsed = self._parse_major_from_error(e) or major
             self.last_start_env["session_not_created_parsed_major"] = parsed
 
@@ -424,10 +370,6 @@ class SeleniumUtils:
                     pass
 
                 self._place_left_half()
-
-                # === 신규 === UC가 남긴 빈 창 정리(재시도 성공 케이스)
-                self._kill_empty_chrome_windows()
-
                 return self.driver
 
             self.last_error = e
@@ -438,62 +380,25 @@ class SeleniumUtils:
             self.last_error = e
             raise e
 
-    def _kill_empty_chrome_windows(self):
-        """
-        uc 패치/테스트로 남는 빈 크롬창(드라이버에 안 잡힘) 정리용.
-        너무 과하게 죽이면 사용자 크롬도 죽일 수 있으니
-        "MyCrawlerProfile\\selenium_profile" 또는 self._tmp_profile 을 쓰는 놈만 남기고 정리한다.
-        """
+    def quit(self):
+        self._safe_quit_driver()
+        # 임시 프로필만 정리하고 고정 프로필은 유지
         try:
             fixed_profile_dir = os.path.join(
                 os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"),
                 "MyCrawlerProfile",
                 "selenium_profile"
             )
-            fixed_profile_dir = os.path.abspath(fixed_profile_dir).lower()
-
-            tmp_profile = ""
-            if self._tmp_profile:
-                tmp_profile = os.path.abspath(self._tmp_profile).lower()
-
-            # wmic 결과가 길면 잘릴 수 있는데, 여기서는 1차로 충분
-            cmd = r'wmic process where "name=\'chrome.exe\'" get ProcessId,CommandLine'
-            out = subprocess.check_output(cmd, shell=True, text=True, errors="ignore")
-
-            for line in out.splitlines():
-                low = (line or "").strip().lower()
-                if not low:
-                    continue
-                if "--user-data-dir" not in low:
-                    continue
-
-                m = re.search(r"(\d+)\s*$", line.strip())
-                if not m:
-                    continue
-                pid = m.group(1)
-
-                # ✅ 내 고정 프로필/임시 프로필이면 유지
-                if fixed_profile_dir and fixed_profile_dir in low:
-                    continue
-                if tmp_profile and tmp_profile in low:
-                    continue
-
-                # ✅ 그 외는 정리
-                subprocess.run(["taskkill", "/PID", str(pid), "/F"], capture_output=True, text=True)
-
-        except Exception:
-            pass
-
-    def quit(self):
-        try:
-            if self.driver:
-                self.driver.quit()
+            if self._tmp_profile and os.path.isdir(self._tmp_profile) and (self._tmp_profile != fixed_profile_dir):
+                shutil.rmtree(self._tmp_profile, ignore_errors=True)
         except Exception:
             pass
         finally:
-            self.driver = None
+            self._tmp_profile = None
 
-    # ----- 헬퍼 -----
+    # =========================================================
+    # helpers
+    # =========================================================
     def wait_element(self, by, selector: str, timeout: int = 10):
         try:
             return WebDriverWait(self.driver, timeout).until(

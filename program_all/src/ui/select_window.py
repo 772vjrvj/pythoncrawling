@@ -1,12 +1,11 @@
+# src/ui/select_window.py
 from functools import partial
-
 from PyQt5.QtCore import Qt                     # 정렬, 스크롤바 정책 등 Qt 상수
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor   # 아이콘/픽스맵/도형 그리기
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QMessageBox, QScrollArea, QSizePolicy,
     QStyle, QFrame, QDesktopWidget, QLineEdit, QWidget as QW
 )
-
 from src.core.global_state import GlobalState                # 전역 상태 저장/조회
 from src.ui.style.style import create_common_button, main_style  # 공통 버튼/입력창 스타일
 from src.vo.site import Site                                 # 사이트 정보 VO(레이블/키/컬러 등)
@@ -338,7 +337,6 @@ class SelectWindow(QWidget):
         state.set(GlobalState.REGION, site.region)     # 리전/지역 등
         state.set(GlobalState.POPUP, site.popup)     # 리전/지역 등
         state.set(GlobalState.SITES, site.sites)    # 컬럼/필드 구성
-        state.set(GlobalState.HOOKING, site.hooking)    # 컬럼/필드 구성
 
         self.close()                                   # 현재 선택창 닫기
         self.app_manager.go_to_main()                  # 메인 화면으로 전환

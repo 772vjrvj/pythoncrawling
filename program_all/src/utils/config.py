@@ -856,9 +856,10 @@ SITE_LIST = [
    #       ],
    #  ),
     Site("네이버 밴드 멤버", "NAVER_BAND_MEMBER", "#03C75A", enabled=True, popup=False,
-         hooking='NAVER_BAND_MEMBER',
          setting=[
-              {'name': '밴드ID', 'code': 'band_id',    'value': '4877094', 'type': 'input'}
+             {'name': '밴드ID', 'code': 'band_id', 'value': '', 'type': 'input'},
+             {'name': 'JSON 폴더', 'code': 'hook_inbox_dir', 'value': 'C:/hook_server/out/inbox', 'type': 'input'},
+             {'name': 'JSON 파일명', 'code': 'hook_json_filename', 'value': 'naver_band_member.json', 'type': 'input'},
          ],
          columns = [
              {"checked": True, "code": "band_name",     "value": "밴드명"},

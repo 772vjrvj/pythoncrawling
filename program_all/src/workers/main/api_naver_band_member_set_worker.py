@@ -3,8 +3,7 @@ import time
 import json
 import threading
 import re
-from datetime import datetime
-from typing import Any, Dict, List
+from typing import List
 
 from bs4 import BeautifulSoup
 
@@ -25,7 +24,6 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         self.site_url = "https://www.band.us/band"
 
         self.running = True
-
         self.csv_filename = None
 
         self.selenium_driver = None
@@ -38,10 +36,9 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         self.band_name = ""
 
     # =========================================================
-    # phone extract (참고 코드 이식)
+    # phone extract
     # =========================================================
     _SEP = r"[^\d]*"
-
     _RE_MOBILE = re.compile(rf"(01[016789]){_SEP}(\d{{3,4}}){_SEP}(\d{{3,4}})")
     _RE_070 = re.compile(rf"(070){_SEP}(\d{{3,4}}){_SEP}(\d{{4}})")
     _RE_AREA = re.compile(rf"(0(?:2|[3-6]\d))" + _SEP + r"(\d{3,4})" + _SEP + r"(\d{4})")
@@ -67,25 +64,19 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
             return []
 
         found = []
-
         for m in self._RE_MOBILE.finditer(hay):
             found.append(self._fmt_mobile(m.group(1), m.group(2), m.group(3)))
-
         for m in self._RE_070.finditer(hay):
             found.append(f"{m.group(1)}-{m.group(2)}-{m.group(3)}")
-
         for m in self._RE_AREA.finditer(hay):
             found.append(f"{m.group(1)}-{m.group(2)}-{m.group(3)}")
-
         for m in self._RE_SPECIAL.finditer(hay):
             found.append(f"{m.group(1)}-{m.group(2)}")
-
         for m in self._RE_LOCAL.finditer(hay):
             if m.group(1).startswith("0"):
                 continue
             found.append(f"{m.group(1)}-{m.group(2)}")
 
-        # 중복 제거(순서 유지)
         return list(dict.fromkeys(found))
 
     def pick_phone(self, name: str, desc: str) -> str:
@@ -102,17 +93,21 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
     def stop(self):
         self.running = False
         try:
-            if self.driver:
-                self.driver.quit()
+            if self.selenium_driver:
+                self.selenium_driver.quit()
         except Exception:
             pass
+        finally:
+            self.driver = None
 
     def destroy(self):
         try:
-            if self.driver:
-                self.driver.quit()
+            if self.selenium_driver:
+                self.selenium_driver.quit()
         except Exception:
             pass
+        finally:
+            self.driver = None
 
         self.progress_signal.emit(0.0, 1000000)
         self.log_signal_func("크롤링 종료중...")
@@ -121,11 +116,15 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         self.progress_end_signal.emit()
 
     def driver_set(self):
+        # === 신규 === 환경 프록시 잔재 제거(원치않게 requests/chrome에 영향 주는 케이스 방지)
+        for k in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+            os.environ.pop(k, None)
+
         self.excel_driver = ExcelUtils(self.log_signal_func)
         self.file_driver = FileUtils(self.log_signal_func)
         self.api_client = APIClient(use_cache=False, log_func=self.log_signal_func)
 
-        # ✅ 크롬 띄우는 건 유지
+        # ✅ 셀레니움은 프록시/후킹 모르고 그냥 띄움
         self.selenium_driver = SeleniumUtils(headless=False)
         self.driver = self.selenium_driver.start_driver(1200)
 
@@ -148,14 +147,18 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
             self.band_name = ""
             self.log_signal_func("⚠️ 밴드명 추출 실패(예외)")
 
-        # ✅ 후킹 결과 파일 대기(mitmproxy addon이 생성/덮어쓰기)
-        inbox_dir = os.path.abspath("./out/inbox")
-        json_path = os.path.join(inbox_dir, "naver_band_member.json")
-        self.log_signal_func("후킹 JSON 대기: " + json_path)
+        # ✅ 외부 후킹 프록시 서버가 만든 JSON 파일만 읽는다.
+        inbox_dir = self.get_setting_value(self.setting, "hook_inbox_dir") or "./out/inbox"
+        json_filename = self.get_setting_value(self.setting, "hook_json_filename") or "naver_band_member.json"
+
+        inbox_dir = os.path.abspath(inbox_dir)
+        json_path = os.path.join(inbox_dir, json_filename)
+
+        self.log_signal_func("JSON 대기: " + json_path)
 
         data = self._wait_json(json_path, timeout_sec=90)
         if not data:
-            self.log_signal_func("❌ 후킹 JSON 수신 실패(시간초과/중지)")
+            self.log_signal_func("❌ JSON 수신 실패(시간초과/중지)")
             self.excel_driver.convert_csv_to_excel_and_delete(self.csv_filename)
             return False
 
@@ -180,26 +183,19 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         band_id = self.get_setting_value(self.setting, "band_id")
         band_url = f"{self.site_url}/{band_id}/member"
 
-        # ✅ 여기서 실제 API 호출이 발생 → 후킹이 잡힘
+        # ✅ 멤버 페이지 진입(여기서 네트워크 트래픽이 발생할 수 있음)
         self.driver.get(band_url)
         time.sleep(2.0)
 
         self.log_signal_func("✅ 멤버 페이지 진입 완료")
 
-    # -------------------------------------------------
-    # === 신규 === 밴드명 추출
-    # <a href="/band/4877094/post" class="uriText" ...>TEXT</a>
-    # -------------------------------------------------
     def _extract_band_name_from_page(self) -> str:
         band_id = self.get_setting_value(self.setting, "band_id")
         if not band_id:
             return ""
 
-        # 우선: 니가 준 스펙 그대로 href + class 매칭
         target_href = f"/band/{band_id}/post"
 
-        # page_source는 Selenium이 있으니 바로 파싱
-        html = ""
         try:
             html = self.driver.page_source or ""
         except Exception:
@@ -209,15 +205,13 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
             return ""
 
         soup = BeautifulSoup(html, "html.parser")
-
         a = soup.select_one(f'a.uriText[href="{target_href}"]')
         if a and a.get_text(strip=True):
             return a.get_text(strip=True)
         return ""
 
-
     # -------------------------------------------------
-    # out/inbox json 대기
+    # json 대기
     # -------------------------------------------------
     def _wait_json(self, json_path, timeout_sec=60):
         t0 = time.time()
@@ -249,9 +243,6 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
 
         return None
 
-    # -------------------------------------------------
-    # JSON -> members
-    # -------------------------------------------------
     def _extract_members(self, data):
         try:
             if data.get("result_code") != 1:
@@ -267,19 +258,14 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         except Exception:
             return []
 
-    # -------------------------------------------------
-    # members -> csv
-    # -------------------------------------------------
     def _save_members(self, members):
         rows = []
-
         band_name = self.band_name or ""
 
         for m in members:
             try:
                 name = m.get("name", "") or ""
                 desc = m.get("description", "") or ""
-
                 rows.append({
                     "밴드명": band_name,
                     "유저번호": m.get("user_no"),

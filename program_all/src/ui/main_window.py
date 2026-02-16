@@ -20,7 +20,7 @@ from src.utils.config import server_url  # 서버 URL 및 설정 정보
 from src.workers.check_worker import CheckWorker
 from src.workers.factory.worker_factory import WORKER_CLASS_MAP
 from src.workers.progress_worker import ProgressWorker
-from src.net.hooking.hooking_dispatcher import HookingDispatcher
+
 
 class MainWindow(QWidget):
 
@@ -44,7 +44,6 @@ class MainWindow(QWidget):
         self.region = None
         self.popup = None
         self.setting = None
-        self.hooking = None
         self.setting_detail = None
 
         self.name = None
@@ -72,7 +71,6 @@ class MainWindow(QWidget):
         self.color = None
         self.cookies = None
         self.api_worker = None
-        self.hook_dispatcher = None
 
     # 변경값 세팅
     def common_data_set(self):
@@ -86,7 +84,6 @@ class MainWindow(QWidget):
         self.sites = state.get("sites")
         self.region = state.get("region")
         self.popup = state.get("popup")
-        self.hooking = state.get("hooking")
         self.setting_detail = state.get("setting_detail")   # === 신규 ===
 
     # 재 초기화
@@ -103,7 +100,7 @@ class MainWindow(QWidget):
             self.api_worker.api_failure.connect(self.handle_api_failure)
             self.api_worker.log_signal.connect(self.add_log)
             self.api_worker.start()
-            
+
     # 메인 워커 세팅
     def main_worker_set(self):
 
@@ -112,7 +109,7 @@ class MainWindow(QWidget):
             self.progress_worker = ProgressWorker(self.task_queue)
             self.progress_worker.progress_signal.connect(self.update_progress)
             self.progress_worker.log_signal.connect(self.add_log)
-        
+
         if self.on_demand_worker is None:
             worker_class = WORKER_CLASS_MAP.get(self.site)
             if worker_class:
@@ -339,51 +336,16 @@ class MainWindow(QWidget):
 
     # 프로그램 시작 중지
     def start_on_demand_worker(self):
-
-        # -------------------------------------------------
-        # 시작
-        # -------------------------------------------------
         if self.collect_button.text() == "시작":
-
-            # 1) 버튼 UI
             self.collect_button.setText("중지")
             self.collect_button.setStyleSheet(main_style(self.color))
-            self.collect_button.repaint()
+            self.collect_button.repaint()  # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
 
-            # 2) === 신규 === 후킹(프록시/mitm) 먼저 실행
-            if self.hooking:
-                # 이미 떠 있으면 재실행 안함
-                if self.hook_dispatcher and getattr(self.hook_dispatcher, "proc", None):
-                    self.add_log("프록시 이미 실행 중: " + str(self.hooking))
-                else:
-                    self.add_log("프록시 세팅 시작: " + str(self.hooking))
-                    self.hook_dispatcher = HookingDispatcher(log_fn=self.add_log)
-
-                    ok = self.hook_dispatcher.start(
-                        worker_key=self.hooking,   # 예: "NAVER_BAND_MEMBER"
-                        out_dir="./out",
-                        port=8888
-                    )
-
-                    if not ok:
-                        self.add_log("프록시 세팅 실패")
-                        self.hook_dispatcher = None
-
-                        # 실패하면 UI 원복
-                        self.collect_button.setText("시작")
-                        self.collect_button.setStyleSheet(main_style(self.color))
-                        self.collect_button.repaint()
-                        return
-
-                    self.add_log("프록시 세팅 완료: " + str(self.hooking))
-
-            # 3) 워커 준비
             if self.on_demand_worker is None and self.progress_worker is None:
                 self.main_worker_set()
 
             self.progress_bar.setValue(0)
             self.progress_worker.start()
-
             if self.setting:
                 self.on_demand_worker.set_setting(self.setting)
 
@@ -406,68 +368,28 @@ class MainWindow(QWidget):
                 self.on_demand_worker.set_user(self.user)
 
             self.on_demand_worker.start()
-            return
 
-        # -------------------------------------------------
-        # 중지
-        # -------------------------------------------------
-        self.collect_button.setText("시작")
-        self.collect_button.setStyleSheet(main_style(self.color))
-        self.collect_button.repaint()
-        self.add_log('중지')
-
-        # === 신규 === 후킹(프록시/mitm)도 같이 종료
-        try:
-            if self.hook_dispatcher:
-                self.add_log("프록시 종료")
-                self.hook_dispatcher.stop()
-                self.hook_dispatcher = None
-        except Exception as e:
-            self.add_log("프록시 종료 실패: " + str(e))
-
-        self.stop()
-
+        else:
+            self.collect_button.setText("시작")
+            self.collect_button.setStyleSheet(main_style(self.color))
+            self.collect_button.repaint() # 버튼 스타일이 즉시 반영되도록 강제로 다시 그리기
+            self.add_log('중지')
+            self.stop()
 
     # 프로그램 중지
     def stop(self):
+        # 크롤링 중지
+        if self.on_demand_worker is not None:
+            self.on_demand_worker.stop()
+            self.on_demand_worker = None
 
-        self.add_log("전체 작업 종료 시작")
-
-        # -----------------------------
-        # 1. Hook 먼저 종료 ⭐⭐⭐⭐⭐
-        # -----------------------------
-        try:
-            if self.hook_dispatcher:
-                self.add_log("프록시 종료 중...")
-                self.hook_dispatcher.stop()
-                self.hook_dispatcher = None
-                self.add_log("프록시 종료 완료")
-        except Exception as e:
-            self.add_log("프록시 종료 오류: " + str(e))
-
-        # -----------------------------
-        # 2. 크롤링 중지
-        # -----------------------------
-        try:
-            if self.on_demand_worker is not None:
-                self.on_demand_worker.stop()
-                self.on_demand_worker = None
-        except Exception as e:
-            self.add_log("worker 종료 오류: " + str(e))
-
-        # -----------------------------
-        # 3. 프로그래스 중지
-        # -----------------------------
-        try:
-            if self.progress_worker is not None:
-                self.progress_worker.stop()
-                self.progress_worker = None
-                self.task_queue = None
-        except Exception as e:
-            self.add_log("progress 종료 오류: " + str(e))
+        # 프로그래스 중지
+        if self.progress_worker is not None:
+            self.progress_worker.stop()
+            self.progress_worker = None
+            self.task_queue = None
 
         self.show_message("크롤링 종료", 'info', None)
-
 
     # 프로그래스 큐 데이터 담기
     def set_progress(self, start_value, end_value):
