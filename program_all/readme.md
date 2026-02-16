@@ -6,10 +6,22 @@ pip 25.1.1
 pip install -r requirements.txt
 
 
+
+
+설정 항목 추가시에는 아래 4개에 추가해야함
+
+# src/vo/site.py
+# src/core/global_state.py
+# src/ui/select_window.py
+# src/utils/config.py
+
+
+
+
+# 기존에 잘되는데 무거움
 pyinstaller main.py `
 --icon "./image/crawling.ico" `
 --name main `
---noconsole `
 --distpath "./dist" `
 --workpath "./build" `
 --hidden-import sip `
@@ -17,6 +29,38 @@ pyinstaller main.py `
 --collect-all numpy `
 --collect-all pandas `
 --add-data "resources;resources"
+
+
+# 신규
+pyinstaller main.py `
+--clean `
+--icon "./image/crawling.ico" `
+--name "main" `
+--noconsole `
+--distpath "./dist" `
+--workpath "./build" `
+--hidden-import sip `
+--hidden-import numpy `
+--hidden-import pandas `
+--add-data "resources;resources"
+
+
+
+pyinstaller main.py `
+--onedir `
+--clean `
+--icon "./image/crawling.ico" `
+--name "main" `
+--distpath "./dist" `
+--workpath "./build" `
+--hidden-import sip `
+--hidden-import numpy `
+--hidden-import pandas `
+--add-data "resources;resources"
+
+
+
+
 
 
 2025-08-09
