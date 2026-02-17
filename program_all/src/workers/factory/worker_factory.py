@@ -74,7 +74,7 @@ WORKER_CLASS_MAP = {
     # "NAVER_BLOG_CTT"                    :   ApiNaverBlogContentsSetLoadWorker,
     # "NAVER_CAFE_CTT_CNT_ONLY"           :   ApiNaverCafeCountOnlySetLoadWorker,
     # "NAVER_LAND_REAL_ESTATE_LOC_ALL"    :   ApiNaverLandRealEstateLocAllSetLoadWorker,
-    "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
+    # "NAVER_LAND_REAL_ESTATE_DETAIL"     :   ApiNaverLandRealEstateDetailSetLoadWorker,
     # "NAVER_BLOG_HTML"                   :   ApiNaverBlogHtmlSetLoadWorker,
     # "NAVER_STOCK_PHONE"                 :   ApiNaverStockPhoneSetLoadWorker,
     # "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
@@ -92,7 +92,7 @@ WORKER_CLASS_MAP = {
     # "THUMNAIL_MAKE"                     :   ApiThumnailMakeSetLoadWorker,
     # "457DEEP"                           :   Api457deepDetailSetLoadWorker,
     # "KMONG_DETAIL"                      :   ApiKmongDetailSetLoadWorker,
-    # "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
+    "NAVER_BAND_MEMBER"                 :   ApiNaverBandMemberSetLoadWorker,
 
     # "BASE"                              :   ApiBaseDetailSetLoadWorker,
 }

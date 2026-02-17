@@ -10,6 +10,9 @@ from typing import List, Optional, Dict, Any
 
 from bs4 import BeautifulSoup
 
+# === 신규 ===
+from urllib.parse import quote
+
 from src.utils.api_utils import APIClient
 from src.utils.excel_utils import ExcelUtils
 from src.utils.file_utils import FileUtils
@@ -206,6 +209,7 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
                 self.log_signal_func("DEBUG current_url(after_get_member): " + cur)
                 if "login_page" in cur or "auth.band.us" in cur:
                     self.log_signal_func("⚠️ 재기동 후 로그인 페이지로 이동됨(세션 유지 실패 가능)")
+
             except Exception:
                 pass
 
@@ -222,19 +226,23 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
     # =========================================================
     def _fetch_members_via_cdp(self) -> Optional[Dict[str, Any]]:
         band_id = self.get_setting_value(self.setting, "band_id")
-
-        req = self.selenium_driver.wait_api_request(
-            url_contains="api-kr.band.us/v2.0.0/get_members_of_band",
-            query_contains=f"band_no={band_id}",
-            timeout_sec=10,
-        )
-
-        if req:
-            self.log_signal_func(f"req ==> {req}")
-
         if not band_id:
             self.log_signal_func("❌ band_id 없음")
             return None
+
+        # === 신규 === (band_id 없을 수 있는 구간에서 wait_api_request 먼저 호출하면 query_contains가 None이 될 수 있어 순서 보정)
+        req = None
+        try:
+            req = self.selenium_driver.wait_api_request(
+                url_contains="api-kr.band.us/v2.0.0/get_members_of_band",
+                query_contains=f"band_no={band_id}",
+                timeout_sec=10,
+            )
+        except Exception:
+            req = None
+
+        if req:
+            self.log_signal_func(f"req ==> {req}")
 
         # 캡처 토글이 꺼져있으면 여기서 켜도 됨(방어)
         # === 신규 ===
@@ -281,23 +289,76 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
     # 로그인 유도 + 멤버페이지 진입(요청 유발)
     # -------------------------------------------------
     def wait_for_user_confirmation(self):
-        self.log_signal_func("밴드 로그인을 진행해주세요.")
-        self.driver.get(self.site_login_url)
-
-        event = threading.Event()
-        self.msg_signal_func("로그인 후 OK를 눌러주세요", "info", event)
-        event.wait()
-
+        """
+        === 변경 포인트 ===
+        기존: 로그인 페이지 -> OK -> 멤버 페이지
+        변경: 멤버 페이지(리다이렉트로 로그인 유도) -> 로그인 완료 후 OK
+        목적: 로그인 1번만 하게 만들기
+        """
         band_id = self.get_setting_value(self.setting, "band_id")
-        band_url = f"{self.site_url}/{band_id}/member"
+        if not band_id:
+            self.log_signal_func("❌ band_id 없음")
+            return
 
+        member_url = f"{self.site_url}/{band_id}/member"
+
+        # === 신규 === 멤버 페이지로 먼저 진입(로그인 안 되어있으면 자동으로 auth로 튐)
         try:
             if self.selenium_driver:
                 self.selenium_driver.drain_performance_logs()
         except Exception:
             pass
 
-        self.driver.get(band_url)
+        self.log_signal_func("멤버 페이지로 먼저 진입합니다(로그인 필요 시 자동으로 로그인 페이지로 이동).")
+        try:
+            self.driver.get(member_url)
+        except Exception as e:
+            self.log_signal_func("⚠️ member_url 진입 실패: " + str(e))
+
+        # === 신규 === 만약 next_url 보장하고 싶으면, login_page?next_url=member_url 로 강제 진입
+        # (리다이렉트가 애매한 환경에서 특히 안정적)
+        try:
+            cur = str(self.driver.current_url or "")
+        except Exception:
+            cur = ""
+
+        if ("auth.band.us" in cur) or ("login_page" in cur):
+            try:
+                login_url = "https://auth.band.us/login_page?next_url=" + quote(member_url, safe="")
+                self.log_signal_func("로그인 페이지로 이동합니다(로그인 후 멤버 페이지로 복귀).")
+                self.driver.get(login_url)
+            except Exception:
+                pass
+
+        # === 기존 UX 유지 === 유저가 로그인 완료한 뒤 OK
+        event = threading.Event()
+        self.msg_signal_func("로그인 완료 후(멤버 페이지로 돌아온 것 확인) OK를 눌러주세요", "info", event)
+        event.wait()
+
+        # === 신규 === OK 후 최종적으로 멤버 페이지인지 보장(로그인 후 복귀 실패 케이스 방어)
+        try:
+            if self.selenium_driver:
+                self.selenium_driver.drain_performance_logs()
+        except Exception:
+            pass
+
+        try:
+            cur2 = str(self.driver.current_url or "")
+        except Exception:
+            cur2 = ""
+
+        if (not cur2) or ("auth.band.us" in cur2) or ("login_page" in cur2) or (f"/band/{band_id}/member" not in cur2):
+            try:
+                self.driver.get(member_url)
+            except Exception:
+                pass
+
+        # === 신규 === 최종 URL 로깅
+        try:
+            self.log_signal_func("✅ 최종 진입 URL: " + str(self.driver.current_url or ""))
+        except Exception:
+            pass
+
         self.log_signal_func("✅ 멤버 페이지 진입 완료")
 
     def _extract_band_name_from_page(self) -> str:
