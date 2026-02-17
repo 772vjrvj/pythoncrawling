@@ -9,11 +9,13 @@ import tempfile
 import uuid
 import subprocess
 import re
+import json
+import base64  # CDP getResponseBody가 base64로 오는 케이스 대응
 import winreg
-from typing import Optional, Tuple, Dict, Any
+from typing import Optional, Tuple, Dict, Any, List
 
 import undetected_chromedriver as uc
-from undetected_chromedriver.patcher import Patcher
+from undetected_chromedriver.patcher import Patcher  # 배포 PC 크롬버전 mismatch 방지(자동 패치)
 
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -29,55 +31,90 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-# 기본 윈도우 크기(참고용). 현재는 --start-maximized를 쓰지만,
-# headless나 일부 환경에서 window-size가 필요할 수 있어 상수는 유지.
+# 기본 윈도우 크기(참고용)
 DEFAULT_WIDTH = 1280
 DEFAULT_HEIGHT = 800
 
-# 고정 프로필 사용 시(로그인 유지) 크롬 락 파일 지운 직후,
-# 크롬이 내부적으로 파일 잠금 상태를 정리할 시간을 약간 주기 위함.
+# 고정 프로필 락 파일 정리 후 약간 대기(Chrome이 lock 재생성 타이밍이 있어 필요)
 SLEEP_AFTER_PROFILE = 0.3
 
 
 class SeleniumUtils:
-    def __init__(self, headless: bool = False, debug: Optional[bool] = None):
+    def __init__(
+            self,
+            headless: bool = False,
+            debug: Optional[bool] = None
+    ):
         """
         headless : True면 브라우저 UI 없이 실행
         debug    : True면 내부 로그 출력
+
+        [빌드/배포 주의]
+        - PyInstaller onefile/onedir 모두에서 동작 가능하도록
+          chrome.exe 위치 탐색/driver mismatch 대응을 내부에서 처리한다.
         """
         self.headless = headless
         self.driver = None
-
-        # 실행할 때 선택된 프로필 경로(고정 프로필 or 임시 프로필)
-        self._tmp_profile: Optional[str] = None
-
-        # 마지막 예외 저장(외부에서 원인 확인용)
         self.last_error: Optional[Exception] = None
 
-        # 디버그 플래그: 인자 없으면 환경변수로 제어 가능
+        # debug 인자 없으면 환경변수로도 켤 수 있게
         if debug is None:
             debug = os.environ.get("SELENIUMUTILS_DEBUG", "").strip().lower() in ("1", "true", "y", "yes")
         self.debug = bool(debug)
 
-        # start_driver 실행 당시 환경 정보를 기록(고객 PC 디버깅에 매우 도움)
+        # 실행 시 사용할 프로필 폴더(고정 or 임시)
+        self._profile_dir: Optional[str] = None
+
+        # - capture_enabled=True 로 띄우면 perf log + CDP 캡처 루틴 사용 가능
+        # - block_images=True 로 띄우면 이미지 로딩 차단(성능/트래픽 감소) -> 페이지에 따라 깨질 수 있으니 토글
+        self.capture_enabled = False
+        self.block_images = False
+        self._net_enabled = False
+        self._perf_supported = None  # type: Optional[bool]
+
+        # start_driver 당시 환경 기록(고객PC 디버깅용)
         self.last_start_env: Dict[str, Any] = {}
 
     # =========================================================
     # log
     # =========================================================
     def _log(self, *args):
-        """debug=True일 때만 print 출력"""
         if self.debug:
             print("[SeleniumUtils]", *args)
+
+    # =========================================================
+    # 토글 API
+    # =========================================================
+    def set_capture_options(self, enabled: bool, block_images: Optional[bool] = None):
+        """
+        enabled=True  : CDP 캡처 사용(= performance log를 읽고 Network.getResponseBody를 쓰는 기능 사용)
+        block_images  : 이미지 차단(옵션이므로 driver 시작 전에 적용 권장)
+
+        [중요]
+        - block_images는 크롬 옵션(prefs)이기 때문에 driver 생성 이후에는 바꿔도 적용 안된다.
+        - capture_enabled는 driver 생성 후 enable_capture_now()로 켤 수 있다.
+        """
+        self.capture_enabled = bool(enabled)
+        if block_images is not None:
+            self.block_images = bool(block_images)
+
+    def enable_capture_now(self) -> bool:
+        """
+        driver 실행 후 CDP 캡처 활성화(Network.enable + perf log 지원 체크)
+        - 옵션(performance log capability)은 driver 생성 시점에 켜져 있어야 가장 안정적이다.
+        - 하지만 일부 환경에서 "일단 띄우고" 나중에 켜는 방식을 원하면 사용.
+        """
+        self.capture_enabled = True
+        return bool(self.enable_network_capture())
 
     # =========================================================
     # profile
     # =========================================================
     def _new_tmp_profile(self) -> str:
         """
-        임시 프로필 폴더 생성
-        - 고정 프로필이 이미 사용 중(다른 크롬/다른 자동화 실행 등)일 때 fallback 용
-        - tempfile 아래에 만든다 (종료 시 삭제 가능)
+        임시 프로필 생성:
+        - 고정 프로필이 사용 중(다른 크롬/다른 자동화)일 때 fallback용
+        - tempfile 아래 생성 -> 종료 시 삭제 가능
         """
         base = os.path.join(tempfile.gettempdir(), "selenium_profiles")
         os.makedirs(base, exist_ok=True)
@@ -87,11 +124,8 @@ class SeleniumUtils:
 
     def _wipe_locks(self, path: str):
         """
-        크롬 프로필 락 관련 파일/디렉토리 제거
-        - 크롬이 비정상 종료되면 SingletonLock, DevToolsActivePort 등이 남아서
-          다음 실행 시 "Chrome failed to start" 류 에러가 나기 쉽다.
-        - ⚠️ 실제로 크롬이 프로필을 사용 중일 때 지우면 프로필 손상 위험이 있으니
-          start_driver()에서 in-use 체크 후 "고정 프로필"일 때만 수행하는 구조로 사용.
+        고정 프로필 사용 시 남아있는 lock 파일 제거
+        - DevToolsActivePort 남아있으면 크롬이 즉시 종료되거나 연결 실패하는 케이스가 있다.
         """
         for pat in ["Singleton*", "LOCK", "LockFile", "DevToolsActivePort", "lockfile"]:
             for p in glob.glob(os.path.join(path, pat)):
@@ -101,52 +135,40 @@ class SeleniumUtils:
                     else:
                         os.remove(p)
                 except Exception:
-                    # 락 파일이 이미 사라졌거나 권한 문제가 있어도 치명적이지 않으니 무시
                     pass
 
     def _is_profile_in_use(self, profile_dir: str) -> bool:
         """
-        Windows에서 크롬 프로필이 "사용 중"인지 대략 판단
-        - SingletonLock 파일이 있으면 in-use 가능성이 높다.
-        - msvcrt로 non-blocking lock을 잡아보고 실패하면 사용 중으로 판단.
-        - 확실치 않으면 안전하게 True(사용 중)로 간주하여 임시 프로필로 회피.
+        프로필 사용 중 추정:
+        - 정확한 lock 잡기까지는 안 하고, SingletonLock 존재로 빠르게 판단
+        - 더 강한 판정이 필요하면 msvcrt locking 방식으로 확장 가능
         """
         lock_path = os.path.join(profile_dir, "SingletonLock")
-        if not os.path.exists(lock_path):
-            return False
+        return os.path.exists(lock_path)
 
-        try:
-            import msvcrt
-            f = open(lock_path, "a+b")
-            try:
-                # 1바이트라도 non-blocking lock 시도
-                msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
-                # lock 획득 성공 -> 사용 중 아닐 확률 높음
-                msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
-                return False
-            except OSError:
-                # lock 실패 -> 다른 프로세스가 사용 중
+    def _wait_profile_unlock(self, profile_dir: str, timeout_sec: float = 6.0, poll: float = 0.2) -> bool:
+        """
+        === 신규 ===
+        restart 직후 SingletonLock이 잠깐 남는 타이밍 이슈가 많아서
+        일정 시간 기다리면서 lock이 풀리기를 대기한다.
+        """
+        t0 = time.time()
+        while time.time() - t0 < float(timeout_sec):
+            if not self._is_profile_in_use(profile_dir):
                 return True
-            finally:
-                try:
-                    f.close()
-                except Exception:
-                    pass
-        except Exception:
-            # 확실치 않으면 "사용 중"으로 잡아 안전하게 처리
-            return True
+            time.sleep(float(poll))
+        return not self._is_profile_in_use(profile_dir)
 
     # =========================================================
-    # chrome exe / version
+    # chrome version / uc patcher
     # =========================================================
     def _find_chrome_exe_windows(self) -> Optional[str]:
         """
-        Windows에서 chrome.exe 경로를 최대한 찾는다.
-        - uc.find_chrome_executable() 우선 사용
-        - Program Files / LocalAppData 후보 경로 확인
-        - App Paths 레지스트리 키도 확인
+        chrome.exe 경로 찾기 (배포/고객PC에서 매우 중요)
+
+        [빌드/배포 주의]
+        - 고객PC에서 크롬 설치 위치가 다를 수 있어 uc.find_chrome_executable() + 레지스트리 + 기본 경로 순으로 탐색
         """
-        # 1) uc 내장 탐색 시도
         try:
             p = uc.find_chrome_executable()
             if p and os.path.isfile(p):
@@ -154,25 +176,24 @@ class SeleniumUtils:
         except Exception:
             pass
 
-        # 2) 기본 설치 경로 후보들
         pf = os.environ.get("ProgramFiles")
         pf86 = os.environ.get("ProgramFiles(x86)")
         local = os.environ.get("LOCALAPPDATA")
 
-        path_candidates = []
+        candidates = []
         if pf:
-            path_candidates.append(os.path.join(pf, "Google", "Chrome", "Application", "chrome.exe"))
+            candidates.append(os.path.join(pf, "Google", "Chrome", "Application", "chrome.exe"))
         if pf86:
-            path_candidates.append(os.path.join(pf86, "Google", "Chrome", "Application", "chrome.exe"))
+            candidates.append(os.path.join(pf86, "Google", "Chrome", "Application", "chrome.exe"))
         if local:
-            path_candidates.append(os.path.join(local, "Google", "Chrome", "Application", "chrome.exe"))
+            candidates.append(os.path.join(local, "Google", "Chrome", "Application", "chrome.exe"))
 
-        # 3) App Paths 레지스트리(실제 설치 위치를 직접 가리키는 경우가 많음)
-        app_paths = [
+        # 레지스트리(가능하면)
+        reg_paths = [
             (winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", ""),
             (winreg.HKEY_LOCAL_MACHINE, r"Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe", ""),
         ]
-        for hive, subkey, value_name in app_paths:
+        for hive, subkey, value_name in reg_paths:
             try:
                 with winreg.OpenKey(hive, subkey) as k:
                     v, _ = winreg.QueryValueEx(k, value_name)
@@ -181,87 +202,48 @@ class SeleniumUtils:
             except Exception:
                 pass
 
-        # 4) 후보 경로 직접 확인
-        for p in path_candidates:
+        for p in candidates:
             if p and os.path.isfile(p):
                 return p
 
         return None
 
-    def _get_chrome_version_text(self) -> Optional[str]:
-        """
-        chrome.exe --version 결과를 가져온다.
-        예: "Google Chrome 121.0.6167.85"
-        """
-        chrome_exe = self._find_chrome_exe_windows()
-        if not chrome_exe:
-            return None
-
-        try:
-            out = subprocess.check_output(
-                [chrome_exe, "--version"],       # chrome.exe 자체를 호출해야 확실함
-                stderr=subprocess.STDOUT,
-                text=True,
-                shell=False
-            )
-            return (out or "").strip()
-        except Exception:
-            return None
-
     def _detect_chrome_major(self) -> Optional[int]:
         """
-        Chrome 버전 문자열에서 major 버전만 추출
-        예: "Google Chrome 121.0.6167.85" -> 121
+        크롬 major 버전 추출:
+        - chromedriver mismatch(SessionNotCreatedException) 방지 핵심
         """
+        chrome = self._find_chrome_exe_windows()
+        if not chrome:
+            return None
         try:
-            out = self._get_chrome_version_text()
-            if not out:
-                return None
-            m = re.search(r"(\d+)\.", out)
-            if m:
-                return int(m.group(1))
+            out = subprocess.check_output([chrome, "--version"], stderr=subprocess.STDOUT, text=True)
+            m = re.search(r"(\d+)\.", out or "")
+            return int(m.group(1)) if m else None
         except Exception:
-            pass
-        return None
+            return None
 
-    def _parse_major_from_error(self, e: Exception) -> Optional[int]:
+    def _get_driver_path_for_major(self, major: int) -> str:
         """
-        SessionNotCreatedException 메시지에서 브라우저 major를 파싱(가능하면)
-        예: "Current browser version is 121.0.6167.85 ..."
+        uc patcher로 해당 major용 chromedriver 내려받고 경로를 받는다.
+        - 배포 환경에서 크롬 업데이트로 driver mismatch 나는 걸 줄여준다.
         """
-        msg = str(e)
-
-        m = re.search(r"Current browser version is (\d+)", msg)
-        if m:
-            return int(m.group(1))
-
-        m = re.search(r"browser version (\d+)", msg, re.IGNORECASE)
-        if m:
-            try:
-                return int(m.group(1))
-            except Exception:
-                return None
-
-        return None
+        patcher = Patcher(version_main=major)
+        patcher.auto()
+        return patcher.executable_path
 
     def _wipe_uc_driver_cache(self):
         """
-        undetected_chromedriver가 내려받아 패치해둔 chromedriver 캐시를 정리
-        - chrome 업데이트/드라이버 꼬임/권한 문제 등으로 uc 캐시가 깨졌을 때 도움이 됨
-        - 폴더 통째 삭제가 아니라 chromedriver*만 지워서 영향 최소화
+        undetected_chromedriver 캐시 드라이버 제거:
+        - 배포 시 어떤 PC에서 오래된 드라이버가 남아 mismatch를 유발하는 케이스가 있다.
         """
-        candidates = [
+        bases = [
             os.path.join(os.path.expanduser("~"), "AppData", "Roaming", "undetected_chromedriver"),
             os.path.join(os.path.expanduser("~"), "AppData", "Local", "undetected_chromedriver"),
         ]
-        for base in candidates:
+        for base in bases:
             try:
                 if os.path.isdir(base):
-                    for p in glob.glob(os.path.join(base, "**", "chromedriver*.exe"), recursive=True):
-                        try:
-                            os.remove(p)
-                        except Exception:
-                            pass
                     for p in glob.glob(os.path.join(base, "**", "chromedriver*"), recursive=True):
                         if os.path.isfile(p):
                             try:
@@ -271,265 +253,496 @@ class SeleniumUtils:
             except Exception:
                 pass
 
-    def _get_driver_path_for_major(self, major: int) -> str:
-        """
-        현재 Chrome major에 맞는 chromedriver를 undetected_chromedriver Patcher로 확보
-        - patcher.auto()가 다운로드/패치까지 해줌
-        """
-        patcher = Patcher(version_main=major)
-        patcher.auto()
-        return patcher.executable_path
-
     # =========================================================
     # options
     # =========================================================
     def _build_options(self):
         """
-        크롬 실행 옵션(가장 중요한 안정화 포인트)
-        - 여기는 "하나하나" 왜 넣는지 주석을 자세히 달아둠
+        크롬 옵션 구성
+
+        [빌드/배포 주의]
+        - capture_enabled=True일 때만 performance log를 켠다.
+        - block_images=True일 때만 이미지 차단 prefs를 적용한다.
         """
         opts = uc.ChromeOptions()
 
-        # --- (1) 자동화 탐지 완화 계열 ------------------------------------
-        # AutomationControlled 플래그를 끄면 일부 사이트에서 자동화 탐지 시그널이 줄어듦
-        # (완전 회피는 아니지만 uc + 이 옵션 조합이 기본 세팅으로 많이 쓰임)
-        opts.add_argument("--disable-blink-features=AutomationControlled")
-
-        # 브라우저 언어/지역 설정
-        # - 네이버/국내 사이트에서 언어가 꼬여서 다른 UI가 뜨는 것 방지
         opts.add_argument("--lang=ko-KR")
-
-        # 브라우저를 최대화로 시작
-        # - 일부 사이트는 viewport 크기에 따라 요소가 달라져서 자동화가 꼬일 수 있음
-        # - headless가 아니라면 사람처럼 보이기도 하고 안정성이 좋아짐
+        opts.add_argument("--disable-blink-features=AutomationControlled")
+        opts.add_argument("--disable-extensions")
+        opts.add_argument("--disable-popup-blocking")
+        opts.add_argument("--no-first-run")
+        opts.add_argument("--no-default-browser-check")
+        opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--disable-quic")
+        opts.add_argument("--remote-allow-origins=*")
+        opts.add_argument("--log-level=3")
         opts.add_argument("--start-maximized")
 
-        # --- (2) 안정성/호환성 계열 --------------------------------------
-        # /dev/shm 공유메모리 사용 문제를 회피(리눅스/도커에서 주로 필요)
-        # - Windows에선 큰 의미 없지만, 환경이 바뀌어도 안전하게 가져가는 옵션
-        opts.add_argument("--disable-dev-shm-usage")
-
-        # 최초 실행(first-run) 안내/팝업 방지
-        # - 자동화 시작 시 "기본 브라우저 설정" 같은 화면 뜨면 작업 흐름이 깨짐
-        opts.add_argument("--no-first-run")
-
-        # "기본 브라우저로 설정" 안내 화면 방지
-        opts.add_argument("--no-default-browser-check")
-
-        # QUIC 프로토콜 비활성화
-        # - 네트워크 이슈(특히 프록시/보안툴/특정 환경)에서 QUIC 때문에 접속/후킹이 꼬이는 경우가 있음
-        # - 안정성 우선이면 끄는 게 편함
-        opts.add_argument("--disable-quic")
-
-        # --- (3) Chrome 111+ 계열 CORS/원본 관련 예외 회피 -----------------
-        # 특정 조합(버전/드라이버/웹드라이버 설정)에서
-        # "Only local connections are allowed" 류의 에러가 나는 경우가 있어
-        # 디버깅/현장 배포 안정성 차원에서 넣어두면 도움이 되는 옵션.
-        # (항상 필요하진 않지만, 넣어도 일반 사용에 부작용은 거의 없음)
-        opts.add_argument("--remote-allow-origins=*")
-
-        # --- (4) 프로필 지정 ----------------------------------------------
-        # 고정 프로필을 쓰면:
-        # - 로그인 세션 유지
-        # - 캡차/쿠키 유지
-        # - 사용자 환경(확장/로컬스토리지 등) 유지 가능
-        # 단, 프로필이 사용 중이면 임시 프로필로 회피하는 구조와 함께 사용해야 안전함
-        if self._tmp_profile:
-            opts.add_argument(f"--user-data-dir={self._tmp_profile}")
-
-        # --- (5) headless 모드 --------------------------------------------
-        # 최신 headless 엔진 사용(Chrome의 new headless)
-        # - 옛날 --headless 보다 호환성이 좋아짐
         if self.headless:
+            # headless는 사이트마다 탐지/차단이 있을 수 있어 필요할 때만
             opts.add_argument("--headless=new")
+
+        # === 신규 === 이미지 차단 토글
+        if self.block_images:
+            try:
+                opts.add_experimental_option("prefs", {
+                    "profile.managed_default_content_settings.images": 2,
+                    "profile.default_content_setting_values.notifications": 2,
+                })
+            except Exception:
+                pass
+
+        # === 신규 === perf log 토글 (캡처할 때만)
+        if self.capture_enabled:
+            try:
+                opts.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+            except Exception:
+                pass
+
+        if self._profile_dir:
+            opts.add_argument(f"--user-data-dir={self._profile_dir}")
 
         return opts
 
     # =========================================================
-    # window place / quit
+    # CDP / performance logs (공통)
     # =========================================================
-    def _get_screen_size(self) -> Tuple[int, int]:
+    def enable_network_capture(self) -> bool:
         """
-        화면 해상도를 얻는다.
-        - 왼쪽 반 화면 배치(_place_left_half)에서 사용
-        - tkinter가 안되면 fallback 1920x1080
-        """
-        try:
-            import tkinter as tk
-            root = tk.Tk()
-            root.withdraw()
-            w = root.winfo_screenwidth()
-            h = root.winfo_screenheight()
-            root.destroy()
-            if w and h:
-                return int(w), int(h)
-        except Exception:
-            pass
-        return 1920, 1080
+        CDP Network.enable + performance log 지원 체크
 
-    def _place_left_half(self):
+        [빌드/배포 주의]
+        - 어떤 환경(특히 보안제품/정책)에서는 performance log 접근이 막힐 수 있다.
+        - 그 경우 _perf_supported=False로 내려가며 wait_api_*는 None을 반환하게 된다.
         """
-        브라우저 창을 왼쪽 반 화면으로 배치(사용자 확인/로그인 작업 편의)
-        headless면 창이 없으니 스킵
-        """
-        if not self.driver or self.headless:
-            return
-        sw, sh = self._get_screen_size()
-        try:
-            self.driver.set_window_rect(x=0, y=0, width=max(600, sw // 2), height=max(600, sh))
-        except Exception:
-            pass
-
-    def _safe_quit_driver(self):
-        """
-        driver를 최대한 안전하게 종료
-        - driver.quit() 실패하는 케이스(드라이버가 먹통/이미 죽음 등) 대비
-        - service.process.kill()까지 시도해서 좀비 프로세스 방지
-        """
-        d = self.driver
-        self.driver = None
-
-        if not d:
-            return
+        if not self.driver:
+            return False
 
         try:
-            d.quit()
-            return
-        except Exception:
-            pass
+            self.driver.execute_cdp_cmd("Network.enable", {})
+            self._net_enabled = True
+        except Exception as e:
+            self._net_enabled = False
+            self._log("Network.enable failed:", str(e))
 
         try:
-            svc = getattr(d, "service", None)
-            proc = getattr(svc, "process", None)
-            if proc and getattr(proc, "poll", None) and proc.poll() is None:
-                proc.kill()
-        except Exception:
-            pass
+            _ = self.driver.get_log("performance")
+            self._perf_supported = True
+        except Exception as e:
+            self._perf_supported = False
+            self._log("performance log not supported:", str(e))
 
-    def _create_uc_driver(self, opts, major: Optional[int]):
-        """
-        uc.Chrome 생성 공통 함수
-        - major가 있으면 해당 버전에 맞춘 chromedriver를 patcher로 확보 후 지정
-        - use_subprocess=False: uc 내부에서 subprocess로 분기하는 동작을 줄여
-          프로세스 잔존/빈 창/종료 불안정 이슈를 완화하는데 도움되는 경우가 많음
-        """
-        if major:
-            driver_path = self._get_driver_path_for_major(major)
-            self._log("using driver major:", major, "| driver_path:", driver_path)
-            return uc.Chrome(
-                options=opts,
-                driver_executable_path=driver_path,
-                use_subprocess=False,
-            )
-
-        self._log("using driver major: None (uc auto)")
-        return uc.Chrome(options=opts, use_subprocess=False)
+        return bool(self._net_enabled and self._perf_supported)
 
     # =========================================================
-    # public
+    # === 신규 === request 캡처 전용
     # =========================================================
-    def start_driver(self, timeout: int = 30):
+    def wait_api_request(
+            self,
+            url_contains: str,
+            query_contains: Optional[str] = None,
+            timeout_sec: float = 15.0,
+            poll: float = 0.2,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        request 정보만 반환 (response body 없음)
+        """
+        if not self.driver:
+            return None
+
+        if not self.capture_enabled:
+            return None
+
+        if not self._net_enabled or self._perf_supported is False:
+            self.enable_network_capture()
+
+        key_req = "Network.requestWillBeSent"
+
+        t0 = time.time()
+        while time.time() - t0 < timeout_sec:
+            try:
+                logs = self.driver.get_log("performance")
+            except Exception:
+                logs = []
+
+            for row in logs or []:
+                msg = row.get("message") if isinstance(row, dict) else None
+                if not msg:
+                    continue
+
+                if key_req not in msg:
+                    continue
+                if url_contains not in msg:
+                    continue
+                if query_contains and query_contains not in msg:
+                    continue
+
+                try:
+                    j = json.loads(msg)
+                    m = (j or {}).get("message") or {}
+                    if m.get("method") != "Network.requestWillBeSent":
+                        continue
+
+                    params = m.get("params") or {}
+                    req = params.get("request") or {}
+                    url = req.get("url") or ""
+
+                    if url_contains not in url:
+                        continue
+                    if query_contains and query_contains not in url:
+                        continue
+
+                    return {
+                        "requestId": params.get("requestId"),
+                        "url": url,
+                        "method": req.get("method"),
+                        "headers": req.get("headers"),
+                        "postData": req.get("postData"),
+                    }
+                except Exception:
+                    continue
+
+            time.sleep(poll)
+
+        return None
+
+    def drain_performance_logs(self):
+        """
+        performance 로그 비우기:
+        - 페이지 이동 직전에 호출하면 "과거 이벤트 오염"을 줄일 수 있다.
+        """
+        if not self.driver:
+            return
+        try:
+            _ = self.driver.get_log("performance")
+        except Exception:
+            pass
+
+    def _get_response_body(self, request_id: str) -> Optional[str]:
+        """
+        CDP Network.getResponseBody로 body를 얻는다.
+        - base64Encoded 인 경우 디코딩 처리
+        """
+        if not self.driver or not request_id:
+            return None
+        try:
+            res = self.driver.execute_cdp_cmd("Network.getResponseBody", {"requestId": request_id})
+            if not isinstance(res, dict):
+                return None
+            body = res.get("body")
+            if body is None:
+                return None
+            if res.get("base64Encoded"):
+                try:
+                    return base64.b64decode(body).decode("utf-8", "replace")
+                except Exception:
+                    return str(body)
+            return str(body)
+        except Exception:
+            return None
+
+    def wait_api_body(
+            self,
+            url_contains: str,
+            query_contains: Optional[str] = None,
+            timeout_sec: float = 15.0,
+            poll: float = 0.2,
+            require_status_200: bool = True,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        ✅ 공통 네트워크 캡처 (도메인 지식 없음)
+        """
+        if not self.driver:
+            return None
+
+        if not self.capture_enabled:
+            self._log("capture_enabled is False -> wait_api_body skip")
+            return None
+
+        if not self._net_enabled or self._perf_supported is False:
+            self.enable_network_capture()
+
+        key_resp = "Network.responseReceived"
+        key_fin = "Network.loadingFinished"
+        key_fail = "Network.loadingFailed"
+
+        candidates: Dict[str, Dict[str, Any]] = {}
+        finished = set()
+        failed = set()
+
+        t0 = time.time()
+        while time.time() - t0 < timeout_sec:
+            try:
+                logs = self.driver.get_log("performance")
+            except Exception:
+                logs = []
+
+            for row in logs or []:
+                msg = row.get("message") if isinstance(row, dict) else None
+                if not msg:
+                    continue
+
+                if (key_resp not in msg) and (key_fin not in msg) and (key_fail not in msg):
+                    continue
+
+                if key_resp in msg and (url_contains in msg) and (query_contains is None or query_contains in msg):
+                    try:
+                        j = json.loads(msg)
+                        m = (j or {}).get("message") or {}
+                        if m.get("method") != "Network.responseReceived":
+                            continue
+
+                        params = m.get("params") or {}
+                        resp = params.get("response") or {}
+                        url = resp.get("url") or ""
+
+                        if url_contains not in url:
+                            continue
+                        if query_contains and query_contains not in url:
+                            continue
+
+                        status = int(resp.get("status") or 0)
+                        if require_status_200 and status != 200:
+                            continue
+
+                        rid = params.get("requestId")
+                        if not rid:
+                            continue
+
+                        candidates[rid] = {
+                            "requestId": rid,
+                            "url": url,
+                            "status": status,
+                            "mimeType": resp.get("mimeType"),
+                        }
+                    except Exception:
+                        continue
+                    continue
+
+                if (key_fin in msg) or (key_fail in msg):
+                    try:
+                        j = json.loads(msg)
+                        m = (j or {}).get("message") or {}
+                        method = m.get("method")
+                        params = m.get("params") or {}
+                        rid = params.get("requestId")
+                        if not rid:
+                            continue
+
+                        if method == "Network.loadingFinished":
+                            finished.add(rid)
+                        elif method == "Network.loadingFailed":
+                            failed.add(rid)
+                    except Exception:
+                        continue
+
+            for rid, meta in list(candidates.items()):
+                if rid in failed:
+                    candidates.pop(rid, None)
+                    continue
+                if rid not in finished:
+                    continue
+
+                body_text = self._get_response_body(rid)
+                if body_text:
+                    out = dict(meta)
+                    out["bodyText"] = body_text
+                    return out
+
+            time.sleep(poll)
+
+        return None
+
+    def wait_api_json(
+            self,
+            url_contains: str,
+            query_contains: Optional[str] = None,
+            timeout_sec: float = 15.0,
+            poll: float = 0.2,
+            require_status_200: bool = True,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        wait_api_body() 결과 bodyText를 JSON으로 파싱해서 반환
+        - JSON이 아니면 None
+        """
+        hit = self.wait_api_body(
+            url_contains=url_contains,
+            query_contains=query_contains,
+            timeout_sec=timeout_sec,
+            poll=poll,
+            require_status_200=require_status_200,
+        )
+        if not hit:
+            return None
+
+        text = hit.get("bodyText") or ""
+        if not text:
+            return None
+
+        try:
+            return json.loads(text)
+        except Exception:
+            return None
+
+    # =========================================================
+    # start / quit
+    # =========================================================
+    def start_driver(self, timeout: int = 30, force_profile_dir: Optional[str] = None, allow_profile_fallback: bool = True):
         """
         Windows 기준 안정화:
-        - 고정 프로필 기본 사용(캡차/로그인 유지)
+        - 고정 프로필 기본 사용(로그인 유지)
         - 프로필이 사용 중이면 임시 프로필로 fallback
-        - Chrome major 감지 후 그 major로 uc patcher 적용
-        - SessionNotCreatedException 시 캐시 wipe 후 재시도
-        """
+        - Chrome major 감지 후 해당 major로 uc patcher 적용
 
-        # 고정 프로필(권장): 로그인/쿠키/캡차 유지 목적
+        === 신규 ===
+        - force_profile_dir: 지정되면 그 프로필을 "무조건" 사용 시도
+        - allow_profile_fallback=False면, lock이 남아도 tmp profile로 절대 안 빠지고 재시도/대기 쪽으로만 간다.
+        """
         fixed_profile_dir = os.path.join(
             os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"),
             "MyCrawlerProfile",
-            "selenium_profile"
-        )
+            "selenium_profile",
+            )
         os.makedirs(fixed_profile_dir, exist_ok=True)
 
-        # start_driver 당시 환경 기록 (문제 발생 시 로그로 원인 추적 가능)
+        chosen_profile = force_profile_dir or fixed_profile_dir
+
         self.last_start_env = {
             "headless": self.headless,
             "timeout": timeout,
             "fixed_profile_dir": fixed_profile_dir,
+            "chosen_profile_dir": chosen_profile,
+            "force_profile_dir": bool(force_profile_dir),
+            "allow_profile_fallback": bool(allow_profile_fallback),
+            "capture_enabled_at_start": bool(self.capture_enabled),
+            "block_images_at_start": bool(self.block_images),
         }
 
-        # 1) 프로필 선택: 고정 프로필을 기본으로 쓰되
-        #    사용 중이면(다른 크롬이 락 잡음) 임시 프로필로 회피
-        use_profile = fixed_profile_dir
-        if self._is_profile_in_use(fixed_profile_dir):
-            tmp = self._new_tmp_profile()
-            self._log("fixed profile seems in-use -> fallback tmp profile:", tmp)
-            use_profile = tmp
-            self.last_start_env["profile_fallback"] = True
-        else:
-            self.last_start_env["profile_fallback"] = False
-
-        self._tmp_profile = use_profile
-
-        # 2) 락 제거: 고정 프로필일 때만(임시 프로필은 새로 만들어서 필요 거의 없음)
-        #    + 사용 중인 프로필을 건드리지 않도록 위에서 in-use 체크를 했음
-        if self._tmp_profile == fixed_profile_dir:
-            self._wipe_locks(self._tmp_profile)
+        # === 신규 === force_profile_dir면 fallback 금지 케이스가 많음
+        if force_profile_dir:
+            self._profile_dir = force_profile_dir
+            # 재기동 직후 lock 잔재 제거 + 대기
+            self._wipe_locks(self._profile_dir)
+            self._wait_profile_unlock(self._profile_dir, timeout_sec=6.0, poll=0.2)
             time.sleep(SLEEP_AFTER_PROFILE)
+        else:
+            # 기존 로직 유지
+            if self._is_profile_in_use(chosen_profile):
+                if allow_profile_fallback:
+                    self._profile_dir = self._new_tmp_profile()
+                    self.last_start_env["profile_fallback"] = True
+                    self._log("fixed profile in-use -> tmp profile:", self._profile_dir)
+                else:
+                    # === 신규 === fallback 금지면 대기만 한다
+                    self._profile_dir = chosen_profile
+                    self.last_start_env["profile_fallback"] = False
+                    self._wipe_locks(self._profile_dir)
+                    self._wait_profile_unlock(self._profile_dir, timeout_sec=8.0, poll=0.2)
+                    time.sleep(SLEEP_AFTER_PROFILE)
+            else:
+                self._profile_dir = chosen_profile
+                self.last_start_env["profile_fallback"] = False
+                self._wipe_locks(self._profile_dir)
+                time.sleep(SLEEP_AFTER_PROFILE)
 
-        # 3) 크롬 major 감지: 현재 설치된 Chrome 버전에 맞춰 chromedriver를 고정시키기 위함
         major = self._detect_chrome_major()
         self.last_start_env["chrome_major"] = major
-        self.last_start_env["chrome_version_text"] = self._get_chrome_version_text()
 
-        # 4) 드라이버 생성
         try:
             opts = self._build_options()
-            self.driver = self._create_uc_driver(opts, major)
 
-            # 페이지 로딩 타임아웃 (네이버/대형 페이지에서 무한 대기 방지)
+            if major:
+                driver_path = self._get_driver_path_for_major(major)
+                self.driver = uc.Chrome(
+                    options=opts,
+                    driver_executable_path=driver_path,
+                    use_subprocess=True,
+                )
+            else:
+                self.driver = uc.Chrome(
+                    options=opts,
+                    use_subprocess=True
+                )
+
             try:
                 self.driver.set_page_load_timeout(timeout)
             except Exception:
                 pass
 
-            # 창 배치(사용자 로그인/확인 편의)
-            self._place_left_half()
             return self.driver
 
-        # 4-1) 드라이버/브라우저 버전 미스매치로 흔히 나는 예외
         except SessionNotCreatedException as e:
+            self.last_error = e
             self._safe_quit_driver()
-
-            # uc 캐시가 꼬인 경우가 많아 chromedriver 캐시를 정리
             self._wipe_uc_driver_cache()
+            raise e
 
-            # 에러 메시지에서 브라우저 버전 major를 파싱해 재시도
-            parsed = self._parse_major_from_error(e) or major
-            self.last_start_env["session_not_created_parsed_major"] = parsed
+        except Exception as e:
+            self.last_error = e
+            self._safe_quit_driver()
+            raise e
 
-            if parsed:
-                opts = self._build_options()
-                self.driver = self._create_uc_driver(opts, parsed)
+    def restart_driver_keep_profile(self, timeout: int = 30, retry: int = 3, retry_sleep: float = 0.6):
+        """
+        같은 user-data-dir(프로필)을 유지한 채 드라이버만 재시작한다.
+        - 로그인 세션 유지
+        - performance log ON/OFF 같은 capability 변경을 적용할 때 필요
 
+        === 신규(핵심 수정) ===
+        - 재기동 시 tmp profile fallback을 절대 허용하지 않는다.
+          (lock 잔재 때문에 fallback되면 세션이 날아가서 로그인 다시 탑니다)
+        """
+        old_profile = self._profile_dir
+
+        self._safe_quit_driver()
+        self.driver = None
+
+        self._profile_dir = old_profile
+
+        last_e = None
+        for i in range(max(1, int(retry))):
+            try:
+                if self._profile_dir and os.path.isdir(self._profile_dir):
+                    self._wipe_locks(self._profile_dir)
+
+                time.sleep(float(retry_sleep))
+
+                # === 신규 === old_profile 강제 + fallback 금지
+                return self.start_driver(
+                    timeout=timeout,
+                    force_profile_dir=self._profile_dir,
+                    allow_profile_fallback=False
+                )
+
+            except Exception as e:
+                last_e = e
                 try:
-                    self.driver.set_page_load_timeout(timeout)
+                    self._log("restart_driver_keep_profile failed:", str(e))
                 except Exception:
                     pass
+                time.sleep(float(retry_sleep))
 
-                self._place_left_half()
-                return self.driver
+        self.last_error = last_e
+        raise last_e
 
-            # 파싱 실패하면 원 예외를 올려서 상위에서 로그로 확인
-            self.last_error = e
-            raise e
-
-        # 4-2) 기타 예외: 드라이버 정리 후 예외 전달
-        except Exception as e:
-            self._safe_quit_driver()
-            self.last_error = e
-            raise e
+    def _safe_quit_driver(self):
+        d = self.driver
+        self.driver = None
+        if not d:
+            return
+        try:
+            d.quit()
+        except Exception:
+            pass
 
     def quit(self):
         """
-        외부에서 종료 호출 시
-        - 드라이버 안전 종료
-        - 임시 프로필이면 삭제(정리)
-        - 고정 프로필은 유지(로그인/쿠키 유지 목적)
+        종료 시:
+        - 드라이버 종료
+        - 임시 프로필이면 삭제
+
+        [빌드/배포 주의]
+        - 고정 프로필(fixed_profile_dir)은 삭제하지 않는다(로그인 유지 목적)
         """
         self._safe_quit_driver()
 
@@ -537,26 +750,21 @@ class SeleniumUtils:
             fixed_profile_dir = os.path.join(
                 os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"),
                 "MyCrawlerProfile",
-                "selenium_profile"
-            )
-
-            # 임시 프로필만 삭제
-            if self._tmp_profile and os.path.isdir(self._tmp_profile) and (self._tmp_profile != fixed_profile_dir):
-                shutil.rmtree(self._tmp_profile, ignore_errors=True)
+                "selenium_profile",
+                )
+            if self._profile_dir and os.path.isdir(self._profile_dir) and self._profile_dir != fixed_profile_dir:
+                shutil.rmtree(self._profile_dir, ignore_errors=True)
         except Exception:
             pass
         finally:
-            self._tmp_profile = None
+            self._profile_dir = None
+            self._net_enabled = False
+            self._perf_supported = None
 
     # =========================================================
     # helpers
     # =========================================================
     def wait_element(self, by, selector: str, timeout: int = 10):
-        """
-        element 존재 대기 헬퍼
-        - presence_of_element_located: DOM에 존재만 하면 반환(보이는지/클릭 가능 여부는 아님)
-        - 실패 시 None 반환하고 last_error에 예외 저장
-        """
         try:
             return WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located((by, selector))
@@ -567,9 +775,6 @@ class SeleniumUtils:
 
     @staticmethod
     def explain_exception(context: str, e: Exception) -> str:
-        """
-        예외를 UI 로그용 한글 메시지로 변환
-        """
         if isinstance(e, NoSuchElementException):
             return f"❌ {context}: 요소 없음"
         if isinstance(e, StaleElementReferenceException):
