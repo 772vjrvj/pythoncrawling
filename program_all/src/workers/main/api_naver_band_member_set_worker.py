@@ -5,9 +5,12 @@ import os
 import time
 import threading
 import re
-import json
+import base64
+import hashlib
+import hmac
 from typing import List, Optional, Dict, Any
 
+import requests
 from bs4 import BeautifulSoup
 
 from src.utils.api_utils import APIClient
@@ -30,13 +33,16 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         self.csv_filename: Optional[str] = None
 
         self.selenium_driver: Optional[SeleniumUtils] = None
-        self.driver: Any = None  # selenium webdriver (타입 힌트 최소화)
+        self.driver: Any = None
         self.excel_driver: Optional[ExcelUtils] = None
         self.file_driver: Optional[FileUtils] = None
         self.api_client: Optional[APIClient] = None
 
         self.band_name: str = ""
         self._driver_closed: bool = False
+
+        # ✅ Band Web 번들에 박혀있는 APP_KEY (= akey 기본값)
+        self.band_app_key: str = "bbc59b0b5f7a1c6efe950f6236ccda35"
 
     # =========================================================
     # lifecycle
@@ -46,8 +52,6 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         return True
 
     def driver_set(self) -> None:
-        # 이전 프록시/후킹 도구(예: mitmproxy, Fiddler) 사용으로 남은 HTTP(S)_PROXY 환경변수를 제거해
-        # Chrome/requests가 의도치 않게 프록시를 타는 문제를 방지한다.
         for k in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
             os.environ.pop(k, None)
 
@@ -55,14 +59,11 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         self.file_driver = FileUtils(self.log_signal_func)
         self.api_client = APIClient(use_cache=False, log_func=self.log_signal_func)
 
+        # ✅ 로그인만 사용 (후킹/캡처 옵션 제거)
         self.selenium_driver = SeleniumUtils(headless=False)
-        self.selenium_driver.set_capture_options(enabled=True, block_images=False)
-
         self.driver = self.selenium_driver.start_driver(1200)
-        self.log_signal_func("CDP 준비: perf log capability=ON, Network.enable=로그인 후 ON(드라이버 재기동 없음)")
 
     def _close_driver_once(self) -> None:
-        # Selenium driver를 여러 번 종료하는 문제를 방지하기 위해 quit()를 한 번만 실행하도록 한다.
         if self._driver_closed:
             return
         self._driver_closed = True
@@ -107,39 +108,47 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
             self.log_signal_func("❌ band_id 없음")
             return False
 
-        # 로그인(유저 OK 대기) + 멤버 페이지로 이동
+        band_id = str(band_id)
+
+        # 1) 로그인(유저 OK 대기) + 멤버 페이지 이동
         self.wait_for_user_confirmation(band_id)
 
-        # CDP Network.enable (실패 시 이후 캡처 불가)
-        ok = self.selenium_driver.enable_capture_now()
-        if not ok:
-            self.log_signal_func("❌ CDP 네트워크 캡처 활성화 실패")
+        time.sleep(1)
+
+        # 2) 밴드명(옵션)
+        self._extract_band_name_from_page(band_id)
+
+        # 3) Selenium 쿠키 확보 (secretKey 필요)
+        cookie_jar = self._get_cookiejar_from_selenium()
+        if not cookie_jar.get_dict():
+            self.log_signal_func("❌ 쿠키 확보 실패(빈 쿠키 jar)")
             return False
-        self.log_signal_func("CDP 네트워크 캡처 활성화 완료")
 
-        # 기존 performance 로그를 비워 이후 발생하는 API만 정확히 캡처하도록 한다. (큐 pop)
-        self.driver.get_log("performance")
+        secret_key = self._get_cookie_value(cookie_jar, "secretKey")
+        secret_key = self._normalize_cookie_value(secret_key)
+        if not secret_key:
+            self.log_signal_func("❌ secretKey 쿠키를 못 찾음 (도메인/세션 확인 필요)")
+            self._debug_dump_cookies(cookie_jar)
+            return False
 
-        # API 요청을 다시 발생시키기 위해 refresh
-        self.driver.refresh()
-        time.sleep(2)
+        # ✅ akey는 고정 APP_KEY 사용
+        akey = self.band_app_key
 
-        # get_members_of_band 응답 JSON 캡처
-        self.log_signal_func("CDP 응답 대기 중(get_members_of_band)...")
-        data = self.selenium_driver.wait_api_json(
-            url_contains="api-kr.band.us/v2.0.0/get_members_of_band",
-            query_contains=f"band_no={band_id}",
-            timeout_sec=12.0,
-            poll=0.2,
-            require_status_200=True,
+        # 4) requests 세션 구성 + API 호출
+        sess = requests.Session()
+        sess.cookies.update(cookie_jar)
+
+        data = self._call_members_api(
+            sess=sess,
+            band_id=band_id,
+            secret_key=secret_key,
+            akey=akey,
+            referer=f"https://www.band.us/band/{band_id}/post",
         )
 
         if not data:
-            self.log_signal_func("❌ CDP로 멤버 API 응답을 못 잡음")
+            self.log_signal_func("❌ API 호출 실패(응답 없음/파싱 실패)")
             return False
-
-        # 밴드명은 옵션(없어도 진행)
-        self._extract_band_name_from_page(band_id)
 
         members = self._extract_members(data)
         self._save_members(members)
@@ -152,29 +161,182 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
     # login (simple)
     # =========================================================
     def wait_for_user_confirmation(self, band_id: str) -> None:
-        # 로그인 페이지로 이동
         self.driver.get(self.site_login_url)
 
-        # 사용자가 로그인 완료 후 OK 누를 때까지 대기
         event = threading.Event()
         self.msg_signal_func("로그인 완료 후 OK를 눌러주세요", "info", event)
         event.wait()
 
-        # 로그인 완료 -> 멤버 페이지로 이동
         member_url = f"{self.site_url}/{band_id}/member"
         self.driver.get(member_url)
-
         self.log_signal_func("✅ 멤버 페이지 진입 완료")
 
     # =========================================================
     # band name (optional)
     # =========================================================
     def _extract_band_name_from_page(self, band_id: str) -> None:
-        """멤버 페이지에서 밴드명을 추출하여 self.band_name에 저장 (옵션값)."""
-        soup = BeautifulSoup(self.driver.page_source, "html.parser")
-        el = soup.select_one(f'a.uriText[href="/band/{band_id}/post"]')
-        self.band_name = el.get_text(strip=True) if el else ""
+        try:
+            soup = BeautifulSoup(self.driver.page_source, "html.parser")
+            el = soup.select_one(f'a.uriText[href="/band/{band_id}/post"]')
+            self.band_name = el.get_text(strip=True) if el else ""
+        except Exception:
+            self.band_name = ""
 
+    # =========================================================
+    # requests helpers (MD)
+    # =========================================================
+    def _extract_path_band(self, url: str) -> str:
+        u = str(url).replace("'", "%27")
+        u = re.sub(r"^.*?:\/\/", "", u)
+        u = re.sub(r"^[^/]+", "", u)
+        return u
+
+    def _make_md(self, url: str, secret_key: str) -> str:
+        source = self._extract_path_band(url)
+        mac = hmac.new(secret_key.encode("utf-8"), source.encode("utf-8"), hashlib.sha256).digest()
+        return base64.b64encode(mac).decode("ascii")
+
+    def _now_ms(self) -> int:
+        return int(time.time() * 1000)
+
+    # =========================================================
+    # cookie / normalize
+    # =========================================================
+    def _normalize_cookie_value(self, v: str) -> str:
+        v = (v or "").strip()
+        if len(v) >= 2 and v[0] == '"' and v[-1] == '"':
+            v = v[1:-1]
+        return v
+
+    def _get_cookiejar_from_selenium(self) -> requests.cookies.RequestsCookieJar:
+        jar = requests.cookies.RequestsCookieJar()
+
+        # ✅ secretKey가 세팅되는 경로를 강제로 한번 방문
+        scan_urls = [
+            "https://www.band.us/",
+            "https://auth.band.us/",
+            "https://www.band.us/s/login/getKey",
+            "https://www.band.us/",
+        ]
+
+        for u in scan_urls:
+            try:
+                self.driver.get(u)
+                time.sleep(1.0)
+            except Exception as e:
+                self.log_signal_func(f"[cookie-scan] 이동 실패: {u} / {str(e)}")
+                continue
+
+            try:
+                cookies = self.driver.get_cookies()
+            except Exception as e:
+                self.log_signal_func(f"[cookie-scan] get_cookies 실패: {u} / {str(e)}")
+                continue
+
+            names = sorted([c.get("name") for c in cookies if c.get("name")])
+            self.log_signal_func(f"[cookie-scan] {u} count={len(cookies)} names={names}")
+
+            for c in cookies:
+                name = c.get("name")
+                value = c.get("value")
+                domain = c.get("domain")
+                path = c.get("path") or "/"
+                if not name:
+                    continue
+                jar.set(name, value, domain=domain, path=path)
+
+            sk = jar.get_dict().get("secretKey") or ""
+            if sk:
+                self.log_signal_func(f"[cookie-scan] ✅ secretKey found (len={len(sk)}) domain/path preserved")
+                break
+
+        final_keys = sorted(list(jar.get_dict().keys()))
+        self.log_signal_func(f"[cookie-scan] final jar keys({len(final_keys)}): {final_keys}")
+
+        return jar
+
+    def _get_cookie_value(self, jar: requests.cookies.RequestsCookieJar, key: str) -> str:
+        try:
+            d = jar.get_dict()
+            return d.get(key) or ""
+        except Exception:
+            return ""
+
+    def _debug_dump_cookies(self, jar: requests.cookies.RequestsCookieJar) -> None:
+        try:
+            d = jar.get_dict()
+        except Exception:
+            d = {}
+        keys = sorted(list(d.keys()))
+        self.log_signal_func(f"cookies keys({len(keys)}): {keys}")
+
+    # =========================================================
+    # api call
+    # =========================================================
+    def _call_members_api(
+            self,
+            sess: requests.Session,
+            band_id: str,
+            secret_key: str,
+            akey: str,
+            referer: str,
+    ) -> Dict[str, Any]:
+        ts = self._now_ms()
+        url = (
+            "https://api-kr.band.us/v2.0.0/get_members_of_band"
+            f"?ts={ts}&band_no={band_id}"
+        )
+
+        md = self._make_md(url, secret_key)
+
+        final_akey = (akey or "").strip() or self.band_app_key
+
+        headers = {
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "cache-control": "no-cache",
+            "pragma": "no-cache",
+            "origin": "https://www.band.us",
+            "referer": referer,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "device-time-zone-id": "Asia/Seoul",
+            "device-time-zone-ms-offset": "32400000",
+            "language": "ko",
+            "md": md,
+
+            # ✅ 핵심: akey는 고정(APP_KEY)
+            "akey": final_akey,
+        }
+
+        self.log_signal_func(f"API 호출: {url}")
+        self.log_signal_func(f"MD: {md}")
+        self.log_signal_func(f"akey(len)={len(final_akey)}")
+
+        try:
+            resp = sess.get(url, headers=headers, timeout=15)
+        except Exception as e:
+            self.log_signal_func(f"❌ requests 실패: {str(e)}")
+            return {}
+
+        self.log_signal_func(f"status={resp.status_code}")
+        if resp.status_code != 200:
+            self.log_signal_func(f"❌ 응답 실패 status={resp.status_code}")
+            try:
+                self.log_signal_func(
+                    f"resp hdr: content-type={resp.headers.get('content-type')} "
+                    f"www-authenticate={resp.headers.get('www-authenticate')} "
+                    f"set-cookie={resp.headers.get('set-cookie')}"
+                )
+            except Exception:
+                pass
+            self.log_signal_func(f"body(앞 800): {resp.text[:800]}")
+            return {}
+
+        try:
+            return resp.json()
+        except Exception as e:
+            self.log_signal_func(f"❌ json 파싱 실패: {str(e)} / body(앞 800): {resp.text[:800]}")
+            return {}
 
     # =========================================================
     # phone extract
@@ -186,7 +348,6 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
     _RE_SPECIAL = re.compile(rf"(1\d{{3}}){_SEP}(\d{{4}})")
     _RE_LOCAL = re.compile(r"(?<!\d)(\d{3,4})" + _SEP + r"(\d{4})(?!\d)")
 
-
     def _clean_text_for_scan(self, s: str) -> str:
         if not s:
             return ""
@@ -195,12 +356,10 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
         s = re.sub(r"\s+", " ", s).strip()
         return s
 
-
     def _fmt_mobile(self, a: str, b: str, c: str) -> str:
         if len(c) == 3:
             c = "0" + c
         return f"{a}-{b}-{c}"
-
 
     def extract_phones(self, name: str, desc: str) -> List[str]:
         hay = self._clean_text_for_scan(f"{name or ''} {desc or ''}")
@@ -221,26 +380,21 @@ class ApiNaverBandMemberSetLoadWorker(BaseApiWorker):
                 continue
             found.append(f"{m.group(1)}-{m.group(2)}")
 
-        # 중복 제거(순서 유지)
         return list(dict.fromkeys(found))
 
     def pick_phone(self, name: str, desc: str) -> str:
         phones = self.extract_phones(name, desc)
         return phones[0] if phones else ""
 
-
     # =========================================================
     # members
     # =========================================================
     def _extract_members(self, data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """band API 응답에서 members 배열만 꺼낸다(실패/형식 불일치 시 빈 리스트)."""
         if not data or data.get("result_code") != 1:
             return []
         return (data.get("result_data") or {}).get("members") or []
 
-
     def _save_members(self, members: List[Dict[str, Any]]) -> None:
-        """members 배열을 CSV rows로 변환해 저장한다."""
         rows: List[Dict[str, Any]] = [{
             "밴드명": self.band_name or "",
             "유저번호": m.get("user_no"),
